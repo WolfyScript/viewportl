@@ -193,27 +193,23 @@ public class WolfyUtilities {
     }
 
     public static boolean hasSpigot() {
-        String path = "org.spigotmc.Metrics";
-        try {
-            Class.forName(path);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return hasClass("org.spigotmc.Metrics");
     }
 
     public static boolean hasWorldGuard(){
-        String path = "com.sk89q.worldguard.WorldGuard";
-        try {
-            Class.forName(path);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return hasClass("com.sk89q.worldguard.WorldGuard");
     }
 
     public static boolean hasPlotSquared(){
-        String path = "com.intellectualcrafters.plot.api.PlotAPI";
+        return hasClass("com.intellectualcrafters.plot.api.PlotAPI");
+    }
+
+    public static boolean hasLWC(){
+        return hasClass("com.griefcraft.lwc.LWC");
+
+    }
+
+    public static boolean hasClass(String path){
         try {
             Class.forName(path);
             return true;
