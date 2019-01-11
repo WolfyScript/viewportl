@@ -1,0 +1,6 @@
+name: WolfyUtilities
+api-version: 1.13
+version: 0.1.0
+author: WolfyScript
+
+main: me.wolfyscript.utilities.main.Main
