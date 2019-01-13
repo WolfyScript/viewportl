@@ -24,6 +24,7 @@ public class GuiClickEvent extends Event implements Cancellable {
     private int clickedSlot;
     private ClickType clickType;
     private Inventory clickedInventory;
+    private Inventory inventory;
     private InventoryAction inventoryAction;
     private int rawSlot;
     private ItemStack currentItem;
@@ -39,6 +40,7 @@ public class GuiClickEvent extends Event implements Cancellable {
         this.clickedSlot = event.getSlot();
         this.clickType = event.getClick();
         this.clickedInventory = event.getClickedInventory();
+        this.inventory = event.getInventory();
         this.inventoryAction = event.getAction();
         this.rawSlot = event.getRawSlot();
         this.currentItem = event.getCurrentItem();
@@ -53,6 +55,10 @@ public class GuiClickEvent extends Event implements Cancellable {
 
     public int getClickedSlot() {
         return clickedSlot;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 
     public ClickType getClickType() {

@@ -28,6 +28,9 @@ public class Main extends JavaPlugin {
 
     public void onEnable() {
         mainUtil = new WolfyUtilities(instance);
+        WolfyUtilities.setLWC();
+        WolfyUtilities.setPlotSquared();
+        WolfyUtilities.setWorldGuard();
         ConfigAPI configAPI = mainUtil.getConfigAPI();
         LanguageAPI languageAPI = mainUtil.getLanguageAPI();
         InventoryAPI inventoryAPI = mainUtil.getInventoryAPI();

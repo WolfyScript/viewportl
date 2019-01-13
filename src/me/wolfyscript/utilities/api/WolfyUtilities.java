@@ -39,6 +39,10 @@ public class WolfyUtilities {
     private InventoryAPI inventoryAPI;
     private LanguageAPI languageAPI;
 
+    private static boolean hasLWC;
+    private static boolean hasWorldGuard;
+    private static boolean hasPlotSquared;
+
     public WolfyUtilities(Plugin plugin){
         this.plugin = plugin;
         Main.registerWolfyUtilities(this);
@@ -196,17 +200,28 @@ public class WolfyUtilities {
         return hasClass("org.spigotmc.Metrics");
     }
 
+    public static void setLWC() {
+        hasLWC = hasClass("com.griefcraft.lwc.LWC");
+    }
+
+    public static void setPlotSquared() {
+        hasPlotSquared = hasClass("com.intellectualcrafters.plot.api.PlotAPI");
+    }
+
+    public static void setWorldGuard() {
+        hasWorldGuard = hasClass("com.sk89q.worldguard.WorldGuard");
+    }
+
     public static boolean hasWorldGuard(){
-        return hasClass("com.sk89q.worldguard.WorldGuard");
+        return hasWorldGuard;
     }
 
     public static boolean hasPlotSquared(){
-        return hasClass("com.intellectualcrafters.plot.api.PlotAPI");
+        return hasPlotSquared;
     }
 
     public static boolean hasLWC(){
-        return hasClass("com.griefcraft.lwc.LWC");
-
+        return hasLWC;
     }
 
     public static boolean hasClass(String path){

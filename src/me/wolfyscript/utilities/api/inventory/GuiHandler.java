@@ -5,6 +5,7 @@ import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -31,6 +32,10 @@ public class GuiHandler implements Listener {
         this.api = api;
         this.player = player;
         this.uuid = player.getUniqueId().toString();
+    }
+
+    public boolean isChangingInv() {
+        return changingInv;
     }
 
     public WolfyUtilities getApi() {
@@ -146,9 +151,10 @@ public class GuiHandler implements Listener {
         changeToInv("none");
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
         if (event.getInventory() != null && !pageHistory.isEmpty() && verifyInv()) {
+            System.out.println(event.getPlayer().getName() +" Close");
             if (player.getOpenInventory() == null || !changingInv) {
                 pageHistory.add("none");
             }

@@ -171,7 +171,7 @@ public class InventoryAPI implements Listener {
         }
     }
 
-    private GuiHandler getGuiHandler(Player player) {
+    public GuiHandler getGuiHandler(Player player) {
         return guiHandlers.get(player.getUniqueId().toString());
     }
 
@@ -204,7 +204,7 @@ public class InventoryAPI implements Listener {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
-                if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).getName().equalsIgnoreCase(event.getClickedInventory().getName())) {
+                if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
                     event.setCancelled(true);
                     String action = guiHandler.verifyItem(event.getCurrentItem());
                     if (!action.isEmpty()) {
@@ -217,6 +217,23 @@ public class InventoryAPI implements Listener {
                         if (!guiClickEvent.isCancelled()) {
                             event.setCancelled(false);
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onItemDrag(InventoryDragEvent event) {
+        if (event.getInventory() != null) {
+            if (hasGuiHandler((Player) event.getWhoClicked())) {
+                GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
+                if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
+                    event.setCancelled(true);
+                    GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
+                    Bukkit.getPluginManager().callEvent(guiItemDragEvent);
+                    if (!guiItemDragEvent.isCancelled()) {
+                        event.setCancelled(false);
                     }
                 }
             }
