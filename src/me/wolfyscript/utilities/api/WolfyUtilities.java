@@ -7,7 +7,6 @@ import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.Legacy;
 import me.wolfyscript.utilities.api.utils.Reflection;
-import me.wolfyscript.utilities.api.utils.XMaterial;
 import me.wolfyscript.utilities.main.Main;
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.ChatColor;
@@ -298,9 +297,9 @@ public class WolfyUtilities {
     public static ItemStack getSkullByValue(String value) {
         ItemStack itemStack;
         if (WolfyUtilities.hasAquaticUpdate()) {
-            itemStack = new ItemStack(getMaterial("PLAYER_HEAD"));
+            itemStack = new ItemStack(Material.PLAYER_HEAD);
         } else {
-            itemStack = new ItemStack(getMaterial("PLAYER_HEAD"), 1, (short) 0, (byte) 3);
+            itemStack = new ItemStack(Material.PLAYER_HEAD, 1, (short) 0, (byte) 3);
         }
         if (value != null && !value.isEmpty()) {
             SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
@@ -369,14 +368,6 @@ public class WolfyUtilities {
         return unhide.replace("§", "");
     }
 
-    public static Material getMaterial(String name) {
-        return XMaterial.fromString(name).parseMaterial();
-    }
-
-    public static ItemStack getItemStack(String name) {
-        return XMaterial.fromString(name).parseItem();
-    }
-
     public static Enchantment getEnchantment(String enchantNmn) {
         try {
             if (!WolfyUtilities.hasAquaticUpdate()) {
@@ -403,7 +394,7 @@ public class WolfyUtilities {
     }
 
     public static boolean isSkull(ItemStack itemStack) {
-        if (itemStack.getType() == getMaterial("PLAYER_HEAD")) {
+        if (itemStack.getType() == Material.PLAYER_HEAD) {
             if (WolfyUtilities.hasAquaticUpdate()) {
                 return true;
             } else return itemStack.getData().getData() == (byte) 3;

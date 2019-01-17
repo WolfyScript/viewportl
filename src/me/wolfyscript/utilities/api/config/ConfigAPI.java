@@ -66,6 +66,12 @@ public class ConfigAPI {
         }
     }
 
+    public void loadConfigs(){
+        for(Config config : configs.values()){
+            config.load();
+        }
+    }
+
     public Plugin getPlugin() {
         return plugin;
     }

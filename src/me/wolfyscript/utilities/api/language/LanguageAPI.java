@@ -21,6 +21,10 @@ public class LanguageAPI {
         //this.playerLanguage = new HashMap<>();
     }
 
+    public void unregisterLanguages(){
+        languages.clear();
+    }
+
     public void registerLanguage(Language language){
         if(languages.isEmpty()){
             setActiveLanguage(language);

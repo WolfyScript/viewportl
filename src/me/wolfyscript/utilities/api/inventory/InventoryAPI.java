@@ -199,7 +199,17 @@ public class InventoryAPI implements Listener {
         return plugin;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    public void reset(){
+        for(Player player : plugin.getServer().getOnlinePlayers()){
+            player.closeInventory();
+            removeGui(player);
+        }
+        guiHandlers.clear();
+        guiWindows.clear();
+        items.clear();
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
@@ -223,17 +233,16 @@ public class InventoryAPI implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onItemDrag(InventoryDragEvent event) {
         if (event.getInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
                 if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
-                    event.setCancelled(true);
                     GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
                     Bukkit.getPluginManager().callEvent(guiItemDragEvent);
-                    if (!guiItemDragEvent.isCancelled()) {
-                        event.setCancelled(false);
+                    if (guiItemDragEvent.isCancelled()) {
+                        event.setCancelled(true);
                     }
                 }
             }

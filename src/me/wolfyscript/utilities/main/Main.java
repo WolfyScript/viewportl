@@ -8,6 +8,9 @@ import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.Legacy;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -28,6 +31,8 @@ public class Main extends JavaPlugin {
 
     public void onEnable() {
         mainUtil = new WolfyUtilities(instance);
+        mainUtil.setCONSOLE_PREFIX("[WU] ");
+        mainUtil.setCHAT_PREFIX("§8[§3WU§8] §7");
         WolfyUtilities.setLWC();
         WolfyUtilities.setPlotSquared();
         WolfyUtilities.setWorldGuard();
@@ -57,5 +62,24 @@ public class Main extends JavaPlugin {
 
     public static WolfyUtilities getMainUtil() {
         return mainUtil;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (label.equalsIgnoreCase("wolfyutils")) {
+            if (sender instanceof Player) {
+                Player p = (Player) sender;
+                mainUtil.sendPlayerMessage(p, "~*~*~*~*&8[&3&lWolfyUtilities&8]&7~*~*~*~*~");
+                mainUtil.sendPlayerMessage(p, "");
+                mainUtil.sendPlayerMessage(p, "      &n     by &b&n&lWolfyScript&7&n      ");
+                mainUtil.sendPlayerMessage(p, "        ------------------");
+                mainUtil.sendPlayerMessage(p, "");
+                mainUtil.sendPlayerMessage(p, "             &nVersion:&r&b "+getDescription().getVersion());
+                mainUtil.sendPlayerMessage(p, "");
+                mainUtil.sendPlayerMessage(p, "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~");
+                return true;
+            }
+        }
+        return true;
     }
 }

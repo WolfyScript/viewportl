@@ -128,12 +128,8 @@ public class Config {
         Saves and loads the config after it!
      */
     public void reload() {
-        try {
-            config.save(configFile);
-            config.load(configFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
+        save();
+        load();
     }
 
     void reloadAuto(){
@@ -155,6 +151,14 @@ public class Config {
         try {
             config.save(configFile);
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void load(){
+        try {
+            config.load(configFile);
+        } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
     }

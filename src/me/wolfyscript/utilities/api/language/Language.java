@@ -24,13 +24,7 @@ public class Language {
         this.messages = new HashMap<>();
         configAPI.registerConfig(config);
 
-        for(String key : this.config.getKeys()){
-            if(this.config.getObject(key) instanceof ArrayList){
-                messages.put(key, this.config.getConfig().getStringList(key));
-            }else{
-                messages.put(key, this.config.getString(key));
-            }
-        }
+        reloadKeys();
     }
 
     /*
@@ -75,5 +69,19 @@ public class Language {
 
     public FileConfiguration getConfig(){
         return config.getConfig();
+    }
+
+    public void reloadKeys(){
+        for(String key : this.config.getKeys()){
+            if(this.config.getObject(key) instanceof ArrayList){
+                messages.put(key, this.config.getConfig().getStringList(key));
+            }else{
+                messages.put(key, this.config.getString(key));
+            }
+        }
+    }
+
+    public String getName() {
+        return lang;
     }
 }

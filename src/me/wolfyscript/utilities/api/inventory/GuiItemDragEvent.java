@@ -29,6 +29,7 @@ public class GuiItemDragEvent extends Event implements Cancellable {
     private final Set<Integer> containerSlots;
     private final ItemStack oldCursor;
     private ItemStack newCursor;
+    private InventoryView view;
 
 
     public GuiItemDragEvent(GuiHandler guiHandler, InventoryDragEvent event) {
@@ -40,6 +41,15 @@ public class GuiItemDragEvent extends Event implements Cancellable {
         addedItems = event.getNewItems();
         containerSlots = event.getInventorySlots();
         oldCursor = event.getOldCursor();
+        view = event.getView();
+    }
+
+    public InventoryView getView() {
+        return view;
+    }
+
+    public boolean verify(GuiWindow guiWindow){
+        return guiWindow.equals(this.guiWindow);
     }
 
     public GuiWindow getGuiWindow() {

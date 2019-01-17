@@ -1,6 +1,6 @@
 name: WolfyUtilities
 api-version: 1.13
-version: 0.1.0
+version: 1.0.0
 author: WolfyScript
 softdepend:
   - LWC
@@ -8,3 +8,7 @@ softdepend:
   - WorldGuard
 
 main: me.wolfyscript.utilities.main.Main
+
+commands:
+  wolfyutils:
+    description: displays version of this plugin
