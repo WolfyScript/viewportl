@@ -1,6 +1,5 @@
 package me.wolfyscript.utilities.api.config;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Set;
 
 public class Config {
@@ -20,6 +20,7 @@ public class Config {
     protected ConfigAPI configAPI;
     private String name;
     private String defaultPath;
+    private String defaultName;
     private Plugin plugin;
     private boolean saveAfterSet;
     private int intervalsToPass = 0;
@@ -29,14 +30,16 @@ public class Config {
     /*
         plugin - your plugin
         defaultPath - the path to the file inside the jar, which contains the default values!
+        defaultName - the name of the default file!
         savePath - The path where the file will be save to!
         name - The name of the file and the name of the default file.
      */
-    public Config(ConfigAPI configAPI, String defaultPath, String savePath, String name) {
+    public Config(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name) {
         this.name = name;
         this.saveAfterSet = true;
         this.plugin = configAPI.getPlugin();
         this.defaultPath = defaultPath;
+        this.defaultName = defaultName;
         this.configAPI = configAPI;
         configFile = new File(savePath, name + ".yml");
         if(!configFile.exists()){
@@ -55,6 +58,10 @@ public class Config {
             firstInit = false;
         }
         init();
+    }
+
+    public Config(ConfigAPI configAPI, String defaultPath, String savePath, String name) {
+        this(configAPI, defaultPath, name, savePath, name);
     }
 
     /*
@@ -112,8 +119,9 @@ public class Config {
         config.options().copyDefaults(true);
         Reader stream;
         try {
-            if(plugin.getResource(defaultPath.isEmpty() ? name : defaultPath +"/"+name+".yml") != null){
-                stream = new InputStreamReader(plugin.getResource(defaultPath.isEmpty() ? name : defaultPath +"/"+name+".yml"), StandardCharsets.UTF_8);
+            String fileName = defaultName.isEmpty() ? name : defaultName;
+            if(plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath +"/"+fileName+".yml") != null){
+                stream = new InputStreamReader(plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath +"/"+fileName+".yml"), StandardCharsets.UTF_8);
                 YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(stream);
                 config.setDefaults(defConfig);
                 stream.close();
@@ -207,6 +215,14 @@ public class Config {
 
     public double getDouble(String path) {
         return config.getDouble(path);
+    }
+
+    public List<String> getStringList(String path){
+        return config.getStringList(path);
+    }
+
+    public String[] getStringArray(String path){
+        return (String[]) getStringList(path).toArray();
     }
 
 
