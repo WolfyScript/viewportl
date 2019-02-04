@@ -3,6 +3,8 @@ package me.wolfyscript.utilities.api.config;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -10,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -225,6 +228,38 @@ public class Config {
         return (String[]) getStringList(path).toArray();
     }
 
+    public void saveItem(String path, ItemStack itemStack){
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName(itemMeta.getDisplayName().replace('§','&'));
+        List<String> newLore = new ArrayList<>();
+        for(String row : itemMeta.getLore()){
+            newLore.add(row.replace('§','&'));
+        }
+        itemMeta.setLore(newLore);
+        itemStack.setItemMeta(itemMeta);
+        set(path, itemStack.serialize());
+    }
+
+    public void saveItem(String path, String name, ItemStack itemStack){
+        saveItem(path+"."+name, itemStack);
+    }
+
+    public ItemStack getItem(String path){
+        ItemStack itemStack = ItemStack.deserialize(getConfig().getConfigurationSection(path).getValues(false));
+        if(itemStack.hasItemMeta()){
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(itemMeta.getDisplayName().replace('&','§'));
+            if(itemMeta.hasLore()){
+                List<String> newLore = new ArrayList<>();
+                for(String row : itemMeta.getLore()){
+                    newLore.add(row.replace('&','§'));
+                }
+                itemMeta.setLore(newLore);
+            }
+            itemStack.setItemMeta(itemMeta);
+        }
+        return itemStack;
+    }
 
 
 

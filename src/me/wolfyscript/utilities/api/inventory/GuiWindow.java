@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.inventory;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
@@ -50,10 +51,19 @@ public class GuiWindow implements Listener {
     //OVERRIDE METHODS
 
     public void onInit() {
+
     }
 
-    public boolean runWithoutAction(int slot){
+    public boolean onAction(GuiAction guiAction){
         return true;
+    }
+
+    public boolean onClick(GuiClick guiClick){
+        return true;
+    }
+
+    public void onUpdate(){
+
     }
 
     public boolean parseChatMessage(int id, String message, GuiHandler guiHandler) {
@@ -80,7 +90,19 @@ public class GuiWindow implements Listener {
     }
 
     public void createItem(String id, Material material) {
-        inventoryAPI.registerItem(itemKey, id, new ItemStack(material));
+        createItem(itemKey, id, material);
+    }
+
+    public void createItem(String id, ItemStack itemStack) {
+        createItem(itemKey, id, itemStack);
+    }
+
+    public void createItem(String key, String id, Material material) {
+        createItem(key, id, new ItemStack(material));
+    }
+
+    public void createItem(String key, String id, ItemStack itemStack) {
+        inventoryAPI.registerItem(key, id, itemStack);
     }
 
     public void reloadInv(GuiHandler guiHandler) {
@@ -94,7 +116,7 @@ public class GuiWindow implements Listener {
     }
 
     protected String getInventoryName(){
-        return inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories."+namespace+"$");
+        return ChatColor.translateAlternateColorCodes('&', inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories."+namespace+"$"));
     }
 
     public Inventory getInventory(GuiHandler guiHandler) {

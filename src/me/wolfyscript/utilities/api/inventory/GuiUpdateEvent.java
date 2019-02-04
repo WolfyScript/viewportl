@@ -43,7 +43,11 @@ public class GuiUpdateEvent extends Event {
     }
 
     public ItemStack getItem(String action) {
-        return guiHandler.getItem(guiWindow.getItemKey(), action).clone();
+        return getItem(guiWindow.getItemKey(), action);
+    }
+
+    public ItemStack getItem(String key, String action){
+        return guiHandler.getItem(key, action).clone();
     }
 
     public ItemStack getGeneralItem(String id) {
@@ -75,7 +79,11 @@ public class GuiUpdateEvent extends Event {
     }
 
     public ItemStack getItem(String action, String keyToReplace, String value){
-        ItemStack item = getItem(action);
+        return getItem(guiWindow.getItemKey(), action, keyToReplace, value);
+    }
+
+    public ItemStack getItem(String key, String action, String keyToReplace, String value){
+        ItemStack item = getItem(key, action);
         ItemMeta posXmeta = item.getItemMeta();
         posXmeta.setDisplayName(posXmeta.getDisplayName().replace(keyToReplace, value));
         item.setItemMeta(posXmeta);
@@ -88,6 +96,10 @@ public class GuiUpdateEvent extends Event {
 
     public void setItem(int slot, String action){
         setItem(slot, action, false);
+    }
+
+    public void setItem(int slot, String key, String action){
+        setItem(slot, getItem(key, action));
     }
 
     public void setItem(int slot, String action, boolean generalItem){

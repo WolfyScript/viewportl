@@ -2,9 +2,6 @@ package me.wolfyscript.utilities.api.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -12,11 +9,9 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class GuiClickEvent extends Event implements Cancellable {
+public class GuiAction {
 
-    private static final HandlerList HANDLER_LIST = new HandlerList();
-    private boolean cancelled = false;
-
+    private String action;
     private GuiHandler guiHandler;
     private Player player;
     private WolfyUtilities wolfyUtilities;
@@ -24,7 +19,6 @@ public class GuiClickEvent extends Event implements Cancellable {
     private int clickedSlot;
     private ClickType clickType;
     private Inventory clickedInventory;
-    private Inventory inventory;
     private InventoryAction inventoryAction;
     private int rawSlot;
     private ItemStack currentItem;
@@ -32,7 +26,8 @@ public class GuiClickEvent extends Event implements Cancellable {
     private int hotbarButton;
     private InventoryType.SlotType slotType;
 
-    public GuiClickEvent(GuiHandler guiHandler, GuiWindow guiWindow, InventoryClickEvent event){
+    public GuiAction(String action, GuiHandler guiHandler, GuiWindow guiWindow, InventoryClickEvent event){
+        this.action = action;
         this.guiHandler = guiHandler;
         this.player = guiHandler.getPlayer();
         this.wolfyUtilities = guiHandler.getApi();
@@ -40,7 +35,6 @@ public class GuiClickEvent extends Event implements Cancellable {
         this.clickedSlot = event.getSlot();
         this.clickType = event.getClick();
         this.clickedInventory = event.getClickedInventory();
-        this.inventory = event.getInventory();
         this.inventoryAction = event.getAction();
         this.rawSlot = event.getRawSlot();
         this.currentItem = event.getCurrentItem();
@@ -49,16 +43,8 @@ public class GuiClickEvent extends Event implements Cancellable {
         this.slotType = event.getSlotType();
     }
 
-    public boolean verify(GuiWindow guiWindow){
-        return guiWindow.equals(this.guiWindow);
-    }
-
     public int getClickedSlot() {
         return clickedSlot;
-    }
-
-    public Inventory getInventory() {
-        return inventory;
     }
 
     public ClickType getClickType() {
@@ -97,34 +83,19 @@ public class GuiClickEvent extends Event implements Cancellable {
         return guiWindow;
     }
 
-    public WolfyUtilities getWolfyUtilities() {
-        return wolfyUtilities;
-    }
-
     public Player getPlayer() {
         return player;
     }
 
+    public WolfyUtilities getWolfyUtilities() {
+        return wolfyUtilities;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
     public GuiHandler getGuiHandler() {
         return guiHandler;
-    }
-
-    public static HandlerList getHandlerList() {
-        return HANDLER_LIST;
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return HANDLER_LIST;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean b) {
-        cancelled = b;
     }
 }

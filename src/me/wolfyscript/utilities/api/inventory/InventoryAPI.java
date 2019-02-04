@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.api.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,7 +18,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -219,12 +217,13 @@ public class InventoryAPI implements Listener {
                     String action = guiHandler.verifyItem(event.getCurrentItem());
                     if (!action.isEmpty()) {
                         guiHandler.getCurrentInv().update(guiHandler);
-                        GuiActionEvent guiActionEvent = new GuiActionEvent(action, guiHandler, guiHandler.getCurrentInv(), event);
-                        Bukkit.getPluginManager().callEvent(guiActionEvent);
+                        GuiAction guiAction = new GuiAction(action, guiHandler, guiHandler.getCurrentInv(), event);
+                        if(!guiHandler.getCurrentInv().onAction(guiAction)){
+                            event.setCancelled(true);
+                        }
                     } else {
-                        GuiClickEvent guiClickEvent = new GuiClickEvent(guiHandler, guiHandler.getCurrentInv(), event);
-                        Bukkit.getPluginManager().callEvent(guiClickEvent);
-                        if (!guiClickEvent.isCancelled()) {
+                        GuiClick guiClick = new GuiClick(guiHandler, guiHandler.getCurrentInv(), event);
+                        if (!guiHandler.getCurrentInv().onClick(guiClick)) {
                             event.setCancelled(false);
                         }
                     }

@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.api.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
@@ -11,11 +10,10 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class GuiActionEvent extends Event {
+public class GuiClick {
 
-    private static final HandlerList HANDLER_LIST = new HandlerList();
+    private boolean cancelled = false;
 
-    private String action;
     private GuiHandler guiHandler;
     private Player player;
     private WolfyUtilities wolfyUtilities;
@@ -23,6 +21,7 @@ public class GuiActionEvent extends Event {
     private int clickedSlot;
     private ClickType clickType;
     private Inventory clickedInventory;
+    private Inventory inventory;
     private InventoryAction inventoryAction;
     private int rawSlot;
     private ItemStack currentItem;
@@ -30,8 +29,7 @@ public class GuiActionEvent extends Event {
     private int hotbarButton;
     private InventoryType.SlotType slotType;
 
-    public GuiActionEvent(String action, GuiHandler guiHandler, GuiWindow guiWindow, InventoryClickEvent event){
-        this.action = action;
+    public GuiClick(GuiHandler guiHandler, GuiWindow guiWindow, InventoryClickEvent event){
         this.guiHandler = guiHandler;
         this.player = guiHandler.getPlayer();
         this.wolfyUtilities = guiHandler.getApi();
@@ -39,6 +37,7 @@ public class GuiActionEvent extends Event {
         this.clickedSlot = event.getSlot();
         this.clickType = event.getClick();
         this.clickedInventory = event.getClickedInventory();
+        this.inventory = event.getInventory();
         this.inventoryAction = event.getAction();
         this.rawSlot = event.getRawSlot();
         this.currentItem = event.getCurrentItem();
@@ -47,12 +46,12 @@ public class GuiActionEvent extends Event {
         this.slotType = event.getSlotType();
     }
 
-    public boolean verify(GuiWindow guiWindow){
-        return guiWindow.equals(this.guiWindow);
-    }
-
     public int getClickedSlot() {
         return clickedSlot;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 
     public ClickType getClickType() {
@@ -91,28 +90,15 @@ public class GuiActionEvent extends Event {
         return guiWindow;
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
     public WolfyUtilities getWolfyUtilities() {
         return wolfyUtilities;
     }
 
-    public String getAction() {
-        return action;
+    public Player getPlayer() {
+        return player;
     }
 
     public GuiHandler getGuiHandler() {
         return guiHandler;
-    }
-
-    public static HandlerList getHandlerList() {
-        return HANDLER_LIST;
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return HANDLER_LIST;
     }
 }
