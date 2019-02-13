@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.config;
 
+import me.wolfyscript.utilities.main.Main;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -48,10 +49,11 @@ public class Config {
         if(!configFile.exists()){
             firstInit = true;
             try {
-                configFile.getParentFile().mkdir();
+                configFile.getParentFile().mkdirs();
                 configFile.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                Main.getMainUtil().sendConsoleMessage("Error creating file: "+configFile.getPath());
+                Main.getMainUtil().sendConsoleMessage("     cause: "+e.getMessage());
             }
         }
         config = YamlConfiguration.loadConfiguration(configFile);
@@ -231,11 +233,13 @@ public class Config {
     public void saveItem(String path, ItemStack itemStack){
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(itemMeta.getDisplayName().replace('§','&'));
-        List<String> newLore = new ArrayList<>();
-        for(String row : itemMeta.getLore()){
-            newLore.add(row.replace('§','&'));
+        if(itemMeta.hasLore()){
+            List<String> newLore = new ArrayList<>();
+            for(String row : itemMeta.getLore()){
+                newLore.add(row.replace('§','&'));
+            }
+            itemMeta.setLore(newLore);
         }
-        itemMeta.setLore(newLore);
         itemStack.setItemMeta(itemMeta);
         set(path, itemStack.serialize());
     }
@@ -261,6 +265,7 @@ public class Config {
         return itemStack;
     }
 
-
-
+    public File getConfigFile() {
+        return configFile;
+    }
 }

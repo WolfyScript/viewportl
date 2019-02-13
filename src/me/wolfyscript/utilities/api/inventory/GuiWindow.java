@@ -73,8 +73,12 @@ public class GuiWindow implements Listener {
     //
 
     protected void update(GuiHandler guiHandler){
-        GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
-        Bukkit.getPluginManager().callEvent(event);
+        Bukkit.getScheduler().runTaskLater(inventoryAPI.getPlugin(), () -> {
+            if(!guiHandler.isChatEventActive()){
+                GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
+                Bukkit.getPluginManager().callEvent(event);
+            }
+        },1);
     }
 
     public String getNamespace() {

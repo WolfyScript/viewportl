@@ -190,6 +190,10 @@ public class InventoryAPI implements Listener {
     }
 
     public boolean hasGuiHandler(Player player) {
+        return guiHandlers.containsKey(player.getUniqueId().toString()) && guiHandlers.get(player.getUniqueId().toString()) != null;
+    }
+
+    public boolean hasGuiHandlerAndInv(Player player) {
         return guiHandlers.containsKey(player.getUniqueId().toString()) && guiHandlers.get(player.getUniqueId().toString()) != null && guiHandlers.get(player.getUniqueId().toString()).getCurrentInv() != null;
     }
 
@@ -257,6 +261,7 @@ public class InventoryAPI implements Listener {
                     guiHandler.openLastInv();
                     guiHandler.setTestChatID(-1);
                 }
+                event.setCancelled(true);
             }
         }
     }

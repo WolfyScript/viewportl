@@ -2,6 +2,10 @@ package me.wolfyscript.utilities.api.config;
 
 import org.bukkit.plugin.Plugin;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 public class ConfigAPI {
@@ -53,6 +57,24 @@ public class ConfigAPI {
 
     public Config getConfig(String name){
         return configs.get(name);
+    }
+
+    public static void exportFile(Class reference, String resourcePath, String savePath) {
+
+        InputStream ddlStream = reference.getClassLoader().getResourceAsStream(resourcePath);
+
+        File target = new File(savePath);
+        try {
+            target.createNewFile();
+            FileOutputStream fos = new FileOutputStream(savePath);
+            byte[] buf = new byte[2048];
+            int r;
+            while ((r = ddlStream.read(buf)) != -1) {
+                fos.write(buf, 0, r);
+            }
+        } catch (IOException e) {
+
+        }
     }
 
     /*
