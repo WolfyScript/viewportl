@@ -401,4 +401,81 @@ public class WolfyUtilities {
         }
         return false;
     }
+
+    public static boolean checkColumn(ArrayList<String> shape, byte column) {
+        for (String s : shape) {
+            if (s.charAt(column) != ' ') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void clearColumn(ArrayList<String> shape, byte column){
+        for(int i = 0; i < shape.size(); i++){
+            shape.set(i, shape.get(i).substring(0, column) + shape.get(i).substring(column+1));
+        }
+    }
+
+    public static ArrayList<String> formatShape(String... shape){
+        ArrayList<String> cleared = new ArrayList<>(Arrays.asList(shape));
+        boolean T1 = false;
+        boolean T2 = false;
+        boolean T3 = false;
+        boolean T4 = false;
+        List<Byte> columns = new ArrayList<>();
+        List<Byte> rows = new ArrayList<>();
+        if(shape[0].equals("   ")){
+            T1 = true;
+            rows.add((byte) 0);
+        }
+        if(checkColumn(cleared, (byte) 0)){
+            T2 = true;
+            columns.add((byte) 0);
+        }
+        if(checkColumn(cleared, (byte) 2)){
+            T3 = true;
+            columns.add((byte) 2);
+        }
+        if(shape[2].equals("   ")){
+            T4 = true;
+            rows.add((byte) 2);
+        }
+        if(T2 && T4){
+            if(checkColumn(cleared, (byte) 1)){
+                columns.add((byte) 1);
+            }else if(shape[1].equals("   ")){
+                rows.add((byte) 1);
+            }
+        }
+        if(T3 && T1){
+            if(shape[1].equals("   ")){
+                rows.add((byte) 1);
+            }else if(checkColumn(cleared, (byte) 1)){
+                columns.add((byte) 1);
+            }
+        }
+        if((T1 && T2) || (T2 && !T3 && !T4) || (T3 && !T1 && !T2 && !T4)){
+            if(checkColumn(cleared, (byte) 1)){
+                columns.add((byte) 1);
+            }
+        }
+        int index = 0;
+        Iterator<String> rowIt = cleared.iterator();
+        while(rowIt.hasNext()){
+            rowIt.next();
+            if(rows.contains((byte)index)){
+                rowIt.remove();
+            }
+            index++;
+        }
+        if(!columns.isEmpty()){
+            Collections.sort(columns);
+            Collections.reverse(columns);
+            for(byte i : columns){
+                clearColumn(cleared, i);
+            }
+        }
+        return cleared;
+    }
 }

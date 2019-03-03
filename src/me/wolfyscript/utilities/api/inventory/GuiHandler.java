@@ -30,6 +30,7 @@ public class GuiHandler implements Listener {
         this.api = api;
         this.player = player;
         this.uuid = player.getUniqueId().toString();
+        Bukkit.getPluginManager().registerEvents(this, api.getPlugin());
     }
 
     public boolean isChangingInv() {
@@ -152,7 +153,6 @@ public class GuiHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
         if (event.getInventory() != null && !pageHistory.isEmpty() && verifyInv()) {
-            System.out.println(event.getPlayer().getName() +" Close");
             if (player.getOpenInventory() == null || !changingInv) {
                 pageHistory.add("none");
             }

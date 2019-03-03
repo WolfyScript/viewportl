@@ -232,7 +232,9 @@ public class Config {
 
     public void saveItem(String path, ItemStack itemStack){
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(itemMeta.getDisplayName().replace('§','&'));
+        if(itemMeta.hasDisplayName()){
+            itemMeta.setDisplayName(itemMeta.getDisplayName().replace('§','&'));
+        }
         if(itemMeta.hasLore()){
             List<String> newLore = new ArrayList<>();
             for(String row : itemMeta.getLore()){
