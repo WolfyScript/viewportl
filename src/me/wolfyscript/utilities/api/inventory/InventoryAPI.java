@@ -252,8 +252,16 @@ public class InventoryAPI implements Listener {
         }
     }
 
-    @EventHandler
-    public void onChat(AsyncPlayerChatEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onChat(AsyncPlayerChatEvent event){
+        if(event.getMessage().contains("[WolfyUtilities CANCELED]")){
+            event.setMessage("");
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPreChat(AsyncPlayerChatEvent event) {
         if (hasGuiHandler(event.getPlayer())) {
             GuiHandler guiHandler = getGuiHandler(event.getPlayer());
             if (guiHandler.isChatEventActive()) {
@@ -261,6 +269,7 @@ public class InventoryAPI implements Listener {
                     guiHandler.openLastInv();
                     guiHandler.setTestChatID(-1);
                 }
+                event.setMessage("[WolfyUtilities CANCELED]");
                 event.setCancelled(true);
             }
         }

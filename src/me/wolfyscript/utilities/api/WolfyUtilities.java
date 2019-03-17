@@ -140,9 +140,27 @@ public class WolfyUtilities {
     }
 
     public void sendPlayerMessage(Player player, String message) {
-        message = CHAT_PREFIX + getLanguageAPI().getActiveLanguage().replaceKeys(message);
-        message = ChatColor.translateAlternateColorCodes('&', message);
-        player.sendMessage(message);
+        if (player != null){
+            message = CHAT_PREFIX + getLanguageAPI().getActiveLanguage().replaceKeys(message);
+            message = ChatColor.translateAlternateColorCodes('&', message);
+            player.sendMessage(message);
+        }
+    }
+
+    public void sendPlayerMessage(Player player, String message, String[]... replacements){
+        if(replacements != null){
+            if(player != null){
+                message = CHAT_PREFIX + getLanguageAPI().getActiveLanguage().replaceKeys(message);
+                for(String[] replace : replacements){
+                    if(replace.length > 1){
+                        message = message.replaceAll(replace[0], replace[1]);
+                    }
+                }
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+            }
+        }else{
+            sendPlayerMessage(player, message);
+        }
     }
 
     public void sendDebugMessage(String message) {
@@ -322,7 +340,7 @@ public class WolfyUtilities {
         return itemStack;
     }
 
-    public static ItemMeta getSkullmeta(String value, SkullMeta skullMeta) {
+    public static SkullMeta getSkullmeta(String value, SkullMeta skullMeta) {
         if (value != null && !value.isEmpty()) {
             String texture = value;
             if (value.startsWith("https://") || value.startsWith("http://")) {
@@ -346,6 +364,66 @@ public class WolfyUtilities {
             }
         }
         return skullMeta;
+    }
+
+    public static String getSkullValue(SkullMeta skullMeta){
+        GameProfile profile = null;
+        Field profileField;
+        try {
+            profileField = skullMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            try {
+                profile = (GameProfile) profileField.get(skullMeta);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } catch (NoSuchFieldException | SecurityException ex) {
+            ex.printStackTrace();
+        }
+        if (profile != null) {
+            if (!profile.getProperties().get("textures").isEmpty()) {
+                for (Property property : profile.getProperties().get("textures")){
+                    if(!property.getValue().isEmpty())
+                        return property.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /*
+    Both items Material must be equal to PLAYER_HEAD!
+
+    Returns result with the texture from the input
+
+    Returns result when one of the items is not Player Head
+     */
+    public static ItemStack migrateSkullTexture(ItemStack input, ItemStack result){
+        if(input.getType().equals(Material.PLAYER_HEAD) && result.getType().equals(Material.PLAYER_HEAD)){
+            SkullMeta inputMeta = (SkullMeta) input.getItemMeta();
+            String value = getSkullValue(inputMeta);
+            if(value != null && !value.isEmpty()){
+                result.setItemMeta(getSkullmeta(value, (SkullMeta) result.getItemMeta()));
+            }
+        }
+        return result;
+    }
+
+    /*
+    Result's Material must be equal to PLAYER_HEAD!
+
+    Returns ItemMeta with the texture from the input
+
+     */
+    public static ItemMeta migrateSkullTexture(SkullMeta input, ItemStack result){
+        if(result.getType().equals(Material.PLAYER_HEAD)){
+            String value = getSkullValue(input);
+            if(value != null && !value.isEmpty()){
+                return getSkullmeta(value, (SkullMeta) result.getItemMeta());
+            }
+        }
+        return result.getItemMeta();
     }
 
     /*

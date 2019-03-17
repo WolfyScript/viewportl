@@ -150,6 +150,14 @@ public class GuiHandler implements Listener {
         changeToInv("none");
     }
 
+    public void setHelpEnabled(boolean helpEnabled) {
+        this.helpEnabled = helpEnabled;
+    }
+
+    public boolean isHelpEnabled() {
+        return helpEnabled;
+    }
+
     @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
         if (event.getInventory() != null && !pageHistory.isEmpty() && verifyInv()) {
