@@ -31,14 +31,16 @@ public class Config {
     private int passedIntervals;
     private boolean firstInit = false;
 
+
     /*
         plugin - your plugin
         defaultPath - the path to the file inside the jar, which contains the default values!
         defaultName - the name of the default file!
         savePath - The path where the file will be save to!
         name - The name of the file and the name of the default file.
+        override - if true, the config will be overridden with the default values (onFirstInit() will run on every override!)
      */
-    public Config(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name) {
+    public Config(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name, boolean override) {
         this.name = name;
         this.saveAfterSet = true;
         this.plugin = configAPI.getPlugin();
@@ -46,6 +48,12 @@ public class Config {
         this.defaultName = defaultName;
         this.configAPI = configAPI;
         configFile = new File(savePath, name + ".yml");
+        if(override && configFile.exists()){
+            if(!configFile.delete()){
+                Main.getMainUtil().sendConsoleMessage("Error while trying to override Config!");
+                Main.getMainUtil().sendConsoleMessage("File: "+configFile.getPath());
+            }
+        }
         if(!configFile.exists()){
             firstInit = true;
             try {
@@ -65,8 +73,24 @@ public class Config {
         init();
     }
 
+
+    /*
+        plugin - your plugin
+        defaultPath - the path to the file inside the jar, which contains the default values!
+        defaultName - the name of the default file!
+        savePath - The path where the file will be save to!
+        name - The name of the file and the name of the default file.
+     */
+    public Config(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name) {
+        this(configAPI, defaultPath, defaultName, savePath, name, false);
+    }
+
     public Config(ConfigAPI configAPI, String defaultPath, String savePath, String name) {
         this(configAPI, defaultPath, name, savePath, name);
+    }
+
+    public Config(ConfigAPI configAPI, String defaultPath, String savePath, String name, boolean override) {
+        this(configAPI, defaultPath, name, savePath, name, override);
     }
 
     /*
@@ -78,6 +102,14 @@ public class Config {
     }
 
     /*
+        defaultPath is not used here!
+        Use this if your default file is in the source folder and not in another package!
+     */
+    public Config(ConfigAPI configAPI, String savePath, String name, boolean override) {
+        this(configAPI, "", savePath, name, override);
+    }
+
+    /*
         savePath is not used here!
         Use this one if your file should be saved in the default Plugin directory!
      */
@@ -85,6 +117,13 @@ public class Config {
         this(configAPI, configAPI.getPlugin().getDataFolder().getPath(), name);
     }
 
+    /*
+        savePath is not used here!
+        Use this one if your file should be saved in the default Plugin directory!
+     */
+    public Config(ConfigAPI configAPI, String name, boolean override) {
+        this(configAPI, configAPI.getPlugin().getDataFolder().getPath(), name, override);
+    }
     /*
         This method is called when the file does not exists.
         Can be overridden.
