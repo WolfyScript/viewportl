@@ -122,7 +122,7 @@ public class InventoryAPI implements Listener {
     }
 
     public ItemStack getItem(String namespace, String id) {
-        return items.getOrDefault(namespace + ":" + id, new ItemStack(Material.STONE));
+        return items.getOrDefault(namespace + ":" + id, new ItemStack(Material.STONE)).clone();
     }
 
     public List<String> getItemHelpLore(String namespace, String id) {

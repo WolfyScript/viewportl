@@ -47,7 +47,7 @@ public class GuiUpdateEvent extends Event {
     }
 
     public ItemStack getItem(String key, String action){
-        return guiHandler.getItem(key, action).clone();
+        return guiHandler.getItem(key, action);
     }
 
     public ItemStack getGeneralItem(String id) {
