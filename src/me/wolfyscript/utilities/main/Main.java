@@ -41,9 +41,7 @@ public class Main extends JavaPlugin {
         InventoryAPI inventoryAPI = mainUtil.getInventoryAPI();
 
         configAPI.registerConfig(new MainConfig(configAPI));
-
         languageAPI.setActiveLanguage(new Language("en_US", new LangConfig(configAPI, "me/wolfyscript/utilities/main/configs/lang", "en_US"), configAPI));
-
     }
 
     public void onDisable() {

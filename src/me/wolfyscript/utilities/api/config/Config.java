@@ -1,6 +1,8 @@
 package me.wolfyscript.utilities.api.config;
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -293,11 +295,11 @@ public class Config {
         ItemStack itemStack = ItemStack.deserialize(getConfig().getConfigurationSection(path).getValues(false));
         if(itemStack.hasItemMeta()){
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.setDisplayName(itemMeta.getDisplayName().replace('&','§'));
+            itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(itemMeta.getDisplayName()));
             if(itemMeta.hasLore()){
                 List<String> newLore = new ArrayList<>();
                 for(String row : itemMeta.getLore()){
-                    newLore.add(row.replace('&','§'));
+                    newLore.add(WolfyUtilities.translateColorCodes(row));
                 }
                 itemMeta.setLore(newLore);
             }

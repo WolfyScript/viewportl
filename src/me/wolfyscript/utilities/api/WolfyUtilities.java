@@ -12,8 +12,10 @@ import org.apache.commons.codec.binary.Base64;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
@@ -302,11 +304,29 @@ public class WolfyUtilities {
         return sB.toString();
     }
 
+    public static boolean areSimilar(ItemStack item, ItemStack item2){
+        if(item == null || item2 == null){
+            return false;
+        }else if(item.equals(item2)){
+            return true;
+        } else {
+            System.out.println("DUR: "+item.getDurability() +" <-> "+item2.getDurability());
+
+            return item.getType().equals(item2.getType()) && item.getDurability() == item2.getDurability() && item.hasItemMeta() == item2.hasItemMeta() && (!item.hasItemMeta() || Bukkit.getItemFactory().equals(item.getItemMeta(), item2.getItemMeta()));
+        }
+    }
+
+
+
     public static ItemStack getCustomHead(String value) {
         if (value.startsWith("http://textures")) {
             value = new String(Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", value).getBytes()));
         }
         return getSkullByValue(value);
+    }
+
+    public static ItemStack getSkullViaURL(String value){
+        return getCustomHead("http://textures.minecraft.net/texture/"+value);
     }
 
     public static ItemStack getSkullByValue(String value) {
@@ -441,6 +461,17 @@ public class WolfyUtilities {
 
     public static String unhideString(String unhide) {
         return unhide.replace("§", "");
+    }
+
+    public static String translateColorCodes(String textToTranslate){
+        char[] b = textToTranslate.toCharArray();
+        for(int i = 0; i < b.length - 1; ++i) {
+            if (b[i] == '&' && b[i + 1] != ' ') {
+                b[i] = 167;
+                b[i + 1] = Character.toLowerCase(b[i + 1]);
+            }
+        }
+        return new String(b);
     }
 
     public static Enchantment getEnchantment(String enchantNmn) {

@@ -1,6 +1,6 @@
 name: WolfyUtilities
 api-version: 1.13
-version: 0.1.4.0
+version: 0.1.7.1
 author: WolfyScript
 softdepend:
   - LWC
