@@ -19,5 +19,6 @@ public class MainConfig extends Config {
 
     @Override
     public void init() {
+
     }
 }
