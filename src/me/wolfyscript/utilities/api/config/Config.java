@@ -272,18 +272,20 @@ public class Config {
     }
 
     public void saveItem(String path, ItemStack itemStack){
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if(itemMeta.hasDisplayName()){
-            itemMeta.setDisplayName(itemMeta.getDisplayName().replace('§','&'));
-        }
-        if(itemMeta.hasLore()){
-            List<String> newLore = new ArrayList<>();
-            for(String row : itemMeta.getLore()){
-                newLore.add(row.replace('§','&'));
+        if(itemStack.hasItemMeta()){
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if(itemMeta.hasDisplayName()){
+                itemMeta.setDisplayName(itemMeta.getDisplayName().replace('§','&'));
             }
-            itemMeta.setLore(newLore);
+            if(itemMeta.hasLore()){
+                List<String> newLore = new ArrayList<>();
+                for(String row : itemMeta.getLore()){
+                    newLore.add(row.replace('§','&'));
+                }
+                itemMeta.setLore(newLore);
+            }
+            itemStack.setItemMeta(itemMeta);
         }
-        itemStack.setItemMeta(itemMeta);
         set(path, itemStack.serialize());
     }
 

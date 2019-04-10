@@ -60,9 +60,7 @@ public class ConfigAPI {
     }
 
     public static void exportFile(Class reference, String resourcePath, String savePath) {
-
         InputStream ddlStream = reference.getClassLoader().getResourceAsStream(resourcePath);
-
         File target = new File(savePath);
         try {
             target.createNewFile();
@@ -73,7 +71,7 @@ public class ConfigAPI {
                 fos.write(buf, 0, r);
             }
         } catch (IOException e) {
-
+            //EMPTY
         }
     }
 

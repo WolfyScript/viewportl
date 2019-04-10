@@ -254,23 +254,27 @@ public class InventoryAPI implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent event){
-        if(event.getMessage().contains("[WolfyUtilities CANCELED]")){
-            event.setMessage("");
-            event.setCancelled(true);
+        if(event.getMessage() != null){
+            if(event.getMessage().contains("[WolfyUtilities CANCELED]")){
+                event.setMessage("");
+                event.setCancelled(true);
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreChat(AsyncPlayerChatEvent event) {
-        if (hasGuiHandler(event.getPlayer())) {
-            GuiHandler guiHandler = getGuiHandler(event.getPlayer());
-            if (guiHandler.isChatEventActive()) {
-                if (!guiHandler.getLastInv().parseChatMessage(guiHandler.getTestChatID(), event.getMessage(), guiHandler)) {
-                    guiHandler.openLastInv();
-                    guiHandler.setTestChatID(-1);
+        if(event.getMessage() != null){
+            if (hasGuiHandler(event.getPlayer())) {
+                GuiHandler guiHandler = getGuiHandler(event.getPlayer());
+                if (guiHandler.isChatEventActive()) {
+                    if (!guiHandler.getLastInv().parseChatMessage(guiHandler.getTestChatID(), event.getMessage(), guiHandler)) {
+                        guiHandler.openLastInv();
+                        guiHandler.setTestChatID(-1);
+                    }
+                    event.setMessage("[WolfyUtilities CANCELED]");
+                    event.setCancelled(true);
                 }
-                event.setMessage("[WolfyUtilities CANCELED]");
-                event.setCancelled(true);
             }
         }
     }

@@ -16,16 +16,13 @@ import org.apache.commons.codec.binary.Base64;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
@@ -189,6 +186,9 @@ public class WolfyUtilities implements Listener {
             clickDataMap.put(id, playerAction);
             TextComponent component = playerAction.getMessage();
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "wu::" + id.toString()));
+            for(ClickEvent clickEvent : data.getClickEvents()){
+                component.setClickEvent(clickEvent);
+            }
             textComponents[i] = component;
         }
         player.spigot().sendMessage(textComponents);
@@ -196,7 +196,7 @@ public class WolfyUtilities implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void actionCommands(AsyncPlayerChatEvent event) {
-        if (event.getMessage().startsWith("wu::")) {
+        if (event.getMessage() != null && event.getMessage().startsWith("wu::")) {
             UUID uuid;
             try {
                 uuid = UUID.fromString(event.getMessage().split("::")[1]);
@@ -216,11 +216,7 @@ public class WolfyUtilities implements Listener {
 
     @EventHandler
     public void actionRemoval(PlayerQuitEvent event){
-        for(UUID uuid : clickDataMap.keySet()){
-            if(clickDataMap.get(uuid).getUuid().equals(event.getPlayer().getUniqueId())){
-                clickDataMap.remove(uuid);
-            }
-        }
+        clickDataMap.keySet().removeIf(uuid -> clickDataMap.get(uuid).getUuid().equals(event.getPlayer().getUniqueId()));
     }
 
     public void sendDebugMessage(String message) {
@@ -643,11 +639,6 @@ public class WolfyUtilities implements Listener {
         }
         return cleared;
     }
-
-
-    /*
-    CLICK ACTIONS!
-     */
 
 
 }
