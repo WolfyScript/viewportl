@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.inventory;
 
+import me.wolfyscript.utilities.api.inventory.button.Button;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,6 +17,8 @@ public class GuiWindow implements Listener {
     public String itemKey;
     private InventoryAPI inventoryAPI;
     private HashMap<GuiHandler, Inventory> cachedInventories;
+    private HashMap<Integer, Button> buttons;
+
 
     //Inventory
     private InventoryType inventoryType;

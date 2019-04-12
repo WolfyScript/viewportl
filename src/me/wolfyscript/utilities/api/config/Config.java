@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.api.config;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
