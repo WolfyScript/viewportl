@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -95,10 +96,9 @@ public class GuiHandler implements Listener {
                 pageHistory.add(inv);
             }
             if (api.getInventoryAPI().getGuiWindow(inv) != null) {
-                GuiUpdateEvent event = new GuiUpdateEvent(this, api.getInventoryAPI().getGuiWindow(inv));
-                Bukkit.getPluginManager().callEvent(event);
-                api.getInventoryAPI().getGuiWindow(inv).setCachedInventorie(this, event.getInventory());
-                player.openInventory(event.getInventory());
+                Inventory result = api.getInventoryAPI().getGuiWindow(inv).onRender(this, api.getInventoryAPI().getGuiWindow(inv).onUpdate(this));
+                api.getInventoryAPI().getGuiWindow(inv).setCachedInventorie(this, result);
+                player.openInventory(result);
             }
         } else {
             api.sendPlayerMessage(player, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + inv.toLowerCase());

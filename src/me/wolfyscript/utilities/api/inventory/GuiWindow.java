@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.inventory;
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -65,8 +66,24 @@ public class GuiWindow implements Listener {
         return true;
     }
 
-    public void onUpdate(){
+    public Inventory onUpdate(GuiHandler guiHandler){
+        if(!hasCachedInventory(guiHandler)){
+            if(getInventoryType() == null){
+                return Bukkit.createInventory(null, getSize(), getInventoryName());
+            }else{
+                return Bukkit.createInventory(null, getInventoryType(), getInventoryName());
+            }
+        }else{
+            return getInventory(guiHandler);
+        }
+    }
 
+    public Inventory onRender(GuiHandler guiHandler, Inventory inventory){
+        for(int slot : buttons.keySet()){
+            Button button = buttons.get(slot);
+            button.execute(guiHandler, slot, guiHandler.getPlayer().getOpenInventory(), inventory, guiHandler.getPlayer());
+        }
+        return inventory;
     }
 
     public boolean parseChatMessage(int id, String message, GuiHandler guiHandler) {
@@ -78,8 +95,8 @@ public class GuiWindow implements Listener {
     protected void update(GuiHandler guiHandler){
         Bukkit.getScheduler().runTaskLater(inventoryAPI.getPlugin(), () -> {
             if(!guiHandler.isChatEventActive()){
-                GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
-                Bukkit.getPluginManager().callEvent(event);
+                Inventory result = onRender(guiHandler, onUpdate(guiHandler));
+                setCachedInventorie(guiHandler, result);
             }
         },1);
     }
@@ -96,18 +113,25 @@ public class GuiWindow implements Listener {
         itemKey = newItemKey;
     }
 
+    public void setButton(int slot, Button button){
+        buttons.put(slot, button);
+    }
+
     public void createItem(String id, Material material) {
         createItem(itemKey, id, material);
     }
 
+    @Deprecated
     public void createItem(String id, ItemStack itemStack) {
         createItem(itemKey, id, itemStack);
     }
 
+    @Deprecated
     public void createItem(String key, String id, Material material) {
-        createItem(key, id, new ItemStack(material));
+        inventoryAPI.registerItem(key, id, material);
     }
 
+    @Deprecated
     public void createItem(String key, String id, ItemStack itemStack) {
         inventoryAPI.registerItem(key, id, itemStack);
     }

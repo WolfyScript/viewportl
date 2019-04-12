@@ -48,10 +48,16 @@ public class InventoryAPI implements Listener {
         return wolfyUtilities;
     }
 
+    @Deprecated
+    public void registerItem(String namespace, String key, ItemStack itemStack){
+        registerItem(namespace, key, itemStack.getType());
+    }
+
     /*
         Gets the item name and lore from the set language!
          */
-    public void registerItem(String namespace, String key, ItemStack itemStack) {
+    public void registerItem(String namespace, String key, Material material) {
+        ItemStack itemStack = new ItemStack(material);
         ItemMeta itemMeta = itemStack.getItemMeta();
         String path = "items." + namespace + "." + key;
         itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$")) + WolfyUtilities.hideString("::" + key + "::" + Main.getMainUtil().getConfigAPI().getConfig("main_config").getString("securityCode")));
