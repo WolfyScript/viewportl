@@ -96,7 +96,7 @@ public class GuiHandler implements Listener {
                 pageHistory.add(inv);
             }
             if (api.getInventoryAPI().getGuiWindow(inv) != null) {
-                Inventory result = api.getInventoryAPI().getGuiWindow(inv).onRender(this, api.getInventoryAPI().getGuiWindow(inv).onUpdate(this));
+                Inventory result = api.getInventoryAPI().getGuiWindow(inv).onRender(this, api.getInventoryAPI().getGuiWindow(inv).onUpdate(this), helpEnabled);
                 api.getInventoryAPI().getGuiWindow(inv).setCachedInventorie(this, result);
                 player.openInventory(result);
             }

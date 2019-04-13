@@ -8,6 +8,7 @@ import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 
@@ -37,8 +38,8 @@ public class ToggleButton extends Button {
     }
 
     @Override
-    public void execute(GuiHandler guiHandler, int slot, InventoryView inventoryView, Inventory inventory, Player player) {
-        states[settings.getOrDefault(guiHandler, true) ? 0 : 1].getAction().run(guiHandler.getApi(), player, inventoryView, inventory, guiHandler);
+    public void execute(GuiHandler guiHandler, Inventory inventory, int slot, InventoryClickEvent event) {
+        states[settings.getOrDefault(guiHandler, true) ? 0 : 1].getAction().run(guiHandler, inventory, slot, event);
         settings.put(guiHandler, !settings.getOrDefault(guiHandler, true));
     }
 

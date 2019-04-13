@@ -3,9 +3,8 @@ package me.wolfyscript.utilities.api.inventory.button;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
-import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 
 public class Button {
 
@@ -26,9 +25,9 @@ public class Button {
         state.init(api);
     }
 
-    public void execute(GuiHandler guiHandler, int slot, InventoryView inventoryView, Inventory inventory, Player player){
+    public void execute(GuiHandler guiHandler, Inventory inventory, int slot, InventoryClickEvent event){
         if(!type.equals(ButtonType.DUMMY) && state.getAction() != null){
-            state.getAction().run(guiHandler.getApi(), player, inventoryView, inventory, guiHandler);
+            state.getAction().run(guiHandler, inventory, slot, event);
         }
     }
 

@@ -5,9 +5,8 @@ import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
-import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 
 public class DummyButton extends Button {
 
@@ -20,7 +19,7 @@ public class DummyButton extends Button {
     }
 
     @Override
-    public void execute(GuiHandler guiHandler, int slot, InventoryView inventoryView, Inventory inventory, Player player) {
+    public void execute(GuiHandler guiHandler, Inventory inventory, int slot, InventoryClickEvent event) {
         //NOTHING
     }
 

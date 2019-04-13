@@ -224,19 +224,7 @@ public class InventoryAPI implements Listener {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
                 if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
                     event.setCancelled(true);
-                    String action = guiHandler.verifyItem(event.getCurrentItem());
-                    if (!action.isEmpty()) {
-                        guiHandler.getCurrentInv().update(guiHandler);
-                        GuiAction guiAction = new GuiAction(action, guiHandler, guiHandler.getCurrentInv(), event);
-                        if(!guiHandler.getCurrentInv().onAction(guiAction)){
-                            event.setCancelled(true);
-                        }
-                    } else {
-                        GuiClick guiClick = new GuiClick(guiHandler, guiHandler.getCurrentInv(), event);
-                        if (!guiHandler.getCurrentInv().onClick(guiClick)) {
-                            event.setCancelled(false);
-                        }
-                    }
+                    guiHandler.getCurrentInv().executeButton(event.getRawSlot(), guiHandler, event);
                 }
             }
         }

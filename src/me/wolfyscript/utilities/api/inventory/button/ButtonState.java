@@ -10,7 +10,7 @@ public class ButtonState {
     private NamespacedKey icon;
     private ButtonAction action;
 
-    ButtonState(String namespace, String key, Material type, ButtonAction action){
+    public ButtonState(String namespace, String key, Material type, ButtonAction action){
         this.icon = new NamespacedKey(namespace, key);
         this.action = action;
         this.iconType = type;

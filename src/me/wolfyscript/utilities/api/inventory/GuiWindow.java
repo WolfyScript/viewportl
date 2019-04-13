@@ -1,11 +1,11 @@
 package me.wolfyscript.utilities.api.inventory;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +19,6 @@ public class GuiWindow implements Listener {
     private InventoryAPI inventoryAPI;
     private HashMap<GuiHandler, Inventory> cachedInventories;
     private HashMap<Integer, Button> buttons;
-
 
     //Inventory
     private InventoryType inventoryType;
@@ -40,6 +39,7 @@ public class GuiWindow implements Listener {
         this.cachedInventories = new HashMap<>();
         this.inventoryType = inventoryType;
         this.size = size;
+        this.buttons = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, inventoryAPI.getPlugin());
         onInit();
     }
@@ -78,12 +78,18 @@ public class GuiWindow implements Listener {
         }
     }
 
-    public Inventory onRender(GuiHandler guiHandler, Inventory inventory){
+    public Inventory onRender(GuiHandler guiHandler, Inventory inventory, boolean help){
         for(int slot : buttons.keySet()){
             Button button = buttons.get(slot);
-            button.execute(guiHandler, slot, guiHandler.getPlayer().getOpenInventory(), inventory, guiHandler.getPlayer());
+            button.render(guiHandler, slot, inventory, help);
         }
         return inventory;
+    }
+
+    public void executeButton(int slot, GuiHandler guiHandler, InventoryClickEvent event){
+        if(buttons.containsKey(slot)){
+            buttons.get(slot).execute(guiHandler, event.getInventory(), slot, event);
+        }
     }
 
     public boolean parseChatMessage(int id, String message, GuiHandler guiHandler) {
@@ -95,7 +101,7 @@ public class GuiWindow implements Listener {
     protected void update(GuiHandler guiHandler){
         Bukkit.getScheduler().runTaskLater(inventoryAPI.getPlugin(), () -> {
             if(!guiHandler.isChatEventActive()){
-                Inventory result = onRender(guiHandler, onUpdate(guiHandler));
+                Inventory result = onRender(guiHandler, onUpdate(guiHandler), guiHandler.isHelpEnabled());
                 setCachedInventorie(guiHandler, result);
             }
         },1);
