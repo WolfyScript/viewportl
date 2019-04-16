@@ -215,8 +215,10 @@ public class InventoryAPI implements Listener {
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
+                Main.getMainUtil().sendDebugMessage("check GUI Handler: "+event.getWhoClicked().getName());
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
                 if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
+                    Main.getMainUtil().sendDebugMessage("   valid -> "+event.getWhoClicked().getName());
                     event.setCancelled(true);
                     String action = guiHandler.verifyItem(event.getCurrentItem());
                     if (!action.isEmpty()) {
