@@ -160,9 +160,12 @@ public class GuiHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
-        if (event.getInventory() != null && !pageHistory.isEmpty() && verifyInv()) {
-            if (player.getOpenInventory() == null || !changingInv) {
-                pageHistory.add("none");
+        Player eventPlayer = (Player) event.getPlayer();
+        if(player.equals(eventPlayer)){
+            if (!pageHistory.isEmpty() && verifyInv()) {
+                if (!changingInv) {
+                    pageHistory.add("none");
+                }
             }
         }
     }
