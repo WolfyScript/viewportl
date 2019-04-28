@@ -81,29 +81,32 @@ public class GuiHandler implements Listener {
     }
 
     public void changeToInv(String inv) {
-        changingInv = true;
-        player.closeInventory();
-        if (WolfyUtilities.hasPermission(player, getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + inv.toLowerCase())) {
-            if (!pageHistory.isEmpty()) {
-                if (!pageHistory.get(pageHistory.size() - 1).equals(inv)) {
-                    if (pageHistory.get(pageHistory.size() - 1).equals("none")) {
-                        pageHistory.remove(pageHistory.size() - 1);
+        Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
+            changingInv = true;
+            player.closeInventory();
+            if (WolfyUtilities.hasPermission(player, getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + inv.toLowerCase())) {
+                if (!pageHistory.isEmpty()) {
+                    if (!pageHistory.get(pageHistory.size() - 1).equals(inv)) {
+                        if (pageHistory.get(pageHistory.size() - 1).equals("none")) {
+                            pageHistory.remove(pageHistory.size() - 1);
+                        }
+                        pageHistory.add(inv);
                     }
+                } else {
                     pageHistory.add(inv);
                 }
+                if (api.getInventoryAPI().getGuiWindow(inv) != null) {
+                    GuiUpdateEvent event = new GuiUpdateEvent(this, api.getInventoryAPI().getGuiWindow(inv));
+                    Bukkit.getPluginManager().callEvent(event);
+                    api.getInventoryAPI().getGuiWindow(inv).setCachedInventorie(this, event.getInventory());
+                    player.openInventory(event.getInventory());
+                }
             } else {
-                pageHistory.add(inv);
+                api.sendPlayerMessage(player, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + inv.toLowerCase());
             }
-            if (api.getInventoryAPI().getGuiWindow(inv) != null) {
-                GuiUpdateEvent event = new GuiUpdateEvent(this, api.getInventoryAPI().getGuiWindow(inv));
-                Bukkit.getPluginManager().callEvent(event);
-                api.getInventoryAPI().getGuiWindow(inv).setCachedInventorie(this, event.getInventory());
-                player.openInventory(event.getInventory());
-            }
-        } else {
-            api.sendPlayerMessage(player, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + inv.toLowerCase());
-        }
-        changingInv = false;
+            changingInv = false;
+        });
+
     }
 
     public void openLastInv() {
