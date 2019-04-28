@@ -2,6 +2,9 @@ package me.wolfyscript.utilities.api;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.base64.Base64;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
@@ -12,7 +15,6 @@ import me.wolfyscript.utilities.api.utils.chat.PlayerAction;
 import me.wolfyscript.utilities.main.Main;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.codec.binary.Base64;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -29,6 +31,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -246,18 +249,16 @@ public class WolfyUtilities implements Listener {
 
     static Random random = new Random();
 
+    public static boolean hasVillagePillageUpdate() {
+        return hasSpecificUpdate("v1_14_R0");
+    }
+
     public static boolean hasAquaticUpdate() {
-        String pkgname = Main.getInstance().getServer().getClass().getPackage().getName();
-        String combatVersion = "v1_13_R0".replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
-        String version = pkgname.substring(pkgname.lastIndexOf('.') + 1).replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
-        return Integer.parseInt(version) >= Integer.parseInt(combatVersion);
+        return hasSpecificUpdate("v1_13_R0");
     }
 
     public static boolean hasCombatUpdate() {
-        String pkgname = Main.getInstance().getServer().getClass().getPackage().getName();
-        String combatVersion = "v1_9_R0".replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
-        String version = pkgname.substring(pkgname.lastIndexOf('.') + 1).replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
-        return Integer.parseInt(version) >= Integer.parseInt(combatVersion);
+        return hasSpecificUpdate("v1_9_R0");
     }
 
     public static boolean hasSpecificUpdate(String versionString) {
@@ -375,7 +376,7 @@ public class WolfyUtilities implements Listener {
 
     public static ItemStack getCustomHead(String value) {
         if (value.startsWith("http://textures")) {
-            value = new String(Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", value).getBytes()));
+            value = getBase64EncodedString(String.format("{textures:{SKIN:{url:\"%s\"}}}", value));
         }
         return getSkullByValue(value);
     }
@@ -416,8 +417,7 @@ public class WolfyUtilities implements Listener {
         if (value != null && !value.isEmpty()) {
             String texture = value;
             if (value.startsWith("https://") || value.startsWith("http://")) {
-                byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", value).getBytes());
-                texture = new String(encodedData);
+                texture = getBase64EncodedString(String.format("{textures:{SKIN:{url:\"%s\"}}}", value));
             }
             GameProfile profile = new GameProfile(UUID.randomUUID(), null);
             profile.getProperties().put("textures", new Property("textures", texture));
@@ -437,6 +437,27 @@ public class WolfyUtilities implements Listener {
         }
         return skullMeta;
     }
+
+    private static String getBase64EncodedString(String str) {
+        ByteBuf byteBuf = null;
+        ByteBuf encodedByteBuf = null;
+        String var3;
+        try {
+            byteBuf = Unpooled.wrappedBuffer(str.getBytes(StandardCharsets.UTF_8));
+            encodedByteBuf = Base64.encode(byteBuf);
+            var3 = encodedByteBuf.toString(StandardCharsets.UTF_8);
+        } finally {
+            if (byteBuf != null) {
+                byteBuf.release();
+                if (encodedByteBuf != null) {
+                    encodedByteBuf.release();
+                }
+            }
+        }
+        return var3;
+    }
+
+
 
     public static String getSkullValue(SkullMeta skullMeta) {
         GameProfile profile = null;
