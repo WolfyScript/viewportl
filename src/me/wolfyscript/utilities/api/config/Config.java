@@ -169,6 +169,7 @@ public class Config {
             if(plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath +"/"+fileName+".yml") != null){
                 stream = new InputStreamReader(plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath +"/"+fileName+".yml"), StandardCharsets.UTF_8);
                 YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(stream);
+                config.options().header(defConfig.options().header());
                 config.setDefaults(defConfig);
                 stream.close();
             }
