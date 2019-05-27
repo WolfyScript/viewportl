@@ -272,7 +272,7 @@ public class InventoryAPI implements Listener {
         if(event.getMessage() != null){
             if (hasGuiHandler(event.getPlayer())) {
                 GuiHandler guiHandler = getGuiHandler(event.getPlayer());
-                if (guiHandler.isChatEventActive()) {
+                if (guiHandler.isChatEventActive() && !event.getMessage().startsWith("wu::")) {
                     if (!guiHandler.getLastInv().parseChatMessage(guiHandler.getTestChatID(), event.getMessage(), guiHandler)) {
                         guiHandler.openLastInv();
                         guiHandler.setTestChatID(-1);

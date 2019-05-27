@@ -10,7 +10,9 @@ import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.Legacy;
 import me.wolfyscript.utilities.api.utils.Reflection;
+import me.wolfyscript.utilities.api.utils.chat.ChatEvent;
 import me.wolfyscript.utilities.api.utils.chat.ClickData;
+import me.wolfyscript.utilities.api.utils.chat.HoverEvent;
 import me.wolfyscript.utilities.api.utils.chat.PlayerAction;
 import me.wolfyscript.utilities.main.Main;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -181,16 +183,24 @@ public class WolfyUtilities implements Listener {
         textComponents[0] = new TextComponent(CHAT_PREFIX);
         for (int i = 1; i < textComponents.length; i++) {
             ClickData data = clickData[i-1];
-            UUID id = UUID.randomUUID();
-            while (clickDataMap.keySet().contains(id)) {
-                id = UUID.randomUUID();
+            TextComponent component = new TextComponent(WolfyUtilities.translateColorCodes(getLanguageAPI().getActiveLanguage().replaceKeys(data.getMessage())));
+
+            if(data.getClickAction() != null){
+                UUID id = UUID.randomUUID();
+                while (clickDataMap.keySet().contains(id)) {
+                    id = UUID.randomUUID();
+                }
+                PlayerAction playerAction = new PlayerAction(this, player, data);
+                clickDataMap.put(id, playerAction);
+                component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "wu::" + id.toString()));
             }
-            PlayerAction playerAction = new PlayerAction(this, player, data);
-            clickDataMap.put(id, playerAction);
-            TextComponent component = playerAction.getMessage();
-            component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "wu::" + id.toString()));
-            for(ClickEvent clickEvent : data.getClickEvents()){
-                component.setClickEvent(clickEvent);
+
+            for(ChatEvent chatEvent : data.getChatEvents()){
+                if(chatEvent instanceof HoverEvent){
+                    component.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(((HoverEvent) chatEvent).getAction(), ((HoverEvent) chatEvent).getValue()));
+                }else if (chatEvent instanceof me.wolfyscript.utilities.api.utils.chat.ClickEvent){
+                    component.setClickEvent(new ClickEvent(((me.wolfyscript.utilities.api.utils.chat.ClickEvent) chatEvent).getAction(), ((me.wolfyscript.utilities.api.utils.chat.ClickEvent) chatEvent).getValue()));
+                }
             }
             textComponents[i] = component;
         }
@@ -213,6 +223,9 @@ public class WolfyUtilities implements Listener {
             Player player = event.getPlayer();
             if (player.getUniqueId().equals(action.getUuid())) {
                 action.run(player);
+                if(action.isDiscard()){
+                    clickDataMap.remove(uuid);
+                }
             }
         }
     }
@@ -601,45 +614,28 @@ public class WolfyUtilities implements Listener {
 
     public static ArrayList<String> formatShape(String... shape) {
         ArrayList<String> cleared = new ArrayList<>(Arrays.asList(shape));
-        boolean T1 = false;
-        boolean T2 = false;
-        boolean T3 = false;
-        boolean T4 = false;
         List<Byte> columns = new ArrayList<>();
         List<Byte> rows = new ArrayList<>();
-        if (shape[0].equals("   ")) {
-            T1 = true;
-            rows.add((byte) 0);
-        }
-        if (checkColumn(cleared, (byte) 0)) {
-            T2 = true;
-            columns.add((byte) 0);
-        }
-        if (checkColumn(cleared, (byte) 2)) {
-            T3 = true;
-            columns.add((byte) 2);
-        }
-        if (shape[2].equals("   ")) {
-            T4 = true;
-            rows.add((byte) 2);
-        }
-        if (T2 && T4) {
-            if (checkColumn(cleared, (byte) 1)) {
-                columns.add((byte) 1);
-            } else if (shape[1].equals("   ")) {
-                rows.add((byte) 1);
+        if (shape[0].equals("   ") || shape[2].equals("   ")) {
+            if(shape[0].equals("   ")){
+                rows.add((byte)0);
+            }
+            if(shape[1].equals("   ")){
+                rows.add((byte)1);
+            }
+            if(shape[2].equals("   ")){
+                rows.add((byte)2);
             }
         }
-        if (T3 && T1) {
-            if (shape[1].equals("   ")) {
-                rows.add((byte) 1);
-            } else if (checkColumn(cleared, (byte) 1)) {
-                columns.add((byte) 1);
+        if(checkColumn(cleared, (byte) 0) || checkColumn(cleared, (byte) 2)){
+            if (checkColumn(cleared, (byte) 0)) {
+                columns.add((byte) 0);
             }
-        }
-        if ((T1 && T2) || (T2 && !T3 && !T4) || (T3 && !T1 && !T2 && !T4)) {
             if (checkColumn(cleared, (byte) 1)) {
                 columns.add((byte) 1);
+            }
+            if (checkColumn(cleared, (byte) 2)) {
+                columns.add((byte) 2);
             }
         }
         int index = 0;
