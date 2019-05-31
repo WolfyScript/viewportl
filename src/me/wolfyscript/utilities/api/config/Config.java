@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.config;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,6 +18,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Config {
@@ -295,7 +297,9 @@ public class Config {
     }
 
     public ItemStack getItem(String path){
-        ItemStack itemStack = ItemStack.deserialize(getConfig().getConfigurationSection(path).getValues(false));
+        Map<String, Object> data = getConfig().getConfigurationSection(path).getValues(false);
+        data.put("v", Bukkit.getUnsafe().getDataVersion());
+        ItemStack itemStack = ItemStack.deserialize(data);
         if(itemStack.hasItemMeta()){
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(itemMeta.getDisplayName()));
