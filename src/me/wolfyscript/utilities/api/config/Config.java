@@ -297,22 +297,25 @@ public class Config {
     }
 
     public ItemStack getItem(String path){
-        Map<String, Object> data = getConfig().getConfigurationSection(path).getValues(false);
-        data.put("v", Bukkit.getUnsafe().getDataVersion());
-        ItemStack itemStack = ItemStack.deserialize(data);
-        if(itemStack.hasItemMeta()){
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(itemMeta.getDisplayName()));
-            if(itemMeta.hasLore()){
-                List<String> newLore = new ArrayList<>();
-                for(String row : itemMeta.getLore()){
-                    newLore.add(WolfyUtilities.translateColorCodes(row));
+        if(getConfig().getConfigurationSection(path) != null){
+            Map<String, Object> data = getConfig().getConfigurationSection(path).getValues(false);
+            data.put("v", Bukkit.getUnsafe().getDataVersion());
+            ItemStack itemStack = ItemStack.deserialize(data);
+            if(itemStack.hasItemMeta()){
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(itemMeta.getDisplayName()));
+                if(itemMeta.hasLore()){
+                    List<String> newLore = new ArrayList<>();
+                    for(String row : itemMeta.getLore()){
+                        newLore.add(WolfyUtilities.translateColorCodes(row));
+                    }
+                    itemMeta.setLore(newLore);
                 }
-                itemMeta.setLore(newLore);
+                itemStack.setItemMeta(itemMeta);
             }
-            itemStack.setItemMeta(itemMeta);
+            return itemStack;
         }
-        return itemStack;
+        return null;
     }
 
     public File getConfigFile() {
