@@ -35,6 +35,8 @@ public class Config {
     private int passedIntervals;
     private boolean firstInit = false;
 
+    private WolfyUtilities api;
+
 
     /*
         plugin - your plugin
@@ -45,6 +47,7 @@ public class Config {
         override - if true, the config will be overridden with the default values (onFirstInit() will run on every override!)
      */
     public Config(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name, boolean override) {
+        this.api = configAPI.getApi();
         this.name = name;
         this.saveAfterSet = true;
         this.plugin = configAPI.getPlugin();
@@ -297,16 +300,38 @@ public class Config {
     }
 
     public ItemStack getItem(String path){
+        return getItem(path, true);
+    }
+
+    public ItemStack getItem(String path, boolean replaceKeys){
         if(getConfig().getConfigurationSection(path) != null){
             Map<String, Object> data = getConfig().getConfigurationSection(path).getValues(false);
             data.put("v", Bukkit.getUnsafe().getDataVersion());
             ItemStack itemStack = ItemStack.deserialize(data);
             if(itemStack.hasItemMeta()){
                 ItemMeta itemMeta = itemStack.getItemMeta();
-                itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(itemMeta.getDisplayName()));
+                if(itemMeta.hasDisplayName()){
+                    String displayName = itemMeta.getDisplayName();
+                    if(replaceKeys && api.getLanguageAPI().getActiveLanguage() != null){
+                        displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
+                    }
+                    itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
+                }
                 if(itemMeta.hasLore()){
                     List<String> newLore = new ArrayList<>();
                     for(String row : itemMeta.getLore()){
+                        if(replaceKeys && api.getLanguageAPI().getActiveLanguage() != null){
+                            if(row.startsWith("[WU]")){
+                                row = row.substring("[WU]".length());
+                                row = api.getLanguageAPI().getActiveLanguage().replaceKeys(row);
+                            }else if(row.startsWith("[WU!]")){
+                                List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
+                                for(String newRow : rows){
+                                    newLore.add(WolfyUtilities.translateColorCodes(newRow));
+                                }
+                                continue;
+                            }
+                        }
                         newLore.add(WolfyUtilities.translateColorCodes(row));
                     }
                     itemMeta.setLore(newLore);

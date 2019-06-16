@@ -40,9 +40,16 @@ public class Language {
             keys.add(matcher.group(0));
         }
         for(String key : keys){
-            msg = msg.replace(key, (String) messages.get(key.replace("$", "")));
+            Object object = messages.get(key.replace("$", ""));
+            if(object instanceof String){
+                msg = msg.replace(key, (String) object);
+            }else if(object instanceof List){
+                StringBuilder sB = new StringBuilder();
+                List<String> list = (List<String>) object;
+                list.forEach(s -> sB.append(' ').append(s));
+                msg = msg.replace(key, sB.toString());
+            }
         }
-
         return msg;
     }
 
@@ -59,7 +66,11 @@ public class Language {
      */
     public List<String> replaceKey(String key) {
         List<String> message = new ArrayList<>();
-        if (key != null) {
+        if (key != null){
+            if(key.contains("$")){
+                key = key.replace("$", "");
+            }
+
             if(messages.get(key) instanceof ArrayList){
                 message.addAll((ArrayList<String>) messages.get(key));
             }

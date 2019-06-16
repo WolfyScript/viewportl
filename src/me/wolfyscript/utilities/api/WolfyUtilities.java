@@ -75,7 +75,7 @@ public class WolfyUtilities implements Listener {
 
     public ConfigAPI getConfigAPI() {
         if (!hasConfigAPI()) {
-            configAPI = new ConfigAPI(this.plugin);
+            configAPI = new ConfigAPI(this);
         }
         return configAPI;
     }

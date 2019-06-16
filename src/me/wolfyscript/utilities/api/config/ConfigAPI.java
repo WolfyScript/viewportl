@@ -1,5 +1,7 @@
 package me.wolfyscript.utilities.api.config;
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -11,18 +13,20 @@ import java.util.HashMap;
 public class ConfigAPI {
 
     private Plugin plugin;
+    private WolfyUtilities api;
 
     private HashMap<String, Config> configs;
 
     private int autoSave = -1;
 
-    public ConfigAPI(Plugin plugin){
-        this.plugin = plugin;
+    public ConfigAPI(WolfyUtilities api){
+        this.api = api;
+        this.plugin = api.getPlugin();
         this.configs = new HashMap<>();
     }
 
-    public ConfigAPI(Plugin plugin, boolean enableAutoSave, int intervalInMin){
-        this(plugin);
+    public ConfigAPI(WolfyUtilities api, boolean enableAutoSave, int intervalInMin){
+        this(api);
         setAutoSave(enableAutoSave, intervalInMin);
     }
 
@@ -94,5 +98,9 @@ public class ConfigAPI {
 
     public Plugin getPlugin() {
         return plugin;
+    }
+
+    public WolfyUtilities getApi() {
+        return api;
     }
 }
