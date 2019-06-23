@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.utils.chat;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.inventory.ItemStack;
 
 public class HoverEvent implements ChatEvent<net.md_5.bungee.api.chat.HoverEvent.Action, BaseComponent[]> {
@@ -13,6 +14,11 @@ public class HoverEvent implements ChatEvent<net.md_5.bungee.api.chat.HoverEvent
     public HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action action, BaseComponent[] value) {
         this.action = action;
         this.value = value;
+    }
+
+    public HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action action, String value){
+        this.action = action;
+        this.value = new ComponentBuilder(value).create();
     }
 
     public HoverEvent(ItemStack itemStack) {
