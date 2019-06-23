@@ -219,6 +219,7 @@ public class WolfyUtilities implements Listener {
             PlayerAction action = clickDataMap.get(uuid);
             if (action == null)
                 return;
+            event.setMessage("");
             event.setCancelled(true);
             Player player = event.getPlayer();
             if (player.getUniqueId().equals(action.getUuid())) {
