@@ -4,6 +4,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,10 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -171,8 +169,9 @@ public class Config {
         Reader stream;
         try {
             String fileName = defaultName.isEmpty() ? name : defaultName;
-            if(plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath +"/"+fileName+".yml") != null){
-                stream = new InputStreamReader(plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath +"/"+fileName+".yml"), StandardCharsets.UTF_8);
+            InputStream inputStream = plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath +"/"+fileName+".yml");
+            if(inputStream != null){
+                stream = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                 YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(stream);
                 config.options().header(defConfig.options().header());
                 config.setDefaults(defConfig);
@@ -304,7 +303,7 @@ public class Config {
     }
 
     public ItemStack getItem(String path, boolean replaceKeys){
-        if(getConfig().getConfigurationSection(path) != null){
+        if(getConfig().isItemStack(path)){
             Map<String, Object> data = getConfig().getConfigurationSection(path).getValues(false);
             data.put("v", Bukkit.getUnsafe().getDataVersion());
             ItemStack itemStack = ItemStack.deserialize(data);
@@ -340,7 +339,7 @@ public class Config {
             }
             return itemStack;
         }
-        return null;
+        return new ItemStack(Material.STONE);
     }
 
     public File getConfigFile() {

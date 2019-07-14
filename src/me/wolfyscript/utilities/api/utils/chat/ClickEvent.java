@@ -10,6 +10,10 @@ public class ClickEvent implements ChatEvent<net.md_5.bungee.api.chat.ClickEvent
         this.value = value;
     }
 
+    public ClickEvent(Action action, String value){
+        this(action.getAction(), value);
+    }
+
     @Override
     public String getValue() {
         return value;
@@ -18,5 +22,17 @@ public class ClickEvent implements ChatEvent<net.md_5.bungee.api.chat.ClickEvent
     @Override
     public net.md_5.bungee.api.chat.ClickEvent.Action getAction() {
         return action;
+    }
+
+    public enum Action{
+        OPEN_URL,
+        OPEN_FILE,
+        RUN_COMMAND,
+        SUGGEST_COMMAND,
+        CHANGE_PAGE;
+
+        public net.md_5.bungee.api.chat.ClickEvent.Action getAction(){
+            return net.md_5.bungee.api.chat.ClickEvent.Action.valueOf(this.toString());
+        }
     }
 }

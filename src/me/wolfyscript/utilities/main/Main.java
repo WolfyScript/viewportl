@@ -8,6 +8,8 @@ import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.Legacy;
+import me.wolfyscript.utilities.main.metrics.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -42,6 +44,19 @@ public class Main extends JavaPlugin {
 
         configAPI.registerConfig(new MainConfig(configAPI));
         languageAPI.setActiveLanguage(new Language("en_US", new LangConfig(configAPI, "me/wolfyscript/utilities/main/configs/lang", "en_US"), configAPI));
+
+        Metrics metrics = new Metrics(this);
+        metrics.addCustomChart(new Metrics.SimplePie("api_software", () -> {
+            String version = Bukkit.getServer().getName();
+            if (WolfyUtilities.hasSpigot()) {
+                version = "Spigot";
+            }
+            if (WolfyUtilities.hasClass("com.destroystokyo.paper.utils.PaperPluginLoader")) {
+                version = "Paper";
+            }
+            return version;
+        }));
+
     }
 
     public void onDisable() {

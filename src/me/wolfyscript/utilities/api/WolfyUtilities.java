@@ -257,7 +257,6 @@ public class WolfyUtilities implements Listener {
                 message = prefix + message;
                 Main.getInstance().getServer().getConsoleSender().sendMessage(message);
             }
-
         }
     }
 
