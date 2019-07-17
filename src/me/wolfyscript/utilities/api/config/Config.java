@@ -3,7 +3,6 @@ package me.wolfyscript.utilities.api.config;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -34,7 +33,6 @@ public class Config {
     private boolean firstInit = false;
 
     private WolfyUtilities api;
-
 
     /*
         plugin - your plugin
@@ -303,7 +301,7 @@ public class Config {
     }
 
     public ItemStack getItem(String path, boolean replaceKeys){
-        if(getConfig().isItemStack(path)){
+        if(getConfig().isSet(path)){
             Map<String, Object> data = getConfig().getConfigurationSection(path).getValues(false);
             data.put("v", Bukkit.getUnsafe().getDataVersion());
             ItemStack itemStack = ItemStack.deserialize(data);

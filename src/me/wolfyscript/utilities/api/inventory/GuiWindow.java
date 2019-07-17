@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.inventory;
 
+import me.wolfyscript.utilities.api.utils.chat.ClickData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -66,6 +67,11 @@ public class GuiWindow implements Listener {
 
     }
 
+    /*
+    Replaced by direct accessed methods via lambda expressions! This method only exist for backwards compatibility!
+    Will be removed completely in the near future!
+     */
+    @Deprecated
     public boolean parseChatMessage(int id, String message, GuiHandler guiHandler) {
         return true;
     }
@@ -113,10 +119,35 @@ public class GuiWindow implements Listener {
         guiHandler.reloadInv(namespace);
     }
 
+    /*
+    Replaced by openChat() method. It is easier to use via lambda!
+    And it is faster in execution! You don't need to check the ids all the time!
+     */
+    @Deprecated
     public void runChat(int id, String message, GuiHandler guiHandler) {
         guiHandler.setTestChatID(id);
         guiHandler.close();
         guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), message);
+    }
+
+    /*
+    Opens the chat, send the player the defined message and waits for the input of the player.
+    When the player sends the message the inputAction method is executed
+     */
+    public void openChat(GuiHandler guiHandler, String msg, ChatInputAction inputAction){
+        guiHandler.setChatInputAction(inputAction);
+        guiHandler.close();
+        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), msg);
+    }
+
+    /*
+    Opens the chat, send the player the defined action messages and waits for the input of the player.
+    When the player sends the message the inputAction method is executed
+     */
+    public void openActionChat(GuiHandler guiHandler, ClickData clickData, ChatInputAction inputAction){
+        guiHandler.setChatInputAction(inputAction);
+        guiHandler.close();
+        guiHandler.getApi().sendActionMessage(guiHandler.getPlayer(), clickData);
     }
 
     protected String getInventoryName(){

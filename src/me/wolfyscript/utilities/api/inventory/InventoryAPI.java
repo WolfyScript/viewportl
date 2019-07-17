@@ -201,8 +201,8 @@ public class InventoryAPI implements Listener {
         return plugin;
     }
 
-    public void reset(){
-        for(Player player : plugin.getServer().getOnlinePlayers()){
+    public void reset() {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
             player.closeInventory();
             removeGui(player);
         }
@@ -215,19 +215,19 @@ public class InventoryAPI implements Listener {
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
-                Main.getMainUtil().sendDebugMessage("check GUI Handler >>>> "+event.getWhoClicked().getName()+" <<<<");
+                Main.getMainUtil().sendDebugMessage("check GUI Handler >>>> " + event.getWhoClicked().getName() + " <<<<");
 
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
-                Main.getMainUtil().sendDebugMessage(" GuiHandler: "+guiHandler);
-                Main.getMainUtil().sendDebugMessage("  Inv: "+guiHandler.getCurrentInv());
+                Main.getMainUtil().sendDebugMessage(" GuiHandler: " + guiHandler);
+                Main.getMainUtil().sendDebugMessage("  Inv: " + guiHandler.getCurrentInv());
                 if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
-                    Main.getMainUtil().sendDebugMessage("   valid -> "+event.getWhoClicked().getName());
+                    Main.getMainUtil().sendDebugMessage("   valid -> " + event.getWhoClicked().getName());
                     event.setCancelled(true);
                     String action = guiHandler.verifyItem(event.getCurrentItem());
                     if (!action.isEmpty()) {
                         guiHandler.getCurrentInv().update(guiHandler);
                         GuiAction guiAction = new GuiAction(action, guiHandler, guiHandler.getCurrentInv(), event);
-                        if(!guiHandler.getCurrentInv().onAction(guiAction)){
+                        if (!guiHandler.getCurrentInv().onAction(guiAction)) {
                             event.setCancelled(true);
                         }
                     } else {
@@ -258,9 +258,9 @@ public class InventoryAPI implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onChat(AsyncPlayerChatEvent event){
-        if(event.getMessage() != null){
-            if(event.getMessage().contains("[WolfyUtilities CANCELED]")){
+    public void onChat(AsyncPlayerChatEvent event) {
+        if (event.getMessage() != null) {
+            if (event.getMessage().contains("[WolfyUtilities CANCELED]")) {
                 event.setMessage("");
                 event.setCancelled(true);
             }
@@ -269,11 +269,14 @@ public class InventoryAPI implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreChat(AsyncPlayerChatEvent event) {
-        if(event.getMessage() != null){
+        if (event.getMessage() != null) {
             if (hasGuiHandler(event.getPlayer())) {
                 GuiHandler guiHandler = getGuiHandler(event.getPlayer());
                 if (guiHandler.isChatEventActive() && !event.getMessage().startsWith("wu::")) {
-                    if (!guiHandler.getLastInv().parseChatMessage(guiHandler.getTestChatID(), event.getMessage(), guiHandler)) {
+                    if (guiHandler.getChatInputAction() != null) {
+                        guiHandler.getChatInputAction().onChat(guiHandler, event.getPlayer(), event.getMessage(), event.getMessage().split(" "));
+
+                    } else if (!guiHandler.getLastInv().parseChatMessage(guiHandler.getTestChatID(), event.getMessage(), guiHandler)) {
                         guiHandler.openLastInv();
                         guiHandler.setTestChatID(-1);
                     }

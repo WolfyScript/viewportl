@@ -20,6 +20,7 @@ public class GuiHandler implements Listener {
     private Player player;
     private boolean changingInv = false;
     private int testChatID = -1;
+    private ChatInputAction chatInputAction = null;
     private String uuid;
 
     private List<String> pageHistory = new ArrayList<>();
@@ -110,9 +111,11 @@ public class GuiHandler implements Listener {
     }
 
     public void openLastInv() {
-        String inv = pageHistory.get((pageHistory.size() - 2) > -1 ? pageHistory.size() - 2 : 0);
-        pageHistory.remove(pageHistory.size() - 1);
-        changeToInv(inv);
+        if(!pageHistory.isEmpty()){
+            String inv = pageHistory.get((pageHistory.size() - 2) > -1 ? pageHistory.size() - 2 : 0);
+            pageHistory.remove(pageHistory.size() - 1);
+            changeToInv(inv);
+        }
     }
 
     public String verifyItem(ItemStack item) {
@@ -133,16 +136,26 @@ public class GuiHandler implements Listener {
         return getApi().getInventoryAPI().getItem(namespace, id, helpEnabled);
     }
 
+    @Deprecated
     public int getTestChatID() {
         return testChatID;
     }
 
+    @Deprecated
     public void setTestChatID(int testChatID) {
         this.testChatID = testChatID;
     }
 
     public boolean isChatEventActive(){
-        return getTestChatID() > -1;
+        return (getTestChatID() > -1) || getChatInputAction() != null;
+    }
+
+    public ChatInputAction getChatInputAction() {
+        return chatInputAction;
+    }
+
+    public void setChatInputAction(ChatInputAction chatInputAction) {
+        this.chatInputAction = chatInputAction;
     }
 
     public void cancelChatEvent(){
