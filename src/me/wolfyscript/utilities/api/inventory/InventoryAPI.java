@@ -260,13 +260,19 @@ public class InventoryAPI implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent event) {
         if (event.getMessage() != null) {
-            if (event.getMessage().contains("[WolfyUtilities CANCELED]")) {
+            if (event.getMessage().equals("[WolfyUtilities CANCELED]")) {
                 event.setMessage("");
                 event.setCancelled(true);
             }
         }
     }
 
+    /*
+    Checks if the player sending the message has active chat event. If he has it's executed!
+    It sets the message to a canceled string, so the following event knows to cancel it.
+    This allows the message to bypass other Chat Plugins.
+    Maybe I find another way to do it someday...
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreChat(AsyncPlayerChatEvent event) {
         if (event.getMessage() != null) {
@@ -275,7 +281,7 @@ public class InventoryAPI implements Listener {
                 if (guiHandler.isChatEventActive() && !event.getMessage().startsWith("wu::")) {
                     if (guiHandler.getChatInputAction() != null) {
                         guiHandler.getChatInputAction().onChat(guiHandler, event.getPlayer(), event.getMessage(), event.getMessage().split(" "));
-
+                        guiHandler.setChatInputAction(null);
                     } else if (!guiHandler.getLastInv().parseChatMessage(guiHandler.getTestChatID(), event.getMessage(), guiHandler)) {
                         guiHandler.openLastInv();
                         guiHandler.setTestChatID(-1);

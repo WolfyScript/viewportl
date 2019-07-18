@@ -46,16 +46,6 @@ public class Main extends JavaPlugin {
         languageAPI.setActiveLanguage(new Language("en_US", new LangConfig(configAPI, "me/wolfyscript/utilities/main/configs/lang", "en_US"), configAPI));
 
         Metrics metrics = new Metrics(this);
-        metrics.addCustomChart(new Metrics.SimplePie("api_software", () -> {
-            String version = Bukkit.getServer().getName();
-            if (WolfyUtilities.hasSpigot()) {
-                version = "Spigot";
-            }
-            if (WolfyUtilities.hasClass("com.destroystokyo.paper.utils.PaperPluginLoader")) {
-                version = "Paper";
-            }
-            return version;
-        }));
 
     }
 

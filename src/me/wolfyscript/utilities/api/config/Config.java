@@ -51,24 +51,24 @@ public class Config {
         this.defaultName = defaultName;
         this.configAPI = configAPI;
         configFile = new File(savePath, name + ".yml");
-        if(override && configFile.exists()){
-            if(!configFile.delete()){
+        if (override && configFile.exists()) {
+            if (!configFile.delete()) {
                 Main.getMainUtil().sendConsoleMessage("Error while trying to override Config!");
-                Main.getMainUtil().sendConsoleMessage("File: "+configFile.getPath());
+                Main.getMainUtil().sendConsoleMessage("File: " + configFile.getPath());
             }
         }
-        if(!configFile.exists()){
+        if (!configFile.exists()) {
             firstInit = true;
             try {
                 configFile.getParentFile().mkdirs();
                 configFile.createNewFile();
             } catch (IOException e) {
-                Main.getMainUtil().sendConsoleMessage("Error creating file: "+configFile.getPath());
-                Main.getMainUtil().sendConsoleMessage("     cause: "+e.getMessage());
+                Main.getMainUtil().sendConsoleMessage("Error creating file: " + configFile.getPath());
+                Main.getMainUtil().sendConsoleMessage("     cause: " + e.getMessage());
             }
         }
         config = YamlConfiguration.loadConfiguration(configFile);
-        if(firstInit){
+        if (firstInit) {
             loadDefaults();
             onFirstInit();
             firstInit = false;
@@ -127,18 +127,19 @@ public class Config {
     public Config(ConfigAPI configAPI, String name, boolean override) {
         this(configAPI, configAPI.getPlugin().getDataFolder().getPath(), name, override);
     }
+
     /*
         This method is called when the file does not exists.
         Can be overridden.
      */
-    public void onFirstInit(){
+    public void onFirstInit() {
     }
 
     /*
         This method is called every time the config is initiated
         Can be overridden.
      */
-    public void init(){
+    public void init() {
     }
 
     public boolean isFirstInit() {
@@ -155,7 +156,7 @@ public class Config {
     /*
         Set if the config should be saved and reloaded after a new value was set.
      */
-    public void saveAfterSet(boolean enable){
+    public void saveAfterSet(boolean enable) {
         this.saveAfterSet = enable;
     }
 
@@ -167,8 +168,8 @@ public class Config {
         Reader stream;
         try {
             String fileName = defaultName.isEmpty() ? name : defaultName;
-            InputStream inputStream = plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath +"/"+fileName+".yml");
-            if(inputStream != null){
+            InputStream inputStream = plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath + "/" + fileName + ".yml");
+            if (inputStream != null) {
                 stream = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                 YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(stream);
                 config.options().header(defConfig.options().header());
@@ -189,14 +190,14 @@ public class Config {
         load();
     }
 
-    void reloadAuto(){
-        if(intervalsToPass > 0){
-            if(passedIntervals < intervalsToPass){
+    void reloadAuto() {
+        if (intervalsToPass > 0) {
+            if (passedIntervals < intervalsToPass) {
                 passedIntervals++;
-            }else{
+            } else {
                 reload();
             }
-        }else{
+        } else {
             reload();
         }
     }
@@ -212,7 +213,7 @@ public class Config {
         }
     }
 
-    public void load(){
+    public void load() {
         try {
             config.load(configFile);
         } catch (IOException | InvalidConfigurationException e) {
@@ -223,9 +224,9 @@ public class Config {
     /*
         Sets a value to the path
      */
-    public void set(String path, Object object){
+    public void set(String path, Object object) {
         config.set(path, object);
-        if(saveAfterSet){
+        if (saveAfterSet) {
             reload();
         }
     }
@@ -266,24 +267,24 @@ public class Config {
         return config.getDouble(path);
     }
 
-    public List<String> getStringList(String path){
+    public List<String> getStringList(String path) {
         return config.getStringList(path);
     }
 
-    public String[] getStringArray(String path){
+    public String[] getStringArray(String path) {
         return (String[]) getStringList(path).toArray();
     }
 
-    public void saveItem(String path, ItemStack itemStack){
-        if(itemStack.hasItemMeta()){
+    public void saveItem(String path, ItemStack itemStack) {
+        if (itemStack.hasItemMeta()) {
             ItemMeta itemMeta = itemStack.getItemMeta();
-            if(itemMeta.hasDisplayName()){
-                itemMeta.setDisplayName(itemMeta.getDisplayName().replace('§','&'));
+            if (itemMeta.hasDisplayName()) {
+                itemMeta.setDisplayName(itemMeta.getDisplayName().replace('§', '&'));
             }
-            if(itemMeta.hasLore()){
+            if (itemMeta.hasLore()) {
                 List<String> newLore = new ArrayList<>();
-                for(String row : itemMeta.getLore()){
-                    newLore.add(row.replace('§','&'));
+                for (String row : itemMeta.getLore()) {
+                    newLore.add(row.replace('§', '&'));
                 }
                 itemMeta.setLore(newLore);
             }
@@ -292,38 +293,38 @@ public class Config {
         set(path, itemStack.serialize());
     }
 
-    public void saveItem(String path, String name, ItemStack itemStack){
-        saveItem(path+"."+name, itemStack);
+    public void saveItem(String path, String name, ItemStack itemStack) {
+        saveItem(path + "." + name, itemStack);
     }
 
-    public ItemStack getItem(String path){
+    public ItemStack getItem(String path) {
         return getItem(path, true);
     }
 
-    public ItemStack getItem(String path, boolean replaceKeys){
+    public ItemStack getItem(String path, boolean replaceKeys) {
         if(getConfig().isSet(path)){
             Map<String, Object> data = getConfig().getConfigurationSection(path).getValues(false);
             data.put("v", Bukkit.getUnsafe().getDataVersion());
             ItemStack itemStack = ItemStack.deserialize(data);
-            if(itemStack.hasItemMeta()){
+            if (itemStack.hasItemMeta()) {
                 ItemMeta itemMeta = itemStack.getItemMeta();
-                if(itemMeta.hasDisplayName()){
+                if (itemMeta.hasDisplayName()) {
                     String displayName = itemMeta.getDisplayName();
-                    if(replaceKeys && api.getLanguageAPI().getActiveLanguage() != null){
+                    if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
                         displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
                     }
                     itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
                 }
-                if(itemMeta.hasLore()){
+                if (itemMeta.hasLore()) {
                     List<String> newLore = new ArrayList<>();
-                    for(String row : itemMeta.getLore()){
-                        if(replaceKeys && api.getLanguageAPI().getActiveLanguage() != null){
-                            if(row.startsWith("[WU]")){
+                    for (String row : itemMeta.getLore()) {
+                        if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
+                            if (row.startsWith("[WU]")) {
                                 row = row.substring("[WU]".length());
                                 row = api.getLanguageAPI().getActiveLanguage().replaceKeys(row);
-                            }else if(row.startsWith("[WU!]")){
+                            } else if (row.startsWith("[WU!]")) {
                                 List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
-                                for(String newRow : rows){
+                                for (String newRow : rows) {
                                     newLore.add(WolfyUtilities.translateColorCodes(newRow));
                                 }
                                 continue;
