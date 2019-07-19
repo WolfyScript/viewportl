@@ -54,9 +54,9 @@ public class InventoryAPI implements Listener {
     public void registerItem(String namespace, String key, ItemStack itemStack) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         String path = "items." + namespace + "." + key;
-        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$")) + WolfyUtilities.hideString("::" + key + "::" + Main.getMainUtil().getConfigAPI().getConfig("main_config").getString("securityCode")));
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$")) + WolfyUtilities.hideString("::" + key + "::" + Main.getMainConfig().getString("securityCode")));
         List<String> loreFirst = new ArrayList<>();
-        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getConfig().contains(path + ".lore")) {
+        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getYamlConfig().contains(path + ".lore")) {
             for (String row : wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKey(path + ".lore")) {
                 if (!row.isEmpty()) {
                     loreFirst.add(row.equalsIgnoreCase("<empty>") ? "" : ChatColor.translateAlternateColorCodes('&', row));
@@ -67,7 +67,7 @@ public class InventoryAPI implements Listener {
             itemMeta.setLore(loreFirst);
 
         List<String> lore = new ArrayList<>();
-        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getConfig().contains(path + ".help")) {
+        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getYamlConfig().contains(path + ".help")) {
             for (String row : wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKey(path + ".help")) {
                 if (!row.isEmpty()) {
                     lore.add(row.equalsIgnoreCase("<empty>") ? "" : ChatColor.translateAlternateColorCodes('&', row));
@@ -90,7 +90,7 @@ public class InventoryAPI implements Listener {
      */
     public void registerItem(String namespace, String key, ItemStack itemStack, String displayName, String[] helpLore, String... normalLore) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName + WolfyUtilities.hideString("::" + key + "::" + wolfyUtilities.getConfigAPI().getConfig("main_config").getString("securityCode"))));
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName + WolfyUtilities.hideString("::" + key + "::" + Main.getMainConfig().getString("securityCode"))));
         List<String> loreFirst = new ArrayList<>();
         if (normalLore != null && normalLore.length > 0) {
             for (String row : normalLore) {

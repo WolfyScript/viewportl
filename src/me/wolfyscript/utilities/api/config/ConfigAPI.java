@@ -1,7 +1,6 @@
 package me.wolfyscript.utilities.api.config;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -50,17 +49,26 @@ public class ConfigAPI {
     private void runAutoSave(int intervalInMin){
         autoSave = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             for(Config config : configs.values()){
-                config.reloadAuto();
+                if(config instanceof YamlConfig){
+                    ((YamlConfig) config).reloadAuto();
+                }
             }
         }, 1200, intervalInMin * 60 * 20);
     }
 
-    public void registerConfig(Config config){
-        configs.put(config.getName(), config);
+    public void registerConfig(YamlConfig yamlConfig){
+        configs.put(yamlConfig.getName(), yamlConfig);
     }
 
     public Config getConfig(String name){
         return configs.get(name);
+    }
+
+    public YamlConfig getmainConfig(){
+        if(getConfig("main_config") instanceof YamlConfig){
+            return (YamlConfig) getConfig("main_config");
+        }
+        return null;
     }
 
     public static void exportFile(Class reference, String resourcePath, String savePath) {

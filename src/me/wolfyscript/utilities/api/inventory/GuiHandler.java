@@ -123,7 +123,7 @@ public class GuiHandler implements Listener {
             if (item.getItemMeta().hasDisplayName()) {
                 String[] splitted = item.getItemMeta().getDisplayName().split("§:§:");
                 if (splitted.length >= 3) {
-                    if (WolfyUtilities.unhideString(splitted[splitted.length - 1]).equals(Main.getMainUtil().getConfigAPI().getConfig("main_config").getString("securityCode"))) {
+                    if (WolfyUtilities.unhideString(splitted[splitted.length - 1]).equals(Main.getMainConfig().getString("securityCode"))) {
                         return WolfyUtilities.unhideString(splitted[splitted.length - 2]);
                     }
                 }

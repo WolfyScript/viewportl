@@ -2,18 +2,17 @@ package me.wolfyscript.utilities.api.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Set;
 
-public class JsonConfig {
+public class JsonConfig implements Config {
 
     private final Gson gson = new GsonBuilder().create();
     private HashMap<String, Object> map = new HashMap<>();
@@ -21,14 +20,15 @@ public class JsonConfig {
     private ConfigAPI configAPI;
     private Plugin plugin;
     private File configFile;
+    private String name;
     private String defPath;
     private String defFileName;
     private String defJsonString;
 
     /*
-        Creates a json Config file. The default is set inside of the jar at the specified path.
+        Creates a json YamlConfig file. The default is set inside of the jar at the specified path.
         path - the config file path
-        file - config file name without ".json"
+        filename - config file name without ".json" and the key of this config (if it's registered)
         defPath - file path of the file containing the defaults
         defFileName - file name of the file containing the defaults
         overwrite - set if the existing file should be replaced by the defaults
@@ -36,6 +36,7 @@ public class JsonConfig {
     public JsonConfig(ConfigAPI configAPI, String path, String filename, String defPath, String defFileName, boolean overwrite) {
         this.configAPI = configAPI;
         this.plugin = configAPI.getPlugin();
+        this.name = filename;
         this.defPath = defPath;
         this.defFileName = defFileName;
         this.configFile = new File(path, filename + ".json");
@@ -47,22 +48,20 @@ public class JsonConfig {
         load();
     }
 
-    public JsonConfig(ConfigAPI configAPI, String path, String filename, String defPath, boolean overwrite){
-        this(configAPI, path, filename, defPath, filename, overwrite);
-    }
-
-    public JsonConfig(ConfigAPI configAPI, String path, String fileName){
-        this(configAPI, path, fileName, "me/wolfyscript/utilities/api/config/defaults","defJson", false);
+    public JsonConfig(ConfigAPI configAPI, String path, String fileName) {
+        this(configAPI, path, fileName, "me/wolfyscript/utilities/api/config/defaults", "defJson", false);
     }
 
     /*
         Creates a jsonConfig with a jsonString as the default instead of a File. Saved in a File (path & filename)
+        name - config file name without ".json" and the key of this config (if it's registered)
         jsonString - the default json value.
         path - the config file path without ".json" at the end!
         overwrite - set if the existing file should be replaced by the defaults
      */
-    public JsonConfig(ConfigAPI configAPI, String jsonString, String path, boolean overwrite){
+    public JsonConfig(ConfigAPI configAPI, String jsonString, String path, String name, boolean overwrite) {
         this.configAPI = configAPI;
+        this.name = name;
         this.configFile = new File(path + ".json");
         if (!configFile.exists() || overwrite) {
             loadDefaults(overwrite);
@@ -75,8 +74,9 @@ public class JsonConfig {
     /*
         Creates a memory only json config!
      */
-    public JsonConfig(ConfigAPI configAPI, String jsonString){
+    public JsonConfig(ConfigAPI configAPI, String jsonString) {
         this.configAPI = configAPI;
+        this.defJsonString = jsonString;
         loadFromString(jsonString);
     }
 
@@ -92,18 +92,28 @@ public class JsonConfig {
     }
 
     public void loadDefaults(boolean overwrite) {
-        if(defPath != null && defFileName != null){
-            if (plugin.getResource(defPath + "/" + defFileName + ".json") != null) {
-                plugin.saveResource(defPath + "/" + defFileName + ".json", overwrite);
+        if (defPath != null && defFileName != null) {
+            if(!configFile.exists() || overwrite){
+                InputStream initialStream = plugin.getResource(defPath + "/" + defFileName + ".json");
+                if(initialStream != null){
+                    try {
+                        byte[] buffer = new byte[initialStream.available()];
+                        initialStream.read(buffer);
+                        OutputStream outStream = new FileOutputStream(configFile);
+                        outStream.write(buffer);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
 
-    public void loadDefaults(){
+    public void loadDefaults() {
         loadDefaults(false);
     }
 
-    public void loadFromString(String json){
+    public void loadFromString(String json) {
         map = gson.fromJson(json, new HashMap<String, Object>().getClass());
     }
 
@@ -117,7 +127,7 @@ public class JsonConfig {
     }
 
     public void load() {
-        if(linkedToFile()){
+        if (linkedToFile()) {
             try {
                 map = gson.fromJson(new FileReader(this.configFile), new HashMap<String, Object>().getClass());
             } catch (FileNotFoundException e) {
@@ -127,7 +137,7 @@ public class JsonConfig {
     }
 
     public void save(boolean prettyPrinting) {
-        if(linkedToFile()){
+        if (linkedToFile()) {
             final String json = toString(prettyPrinting);
             configFile.delete();
             try {
@@ -147,8 +157,8 @@ public class JsonConfig {
         load();
     }
 
-    public void linkToFile(String path){
-        this.configFile = new File(path+".json");
+    public void linkToFile(String path) {
+        this.configFile = new File(path + ".json");
         if (!configFile.exists()) {
             configFile.getParentFile().mkdirs();
             loadDefaults();
@@ -156,11 +166,11 @@ public class JsonConfig {
         }
     }
 
-    public void linkToFile(String path, String fileName){
-        linkToFile(path+"/"+fileName);
+    public void linkToFile(String path, String fileName) {
+        linkToFile(path + "/" + fileName);
     }
 
-    public boolean linkedToFile(){
+    public boolean linkedToFile() {
         return configFile != null;
     }
 
@@ -176,4 +186,13 @@ public class JsonConfig {
         return map.get(key);
     }
 
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.JSON;
+    }
 }

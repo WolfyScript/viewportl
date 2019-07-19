@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.language;
 
-import me.wolfyscript.utilities.api.config.Config;
+import me.wolfyscript.utilities.api.config.YamlConfig;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -14,15 +14,15 @@ import java.util.regex.Pattern;
 public class Language {
 
     private String lang;
-    private Config config;
+    private YamlConfig yamlConfig;
 
     private HashMap<String, Object> messages;
 
-    public Language(String lang, Config config, ConfigAPI configAPI){
+    public Language(String lang, YamlConfig yamlConfig, ConfigAPI configAPI){
         this.lang = lang;
-        this.config = config;
+        this.yamlConfig = yamlConfig;
         this.messages = new HashMap<>();
-        configAPI.registerConfig(config);
+        configAPI.registerConfig(yamlConfig);
 
         reloadKeys();
     }
@@ -78,16 +78,16 @@ public class Language {
         return message;
     }
 
-    public FileConfiguration getConfig(){
-        return config.getConfig();
+    public FileConfiguration getYamlConfig(){
+        return yamlConfig.getConfig();
     }
 
     public void reloadKeys(){
-        for(String key : this.config.getKeys()){
-            if(this.config.getObject(key) instanceof ArrayList){
-                messages.put(key, this.config.getConfig().getStringList(key));
+        for(String key : this.yamlConfig.getKeys()){
+            if(this.yamlConfig.getObject(key) instanceof ArrayList){
+                messages.put(key, this.yamlConfig.getConfig().getStringList(key));
             }else{
-                messages.put(key, this.config.getString(key));
+                messages.put(key, this.yamlConfig.getString(key));
             }
         }
     }
