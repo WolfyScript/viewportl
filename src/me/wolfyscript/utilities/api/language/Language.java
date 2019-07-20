@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.language;
 
-import me.wolfyscript.utilities.api.config.YamlConfig;
+import me.wolfyscript.utilities.api.config.YamlConfiguration;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -14,11 +14,11 @@ import java.util.regex.Pattern;
 public class Language {
 
     private String lang;
-    private YamlConfig yamlConfig;
+    private YamlConfiguration yamlConfig;
 
     private HashMap<String, Object> messages;
 
-    public Language(String lang, YamlConfig yamlConfig, ConfigAPI configAPI){
+    public Language(String lang, YamlConfiguration yamlConfig, ConfigAPI configAPI){
         this.lang = lang;
         this.yamlConfig = yamlConfig;
         this.messages = new HashMap<>();

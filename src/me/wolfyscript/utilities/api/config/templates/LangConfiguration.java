@@ -1,15 +1,15 @@
 package me.wolfyscript.utilities.api.config.templates;
 
-import me.wolfyscript.utilities.api.config.YamlConfig;
+import me.wolfyscript.utilities.api.config.YamlConfiguration;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 
-public class LangConfig extends YamlConfig {
+public class LangConfiguration extends YamlConfiguration {
 
-    public LangConfig(ConfigAPI configAPI, String name) {
+    public LangConfiguration(ConfigAPI configAPI, String name) {
         this(configAPI, "lang",  name);
     }
 
-    public LangConfig(ConfigAPI configAPI, String defaultPath, String name) {
+    public LangConfiguration(ConfigAPI configAPI, String defaultPath, String name) {
         super(configAPI, defaultPath, configAPI.getPlugin().getDataFolder().getPath()+"/lang", name);
     }
 

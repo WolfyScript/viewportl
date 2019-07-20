@@ -5,20 +5,11 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.Set;
 
-public interface Config {
+public interface ConfigurationSection {
 
-    String getName();
-
-    Type getType();
-
-    void load();
-
-    void save();
-
-    void reload();
-
-    Set<String> getKeys();
-
+    /*
+        Sets a value to the path
+     */
     void set(String path, Object value);
 
     Object get(String path);
@@ -53,7 +44,4 @@ public interface Config {
 
     ItemStack getItem(String path, boolean replaceKeys);
 
-    enum Type{
-        YAML, JSON
-    }
 }

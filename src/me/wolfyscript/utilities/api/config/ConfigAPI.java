@@ -14,7 +14,7 @@ public class ConfigAPI {
     private Plugin plugin;
     private WolfyUtilities api;
 
-    private HashMap<String, Config> configs;
+    private HashMap<String, Configuration> configs;
 
     private int autoSave = -1;
 
@@ -48,25 +48,25 @@ public class ConfigAPI {
 
     private void runAutoSave(int intervalInMin){
         autoSave = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            for(Config config : configs.values()){
-                if(config instanceof YamlConfig){
-                    ((YamlConfig) config).reloadAuto();
+            for(Configuration configuration : configs.values()){
+                if(configuration instanceof YamlConfiguration){
+                    ((YamlConfiguration) configuration).reloadAuto();
                 }
             }
         }, 1200, intervalInMin * 60 * 20);
     }
 
-    public void registerConfig(YamlConfig yamlConfig){
+    public void registerConfig(YamlConfiguration yamlConfig){
         configs.put(yamlConfig.getName(), yamlConfig);
     }
 
-    public Config getConfig(String name){
+    public Configuration getConfig(String name){
         return configs.get(name);
     }
 
-    public YamlConfig getmainConfig(){
-        if(getConfig("main_config") instanceof YamlConfig){
-            return (YamlConfig) getConfig("main_config");
+    public YamlConfiguration getmainConfig(){
+        if(getConfig("main_config") instanceof YamlConfiguration){
+            return (YamlConfiguration) getConfig("main_config");
         }
         return null;
     }
@@ -93,14 +93,18 @@ public class ConfigAPI {
     It can be called from everywhere, but it's not useful.
      */
     public void saveConfigs(){
-        for(Config config : configs.values()){
-            config.save();
+        for(Configuration configuration : configs.values()){
+            if(configuration instanceof FileConfiguration){
+                ((FileConfiguration) configuration).save();
+            }
         }
     }
 
     public void loadConfigs(){
-        for(Config config : configs.values()){
-            config.load();
+        for(Configuration configuration : configs.values()){
+            if(configuration instanceof FileConfiguration){
+                ((FileConfiguration) configuration).load();
+            }
         }
     }
 

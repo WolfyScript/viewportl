@@ -2,7 +2,7 @@ package me.wolfyscript.utilities.main;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.config.templates.LangConfig;
+import me.wolfyscript.utilities.api.config.templates.LangConfiguration;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
@@ -23,7 +23,7 @@ public class Main extends JavaPlugin {
     private static List<WolfyUtilities> wolfyUtilitiesList = new ArrayList<>();
 
     private static WolfyUtilities mainUtil;
-    private static MainConfig mainConfig;
+    private static MainConfiguration mainConfig;
 
     public void onLoad() {
         instance = this;
@@ -41,9 +41,9 @@ public class Main extends JavaPlugin {
         LanguageAPI languageAPI = mainUtil.getLanguageAPI();
         InventoryAPI inventoryAPI = mainUtil.getInventoryAPI();
 
-        mainConfig = new MainConfig(configAPI);
+        mainConfig = new MainConfiguration(configAPI);
         configAPI.registerConfig(mainConfig);
-        languageAPI.setActiveLanguage(new Language("en_US", new LangConfig(configAPI, "me/wolfyscript/utilities/main/configs/lang", "en_US"), configAPI));
+        languageAPI.setActiveLanguage(new Language("en_US", new LangConfiguration(configAPI, "me/wolfyscript/utilities/main/configs/lang", "en_US"), configAPI));
 
         Metrics metrics = new Metrics(this);
 
@@ -86,7 +86,7 @@ public class Main extends JavaPlugin {
         return true;
     }
 
-    public static MainConfig getMainConfig() {
+    public static MainConfiguration getMainConfig() {
         return mainConfig;
     }
 }

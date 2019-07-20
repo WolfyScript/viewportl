@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.config.YamlConfig;
+import me.wolfyscript.utilities.api.config.YamlConfiguration;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.Legacy;
@@ -136,8 +136,8 @@ public class WolfyUtilities implements Listener {
     }
 
     public boolean hasDebuggingMode() {
-        if(getConfigAPI().getConfig("main_config") instanceof YamlConfig){
-            return ((YamlConfig) getConfigAPI().getConfig("main_config")).getBoolean("debug");
+        if(getConfigAPI().getConfig("main_config") instanceof YamlConfiguration){
+            return ((YamlConfiguration) getConfigAPI().getConfig("main_config")).getBoolean("debug");
         }
         return false;
     }

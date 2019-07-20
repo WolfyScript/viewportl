@@ -1,12 +1,12 @@
 package me.wolfyscript.utilities.main;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.config.YamlConfig;
+import me.wolfyscript.utilities.api.config.YamlConfiguration;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 
-public class MainConfig extends YamlConfig {
+public class MainConfiguration extends YamlConfiguration {
 
-    MainConfig(ConfigAPI configAPI) {
+    MainConfiguration(ConfigAPI configAPI) {
         super(configAPI, "me/wolfyscript/utilities/main/configs", configAPI.getPlugin().getDataFolder().getPath(), "main_config");
 
     }

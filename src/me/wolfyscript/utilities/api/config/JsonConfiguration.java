@@ -16,39 +16,25 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
-public class JsonConfig implements Config {
+public class JsonConfiguration extends FileConfiguration implements ConfigurationSection{
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private HashMap<String, Object> map = new HashMap<>();
-
-    private ConfigAPI configAPI;
-    private Plugin plugin;
-    private File configFile;
-    private String name;
-    private String defPath;
-    private String defFileName;
     private String defJsonString;
 
     private char pathSeparator = '#';
 
-    private WolfyUtilities api;
-
     /*
-        Creates a json YamlConfig file. The default is set inside of the jar at the specified path.
+        Creates a json YamlConfiguration file. The default is set inside of the jar at the specified path.
         path - the config file path
         filename - config file name without ".json" and the key of this config (if it's registered)
         defPath - file path of the file containing the defaults
         defFileName - file name of the file containing the defaults
         overwrite - set if the existing file should be replaced by the defaults
      */
-    public JsonConfig(ConfigAPI configAPI, String path, String filename, String defPath, String defFileName, boolean overwrite) {
-        this.api = configAPI.getApi();
-        this.configAPI = configAPI;
-        this.plugin = configAPI.getPlugin();
-        this.name = filename;
-        this.defPath = defPath;
-        this.defFileName = defFileName;
-        this.configFile = new File(path, filename + ".json");
+    public JsonConfiguration(ConfigAPI configAPI, String path, String name, String defPath, String defFileName, boolean overwrite) {
+        super(configAPI, path, name, defPath, defFileName, Type.JSON);
+
         if (!configFile.exists() || overwrite) {
             configFile.getParentFile().mkdirs();
             loadDefaults(overwrite);
@@ -57,7 +43,7 @@ public class JsonConfig implements Config {
         load();
     }
 
-    public JsonConfig(ConfigAPI configAPI, String path, String fileName) {
+    public JsonConfiguration(ConfigAPI configAPI, String path, String fileName) {
         this(configAPI, path, fileName, "me/wolfyscript/utilities/api/config/defaults", "defJson", false);
     }
 
@@ -68,7 +54,8 @@ public class JsonConfig implements Config {
         path - the config file path without ".json" at the end!
         overwrite - set if the existing file should be replaced by the defaults
      */
-    public JsonConfig(ConfigAPI configAPI, String jsonString, String path, String name, boolean overwrite) {
+    public JsonConfiguration(ConfigAPI configAPI, String jsonString, String path, String name, boolean overwrite) {
+        super(configAPI, path, name, "","", Type.JSON);
         this.configAPI = configAPI;
         this.name = name;
         this.configFile = new File(path + ".json");
@@ -83,7 +70,8 @@ public class JsonConfig implements Config {
     /*
         Creates a memory only json config!
      */
-    public JsonConfig(ConfigAPI configAPI, String jsonString) {
+    public JsonConfiguration(ConfigAPI configAPI, String jsonString) {
+        super(configAPI, "", "", "", "", Type.JSON);
         this.configAPI = configAPI;
         this.defJsonString = jsonString;
         loadFromString(jsonString);
@@ -209,6 +197,11 @@ public class JsonConfig implements Config {
     }
 
     @Override
+    public Map<String, Object> getMap() {
+        return map;
+    }
+
+    @Override
     public Object get(String path) {
         return get(path, null);
     }
@@ -258,10 +251,10 @@ public class JsonConfig implements Config {
                     currentMap = (Map<String, Object>) object;
                 }
             }else{
-                System.out.print("Put "+value);
-                System.out.print("WITH "+pathKeys[i]);
-                System.out.print("INTO "+currentMap);
                 currentMap.put(pathKeys[i], value);
+                if (saveAfterValueSet) {
+                    reload();
+                }
             }
         }
     }
@@ -325,16 +318,6 @@ public class JsonConfig implements Config {
         }
     }
 
-    @Override
-    public void setItem(String path, ItemStack itemStack) {
-        set(path, ItemUtils.serializeItemStack(itemStack));
-    }
-
-    @Override
-    public void setItem(String path, String name, ItemStack itemStack) {
-        setItem(path + "." + name, itemStack);
-    }
-
     @Deprecated
     @Override
     public void saveItem(String path, ItemStack item) {
@@ -345,6 +328,16 @@ public class JsonConfig implements Config {
     @Override
     public void saveItem(String path, String name, ItemStack itemStack) {
         setItem(path, name, itemStack);
+    }
+
+    @Override
+    public void setItem(String path, ItemStack itemStack) {
+        set(path, ItemUtils.serializeItemStack(itemStack));
+    }
+
+    @Override
+    public void setItem(String path, String name, ItemStack itemStack) {
+        setItem(path + "." + name, itemStack);
     }
 
     @Override
@@ -363,25 +356,24 @@ public class JsonConfig implements Config {
                     String displayName = itemMeta.getDisplayName();
                     if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
                         displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
+                        itemMeta.setDisplayName(displayName);
                     }
-                    itemMeta.setDisplayName(displayName);
                 }
                 if (itemMeta.hasLore()) {
                     List<String> newLore = new ArrayList<>();
-                    for (String row : itemMeta.getLore()) {
-                        if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
-                            if (row.startsWith("[WU]")) {
-                                row = row.substring("[WU]".length());
-                                row = api.getLanguageAPI().getActiveLanguage().replaceKeys(row);
-                            } else if (row.startsWith("[WU!]")) {
-                                List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
-                                for (String newRow : rows) {
-                                    newLore.add(WolfyUtilities.translateColorCodes(newRow));
+                    if(replaceKeys){
+                        for (String row : itemMeta.getLore()) {
+                            if (api.getLanguageAPI().getActiveLanguage() != null) {
+                                if (row.startsWith("[WU]")) {
+                                    newLore.add(api.getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
+                                } else if (row.startsWith("[WU!]")) {
+                                    List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
+                                    for (String newRow : rows) {
+                                        newLore.add(WolfyUtilities.translateColorCodes(newRow));
+                                    }
                                 }
-                                continue;
                             }
                         }
-                        newLore.add(row);
                     }
                     itemMeta.setLore(newLore);
                 }
@@ -395,7 +387,6 @@ public class JsonConfig implements Config {
     protected boolean isPrimitiveWrapper(@Nullable Object input) {
         return input instanceof Integer || input instanceof Boolean || input instanceof Character || input instanceof Byte || input instanceof Short || input instanceof Double || input instanceof Long || input instanceof Float;
     }
-
 
     @Override
     public String getName() {

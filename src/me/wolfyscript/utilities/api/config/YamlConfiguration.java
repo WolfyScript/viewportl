@@ -7,10 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -19,21 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class YamlConfig implements Config{
+public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileConfiguration implements ConfigurationSection{
 
-    private File configFile;
-    private YamlConfiguration config;
-    protected ConfigAPI configAPI;
-    private String name;
-    private String defaultPath;
-    private String defaultName;
-    private Plugin plugin;
-    private boolean saveAfterSet;
+    private org.bukkit.configuration.file.YamlConfiguration config;
     private int intervalsToPass = 0;
     private int passedIntervals;
     private boolean firstInit = false;
-
-    private WolfyUtilities api;
 
     /*
         plugin - your plugin
@@ -43,18 +32,11 @@ public class YamlConfig implements Config{
         name - The name of the file and the name of the default file.
         override - if true, the config will be overridden with the default values (onFirstInit() will run on every override!)
      */
-    public YamlConfig(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name, boolean override) {
-        this.api = configAPI.getApi();
-        this.name = name;
-        this.saveAfterSet = true;
-        this.plugin = configAPI.getPlugin();
-        this.defaultPath = defaultPath;
-        this.defaultName = defaultName;
-        this.configAPI = configAPI;
-        configFile = new File(savePath, name + ".yml");
+    public YamlConfiguration(ConfigAPI configAPI, String path, String name, String defPath, String defFileName, boolean override) {
+        super(configAPI, path, name, defPath, defFileName, Type.YAML);
         if (override && configFile.exists()) {
             if (!configFile.delete()) {
-                Main.getMainUtil().sendConsoleMessage("Error while trying to override YamlConfig!");
+                Main.getMainUtil().sendConsoleMessage("Error while trying to override YamlConfiguration!");
                 Main.getMainUtil().sendConsoleMessage("File: " + configFile.getPath());
             }
         }
@@ -68,7 +50,7 @@ public class YamlConfig implements Config{
                 Main.getMainUtil().sendConsoleMessage("     cause: " + e.getMessage());
             }
         }
-        config = YamlConfiguration.loadConfiguration(configFile);
+        config = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(configFile);
         if (firstInit) {
             loadDefaults();
             onFirstInit();
@@ -77,7 +59,6 @@ public class YamlConfig implements Config{
         init();
     }
 
-
     /*
         plugin - your plugin
         defaultPath - the path to the file inside the jar, which contains the default values!
@@ -85,15 +66,15 @@ public class YamlConfig implements Config{
         savePath - The path where the file will be save to!
         name - The name of the file and the name of the default file.
      */
-    public YamlConfig(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name) {
+    public YamlConfiguration(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name) {
         this(configAPI, defaultPath, defaultName, savePath, name, false);
     }
 
-    public YamlConfig(ConfigAPI configAPI, String defaultPath, String savePath, String name) {
+    public YamlConfiguration(ConfigAPI configAPI, String defaultPath, String savePath, String name) {
         this(configAPI, defaultPath, name, savePath, name);
     }
 
-    public YamlConfig(ConfigAPI configAPI, String defaultPath, String savePath, String name, boolean override) {
+    public YamlConfiguration(ConfigAPI configAPI, String defaultPath, String savePath, String name, boolean override) {
         this(configAPI, defaultPath, name, savePath, name, override);
     }
 
@@ -101,7 +82,7 @@ public class YamlConfig implements Config{
         defaultPath is not used here!
         Use this if your default file is in the source folder and not in another package!
      */
-    public YamlConfig(ConfigAPI configAPI, String savePath, String name) {
+    public YamlConfiguration(ConfigAPI configAPI, String savePath, String name) {
         this(configAPI, "", savePath, name);
     }
 
@@ -109,7 +90,7 @@ public class YamlConfig implements Config{
         defaultPath is not used here!
         Use this if your default file is in the source folder and not in another package!
      */
-    public YamlConfig(ConfigAPI configAPI, String savePath, String name, boolean override) {
+    public YamlConfiguration(ConfigAPI configAPI, String savePath, String name, boolean override) {
         this(configAPI, "", savePath, name, override);
     }
 
@@ -117,7 +98,7 @@ public class YamlConfig implements Config{
         savePath is not used here!
         Use this one if your file should be saved in the default Plugin directory!
      */
-    public YamlConfig(ConfigAPI configAPI, String name) {
+    public YamlConfiguration(ConfigAPI configAPI, String name) {
         this(configAPI, configAPI.getPlugin().getDataFolder().getPath(), name);
     }
 
@@ -125,7 +106,7 @@ public class YamlConfig implements Config{
         savePath is not used here!
         Use this one if your file should be saved in the default Plugin directory!
      */
-    public YamlConfig(ConfigAPI configAPI, String name, boolean override) {
+    public YamlConfiguration(ConfigAPI configAPI, String name, boolean override) {
         this(configAPI, configAPI.getPlugin().getDataFolder().getPath(), name, override);
     }
 
@@ -148,17 +129,10 @@ public class YamlConfig implements Config{
     }
 
     /*
-        Auto-save intervals this YamlConfig has to pass to be saved.
+        Auto-save intervals this YamlConfiguration has to pass to be saved.
     */
     public void setIntervalsToPass(int intervalsToPass) {
         this.intervalsToPass = intervalsToPass;
-    }
-
-    /*
-        Set if the config should be saved and reloaded after a new value was set.
-     */
-    public void saveAfterSet(boolean enable) {
-        this.saveAfterSet = enable;
     }
 
     /*
@@ -168,11 +142,11 @@ public class YamlConfig implements Config{
         config.options().copyDefaults(true);
         Reader stream;
         try {
-            String fileName = defaultName.isEmpty() ? name : defaultName;
-            InputStream inputStream = plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath + "/" + fileName + ".yml");
+            String fileName = defFileName.isEmpty() ? name : defFileName;
+            InputStream inputStream = plugin.getResource(defPath.isEmpty() ? fileName : defPath + "/" + fileName + ".yml");
             if (inputStream != null) {
                 stream = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-                YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(stream);
+                org.bukkit.configuration.file.YamlConfiguration defConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(stream);
                 config.options().header(defConfig.options().header());
                 config.setDefaults(defConfig);
                 stream.close();
@@ -203,9 +177,6 @@ public class YamlConfig implements Config{
         }
     }
 
-    /*
-        Saves the config
-     */
     public void save() {
         try {
             config.save(configFile);
@@ -222,12 +193,10 @@ public class YamlConfig implements Config{
         }
     }
 
-    /*
-        Sets a value to the path
-     */
+    @Override
     public void set(String path, Object object) {
         config.set(path, object);
-        if (saveAfterSet) {
+        if (saveAfterValueSet) {
             reload();
         }
     }
@@ -257,6 +226,11 @@ public class YamlConfig implements Config{
 
     public Set<String> getKeys() {
         return config.getKeys(true);
+    }
+
+    @Override
+    public Map<String, Object> getMap() {
+        return config.getValues(true);
     }
 
     public Object getObject(String path) {
@@ -293,6 +267,18 @@ public class YamlConfig implements Config{
         return config.getStringList(path);
     }
 
+    @Deprecated
+    @Override
+    public void saveItem(String path, String name, ItemStack itemStack) {
+        setItem(path, name, itemStack);
+    }
+
+    @Deprecated
+    @Override
+    public void saveItem(String path, ItemStack item) {
+        setItem(path, item);
+    }
+
     @Override
     public void setItem(String path, ItemStack itemStack) {
         if (itemStack.hasItemMeta()) {
@@ -315,18 +301,6 @@ public class YamlConfig implements Config{
     @Override
     public void setItem(String path, String name, ItemStack itemStack) {
         setItem(path + "." + name, itemStack);
-    }
-
-    @Deprecated
-    @Override
-    public void saveItem(String path, String name, ItemStack itemStack) {
-        setItem(path, name, itemStack);
-    }
-
-    @Deprecated
-    @Override
-    public void saveItem(String path, ItemStack item) {
-        setItem(path, item);
     }
 
     @Override
