@@ -2,19 +2,23 @@ package me.wolfyscript.utilities.api.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.bukkit.configuration.file.YamlConfiguration;
+import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.utils.ItemUtils;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.NumberConversions;
 
+import javax.annotation.Nullable;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 public class JsonConfig implements Config {
 
-    private final Gson gson = new GsonBuilder().create();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private HashMap<String, Object> map = new HashMap<>();
 
     private ConfigAPI configAPI;
@@ -25,6 +29,10 @@ public class JsonConfig implements Config {
     private String defFileName;
     private String defJsonString;
 
+    private char pathSeparator = '#';
+
+    private WolfyUtilities api;
+
     /*
         Creates a json YamlConfig file. The default is set inside of the jar at the specified path.
         path - the config file path
@@ -34,6 +42,7 @@ public class JsonConfig implements Config {
         overwrite - set if the existing file should be replaced by the defaults
      */
     public JsonConfig(ConfigAPI configAPI, String path, String filename, String defPath, String defFileName, boolean overwrite) {
+        this.api = configAPI.getApi();
         this.configAPI = configAPI;
         this.plugin = configAPI.getPlugin();
         this.name = filename;
@@ -91,11 +100,23 @@ public class JsonConfig implements Config {
 
     }
 
+    public boolean hasPathSeparator(){
+        return this.pathSeparator != 0;
+    }
+
+    public void setPathSeparator(char pathSeparator){
+        this.pathSeparator = pathSeparator;
+    }
+
+    public char getPathSeparator() {
+        return pathSeparator;
+    }
+
     public void loadDefaults(boolean overwrite) {
         if (defPath != null && defFileName != null) {
-            if(!configFile.exists() || overwrite){
+            if (!configFile.exists() || overwrite) {
                 InputStream initialStream = plugin.getResource(defPath + "/" + defFileName + ".json");
-                if(initialStream != null){
+                if (initialStream != null) {
                     try {
                         byte[] buffer = new byte[initialStream.available()];
                         initialStream.read(buffer);
@@ -139,7 +160,12 @@ public class JsonConfig implements Config {
     public void save(boolean prettyPrinting) {
         if (linkedToFile()) {
             final String json = toString(prettyPrinting);
-            configFile.delete();
+            try {
+                PrintWriter pw = new PrintWriter(configFile);
+                pw.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
             try {
                 Files.write(configFile.toPath(), json.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
             } catch (IOException e) {
@@ -182,9 +208,194 @@ public class JsonConfig implements Config {
         return map.keySet();
     }
 
-    public Object getObject(String key) {
-        return map.get(key);
+    @Override
+    public Object get(String path) {
+        return get(path, null);
     }
+
+    /*
+        Gets the Object of the specified path.
+        The name would be accessed with getObject("crafting", "workbench", "name");
+        The path defines the keys and sub keys.
+        {
+            "crafting": {
+                "workbench": {
+                    "name": "&6Advanced Workbench",
+                    "lore": [
+                        "&7Workbench for advanced crafting"
+                    ]
+                }
+            }
+        }
+    */
+    public Object get(String path, @Nullable Object def) {
+        String[] pathKeys = path.split(""+pathSeparator);
+        Map<String, Object> currentMap = map;
+        for (int i = 0; i < pathKeys.length; i++) {
+            Object object = currentMap.get(pathKeys[i]);
+            if (i != pathKeys.length - 1) {
+                if (object instanceof Map) {
+                    currentMap = (Map<String, Object>) object;
+                }
+            } else {
+                return object;
+            }
+        }
+        if(def != null){
+            return def;
+        }
+        return null;
+    }
+
+    @Override
+    public void set(String path, Object value){
+        String[] pathKeys = path.split(""+pathSeparator);
+        Map<String, Object> currentMap = map;
+        for (int i = 0; i < pathKeys.length; i++) {
+            Object object = currentMap.get(pathKeys[i]);
+            if (i != pathKeys.length - 1) {
+                if (object instanceof Map) {
+                    currentMap = (Map<String, Object>) object;
+                }
+            }else{
+                System.out.print("Put "+value);
+                System.out.print("WITH "+pathKeys[i]);
+                System.out.print("INTO "+currentMap);
+                currentMap.put(pathKeys[i], value);
+            }
+        }
+    }
+
+    @Override
+    public String getString(String path) {
+        if(get(path) != null){
+            return get(path).toString();
+        }
+        return "";
+    }
+
+    @Override
+    public int getInt(String path) {
+        return NumberConversions.toInt(get(path));
+    }
+
+    @Override
+    public boolean getBoolean(String path) {
+        Object val = this.get(path);
+        return val instanceof Boolean && (Boolean) val;
+    }
+
+    @Override
+    public double getDouble(String path) {
+        Object val = this.get(path);
+        return val instanceof Number ? NumberConversions.toDouble(val) : 0.0D;
+    }
+
+    @Override
+    public long getLong(String path) {
+        Object val = this.get(path);
+        return val instanceof Number ? NumberConversions.toLong(val) : 0;
+    }
+
+    @Override
+    public List<?> getList(String path) {
+        Object val = this.get(path);
+        return (List)(val instanceof List ? val : null);
+    }
+
+    @Override
+    public List<String> getStringList(String path) {
+        List<?> list = this.getList(path);
+        if (list == null) {
+            return new ArrayList(0);
+        } else {
+            List<String> result = new ArrayList();
+            Iterator var5 = list.iterator();
+            while(true) {
+                Object object;
+                do {
+                    if (!var5.hasNext()) {
+                        return result;
+                    }
+                    object = var5.next();
+                } while(!(object instanceof String) && !this.isPrimitiveWrapper(object));
+
+                result.add(String.valueOf(object));
+            }
+        }
+    }
+
+    @Override
+    public void setItem(String path, ItemStack itemStack) {
+        set(path, ItemUtils.serializeItemStack(itemStack));
+    }
+
+    @Override
+    public void setItem(String path, String name, ItemStack itemStack) {
+        setItem(path + "." + name, itemStack);
+    }
+
+    @Deprecated
+    @Override
+    public void saveItem(String path, ItemStack item) {
+        setItem(path, item);
+    }
+
+    @Deprecated
+    @Override
+    public void saveItem(String path, String name, ItemStack itemStack) {
+        setItem(path, name, itemStack);
+    }
+
+    @Override
+    public ItemStack getItem(String path) {
+        return getItem(path, true);
+    }
+
+    @Override
+    public ItemStack getItem(String path, boolean replaceKeys) {
+        String data = getString(path);
+        if(data != null && !data.isEmpty()){
+            ItemStack itemStack = ItemUtils.deserializeItemStack(data);
+            if (itemStack.hasItemMeta()) {
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                if (itemMeta.hasDisplayName()) {
+                    String displayName = itemMeta.getDisplayName();
+                    if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
+                        displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
+                    }
+                    itemMeta.setDisplayName(displayName);
+                }
+                if (itemMeta.hasLore()) {
+                    List<String> newLore = new ArrayList<>();
+                    for (String row : itemMeta.getLore()) {
+                        if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
+                            if (row.startsWith("[WU]")) {
+                                row = row.substring("[WU]".length());
+                                row = api.getLanguageAPI().getActiveLanguage().replaceKeys(row);
+                            } else if (row.startsWith("[WU!]")) {
+                                List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
+                                for (String newRow : rows) {
+                                    newLore.add(WolfyUtilities.translateColorCodes(newRow));
+                                }
+                                continue;
+                            }
+                        }
+                        newLore.add(row);
+                    }
+                    itemMeta.setLore(newLore);
+                }
+                itemStack.setItemMeta(itemMeta);
+            }
+            return itemStack;
+        }
+        return new ItemStack(Material.STONE);
+    }
+
+    protected boolean isPrimitiveWrapper(@Nullable Object input) {
+        return input instanceof Integer || input instanceof Boolean || input instanceof Character || input instanceof Byte || input instanceof Short || input instanceof Double || input instanceof Long || input instanceof Float;
+    }
+
 
     @Override
     public String getName() {

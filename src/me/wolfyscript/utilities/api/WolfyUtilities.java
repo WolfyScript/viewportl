@@ -46,6 +46,8 @@ public class WolfyUtilities implements Listener {
     private String CONSOLE_PREFIX;
     private String CHAT_PREFIX;
 
+    private String dataBasePrefix;
+
     private ConfigAPI configAPI;
     private InventoryAPI inventoryAPI;
     private LanguageAPI languageAPI;
@@ -58,6 +60,7 @@ public class WolfyUtilities implements Listener {
 
     public WolfyUtilities(Plugin plugin) {
         this.plugin = plugin;
+        this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT)+"_";
         Main.registerWolfyUtilities(this);
         clickDataMap = new HashMap<>();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -122,6 +125,14 @@ public class WolfyUtilities implements Listener {
 
     public String getCONSOLE_PREFIX() {
         return CONSOLE_PREFIX;
+    }
+
+    public String getDataBasePrefix() {
+        return dataBasePrefix;
+    }
+
+    public void setDataBasePrefix(String dataBasePrefix) {
+        this.dataBasePrefix = dataBasePrefix;
     }
 
     public boolean hasDebuggingMode() {

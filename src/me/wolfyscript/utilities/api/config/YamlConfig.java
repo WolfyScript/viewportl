@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.config;
 
+import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
@@ -231,6 +232,16 @@ public class YamlConfig implements Config{
         }
     }
 
+    @Override
+    public Object get(String path) {
+        return config.get(path);
+    }
+
+    @Override
+    public Object get(String path, Object def) {
+        return config.get(path, def);
+    }
+
     public FileConfiguration getConfig() {
         return config;
     }
@@ -272,15 +283,18 @@ public class YamlConfig implements Config{
         return config.getDouble(path);
     }
 
+    @Override
+    public List<?> getList(String path) {
+        return config.getList(path);
+    }
+
+    @NotNull
     public List<String> getStringList(String path) {
         return config.getStringList(path);
     }
 
-    public String[] getStringArray(String path) {
-        return (String[]) getStringList(path).toArray();
-    }
-
-    public void saveItem(String path, ItemStack itemStack) {
+    @Override
+    public void setItem(String path, ItemStack itemStack) {
         if (itemStack.hasItemMeta()) {
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta.hasDisplayName()) {
@@ -298,14 +312,29 @@ public class YamlConfig implements Config{
         set(path, itemStack.serialize());
     }
 
-    public void saveItem(String path, String name, ItemStack itemStack) {
-        saveItem(path + "." + name, itemStack);
+    @Override
+    public void setItem(String path, String name, ItemStack itemStack) {
+        setItem(path + "." + name, itemStack);
     }
 
+    @Deprecated
+    @Override
+    public void saveItem(String path, String name, ItemStack itemStack) {
+        setItem(path, name, itemStack);
+    }
+
+    @Deprecated
+    @Override
+    public void saveItem(String path, ItemStack item) {
+        setItem(path, item);
+    }
+
+    @Override
     public ItemStack getItem(String path) {
         return getItem(path, true);
     }
 
+    @Override
     public ItemStack getItem(String path, boolean replaceKeys) {
         if(getConfig().isSet(path)){
             Map<String, Object> data = getConfig().getConfigurationSection(path).getValues(false);
@@ -344,9 +373,5 @@ public class YamlConfig implements Config{
             return itemStack;
         }
         return new ItemStack(Material.STONE);
-    }
-
-    public File getConfigFile() {
-        return configFile;
     }
 }

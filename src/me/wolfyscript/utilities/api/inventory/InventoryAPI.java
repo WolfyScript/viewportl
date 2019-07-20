@@ -153,14 +153,22 @@ public class InventoryAPI implements Listener {
         mainmenu = key;
     }
 
-    public void openGui(Player player) {
+    public void openGui(Player player, String gui) {
         if (hasGuiHandler(player)) {
             getGuiHandler(player).testForNewPlayerInstance();
-            getGuiHandler(player).openLastInv();
+            if(getGuiHandler(player).getLastInv() != null){
+                getGuiHandler(player).openLastInv();
+            }else{
+                getGuiHandler(player).changeToInv(gui);
+            }
         } else {
             createGuiHandler(player);
-            getGuiHandler(player).changeToInv(mainmenu);
+            getGuiHandler(player).changeToInv(gui);
         }
+    }
+
+    public void openGui(Player player){
+        openGui(player, mainmenu);
     }
 
     public void removeGui(Player player) {
