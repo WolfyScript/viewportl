@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -16,13 +17,12 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
-public class JsonConfiguration extends FileConfiguration implements ConfigurationSection{
+public class JsonConfiguration extends FileConfiguration {
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private HashMap<String, Object> map = new HashMap<>();
     private String defJsonString;
 
-    private char pathSeparator = '#';
+    private char pathSeparator = '.';
 
     /*
         Creates a json YamlConfiguration file. The default is set inside of the jar at the specified path.
@@ -34,17 +34,26 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
      */
     public JsonConfiguration(ConfigAPI configAPI, String path, String name, String defPath, String defFileName, boolean overwrite) {
         super(configAPI, path, name, defPath, defFileName, Type.JSON);
-
+        this.map = new HashMap<>();
         if (!configFile.exists() || overwrite) {
             configFile.getParentFile().mkdirs();
-            loadDefaults(overwrite);
+            if (configFile.exists() && overwrite) {
+                try {
+                    PrintWriter pw = new PrintWriter(configFile);
+                    pw.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            loadDefaults();
+            reload();
             onFirstInit();
         }
-        load();
+        init();
     }
 
-    public JsonConfiguration(ConfigAPI configAPI, String path, String fileName) {
-        this(configAPI, path, fileName, "me/wolfyscript/utilities/api/config/defaults", "defJson", false);
+    public JsonConfiguration(ConfigAPI configAPI, String fileName) {
+        this(configAPI, "{}", fileName);
     }
 
     /*
@@ -55,24 +64,16 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
         overwrite - set if the existing file should be replaced by the defaults
      */
     public JsonConfiguration(ConfigAPI configAPI, String jsonString, String path, String name, boolean overwrite) {
-        super(configAPI, path, name, "","", Type.JSON);
-        this.configAPI = configAPI;
-        this.name = name;
-        this.configFile = new File(path + ".json");
-        if (!configFile.exists() || overwrite) {
-            loadDefaults(overwrite);
-            loadFromString(jsonString);
-            save();
-            onFirstInit();
-        }
+        this(configAPI, path, name, "", "", overwrite);
+        this.defJsonString = jsonString;
     }
 
     /*
         Creates a memory only json config!
      */
-    public JsonConfiguration(ConfigAPI configAPI, String jsonString) {
-        super(configAPI, "", "", "", "", Type.JSON);
-        this.configAPI = configAPI;
+    public JsonConfiguration(ConfigAPI configAPI, String jsonString, String name) {
+        super(configAPI, "", name, "", "", Type.JSON);
+        this.map = new HashMap<>();
         this.defJsonString = jsonString;
         loadFromString(jsonString);
     }
@@ -88,11 +89,11 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
 
     }
 
-    public boolean hasPathSeparator(){
+    public boolean hasPathSeparator() {
         return this.pathSeparator != 0;
     }
 
-    public void setPathSeparator(char pathSeparator){
+    public void setPathSeparator(char pathSeparator) {
         this.pathSeparator = pathSeparator;
     }
 
@@ -100,26 +101,36 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
         return pathSeparator;
     }
 
-    public void loadDefaults(boolean overwrite) {
-        if (defPath != null && defFileName != null) {
-            if (!configFile.exists() || overwrite) {
-                InputStream initialStream = plugin.getResource(defPath + "/" + defFileName + ".json");
-                if (initialStream != null) {
-                    try {
-                        byte[] buffer = new byte[initialStream.available()];
-                        initialStream.read(buffer);
-                        OutputStream outStream = new FileOutputStream(configFile);
-                        outStream.write(buffer);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+    public void loadDefaults() {
+        if (defPath != null && defFileName != null && !defPath.isEmpty() && !defFileName.isEmpty()) {
+            if (!configFile.exists()) {
+                try {
+                    configFile.createNewFile();
+                    InputStream ddlStream = plugin.getResource(defPath + "/" + defFileName + ".json");
+                    if(ddlStream != null){
+                        FileOutputStream fos = new FileOutputStream(configFile);
+                        byte[] buf = new byte[2048];
+                        int r;
+                        while ((r = ddlStream.read(buf)) != -1) {
+                            fos.write(buf, 0, r);
+                        }
+                        fos.flush();
+                        fos.close();
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                load();
+            }
+        } else {
+            try {
+                PrintWriter pw = new PrintWriter(configFile);
+                pw.write(defJsonString);
+                pw.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
         }
-    }
-
-    public void loadDefaults() {
-        loadDefaults(false);
     }
 
     public void loadFromString(String json) {
@@ -193,7 +204,32 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
     }
 
     public Set<String> getKeys() {
+        return getKeys(false);
+    }
+
+    @Override
+    public Set<String> getKeys(boolean deep) {
+        if (deep) {
+            Set<String> keys = parse(map, new HashSet<>());
+            return keys;
+        }
         return map.keySet();
+    }
+
+    public Set<String> parse(Map<String, Object> map, Set<String> out) {
+        for (String key : map.keySet()) {
+            String val = null;
+            if (get(key) instanceof Map) {
+                Map<String, Object> value = getValues(key);
+                parse(value, out);
+            } else {
+                val = key;
+            }
+            if (val != null) {
+                out.add(key + getPathSeparator() + val);
+            }
+        }
+        return out;
     }
 
     @Override
@@ -222,7 +258,7 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
         }
     */
     public Object get(String path, @Nullable Object def) {
-        String[] pathKeys = path.split(""+pathSeparator);
+        String[] pathKeys = path.split("" + pathSeparator);
         Map<String, Object> currentMap = map;
         for (int i = 0; i < pathKeys.length; i++) {
             Object object = currentMap.get(pathKeys[i]);
@@ -234,15 +270,15 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
                 return object;
             }
         }
-        if(def != null){
+        if (def != null) {
             return def;
         }
         return null;
     }
 
     @Override
-    public void set(String path, Object value){
-        String[] pathKeys = path.split(""+pathSeparator);
+    public void set(String path, Object value) {
+        String[] pathKeys = path.split("" + pathSeparator);
         Map<String, Object> currentMap = map;
         for (int i = 0; i < pathKeys.length; i++) {
             Object object = currentMap.get(pathKeys[i]);
@@ -250,7 +286,7 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
                 if (object instanceof Map) {
                     currentMap = (Map<String, Object>) object;
                 }
-            }else{
+            } else {
                 currentMap.put(pathKeys[i], value);
                 if (saveAfterValueSet) {
                     reload();
@@ -261,7 +297,7 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
 
     @Override
     public String getString(String path) {
-        if(get(path) != null){
+        if (get(path) != null) {
             return get(path).toString();
         }
         return "";
@@ -293,7 +329,7 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
     @Override
     public List<?> getList(String path) {
         Object val = this.get(path);
-        return (List)(val instanceof List ? val : null);
+        return (List) (val instanceof List ? val : null);
     }
 
     @Override
@@ -304,14 +340,14 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
         } else {
             List<String> result = new ArrayList();
             Iterator var5 = list.iterator();
-            while(true) {
+            while (true) {
                 Object object;
                 do {
                     if (!var5.hasNext()) {
                         return result;
                     }
                     object = var5.next();
-                } while(!(object instanceof String) && !this.isPrimitiveWrapper(object));
+                } while (!(object instanceof String) && !this.isPrimitiveWrapper(object));
 
                 result.add(String.valueOf(object));
             }
@@ -348,7 +384,7 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
     @Override
     public ItemStack getItem(String path, boolean replaceKeys) {
         String data = getString(path);
-        if(data != null && !data.isEmpty()){
+        if (data != null && !data.isEmpty()) {
             ItemStack itemStack = ItemUtils.deserializeItemStack(data);
             if (itemStack.hasItemMeta()) {
                 ItemMeta itemMeta = itemStack.getItemMeta();
@@ -361,7 +397,7 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
                 }
                 if (itemMeta.hasLore()) {
                     List<String> newLore = new ArrayList<>();
-                    if(replaceKeys){
+                    if (replaceKeys) {
                         for (String row : itemMeta.getLore()) {
                             if (api.getLanguageAPI().getActiveLanguage() != null) {
                                 if (row.startsWith("[WU]")) {
@@ -384,17 +420,12 @@ public class JsonConfiguration extends FileConfiguration implements Configuratio
         return new ItemStack(Material.STONE);
     }
 
+    @Override
+    public Map<String, Object> getValues(String path) {
+        return (Map<String, Object>) get(path, new HashMap<>());
+    }
+
     protected boolean isPrimitiveWrapper(@Nullable Object input) {
         return input instanceof Integer || input instanceof Boolean || input instanceof Character || input instanceof Byte || input instanceof Short || input instanceof Double || input instanceof Long || input instanceof Float;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public Type getType() {
-        return Type.JSON;
     }
 }

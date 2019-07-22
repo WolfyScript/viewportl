@@ -30,6 +30,14 @@ public abstract class FileConfiguration extends MemoryConfiguration{
 
     abstract public void reload();
 
+    abstract public void loadDefaults();
+
+    abstract public void onFirstInit();
+
+    abstract public void init();
+
+
+
     public File getConfigFile(){
         return configFile;
     }

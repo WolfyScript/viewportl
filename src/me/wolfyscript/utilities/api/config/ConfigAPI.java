@@ -56,8 +56,8 @@ public class ConfigAPI {
         }, 1200, intervalInMin * 60 * 20);
     }
 
-    public void registerConfig(YamlConfiguration yamlConfig){
-        configs.put(yamlConfig.getName(), yamlConfig);
+    public void registerConfig(Configuration configuration){
+        configs.put(configuration.getName(), configuration);
     }
 
     public Configuration getConfig(String name){

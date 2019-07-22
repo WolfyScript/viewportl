@@ -5,11 +5,11 @@ import org.bukkit.plugin.Plugin;
 
 public abstract class Configuration{
 
-    protected WolfyUtilities api;
-    protected ConfigAPI configAPI;
-    protected Plugin plugin;
+    public WolfyUtilities api;
+    public ConfigAPI configAPI;
+    public Plugin plugin;
     private Type type;
-    protected String name;
+    private String name;
 
     public Configuration(ConfigAPI configAPI, String name, Type type){
         this.api = configAPI.getApi();

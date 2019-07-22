@@ -43,7 +43,7 @@ public class Main extends JavaPlugin {
 
         mainConfig = new MainConfiguration(configAPI);
         configAPI.registerConfig(mainConfig);
-        languageAPI.setActiveLanguage(new Language("en_US", new LangConfiguration(configAPI, "me/wolfyscript/utilities/main/configs/lang", "en_US"), configAPI));
+        languageAPI.setActiveLanguage(new Language("en_US", new LangConfiguration(configAPI, "en_US", "me/wolfyscript/utilities/main/configs/lang", "en_US", "yml", false), configAPI));
 
         Metrics metrics = new Metrics(this);
 

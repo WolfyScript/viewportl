@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.config;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface ConfigurationSection {
@@ -44,4 +45,5 @@ public interface ConfigurationSection {
 
     ItemStack getItem(String path, boolean replaceKeys);
 
+    Map<String, Object> getValues(String path);
 }

@@ -12,12 +12,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileConfiguration implements ConfigurationSection{
+public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileConfiguration {
 
     private org.bukkit.configuration.file.YamlConfiguration config;
     private int intervalsToPass = 0;
@@ -142,7 +139,7 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         config.options().copyDefaults(true);
         Reader stream;
         try {
-            String fileName = defFileName.isEmpty() ? name : defFileName;
+            String fileName = defFileName.isEmpty() ? getName() : defFileName;
             InputStream inputStream = plugin.getResource(defPath.isEmpty() ? fileName : defPath + "/" + fileName + ".yml");
             if (inputStream != null) {
                 stream = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
@@ -215,22 +212,38 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         return config;
     }
 
-    public String getName() {
-        return name;
-    }
-
     @Override
     public Type getType() {
         return Type.YAML;
     }
 
     public Set<String> getKeys() {
-        return config.getKeys(true);
+        return getKeys(false);
+    }
+
+    @Override
+    public Set<String> getKeys(boolean deep) {
+        return config.getKeys(deep);
     }
 
     @Override
     public Map<String, Object> getMap() {
-        return config.getValues(true);
+        return config.getValues(false);
+    }
+
+    @Override
+    public boolean hasPathSeparator() {
+        return config.options().pathSeparator() != 0;
+    }
+
+    @Override
+    public void setPathSeparator(char pathSeparator) {
+        config.options().pathSeparator(pathSeparator);
+    }
+
+    @Override
+    public char getPathSeparator() {
+        return config.options().pathSeparator();
     }
 
     public Object getObject(String path) {
@@ -310,8 +323,8 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
 
     @Override
     public ItemStack getItem(String path, boolean replaceKeys) {
-        if(getConfig().isSet(path)){
-            Map<String, Object> data = getConfig().getConfigurationSection(path).getValues(false);
+        if(config.isSet(path)){
+            Map<String, Object> data = getValues(path);
             data.put("v", Bukkit.getUnsafe().getDataVersion());
             ItemStack itemStack = ItemStack.deserialize(data);
             if (itemStack.hasItemMeta()) {
@@ -347,5 +360,13 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
             return itemStack;
         }
         return new ItemStack(Material.STONE);
+    }
+
+    @Override
+    public Map<String, Object> getValues(String path) {
+        if(config.getConfigurationSection(path) != null){
+            return config.getConfigurationSection(path).getValues(false);
+        }
+        return new HashMap<>();
     }
 }

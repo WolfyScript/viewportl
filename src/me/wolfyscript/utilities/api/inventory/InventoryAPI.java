@@ -56,7 +56,7 @@ public class InventoryAPI implements Listener {
         String path = "items." + namespace + "." + key;
         itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$")) + WolfyUtilities.hideString("::" + key + "::" + Main.getMainConfig().getString("securityCode")));
         List<String> loreFirst = new ArrayList<>();
-        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getYamlConfig().contains(path + ".lore")) {
+        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getConfig().get(path + "#lore") != null) {
             for (String row : wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKey(path + ".lore")) {
                 if (!row.isEmpty()) {
                     loreFirst.add(row.equalsIgnoreCase("<empty>") ? "" : ChatColor.translateAlternateColorCodes('&', row));
@@ -67,7 +67,7 @@ public class InventoryAPI implements Listener {
             itemMeta.setLore(loreFirst);
 
         List<String> lore = new ArrayList<>();
-        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getYamlConfig().contains(path + ".help")) {
+        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".help") != null) {
             for (String row : wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKey(path + ".help")) {
                 if (!row.isEmpty()) {
                     lore.add(row.equalsIgnoreCase("<empty>") ? "" : ChatColor.translateAlternateColorCodes('&', row));

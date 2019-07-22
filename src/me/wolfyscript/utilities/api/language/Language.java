@@ -1,28 +1,26 @@
 package me.wolfyscript.utilities.api.language;
 
-import me.wolfyscript.utilities.api.config.YamlConfiguration;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
-import org.bukkit.configuration.file.FileConfiguration;
+import me.wolfyscript.utilities.api.config.Config;
+import me.wolfyscript.utilities.api.config.Configuration;
+import me.wolfyscript.utilities.api.config.MemoryConfiguration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Language {
 
     private String lang;
-    private YamlConfiguration yamlConfig;
+    private MemoryConfiguration config;
 
     private HashMap<String, Object> messages;
 
-    public Language(String lang, YamlConfiguration yamlConfig, ConfigAPI configAPI){
+    public Language(String lang, MemoryConfiguration config, ConfigAPI configAPI){
         this.lang = lang;
-        this.yamlConfig = yamlConfig;
+        this.config = config;
         this.messages = new HashMap<>();
-        configAPI.registerConfig(yamlConfig);
+        configAPI.registerConfig(config);
 
         reloadKeys();
     }
@@ -78,16 +76,18 @@ public class Language {
         return message;
     }
 
-    public FileConfiguration getYamlConfig(){
-        return yamlConfig.getConfig();
+    public MemoryConfiguration getConfig(){
+        return config;
     }
 
     public void reloadKeys(){
-        for(String key : this.yamlConfig.getKeys()){
-            if(this.yamlConfig.getObject(key) instanceof ArrayList){
-                messages.put(key, this.yamlConfig.getConfig().getStringList(key));
+        Set<String> keys = this.config.getKeys(true);
+
+        for(String key : keys){
+            if(this.config.get(key) instanceof ArrayList){
+                messages.put(key, this.config.getStringList(key));
             }else{
-                messages.put(key, this.yamlConfig.getString(key));
+                messages.put(key, this.config.getString(key));
             }
         }
     }
