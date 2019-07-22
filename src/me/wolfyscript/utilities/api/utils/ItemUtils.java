@@ -9,11 +9,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Base64;
 import java.util.Map;
 
 public class ItemUtils {
@@ -56,22 +58,25 @@ public class ItemUtils {
     }
 
     public static String serializeItemStack(ItemStack is) {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             BukkitObjectOutputStream bukkitOutputStream = new BukkitObjectOutputStream(outputStream)) {
+        try{
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream bukkitOutputStream = new BukkitObjectOutputStream(outputStream);
             bukkitOutputStream.writeObject(is);
-            return BaseEncoding.base64().encode(outputStream.toByteArray());
+            bukkitOutputStream.flush();
+            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException("Unable to serialize ItemStack!", e);
         }
     }
 
     public static ItemStack deserializeItemStack(String data){
-        return deserializeItemStack(BaseEncoding.base64().decode(data));
+        return deserializeItemStack(Base64.getDecoder().decode(data));
     }
 
     public static ItemStack deserializeItemStack(byte[] bytes) {
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-             BukkitObjectInputStream bukkitInputStream = new BukkitObjectInputStream(inputStream)) {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+            BukkitObjectInputStream bukkitInputStream = new BukkitObjectInputStream(inputStream);
             ItemStack decoded = (ItemStack) bukkitInputStream.readObject();
             return decoded;
         } catch (IOException | ClassNotFoundException e) {

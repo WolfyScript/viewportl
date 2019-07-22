@@ -50,7 +50,7 @@ public class JsonConfiguration extends FileConfiguration {
             load();
             reload();
             onFirstInit();
-        }else{
+        } else {
             load();
         }
         init();
@@ -111,7 +111,7 @@ public class JsonConfiguration extends FileConfiguration {
                 try {
                     configFile.createNewFile();
                     InputStream ddlStream = plugin.getResource(defPath + "/" + defFileName + ".json");
-                    if(ddlStream != null){
+                    if (ddlStream != null) {
                         FileOutputStream fos = new FileOutputStream(configFile);
                         byte[] buf = new byte[2048];
                         int r;
@@ -153,6 +153,9 @@ public class JsonConfiguration extends FileConfiguration {
         if (linkedToFile()) {
             try {
                 this.map = gson.fromJson(new FileReader(this.configFile), new HashMap<String, Object>().getClass());
+                if (map == null) {
+                    this.map = new HashMap<>();
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -278,8 +281,8 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public void set(String path, Object value) {
-        String[] pathKeys = path.split("" + pathSeparator);
-        Map<String, Object> currentMap = map;
+        String[] pathKeys = path.split(pathSeparator == '.' ? "\\." : pathSeparator + "");
+        Map<String, Object> currentMap = this.map;
         for (int i = 0; i < pathKeys.length; i++) {
             Object object = currentMap.get(pathKeys[i]);
             if (i != pathKeys.length - 1) {
@@ -336,7 +339,7 @@ public class JsonConfiguration extends FileConfiguration {
     public List<String> getStringList(String path) {
         List<?> list = this.getList(path);
         if (list == null) {
-            return new ArrayList(0);
+            return new ArrayList();
         } else {
             List<String> result = new ArrayList();
             Iterator var5 = list.iterator();
@@ -395,18 +398,16 @@ public class JsonConfiguration extends FileConfiguration {
                         itemMeta.setDisplayName(displayName);
                     }
                 }
-                if (itemMeta.hasLore()) {
+                if (itemMeta.hasLore() && replaceKeys) {
                     List<String> newLore = new ArrayList<>();
-                    if (replaceKeys) {
-                        for (String row : itemMeta.getLore()) {
-                            if (api.getLanguageAPI().getActiveLanguage() != null) {
-                                if (row.startsWith("[WU]")) {
-                                    newLore.add(api.getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
-                                } else if (row.startsWith("[WU!]")) {
-                                    List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
-                                    for (String newRow : rows) {
-                                        newLore.add(WolfyUtilities.translateColorCodes(newRow));
-                                    }
+                    for (String row : itemMeta.getLore()) {
+                        if (api.getLanguageAPI().getActiveLanguage() != null) {
+                            if (row.startsWith("[WU]")) {
+                                newLore.add(api.getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
+                            } else if (row.startsWith("[WU!]")) {
+                                List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
+                                for (String newRow : rows) {
+                                    newLore.add(WolfyUtilities.translateColorCodes(newRow));
                                 }
                             }
                         }
@@ -422,7 +423,7 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public Map<String, Object> getValues(String path) {
-        if(path.isEmpty()){
+        if (path.isEmpty()) {
             return getValues();
         }
         return (Map<String, Object>) get(path, new HashMap<>());
