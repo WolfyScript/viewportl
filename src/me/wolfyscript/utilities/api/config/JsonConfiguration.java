@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
 import org.apache.commons.io.IOUtils;
@@ -46,8 +47,11 @@ public class JsonConfiguration extends FileConfiguration {
                 }
             }
             loadDefaults();
+            load();
             reload();
             onFirstInit();
+        }else{
+            load();
         }
         init();
     }
@@ -120,7 +124,6 @@ public class JsonConfiguration extends FileConfiguration {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                load();
             }
         } else {
             try {
@@ -149,7 +152,7 @@ public class JsonConfiguration extends FileConfiguration {
     public void load() {
         if (linkedToFile()) {
             try {
-                map = gson.fromJson(new FileReader(this.configFile), new HashMap<String, Object>().getClass());
+                this.map = gson.fromJson(new FileReader(this.configFile), new HashMap<String, Object>().getClass());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -210,23 +213,23 @@ public class JsonConfiguration extends FileConfiguration {
     @Override
     public Set<String> getKeys(boolean deep) {
         if (deep) {
-            Set<String> keys = parse(map, new HashSet<>());
-            return keys;
+            return parse("", new HashSet<>());
         }
         return map.keySet();
     }
 
-    public Set<String> parse(Map<String, Object> map, Set<String> out) {
-        for (String key : map.keySet()) {
+    public Set<String> parse(String currentPath, Set<String> out) {
+        Map<String, Object> values = getValues(currentPath);
+        for (String key : values.keySet()) {
+            String path = (currentPath.isEmpty() ? "" : currentPath + getPathSeparator()) + key;
             String val = null;
-            if (get(key) instanceof Map) {
-                Map<String, Object> value = getValues(key);
-                parse(value, out);
+            if (get(path) instanceof Map) {
+                parse(path, out);
             } else {
-                val = key;
+                val = path;
             }
             if (val != null) {
-                out.add(key + getPathSeparator() + val);
+                out.add(val);
             }
         }
         return out;
@@ -258,7 +261,7 @@ public class JsonConfiguration extends FileConfiguration {
         }
     */
     public Object get(String path, @Nullable Object def) {
-        String[] pathKeys = path.split("" + pathSeparator);
+        String[] pathKeys = path.split(pathSeparator == '.' ? "\\." : pathSeparator + "");
         Map<String, Object> currentMap = map;
         for (int i = 0; i < pathKeys.length; i++) {
             Object object = currentMap.get(pathKeys[i]);
@@ -270,10 +273,7 @@ public class JsonConfiguration extends FileConfiguration {
                 return object;
             }
         }
-        if (def != null) {
-            return def;
-        }
-        return null;
+        return def;
     }
 
     @Override
@@ -422,6 +422,9 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public Map<String, Object> getValues(String path) {
+        if(path.isEmpty()){
+            return getValues();
+        }
         return (Map<String, Object>) get(path, new HashMap<>());
     }
 
