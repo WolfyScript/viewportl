@@ -25,6 +25,14 @@ public class Config extends FileConfiguration implements ConfigurationSection {
         configuration.save();
     }
 
+    public void save(boolean prettyPrinting){
+        if(configuration instanceof JsonConfiguration){
+            ((JsonConfiguration) configuration).save(prettyPrinting);
+        }else{
+            this.save();
+        }
+    }
+
     @Override
     public void load() {
         configuration.load();
@@ -33,6 +41,14 @@ public class Config extends FileConfiguration implements ConfigurationSection {
     @Override
     public void reload() {
         configuration.reload();
+    }
+
+    public void reload(boolean prettyPrinting){
+        if(configuration instanceof JsonConfiguration){
+            ((JsonConfiguration) configuration).reload(prettyPrinting);
+        }else{
+            this.reload();
+        }
     }
 
     @Override

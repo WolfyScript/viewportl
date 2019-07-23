@@ -188,6 +188,11 @@ public class JsonConfiguration extends FileConfiguration {
         load();
     }
 
+    public void reload(boolean prettyPrinting) {
+        save(prettyPrinting);
+        load();
+    }
+
     public void linkToFile(String path) {
         this.configFile = new File(path + ".json");
         if (!configFile.exists()) {
@@ -285,16 +290,18 @@ public class JsonConfiguration extends FileConfiguration {
         Map<String, Object> currentMap = this.map;
         for (int i = 0; i < pathKeys.length; i++) {
             Object object = currentMap.get(pathKeys[i]);
-            if (i != pathKeys.length - 1) {
-                if (object instanceof Map) {
-                    currentMap = (Map<String, Object>) object;
-                }
+            if (object == null && i != pathKeys.length - 1) {
+                currentMap.put(pathKeys[i], new HashMap<>());
+                currentMap = (Map<String, Object>) currentMap.get(pathKeys[i]);
+            } else if (object instanceof Map) {
+                currentMap = (Map<String, Object>) object;
             } else {
                 currentMap.put(pathKeys[i], value);
                 if (saveAfterValueSet) {
                     reload();
                 }
             }
+
         }
     }
 
