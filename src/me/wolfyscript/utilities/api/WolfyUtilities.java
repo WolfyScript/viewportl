@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
+import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.YamlConfiguration;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
@@ -136,8 +137,8 @@ public class WolfyUtilities implements Listener {
     }
 
     public boolean hasDebuggingMode() {
-        if(getConfigAPI().getConfig("main_config") instanceof YamlConfiguration){
-            return ((YamlConfiguration) getConfigAPI().getConfig("main_config")).getBoolean("debug");
+        if(getConfigAPI().getConfig("main_config") instanceof Config){
+            return ((Config) getConfigAPI().getConfig("main_config")).getBoolean("debug");
         }
         return false;
     }
@@ -388,19 +389,6 @@ public class WolfyUtilities implements Listener {
         }
         return sB.toString();
     }
-
-    public static boolean areSimilar(ItemStack item, ItemStack item2) {
-        if (item == null || item2 == null) {
-            return false;
-        } else if (item.equals(item2)) {
-            return true;
-        } else {
-            System.out.println("DUR: " + item.getDurability() + " <-> " + item2.getDurability());
-
-            return item.getType().equals(item2.getType()) && item.getDurability() == item2.getDurability() && item.hasItemMeta() == item2.hasItemMeta() && (!item.hasItemMeta() || Bukkit.getItemFactory().equals(item.getItemMeta(), item2.getItemMeta()));
-        }
-    }
-
 
     public static ItemStack getCustomHead(String value) {
         if (value.startsWith("http://textures")) {
