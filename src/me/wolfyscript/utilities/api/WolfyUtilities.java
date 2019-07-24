@@ -67,6 +67,14 @@ public class WolfyUtilities implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
+    public static String getVersion(){
+        return Main.getInstance().getDescription().getVersion();
+    }
+
+    public static int getVersionNumber(){
+        return Integer.parseInt(getVersion().replace("\\.", ""));
+    }
+
     public LanguageAPI getLanguageAPI() {
         if (!hasLanguageAPI()) {
             languageAPI = new LanguageAPI(this.plugin);
