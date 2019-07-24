@@ -342,6 +342,7 @@ public class JsonConfiguration extends FileConfiguration {
         return (List) (val instanceof List ? val : null);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getStringList(String path) {
         List<?> list = this.getList(path);
