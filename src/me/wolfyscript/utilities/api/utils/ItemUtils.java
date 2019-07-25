@@ -80,7 +80,7 @@ public class ItemUtils {
             ItemStack decoded = (ItemStack) bukkitInputStream.readObject();
             return decoded;
         } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Unable to deserialize ItemStack!", e);
+            return null;
         }
     }
 }

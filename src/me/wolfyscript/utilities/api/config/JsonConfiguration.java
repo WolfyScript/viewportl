@@ -397,34 +397,37 @@ public class JsonConfiguration extends FileConfiguration {
         String data = getString(path);
         if (data != null && !data.isEmpty()) {
             ItemStack itemStack = ItemUtils.deserializeItemStack(data);
-            if (itemStack.hasItemMeta()) {
-                ItemMeta itemMeta = itemStack.getItemMeta();
-                if (itemMeta.hasDisplayName()) {
-                    String displayName = itemMeta.getDisplayName();
-                    if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
-                        displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
-                        itemMeta.setDisplayName(displayName);
+            if(itemStack != null){
+                if (itemStack.hasItemMeta()) {
+                    ItemMeta itemMeta = itemStack.getItemMeta();
+                    if (itemMeta.hasDisplayName()) {
+                        String displayName = itemMeta.getDisplayName();
+                        if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
+                            displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
+                            itemMeta.setDisplayName(displayName);
+                        }
                     }
-                }
-                if (itemMeta.hasLore() && replaceKeys) {
-                    List<String> newLore = new ArrayList<>();
-                    for (String row : itemMeta.getLore()) {
-                        if (api.getLanguageAPI().getActiveLanguage() != null) {
-                            if (row.startsWith("[WU]")) {
-                                newLore.add(api.getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
-                            } else if (row.startsWith("[WU!]")) {
-                                List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
-                                for (String newRow : rows) {
-                                    newLore.add(WolfyUtilities.translateColorCodes(newRow));
+                    if (itemMeta.hasLore() && replaceKeys) {
+                        List<String> newLore = new ArrayList<>();
+                        for (String row : itemMeta.getLore()) {
+                            if (api.getLanguageAPI().getActiveLanguage() != null) {
+                                if (row.startsWith("[WU]")) {
+                                    newLore.add(api.getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
+                                } else if (row.startsWith("[WU!]")) {
+                                    List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
+                                    for (String newRow : rows) {
+                                        newLore.add(WolfyUtilities.translateColorCodes(newRow));
+                                    }
                                 }
                             }
                         }
+                        itemMeta.setLore(newLore);
                     }
-                    itemMeta.setLore(newLore);
+                    itemStack.setItemMeta(itemMeta);
                 }
-                itemStack.setItemMeta(itemMeta);
+                return itemStack;
             }
-            return itemStack;
+            return null;
         }
         return new ItemStack(Material.STONE);
     }
