@@ -397,28 +397,28 @@ public class JsonConfiguration extends FileConfiguration {
         String data = getString(path);
         if (data != null && !data.isEmpty()) {
             ItemStack itemStack = ItemUtils.deserializeItemStack(data);
-            if(itemStack != null){
+            if (itemStack != null) {
                 if (itemStack.hasItemMeta()) {
                     ItemMeta itemMeta = itemStack.getItemMeta();
                     if (itemMeta.hasDisplayName()) {
                         String displayName = itemMeta.getDisplayName();
                         if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
                             displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
-                            itemMeta.setDisplayName(displayName);
                         }
+                        itemMeta.setDisplayName(displayName);
                     }
-                    if (itemMeta.hasLore() && replaceKeys) {
+                    if (itemMeta.hasLore() && replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
                         List<String> newLore = new ArrayList<>();
                         for (String row : itemMeta.getLore()) {
-                            if (api.getLanguageAPI().getActiveLanguage() != null) {
-                                if (row.startsWith("[WU]")) {
-                                    newLore.add(api.getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
-                                } else if (row.startsWith("[WU!]")) {
-                                    List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
-                                    for (String newRow : rows) {
-                                        newLore.add(WolfyUtilities.translateColorCodes(newRow));
-                                    }
+                            if (row.startsWith("[WU]")) {
+                                newLore.add(api.getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
+                            } else if (row.startsWith("[WU!]")) {
+                                List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
+                                for (String newRow : rows) {
+                                    newLore.add(WolfyUtilities.translateColorCodes(newRow));
                                 }
+                            }else{
+                                newLore.add(row);
                             }
                         }
                         itemMeta.setLore(newLore);
