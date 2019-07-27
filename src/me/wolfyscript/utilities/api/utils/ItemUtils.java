@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.utils;
 
 import com.google.common.io.BaseEncoding;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -9,14 +10,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Base64;
-import java.util.Map;
+import java.util.*;
 
 public class ItemUtils {
 
@@ -82,5 +86,100 @@ public class ItemUtils {
         } catch (IOException | ClassNotFoundException e) {
             return null;
         }
+    }
+
+    public static ItemStack setToCCSettings(ItemStack itemStack, String key, Object value){
+        JSONObject obj = getCCSettings(itemStack);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
+        if(obj == null){
+            obj = new JSONObject(new HashMap<String, Object>());
+            obj.put(key, value);
+            lore.add(WolfyUtilities.hideString("itemSettings"+obj.toString()));
+        }else{
+            System.out.println("Set: "+key+" -> "+value);
+            obj.put(key, value);
+            for(int i = 0; i < lore.size(); i++){
+                String line = WolfyUtilities.unhideString(lore.get(i));
+                if(line.startsWith("itemSettings")){
+                    lore.remove(i);
+                }
+            }
+            lore.add(WolfyUtilities.hideString("itemSettings"+obj.toString()));
+        }
+        itemMeta.setLore(lore);
+        itemStack.setItemMeta(itemMeta);
+        return itemStack;
+    }
+
+    @Nullable
+    public static Object getFromCCSettings(ItemStack itemStack, String key){
+        if(hasCCSettings(itemStack)){
+            return getCCSettings(itemStack).get(key);
+        }
+        return null;
+    }
+
+    public static boolean isInCCSettings(ItemStack itemStack, String key){
+        return getFromCCSettings(itemStack, key) != null;
+    }
+
+    public static boolean hasCCSettings(ItemStack itemStack){
+        return getCCSettings(itemStack) != null;
+    }
+
+    public static JSONObject getCCSettings(ItemStack itemStack){
+        if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasLore()) {
+            List<String> lore = itemStack.getItemMeta().getLore();
+            for (String line : lore) {
+                String cleared = WolfyUtilities.unhideString(line);
+                if (cleared.startsWith("itemSettings")) {
+                    try {
+                        JSONObject obj = (JSONObject) new JSONParser().parse(cleared.replace("itemSettings", ""));
+                        return obj;
+                    } catch (ParseException e) {
+                        Main.getMainUtil().sendConsoleWarning("Error getting JSONObject from String:");
+                        Main.getMainUtil().sendConsoleWarning("" + cleared);
+                        return null;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    //cc_settings{"damage":<damage>,"durability":<total_durability>}
+
+    public static boolean hasCustomDurability(ItemStack itemStack) {
+        JSONObject obj = getCCSettings(itemStack);
+        if (obj != null) {
+            return ((Set<String>) obj.keySet()).contains("durability");
+        }
+        return false;
+    }
+
+    public static ItemStack setCustomDurability(ItemStack itemStack, long durability) {
+        if(isInCCSettings(itemStack, "damage")){
+            setToCCSettings(itemStack, "damage", 0);
+        }
+        return setToCCSettings(itemStack, "durability", durability);
+    }
+
+    public static long getCustomDurability(ItemStack itemStack){
+        if(getFromCCSettings(itemStack, "durability") != null){
+            return (long) getFromCCSettings(itemStack, "durability");
+        }
+        return 0;
+    }
+
+    public static ItemStack setDamage(ItemStack itemStack, long damage){
+        return setToCCSettings(itemStack, "damage", damage);
+    }
+
+    public static long getDamage(ItemStack itemStack){
+        if(getFromCCSettings(itemStack, "damage") != null){
+            return (long) getFromCCSettings(itemStack, "damage");
+        }
+        return 0;
     }
 }
