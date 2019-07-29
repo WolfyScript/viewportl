@@ -64,7 +64,7 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         name - The name of the file and the name of the default file.
      */
     public YamlConfiguration(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name) {
-        this(configAPI, defaultPath, defaultName, savePath, name, false);
+        this(configAPI, savePath, name, defaultPath, defaultName, false);
     }
 
     public YamlConfiguration(ConfigAPI configAPI, String defaultPath, String savePath, String name) {

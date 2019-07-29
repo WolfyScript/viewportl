@@ -66,10 +66,7 @@ public class GuiHandler implements Listener {
 
     public GuiWindow getCurrentInv() {
         if (!pageHistory.isEmpty()) {
-            if(pageHistory.size() > 1){
-                return getApi().getInventoryAPI().getGuiWindow(pageHistory.get(pageHistory.size() - 1));
-            }
-            return getApi().getInventoryAPI().getGuiWindow(pageHistory.get(0));
+            return getApi().getInventoryAPI().getGuiWindow(pageHistory.get(pageHistory.size() - 1));
         }
         return null;
     }
@@ -112,7 +109,12 @@ public class GuiHandler implements Listener {
 
     public void openLastInv() {
         if(!pageHistory.isEmpty()){
-            String inv = pageHistory.get((pageHistory.size() - 2) > -1 ? pageHistory.size() - 2 : 0);
+            String inv;
+            if(getLastInv() != null){
+                inv = getLastInv().getNamespace();
+            }else{
+                inv = pageHistory.get(0);
+            }
             pageHistory.remove(pageHistory.size() - 1);
             changeToInv(inv);
         }

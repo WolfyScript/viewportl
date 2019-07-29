@@ -1,8 +1,8 @@
 package me.wolfyscript.utilities.api.inventory;
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.utils.chat.ClickData;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
@@ -151,7 +151,7 @@ public class GuiWindow implements Listener {
     }
 
     protected String getInventoryName(){
-        return ChatColor.translateAlternateColorCodes('&', inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories."+namespace+"$"));
+        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories."+namespace+"$"));
     }
 
     public Inventory getInventory(GuiHandler guiHandler) {

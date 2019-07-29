@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.inventory;
 
+import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
@@ -12,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -154,20 +156,15 @@ public class InventoryAPI implements Listener {
     }
 
     public void openGui(Player player, String gui) {
-        if (hasGuiHandler(player)) {
-            getGuiHandler(player).testForNewPlayerInstance();
-            if(getGuiHandler(player).getLastInv() != null){
-                getGuiHandler(player).openLastInv();
-            }else{
-                getGuiHandler(player).changeToInv(gui);
-            }
+        getGuiHandler(player).testForNewPlayerInstance();
+        if (getGuiHandler(player).getLastInv() != null) {
+            getGuiHandler(player).openLastInv();
         } else {
-            createGuiHandler(player);
             getGuiHandler(player).changeToInv(gui);
         }
     }
 
-    public void openGui(Player player){
+    public void openGui(Player player) {
         openGui(player, mainmenu);
     }
 
@@ -177,7 +174,11 @@ public class InventoryAPI implements Listener {
         }
     }
 
+    @NotNull
     public GuiHandler getGuiHandler(Player player) {
+        if (!hasGuiHandler(player)) {
+            createGuiHandler(player);
+        }
         return guiHandlers.get(player.getUniqueId().toString());
     }
 

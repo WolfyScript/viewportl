@@ -7,7 +7,9 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.NumberConversions;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.json.simple.JSONObject;
@@ -97,7 +99,6 @@ public class ItemUtils {
             obj.put(key, value);
             lore.add(WolfyUtilities.hideString("itemSettings"+obj.toString()));
         }else{
-            System.out.println("Set: "+key+" -> "+value);
             obj.put(key, value);
             for(int i = 0; i < lore.size(); i++){
                 String line = WolfyUtilities.unhideString(lore.get(i));
@@ -148,7 +149,11 @@ public class ItemUtils {
         return null;
     }
 
-    //cc_settings{"damage":<damage>,"durability":<total_durability>}
+    /*
+        Custom Item Damage!
+     */
+
+    //itemSettings{"damage":<damage>,"durability":<total_durability>}
 
     public static boolean hasCustomDurability(ItemStack itemStack) {
         JSONObject obj = getCCSettings(itemStack);
@@ -158,6 +163,10 @@ public class ItemUtils {
         return false;
     }
 
+    /*
+    Sets the custom durability to the ItemStack and adds damage of 0 if it not exists.
+    Returns the ItemStack with the new lore.
+     */
     public static ItemStack setCustomDurability(ItemStack itemStack, long durability) {
         if(isInCCSettings(itemStack, "damage")){
             setToCCSettings(itemStack, "damage", 0);
@@ -165,20 +174,25 @@ public class ItemUtils {
         return setToCCSettings(itemStack, "durability", durability);
     }
 
-    public static long getCustomDurability(ItemStack itemStack){
+    public static int getCustomDurability(ItemStack itemStack){
         if(getFromCCSettings(itemStack, "durability") != null){
-            return (long) getFromCCSettings(itemStack, "durability");
+            return NumberConversions.toInt(getFromCCSettings(itemStack, "durability"));
         }
         return 0;
     }
 
-    public static ItemStack setDamage(ItemStack itemStack, long damage){
+    public static ItemStack setDamage(ItemStack itemStack, int damage){
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if(itemMeta instanceof Damageable){
+            ((Damageable) itemMeta).setDamage((int) (itemStack.getType().getMaxDurability() * ((double) damage / (double) getCustomDurability(itemStack))));
+        }
+        itemStack.setItemMeta(itemMeta);
         return setToCCSettings(itemStack, "damage", damage);
     }
 
-    public static long getDamage(ItemStack itemStack){
+    public static int getDamage(ItemStack itemStack){
         if(getFromCCSettings(itemStack, "damage") != null){
-            return (long) getFromCCSettings(itemStack, "damage");
+            return NumberConversions.toInt(getFromCCSettings(itemStack, "damage"));
         }
         return 0;
     }
