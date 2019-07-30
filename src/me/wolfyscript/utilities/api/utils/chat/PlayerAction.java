@@ -13,12 +13,14 @@ public class PlayerAction {
 
     private TextComponent message;
     private ClickAction clickAction;
+    private boolean discard;
 
     public PlayerAction(WolfyUtilities api, Player player, ClickData clickData){
         this.uuid = player.getUniqueId();
         this.api = api;
         this.message = new TextComponent(WolfyUtilities.translateColorCodes(api.getLanguageAPI().getActiveLanguage().replaceKeys(clickData.getMessage())));
         this.clickAction = clickData.getClickAction();
+        this.discard = clickData.isDiscard();
     }
 
     public void run(Player player){
@@ -57,5 +59,9 @@ public class PlayerAction {
 
     public void setClickAction(ClickAction clickAction) {
         this.clickAction = clickAction;
+    }
+
+    public boolean isDiscard() {
+        return discard;
     }
 }

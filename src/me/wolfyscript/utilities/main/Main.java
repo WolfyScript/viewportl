@@ -1,13 +1,15 @@
 package me.wolfyscript.utilities.main;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.config.templates.LangConfig;
+import me.wolfyscript.utilities.api.config.templates.LangConfiguration;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.Legacy;
+import me.wolfyscript.utilities.main.listeners.ItemListener;
+import me.wolfyscript.utilities.main.metrics.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,6 +25,7 @@ public class Main extends JavaPlugin {
     private static List<WolfyUtilities> wolfyUtilitiesList = new ArrayList<>();
 
     private static WolfyUtilities mainUtil;
+    private static MainConfiguration mainConfig;
 
     public void onLoad() {
         instance = this;
@@ -40,8 +43,14 @@ public class Main extends JavaPlugin {
         LanguageAPI languageAPI = mainUtil.getLanguageAPI();
         InventoryAPI inventoryAPI = mainUtil.getInventoryAPI();
 
-        configAPI.registerConfig(new MainConfig(configAPI));
-        languageAPI.setActiveLanguage(new Language("en_US", new LangConfig(configAPI, "me/wolfyscript/utilities/main/configs/lang", "en_US"), configAPI));
+        mainConfig = new MainConfiguration(configAPI);
+        configAPI.registerConfig(mainConfig);
+        languageAPI.setActiveLanguage(new Language("en_US", new LangConfiguration(configAPI, "en_US", "me/wolfyscript/utilities/main/configs/lang", "en_US", "yml", false), configAPI));
+
+        Bukkit.getPluginManager().registerEvents(new ItemListener(), this);
+
+        Metrics metrics = new Metrics(this);
+
     }
 
     public void onDisable() {
@@ -79,5 +88,9 @@ public class Main extends JavaPlugin {
             }
         }
         return true;
+    }
+
+    public static MainConfiguration getMainConfig() {
+        return mainConfig;
     }
 }

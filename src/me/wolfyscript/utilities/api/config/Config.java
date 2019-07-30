@@ -1,315 +1,185 @@
 package me.wolfyscript.utilities.api.config;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.main.Main;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class Config {
+public class Config extends FileConfiguration implements ConfigurationSection {
 
-    private File configFile;
-    private YamlConfiguration config;
-    protected ConfigAPI configAPI;
-    private String name;
-    private String defaultPath;
-    private String defaultName;
-    private Plugin plugin;
-    private boolean saveAfterSet;
-    private int intervalsToPass = 0;
-    private int passedIntervals;
-    private boolean firstInit = false;
+    public FileConfiguration configuration;
 
-
-    /*
-        plugin - your plugin
-        defaultPath - the path to the file inside the jar, which contains the default values!
-        defaultName - the name of the default file!
-        savePath - The path where the file will be save to!
-        name - The name of the file and the name of the default file.
-        override - if true, the config will be overridden with the default values (onFirstInit() will run on every override!)
-     */
-    public Config(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name, boolean override) {
-        this.name = name;
-        this.saveAfterSet = true;
-        this.plugin = configAPI.getPlugin();
-        this.defaultPath = defaultPath;
-        this.defaultName = defaultName;
-        this.configAPI = configAPI;
-        configFile = new File(savePath, name + ".yml");
-        if(override && configFile.exists()){
-            if(!configFile.delete()){
-                Main.getMainUtil().sendConsoleMessage("Error while trying to override Config!");
-                Main.getMainUtil().sendConsoleMessage("File: "+configFile.getPath());
-            }
-        }
-        if(!configFile.exists()){
-            firstInit = true;
-            try {
-                configFile.getParentFile().mkdirs();
-                configFile.createNewFile();
-            } catch (IOException e) {
-                Main.getMainUtil().sendConsoleMessage("Error creating file: "+configFile.getPath());
-                Main.getMainUtil().sendConsoleMessage("     cause: "+e.getMessage());
-            }
-        }
-        config = YamlConfiguration.loadConfiguration(configFile);
-        if(firstInit){
-            loadDefaults();
-            onFirstInit();
-            firstInit = false;
-        }
-        init();
-    }
-
-
-    /*
-        plugin - your plugin
-        defaultPath - the path to the file inside the jar, which contains the default values!
-        defaultName - the name of the default file!
-        savePath - The path where the file will be save to!
-        name - The name of the file and the name of the default file.
-     */
-    public Config(ConfigAPI configAPI, String defaultPath, String defaultName, String savePath, String name) {
-        this(configAPI, defaultPath, defaultName, savePath, name, false);
-    }
-
-    public Config(ConfigAPI configAPI, String defaultPath, String savePath, String name) {
-        this(configAPI, defaultPath, name, savePath, name);
-    }
-
-    public Config(ConfigAPI configAPI, String defaultPath, String savePath, String name, boolean override) {
-        this(configAPI, defaultPath, name, savePath, name, override);
-    }
-
-    /*
-        defaultPath is not used here!
-        Use this if your default file is in the source folder and not in another package!
-     */
-    public Config(ConfigAPI configAPI, String savePath, String name) {
-        this(configAPI, "", savePath, name);
-    }
-
-    /*
-        defaultPath is not used here!
-        Use this if your default file is in the source folder and not in another package!
-     */
-    public Config(ConfigAPI configAPI, String savePath, String name, boolean override) {
-        this(configAPI, "", savePath, name, override);
-    }
-
-    /*
-        savePath is not used here!
-        Use this one if your file should be saved in the default Plugin directory!
-     */
-    public Config(ConfigAPI configAPI, String name) {
-        this(configAPI, configAPI.getPlugin().getDataFolder().getPath(), name);
-    }
-
-    /*
-        savePath is not used here!
-        Use this one if your file should be saved in the default Plugin directory!
-     */
-    public Config(ConfigAPI configAPI, String name, boolean override) {
-        this(configAPI, configAPI.getPlugin().getDataFolder().getPath(), name, override);
-    }
-    /*
-        This method is called when the file does not exists.
-        Can be overridden.
-     */
-    public void onFirstInit(){
-    }
-
-    /*
-        This method is called every time the config is initiated
-        Can be overridden.
-     */
-    public void init(){
-    }
-
-    public boolean isFirstInit() {
-        return firstInit;
-    }
-
-    /*
-        Auto-save intervals this Config has to pass to be saved.
-    */
-    public void setIntervalsToPass(int intervalsToPass) {
-        this.intervalsToPass = intervalsToPass;
-    }
-
-    /*
-        Set if the config should be saved and reloaded after a new value was set.
-     */
-    public void saveAfterSet(boolean enable){
-        this.saveAfterSet = enable;
-    }
-
-    /*
-        loads the defaults out of the path you set on init!
-     */
-    public void loadDefaults() {
-        config.options().copyDefaults(true);
-        Reader stream;
-        try {
-            String fileName = defaultName.isEmpty() ? name : defaultName;
-            if(plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath +"/"+fileName+".yml") != null){
-                stream = new InputStreamReader(plugin.getResource(defaultPath.isEmpty() ? fileName : defaultPath +"/"+fileName+".yml"), StandardCharsets.UTF_8);
-                YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(stream);
-                config.setDefaults(defConfig);
-                stream.close();
-            }
-        } catch (IOException e) {
-            //EMPTY
-        }
-        reload();
-    }
-
-    /*
-        Saves and loads the config after it!
-     */
-    public void reload() {
-        save();
-        load();
-    }
-
-    void reloadAuto(){
-        if(intervalsToPass > 0){
-            if(passedIntervals < intervalsToPass){
-                passedIntervals++;
-            }else{
-                reload();
-            }
+    public Config(ConfigAPI configAPI, String path, String name, String defPath, String defFileName, String fileType, boolean overwrite) {
+        super(configAPI, path, name, defPath, defFileName, fileType.equalsIgnoreCase("json") ? Type.JSON : Type.YAML);
+        if(getType().equals(Configuration.Type.JSON)){
+            this.configuration = new JsonConfiguration(configAPI, path, name, defPath, defFileName, overwrite);
         }else{
-            reload();
+            this.configuration = new YamlConfiguration(configAPI, path, name, defPath, defFileName, overwrite);
         }
+        setPathSeparator('.');
     }
 
-    /*
-        Saves the config
-     */
+    @Override
     public void save() {
-        try {
-            config.save(configFile);
-        } catch (IOException e) {
-            e.printStackTrace();
+        configuration.save();
+    }
+
+    public void save(boolean prettyPrinting){
+        if(configuration instanceof JsonConfiguration){
+            ((JsonConfiguration) configuration).save(prettyPrinting);
+        }else{
+            this.save();
         }
     }
 
-    public void load(){
-        try {
-            config.load(configFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
+    @Override
+    public void load() {
+        configuration.load();
+    }
+
+    @Override
+    public void reload() {
+        configuration.reload();
+    }
+
+    public void reload(boolean prettyPrinting){
+        if(configuration instanceof JsonConfiguration){
+            ((JsonConfiguration) configuration).reload(prettyPrinting);
+        }else{
+            this.reload();
         }
     }
 
-    /*
-        Sets a value to the path
-     */
-    public void set(String path, Object object){
-        config.set(path, object);
-        if(saveAfterSet){
-            reload();
-        }
+    @Override
+    public void loadDefaults() {
+        configuration.loadDefaults();
     }
 
-    public FileConfiguration getConfig() {
-        return config;
+    @Override
+    public void onFirstInit() {
+        configuration.onFirstInit();
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public void init() {
+        configuration.init();
     }
 
+    @Override
     public Set<String> getKeys() {
-        return config.getKeys(true);
+        return configuration.getKeys();
     }
 
-    public Object getObject(String path) {
-        return config.get(path);
+    @Override
+    public Set<String> getKeys(boolean deep) {
+        return configuration.getKeys(deep);
     }
 
+    @Override
+    public Map<String, Object> getMap() {
+        return configuration.getMap();
+    }
+
+    @Override
+    public boolean hasPathSeparator() {
+        return configuration.hasPathSeparator();
+    }
+
+    @Override
+    public void setPathSeparator(char pathSeparator) {
+        configuration.setPathSeparator(pathSeparator);
+    }
+
+    @Override
+    public char getPathSeparator() {
+        return configuration.getPathSeparator();
+    }
+
+    @Override
+    public void set(String path, Object value) {
+        configuration.set(path, value);
+    }
+
+    @Override
+    public Object get(String path) {
+        return configuration.get(path);
+    }
+
+    @Override
+    public Object get(String path, Object def) {
+        return configuration.get(path, def);
+    }
+
+    @Override
     public String getString(String path) {
-        return config.getString(path);
+        return configuration.getString(path);
     }
 
+    @Override
     public int getInt(String path) {
-        return config.getInt(path);
+        return configuration.getInt(path);
     }
 
+    @Override
     public boolean getBoolean(String path) {
-        return config.getBoolean(path);
+        return configuration.getBoolean(path);
     }
 
-    public long getLong(String path) {
-        return config.getLong(path);
-    }
-
+    @Override
     public double getDouble(String path) {
-        return config.getDouble(path);
+        return configuration.getDouble(path);
     }
 
-    public List<String> getStringList(String path){
-        return config.getStringList(path);
+    @Override
+    public long getLong(String path) {
+        return configuration.getLong(path);
     }
 
-    public String[] getStringArray(String path){
-        return (String[]) getStringList(path).toArray();
+    @Override
+    public List<?> getList(String path) {
+        return configuration.getList(path);
     }
 
-    public void saveItem(String path, ItemStack itemStack){
-        if(itemStack.hasItemMeta()){
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            if(itemMeta.hasDisplayName()){
-                itemMeta.setDisplayName(itemMeta.getDisplayName().replace('§','&'));
-            }
-            if(itemMeta.hasLore()){
-                List<String> newLore = new ArrayList<>();
-                for(String row : itemMeta.getLore()){
-                    newLore.add(row.replace('§','&'));
-                }
-                itemMeta.setLore(newLore);
-            }
-            itemStack.setItemMeta(itemMeta);
-        }
-        set(path, itemStack.serialize());
+    @Override
+    public List<String> getStringList(String path) {
+        return configuration.getStringList(path);
     }
 
-    public void saveItem(String path, String name, ItemStack itemStack){
-        saveItem(path+"."+name, itemStack);
+    @Override
+    public void setItem(String path, ItemStack itemStack) {
+        configuration.setItem(path, itemStack);
     }
 
-    public ItemStack getItem(String path){
-        ItemStack itemStack = ItemStack.deserialize(getConfig().getConfigurationSection(path).getValues(false));
-        if(itemStack.hasItemMeta()){
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(itemMeta.getDisplayName()));
-            if(itemMeta.hasLore()){
-                List<String> newLore = new ArrayList<>();
-                for(String row : itemMeta.getLore()){
-                    newLore.add(WolfyUtilities.translateColorCodes(row));
-                }
-                itemMeta.setLore(newLore);
-            }
-            itemStack.setItemMeta(itemMeta);
-        }
-        return itemStack;
+    @Override
+    public void setItem(String path, String name, ItemStack itemStack) {
+        configuration.setItem(path, name, itemStack);
     }
 
-    public File getConfigFile() {
-        return configFile;
+    @Deprecated
+    @Override
+    public void saveItem(String path, ItemStack item) {
+        configuration.saveItem(path, item);
+    }
+
+    @Deprecated
+    @Override
+    public void saveItem(String path, String name, ItemStack itemStack) {
+        configuration.saveItem(path, name, itemStack);
+    }
+
+    @Override
+    public ItemStack getItem(String path) {
+        return configuration.getItem(path);
+    }
+
+    @Override
+    public ItemStack getItem(String path, boolean replaceKeys) {
+        return configuration.getItem(path, replaceKeys);
+    }
+
+    @Override
+    public Map<String, Object> getValues(String path) {
+        return configuration.getValues(path);
     }
 }

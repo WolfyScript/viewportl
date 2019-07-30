@@ -2,17 +2,22 @@ package me.wolfyscript.utilities.api;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.base64.Base64;
+import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.Legacy;
 import me.wolfyscript.utilities.api.utils.Reflection;
+import me.wolfyscript.utilities.api.utils.chat.ChatEvent;
 import me.wolfyscript.utilities.api.utils.chat.ClickData;
+import me.wolfyscript.utilities.api.utils.chat.HoverEvent;
 import me.wolfyscript.utilities.api.utils.chat.PlayerAction;
 import me.wolfyscript.utilities.main.Main;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.codec.binary.Base64;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -29,6 +34,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +45,8 @@ public class WolfyUtilities implements Listener {
 
     private String CONSOLE_PREFIX;
     private String CHAT_PREFIX;
+
+    private String dataBasePrefix;
 
     private ConfigAPI configAPI;
     private InventoryAPI inventoryAPI;
@@ -52,9 +60,18 @@ public class WolfyUtilities implements Listener {
 
     public WolfyUtilities(Plugin plugin) {
         this.plugin = plugin;
+        this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT)+"_";
         Main.registerWolfyUtilities(this);
         clickDataMap = new HashMap<>();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    public static String getVersion(){
+        return Main.getInstance().getDescription().getVersion();
+    }
+
+    public static int getVersionNumber(){
+        return Integer.parseInt(getVersion().replace("\\.", ""));
     }
 
     public LanguageAPI getLanguageAPI() {
@@ -70,7 +87,7 @@ public class WolfyUtilities implements Listener {
 
     public ConfigAPI getConfigAPI() {
         if (!hasConfigAPI()) {
-            configAPI = new ConfigAPI(this.plugin);
+            configAPI = new ConfigAPI(this);
         }
         return configAPI;
     }
@@ -118,8 +135,19 @@ public class WolfyUtilities implements Listener {
         return CONSOLE_PREFIX;
     }
 
+    public String getDataBasePrefix() {
+        return dataBasePrefix;
+    }
+
+    public void setDataBasePrefix(String dataBasePrefix) {
+        this.dataBasePrefix = dataBasePrefix;
+    }
+
     public boolean hasDebuggingMode() {
-        return getConfigAPI().getConfig("main_config").getBoolean("debug");
+        if(getConfigAPI().getConfig("main_config") instanceof Config){
+            return ((Config) getConfigAPI().getConfig("main_config")).getBoolean("debug");
+        }
+        return false;
     }
 
     public void sendConsoleMessage(String message) {
@@ -178,16 +206,24 @@ public class WolfyUtilities implements Listener {
         textComponents[0] = new TextComponent(CHAT_PREFIX);
         for (int i = 1; i < textComponents.length; i++) {
             ClickData data = clickData[i-1];
-            UUID id = UUID.randomUUID();
-            while (clickDataMap.keySet().contains(id)) {
-                id = UUID.randomUUID();
+            TextComponent component = new TextComponent(WolfyUtilities.translateColorCodes(getLanguageAPI().getActiveLanguage().replaceKeys(data.getMessage())));
+
+            if(data.getClickAction() != null){
+                UUID id = UUID.randomUUID();
+                while (clickDataMap.keySet().contains(id)) {
+                    id = UUID.randomUUID();
+                }
+                PlayerAction playerAction = new PlayerAction(this, player, data);
+                clickDataMap.put(id, playerAction);
+                component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "wu::" + id.toString()));
             }
-            PlayerAction playerAction = new PlayerAction(this, player, data);
-            clickDataMap.put(id, playerAction);
-            TextComponent component = playerAction.getMessage();
-            component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "wu::" + id.toString()));
-            for(ClickEvent clickEvent : data.getClickEvents()){
-                component.setClickEvent(clickEvent);
+
+            for(ChatEvent chatEvent : data.getChatEvents()){
+                if(chatEvent instanceof HoverEvent){
+                    component.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(((HoverEvent) chatEvent).getAction(), ((HoverEvent) chatEvent).getValue()));
+                }else if (chatEvent instanceof me.wolfyscript.utilities.api.utils.chat.ClickEvent){
+                    component.setClickEvent(new ClickEvent(((me.wolfyscript.utilities.api.utils.chat.ClickEvent) chatEvent).getAction(), ((me.wolfyscript.utilities.api.utils.chat.ClickEvent) chatEvent).getValue()));
+                }
             }
             textComponents[i] = component;
         }
@@ -206,10 +242,14 @@ public class WolfyUtilities implements Listener {
             PlayerAction action = clickDataMap.get(uuid);
             if (action == null)
                 return;
+            event.setMessage("");
             event.setCancelled(true);
             Player player = event.getPlayer();
             if (player.getUniqueId().equals(action.getUuid())) {
                 action.run(player);
+                if(action.isDiscard()){
+                    clickDataMap.remove(uuid);
+                }
             }
         }
     }
@@ -240,24 +280,21 @@ public class WolfyUtilities implements Listener {
                 message = prefix + message;
                 Main.getInstance().getServer().getConsoleSender().sendMessage(message);
             }
-
         }
     }
 
     static Random random = new Random();
 
+    public static boolean hasVillagePillageUpdate() {
+        return hasSpecificUpdate("v1_14_R0");
+    }
+
     public static boolean hasAquaticUpdate() {
-        String pkgname = Main.getInstance().getServer().getClass().getPackage().getName();
-        String combatVersion = "v1_13_R0".replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
-        String version = pkgname.substring(pkgname.lastIndexOf('.') + 1).replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
-        return Integer.parseInt(version) >= Integer.parseInt(combatVersion);
+        return hasSpecificUpdate("v1_13_R0");
     }
 
     public static boolean hasCombatUpdate() {
-        String pkgname = Main.getInstance().getServer().getClass().getPackage().getName();
-        String combatVersion = "v1_9_R0".replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
-        String version = pkgname.substring(pkgname.lastIndexOf('.') + 1).replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
-        return Integer.parseInt(version) >= Integer.parseInt(combatVersion);
+        return hasSpecificUpdate("v1_9_R0");
     }
 
     public static boolean hasSpecificUpdate(String versionString) {
@@ -360,22 +397,9 @@ public class WolfyUtilities implements Listener {
         return sB.toString();
     }
 
-    public static boolean areSimilar(ItemStack item, ItemStack item2) {
-        if (item == null || item2 == null) {
-            return false;
-        } else if (item.equals(item2)) {
-            return true;
-        } else {
-            System.out.println("DUR: " + item.getDurability() + " <-> " + item2.getDurability());
-
-            return item.getType().equals(item2.getType()) && item.getDurability() == item2.getDurability() && item.hasItemMeta() == item2.hasItemMeta() && (!item.hasItemMeta() || Bukkit.getItemFactory().equals(item.getItemMeta(), item2.getItemMeta()));
-        }
-    }
-
-
     public static ItemStack getCustomHead(String value) {
         if (value.startsWith("http://textures")) {
-            value = new String(Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", value).getBytes()));
+            value = getBase64EncodedString(String.format("{textures:{SKIN:{url:\"%s\"}}}", value));
         }
         return getSkullByValue(value);
     }
@@ -416,8 +440,7 @@ public class WolfyUtilities implements Listener {
         if (value != null && !value.isEmpty()) {
             String texture = value;
             if (value.startsWith("https://") || value.startsWith("http://")) {
-                byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", value).getBytes());
-                texture = new String(encodedData);
+                texture = getBase64EncodedString(String.format("{textures:{SKIN:{url:\"%s\"}}}", value));
             }
             GameProfile profile = new GameProfile(UUID.randomUUID(), null);
             profile.getProperties().put("textures", new Property("textures", texture));
@@ -437,6 +460,27 @@ public class WolfyUtilities implements Listener {
         }
         return skullMeta;
     }
+
+    private static String getBase64EncodedString(String str) {
+        ByteBuf byteBuf = null;
+        ByteBuf encodedByteBuf = null;
+        String var3;
+        try {
+            byteBuf = Unpooled.wrappedBuffer(str.getBytes(StandardCharsets.UTF_8));
+            encodedByteBuf = Base64.encode(byteBuf);
+            var3 = encodedByteBuf.toString(StandardCharsets.UTF_8);
+        } finally {
+            if (byteBuf != null) {
+                byteBuf.release();
+                if (encodedByteBuf != null) {
+                    encodedByteBuf.release();
+                }
+            }
+        }
+        return var3;
+    }
+
+
 
     public static String getSkullValue(SkullMeta skullMeta) {
         GameProfile profile = null;
@@ -580,45 +624,28 @@ public class WolfyUtilities implements Listener {
 
     public static ArrayList<String> formatShape(String... shape) {
         ArrayList<String> cleared = new ArrayList<>(Arrays.asList(shape));
-        boolean T1 = false;
-        boolean T2 = false;
-        boolean T3 = false;
-        boolean T4 = false;
         List<Byte> columns = new ArrayList<>();
         List<Byte> rows = new ArrayList<>();
-        if (shape[0].equals("   ")) {
-            T1 = true;
-            rows.add((byte) 0);
-        }
-        if (checkColumn(cleared, (byte) 0)) {
-            T2 = true;
-            columns.add((byte) 0);
-        }
-        if (checkColumn(cleared, (byte) 2)) {
-            T3 = true;
-            columns.add((byte) 2);
-        }
-        if (shape[2].equals("   ")) {
-            T4 = true;
-            rows.add((byte) 2);
-        }
-        if (T2 && T4) {
-            if (checkColumn(cleared, (byte) 1)) {
-                columns.add((byte) 1);
-            } else if (shape[1].equals("   ")) {
-                rows.add((byte) 1);
+        if (shape[0].equals("   ") || shape[2].equals("   ")) {
+            if(shape[0].equals("   ")){
+                rows.add((byte)0);
+            }
+            if(shape[1].equals("   ")){
+                rows.add((byte)1);
+            }
+            if(shape[2].equals("   ")){
+                rows.add((byte)2);
             }
         }
-        if (T3 && T1) {
-            if (shape[1].equals("   ")) {
-                rows.add((byte) 1);
-            } else if (checkColumn(cleared, (byte) 1)) {
-                columns.add((byte) 1);
+        if(checkColumn(cleared, (byte) 0) || checkColumn(cleared, (byte) 2)){
+            if (checkColumn(cleared, (byte) 0)) {
+                columns.add((byte) 0);
             }
-        }
-        if ((T1 && T2) || (T2 && !T3 && !T4) || (T3 && !T1 && !T2 && !T4)) {
             if (checkColumn(cleared, (byte) 1)) {
                 columns.add((byte) 1);
+            }
+            if (checkColumn(cleared, (byte) 2)) {
+                columns.add((byte) 2);
             }
         }
         int index = 0;

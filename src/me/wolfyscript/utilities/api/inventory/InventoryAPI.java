@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.inventory;
 
+import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
@@ -12,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -48,21 +50,15 @@ public class InventoryAPI implements Listener {
         return wolfyUtilities;
     }
 
-    @Deprecated
-    public void registerItem(String namespace, String key, ItemStack itemStack){
-        registerItem(namespace, key, itemStack.getType());
-    }
-
     /*
         Gets the item name and lore from the set language!
          */
-    public void registerItem(String namespace, String key, Material material) {
-        ItemStack itemStack = new ItemStack(material);
+    public void registerItem(String namespace, String key, ItemStack itemStack) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         String path = "items." + namespace + "." + key;
-        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$")) + WolfyUtilities.hideString("::" + key + "::" + Main.getMainUtil().getConfigAPI().getConfig("main_config").getString("securityCode")));
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$")) + WolfyUtilities.hideString("::" + key + "::" + Main.getMainConfig().getString("securityCode")));
         List<String> loreFirst = new ArrayList<>();
-        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getConfig().contains(path + ".lore")) {
+        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".lore") != null) {
             for (String row : wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKey(path + ".lore")) {
                 if (!row.isEmpty()) {
                     loreFirst.add(row.equalsIgnoreCase("<empty>") ? "" : ChatColor.translateAlternateColorCodes('&', row));
@@ -73,7 +69,7 @@ public class InventoryAPI implements Listener {
             itemMeta.setLore(loreFirst);
 
         List<String> lore = new ArrayList<>();
-        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getConfig().contains(path + ".help")) {
+        if (wolfyUtilities.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".help") != null) {
             for (String row : wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKey(path + ".help")) {
                 if (!row.isEmpty()) {
                     lore.add(row.equalsIgnoreCase("<empty>") ? "" : ChatColor.translateAlternateColorCodes('&', row));
@@ -96,7 +92,7 @@ public class InventoryAPI implements Listener {
      */
     public void registerItem(String namespace, String key, ItemStack itemStack, String displayName, String[] helpLore, String... normalLore) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName + WolfyUtilities.hideString("::" + key + "::" + wolfyUtilities.getConfigAPI().getConfig("main_config").getString("securityCode"))));
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName + WolfyUtilities.hideString("::" + key + "::" + Main.getMainConfig().getString("securityCode"))));
         List<String> loreFirst = new ArrayList<>();
         if (normalLore != null && normalLore.length > 0) {
             for (String row : normalLore) {
@@ -159,14 +155,17 @@ public class InventoryAPI implements Listener {
         mainmenu = key;
     }
 
-    public void openGui(Player player) {
-        if (hasGuiHandler(player)) {
-            getGuiHandler(player).testForNewPlayerInstance();
+    public void openGui(Player player, String gui) {
+        getGuiHandler(player).testForNewPlayerInstance();
+        if (getGuiHandler(player).getLastInv() != null) {
             getGuiHandler(player).openLastInv();
         } else {
-            createGuiHandler(player);
-            getGuiHandler(player).changeToInv(mainmenu);
+            getGuiHandler(player).changeToInv(gui);
         }
+    }
+
+    public void openGui(Player player) {
+        openGui(player, mainmenu);
     }
 
     public void removeGui(Player player) {
@@ -175,7 +174,11 @@ public class InventoryAPI implements Listener {
         }
     }
 
+    @NotNull
     public GuiHandler getGuiHandler(Player player) {
+        if (!hasGuiHandler(player)) {
+            createGuiHandler(player);
+        }
         return guiHandlers.get(player.getUniqueId().toString());
     }
 
@@ -207,8 +210,8 @@ public class InventoryAPI implements Listener {
         return plugin;
     }
 
-    public void reset(){
-        for(Player player : plugin.getServer().getOnlinePlayers()){
+    public void reset() {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
             player.closeInventory();
             removeGui(player);
         }
@@ -221,10 +224,27 @@ public class InventoryAPI implements Listener {
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
+                Main.getMainUtil().sendDebugMessage("check GUI Handler >>>> " + event.getWhoClicked().getName() + " <<<<");
+
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
+                Main.getMainUtil().sendDebugMessage(" GuiHandler: " + guiHandler);
+                Main.getMainUtil().sendDebugMessage("  Inv: " + guiHandler.getCurrentInv());
                 if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
+                    Main.getMainUtil().sendDebugMessage("   valid -> " + event.getWhoClicked().getName());
                     event.setCancelled(true);
-                    guiHandler.getCurrentInv().executeButton(event.getRawSlot(), guiHandler, event);
+                    String action = guiHandler.verifyItem(event.getCurrentItem());
+                    if (!action.isEmpty()) {
+                        guiHandler.getCurrentInv().update(guiHandler);
+                        GuiAction guiAction = new GuiAction(action, guiHandler, guiHandler.getCurrentInv(), event);
+                        if (!guiHandler.getCurrentInv().onAction(guiAction)) {
+                            event.setCancelled(true);
+                        }
+                    } else {
+                        GuiClick guiClick = new GuiClick(guiHandler, guiHandler.getCurrentInv(), event);
+                        if (!guiHandler.getCurrentInv().onClick(guiClick)) {
+                            event.setCancelled(false);
+                        }
+                    }
                 }
             }
         }
@@ -247,22 +267,31 @@ public class InventoryAPI implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onChat(AsyncPlayerChatEvent event){
-        if(event.getMessage() != null){
-            if(event.getMessage().contains("[WolfyUtilities CANCELED]")){
+    public void onChat(AsyncPlayerChatEvent event) {
+        if (event.getMessage() != null) {
+            if (event.getMessage().equals("[WolfyUtilities CANCELED]")) {
                 event.setMessage("");
                 event.setCancelled(true);
             }
         }
     }
 
+    /*
+    Checks if the player sending the message has active chat event. If he has it's executed!
+    It sets the message to a canceled string, so the following event knows to cancel it.
+    This allows the message to bypass other Chat Plugins.
+    Maybe I find another way to do it someday...
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreChat(AsyncPlayerChatEvent event) {
-        if(event.getMessage() != null){
+        if (event.getMessage() != null) {
             if (hasGuiHandler(event.getPlayer())) {
                 GuiHandler guiHandler = getGuiHandler(event.getPlayer());
-                if (guiHandler.isChatEventActive()) {
-                    if (!guiHandler.getLastInv().parseChatMessage(guiHandler.getTestChatID(), event.getMessage(), guiHandler)) {
+                if (guiHandler.isChatEventActive() && !event.getMessage().startsWith("wu::")) {
+                    if (guiHandler.getChatInputAction() != null) {
+                        guiHandler.getChatInputAction().onChat(guiHandler, event.getPlayer(), event.getMessage(), event.getMessage().split(" "));
+                        guiHandler.setChatInputAction(null);
+                    } else if (!guiHandler.getLastInv().parseChatMessage(guiHandler.getTestChatID(), event.getMessage(), guiHandler)) {
                         guiHandler.openLastInv();
                         guiHandler.setTestChatID(-1);
                     }
