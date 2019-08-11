@@ -2,7 +2,7 @@ package me.wolfyscript.utilities.api.config;
 
 import java.io.File;
 
-public abstract class FileConfiguration extends MemoryConfiguration{
+public abstract class FileConfiguration extends MemoryConfiguration {
 
     protected File configFile;
     protected String defPath;
@@ -14,7 +14,7 @@ public abstract class FileConfiguration extends MemoryConfiguration{
         super(configAPI, name, type);
         this.defPath = defPath;
         this.defFileName = defFileName;
-        this.configFile = new File(path, name + "."+(type.equals(Type.YAML) ? "yml" : "json"));
+        this.configFile = new File(path, name + "." + (type.equals(Type.YAML) ? "yml" : "json"));
     }
 
     /*
@@ -37,12 +37,11 @@ public abstract class FileConfiguration extends MemoryConfiguration{
     abstract public void init();
 
 
-
-    public File getConfigFile(){
+    public File getConfigFile() {
         return configFile;
     }
 
-    public void setConfigFile(File configFile){
+    public void setConfigFile(File configFile) {
         this.configFile = configFile;
     }
 

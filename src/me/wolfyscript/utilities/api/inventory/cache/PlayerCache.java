@@ -12,19 +12,19 @@ public class PlayerCache {
 
     private HashMap<String, HashMap<Integer, String>> cachedButtons = new HashMap<>();
 
-    public PlayerCache(WolfyUtilities api){
+    public PlayerCache(WolfyUtilities api) {
         this.api = api;
     }
 
-    public void setButton(GuiWindow guiWindow, int slot, String id){
+    public void setButton(GuiWindow guiWindow, int slot, String id) {
         HashMap<Integer, String> buttons = cachedButtons.getOrDefault(guiWindow.getNamespace(), new HashMap<>());
         buttons.put(slot, id);
         cachedButtons.put(guiWindow.getNamespace(), buttons);
     }
 
-    public Button getButton(GuiWindow guiWindow, int slot){
+    public Button getButton(GuiWindow guiWindow, int slot) {
         String id = cachedButtons.getOrDefault(guiWindow.getNamespace(), new HashMap<>()).get(slot);
-        if(id.contains(":")){
+        if (id.contains(":")) {
             return api.getInventoryAPI().getButton(id.split(":")[0], id.split(":")[1]);
         }
         return guiWindow.getButton(id);

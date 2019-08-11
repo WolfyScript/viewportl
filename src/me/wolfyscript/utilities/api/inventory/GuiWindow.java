@@ -5,14 +5,12 @@ import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.utils.chat.ClickData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class GuiWindow implements Listener {
 
@@ -116,7 +114,7 @@ public class GuiWindow implements Listener {
     /*
     Returns true if the Button is registered!
      */
-    public boolean hasButton(String id){
+    public boolean hasButton(String id) {
         return buttons.containsKey(id);
     }
 
@@ -144,6 +142,7 @@ public class GuiWindow implements Listener {
         guiHandler.close();
         guiHandler.getApi().sendActionMessage(guiHandler.getPlayer(), clickData);
     }
+
     protected String getInventoryName() {
         return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories." + namespace + "$"));
     }

@@ -15,7 +15,7 @@ public class PlayerAction {
     private ClickAction clickAction;
     private boolean discard;
 
-    public PlayerAction(WolfyUtilities api, Player player, ClickData clickData){
+    public PlayerAction(WolfyUtilities api, Player player, ClickData clickData) {
         this.uuid = player.getUniqueId();
         this.api = api;
         this.message = new TextComponent(WolfyUtilities.translateColorCodes(api.getLanguageAPI().getActiveLanguage().replaceKeys(clickData.getMessage())));
@@ -23,8 +23,8 @@ public class PlayerAction {
         this.discard = clickData.isDiscard();
     }
 
-    public void run(Player player){
-        if(clickAction != null){
+    public void run(Player player) {
+        if (clickAction != null) {
             clickAction.run(api, player);
         }
     }

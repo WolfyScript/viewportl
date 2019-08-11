@@ -18,7 +18,10 @@ import me.wolfyscript.utilities.api.utils.chat.PlayerAction;
 import me.wolfyscript.utilities.main.Main;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -60,17 +63,17 @@ public class WolfyUtilities implements Listener {
 
     public WolfyUtilities(Plugin plugin) {
         this.plugin = plugin;
-        this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT)+"_";
+        this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT) + "_";
         Main.registerWolfyUtilities(this);
         clickDataMap = new HashMap<>();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    public static String getVersion(){
+    public static String getVersion() {
         return Main.getInstance().getDescription().getVersion();
     }
 
-    public static int getVersionNumber(){
+    public static int getVersionNumber() {
         return Integer.parseInt(getVersion().replace(".", ""));
     }
 
@@ -144,7 +147,7 @@ public class WolfyUtilities implements Listener {
     }
 
     public boolean hasDebuggingMode() {
-        if(getConfigAPI().getConfig("main_config") instanceof Config){
+        if (getConfigAPI().getConfig("main_config") instanceof Config) {
             return ((Config) getConfigAPI().getConfig("main_config")).getBoolean("debug");
         }
         return false;
@@ -202,13 +205,13 @@ public class WolfyUtilities implements Listener {
     }
 
     public void sendActionMessage(Player player, ClickData... clickData) {
-        TextComponent[] textComponents = new TextComponent[clickData.length+1];
+        TextComponent[] textComponents = new TextComponent[clickData.length + 1];
         textComponents[0] = new TextComponent(CHAT_PREFIX);
         for (int i = 1; i < textComponents.length; i++) {
-            ClickData data = clickData[i-1];
+            ClickData data = clickData[i - 1];
             TextComponent component = new TextComponent(WolfyUtilities.translateColorCodes(getLanguageAPI().getActiveLanguage().replaceKeys(data.getMessage())));
 
-            if(data.getClickAction() != null){
+            if (data.getClickAction() != null) {
                 UUID id = UUID.randomUUID();
                 while (clickDataMap.keySet().contains(id)) {
                     id = UUID.randomUUID();
@@ -218,10 +221,10 @@ public class WolfyUtilities implements Listener {
                 component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "wu::" + id.toString()));
             }
 
-            for(ChatEvent chatEvent : data.getChatEvents()){
-                if(chatEvent instanceof HoverEvent){
+            for (ChatEvent chatEvent : data.getChatEvents()) {
+                if (chatEvent instanceof HoverEvent) {
                     component.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(((HoverEvent) chatEvent).getAction(), ((HoverEvent) chatEvent).getValue()));
-                }else if (chatEvent instanceof me.wolfyscript.utilities.api.utils.chat.ClickEvent){
+                } else if (chatEvent instanceof me.wolfyscript.utilities.api.utils.chat.ClickEvent) {
                     component.setClickEvent(new ClickEvent(((me.wolfyscript.utilities.api.utils.chat.ClickEvent) chatEvent).getAction(), ((me.wolfyscript.utilities.api.utils.chat.ClickEvent) chatEvent).getValue()));
                 }
             }
@@ -247,7 +250,7 @@ public class WolfyUtilities implements Listener {
             Player player = event.getPlayer();
             if (player.getUniqueId().equals(action.getUuid())) {
                 action.run(player);
-                if(action.isDiscard()){
+                if (action.isDiscard()) {
                     clickDataMap.remove(uuid);
                 }
             }
@@ -255,7 +258,7 @@ public class WolfyUtilities implements Listener {
     }
 
     @EventHandler
-    public void actionRemoval(PlayerQuitEvent event){
+    public void actionRemoval(PlayerQuitEvent event) {
         clickDataMap.keySet().removeIf(uuid -> clickDataMap.get(uuid).getUuid().equals(event.getPlayer().getUniqueId()));
     }
 
@@ -481,7 +484,6 @@ public class WolfyUtilities implements Listener {
     }
 
 
-
     public static String getSkullValue(SkullMeta skullMeta) {
         GameProfile profile = null;
         Field profileField;
@@ -627,17 +629,17 @@ public class WolfyUtilities implements Listener {
         List<Byte> columns = new ArrayList<>();
         List<Byte> rows = new ArrayList<>();
         if (shape[0].equals("   ") || shape[2].equals("   ")) {
-            if(shape[0].equals("   ")){
-                rows.add((byte)0);
+            if (shape[0].equals("   ")) {
+                rows.add((byte) 0);
             }
-            if(shape[1].equals("   ")){
-                rows.add((byte)1);
+            if (shape[1].equals("   ")) {
+                rows.add((byte) 1);
             }
-            if(shape[2].equals("   ")){
-                rows.add((byte)2);
+            if (shape[2].equals("   ")) {
+                rows.add((byte) 2);
             }
         }
-        if(checkColumn(cleared, (byte) 0) || checkColumn(cleared, (byte) 2)){
+        if (checkColumn(cleared, (byte) 0) || checkColumn(cleared, (byte) 2)) {
             if (checkColumn(cleared, (byte) 0)) {
                 columns.add((byte) 0);
             }

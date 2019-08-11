@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.utils;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
+
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -10,7 +11,7 @@ public class Legacy {
 
     private static HashMap<String, Enchantment> enchantments = new HashMap<>();
 
-    public static void init(){
+    public static void init() {
         initEnchants();
         initPotions();
     }
@@ -35,24 +36,24 @@ public class Legacy {
         enchantments.put("flame", Enchantment.ARROW_FIRE);
         enchantments.put("infinity", Enchantment.ARROW_INFINITE);
         enchantments.put("luck_of_the_sea", Enchantment.LUCK);
-        if(WolfyUtilities.hasSpecificUpdate("1_10")){
+        if (WolfyUtilities.hasSpecificUpdate("1_10")) {
             enchantments.put("sweeping", Enchantment.SWEEPING_EDGE);
         }
     }
 
     public static Enchantment getEnchantment(String name) {
-        if(!enchantments.containsKey(name)){
+        if (!enchantments.containsKey(name)) {
             return Enchantment.getByName(name);
         }
         return enchantments.get(name);
     }
 
-    public static String getEnchantName(Enchantment enchantment){
-        if(!enchantments.containsValue(enchantment)){
+    public static String getEnchantName(Enchantment enchantment) {
+        if (!enchantments.containsValue(enchantment)) {
             return enchantment.getName().toLowerCase(Locale.ENGLISH);
         }
-        for(String name : enchantments.keySet()){
-            if(enchantments.get(name).equals(enchantment)){
+        for (String name : enchantments.keySet()) {
+            if (enchantments.get(name).equals(enchantment)) {
                 return name;
             }
         }
@@ -61,7 +62,7 @@ public class Legacy {
 
     private static HashMap<String, PotionEffectType> potions = new HashMap<>();
 
-    private static void initPotions(){
+    private static void initPotions() {
         potions.put("slowness", PotionEffectType.SLOW);
         potions.put("haste", PotionEffectType.FAST_DIGGING);
         potions.put("mining_fatigue", PotionEffectType.SLOW_DIGGING);
@@ -74,18 +75,18 @@ public class Legacy {
     }
 
     public static PotionEffectType getPotion(String name) {
-        if(!potions.containsKey(name)){
+        if (!potions.containsKey(name)) {
             return PotionEffectType.getByName(name);
         }
         return potions.get(name);
     }
 
-    public static String getPotionName(PotionEffectType potion){
-        if(!potions.containsValue(potion)){
+    public static String getPotionName(PotionEffectType potion) {
+        if (!potions.containsValue(potion)) {
             return potion.getName().toLowerCase(Locale.ENGLISH);
         }
-        for(String name : potions.keySet()){
-            if(potions.get(name).equals(potion)){
+        for (String name : potions.keySet()) {
+            if (potions.get(name).equals(potion)) {
                 return name;
             }
         }

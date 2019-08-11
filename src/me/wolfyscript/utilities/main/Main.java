@@ -61,8 +61,8 @@ public class Main extends JavaPlugin {
         return instance;
     }
 
-    public static void registerWolfyUtilities(WolfyUtilities wolfyUtilities){
-        if(!wolfyUtilitiesList.contains(wolfyUtilities)){
+    public static void registerWolfyUtilities(WolfyUtilities wolfyUtilities) {
+        if (!wolfyUtilitiesList.contains(wolfyUtilities)) {
             wolfyUtilitiesList.add(wolfyUtilities);
         }
     }
@@ -81,7 +81,7 @@ public class Main extends JavaPlugin {
                 mainUtil.sendPlayerMessage(p, "      &n     by &b&n&lWolfyScript&7&n      ");
                 mainUtil.sendPlayerMessage(p, "        ------------------");
                 mainUtil.sendPlayerMessage(p, "");
-                mainUtil.sendPlayerMessage(p, "             &nVersion:&r&b "+getDescription().getVersion());
+                mainUtil.sendPlayerMessage(p, "             &nVersion:&r&b " + getDescription().getVersion());
                 mainUtil.sendPlayerMessage(p, "");
                 mainUtil.sendPlayerMessage(p, "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~");
                 return true;

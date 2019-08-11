@@ -14,31 +14,31 @@ public class LanguageAPI {
 
     //private HashMap<String, Language> playerLanguage;
 
-    public LanguageAPI(Plugin plugin){
+    public LanguageAPI(Plugin plugin) {
         this.plugin = plugin;
         this.languages = new ArrayList<>();
         this.activeLanguage = null;
         //this.playerLanguage = new HashMap<>();
     }
 
-    public void unregisterLanguages(){
+    public void unregisterLanguages() {
         languages.clear();
     }
 
-    public void registerLanguage(Language language){
-        if(languages.isEmpty()){
+    public void registerLanguage(Language language) {
+        if (languages.isEmpty()) {
             setActiveLanguage(language);
         }
-        if(!languages.contains(language)){
+        if (!languages.contains(language)) {
             languages.add(language);
         }
     }
 
-    public void setActiveLanguage(Language language){
+    public void setActiveLanguage(Language language) {
         activeLanguage = language;
     }
 
-    public Language getActiveLanguage(){
+    public Language getActiveLanguage() {
         return activeLanguage;
     }
 

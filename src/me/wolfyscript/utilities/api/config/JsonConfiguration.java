@@ -2,14 +2,11 @@ package me.wolfyscript.utilities.api.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
-import org.apache.commons.io.IOUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.NumberConversions;
 
 import javax.annotation.Nullable;
@@ -417,7 +414,7 @@ public class JsonConfiguration extends FileConfiguration {
                                 for (String newRow : rows) {
                                     newLore.add(WolfyUtilities.translateColorCodes(newRow));
                                 }
-                            }else{
+                            } else {
                                 newLore.add(row);
                             }
                         }

@@ -12,7 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
@@ -129,21 +130,21 @@ public class InventoryAPI implements Listener {
     These Buttons can also be sorted into different namespaces.
     Default namespace is "none".
      */
-    public void registerButton(String key, Button button){
+    public void registerButton(String key, Button button) {
         registerButton("none", key, button);
     }
 
     /*
     Registers an Button globally which then can be accessed in every GUI.
      */
-    public void registerButton(String namespace, String key, Button button){
+    public void registerButton(String namespace, String key, Button button) {
         registerButton(new NamespacedKey(namespace, key), button);
     }
 
     /*
     Registers an Button globally which then can be accessed in every GUI.
      */
-    public void registerButton(NamespacedKey namespacedKey, Button button){
+    public void registerButton(NamespacedKey namespacedKey, Button button) {
         button.init(namespacedKey.getNamespace(), getWolfyUtilities());
         buttons.put(namespacedKey, button);
     }
@@ -152,7 +153,7 @@ public class InventoryAPI implements Listener {
     Get an globally registered Button.
     This returns an Button out of the default namespace.
      */
-    public Button getButton(String key){
+    public Button getButton(String key) {
         return getButton("none", key);
     }
 
@@ -160,7 +161,7 @@ public class InventoryAPI implements Listener {
     Get an globally registered Button.
     This returns an Button out of the specific namespace.
      */
-    public Button getButton(String namespace, String key){
+    public Button getButton(String namespace, String key) {
         return getButton(new NamespacedKey(namespace, key));
     }
 
@@ -168,7 +169,7 @@ public class InventoryAPI implements Listener {
     Get an globally registered Button.
     This returns an Button out of the specific namespace.
      */
-    public Button getButton(NamespacedKey namespacedKey){
+    public Button getButton(NamespacedKey namespacedKey) {
         return buttons.get(namespacedKey);
     }
 
@@ -182,10 +183,10 @@ public class InventoryAPI implements Listener {
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
 
                     Button button = guiHandler.getPlayerCache().getButton(guiWindow, event.getSlot());
-                    if(button != null){
+                    if (button != null) {
                         event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
                         guiHandler.getCurrentInv().update(guiHandler);
-                    }else{
+                    } else {
                         /*
                         Deprecated!
                          */
@@ -259,6 +260,7 @@ public class InventoryAPI implements Listener {
             }
         }
     }
+
     @EventHandler
     public void onCancel(PlayerCommandPreprocessEvent event) {
         if (hasGuiHandler(event.getPlayer())) {
@@ -286,7 +288,7 @@ public class InventoryAPI implements Listener {
      */
     @Deprecated
     public void registerItem(String namespace, String key, ItemStack itemStack, String displayName, String[] helpLore, String... normalLore) {
-        items.put(namespace + ":" + key, ItemUtils.createItem(itemStack, displayName + WolfyUtilities.hideString("::" + key+ "::"+Main.getMainConfig().getString("securityCode")), helpLore, normalLore));
+        items.put(namespace + ":" + key, ItemUtils.createItem(itemStack, displayName + WolfyUtilities.hideString("::" + key + "::" + Main.getMainConfig().getString("securityCode")), helpLore, normalLore));
     }
 
     @Deprecated

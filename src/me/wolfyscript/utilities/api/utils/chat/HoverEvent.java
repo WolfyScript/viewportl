@@ -15,7 +15,7 @@ public class HoverEvent implements ChatEvent<net.md_5.bungee.api.chat.HoverEvent
         this.value = value;
     }
 
-    public HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action action, String value){
+    public HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action action, String value) {
         this(action, new ComponentBuilder(value).create());
     }
 
@@ -23,11 +23,11 @@ public class HoverEvent implements ChatEvent<net.md_5.bungee.api.chat.HoverEvent
         this(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_ITEM, new ComponentBuilder(ItemUtils.convertItemStackToJson(itemStack)).create());
     }
 
-    public HoverEvent(Action action, BaseComponent[] value){
+    public HoverEvent(Action action, BaseComponent[] value) {
         this(action.getAction(), value);
     }
 
-    public HoverEvent(Action action, String value){
+    public HoverEvent(Action action, String value) {
         this(action, new ComponentBuilder(value).create());
     }
 
@@ -41,13 +41,13 @@ public class HoverEvent implements ChatEvent<net.md_5.bungee.api.chat.HoverEvent
         return action;
     }
 
-    public enum Action{
+    public enum Action {
         SHOW_TEXT,
         SHOW_ACHIEVEMENT,
         SHOW_ITEM,
         SHOW_ENTITY;
 
-        public net.md_5.bungee.api.chat.HoverEvent.Action getAction(){
+        public net.md_5.bungee.api.chat.HoverEvent.Action getAction() {
             return net.md_5.bungee.api.chat.HoverEvent.Action.valueOf(this.toString());
         }
     }

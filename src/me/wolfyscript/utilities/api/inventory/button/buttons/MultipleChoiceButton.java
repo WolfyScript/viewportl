@@ -8,11 +8,9 @@ import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,14 +35,14 @@ public class MultipleChoiceButton extends Button {
 
     @Override
     public void init(GuiWindow guiWindow) {
-        for(ButtonState btnState : states){
+        for (ButtonState btnState : states) {
             btnState.init(guiWindow);
         }
     }
 
     @Override
     public void init(String windowKey, WolfyUtilities api) {
-        for(ButtonState btnState : states){
+        for (ButtonState btnState : states) {
             btnState.init(windowKey, api);
         }
     }
@@ -52,10 +50,10 @@ public class MultipleChoiceButton extends Button {
     @Override
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
         int setting = settings.getOrDefault(guiHandler, 0);
-        if(states != null && states.size() > setting){
+        if (states != null && states.size() > setting) {
             ButtonState btnState = states.get(setting);
             setting++;
-            if(setting >= states.size()){
+            if (setting >= states.size()) {
                 settings.put(guiHandler, 0);
             }
             return btnState.getAction().run(guiHandler, player, inventory, slot, event);
@@ -67,7 +65,7 @@ public class MultipleChoiceButton extends Button {
     public void render(GuiHandler guiHandler, int slot, Inventory inventory, boolean help) {
         InventoryAPI invAPI = guiHandler.getApi().getInventoryAPI();
         int setting = settings.getOrDefault(guiHandler, 0);
-        if(states != null && states.size() > setting){
+        if (states != null && states.size() > setting) {
             inventory.setItem(slot, states.get(setting).getIcon(help));
         }
     }

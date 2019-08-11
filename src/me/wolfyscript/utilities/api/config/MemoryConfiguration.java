@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class MemoryConfiguration extends Configuration implements ConfigurationSection{
+public abstract class MemoryConfiguration extends Configuration implements ConfigurationSection {
 
     public HashMap<String, Object> map;
 

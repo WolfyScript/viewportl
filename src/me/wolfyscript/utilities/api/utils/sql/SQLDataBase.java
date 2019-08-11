@@ -24,7 +24,7 @@ public class SQLDataBase {
         this.port = port;
     }
 
-    public void openConnectionOnMainThread(){
+    public void openConnectionOnMainThread() {
         try {
             if (connection != null && !connection.isClosed()) {
                 return;
@@ -42,7 +42,7 @@ public class SQLDataBase {
         }
     }
 
-    public void openConnection(){
+    public void openConnection() {
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {

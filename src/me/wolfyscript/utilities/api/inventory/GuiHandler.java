@@ -110,11 +110,11 @@ public class GuiHandler implements Listener {
     }
 
     public void openLastInv() {
-        if(!pageHistory.isEmpty()){
+        if (!pageHistory.isEmpty()) {
             String inv;
-            if(getLastInv() != null){
+            if (getLastInv() != null) {
                 inv = getLastInv().getNamespace();
-            }else{
+            } else {
                 inv = pageHistory.get(0);
             }
             pageHistory.remove(pageHistory.size() - 1);
@@ -122,7 +122,7 @@ public class GuiHandler implements Listener {
         }
     }
 
-    public boolean isChatEventActive(){
+    public boolean isChatEventActive() {
         return (getTestChatID() > -1) || getChatInputAction() != null;
     }
 
@@ -134,11 +134,11 @@ public class GuiHandler implements Listener {
         this.chatInputAction = chatInputAction;
     }
 
-    public void cancelChatEvent(){
+    public void cancelChatEvent() {
         setTestChatID(-1);
     }
 
-    public void close(){
+    public void close() {
         changeToInv("none");
     }
 
@@ -157,7 +157,7 @@ public class GuiHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
         Player eventPlayer = (Player) event.getPlayer();
-        if(player.equals(eventPlayer)){
+        if (player.equals(eventPlayer)) {
             if (!pageHistory.isEmpty() && verifyInv()) {
                 if (!changingInv) {
                     pageHistory.add("none");

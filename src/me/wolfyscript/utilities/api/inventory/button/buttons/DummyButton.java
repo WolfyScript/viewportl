@@ -1,11 +1,8 @@
 package me.wolfyscript.utilities.api.inventory.button.buttons;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
-import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -20,7 +17,7 @@ public class DummyButton extends ActionButton {
         super(id, ButtonType.DUMMY, state);
     }
 
-    public DummyButton(String id){
+    public DummyButton(String id) {
         super(id, ButtonType.DUMMY, null);
     }
 

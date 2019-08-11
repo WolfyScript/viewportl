@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.api.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -29,7 +28,7 @@ public class GuiClick {
     private int hotbarButton;
     private InventoryType.SlotType slotType;
 
-    public GuiClick(GuiHandler guiHandler, GuiWindow guiWindow, InventoryClickEvent event){
+    public GuiClick(GuiHandler guiHandler, GuiWindow guiWindow, InventoryClickEvent event) {
         this.guiHandler = guiHandler;
         this.player = guiHandler.getPlayer();
         this.wolfyUtilities = guiHandler.getApi();

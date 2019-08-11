@@ -1,6 +1,5 @@
 package me.wolfyscript.utilities.api.utils;
 
-import com.google.common.io.BaseEncoding;
 import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
@@ -17,7 +16,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import javax.annotation.Nullable;
-import javax.management.ReflectionException;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -66,7 +64,7 @@ public class ItemUtils {
     /*
     Prepare and configure the ItemStack for the GUI!
      */
-    public static ItemStack[] createItem(ItemStack itemStack, String displayName, String[] helpLore, String... normalLore){
+    public static ItemStack[] createItem(ItemStack itemStack, String displayName, String[] helpLore, String... normalLore) {
         ItemStack[] itemStacks = new ItemStack[2];
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(org.bukkit.ChatColor.translateAlternateColorCodes('&', displayName));
@@ -108,7 +106,7 @@ public class ItemUtils {
      */
     @Deprecated
     public static String serializeItemStack(ItemStack is) {
-        try{
+        try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream bukkitOutputStream = new BukkitObjectOutputStream(outputStream);
             bukkitOutputStream.writeObject(is);
@@ -119,20 +117,20 @@ public class ItemUtils {
         }
     }
 
-    public static ItemStack deserializeItemStack(String data){
+    public static ItemStack deserializeItemStack(String data) {
         return deserializeItemStack(Base64.getDecoder().decode(data));
     }
 
     public static ItemStack deserializeItemStack(byte[] bytes) {
         try {
-            try{
+            try {
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
                 BukkitObjectInputStream bukkitInputStream = new BukkitObjectInputStream(inputStream);
                 Object itemStack = bukkitInputStream.readObject();
-                if(itemStack instanceof ItemStack){
+                if (itemStack instanceof ItemStack) {
                     return (ItemStack) itemStack;
                 }
-            }catch (StreamCorruptedException ex){
+            } catch (StreamCorruptedException ex) {
                 return deserializeNMSItemStack(bytes);
             }
             return null;
@@ -142,10 +140,10 @@ public class ItemUtils {
         }
     }
 
-    public static String serializeNMSItemStack(ItemStack itemStack){
-        if(itemStack == null) return "null";
+    public static String serializeNMSItemStack(ItemStack itemStack) {
+        if (itemStack == null) return "null";
         ByteArrayOutputStream outputStream = null;
-        try{
+        try {
             Class<?> nbtTagCompoundClass = Reflection.getNMS("NBTTagCompound");
             Constructor<?> nbtTagCompoundConstructor = nbtTagCompoundClass.getConstructor();
             Object nbtTagCompound = nbtTagCompoundConstructor.newInstance();
@@ -153,52 +151,49 @@ public class ItemUtils {
             Reflection.getNMS("ItemStack").getMethod("save", nbtTagCompoundClass).invoke(nmsItemStack, nbtTagCompound);
             outputStream = new ByteArrayOutputStream();
             Reflection.getNMS("NBTCompressedStreamTools").getMethod("a", nbtTagCompoundClass, OutputStream.class).invoke(null, nbtTagCompound, outputStream);
-        }catch(SecurityException | NoSuchMethodException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e){
+        } catch (SecurityException | NoSuchMethodException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return Base64.getEncoder().encodeToString(outputStream.toByteArray());
     }
 
-    public static ItemStack deserializeNMSItemStack(String data){
+    public static ItemStack deserializeNMSItemStack(String data) {
         return deserializeNMSItemStack(Base64.getDecoder().decode(data));
     }
 
-    public static ItemStack deserializeNMSItemStack(byte[] bytes){
-        if(bytes == null) return null;
-
+    public static ItemStack deserializeNMSItemStack(byte[] bytes) {
+        if (bytes == null) return null;
         ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-
         Class<?> nbtTagCompoundClass = Reflection.getNMS("NBTTagCompound");
         Class<?> nmsItemStackClass = Reflection.getNMS("ItemStack");
-        Object nbtTagCompound = null;
+        Object nbtTagCompound;
         ItemStack itemStack = null;
-        try{
+        try {
             nbtTagCompound = Reflection.getNMS("NBTCompressedStreamTools").getMethod("a", InputStream.class).invoke(null, inputStream);
             Object craftItemStack = nmsItemStackClass.getMethod("a", nbtTagCompoundClass).invoke(nmsItemStackClass, nbtTagCompound);
-            itemStack = (ItemStack)Reflection.getOBC("inventory.CraftItemStack").getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, craftItemStack);
-        }catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e){
+            itemStack = (ItemStack) Reflection.getOBC("inventory.CraftItemStack").getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, craftItemStack);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
         }
-
         return itemStack;
     }
 
     /*
     Sets value to the lore. It will be hidden.
      */
-    public static ItemMeta setToCCSettings(ItemMeta itemMeta, String key, Object value){
-        JSONObject obj = getCCSettings(itemMeta);
+    public static ItemMeta setToItemSettings(ItemMeta itemMeta, String key, Object value) {
+        JSONObject obj = getItemSettings(itemMeta);
         List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
-        if(obj == null){
+        if (obj == null) {
             obj = new JSONObject(new HashMap<String, Object>());
             obj.put(key, value);
-            lore.add(WolfyUtilities.hideString("itemSettings"+obj.toString()));
-        }else{
+            lore.add(WolfyUtilities.hideString("itemSettings" + obj.toString()));
+        } else {
             obj.put(key, value);
-            for(int i = 0; i < lore.size(); i++){
+            for (int i = 0; i < lore.size(); i++) {
                 String line = WolfyUtilities.unhideString(lore.get(i));
-                if(line.startsWith("itemSettings")){
-                    lore.set(i, WolfyUtilities.hideString("itemSettings"+obj.toString()));
+                if (line.startsWith("itemSettings")) {
+                    lore.set(i, WolfyUtilities.hideString("itemSettings" + obj.toString()));
                 }
             }
         }
@@ -206,45 +201,45 @@ public class ItemUtils {
         return itemMeta;
     }
 
-    public static ItemStack setToCCSettings(ItemStack itemStack, String key, Object value){
-        itemStack.setItemMeta(setToCCSettings(itemStack.getItemMeta(), key, value));
+    public static ItemStack setToItemSettings(ItemStack itemStack, String key, Object value) {
+        itemStack.setItemMeta(setToItemSettings(itemStack.getItemMeta(), key, value));
         return itemStack;
     }
 
     @Nullable
-    public static Object getFromCCSettings(ItemMeta itemMeta, String key){
-        if(hasCCSettings(itemMeta)){
-            return getCCSettings(itemMeta).get(key);
+    public static Object getFromItemSettings(ItemMeta itemMeta, String key) {
+        if (hasItemSettings(itemMeta)) {
+            return getItemSettings(itemMeta).get(key);
         }
         return null;
     }
 
-    public static Object getFromCCSettings(ItemStack itemStack, String key){
-        return getFromCCSettings(itemStack.getItemMeta(), key);
+    public static Object getFromItemSettings(ItemStack itemStack, String key) {
+        return getFromItemSettings(itemStack.getItemMeta(), key);
     }
 
-    public static boolean isInCCSettings(ItemStack itemStack, String key){
-        return getFromCCSettings(itemStack, key) != null;
+    public static boolean isInItemSettings(ItemStack itemStack, String key) {
+        return getFromItemSettings(itemStack, key) != null;
     }
 
-    public static boolean isInCCSettings(ItemMeta itemMeta, String key){
-        return getFromCCSettings(itemMeta, key) != null;
+    public static boolean isInItemSettings(ItemMeta itemMeta, String key) {
+        return getFromItemSettings(itemMeta, key) != null;
     }
 
-    public static boolean hasCCSettings(@NotNull ItemStack itemStack){
-        return getCCSettings(itemStack.getItemMeta()) != null;
+    public static boolean hasItemSettings(@NotNull ItemStack itemStack) {
+        return getItemSettings(itemStack.getItemMeta()) != null;
     }
 
-    public static boolean hasCCSettings(@Nullable ItemMeta itemMeta){
-        return getCCSettings(itemMeta) != null;
+    public static boolean hasItemSettings(@Nullable ItemMeta itemMeta) {
+        return getItemSettings(itemMeta) != null;
     }
 
-    public static JSONObject getCCSettings(@NotNull ItemStack itemStack){
-        return getCCSettings(itemStack.getItemMeta());
+    public static JSONObject getItemSettings(@NotNull ItemStack itemStack) {
+        return getItemSettings(itemStack.getItemMeta());
     }
 
     @Nullable
-    public static JSONObject getCCSettings(@Nullable ItemMeta itemMeta){
+    public static JSONObject getItemSettings(@Nullable ItemMeta itemMeta) {
         if (itemMeta != null && itemMeta.hasLore()) {
             List<String> lore = itemMeta.getLore();
             for (String line : lore) {
@@ -275,7 +270,7 @@ public class ItemUtils {
     }
 
     public static boolean hasCustomDurability(@Nullable ItemMeta itemMeta) {
-        JSONObject obj = getCCSettings(itemMeta);
+        JSONObject obj = getItemSettings(itemMeta);
         if (obj != null) {
             return ((Set<String>) obj.keySet()).contains("durability");
         }
@@ -291,85 +286,85 @@ public class ItemUtils {
     }
 
     public static void setCustomDurability(ItemMeta itemMeta, int durability) {
-        setToCCSettings(itemMeta, "durability", durability);
+        setToItemSettings(itemMeta, "durability", durability);
         setDurabilityTag(itemMeta);
     }
 
-    public static int getCustomDurability(ItemStack itemStack){
+    public static int getCustomDurability(ItemStack itemStack) {
         return getCustomDurability(itemStack.getItemMeta());
     }
 
-    public static int getCustomDurability(ItemMeta itemMeta){
-        if(getFromCCSettings(itemMeta, "durability") != null){
-            return NumberConversions.toInt(getFromCCSettings(itemMeta, "durability"));
+    public static int getCustomDurability(ItemMeta itemMeta) {
+        if (getFromItemSettings(itemMeta, "durability") != null) {
+            return NumberConversions.toInt(getFromItemSettings(itemMeta, "durability"));
         }
         return 0;
     }
 
-    public static void setDamage(ItemStack itemStack, int damage){
+    public static void setDamage(ItemStack itemStack, int damage) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if(itemMeta instanceof Damageable){
+        if (itemMeta instanceof Damageable) {
             ((Damageable) itemMeta).setDamage((int) (itemStack.getType().getMaxDurability() * ((double) damage / (double) getCustomDurability(itemStack))));
         }
         setDamage(itemMeta, damage);
         itemStack.setItemMeta(itemMeta);
     }
 
-    public static void setDamage(ItemMeta itemMeta, int damage){
-        setToCCSettings(itemMeta, "damage", damage);
+    public static void setDamage(ItemMeta itemMeta, int damage) {
+        setToItemSettings(itemMeta, "damage", damage);
         setDurabilityTag(itemMeta);
     }
 
-    public static int getDamage(ItemStack itemStack){
+    public static int getDamage(ItemStack itemStack) {
         return getDamage(itemStack.getItemMeta());
     }
 
-    public static int getDamage(ItemMeta itemMeta){
-        if(getFromCCSettings(itemMeta, "damage") != null){
-            int damage = NumberConversions.toInt(getFromCCSettings(itemMeta, "damage"));
+    public static int getDamage(ItemMeta itemMeta) {
+        if (getFromItemSettings(itemMeta, "damage") != null) {
+            int damage = NumberConversions.toInt(getFromItemSettings(itemMeta, "damage"));
             return damage;
         }
         return 0;
     }
 
-    public static void setDurabilityTag(ItemStack itemStack){
+    public static void setDurabilityTag(ItemStack itemStack) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         setDurabilityTag(itemMeta);
         itemStack.setItemMeta(itemMeta);
     }
 
-    public static void setDurabilityTag(ItemMeta itemMeta){
-        if(!getDurabilityTag(itemMeta).isEmpty() && !getDurabilityTag(itemMeta).equals("")){
+    public static void setDurabilityTag(ItemMeta itemMeta) {
+        if (!getDurabilityTag(itemMeta).isEmpty() && !getDurabilityTag(itemMeta).equals("")) {
             List<String> lore = itemMeta.getLore() != null ? itemMeta.getLore() : new ArrayList<>();
-            for(int i = 0; i < lore.size(); i++){
+            for (int i = 0; i < lore.size(); i++) {
                 String line = WolfyUtilities.unhideString(lore.get(i));
-                if(line.startsWith("durability_tag")){
+                if (line.startsWith("durability_tag")) {
                     lore.remove(i);
                 }
             }
-            lore.add(lore.size() > 0 ? lore.size()-1 : 0, WolfyUtilities.hideString("durability_tag") + WolfyUtilities.translateColorCodes(getDurabilityTag(itemMeta).replace("%DUR%", String.valueOf(getCustomDurability(itemMeta)-getDamage(itemMeta))).replace("%MAX_DUR%", String.valueOf(getCustomDurability(itemMeta)))));
+            lore.add(lore.size() > 0 ? lore.size() - 1 : 0, WolfyUtilities.hideString("durability_tag") + WolfyUtilities.translateColorCodes(getDurabilityTag(itemMeta).replace("%DUR%", String.valueOf(getCustomDurability(itemMeta) - getDamage(itemMeta))).replace("%MAX_DUR%", String.valueOf(getCustomDurability(itemMeta)))));
             itemMeta.setLore(lore);
         }
     }
 
-    public static void setDurabilityTag(ItemMeta itemMeta, String value){
-        setToCCSettings(itemMeta, "durability_tag", value);
+    public static void setDurabilityTag(ItemMeta itemMeta, String value) {
+        setToItemSettings(itemMeta, "durability_tag", value);
         setDurabilityTag(itemMeta);
     }
 
-    public static void setDurabilityTag(ItemStack itemStack, String value){
+    public static void setDurabilityTag(ItemStack itemStack, String value) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         setDurabilityTag(itemMeta, value);
         itemStack.setItemMeta(itemMeta);
     }
 
-    public static String getDurabilityTag(ItemStack itemStack){
+    public static String getDurabilityTag(ItemStack itemStack) {
         return getDurabilityTag(itemStack.getItemMeta());
     }
 
-    public static String getDurabilityTag(ItemMeta itemMeta){
-        if(getFromCCSettings(itemMeta, "durability_tag") != null){
-            return (String) getFromCCSettings(itemMeta, "durability_tag");
+    public static String getDurabilityTag(ItemMeta itemMeta) {
+        if (getFromItemSettings(itemMeta, "durability_tag") != null) {
+            return (String) getFromItemSettings(itemMeta, "durability_tag");
         }
         return "";
     }

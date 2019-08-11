@@ -11,11 +11,11 @@ public class LWCUtil {
 
     private static LWC lwc = LWC.getInstance();
 
-    public static boolean hasPermToInteract(Player player, Entity entity){
+    public static boolean hasPermToInteract(Player player, Entity entity) {
         return lwc.canAccessProtection(player, entity.getLocation().getBlock());
     }
 
-    public static boolean canAccessprotection(Player player, Block block){
+    public static boolean canAccessprotection(Player player, Block block) {
         return lwc.canAccessProtection(player, block);
     }
 

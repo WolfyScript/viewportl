@@ -26,7 +26,7 @@ public class GuiAction {
     private int hotbarButton;
     private InventoryType.SlotType slotType;
 
-    public GuiAction(String action, GuiHandler guiHandler, GuiWindow guiWindow, InventoryClickEvent event){
+    public GuiAction(String action, GuiHandler guiHandler, GuiWindow guiWindow, InventoryClickEvent event) {
         this.action = action;
         this.guiHandler = guiHandler;
         this.player = guiHandler.getPlayer();

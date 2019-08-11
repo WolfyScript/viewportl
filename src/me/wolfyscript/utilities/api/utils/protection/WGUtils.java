@@ -43,12 +43,12 @@ public class WGUtils {
         return set.testState(localPlayer, flag) || hasBypassPerm(player, location);
     }
 
-    public static boolean hasBypassPerm(Player player, Location location){
+    public static boolean hasBypassPerm(Player player, Location location) {
         return hasBypassPerm(player, location.getWorld());
     }
 
-    public static boolean hasBypassPerm(Player player, World world){
-        return player.hasPermission("worldguard.region.bypass.*") || player.hasPermission("worldguard.region.bypass."+world.getName());
+    public static boolean hasBypassPerm(Player player, World world) {
+        return player.hasPermission("worldguard.region.bypass.*") || player.hasPermission("worldguard.region.bypass." + world.getName());
     }
 
 }

@@ -18,43 +18,43 @@ public class ButtonState {
     private String[] helpLore;
     private String[] normalLore;
 
-    public ButtonState(String key, ItemStack presetIcon, ButtonAction action){
+    public ButtonState(String key, ItemStack presetIcon, ButtonAction action) {
         this.key = key;
         this.presetIcon = presetIcon;
         this.action = action;
     }
 
-    public ButtonState(String key, Material presetIcon, ButtonAction action){
+    public ButtonState(String key, Material presetIcon, ButtonAction action) {
         this(key, new ItemStack(presetIcon), action);
     }
 
-    public ButtonState(String namespace, String key, ItemStack presetIcon, ButtonAction action){
+    public ButtonState(String namespace, String key, ItemStack presetIcon, ButtonAction action) {
         this.action = action;
         this.presetIcon = presetIcon;
         this.namespace = namespace;
         this.key = key;
     }
 
-    public ButtonState(String namespace, String key, Material presetIcon, ButtonAction action){
+    public ButtonState(String namespace, String key, Material presetIcon, ButtonAction action) {
         this(namespace, key, new ItemStack(presetIcon), action);
     }
 
-    public ButtonState(ItemStack presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action){
+    public ButtonState(ItemStack presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action) {
         this.action = action;
         this.presetIcon = presetIcon;
         this.icon = ItemUtils.createItem(presetIcon, displayName, helpLore, normalLore);
     }
 
-    public ButtonState(Material presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action){
+    public ButtonState(Material presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action) {
         this(new ItemStack(presetIcon), displayName, helpLore, normalLore, action);
     }
 
-    public void init(GuiWindow window){
+    public void init(GuiWindow window) {
         init(window.getNamespace(), window.getAPI());
     }
 
-    public void init(String windowKey, WolfyUtilities api){
-        if(key != null && !key.isEmpty()){
+    public void init(String windowKey, WolfyUtilities api) {
+        if (key != null && !key.isEmpty()) {
             String path = "items." + (namespace == null || namespace.isEmpty() ? windowKey : (windowKey + namespace)) + "." + key;
             displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$");
             helpLore = api.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".help") != null ? api.getLanguageAPI().getActiveLanguage().replaceKey(path + ".help").toArray(new String[0]) : new String[0];
@@ -64,7 +64,7 @@ public class ButtonState {
     }
 
     public ItemStack getIcon(boolean help) {
-        if(help){
+        if (help) {
             return icon[1];
         }
         return icon[0];
@@ -78,7 +78,7 @@ public class ButtonState {
         this.action = action;
     }
 
-    public static ItemStack createItem(){
+    public static ItemStack createItem() {
         return null;
     }
 }

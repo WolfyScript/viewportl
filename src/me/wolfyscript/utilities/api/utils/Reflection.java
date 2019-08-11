@@ -37,7 +37,6 @@ public class Reflection {
     private static Map<Class<?>, Map<String, Field>> loadedFields = new HashMap<>();
 
 
-
     public static String getVersion() {
         return Main.getInstance().getServer().getClass().getPackage().getName().substring(23);
     }
@@ -53,7 +52,7 @@ public class Reflection {
             return loadedOBCClasses.get(obcClassName);
         }
 
-        String clazzName = "org.bukkit.craftbukkit." + getVersion()+ "." + obcClassName;
+        String clazzName = "org.bukkit.craftbukkit." + getVersion() + "." + obcClassName;
         Class<?> clazz;
 
         try {
@@ -79,7 +78,7 @@ public class Reflection {
             return loadedNMSClasses.get(nmsClassName);
         }
 
-        String clazzName = "net.minecraft.server." + getVersion()+ "." + nmsClassName;
+        String clazzName = "net.minecraft.server." + getVersion() + "." + nmsClassName;
         Class<?> clazz;
 
         try {

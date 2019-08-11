@@ -3,7 +3,7 @@ package me.wolfyscript.utilities.api.config;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.plugin.Plugin;
 
-public abstract class Configuration{
+public abstract class Configuration {
 
     public WolfyUtilities api;
     public ConfigAPI configAPI;
@@ -11,7 +11,7 @@ public abstract class Configuration{
     private Type type;
     private String name;
 
-    public Configuration(ConfigAPI configAPI, String name, Type type){
+    public Configuration(ConfigAPI configAPI, String name, Type type) {
         this.api = configAPI.getApi();
         this.configAPI = configAPI;
         this.plugin = configAPI.getPlugin();
@@ -19,15 +19,15 @@ public abstract class Configuration{
         this.type = type;
     }
 
-    public Type getType(){
+    public Type getType() {
         return type;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    protected enum Type{
+    protected enum Type {
         YAML, JSON
     }
 }

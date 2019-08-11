@@ -1,8 +1,6 @@
 package me.wolfyscript.utilities.api.language;
 
 import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.config.Config;
-import me.wolfyscript.utilities.api.config.Configuration;
 import me.wolfyscript.utilities.api.config.MemoryConfiguration;
 
 import java.util.*;
@@ -16,7 +14,7 @@ public class Language {
 
     private HashMap<String, Object> messages;
 
-    public Language(String lang, MemoryConfiguration config, ConfigAPI configAPI){
+    public Language(String lang, MemoryConfiguration config, ConfigAPI configAPI) {
         this.lang = lang;
         this.config = config;
         this.messages = new HashMap<>();
@@ -37,11 +35,11 @@ public class Language {
         while (matcher.find()) {
             keys.add(matcher.group(0));
         }
-        for(String key : keys){
+        for (String key : keys) {
             Object object = messages.get(key.replace("$", ""));
-            if(object instanceof String){
+            if (object instanceof String) {
                 msg = msg.replace(key, (String) object);
-            }else if(object instanceof List){
+            } else if (object instanceof List) {
                 StringBuilder sB = new StringBuilder();
                 List<String> list = (List<String>) object;
                 list.forEach(s -> sB.append(' ').append(s));
@@ -64,29 +62,29 @@ public class Language {
      */
     public List<String> replaceKey(String key) {
         List<String> message = new ArrayList<>();
-        if (key != null){
-            if(key.contains("$")){
+        if (key != null) {
+            if (key.contains("$")) {
                 key = key.replace("$", "");
             }
 
-            if(messages.get(key) instanceof ArrayList){
+            if (messages.get(key) instanceof ArrayList) {
                 message.addAll((ArrayList<String>) messages.get(key));
             }
         }
         return message;
     }
 
-    public MemoryConfiguration getConfig(){
+    public MemoryConfiguration getConfig() {
         return config;
     }
 
-    public void reloadKeys(){
+    public void reloadKeys() {
         Set<String> keys = this.config.getKeys(true);
 
-        for(String key : keys){
-            if(this.config.get(key) instanceof ArrayList){
+        for (String key : keys) {
+            if (this.config.get(key) instanceof ArrayList) {
                 messages.put(key, this.config.getStringList(key));
-            }else{
+            } else {
                 messages.put(key, this.config.getString(key));
             }
         }

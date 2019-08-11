@@ -9,11 +9,11 @@ import org.bukkit.inventory.ItemStack;
 public class ItemListener implements Listener {
 
     @EventHandler
-    public void onDamage(PlayerItemDamageEvent event){
+    public void onDamage(PlayerItemDamageEvent event) {
         ItemStack itemStack = event.getItem();
-        if(ItemUtils.hasCustomDurability(itemStack)){
+        if (ItemUtils.hasCustomDurability(itemStack)) {
             event.setCancelled(true);
-            ItemUtils.setDamage(itemStack, ItemUtils.getDamage(itemStack)+event.getDamage());
+            ItemUtils.setDamage(itemStack, ItemUtils.getDamage(itemStack) + event.getDamage());
         }
     }
 }

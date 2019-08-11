@@ -12,12 +12,12 @@ public abstract class Button {
     private String id;
     private ButtonType type;
 
-    public Button(String id, ButtonType type){
+    public Button(String id, ButtonType type) {
         this.id = id;
         this.type = type;
     }
 
-    public Button(String id){
+    public Button(String id) {
         this(id, ButtonType.NORMAL);
     }
 

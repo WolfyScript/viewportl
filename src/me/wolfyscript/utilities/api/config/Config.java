@@ -12,9 +12,9 @@ public class Config extends FileConfiguration implements ConfigurationSection {
 
     public Config(ConfigAPI configAPI, String path, String name, String defPath, String defFileName, String fileType, boolean overwrite) {
         super(configAPI, path, name, defPath, defFileName, fileType.equalsIgnoreCase("json") ? Type.JSON : Type.YAML);
-        if(getType().equals(Configuration.Type.JSON)){
+        if (getType().equals(Configuration.Type.JSON)) {
             this.configuration = new JsonConfiguration(configAPI, path, name, defPath, defFileName, overwrite);
-        }else{
+        } else {
             this.configuration = new YamlConfiguration(configAPI, path, name, defPath, defFileName, overwrite);
         }
         setPathSeparator('.');
@@ -25,10 +25,10 @@ public class Config extends FileConfiguration implements ConfigurationSection {
         configuration.save();
     }
 
-    public void save(boolean prettyPrinting){
-        if(configuration instanceof JsonConfiguration){
+    public void save(boolean prettyPrinting) {
+        if (configuration instanceof JsonConfiguration) {
             ((JsonConfiguration) configuration).save(prettyPrinting);
-        }else{
+        } else {
             this.save();
         }
     }
@@ -43,10 +43,10 @@ public class Config extends FileConfiguration implements ConfigurationSection {
         configuration.reload();
     }
 
-    public void reload(boolean prettyPrinting){
-        if(configuration instanceof JsonConfiguration){
+    public void reload(boolean prettyPrinting) {
+        if (configuration instanceof JsonConfiguration) {
             ((JsonConfiguration) configuration).reload(prettyPrinting);
-        }else{
+        } else {
             this.reload();
         }
     }

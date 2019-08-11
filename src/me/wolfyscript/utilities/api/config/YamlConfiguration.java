@@ -10,7 +10,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -323,7 +326,7 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
 
     @Override
     public ItemStack getItem(String path, boolean replaceKeys) {
-        if(config.isSet(path)){
+        if (config.isSet(path)) {
             Map<String, Object> data = getValues(path);
             data.put("v", Bukkit.getUnsafe().getDataVersion());
             ItemStack itemStack = ItemStack.deserialize(data);
@@ -364,7 +367,7 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
 
     @Override
     public Map<String, Object> getValues(String path) {
-        if(config.getConfigurationSection(path) != null){
+        if (config.getConfigurationSection(path) != null) {
             return config.getConfigurationSection(path).getValues(false);
         }
         return new HashMap<>();

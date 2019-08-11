@@ -11,18 +11,18 @@ public class ClickData {
     private List<ChatEvent> clickEvents;
     private boolean discard;
 
-    public ClickData(String message, @Nullable ClickAction clickAction, boolean discard, ChatEvent... clickEvents){
+    public ClickData(String message, @Nullable ClickAction clickAction, boolean discard, ChatEvent... clickEvents) {
         this.clickAction = clickAction;
         this.message = message;
         this.clickEvents = Arrays.asList(clickEvents);
         this.discard = discard;
     }
 
-    public ClickData(String message, @Nullable ClickAction clickAction, ChatEvent... clickEvents){
+    public ClickData(String message, @Nullable ClickAction clickAction, ChatEvent... clickEvents) {
         this(message, clickAction, false, clickEvents);
     }
 
-    public ClickData(String message, @Nullable ClickAction clickAction){
+    public ClickData(String message, @Nullable ClickAction clickAction) {
         this(message, clickAction, new ChatEvent[]{});
     }
 

@@ -48,7 +48,7 @@ public class GuiItemDragEvent extends Event implements Cancellable {
         return view;
     }
 
-    public boolean verify(GuiWindow guiWindow){
+    public boolean verify(GuiWindow guiWindow) {
         return guiWindow.equals(this.guiWindow);
     }
 

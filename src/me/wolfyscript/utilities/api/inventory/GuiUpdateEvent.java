@@ -22,24 +22,24 @@ public class GuiUpdateEvent extends Event {
     private Inventory inventory;
     private GuiWindow guiWindow;
 
-    public GuiUpdateEvent(GuiHandler guiHandler, GuiWindow guiWindow){
+    public GuiUpdateEvent(GuiHandler guiHandler, GuiWindow guiWindow) {
         this.guiHandler = guiHandler;
         this.inventoryAPI = guiHandler.getApi().getInventoryAPI();
         this.wolfyUtilities = guiHandler.getApi();
         this.player = guiHandler.getPlayer();
         this.guiWindow = guiWindow;
-        if(!guiWindow.hasCachedInventory(guiHandler)){
-            if(guiWindow.getInventoryType() == null){
+        if (!guiWindow.hasCachedInventory(guiHandler)) {
+            if (guiWindow.getInventoryType() == null) {
                 this.inventory = Bukkit.createInventory(null, guiWindow.getSize(), guiWindow.getInventoryName());
-            }else{
+            } else {
                 this.inventory = Bukkit.createInventory(null, guiWindow.getInventoryType(), guiWindow.getInventoryName());
             }
-        }else{
+        } else {
             this.inventory = guiWindow.getInventory(guiHandler);
         }
     }
 
-    public boolean verify(GuiWindow guiWindow){
+    public boolean verify(GuiWindow guiWindow) {
         return guiWindow.equals(this.guiWindow);
     }
 
@@ -63,11 +63,11 @@ public class GuiUpdateEvent extends Event {
         return inventoryAPI;
     }
 
-    public ItemStack getItem(int slot){
+    public ItemStack getItem(int slot) {
         return getInventory().getItem(slot);
     }
 
-    public void setItem(int slot, ItemStack itemStack){
+    public void setItem(int slot, ItemStack itemStack) {
         getInventory().setItem(slot, itemStack);
     }
 
@@ -75,12 +75,12 @@ public class GuiUpdateEvent extends Event {
     Set an locally registered Button.
     Locally means it is registered inside of the GuiWindow!
      */
-    public void setButton(int slot, String id){
+    public void setButton(int slot, String id) {
         Button button = guiWindow.getButton(id);
-        if(button == null){
+        if (button == null) {
             inventoryAPI.getButton(id);
         }
-        if(button != null){
+        if (button != null) {
             guiHandler.getPlayerCache().setButton(guiWindow, slot, id);
             button.render(guiHandler, slot, inventory, guiHandler.isHelpEnabled());
         }
@@ -90,10 +90,10 @@ public class GuiUpdateEvent extends Event {
     Set an globally registered Button.
     Globally means it is registered via the InventoryAPI.
      */
-    public void setButton(int slot, String namespace, String key){
+    public void setButton(int slot, String namespace, String key) {
         Button button = inventoryAPI.getButton(namespace, key);
-        if(button != null){
-            guiHandler.getPlayerCache().setButton(guiWindow, slot, namespace+":"+key);
+        if (button != null) {
+            guiHandler.getPlayerCache().setButton(guiWindow, slot, namespace + ":" + key);
             button.render(guiHandler, slot, inventory, guiHandler.isHelpEnabled());
         }
     }
@@ -102,11 +102,11 @@ public class GuiUpdateEvent extends Event {
         return inventory;
     }
 
-    public Inventory createInventory(InventoryHolder owner, int size){
-         return Bukkit.createInventory(owner, size, guiWindow.getInventoryName());
+    public Inventory createInventory(InventoryHolder owner, int size) {
+        return Bukkit.createInventory(owner, size, guiWindow.getInventoryName());
     }
 
-    public Inventory createInventory(InventoryHolder owner, InventoryType type){
+    public Inventory createInventory(InventoryHolder owner, InventoryType type) {
         return Bukkit.createInventory(owner, type, guiWindow.getInventoryName());
     }
 
@@ -115,7 +115,7 @@ public class GuiUpdateEvent extends Event {
         return handlers;
     }
 
-    public static HandlerList getHandlerList(){
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 
@@ -130,7 +130,7 @@ public class GuiUpdateEvent extends Event {
     }
 
     @Deprecated
-    public ItemStack getItem(String key, String action){
+    public ItemStack getItem(String key, String action) {
         return guiHandler.getItem(key, action);
     }
 
@@ -140,12 +140,12 @@ public class GuiUpdateEvent extends Event {
     }
 
     @Deprecated
-    public ItemStack getItem(String action, String keyToReplace, String value){
+    public ItemStack getItem(String action, String keyToReplace, String value) {
         return getItem(guiWindow.getItemKey(), action, keyToReplace, value);
     }
 
     @Deprecated
-    public ItemStack getItem(String key, String action, String keyToReplace, String value){
+    public ItemStack getItem(String key, String action, String keyToReplace, String value) {
         ItemStack item = getItem(key, action);
         ItemMeta posXmeta = item.getItemMeta();
         posXmeta.setDisplayName(posXmeta.getDisplayName().replace(keyToReplace, value));
@@ -154,17 +154,17 @@ public class GuiUpdateEvent extends Event {
     }
 
     @Deprecated
-    public void setItem(int slot, String action){
+    public void setItem(int slot, String action) {
         setItem(slot, action, false);
     }
 
     @Deprecated
-    public void setItem(int slot, String key, String action){
+    public void setItem(int slot, String key, String action) {
         setItem(slot, getItem(key, action));
     }
 
     @Deprecated
-    public void setItem(int slot, String action, boolean generalItem){
+    public void setItem(int slot, String action, boolean generalItem) {
         setItem(slot, generalItem ? getGeneralItem(action) : getItem(action));
     }
 }

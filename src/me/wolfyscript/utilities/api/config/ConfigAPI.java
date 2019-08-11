@@ -18,54 +18,54 @@ public class ConfigAPI {
 
     private int autoSave = -1;
 
-    public ConfigAPI(WolfyUtilities api){
+    public ConfigAPI(WolfyUtilities api) {
         this.api = api;
         this.plugin = api.getPlugin();
         this.configs = new HashMap<>();
     }
 
-    public ConfigAPI(WolfyUtilities api, boolean enableAutoSave, int intervalInMin){
+    public ConfigAPI(WolfyUtilities api, boolean enableAutoSave, int intervalInMin) {
         this(api);
         setAutoSave(enableAutoSave, intervalInMin);
     }
 
-    public void setAutoSave(boolean enabled, int intervalInMin){
-        if(autoSave == -1 && enabled){
+    public void setAutoSave(boolean enabled, int intervalInMin) {
+        if (autoSave == -1 && enabled) {
             runAutoSave(intervalInMin);
-        }else if(!enabled){
+        } else if (!enabled) {
             stopAutoSave();
-        }else{
+        } else {
             stopAutoSave();
             runAutoSave(intervalInMin);
         }
     }
 
-    public void stopAutoSave(){
-        if(plugin.getServer().getScheduler().isCurrentlyRunning(autoSave)){
+    public void stopAutoSave() {
+        if (plugin.getServer().getScheduler().isCurrentlyRunning(autoSave)) {
             plugin.getServer().getScheduler().cancelTask(autoSave);
         }
     }
 
-    private void runAutoSave(int intervalInMin){
+    private void runAutoSave(int intervalInMin) {
         autoSave = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            for(Configuration configuration : configs.values()){
-                if(configuration instanceof YamlConfiguration){
+            for (Configuration configuration : configs.values()) {
+                if (configuration instanceof YamlConfiguration) {
                     ((YamlConfiguration) configuration).reloadAuto();
                 }
             }
         }, 1200, intervalInMin * 60 * 20);
     }
 
-    public void registerConfig(Configuration configuration){
+    public void registerConfig(Configuration configuration) {
         configs.put(configuration.getName(), configuration);
     }
 
-    public Configuration getConfig(String name){
+    public Configuration getConfig(String name) {
         return configs.get(name);
     }
 
-    public YamlConfiguration getmainConfig(){
-        if(getConfig("main_config") instanceof YamlConfiguration){
+    public YamlConfiguration getmainConfig() {
+        if (getConfig("main_config") instanceof YamlConfiguration) {
             return (YamlConfiguration) getConfig("main_config");
         }
         return null;
@@ -92,17 +92,17 @@ public class ConfigAPI {
     So that all configs are saved!
     It can be called from everywhere, but it's not useful.
      */
-    public void saveConfigs(){
-        for(Configuration configuration : configs.values()){
-            if(configuration instanceof FileConfiguration){
+    public void saveConfigs() {
+        for (Configuration configuration : configs.values()) {
+            if (configuration instanceof FileConfiguration) {
                 ((FileConfiguration) configuration).save();
             }
         }
     }
 
-    public void loadConfigs(){
-        for(Configuration configuration : configs.values()){
-            if(configuration instanceof FileConfiguration){
+    public void loadConfigs() {
+        for (Configuration configuration : configs.values()) {
+            if (configuration instanceof FileConfiguration) {
                 ((FileConfiguration) configuration).load();
             }
         }

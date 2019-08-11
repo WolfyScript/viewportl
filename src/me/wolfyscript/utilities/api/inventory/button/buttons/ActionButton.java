@@ -17,18 +17,18 @@ public class ActionButton extends Button {
     private ButtonType type;
     private ButtonState state;
 
-    public ActionButton(String id, ButtonType type, ButtonState state){
+    public ActionButton(String id, ButtonType type, ButtonState state) {
         super(id, type);
         this.id = id;
         this.type = type;
         this.state = state;
     }
 
-    public ActionButton(String id, ButtonState state){
+    public ActionButton(String id, ButtonState state) {
         this(id, ButtonType.NORMAL, state);
     }
 
-    public void init(GuiWindow guiWindow){
+    public void init(GuiWindow guiWindow) {
         state.init(guiWindow);
     }
 
@@ -37,14 +37,14 @@ public class ActionButton extends Button {
         state.init(windowKey, api);
     }
 
-    public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event){
-        if(!type.equals(ButtonType.DUMMY) && state.getAction() != null){
+    public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
+        if (!type.equals(ButtonType.DUMMY) && state.getAction() != null) {
             return state.getAction().run(guiHandler, player, inventory, slot, event);
         }
         return true;
     }
 
-    public void render(GuiHandler guiHandler, int slot, Inventory inventory, boolean help){
+    public void render(GuiHandler guiHandler, int slot, Inventory inventory, boolean help) {
         InventoryAPI invAPI = guiHandler.getApi().getInventoryAPI();
         inventory.setItem(slot, state.getIcon(help));
     }

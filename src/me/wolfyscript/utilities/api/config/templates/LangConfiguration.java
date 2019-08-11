@@ -1,7 +1,6 @@
 package me.wolfyscript.utilities.api.config.templates;
 
 import me.wolfyscript.utilities.api.config.Config;
-import me.wolfyscript.utilities.api.config.YamlConfiguration;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 
 public class LangConfiguration extends Config {
@@ -11,6 +10,6 @@ public class LangConfiguration extends Config {
     }
 
     public LangConfiguration(ConfigAPI configAPI, String name, String defaultPath, String defName, String fileType, boolean overwrite) {
-        super(configAPI, configAPI.getPlugin().getDataFolder().getPath()+"/lang", name, defaultPath, defName, fileType, overwrite);
+        super(configAPI, configAPI.getPlugin().getDataFolder().getPath() + "/lang", name, defaultPath, defName, fileType, overwrite);
     }
 }
