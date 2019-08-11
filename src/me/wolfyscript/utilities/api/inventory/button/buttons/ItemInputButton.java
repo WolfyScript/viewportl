@@ -28,7 +28,7 @@ public class ItemInputButton extends ActionButton {
 
     @Override
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
-        content.put(guiHandler, inventory.getItem(slot));
+        content.put(guiHandler, inventory.getItem(slot) != null ? inventory.getItem(slot).clone() : new ItemStack(Material.AIR));
         return super.execute(guiHandler, player, inventory, slot, event);
     }
 

@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.button.Button;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -70,8 +71,31 @@ public class GuiUpdateEvent extends Event {
         getInventory().setItem(slot, itemStack);
     }
 
+    /*
+    Set an locally registered Button.
+    Locally means it is registered inside of the GuiWindow!
+     */
     public void setButton(int slot, String id){
+        Button button = guiWindow.getButton(id);
+        if(button == null){
+            inventoryAPI.getButton(id);
+        }
+        if(button != null){
+            guiHandler.getPlayerCache().setButton(guiWindow, slot, id);
+            button.render(guiHandler, slot, inventory, guiHandler.isHelpEnabled());
+        }
+    }
 
+    /*
+    Set an globally registered Button.
+    Globally means it is registered via the InventoryAPI.
+     */
+    public void setButton(int slot, String namespace, String key){
+        Button button = inventoryAPI.getButton(namespace, key);
+        if(button != null){
+            guiHandler.getPlayerCache().setButton(guiWindow, slot, namespace+":"+key);
+            button.render(guiHandler, slot, inventory, guiHandler.isHelpEnabled());
+        }
     }
 
     public Inventory getInventory() {

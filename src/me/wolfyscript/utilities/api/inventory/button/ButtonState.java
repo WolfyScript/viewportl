@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.inventory.button;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class ButtonState {
@@ -23,11 +24,19 @@ public class ButtonState {
         this.action = action;
     }
 
+    public ButtonState(String key, Material presetIcon, ButtonAction action){
+        this(key, new ItemStack(presetIcon), action);
+    }
+
     public ButtonState(String namespace, String key, ItemStack presetIcon, ButtonAction action){
         this.action = action;
         this.presetIcon = presetIcon;
         this.namespace = namespace;
         this.key = key;
+    }
+
+    public ButtonState(String namespace, String key, Material presetIcon, ButtonAction action){
+        this(namespace, key, new ItemStack(presetIcon), action);
     }
 
     public ButtonState(ItemStack presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action){
@@ -36,18 +45,22 @@ public class ButtonState {
         this.icon = ItemUtils.createItem(presetIcon, displayName, helpLore, normalLore);
     }
 
-    public void init(GuiWindow window, Button button){
-        init(button, window.getNamespace(), window.getAPI());
+    public ButtonState(Material presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action){
+        this(new ItemStack(presetIcon), displayName, helpLore, normalLore, action);
     }
 
-    public void init(Button button, String windowKey, WolfyUtilities api){
-        if(key != null && key.isEmpty()){
+    public void init(GuiWindow window){
+        init(window.getNamespace(), window.getAPI());
+    }
+
+    public void init(String windowKey, WolfyUtilities api){
+        if(key != null && !key.isEmpty()){
             String path = "items." + (namespace == null || namespace.isEmpty() ? windowKey : (windowKey + namespace)) + "." + key;
             displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$");
             helpLore = api.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".help") != null ? api.getLanguageAPI().getActiveLanguage().replaceKey(path + ".help").toArray(new String[0]) : new String[0];
             normalLore = api.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".lore") != null ? api.getLanguageAPI().getActiveLanguage().replaceKey(path + ".lore").toArray(new String[0]) : new String[0];
         }
-        this.icon = ItemUtils.createItem(presetIcon, displayName+ WolfyUtilities.hideString("::"+button.getId()), helpLore, normalLore);
+        this.icon = ItemUtils.createItem(presetIcon, displayName, helpLore, normalLore);
     }
 
     public ItemStack getIcon(boolean help) {

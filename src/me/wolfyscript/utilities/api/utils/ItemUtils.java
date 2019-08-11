@@ -69,7 +69,7 @@ public class ItemUtils {
     public static ItemStack[] createItem(ItemStack itemStack, String displayName, String[] helpLore, String... normalLore){
         ItemStack[] itemStacks = new ItemStack[2];
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(org.bukkit.ChatColor.translateAlternateColorCodes('&', displayName + WolfyUtilities.hideString(Main.getMainConfig().getString("securityCode"))));
+        itemMeta.setDisplayName(org.bukkit.ChatColor.translateAlternateColorCodes('&', displayName));
         List<String> lore = new ArrayList<>();
         if (normalLore != null && normalLore.length > 0) {
             for (String row : normalLore) {

@@ -35,23 +35,21 @@ public class ToggleButton extends Button {
 
     @Override
     public void init(GuiWindow guiWindow) {
-        states[0].init(guiWindow, this);
-        states[1].init(guiWindow, this);
+        states[0].init(guiWindow);
+        states[1].init(guiWindow);
     }
 
     @Override
     public void init(String windowKey, WolfyUtilities api) {
-        states[0].init(this, windowKey, api);
-        states[1].init(this, windowKey, api);
+        states[0].init(windowKey, api);
+        states[1].init(windowKey, api);
     }
 
     @Override
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
-        if(!states[settings.getOrDefault(guiHandler, true) ? 0 : 1].getAction().run(guiHandler, player, inventory, slot, event)){
-            settings.put(guiHandler, !settings.getOrDefault(guiHandler, true));
-            return true;
-        }
-        return false;
+        boolean result = states[settings.getOrDefault(guiHandler, true) ? 0 : 1].getAction().run(guiHandler, player, inventory, slot, event);
+        settings.put(guiHandler, !settings.getOrDefault(guiHandler, true));
+        return result;
     }
 
     @Override

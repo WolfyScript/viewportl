@@ -38,14 +38,14 @@ public class MultipleChoiceButton extends Button {
     @Override
     public void init(GuiWindow guiWindow) {
         for(ButtonState btnState : states){
-            btnState.init(guiWindow, this);
+            btnState.init(guiWindow);
         }
     }
 
     @Override
     public void init(String windowKey, WolfyUtilities api) {
         for(ButtonState btnState : states){
-            btnState.init(this, windowKey, api);
+            btnState.init(windowKey, api);
         }
     }
 

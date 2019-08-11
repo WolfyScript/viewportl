@@ -29,12 +29,12 @@ public class ActionButton extends Button {
     }
 
     public void init(GuiWindow guiWindow){
-        state.init(guiWindow, this);
+        state.init(guiWindow);
     }
 
     @Override
     public void init(String windowKey, WolfyUtilities api) {
-        state.init(this, windowKey, api);
+        state.init(windowKey, api);
     }
 
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event){

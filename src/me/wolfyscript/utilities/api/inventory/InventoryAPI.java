@@ -7,6 +7,7 @@ import me.wolfyscript.utilities.api.utils.ItemUtils;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,7 +30,8 @@ public class InventoryAPI implements Listener {
     private HashMap<String, GuiWindow> guiWindows;
     private HashMap<String, ItemStack[]> items;
     private HashMap<String, List<String>> itemHelpLores;
-    private HashMap<String, Button> buttons = new HashMap<>();
+
+    private HashMap<NamespacedKey, Button> buttons = new HashMap<>();
     private String mainmenu;
 
     public InventoryAPI(Plugin plugin, WolfyUtilities wolfyUtilities) {
@@ -122,46 +124,75 @@ public class InventoryAPI implements Listener {
         items.clear();
     }
 
-    public void registerButton(String id, Button button){
-        button.init(id, getWolfyUtilities());
-        buttons.put(id, button);
+    /*
+    Registers an Button globally which then can be accessed in every GUI.
+    These Buttons can also be sorted into different namespaces.
+    Default namespace is "none".
+     */
+    public void registerButton(String key, Button button){
+        registerButton("none", key, button);
     }
 
-    public String verifyButton(ItemStack button){
-        if (button != null && button.hasItemMeta()) {
-            if (button.getItemMeta().hasDisplayName()) {
-                String[] splitted = button.getItemMeta().getDisplayName().split("§:§:");
-                if (splitted.length >= 2) {
-                    return WolfyUtilities.unhideString(splitted[splitted.length - 1]);
-                }
-            }
-        }
-        return "";
+    /*
+    Registers an Button globally which then can be accessed in every GUI.
+     */
+    public void registerButton(String namespace, String key, Button button){
+        registerButton(new NamespacedKey(namespace, key), button);
+    }
+
+    /*
+    Registers an Button globally which then can be accessed in every GUI.
+     */
+    public void registerButton(NamespacedKey namespacedKey, Button button){
+        button.init(namespacedKey.getNamespace(), getWolfyUtilities());
+        buttons.put(namespacedKey, button);
+    }
+
+    /*
+    Get an globally registered Button.
+    This returns an Button out of the default namespace.
+     */
+    public Button getButton(String key){
+        return getButton("none", key);
+    }
+
+    /*
+    Get an globally registered Button.
+    This returns an Button out of the specific namespace.
+     */
+    public Button getButton(String namespace, String key){
+        return getButton(new NamespacedKey(namespace, key));
+    }
+
+    /*
+    Get an globally registered Button.
+    This returns an Button out of the specific namespace.
+     */
+    public Button getButton(NamespacedKey namespacedKey){
+        return buttons.get(namespacedKey);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
-                Main.getMainUtil().sendDebugMessage("check GUI Handler >>>> " + event.getWhoClicked().getName() + " <<<<");
-
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
-                Main.getMainUtil().sendDebugMessage(" GuiHandler: " + guiHandler);
-                Main.getMainUtil().sendDebugMessage("  Inv: " + guiHandler.getCurrentInv());
                 if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
-                    Main.getMainUtil().sendDebugMessage("   valid -> " + event.getWhoClicked().getName());
                     event.setCancelled(true);
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
 
-                    Button button = guiWindow.getButton(verifyButton(event.getCurrentItem()));
+                    Button button = guiHandler.getPlayerCache().getButton(guiWindow, event.getSlot());
                     if(button != null){
                         event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
                         guiHandler.getCurrentInv().update(guiHandler);
                     }else{
+                        /*
+                        Deprecated!
+                         */
                         String action = guiHandler.verifyItem(event.getCurrentItem());
                         if (!action.isEmpty()) {
-
                             GuiAction guiAction = new GuiAction(action, guiHandler, guiHandler.getCurrentInv(), event);
+                            guiHandler.getCurrentInv().update(guiHandler);
                             if (!guiHandler.getCurrentInv().onAction(guiAction)) {
                                 event.setCancelled(true);
                             }
@@ -255,7 +286,7 @@ public class InventoryAPI implements Listener {
      */
     @Deprecated
     public void registerItem(String namespace, String key, ItemStack itemStack, String displayName, String[] helpLore, String... normalLore) {
-        items.put(namespace + ":" + key, ItemUtils.createItem(itemStack, displayName + WolfyUtilities.hideString("::" + key + "::"), helpLore, normalLore));
+        items.put(namespace + ":" + key, ItemUtils.createItem(itemStack, displayName + WolfyUtilities.hideString("::" + key+ "::"+Main.getMainConfig().getString("securityCode")), helpLore, normalLore));
     }
 
     @Deprecated

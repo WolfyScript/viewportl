@@ -22,6 +22,7 @@ public class GuiWindow implements Listener {
     private HashMap<GuiHandler, Inventory> cachedInventories;
     private HashMap<String, Button> buttons = new HashMap<>();
 
+
     //Inventory
     private InventoryType inventoryType;
     private int size;

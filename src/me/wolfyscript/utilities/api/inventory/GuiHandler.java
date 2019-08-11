@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.cache.PlayerCache;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class GuiHandler implements Listener {
 
     private WolfyUtilities api;
+    private PlayerCache playerCache;
     private Player player;
     private boolean changingInv = false;
     private int testChatID = -1;
@@ -24,13 +26,13 @@ public class GuiHandler implements Listener {
     private String uuid;
 
     private List<String> pageHistory = new ArrayList<>();
-
     private boolean helpEnabled = false;
 
     public GuiHandler(Player player, WolfyUtilities api) {
         this.api = api;
         this.player = player;
         this.uuid = player.getUniqueId().toString();
+        this.playerCache = new PlayerCache(getApi());
         Bukkit.getPluginManager().registerEvents(this, api.getPlugin());
     }
 
@@ -120,35 +122,6 @@ public class GuiHandler implements Listener {
         }
     }
 
-    @Deprecated
-    public String verifyItem(ItemStack item) {
-        if (item != null && item.hasItemMeta()) {
-            if (item.getItemMeta().hasDisplayName()) {
-                String[] splitted = item.getItemMeta().getDisplayName().split("§:§:");
-                if (splitted.length >= 3) {
-                    if (WolfyUtilities.unhideString(splitted[splitted.length - 1]).equals(Main.getMainConfig().getString("securityCode"))) {
-                        return WolfyUtilities.unhideString(splitted[splitted.length - 2]);
-                    }
-                }
-            }
-        }
-        return "";
-    }
-
-    public ItemStack getItem(String namespace, String id) {
-        return getApi().getInventoryAPI().getItem(namespace, id, helpEnabled);
-    }
-
-    @Deprecated
-    public int getTestChatID() {
-        return testChatID;
-    }
-
-    @Deprecated
-    public void setTestChatID(int testChatID) {
-        this.testChatID = testChatID;
-    }
-
     public boolean isChatEventActive(){
         return (getTestChatID() > -1) || getChatInputAction() != null;
     }
@@ -177,6 +150,10 @@ public class GuiHandler implements Listener {
         return helpEnabled;
     }
 
+    public PlayerCache getPlayerCache() {
+        return playerCache;
+    }
+
     @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
         Player eventPlayer = (Player) event.getPlayer();
@@ -187,5 +164,35 @@ public class GuiHandler implements Listener {
                 }
             }
         }
+    }
+
+    @Deprecated
+    public String verifyItem(ItemStack item) {
+        if (item != null && item.hasItemMeta()) {
+            if (item.getItemMeta().hasDisplayName()) {
+                String[] splitted = item.getItemMeta().getDisplayName().split("§:§:");
+                if (splitted.length >= 3) {
+                    if (WolfyUtilities.unhideString(splitted[splitted.length - 1]).equals(Main.getMainConfig().getString("securityCode"))) {
+                        return WolfyUtilities.unhideString(splitted[splitted.length - 2]);
+                    }
+                }
+            }
+        }
+        return "";
+    }
+
+    @Deprecated
+    public ItemStack getItem(String namespace, String id) {
+        return getApi().getInventoryAPI().getItem(namespace, id, helpEnabled);
+    }
+
+    @Deprecated
+    public int getTestChatID() {
+        return testChatID;
+    }
+
+    @Deprecated
+    public void setTestChatID(int testChatID) {
+        this.testChatID = testChatID;
     }
 }
