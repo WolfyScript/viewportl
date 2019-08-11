@@ -5,22 +5,29 @@ import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
-public class DummyButton extends Button {
+public class DummyButton extends ActionButton {
 
     /*
     This Button acts as a dummy, it will not run the action, even if you set one for the ButtonState!
      */
 
-    public DummyButton(WolfyUtilities api, ButtonState state) {
-        super(api, ButtonType.DUMMY, state);
+    public DummyButton(String id, ButtonState state) {
+        super(id, ButtonType.DUMMY, state);
+    }
+
+    public DummyButton(String id){
+        super(id, ButtonType.DUMMY, null);
     }
 
     @Override
-    public void execute(GuiHandler guiHandler, Inventory inventory, int slot, InventoryClickEvent event) {
+    public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
         //NOTHING
+        return true;
     }
 
     @Override

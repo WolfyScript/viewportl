@@ -3,10 +3,12 @@ package me.wolfyscript.utilities.api.inventory.button.buttons;
 import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
+import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -27,30 +29,38 @@ public class MultipleChoiceButton extends Button {
     After the index reached the size of the States it is reset to 0!
      */
 
-    public MultipleChoiceButton(WolfyUtilities api, @NotNull ButtonState... states) {
-        super(api, ButtonType.CHOICES, null);
+    public MultipleChoiceButton(String id, @NotNull ButtonState... states) {
+        super(id, ButtonType.CHOICES);
         this.states = Arrays.asList(states);
         settings = new HashMap<>();
     }
 
     @Override
-    public void init(WolfyUtilities api) {
+    public void init(GuiWindow guiWindow) {
         for(ButtonState btnState : states){
-            btnState.init(api);
+            btnState.init(guiWindow, this);
         }
     }
 
     @Override
-    public void execute(GuiHandler guiHandler, Inventory inventory, int slot, InventoryClickEvent event) {
+    public void init(String windowKey, WolfyUtilities api) {
+        for(ButtonState btnState : states){
+            btnState.init(this, windowKey, api);
+        }
+    }
+
+    @Override
+    public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
         int setting = settings.getOrDefault(guiHandler, 0);
         if(states != null && states.size() > setting){
             ButtonState btnState = states.get(setting);
-            btnState.getAction().run(guiHandler, inventory, slot, event);
             setting++;
             if(setting >= states.size()){
                 settings.put(guiHandler, 0);
             }
+            return btnState.getAction().run(guiHandler, player, inventory, slot, event);
         }
+        return true;
     }
 
     @Override
@@ -58,7 +68,7 @@ public class MultipleChoiceButton extends Button {
         InventoryAPI invAPI = guiHandler.getApi().getInventoryAPI();
         int setting = settings.getOrDefault(guiHandler, 0);
         if(states != null && states.size() > setting){
-            inventory.setItem(slot, invAPI.getItem(states.get(setting).getIcon().getNamespace(), states.get(setting).getIcon().getKey(), help));
+            inventory.setItem(slot, states.get(setting).getIcon(help));
         }
     }
 }

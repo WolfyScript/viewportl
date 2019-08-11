@@ -1,20 +1,17 @@
 package me.wolfyscript.utilities.api.inventory.button.buttons;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
-import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 
-public class ItemInputButton extends Button {
+public class ItemInputButton extends ActionButton {
 
     private HashMap<GuiHandler, ItemStack> content;
 
@@ -24,15 +21,15 @@ public class ItemInputButton extends Button {
     an action on each click.
      */
 
-    public ItemInputButton(WolfyUtilities api, ButtonState state) {
-        super(api, ButtonType.ITEM_SLOT, state);
+    public ItemInputButton(String id, ButtonState state) {
+        super(id, ButtonType.ITEM_SLOT, state);
         this.content = new HashMap<>();
     }
 
     @Override
-    public void execute(GuiHandler guiHandler, Inventory inventory, int slot, InventoryClickEvent event) {
+    public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
         content.put(guiHandler, inventory.getItem(slot));
-        super.execute(guiHandler, inventory, slot, event);
+        return super.execute(guiHandler, player, inventory, slot, event);
     }
 
     @Override

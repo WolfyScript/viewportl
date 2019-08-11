@@ -1,15 +1,18 @@
 package me.wolfyscript.utilities.api.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.utils.chat.ClickData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class GuiWindow implements Listener {
 
@@ -17,6 +20,7 @@ public class GuiWindow implements Listener {
     public String itemKey;
     private InventoryAPI inventoryAPI;
     private HashMap<GuiHandler, Inventory> cachedInventories;
+    private HashMap<String, Button> buttons = new HashMap<>();
 
     //Inventory
     private InventoryType inventoryType;
@@ -45,6 +49,10 @@ public class GuiWindow implements Listener {
         return inventoryType;
     }
 
+    public WolfyUtilities getAPI() {
+        return inventoryAPI.getWolfyUtilities();
+    }
+
     public int getSize() {
         return size;
     }
@@ -55,36 +63,25 @@ public class GuiWindow implements Listener {
 
     }
 
-    public boolean onAction(GuiAction guiAction){
+    public boolean onAction(GuiAction guiAction) {
         return true;
     }
 
-    public boolean onClick(GuiClick guiClick){
+    public boolean onClick(GuiClick guiClick) {
         return true;
     }
 
-    public void onUpdate(){
+    public void onUpdate() {
 
     }
 
-    /*
-    Replaced by direct accessed methods via lambda expressions! This method only exist for backwards compatibility!
-    Will be removed completely in the near future!
-     */
-    @Deprecated
-    public boolean parseChatMessage(int id, String message, GuiHandler guiHandler) {
-        return true;
-    }
-
-    //
-
-    protected void update(GuiHandler guiHandler){
+    protected void update(GuiHandler guiHandler) {
         Bukkit.getScheduler().runTaskLater(inventoryAPI.getPlugin(), () -> {
-            if(!guiHandler.isChatEventActive()){
+            if (!guiHandler.isChatEventActive()) {
                 GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
                 Bukkit.getPluginManager().callEvent(event);
             }
-        },1);
+        }, 1);
     }
 
     public String getNamespace() {
@@ -99,24 +96,90 @@ public class GuiWindow implements Listener {
         itemKey = newItemKey;
     }
 
-    public void createItem(String id, Material material) {
-        createItem(itemKey, id, material);
+    /*
+        Register an Button!
+        The id of the Button must be unique, else it will override the Button with the same id.
+     */
+    public void registerButton(Button button) {
+        button.init(this);
+        buttons.put(button.getId(), button);
     }
 
-    public void createItem(String id, ItemStack itemStack) {
-        createItem(itemKey, id, itemStack);
+    /*
+    Gets the Button by it's id.
+     */
+    public Button getButton(String id) {
+        return buttons.get(id);
     }
 
-    public void createItem(String key, String id, Material material) {
-        createItem(key, id, new ItemStack(material));
-    }
-
-    public void createItem(String key, String id, ItemStack itemStack) {
-        inventoryAPI.registerItem(key, id, itemStack);
+    /*
+    Returns true if the Button is registered!
+     */
+    public boolean hasButton(String id){
+        return buttons.containsKey(id);
     }
 
     public void reloadInv(GuiHandler guiHandler) {
         guiHandler.reloadInv(namespace);
+    }
+
+    /*
+    Opens the chat, send the player the defined message and waits for the input of the player.
+    When the player sends the message the inputAction method is executed
+     */
+
+    public void openChat(GuiHandler guiHandler, String msg, ChatInputAction inputAction) {
+        guiHandler.setChatInputAction(inputAction);
+        guiHandler.close();
+        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), msg);
+    }
+    /*
+    Opens the chat, send the player the defined action messages and waits for the input of the player.
+    When the player sends the message the inputAction method is executed
+     */
+
+    public void openActionChat(GuiHandler guiHandler, ClickData clickData, ChatInputAction inputAction) {
+        guiHandler.setChatInputAction(inputAction);
+        guiHandler.close();
+        guiHandler.getApi().sendActionMessage(guiHandler.getPlayer(), clickData);
+    }
+    protected String getInventoryName() {
+        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories." + namespace + "$"));
+    }
+
+    public Inventory getInventory(GuiHandler guiHandler) {
+        return cachedInventories.get(guiHandler);
+    }
+
+    public boolean hasCachedInventory(GuiHandler guiHandler) {
+        return cachedInventories.containsKey(guiHandler);
+    }
+
+    public void setCachedInventorie(GuiHandler guiHandler, Inventory inventory) {
+        cachedInventories.put(guiHandler, inventory);
+    }
+
+    /*
+    Replaced by Button system. To use Buttons may also be easier and cleaner!
+     */
+    @Deprecated
+    public void createItem(String id, Material material) {
+        createItem(itemKey, id, material);
+    }
+
+    @Deprecated
+    public void createItem(String id, ItemStack itemStack) {
+        createItem(itemKey, id, itemStack);
+    }
+
+    @Deprecated
+    public void createItem(String key, String id, Material material) {
+        createItem(key, id, new ItemStack(material));
+    }
+
+    @Deprecated
+    public void createItem(String key, String id, ItemStack itemStack) {
+        inventoryAPI.registerItem(key, id, itemStack);
     }
 
     /*
@@ -131,41 +194,12 @@ public class GuiWindow implements Listener {
     }
 
     /*
-    Opens the chat, send the player the defined message and waits for the input of the player.
-    When the player sends the message the inputAction method is executed
+    Replaced by direct accessed methods via lambda expressions! This method only exist for backwards compatibility!
+    Will be removed completely in the near future!
      */
-    public void openChat(GuiHandler guiHandler, String msg, ChatInputAction inputAction){
-        guiHandler.setChatInputAction(inputAction);
-        guiHandler.close();
-        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), msg);
+    @Deprecated
+    public boolean parseChatMessage(int id, String message, GuiHandler guiHandler) {
+        return true;
     }
-
-    /*
-    Opens the chat, send the player the defined action messages and waits for the input of the player.
-    When the player sends the message the inputAction method is executed
-     */
-    public void openActionChat(GuiHandler guiHandler, ClickData clickData, ChatInputAction inputAction){
-        guiHandler.setChatInputAction(inputAction);
-        guiHandler.close();
-        guiHandler.getApi().sendActionMessage(guiHandler.getPlayer(), clickData);
-    }
-
-    protected String getInventoryName(){
-        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories."+namespace+"$"));
-    }
-
-    public Inventory getInventory(GuiHandler guiHandler) {
-        return cachedInventories.get(guiHandler);
-    }
-
-    public boolean hasCachedInventory(GuiHandler guiHandler){
-        return cachedInventories.containsKey(guiHandler);
-    }
-
-    public void setCachedInventorie(GuiHandler guiHandler, Inventory inventory){
-        cachedInventories.put(guiHandler, inventory);
-    }
-
-
 
 }

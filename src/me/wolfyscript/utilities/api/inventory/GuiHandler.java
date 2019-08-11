@@ -120,6 +120,7 @@ public class GuiHandler implements Listener {
         }
     }
 
+    @Deprecated
     public String verifyItem(ItemStack item) {
         if (item != null && item.hasItemMeta()) {
             if (item.getItemMeta().hasDisplayName()) {

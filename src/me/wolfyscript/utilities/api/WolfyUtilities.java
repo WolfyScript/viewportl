@@ -71,7 +71,7 @@ public class WolfyUtilities implements Listener {
     }
 
     public static int getVersionNumber(){
-        return Integer.parseInt(getVersion().replace("\\.", ""));
+        return Integer.parseInt(getVersion().replace(".", ""));
     }
 
     public LanguageAPI getLanguageAPI() {

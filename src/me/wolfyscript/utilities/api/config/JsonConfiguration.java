@@ -379,7 +379,7 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public void setItem(String path, ItemStack itemStack) {
-        set(path, ItemUtils.serializeItemStack(itemStack));
+        set(path, ItemUtils.serializeNMSItemStack(itemStack));
     }
 
     @Override

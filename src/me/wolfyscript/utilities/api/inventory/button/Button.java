@@ -2,45 +2,38 @@ package me.wolfyscript.utilities.api.inventory.button;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
-import me.wolfyscript.utilities.api.inventory.InventoryAPI;
+import me.wolfyscript.utilities.api.inventory.GuiWindow;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
-public class Button {
+public abstract class Button {
 
+    private String id;
     private ButtonType type;
-    private ButtonState state;
 
-    public Button(WolfyUtilities api, ButtonType type, ButtonState state){
+    public Button(String id, ButtonType type){
+        this.id = id;
         this.type = type;
-        this.state = state;
-        init(api);
     }
 
-    public Button(WolfyUtilities api, ButtonState state){
-        this(api, ButtonType.NORMAL, state);
+    public Button(String id){
+        this(id, ButtonType.NORMAL);
     }
 
-    public void init(WolfyUtilities api){
-        state.init(api);
-    }
+    public abstract void init(GuiWindow guiWindow);
 
-    public void execute(GuiHandler guiHandler, Inventory inventory, int slot, InventoryClickEvent event){
-        if(!type.equals(ButtonType.DUMMY) && state.getAction() != null){
-            state.getAction().run(guiHandler, inventory, slot, event);
-        }
-    }
+    public abstract void init(String windowKey, WolfyUtilities api);
 
-    public void render(GuiHandler guiHandler, int slot, Inventory inventory, boolean help){
-        InventoryAPI invAPI = guiHandler.getApi().getInventoryAPI();
-        inventory.setItem(slot, invAPI.getItem(state.getIcon().getNamespace(), state.getIcon().getKey(), help));
-    }
+    public abstract boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event);
+
+    public abstract void render(GuiHandler guiHandler, int slot, Inventory inventory, boolean help);
 
     public ButtonType getType() {
         return type;
     }
 
-    public ButtonState getState() {
-        return state;
+    public String getId() {
+        return id;
     }
 }

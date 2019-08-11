@@ -42,18 +42,6 @@ public class GuiUpdateEvent extends Event {
         return guiWindow.equals(this.guiWindow);
     }
 
-    public ItemStack getItem(String action) {
-        return getItem(guiWindow.getItemKey(), action);
-    }
-
-    public ItemStack getItem(String key, String action){
-        return guiHandler.getItem(key, action);
-    }
-
-    public ItemStack getGeneralItem(String id) {
-        return guiHandler.getItem("none", id);
-    }
-
     public GuiHandler getGuiHandler() {
         return guiHandler;
     }
@@ -78,32 +66,12 @@ public class GuiUpdateEvent extends Event {
         return getInventory().getItem(slot);
     }
 
-    public ItemStack getItem(String action, String keyToReplace, String value){
-        return getItem(guiWindow.getItemKey(), action, keyToReplace, value);
-    }
-
-    public ItemStack getItem(String key, String action, String keyToReplace, String value){
-        ItemStack item = getItem(key, action);
-        ItemMeta posXmeta = item.getItemMeta();
-        posXmeta.setDisplayName(posXmeta.getDisplayName().replace(keyToReplace, value));
-        item.setItemMeta(posXmeta);
-        return item;
-    }
-
     public void setItem(int slot, ItemStack itemStack){
         getInventory().setItem(slot, itemStack);
     }
 
-    public void setItem(int slot, String action){
-        setItem(slot, action, false);
-    }
+    public void setButton(int slot, String id){
 
-    public void setItem(int slot, String key, String action){
-        setItem(slot, getItem(key, action));
-    }
-
-    public void setItem(int slot, String action, boolean generalItem){
-        setItem(slot, generalItem ? getGeneralItem(action) : getItem(action));
     }
 
     public Inventory getInventory() {
@@ -125,5 +93,54 @@ public class GuiUpdateEvent extends Event {
 
     public static HandlerList getHandlerList(){
         return handlers;
+    }
+
+
+    /*
+    Deprecated item management. Replaced by new Button system!
+     */
+
+    @Deprecated
+    public ItemStack getItem(String action) {
+        return getItem(guiWindow.getItemKey(), action);
+    }
+
+    @Deprecated
+    public ItemStack getItem(String key, String action){
+        return guiHandler.getItem(key, action);
+    }
+
+    @Deprecated
+    public ItemStack getGeneralItem(String id) {
+        return guiHandler.getItem("none", id);
+    }
+
+    @Deprecated
+    public ItemStack getItem(String action, String keyToReplace, String value){
+        return getItem(guiWindow.getItemKey(), action, keyToReplace, value);
+    }
+
+    @Deprecated
+    public ItemStack getItem(String key, String action, String keyToReplace, String value){
+        ItemStack item = getItem(key, action);
+        ItemMeta posXmeta = item.getItemMeta();
+        posXmeta.setDisplayName(posXmeta.getDisplayName().replace(keyToReplace, value));
+        item.setItemMeta(posXmeta);
+        return item;
+    }
+
+    @Deprecated
+    public void setItem(int slot, String action){
+        setItem(slot, action, false);
+    }
+
+    @Deprecated
+    public void setItem(int slot, String key, String action){
+        setItem(slot, getItem(key, action));
+    }
+
+    @Deprecated
+    public void setItem(int slot, String action, boolean generalItem){
+        setItem(slot, generalItem ? getGeneralItem(action) : getItem(action));
     }
 }
