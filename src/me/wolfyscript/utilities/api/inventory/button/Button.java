@@ -27,7 +27,7 @@ public abstract class Button {
 
     public abstract boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event);
 
-    public abstract void render(GuiHandler guiHandler, int slot, Inventory inventory, boolean help);
+    public abstract void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help);
 
     public ButtonType getType() {
         return type;

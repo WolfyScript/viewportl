@@ -6,15 +6,19 @@ import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.button.Button;
+import me.wolfyscript.utilities.api.inventory.button.ButtonActionRender;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MultipleChoiceButton extends Button {
 
@@ -62,11 +66,27 @@ public class MultipleChoiceButton extends Button {
     }
 
     @Override
-    public void render(GuiHandler guiHandler, int slot, Inventory inventory, boolean help) {
+    public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) {
         InventoryAPI invAPI = guiHandler.getApi().getInventoryAPI();
         int setting = settings.getOrDefault(guiHandler, 0);
         if (states != null && states.size() > setting) {
-            inventory.setItem(slot, states.get(setting).getIcon(help));
+            ItemStack item = states.get(setting).getIcon(help);
+            HashMap<String, Object> values = new HashMap<>();
+            if(states.get(setting).getAction() instanceof ButtonActionRender){
+                ((ButtonActionRender) states.get(setting).getAction()).render(values, guiHandler, player, item);
+            }else if(states.get(setting).getRenderAction() != null){
+                states.get(setting).getRenderAction().render(values, guiHandler, player, item);
+            }
+            ItemMeta meta = item.getItemMeta();
+            if(meta.hasDisplayName()){
+                String name = meta.getDisplayName();
+                for(Map.Entry<String, Object> entry : values.entrySet()){
+                    name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
+                }
+                meta.setDisplayName(name);
+                item.setItemMeta(meta);
+            }
+            inventory.setItem(slot, item);
         }
     }
 }

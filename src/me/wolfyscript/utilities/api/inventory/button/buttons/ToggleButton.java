@@ -5,13 +5,17 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.button.Button;
+import me.wolfyscript.utilities.api.inventory.button.ButtonActionRender;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ToggleButton extends Button {
 
@@ -50,7 +54,24 @@ public class ToggleButton extends Button {
     }
 
     @Override
-    public void render(GuiHandler guiHandler, int slot, Inventory inventory, boolean help) {
-        inventory.setItem(slot, states[settings.getOrDefault(guiHandler, true) ? 0 : 1].getIcon(help));
+    public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) {
+        ButtonState state = states[settings.getOrDefault(guiHandler, true) ? 0 : 1];
+        ItemStack item = state.getIcon(help);
+        HashMap<String, Object> values = new HashMap<>();
+        if(state.getAction() instanceof ButtonActionRender){
+            ((ButtonActionRender) state.getAction()).render(values, guiHandler, player, item);
+        }else if(state.getRenderAction() != null){
+            state.getRenderAction().render(values, guiHandler, player, item);
+        }
+        ItemMeta meta = item.getItemMeta();
+        if(meta.hasDisplayName()){
+            String name = meta.getDisplayName();
+            for(Map.Entry<String, Object> entry : values.entrySet()){
+                name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
+            }
+            meta.setDisplayName(name);
+            item.setItemMeta(meta);
+        }
+        inventory.setItem(slot, item);
     }
 }

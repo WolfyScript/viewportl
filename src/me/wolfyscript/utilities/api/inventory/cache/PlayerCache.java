@@ -24,7 +24,7 @@ public class PlayerCache {
 
     public Button getButton(GuiWindow guiWindow, int slot) {
         String id = cachedButtons.getOrDefault(guiWindow.getNamespace(), new HashMap<>()).get(slot);
-        if (id.contains(":")) {
+        if (id != null && !id.isEmpty() && id.contains(":")) {
             return api.getInventoryAPI().getButton(id.split(":")[0], id.split(":")[1]);
         }
         return guiWindow.getButton(id);

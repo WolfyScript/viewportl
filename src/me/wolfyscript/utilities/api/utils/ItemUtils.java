@@ -282,7 +282,9 @@ public class ItemUtils {
     Returns the ItemStack with the new lore.
      */
     public static void setCustomDurability(ItemStack itemStack, int durability) {
-        setCustomDurability(itemStack.getItemMeta(), durability);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        setCustomDurability(itemMeta, durability);
+        itemStack.setItemMeta(itemMeta);
     }
 
     public static void setCustomDurability(ItemMeta itemMeta, int durability) {

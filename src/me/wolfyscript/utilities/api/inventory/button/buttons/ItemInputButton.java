@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.inventory.button.buttons;
 
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
+import me.wolfyscript.utilities.api.inventory.button.ButtonActionRender;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
 import org.bukkit.Material;
@@ -8,8 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ItemInputButton extends ActionButton {
 
@@ -33,8 +36,23 @@ public class ItemInputButton extends ActionButton {
     }
 
     @Override
-    public void render(GuiHandler guiHandler, int slot, Inventory inventory, boolean help) {
-        ItemStack itemStack = content.getOrDefault(guiHandler, new ItemStack(Material.AIR));
-        inventory.setItem(slot, itemStack);
+    public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) {
+        ItemStack item = content.getOrDefault(guiHandler, new ItemStack(Material.AIR));
+        HashMap<String, Object> values = new HashMap<>();
+        if(getState().getAction() instanceof ButtonActionRender){
+            ((ButtonActionRender) getState().getAction()).render(values, guiHandler, player, item);
+        }else if(getState().getRenderAction() != null){
+            getState().getRenderAction().render(values, guiHandler, player, item);
+        }
+        ItemMeta meta = item.getItemMeta();
+        if(meta.hasDisplayName()){
+            String name = meta.getDisplayName();
+            for(Map.Entry<String, Object> entry : values.entrySet()){
+                name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
+            }
+            meta.setDisplayName(name);
+            item.setItemMeta(meta);
+        }
+        inventory.setItem(slot, item);
     }
 }

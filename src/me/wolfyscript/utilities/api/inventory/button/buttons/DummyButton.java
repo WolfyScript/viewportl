@@ -28,7 +28,7 @@ public class DummyButton extends ActionButton {
     }
 
     @Override
-    public void render(GuiHandler guiHandler, int slot, Inventory inventory, boolean help) {
-        super.render(guiHandler, slot, inventory, help);
+    public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) {
+        super.render(guiHandler,player, inventory, slot, help);
     }
 }

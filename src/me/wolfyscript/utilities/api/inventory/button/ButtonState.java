@@ -1,10 +1,13 @@
 package me.wolfyscript.utilities.api.inventory.button;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
 
 public class ButtonState {
 
@@ -13,6 +16,8 @@ public class ButtonState {
     private ItemStack presetIcon;
     private ItemStack[] icon;
     private ButtonAction action;
+    private ButtonRender buttonRender = null;
+    private HashMap<GuiHandler, HashMap<String, Object>> stateValues = new HashMap<>();
 
     private String displayName;
     private String[] helpLore;
@@ -74,11 +79,21 @@ public class ButtonState {
         return action;
     }
 
-    public void setAction(ButtonAction action) {
+    public ButtonState setAction(ButtonAction action) {
         this.action = action;
+        return this;
+    }
+
+    public ButtonState setRenderAction(ButtonRender renderAction){
+        this.buttonRender = renderAction;
+        return this;
     }
 
     public static ItemStack createItem() {
         return null;
+    }
+
+    public ButtonRender getRenderAction() {
+        return buttonRender;
     }
 }

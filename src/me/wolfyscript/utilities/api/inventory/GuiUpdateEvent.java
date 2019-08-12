@@ -82,7 +82,7 @@ public class GuiUpdateEvent extends Event {
         }
         if (button != null) {
             guiHandler.getPlayerCache().setButton(guiWindow, slot, id);
-            button.render(guiHandler, slot, inventory, guiHandler.isHelpEnabled());
+            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -94,7 +94,7 @@ public class GuiUpdateEvent extends Event {
         Button button = inventoryAPI.getButton(namespace, key);
         if (button != null) {
             guiHandler.getPlayerCache().setButton(guiWindow, slot, namespace + ":" + key);
-            button.render(guiHandler, slot, inventory, guiHandler.isHelpEnabled());
+            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -147,9 +147,9 @@ public class GuiUpdateEvent extends Event {
     @Deprecated
     public ItemStack getItem(String key, String action, String keyToReplace, String value) {
         ItemStack item = getItem(key, action);
-        ItemMeta posXmeta = item.getItemMeta();
-        posXmeta.setDisplayName(posXmeta.getDisplayName().replace(keyToReplace, value));
-        item.setItemMeta(posXmeta);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(meta.getDisplayName().replace(keyToReplace, value));
+        item.setItemMeta(meta);
         return item;
     }
 
