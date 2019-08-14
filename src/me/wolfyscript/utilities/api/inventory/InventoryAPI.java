@@ -173,7 +173,7 @@ public class InventoryAPI implements Listener {
         return buttons.get(namespacedKey);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
@@ -182,7 +182,7 @@ public class InventoryAPI implements Listener {
                     event.setCancelled(true);
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
 
-                    Button button = guiHandler.getPlayerCache().getButton(guiWindow, event.getSlot());
+                    Button button = guiHandler.getButton(guiWindow, event.getSlot());
                     if (button != null) {
                         event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
                         guiHandler.getCurrentInv().update(guiHandler);

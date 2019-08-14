@@ -59,12 +59,12 @@ public class ToggleButton extends Button {
         ItemStack item = state.getIcon(help);
         HashMap<String, Object> values = new HashMap<>();
         if(state.getAction() instanceof ButtonActionRender){
-            ((ButtonActionRender) state.getAction()).render(values, guiHandler, player, item);
+            item = ((ButtonActionRender) state.getAction()).render(values, guiHandler, player, item);
         }else if(state.getRenderAction() != null){
-            state.getRenderAction().render(values, guiHandler, player, item);
+            item = state.getRenderAction().render(values, guiHandler, player, item);
         }
         ItemMeta meta = item.getItemMeta();
-        if(meta.hasDisplayName()){
+        if(meta != null && meta.hasDisplayName()){
             String name = meta.getDisplayName();
             for(Map.Entry<String, Object> entry : values.entrySet()){
                 name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));

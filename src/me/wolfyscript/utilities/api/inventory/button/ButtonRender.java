@@ -8,5 +8,5 @@ import java.util.HashMap;
 
 public interface ButtonRender {
 
-    void render(HashMap<String, Object> values, GuiHandler guiHandler, Player player, ItemStack icon);
+    ItemStack render(HashMap<String, Object> values, GuiHandler guiHandler, Player player, ItemStack icon);
 }

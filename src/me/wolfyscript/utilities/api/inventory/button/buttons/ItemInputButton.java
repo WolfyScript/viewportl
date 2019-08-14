@@ -4,6 +4,8 @@ import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.button.ButtonActionRender;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
+import me.wolfyscript.utilities.main.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -31,8 +33,11 @@ public class ItemInputButton extends ActionButton {
 
     @Override
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
-        content.put(guiHandler, inventory.getItem(slot) != null ? inventory.getItem(slot).clone() : new ItemStack(Material.AIR));
-        return super.execute(guiHandler, player, inventory, slot, event);
+        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> content.put(guiHandler, inventory.getItem(slot) != null ? inventory.getItem(slot).clone() : new ItemStack(Material.AIR)), 1);
+        if (!getType().equals(ButtonType.DUMMY) && getState().getAction() != null) {
+            return getState().getAction().run(guiHandler, player, inventory, slot, event);
+        }
+        return false;
     }
 
     @Override
@@ -40,12 +45,12 @@ public class ItemInputButton extends ActionButton {
         ItemStack item = content.getOrDefault(guiHandler, new ItemStack(Material.AIR));
         HashMap<String, Object> values = new HashMap<>();
         if(getState().getAction() instanceof ButtonActionRender){
-            ((ButtonActionRender) getState().getAction()).render(values, guiHandler, player, item);
+            item = ((ButtonActionRender) getState().getAction()).render(values, guiHandler, player, item);
         }else if(getState().getRenderAction() != null){
-            getState().getRenderAction().render(values, guiHandler, player, item);
+            item = getState().getRenderAction().render(values, guiHandler, player, item);
         }
         ItemMeta meta = item.getItemMeta();
-        if(meta.hasDisplayName()){
+        if(meta != null && meta.hasDisplayName()){
             String name = meta.getDisplayName();
             for(Map.Entry<String, Object> entry : values.entrySet()){
                 name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));

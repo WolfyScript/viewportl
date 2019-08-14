@@ -73,12 +73,12 @@ public class MultipleChoiceButton extends Button {
             ItemStack item = states.get(setting).getIcon(help);
             HashMap<String, Object> values = new HashMap<>();
             if(states.get(setting).getAction() instanceof ButtonActionRender){
-                ((ButtonActionRender) states.get(setting).getAction()).render(values, guiHandler, player, item);
+                item = ((ButtonActionRender) states.get(setting).getAction()).render(values, guiHandler, player, item);
             }else if(states.get(setting).getRenderAction() != null){
-                states.get(setting).getRenderAction().render(values, guiHandler, player, item);
+                item = states.get(setting).getRenderAction().render(values, guiHandler, player, item);
             }
             ItemMeta meta = item.getItemMeta();
-            if(meta.hasDisplayName()){
+            if(meta != null && meta.hasDisplayName()){
                 String name = meta.getDisplayName();
                 for(Map.Entry<String, Object> entry : values.entrySet()){
                     name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));

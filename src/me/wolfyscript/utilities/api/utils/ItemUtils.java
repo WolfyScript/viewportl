@@ -67,35 +67,41 @@ public class ItemUtils {
     public static ItemStack[] createItem(ItemStack itemStack, String displayName, String[] helpLore, String... normalLore) {
         ItemStack[] itemStacks = new ItemStack[2];
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(org.bukkit.ChatColor.translateAlternateColorCodes('&', displayName));
         List<String> lore = new ArrayList<>();
-        if (normalLore != null && normalLore.length > 0) {
-            for (String row : normalLore) {
-                if (!row.isEmpty()) {
-                    lore.add(row.equalsIgnoreCase("<empty>") ? "" : org.bukkit.ChatColor.translateAlternateColorCodes('&', row));
+        if(itemMeta != null){
+            if(displayName != null && !displayName.isEmpty()){
+                itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
+            }
+            if (normalLore != null && normalLore.length > 0) {
+                for (String row : normalLore) {
+                    if (!row.isEmpty()) {
+                        lore.add(row.equalsIgnoreCase("<empty>") ? "" : org.bukkit.ChatColor.translateAlternateColorCodes('&', row));
+                    }
                 }
             }
+            if (lore.size() > 0) {
+                itemMeta.setLore(lore);
+            }
+            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            itemMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+            itemStack.setItemMeta(itemMeta);
         }
-        if (lore.size() > 0) {
-            itemMeta.setLore(lore);
-        }
-        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        itemMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-        itemStack.setItemMeta(itemMeta);
         itemStacks[0] = itemStack;
         ItemStack helpItem = new ItemStack(itemStack);
         ItemMeta helpMeta = helpItem.getItemMeta();
-        if (helpLore != null && helpLore.length > 0) {
-            for (String row : helpLore) {
-                if (!row.isEmpty()) {
-                    lore.add(row.equalsIgnoreCase("<empty>") ? "" : ChatColor.translateAlternateColorCodes('&', row));
+        if(helpMeta != null){
+            if (helpLore != null && helpLore.length > 0) {
+                for (String row : helpLore) {
+                    if (!row.isEmpty()) {
+                        lore.add(row.equalsIgnoreCase("<empty>") ? "" : ChatColor.translateAlternateColorCodes('&', row));
+                    }
                 }
             }
+            helpMeta.setLore(lore);
+            helpItem.setItemMeta(helpMeta);
         }
-        helpMeta.setLore(lore);
-        helpItem.setItemMeta(helpMeta);
         itemStacks[1] = helpItem;
         return itemStacks;
     }

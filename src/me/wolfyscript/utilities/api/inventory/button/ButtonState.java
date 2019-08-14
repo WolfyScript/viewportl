@@ -17,7 +17,6 @@ public class ButtonState {
     private ItemStack[] icon;
     private ButtonAction action;
     private ButtonRender buttonRender = null;
-    private HashMap<GuiHandler, HashMap<String, Object>> stateValues = new HashMap<>();
 
     private String displayName;
     private String[] helpLore;

@@ -81,7 +81,7 @@ public class GuiUpdateEvent extends Event {
             inventoryAPI.getButton(id);
         }
         if (button != null) {
-            guiHandler.getPlayerCache().setButton(guiWindow, slot, id);
+            guiHandler.setButton(guiWindow, slot, id);
             button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
         }
     }
@@ -93,7 +93,7 @@ public class GuiUpdateEvent extends Event {
     public void setButton(int slot, String namespace, String key) {
         Button button = inventoryAPI.getButton(namespace, key);
         if (button != null) {
-            guiHandler.getPlayerCache().setButton(guiWindow, slot, namespace + ":" + key);
+            guiHandler.setButton(guiWindow, slot, namespace + ":" + key);
             button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
         }
     }

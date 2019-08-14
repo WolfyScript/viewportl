@@ -1,7 +1,7 @@
 package me.wolfyscript.utilities.api.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.inventory.cache.PlayerCache;
+import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -12,13 +12,13 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class GuiHandler implements Listener {
 
     private WolfyUtilities api;
-    private PlayerCache playerCache;
     private Player player;
     private boolean changingInv = false;
     private int testChatID = -1;
@@ -28,11 +28,12 @@ public class GuiHandler implements Listener {
     private List<String> pageHistory = new ArrayList<>();
     private boolean helpEnabled = false;
 
+    private HashMap<String, HashMap<Integer, String>> cachedButtons = new HashMap<>();
+
     public GuiHandler(Player player, WolfyUtilities api) {
         this.api = api;
         this.player = player;
         this.uuid = player.getUniqueId().toString();
-        this.playerCache = new PlayerCache(getApi());
         Bukkit.getPluginManager().registerEvents(this, api.getPlugin());
     }
 
@@ -150,8 +151,18 @@ public class GuiHandler implements Listener {
         return helpEnabled;
     }
 
-    public PlayerCache getPlayerCache() {
-        return playerCache;
+    public void setButton(GuiWindow guiWindow, int slot, String id) {
+        HashMap<Integer, String> buttons = cachedButtons.getOrDefault(guiWindow.getNamespace(), new HashMap<>());
+        buttons.put(slot, id);
+        cachedButtons.put(guiWindow.getNamespace(), buttons);
+    }
+
+    public Button getButton(GuiWindow guiWindow, int slot) {
+        String id = cachedButtons.getOrDefault(guiWindow.getNamespace(), new HashMap<>()).get(slot);
+        if (id != null && !id.isEmpty() && id.contains(":")) {
+            return api.getInventoryAPI().getButton(id.split(":")[0], id.split(":")[1]);
+        }
+        return guiWindow.getButton(id);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
