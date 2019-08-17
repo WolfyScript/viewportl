@@ -14,7 +14,9 @@ public abstract class FileConfiguration extends MemoryConfiguration {
         super(configAPI, name, type);
         this.defPath = defPath;
         this.defFileName = defFileName;
-        this.configFile = new File(path, name + "." + (type.equals(Type.YAML) ? "yml" : "json"));
+        if(!path.isEmpty() && !name.isEmpty()){
+            this.configFile = new File(path, name + "." + (type.equals(Type.YAML) ? "yml" : "json"));
+        }
     }
 
     /*

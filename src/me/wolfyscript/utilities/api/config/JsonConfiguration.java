@@ -33,23 +33,18 @@ public class JsonConfiguration extends FileConfiguration {
     public JsonConfiguration(ConfigAPI configAPI, String path, String name, String defPath, String defFileName, boolean overwrite) {
         super(configAPI, path, name, defPath, defFileName, Type.JSON);
         this.map = new HashMap<>();
-        if (!configFile.exists() || overwrite) {
-            configFile.getParentFile().mkdirs();
-            if (configFile.exists() && overwrite) {
-                try {
-                    PrintWriter pw = new PrintWriter(configFile);
-                    pw.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+        if (!configFile.exists()) {
+            try {
+                configFile.getParentFile().mkdirs();
+                configFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            loadDefaults();
-            load();
-            reload();
             onFirstInit();
-        } else {
-            load();
         }
+        load();
+        loadDefaults(overwrite);
+        reload();
         init();
     }
 
@@ -80,6 +75,15 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
     /*
+        Creates a memory only json config from a default saved in a File!
+     */
+    public JsonConfiguration(ConfigAPI configAPI, String name, String defPath, String defFileName) {
+        super(configAPI, "", name, defPath, defFileName, Type.JSON);
+        this.map = new HashMap<>();
+        loadDefaults();
+    }
+
+    /*
         Called when the config file didn't exist or whenever the config gets overwritten!
      */
     public void onFirstInit() {
@@ -103,23 +107,17 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
     public void loadDefaults() {
+        loadDefaults(false);
+    }
+
+    public void loadDefaults(boolean overwrite) {
         if (defPath != null && defFileName != null && !defPath.isEmpty() && !defFileName.isEmpty()) {
-            if (!configFile.exists()) {
-                try {
-                    configFile.createNewFile();
-                    InputStream ddlStream = plugin.getResource(defPath + "/" + defFileName + ".json");
-                    if (ddlStream != null) {
-                        FileOutputStream fos = new FileOutputStream(configFile);
-                        byte[] buf = new byte[2048];
-                        int r;
-                        while ((r = ddlStream.read(buf)) != -1) {
-                            fos.write(buf, 0, r);
-                        }
-                        fos.flush();
-                        fos.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+            HashMap<String, Object> defMap = gson.fromJson(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json")), new HashMap<String, Object>().getClass());
+            if (overwrite) {
+                this.map.putAll(defMap);
+            } else {
+                for (Map.Entry<String, Object> entry : defMap.entrySet()) {
+                    this.map.putIfAbsent(entry.getKey(), entry.getValue());
                 }
             }
         } else {

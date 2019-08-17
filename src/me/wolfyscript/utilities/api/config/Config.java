@@ -20,6 +20,14 @@ public class Config extends FileConfiguration implements ConfigurationSection {
         setPathSeparator('.');
     }
 
+    /*
+    A Config not linked to a File! Must be json!
+     */
+    public Config(ConfigAPI configAPI, String name, String defPath, String defFileName){
+        super(configAPI, "", name, defPath, defFileName, Type.JSON);
+        this.configuration = new JsonConfiguration(configAPI, name, defPath, defFileName);
+    }
+
     @Override
     public void save() {
         configuration.save();

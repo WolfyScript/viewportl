@@ -34,6 +34,10 @@ public class ToggleButton extends Button {
         settings = new HashMap<>();
     }
 
+    public void setState(GuiHandler guiHandler, boolean enabled){
+        settings.put(guiHandler, enabled);
+    }
+
     @Override
     public void init(GuiWindow guiWindow) {
         states[0].init(guiWindow);

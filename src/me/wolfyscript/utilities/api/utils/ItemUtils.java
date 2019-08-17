@@ -4,6 +4,7 @@ import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.ChatColor;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -182,6 +183,26 @@ public class ItemUtils {
             e.printStackTrace();
         }
         return itemStack;
+    }
+
+    //SOME ITEMMETA UTILS
+    public static ItemMeta toggleItemFlag(ItemMeta itemMeta, ItemFlag itemFlag){
+        if (!itemMeta.hasItemFlag(itemFlag)) {
+            itemMeta.addItemFlags(itemFlag);
+        } else {
+            itemMeta.removeItemFlags(itemFlag);
+        }
+        return itemMeta;
+    }
+
+    public static ItemMeta setEnchantEffect(ItemMeta itemMeta, boolean hide){
+        if(!itemMeta.hasEnchants()){
+            itemMeta.addEnchant(Enchantment.DAMAGE_ARTHROPODS, 0, true);
+            if(hide){
+                itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+        }
+        return itemMeta;
     }
 
     /*

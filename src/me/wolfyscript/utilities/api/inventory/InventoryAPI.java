@@ -130,15 +130,15 @@ public class InventoryAPI implements Listener {
     These Buttons can also be sorted into different namespaces.
     Default namespace is "none".
      */
-    public void registerButton(String key, Button button) {
-        registerButton("none", key, button);
+    public void registerButton(Button button) {
+        registerButton("none", button);
     }
 
     /*
     Registers an Button globally which then can be accessed in every GUI.
      */
-    public void registerButton(String namespace, String key, Button button) {
-        registerButton(new NamespacedKey(namespace, key), button);
+    public void registerButton(String namespace, Button button) {
+        registerButton(new NamespacedKey(namespace, button.getId()), button);
     }
 
     /*
@@ -179,17 +179,11 @@ public class InventoryAPI implements Listener {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
                 if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
-                    event.setCancelled(true);
-                    GuiWindow guiWindow = guiHandler.getCurrentInv();
+                    if (event.getClickedInventory().equals(event.getView().getTopInventory())) {
+                        event.setCancelled(true);
+                        GuiWindow guiWindow = guiHandler.getCurrentInv();
 
-                    Button button = guiHandler.getButton(guiWindow, event.getSlot());
-                    if (button != null) {
-                        event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
-                        guiHandler.getCurrentInv().update(guiHandler);
-                    } else {
-                        /*
-                        Deprecated!
-                         */
+                        //DEPRECATED
                         String action = guiHandler.verifyItem(event.getCurrentItem());
                         if (!action.isEmpty()) {
                             GuiAction guiAction = new GuiAction(action, guiHandler, guiHandler.getCurrentInv(), event);
@@ -197,13 +191,28 @@ public class InventoryAPI implements Listener {
                             if (!guiHandler.getCurrentInv().onAction(guiAction)) {
                                 event.setCancelled(true);
                             }
+
                         } else {
                             GuiClick guiClick = new GuiClick(guiHandler, guiHandler.getCurrentInv(), event);
                             if (!guiHandler.getCurrentInv().onClick(guiClick)) {
                                 event.setCancelled(false);
                             }
+
+                            Button button = guiHandler.getButton(guiWindow, event.getSlot());
+                            if (button != null) {
+                                event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
+                                guiHandler.getCurrentInv().update(guiHandler);
+                            }
+                        }
+
+
+                    } else {
+                        GuiClick guiClick = new GuiClick(guiHandler, guiHandler.getCurrentInv(), event);
+                        if (!guiHandler.getCurrentInv().onClick(guiClick)) {
+                            event.setCancelled(false);
                         }
                     }
+
                 }
             }
         }
@@ -250,6 +259,7 @@ public class InventoryAPI implements Listener {
                 if (guiHandler.isChatEventActive() && !event.getMessage().startsWith("wu::")) {
                     if (guiHandler.getChatInputAction() != null && !guiHandler.getChatInputAction().onChat(guiHandler, event.getPlayer(), event.getMessage(), event.getMessage().split(" "))) {
                         guiHandler.setChatInputAction(null);
+                        guiHandler.openLastInv();
                     } else if (!guiHandler.getLastInv().parseChatMessage(guiHandler.getTestChatID(), event.getMessage(), guiHandler)) {
                         guiHandler.openLastInv();
                         guiHandler.setTestChatID(-1);

@@ -59,7 +59,7 @@ public class ButtonState {
 
     public void init(String windowKey, WolfyUtilities api) {
         if (key != null && !key.isEmpty()) {
-            String path = "items." + (namespace == null || namespace.isEmpty() ? windowKey : (windowKey + namespace)) + "." + key;
+            String path = "items." + (namespace == null || namespace.isEmpty() ? windowKey : namespace) + "." + key;
             displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$");
             helpLore = api.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".help") != null ? api.getLanguageAPI().getActiveLanguage().replaceKey(path + ".help").toArray(new String[0]) : new String[0];
             normalLore = api.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".lore") != null ? api.getLanguageAPI().getActiveLanguage().replaceKey(path + ".lore").toArray(new String[0]) : new String[0];

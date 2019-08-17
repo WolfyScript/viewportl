@@ -86,6 +86,10 @@ public class SQLDataBase {
         return getResultSet(getPreparedStatement(query));
     }
 
+    public Connection getConnection() {
+        return connection;
+    }
+
     public WolfyUtilities getApi() {
         return api;
     }
