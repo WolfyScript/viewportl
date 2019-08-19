@@ -28,6 +28,26 @@ public class Config extends FileConfiguration implements ConfigurationSection {
         this.configuration = new JsonConfiguration(configAPI, name, defPath, defFileName);
     }
 
+    /*
+    A Config not linked to a File! Must be json!
+     */
+    public Config(String jsonData, ConfigAPI configAPI, String name, String defPath, String defFileName){
+        super(configAPI, "", name, defPath, defFileName, Type.JSON);
+        this.configuration = new JsonConfiguration(jsonData, configAPI, name, defPath, defFileName);
+    }
+
+    public String toString(){
+        return toString(false);
+    }
+
+    public String toString(boolean prettyPrinting){
+        if(getType().equals(Type.YAML)){
+            return ((YamlConfiguration) this.configuration).getBukkitConfig().saveToString();
+        }else{
+            return ((JsonConfiguration) this.configuration).toString(prettyPrinting);
+        }
+    }
+
     @Override
     public void save() {
         configuration.save();

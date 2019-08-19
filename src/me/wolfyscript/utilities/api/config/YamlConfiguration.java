@@ -372,4 +372,8 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         }
         return new HashMap<>();
     }
+
+    public org.bukkit.configuration.file.YamlConfiguration getBukkitConfig(){
+        return config;
+    }
 }

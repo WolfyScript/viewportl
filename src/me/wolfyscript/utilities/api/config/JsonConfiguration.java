@@ -67,19 +67,29 @@ public class JsonConfiguration extends FileConfiguration {
     /*
         Creates a memory only json config!
      */
-    public JsonConfiguration(ConfigAPI configAPI, String jsonString, String name) {
+    public JsonConfiguration(ConfigAPI configAPI, String jsonData, String name) {
         super(configAPI, "", name, "", "", Type.JSON);
         this.map = new HashMap<>();
-        this.defJsonString = jsonString;
-        loadFromString(jsonString);
+        this.defJsonString = jsonData;
+        loadFromString(jsonData);
     }
 
     /*
         Creates a memory only json config from a default saved in a File!
      */
     public JsonConfiguration(ConfigAPI configAPI, String name, String defPath, String defFileName) {
+        this("{}", configAPI, name, defPath, defFileName);
+        this.map = new HashMap<>();
+        loadDefaults();
+    }
+
+    /*
+        Creates a memory only json config from already existing data and also adds default data if it is missing!
+     */
+    public JsonConfiguration(String jsonData, ConfigAPI configAPI, String name, String defPath, String defFileName) {
         super(configAPI, "", name, defPath, defFileName, Type.JSON);
         this.map = new HashMap<>();
+        loadFromString(jsonData);
         loadDefaults();
     }
 
@@ -112,12 +122,14 @@ public class JsonConfiguration extends FileConfiguration {
 
     public void loadDefaults(boolean overwrite) {
         if (defPath != null && defFileName != null && !defPath.isEmpty() && !defFileName.isEmpty()) {
-            HashMap<String, Object> defMap = gson.fromJson(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json")), new HashMap<String, Object>().getClass());
-            if (overwrite) {
-                this.map.putAll(defMap);
-            } else {
-                for (Map.Entry<String, Object> entry : defMap.entrySet()) {
-                    this.map.putIfAbsent(entry.getKey(), entry.getValue());
+            if(plugin.getResource(defPath + "/" + defFileName + ".json") != null){
+                HashMap<String, Object> defMap = gson.fromJson(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json")), new HashMap<String, Object>().getClass());
+                if (overwrite) {
+                    this.map.putAll(defMap);
+                } else {
+                    for (Map.Entry<String, Object> entry : defMap.entrySet()) {
+                        this.map.putIfAbsent(entry.getKey(), entry.getValue());
+                    }
                 }
             }
         } else {
