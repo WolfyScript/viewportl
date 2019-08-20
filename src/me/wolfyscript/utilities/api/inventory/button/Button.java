@@ -6,6 +6,12 @@ import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class Button {
 
@@ -35,5 +41,25 @@ public abstract class Button {
 
     public String getId() {
         return id;
+    }
+
+    protected ItemStack replaceKeysWithValue(ItemStack itemStack, HashMap<String, Object> values){
+        ItemMeta meta = itemStack.getItemMeta();
+        if(meta != null && meta.hasDisplayName()){
+            String name = meta.getDisplayName();
+            List<String> lore = meta.getLore();
+            for(Map.Entry<String, Object> entry : values.entrySet()){
+                name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
+                if (meta.hasLore()) {
+                    for (int i = 0; i < lore.size(); i++) {
+                        lore.set(i, lore.get(i).replace(entry.getKey(), String.valueOf(entry.getValue())));
+                    }
+                }
+            }
+            meta.setDisplayName(name);
+            meta.setLore(lore);
+            itemStack.setItemMeta(meta);
+        }
+        return itemStack;
     }
 }

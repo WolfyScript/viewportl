@@ -67,7 +67,6 @@ public class MultipleChoiceButton extends Button {
 
     @Override
     public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) {
-        InventoryAPI invAPI = guiHandler.getApi().getInventoryAPI();
         int setting = settings.getOrDefault(guiHandler, 0);
         if (states != null && states.size() > setting) {
             ItemStack item = states.get(setting).getIcon(help);
@@ -77,16 +76,7 @@ public class MultipleChoiceButton extends Button {
             }else if(states.get(setting).getRenderAction() != null){
                 item = states.get(setting).getRenderAction().render(values, guiHandler, player, item);
             }
-            ItemMeta meta = item.getItemMeta();
-            if(meta != null && meta.hasDisplayName()){
-                String name = meta.getDisplayName();
-                for(Map.Entry<String, Object> entry : values.entrySet()){
-                    name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
-                }
-                meta.setDisplayName(name);
-                item.setItemMeta(meta);
-            }
-            inventory.setItem(slot, item);
+            inventory.setItem(slot, replaceKeysWithValue(item, values));
         }
     }
 }

@@ -15,11 +15,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ToggleButton extends Button {
 
     private ButtonState[] states;
+    private boolean defaultState;
     private HashMap<GuiHandler, Boolean> settings;
 
     /*
@@ -28,10 +30,15 @@ public class ToggleButton extends Button {
         You can add a empty action however, but then you should consider using a normal Button!
      */
 
-    public ToggleButton(String id, @NotNull ButtonState state, @NotNull ButtonState state2) {
+    public ToggleButton(String id, boolean defaultState, @NotNull ButtonState state, @NotNull ButtonState state2) {
         super(id, ButtonType.TOGGLE);
+        this.defaultState = defaultState;
         states = new ButtonState[]{state, state2};
         settings = new HashMap<>();
+    }
+
+    public ToggleButton(String id, @NotNull ButtonState state, @NotNull ButtonState state2) {
+        this(id, false, state, state2);
     }
 
     public void setState(GuiHandler guiHandler, boolean enabled){
@@ -52,14 +59,14 @@ public class ToggleButton extends Button {
 
     @Override
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
-        boolean result = states[settings.getOrDefault(guiHandler, true) ? 0 : 1].getAction().run(guiHandler, player, inventory, slot, event);
-        settings.put(guiHandler, !settings.getOrDefault(guiHandler, true));
+        boolean result = states[settings.getOrDefault(guiHandler, defaultState) ? 0 : 1].getAction().run(guiHandler, player, inventory, slot, event);
+        settings.put(guiHandler, !settings.getOrDefault(guiHandler, defaultState));
         return result;
     }
 
     @Override
     public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) {
-        ButtonState state = states[settings.getOrDefault(guiHandler, true) ? 0 : 1];
+        ButtonState state = states[settings.getOrDefault(guiHandler, defaultState) ? 0 : 1];
         ItemStack item = state.getIcon(help);
         HashMap<String, Object> values = new HashMap<>();
         if(state.getAction() instanceof ButtonActionRender){
@@ -67,15 +74,6 @@ public class ToggleButton extends Button {
         }else if(state.getRenderAction() != null){
             item = state.getRenderAction().render(values, guiHandler, player, item);
         }
-        ItemMeta meta = item.getItemMeta();
-        if(meta != null && meta.hasDisplayName()){
-            String name = meta.getDisplayName();
-            for(Map.Entry<String, Object> entry : values.entrySet()){
-                name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
-            }
-            meta.setDisplayName(name);
-            item.setItemMeta(meta);
-        }
-        inventory.setItem(slot, item);
+        inventory.setItem(slot, replaceKeysWithValue(item, values));
     }
 }

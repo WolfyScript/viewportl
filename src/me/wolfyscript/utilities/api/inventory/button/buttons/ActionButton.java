@@ -57,16 +57,7 @@ public class ActionButton extends Button {
         }else if(state.getRenderAction() != null){
             item = state.getRenderAction().render(values, guiHandler, player, item);
         }
-        ItemMeta meta = item.getItemMeta();
-        if(meta != null && meta.hasDisplayName()){
-            String name = meta.getDisplayName();
-            for(Map.Entry<String, Object> entry : values.entrySet()){
-                name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
-            }
-            meta.setDisplayName(name);
-            item.setItemMeta(meta);
-        }
-        inventory.setItem(slot, item);
+        inventory.setItem(slot, replaceKeysWithValue(item, values));
     }
 
     public ButtonType getType() {

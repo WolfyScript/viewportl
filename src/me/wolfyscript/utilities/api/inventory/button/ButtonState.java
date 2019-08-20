@@ -1,13 +1,10 @@
 package me.wolfyscript.utilities.api.inventory.button;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.HashMap;
 
 public class ButtonState {
 
@@ -30,6 +27,24 @@ public class ButtonState {
 
     public ButtonState(String key, Material presetIcon, ButtonAction action) {
         this(key, new ItemStack(presetIcon), action);
+    }
+
+    public ButtonState(String key, ItemStack presetIcon) {
+        this(key, presetIcon, (guiHandler, player, inventory, slot, event) -> true);
+    }
+
+    public ButtonState(String key, Material presetIcon) {
+        this(key, new ItemStack(presetIcon), (guiHandler, player, inventory, slot, event) -> true);
+    }
+
+    public ButtonState(String key, ItemStack presetIcon, ButtonRender render) {
+        this(key, presetIcon, (guiHandler, player, inventory, slot, event) -> true);
+        setRenderAction(render);
+    }
+
+    public ButtonState(String key, Material presetIcon, ButtonRender render) {
+        this(key, new ItemStack(presetIcon), (guiHandler, player, inventory, slot, event) -> true);
+        setRenderAction(render);
     }
 
     public ButtonState(String namespace, String key, ItemStack presetIcon, ButtonAction action) {
