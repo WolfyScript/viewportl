@@ -29,6 +29,16 @@ public class ButtonState {
         this(key, new ItemStack(presetIcon), action);
     }
 
+    public ButtonState(String key, ItemStack presetIcon, ButtonActionRender action) {
+        this.key = key;
+        this.presetIcon = presetIcon;
+        this.action = action;
+    }
+
+    public ButtonState(String key, Material presetIcon, ButtonActionRender action) {
+        this(key, new ItemStack(presetIcon), action);
+    }
+
     public ButtonState(String key, ItemStack presetIcon) {
         this(key, presetIcon, (guiHandler, player, inventory, slot, event) -> true);
     }
