@@ -62,16 +62,13 @@ public class GuiWindow implements Listener {
 
     }
 
+    @Deprecated
     public boolean onAction(GuiAction guiAction) {
         return true;
     }
 
     public boolean onClick(GuiClick guiClick) {
         return true;
-    }
-
-    public void onUpdate() {
-
     }
 
     protected void update(GuiHandler guiHandler) {
@@ -119,24 +116,23 @@ public class GuiWindow implements Listener {
     }
 
     public void reloadInv(GuiHandler guiHandler) {
-        guiHandler.reloadInv(namespace);
+        guiHandler.reloadInv(guiHandler.getCurrentGuiCluster(), guiHandler.getCurrentInv().getNamespace());
     }
 
     /*
     Opens the chat, send the player the defined message and waits for the input of the player.
     When the player sends the message the inputAction method is executed
      */
-
     public void openChat(GuiHandler guiHandler, String msg, ChatInputAction inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
         guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), msg);
     }
+
     /*
     Opens the chat, send the player the defined action messages and waits for the input of the player.
     When the player sends the message the inputAction method is executed
      */
-
     public void openActionChat(GuiHandler guiHandler, ClickData clickData, ChatInputAction inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
@@ -157,49 +153,6 @@ public class GuiWindow implements Listener {
 
     public void setCachedInventorie(GuiHandler guiHandler, Inventory inventory) {
         cachedInventories.put(guiHandler, inventory);
-    }
-
-    /*
-    Replaced by Button system. To use Buttons may also be easier and cleaner!
-     */
-    @Deprecated
-    public void createItem(String id, Material material) {
-        createItem(itemKey, id, material);
-    }
-
-    @Deprecated
-    public void createItem(String id, ItemStack itemStack) {
-        createItem(itemKey, id, itemStack);
-    }
-
-    @Deprecated
-    public void createItem(String key, String id, Material material) {
-        createItem(key, id, new ItemStack(material));
-    }
-
-    @Deprecated
-    public void createItem(String key, String id, ItemStack itemStack) {
-        inventoryAPI.registerItem(key, id, itemStack);
-    }
-
-    /*
-    Replaced by openChat() method. It is easier to use via lambda!
-    And it is faster in execution! You don't need to check the ids all the time!
-     */
-    @Deprecated
-    public void runChat(int id, String message, GuiHandler guiHandler) {
-        guiHandler.setTestChatID(id);
-        guiHandler.close();
-        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), message);
-    }
-
-    /*
-    Replaced by direct accessed methods via lambda expressions! This method only exist for backwards compatibility!
-    Will be removed completely in the near future!
-     */
-    @Deprecated
-    public boolean parseChatMessage(int id, String message, GuiHandler guiHandler) {
-        return true;
     }
 
 }

@@ -12,8 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
@@ -28,49 +27,74 @@ public class InventoryAPI implements Listener {
     private Plugin plugin;
     private WolfyUtilities wolfyUtilities;
     private HashMap<String, GuiHandler> guiHandlers = new HashMap<>();
-    private HashMap<String, GuiWindow> guiWindows;
-    private HashMap<String, ItemStack[]> items;
-    private HashMap<String, List<String>> itemHelpLores;
-
-    private HashMap<NamespacedKey, Button> buttons = new HashMap<>();
-    private String mainmenu;
+    private HashMap<String, GuiCluster> guiClusters = new HashMap<>();
 
     public InventoryAPI(Plugin plugin, WolfyUtilities wolfyUtilities) {
         this.wolfyUtilities = wolfyUtilities;
-        guiWindows = new HashMap<>();
-        items = new HashMap<>();
-        itemHelpLores = new HashMap<>();
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
+    public void registerGuiCluster(String id) {
+        guiClusters.putIfAbsent(id, new GuiCluster(this));
+    }
+
+    public void registerCustomGuiCluster(String id, GuiCluster guiCluster) {
+        guiClusters.putIfAbsent(id, guiCluster);
+    }
+
+    public GuiCluster getOrRegisterGuiCluster(String clusterID) {
+        registerGuiCluster(clusterID);
+        return getGuiCluster(clusterID);
+    }
+
+    public GuiCluster getGuiCluster(String id) {
+        return guiClusters.get(id);
+    }
+
+    public GuiCluster getGuiCluster() {
+        return getGuiCluster("none");
+    }
+
+    public boolean hasGuiCluster(String id) {
+        return getGuiCluster(id) != null;
+    }
+
+    public void registerGuiWindow(String clusterID, GuiWindow guiWindow) {
+        getGuiCluster(clusterID).registerGuiWindow(guiWindow);
+    }
+
     public void registerGuiWindow(GuiWindow guiWindow) {
-        guiWindows.put(guiWindow.getNamespace(), guiWindow);
+        registerGuiWindow("none", guiWindow);
+    }
+
+    public GuiWindow getGuiWindow(String clusterID, String guiWindowID) {
+        return getGuiCluster(clusterID).getGuiWindow(guiWindowID);
+    }
+
+    public GuiWindow getGuiWindow(String guiWindowID) {
+        return getGuiCluster("none").getGuiWindow(guiWindowID);
     }
 
     public WolfyUtilities getWolfyUtilities() {
         return wolfyUtilities;
     }
 
-    public GuiWindow getGuiWindow(String key) {
-        return guiWindows.get(key);
+    public void setMainmenu(String guiWindowID) {
+        getGuiCluster("none").setMainmenu(guiWindowID);
     }
 
-    public void setMainmenu(String key) {
-        mainmenu = key;
+    public void openCluster(Player player, String clusterID) {
+        getGuiHandler(player).openCluster(clusterID);
     }
 
-    public void openGui(Player player, String gui) {
-        getGuiHandler(player).testForNewPlayerInstance();
-        if (getGuiHandler(player).getLastInv() != null) {
-            getGuiHandler(player).openLastInv();
-        } else {
-            getGuiHandler(player).changeToInv(gui);
-        }
+    @Deprecated
+    public void openGui(Player player, String guiWindowID) {
+        getGuiHandler(player).changeToInv(guiWindowID);
     }
 
-    public void openGui(Player player) {
-        openGui(player, mainmenu);
+    public void openGui(Player player, String clusterID, String guiWindowID) {
+        getGuiHandler(player).changeToInv(clusterID, guiWindowID);
     }
 
     public void removeGui(Player player) {
@@ -121,8 +145,6 @@ public class InventoryAPI implements Listener {
             removeGui(player);
         }
         guiHandlers.clear();
-        guiWindows.clear();
-        items.clear();
     }
 
     /*
@@ -137,52 +159,37 @@ public class InventoryAPI implements Listener {
     /*
     Registers an Button globally which then can be accessed in every GUI.
      */
-    public void registerButton(String namespace, Button button) {
-        registerButton(new NamespacedKey(namespace, button.getId()), button);
-    }
-
-    /*
-    Registers an Button globally which then can be accessed in every GUI.
-     */
-    public void registerButton(NamespacedKey namespacedKey, Button button) {
-        button.init(namespacedKey.getNamespace(), getWolfyUtilities());
-        buttons.put(namespacedKey, button);
+    public void registerButton(String clusterID, Button button) {
+        button.init(clusterID, getWolfyUtilities());
+        getGuiCluster(clusterID).registerButton(button);
     }
 
     /*
     Get an globally registered Button.
     This returns an Button out of the default namespace.
      */
-    public Button getButton(String key) {
-        return getButton("none", key);
+    public Button getButton(String buttonID) {
+        return getButton("none", buttonID);
     }
 
     /*
     Get an globally registered Button.
     This returns an Button out of the specific namespace.
      */
-    public Button getButton(String namespace, String key) {
-        return getButton(new NamespacedKey(namespace, key));
+    public Button getButton(String clusterID, String buttonID) {
+        return getGuiCluster(clusterID).getButton(buttonID);
     }
 
-    /*
-    Get an globally registered Button.
-    This returns an Button out of the specific namespace.
-     */
-    public Button getButton(NamespacedKey namespacedKey) {
-        return buttons.get(namespacedKey);
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
-                if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
+                if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
+                    GuiWindow guiWindow = guiHandler.getCurrentInv();
                     if (event.getClickedInventory().equals(event.getView().getTopInventory())) {
                         event.setCancelled(true);
-                        GuiWindow guiWindow = guiHandler.getCurrentInv();
-
                         //DEPRECATED
                         String action = guiHandler.verifyItem(event.getCurrentItem());
                         if (!action.isEmpty()) {
@@ -191,28 +198,29 @@ public class InventoryAPI implements Listener {
                             if (!guiHandler.getCurrentInv().onAction(guiAction)) {
                                 event.setCancelled(true);
                             }
+                        }
 
-                        } else {
-                            GuiClick guiClick = new GuiClick(guiHandler, guiHandler.getCurrentInv(), event);
-                            if (!guiHandler.getCurrentInv().onClick(guiClick)) {
-                                event.setCancelled(false);
+                        Button button = guiHandler.getButton(guiWindow, event.getSlot());
+                        if (button != null) {
+                            event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
+                            guiHandler.getCurrentInv().update(guiHandler);
+                        }
+                    }else{
+                        if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+                            int slot = -1;
+                            if (event.getCurrentItem() != null) {
+                                slot = event.getView().getTopInventory().first(event.getCurrentItem());
                             }
-
-                            Button button = guiHandler.getButton(guiWindow, event.getSlot());
+                            if (slot == -1) {
+                                slot = event.getView().getTopInventory().firstEmpty();
+                            }
+                            Button button = guiHandler.getButton(guiWindow, slot);
                             if (button != null) {
-                                event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
+                                event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), slot, event));
                                 guiHandler.getCurrentInv().update(guiHandler);
                             }
                         }
-
-
-                    } else {
-                        GuiClick guiClick = new GuiClick(guiHandler, guiHandler.getCurrentInv(), event);
-                        if (!guiHandler.getCurrentInv().onClick(guiClick)) {
-                            event.setCancelled(false);
-                        }
                     }
-
                 }
             }
         }
@@ -223,11 +231,19 @@ public class InventoryAPI implements Listener {
         if (event.getInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
-                if (guiHandler.verifyInv() && guiHandler.getCurrentInv().getInventory(guiHandler).equals(event.getView().getTopInventory())) {
+                if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
+                    GuiWindow guiWindow = guiHandler.getCurrentInv();
                     GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
                     Bukkit.getPluginManager().callEvent(guiItemDragEvent);
                     if (guiItemDragEvent.isCancelled()) {
                         event.setCancelled(true);
+                    }
+                    for (int slot : event.getInventorySlots()) {
+                        Button button = guiHandler.getButton(guiWindow, slot);
+                        if (button != null) {
+                            event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), slot, new InventoryClickEvent(event.getView(), event.getView().getSlotType(slot), slot, ClickType.RIGHT, InventoryAction.PLACE_SOME)));
+                            guiWindow.update(guiHandler);
+                        }
                     }
                 }
             }
@@ -259,10 +275,7 @@ public class InventoryAPI implements Listener {
                 if (guiHandler.isChatEventActive() && !event.getMessage().startsWith("wu::")) {
                     if (guiHandler.getChatInputAction() != null && !guiHandler.getChatInputAction().onChat(guiHandler, event.getPlayer(), event.getMessage(), event.getMessage().split(" "))) {
                         guiHandler.setChatInputAction(null);
-                        guiHandler.openLastInv();
-                    } else if (!guiHandler.getLastInv().parseChatMessage(guiHandler.getTestChatID(), event.getMessage(), guiHandler)) {
-                        guiHandler.openLastInv();
-                        guiHandler.setTestChatID(-1);
+                        guiHandler.openCluster();
                     }
                     event.setMessage("[WolfyUtilities CANCELED]");
                     event.setCancelled(true);
@@ -279,45 +292,6 @@ public class InventoryAPI implements Listener {
                 guiHandler.cancelChatEvent();
             }
         }
-    }
-
-    /*
-        Gets the item name and lore from the set language!
-         */
-    @Deprecated
-    public void registerItem(String namespace, String key, ItemStack itemStack) {
-        String path = "items." + namespace + "." + key;
-        String displayName = wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$");
-        String[] helpLore = wolfyUtilities.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".help") != null ? wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKey(path + ".help").toArray(new String[0]) : new String[0];
-        String[] normalLore = wolfyUtilities.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".lore") != null ? wolfyUtilities.getLanguageAPI().getActiveLanguage().replaceKey(path + ".lore").toArray(new String[0]) : new String[0];
-        registerItem(namespace, key, itemStack, displayName, helpLore, normalLore);
-    }
-
-    /*
-    Registers an item, which is not connected with the languages!
-     */
-    @Deprecated
-    public void registerItem(String namespace, String key, ItemStack itemStack, String displayName, String[] helpLore, String... normalLore) {
-        items.put(namespace + ":" + key, ItemUtils.createItem(itemStack, displayName + WolfyUtilities.hideString("::" + key + "::" + Main.getMainConfig().getString("securityCode")), helpLore, normalLore));
-    }
-
-    @Deprecated
-    public ItemStack[] getItem(String namespace, String id) {
-        return items.getOrDefault(namespace + ":" + id, new ItemStack[]{new ItemStack(Material.STONE), new ItemStack(Material.STONE)});
-    }
-
-    @Deprecated
-    public List<String> getItemHelpLore(String namespace, String id) {
-        return itemHelpLores.getOrDefault(namespace + ":" + id, new ArrayList<>());
-    }
-
-    @Deprecated
-    public ItemStack getItem(String namespace, String id, boolean help) {
-        ItemStack[] itemStacks = getItem(namespace, id);
-        if (help) {
-            return itemStacks[1].clone();
-        }
-        return itemStacks[0].clone();
     }
 
 }

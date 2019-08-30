@@ -70,9 +70,9 @@ public class ToggleButton extends Button {
         ItemStack item = state.getIcon(help);
         HashMap<String, Object> values = new HashMap<>();
         if(state.getAction() instanceof ButtonActionRender){
-            item = ((ButtonActionRender) state.getAction()).render(values, guiHandler, player, item);
+            item = ((ButtonActionRender) state.getAction()).render(values, guiHandler, player, item, slot, help);
         }else if(state.getRenderAction() != null){
-            item = state.getRenderAction().render(values, guiHandler, player, item);
+            item = state.getRenderAction().render(values, guiHandler, player, item, slot, help);
         }
         inventory.setItem(slot, replaceKeysWithValue(item, values));
     }

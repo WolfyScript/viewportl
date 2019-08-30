@@ -45,9 +45,9 @@ public class ItemInputButton extends ActionButton {
         ItemStack item = content.getOrDefault(guiHandler, new ItemStack(Material.AIR));
         HashMap<String, Object> values = new HashMap<>();
         if(getState().getAction() instanceof ButtonActionRender){
-            item = ((ButtonActionRender) getState().getAction()).render(values, guiHandler, player, item);
+            item = ((ButtonActionRender) getState().getAction()).render(values, guiHandler, player, item, slot, help);
         }else if(getState().getRenderAction() != null){
-            item = getState().getRenderAction().render(values, guiHandler, player, item);
+            item = getState().getRenderAction().render(values, guiHandler, player, item, slot, help);
         }
         inventory.setItem(slot, replaceKeysWithValue(item, values));
     }

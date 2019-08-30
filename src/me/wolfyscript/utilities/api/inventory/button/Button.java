@@ -29,7 +29,7 @@ public abstract class Button {
 
     public abstract void init(GuiWindow guiWindow);
 
-    public abstract void init(String windowKey, WolfyUtilities api);
+    public abstract void init(String clusterID, WolfyUtilities api);
 
     public abstract boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event);
 
