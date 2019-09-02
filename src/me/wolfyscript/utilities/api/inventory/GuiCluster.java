@@ -1,13 +1,12 @@
 package me.wolfyscript.utilities.api.inventory;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
-import org.bukkit.Bukkit;
 
 import java.util.HashMap;
 
 public class GuiCluster {
 
+    private String id;
     private InventoryAPI inventoryAPI;
     private HashMap<String, Button> buttons = new HashMap<>();
     private HashMap<String, GuiWindow> guiWindows = new HashMap<>();
@@ -35,10 +34,16 @@ public class GuiCluster {
     }
 
     public void registerGuiWindow(GuiWindow guiWindow){
+        guiWindow.setClusterID(id);
+        guiWindow.onInit();
         guiWindows.put(guiWindow.getNamespace(), guiWindow);
     }
 
     public GuiWindow getGuiWindow(String id){
         return guiWindows.get(id);
+    }
+
+    void setId(String id){
+        this.id = id;
     }
 }

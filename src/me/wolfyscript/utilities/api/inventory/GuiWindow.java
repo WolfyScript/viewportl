@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 public class GuiWindow implements Listener {
 
+    private String clusterID;
     private String namespace;
     public String itemKey;
     private InventoryAPI inventoryAPI;
@@ -41,7 +42,6 @@ public class GuiWindow implements Listener {
         this.inventoryType = inventoryType;
         this.size = size;
         Bukkit.getPluginManager().registerEvents(this, inventoryAPI.getPlugin());
-        onInit();
     }
 
     public InventoryType getInventoryType() {
@@ -60,11 +60,6 @@ public class GuiWindow implements Listener {
 
     public void onInit() {
 
-    }
-
-    @Deprecated
-    public boolean onAction(GuiAction guiAction) {
-        return true;
     }
 
     public boolean onClick(GuiClick guiClick) {
@@ -140,7 +135,11 @@ public class GuiWindow implements Listener {
     }
 
     protected String getInventoryName() {
-        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories." + namespace + "$"));
+        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories."+ clusterID + "." + namespace + ".gui_name$"));
+    }
+
+    public void setClusterID(String clusterID){
+        this.clusterID = clusterID;
     }
 
     public Inventory getInventory(GuiHandler guiHandler) {
@@ -155,4 +154,7 @@ public class GuiWindow implements Listener {
         cachedInventories.put(guiHandler, inventory);
     }
 
+    public String getClusterID() {
+        return clusterID;
+    }
 }

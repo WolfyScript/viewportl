@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ButtonState {
 
-    private String namespace;
+    private String clusterID;
     private String key;
     private ItemStack presetIcon;
     private ItemStack[] icon;
@@ -57,15 +57,15 @@ public class ButtonState {
         setRenderAction(render);
     }
 
-    public ButtonState(String namespace, String key, ItemStack presetIcon, ButtonAction action) {
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, ButtonAction action) {
         this.action = action;
         this.presetIcon = presetIcon;
-        this.namespace = namespace;
+        this.clusterID = clusterID;
         this.key = key;
     }
 
-    public ButtonState(String namespace, String key, Material presetIcon, ButtonAction action) {
-        this(namespace, key, new ItemStack(presetIcon), action);
+    public ButtonState(String clusterID, String key, Material presetIcon, ButtonAction action) {
+        this(clusterID, key, new ItemStack(presetIcon), action);
     }
 
     public ButtonState(ItemStack presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action) {
@@ -79,12 +79,21 @@ public class ButtonState {
     }
 
     public void init(GuiWindow window) {
-        init(window.getNamespace(), window.getAPI());
+        if (key != null && !key.isEmpty()) {
+            String path = "inventories."+ window.getClusterID() + "." + window.getNamespace() + ".items." + key;
+            if(clusterID != null && !clusterID.isEmpty()){
+                path = "inventories."+ clusterID + ".global_items." + key;
+            }
+            displayName = window.getAPI().getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$");
+            helpLore = window.getAPI().getLanguageAPI().getActiveLanguage().getConfig().get(path + ".help") != null ? window.getAPI().getLanguageAPI().getActiveLanguage().replaceKey(path + ".help").toArray(new String[0]) : new String[0];
+            normalLore = window.getAPI().getLanguageAPI().getActiveLanguage().getConfig().get(path + ".lore") != null ? window.getAPI().getLanguageAPI().getActiveLanguage().replaceKey(path + ".lore").toArray(new String[0]) : new String[0];
+            this.icon = ItemUtils.createItem(presetIcon, displayName, helpLore, normalLore);
+        }
     }
 
-    public void init(String windowKey, WolfyUtilities api) {
+    public void init(String clusterID, WolfyUtilities api) {
         if (key != null && !key.isEmpty()) {
-            String path = "items." + (namespace == null || namespace.isEmpty() ? windowKey : namespace) + "." + key;
+            String path = "inventories."+ clusterID + ".global_items." + key;
             displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$");
             helpLore = api.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".help") != null ? api.getLanguageAPI().getActiveLanguage().replaceKey(path + ".help").toArray(new String[0]) : new String[0];
             normalLore = api.getLanguageAPI().getActiveLanguage().getConfig().get(path + ".lore") != null ? api.getLanguageAPI().getActiveLanguage().replaceKey(path + ".lore").toArray(new String[0]) : new String[0];

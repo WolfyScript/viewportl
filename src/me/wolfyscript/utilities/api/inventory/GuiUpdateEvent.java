@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.inventory;
 
+import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import org.bukkit.Bukkit;
@@ -11,7 +12,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
 public class GuiUpdateEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
@@ -77,8 +77,20 @@ public class GuiUpdateEvent extends Event {
      */
     public void setButton(int slot, String id) {
         Button button = guiWindow.getButton(id);
-        if (button == null) {
-            inventoryAPI.getButton(id);
+        if (button != null) {
+            guiHandler.setButton(guiWindow, slot, id);
+            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+        }
+    }
+
+    /*
+    Tries to add an Locally registered Button. If it doesn't exist then
+    it will try to get the button globally registered for this GuiCluster.
+     */
+    public void setLocalOrGlobalButton(int slot, String id){
+        Button button = guiWindow.getButton(id);
+        if(button == null){
+            button = inventoryAPI.getButton(guiWindow.getClusterID(), id);
         }
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, id);
@@ -87,8 +99,18 @@ public class GuiUpdateEvent extends Event {
     }
 
     /*
+    Sets a Button object to the specific slot.
+     */
+    public void setButton(int slot, @NotNull Button button) {
+        if (button != null) {
+            guiHandler.setButton(guiWindow, slot, button.getId());
+            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+        }
+    }
+
+    /*
     Set an globally registered Button.
-    Globally means it is registered via the InventoryAPI.
+    Globally means it is registered via the InventoryAPI and registered in the GuiCluster.
      */
     public void setButton(int slot, String namespace, String key) {
         Button button = inventoryAPI.getButton(namespace, key);

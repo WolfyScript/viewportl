@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -161,15 +162,14 @@ public class GuiHandler implements Listener {
      */
     public void changeToInv(@NotNull String clusterID, @NotNull String guiWindowID) {
         Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
+            Player player1 = getPlayer();
             changingInv = true;
-            player.closeInventory();
-            if (WolfyUtilities.hasPermission(player, getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT))) {
+            player1.closeInventory();
+            if (WolfyUtilities.hasPermission(player1, getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT))) {
                 List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
                 if(getCurrentInv(clusterID) == null || !getCurrentInv(clusterID).getNamespace().equals(guiWindowID)){
                     history.add(guiWindowID);
                 }
-                System.out.println("Cluster: "+clusterID);
-                System.out.println("History: "+history);
                 clusterHistory.put(clusterID, history);
                 if (api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID) != null) {
                     currentGuiCluster = clusterID;
@@ -177,10 +177,10 @@ public class GuiHandler implements Listener {
                     GuiUpdateEvent event = new GuiUpdateEvent(this, api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID));
                     Bukkit.getPluginManager().callEvent(event);
                     api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).setCachedInventorie(this, event.getInventory());
-                    player.openInventory(event.getInventory());
+                    player1.openInventory(event.getInventory());
                 }
             } else {
-                api.sendPlayerMessage(player, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT));
+                api.sendPlayerMessage(player1, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT));
             }
             changingInv = false;
         });
@@ -256,27 +256,16 @@ public class GuiHandler implements Listener {
         }
     }
 
-    @Deprecated
-    public void testForNewPlayerInstance() {
-        this.player = player.getPlayer();
-    }
-
-    @Deprecated
-    public String verifyItem(ItemStack item) {
-        if (item != null && item.hasItemMeta()) {
-            if (item.getItemMeta().hasDisplayName()) {
-                String[] splitted = item.getItemMeta().getDisplayName().split("§:§:");
-                if (splitted.length >= 3) {
-                    if (WolfyUtilities.unhideString(splitted[splitted.length - 1]).equals(Main.getMainConfig().getString("securityCode"))) {
-                        return WolfyUtilities.unhideString(splitted[splitted.length - 2]);
-                    }
-                }
-            }
-        }
-        return "";
-    }
 
     public void cancelChatEvent() {
         setChatInputAction(null);
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event){
+        Player player = event.getPlayer();
+        if(player.getUniqueId().equals(this.player.getUniqueId())){
+            this.player = player;
+        }
     }
 }

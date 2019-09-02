@@ -36,10 +36,13 @@ public class InventoryAPI implements Listener {
     }
 
     public void registerGuiCluster(String id) {
-        guiClusters.putIfAbsent(id, new GuiCluster(this));
+        GuiCluster guiCluster = new GuiCluster(this);
+        guiCluster.setId(id);
+        guiClusters.putIfAbsent(id, guiCluster);
     }
 
     public void registerCustomGuiCluster(String id, GuiCluster guiCluster) {
+        guiCluster.setId(id);
         guiClusters.putIfAbsent(id, guiCluster);
     }
 
@@ -149,27 +152,10 @@ public class InventoryAPI implements Listener {
 
     /*
     Registers an Button globally which then can be accessed in every GUI.
-    These Buttons can also be sorted into different namespaces.
-    Default namespace is "none".
-     */
-    public void registerButton(Button button) {
-        registerButton("none", button);
-    }
-
-    /*
-    Registers an Button globally which then can be accessed in every GUI.
      */
     public void registerButton(String clusterID, Button button) {
         button.init(clusterID, getWolfyUtilities());
         getGuiCluster(clusterID).registerButton(button);
-    }
-
-    /*
-    Get an globally registered Button.
-    This returns an Button out of the default namespace.
-     */
-    public Button getButton(String buttonID) {
-        return getButton("none", buttonID);
     }
 
     /*
@@ -190,15 +176,6 @@ public class InventoryAPI implements Listener {
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
                     if (event.getClickedInventory().equals(event.getView().getTopInventory())) {
                         event.setCancelled(true);
-                        //DEPRECATED
-                        String action = guiHandler.verifyItem(event.getCurrentItem());
-                        if (!action.isEmpty()) {
-                            GuiAction guiAction = new GuiAction(action, guiHandler, guiHandler.getCurrentInv(), event);
-                            guiHandler.getCurrentInv().update(guiHandler);
-                            if (!guiHandler.getCurrentInv().onAction(guiAction)) {
-                                event.setCancelled(true);
-                            }
-                        }
 
                         Button button = guiHandler.getButton(guiWindow, event.getSlot());
                         if (button != null) {

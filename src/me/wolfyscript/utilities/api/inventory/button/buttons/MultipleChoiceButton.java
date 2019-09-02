@@ -30,7 +30,6 @@ public class MultipleChoiceButton extends Button {
     Each click the index increases by 1.
     After the index reached the size of the States it is reset to 0!
      */
-
     public MultipleChoiceButton(String id, @NotNull ButtonState... states) {
         super(id, ButtonType.CHOICES);
         this.states = Arrays.asList(states);
@@ -54,11 +53,13 @@ public class MultipleChoiceButton extends Button {
     @Override
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
         int setting = settings.getOrDefault(guiHandler, 0);
-        if (states != null && states.size() > setting) {
+        if (states != null && setting < states.size()) {
             ButtonState btnState = states.get(setting);
             setting++;
             if (setting >= states.size()) {
                 settings.put(guiHandler, 0);
+            }else{
+                settings.put(guiHandler, setting);
             }
             return btnState.getAction().run(guiHandler, player, inventory, slot, event);
         }
