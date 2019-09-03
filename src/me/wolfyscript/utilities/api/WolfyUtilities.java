@@ -176,8 +176,19 @@ public class WolfyUtilities implements Listener {
         for (int i = 0; i < keys.size(); i++) {
             message = message.replace(keys.get(i), replacements[i]);
         }
-        message = ChatColor.translateAlternateColorCodes('&', message);
-        plugin.getServer().getConsoleSender().sendMessage(message);
+        plugin.getServer().getConsoleSender().sendMessage(WolfyUtilities.translateColorCodes(message));
+    }
+
+    public void sendConsoleMessage(String message, String[]... replacements) {
+        if (replacements != null) {
+            message = CHAT_PREFIX + getLanguageAPI().getActiveLanguage().replaceKeys(message);
+            for (String[] replace : replacements) {
+                if (replace.length > 1) {
+                    message = message.replaceAll(replace[0], replace[1]);
+                }
+            }
+        }
+        plugin.getServer().getConsoleSender().sendMessage(WolfyUtilities.translateColorCodes(message));
     }
 
     public void sendPlayerMessage(Player player, String message) {
@@ -197,11 +208,11 @@ public class WolfyUtilities implements Listener {
                         message = message.replaceAll(replace[0], replace[1]);
                     }
                 }
-                player.sendMessage(WolfyUtilities.translateColorCodes(message));
+            }else{
+                return;
             }
-        } else {
-            sendPlayerMessage(player, message);
         }
+        player.sendMessage(WolfyUtilities.translateColorCodes(message));
     }
 
     public void sendActionMessage(Player player, ClickData... clickData) {

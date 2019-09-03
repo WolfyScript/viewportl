@@ -257,8 +257,18 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         return config.getString(path);
     }
 
+    @Override
+    public String getString(String path, String def) {
+        return config.getString(path, def);
+    }
+
     public int getInt(String path) {
         return config.getInt(path);
+    }
+
+    @Override
+    public int getInt(String path, int def) {
+        return config.getInt(path, def);
     }
 
     public boolean getBoolean(String path) {
@@ -269,8 +279,18 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         return config.getLong(path);
     }
 
+    @Override
+    public long getLong(String path, long def) {
+        return config.getLong(path, def);
+    }
+
     public double getDouble(String path) {
         return config.getDouble(path);
+    }
+
+    @Override
+    public double getDouble(String path, double def) {
+        return config.getDouble(path, def);
     }
 
     @Override

@@ -18,13 +18,21 @@ public interface ConfigurationSection {
 
     String getString(String path);
 
+    String getString(String path, String def);
+
     int getInt(String path);
+
+    int getInt(String path, int def);
 
     boolean getBoolean(String path);
 
     double getDouble(String path);
 
+    double getDouble(String path, double def);
+
     long getLong(String path);
+
+    long getLong(String path, long def);
 
     List<?> getList(String path);
 

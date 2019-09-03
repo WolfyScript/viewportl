@@ -314,15 +314,26 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public String getString(String path) {
+        return getString(path, "");
+    }
+
+    @Override
+    public String getString(String path, String def) {
         if (get(path) != null) {
             return get(path).toString();
         }
-        return "";
+        return def;
     }
 
     @Override
     public int getInt(String path) {
-        return NumberConversions.toInt(get(path));
+        return getInt(path, 0);
+    }
+
+    @Override
+    public int getInt(String path, int def) {
+        Object val = this.get(path);
+        return val instanceof Number ? NumberConversions.toInt(get(path)) : def;
     }
 
     @Override
@@ -333,14 +344,24 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public double getDouble(String path) {
+        return getDouble(path, 0.0d);
+    }
+
+    @Override
+    public double getDouble(String path, double def) {
         Object val = this.get(path);
-        return val instanceof Number ? NumberConversions.toDouble(val) : 0.0D;
+        return val instanceof Number ? NumberConversions.toDouble(val) : def;
     }
 
     @Override
     public long getLong(String path) {
+        return getLong(path, 0);
+    }
+
+    @Override
+    public long getLong(String path, long def) {
         Object val = this.get(path);
-        return val instanceof Number ? NumberConversions.toLong(val) : 0;
+        return val instanceof Number ? NumberConversions.toLong(val) : def;
     }
 
     @Override
@@ -412,7 +433,7 @@ public class JsonConfiguration extends FileConfiguration {
                         if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
                             displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
                         }
-                        itemMeta.setDisplayName(displayName);
+                        itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
                     }
                     if (itemMeta.hasLore() && replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
                         List<String> newLore = new ArrayList<>();

@@ -145,8 +145,18 @@ public class Config extends FileConfiguration implements ConfigurationSection {
     }
 
     @Override
+    public String getString(String path, String def) {
+        return configuration.getString(path, def);
+    }
+
+    @Override
     public int getInt(String path) {
         return configuration.getInt(path);
+    }
+
+    @Override
+    public int getInt(String path, int def) {
+        return configuration.getInt(path, def);
     }
 
     @Override
@@ -160,8 +170,18 @@ public class Config extends FileConfiguration implements ConfigurationSection {
     }
 
     @Override
+    public double getDouble(String path, double def) {
+        return configuration.getDouble(path, def);
+    }
+
+    @Override
     public long getLong(String path) {
         return configuration.getLong(path);
+    }
+
+    @Override
+    public long getLong(String path, long def) {
+        return configuration.getLong(path, def);
     }
 
     @Override
