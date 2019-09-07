@@ -122,7 +122,7 @@ public class JsonConfiguration extends FileConfiguration {
 
     public void loadDefaults(boolean overwrite) {
         if (defPath != null && defFileName != null && !defPath.isEmpty() && !defFileName.isEmpty()) {
-            if(plugin.getResource(defPath + "/" + defFileName + ".json") != null){
+            if (plugin.getResource(defPath + "/" + defFileName + ".json") != null) {
                 HashMap<String, Object> defMap = gson.fromJson(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json")), new HashMap<String, Object>().getClass());
                 if (overwrite) {
                     this.map.putAll(defMap);
@@ -255,26 +255,26 @@ public class JsonConfiguration extends FileConfiguration {
         return map;
     }
 
+    /*
+            Gets the Object of the specified path.
+            In this example the name would be accessed with get("crafting.workbench.name");
+            The path defines the keys and sub keys.
+            {
+                "crafting": {
+                    "workbench": {
+                        "name": "&6Advanced Workbench",
+                        "lore": [
+                            "&7Workbench for advanced crafting"
+                        ]
+                    }
+                }
+            }
+    */
     @Override
     public Object get(String path) {
         return get(path, null);
     }
 
-    /*
-        Gets the Object of the specified path.
-        The name would be accessed with getObject("crafting", "workbench", "name");
-        The path defines the keys and sub keys.
-        {
-            "crafting": {
-                "workbench": {
-                    "name": "&6Advanced Workbench",
-                    "lore": [
-                        "&7Workbench for advanced crafting"
-                    ]
-                }
-            }
-        }
-    */
     public Object get(String path, @Nullable Object def) {
         String[] pathKeys = path.split(pathSeparator == '.' ? "\\." : pathSeparator + "");
         Map<String, Object> currentMap = map;

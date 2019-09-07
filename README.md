@@ -4,7 +4,7 @@
 This API is the core that powers all of my plugins (right now only CustomCrafting).
 
 ##### WolfyUtilities contains a lot of useful APIs, such as:
-- **InventoryAPI** to create in-game GUIs (_going to be rewritten soon!_)
+- **InventoryAPI** to create in-game GUIs
 - **ConfigAPI** to easily manage your configs needs. It supports _YAML_ and _JSON_
 - **LanguageAPI** that allows you to connect your plugin to a language file and support multiple languages for GUIs, messages, etc.!
 
@@ -14,3 +14,4 @@ This API is the core that powers all of my plugins (right now only CustomCraftin
 - Basic **Reflection** Utils
 - **Skull texture** utils
 - Basic **MySQL** connection (WIP)
+- ItemBuilder class (WIP)

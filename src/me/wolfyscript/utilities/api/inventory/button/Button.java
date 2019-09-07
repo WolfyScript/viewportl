@@ -44,21 +44,23 @@ public abstract class Button {
     }
 
     protected ItemStack replaceKeysWithValue(ItemStack itemStack, HashMap<String, Object> values){
-        ItemMeta meta = itemStack.getItemMeta();
-        if(meta != null && meta.hasDisplayName()){
-            String name = meta.getDisplayName();
-            List<String> lore = meta.getLore();
-            for(Map.Entry<String, Object> entry : values.entrySet()){
-                name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
-                if (meta.hasLore()) {
-                    for (int i = 0; i < lore.size(); i++) {
-                        lore.set(i, lore.get(i).replace(entry.getKey(), String.valueOf(entry.getValue())));
+        if(itemStack != null){
+            ItemMeta meta = itemStack.getItemMeta();
+            if(meta != null && meta.hasDisplayName()){
+                String name = meta.getDisplayName();
+                List<String> lore = meta.getLore();
+                for(Map.Entry<String, Object> entry : values.entrySet()){
+                    name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
+                    if (meta.hasLore()) {
+                        for (int i = 0; i < lore.size(); i++) {
+                            lore.set(i, lore.get(i).replace(entry.getKey(), String.valueOf(entry.getValue())));
+                        }
                     }
                 }
+                meta.setDisplayName(name);
+                meta.setLore(lore);
+                itemStack.setItemMeta(meta);
             }
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-            itemStack.setItemMeta(meta);
         }
         return itemStack;
     }
