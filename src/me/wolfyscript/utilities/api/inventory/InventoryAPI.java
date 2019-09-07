@@ -3,24 +3,24 @@ package me.wolfyscript.utilities.api.inventory;
 import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
-import me.wolfyscript.utilities.api.utils.ItemUtils;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.api.utils.InventoryUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InventoryAPI implements Listener {
 
@@ -170,6 +170,7 @@ public class InventoryAPI implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
+            System.out.println("Type: " + event.getAction());
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
                 if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
@@ -182,7 +183,7 @@ public class InventoryAPI implements Listener {
                             event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
                             guiHandler.getCurrentInv().update(guiHandler);
                         }
-                    }else{
+                    } else {
                         if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                             int slot = -1;
                             if (event.getCurrentItem() != null) {
@@ -195,9 +196,12 @@ public class InventoryAPI implements Listener {
                             if (button != null) {
                                 event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), slot, event));
                                 guiHandler.getCurrentInv().update(guiHandler);
+                            } else {
+                                event.setCancelled(true);
                             }
                         }
                     }
+                    //TODO: Double click item to execute all affecting buttons.
                 }
             }
         }
@@ -208,20 +212,29 @@ public class InventoryAPI implements Listener {
         if (event.getInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
-                if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
-                    GuiWindow guiWindow = guiHandler.getCurrentInv();
-                    GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
-                    Bukkit.getPluginManager().callEvent(guiItemDragEvent);
-                    if (guiItemDragEvent.isCancelled()) {
+                for (int rawSlot : event.getRawSlots()) {
+                    if (!guiHandler.verifyInventory(event.getView().getInventory(rawSlot))) {
                         event.setCancelled(true);
+                        return;
                     }
-                    for (int slot : event.getInventorySlots()) {
-                        Button button = guiHandler.getButton(guiWindow, slot);
-                        if (button != null) {
-                            event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), slot, new InventoryClickEvent(event.getView(), event.getView().getSlotType(slot), slot, ClickType.RIGHT, InventoryAction.PLACE_SOME)));
-                            guiWindow.update(guiHandler);
-                        }
+                }
+                GuiWindow guiWindow = guiHandler.getCurrentInv();
+                GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
+                Bukkit.getPluginManager().callEvent(guiItemDragEvent);
+                if (guiItemDragEvent.isCancelled()) {
+                    event.setCancelled(true);
+                }
+                HashMap<Button, Integer> buttons = new HashMap<>();
+                for (int slot : event.getInventorySlots()) {
+                    Button button = guiHandler.getButton(guiWindow, slot);
+                    if (button == null) {
+                        event.setCancelled(true);
+                        return;
                     }
+                    buttons.put(button, slot);
+                }
+                for(Map.Entry<Button, Integer> button : buttons.entrySet()){
+                    event.setCancelled(button.getKey().execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), button.getValue(), new InventoryClickEvent(event.getView(), event.getView().getSlotType(button.getValue()), button.getValue(), ClickType.RIGHT, InventoryAction.PLACE_SOME)));
                 }
             }
         }
@@ -243,7 +256,6 @@ public class InventoryAPI implements Listener {
     This allows the message to bypass other Chat Plugins.
     Maybe I find another way to do it someday...
      */
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreChat(AsyncPlayerChatEvent event) {
         if (event.getMessage() != null) {
