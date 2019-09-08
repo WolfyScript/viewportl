@@ -3,7 +3,6 @@ package me.wolfyscript.utilities.api.inventory;
 import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
-import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -242,6 +240,10 @@ public class GuiHandler implements Listener {
             return api.getInventoryAPI().getButton(id.split(":")[0], id.split(":")[1]);
         }
         return guiWindow.getButton(id);
+    }
+
+    public Set<Map.Entry<Integer, String>> getButtons(GuiWindow guiWindow){
+        return cachedButtons.getOrDefault(guiWindow.getNamespace(),  new HashMap<>()).entrySet();
     }
 
     @EventHandler(priority = EventPriority.HIGH)

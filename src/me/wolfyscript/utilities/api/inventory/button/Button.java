@@ -9,6 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,18 @@ public abstract class Button {
         return id;
     }
 
+    protected void applyItem(GuiHandler guiHandler, Player player, Inventory inventory, ButtonState state, int slot, boolean help){
+        ItemStack item = state.getIcon(help);
+        HashMap<String, Object> values = new HashMap<>();
+        values.put("%wolfyutilities.help%", help ? guiHandler.getCurrentInv().getHelpInformation() : "");
+        if(state.getAction() instanceof ButtonActionRender){
+            item = ((ButtonActionRender) state.getAction()).render(values, guiHandler, player, item, slot, help);
+        }else if(state.getRenderAction() != null){
+            item = state.getRenderAction().render(values, guiHandler, player, item, slot, help);
+        }
+        inventory.setItem(slot, replaceKeysWithValue(item, values));
+    }
+
     protected ItemStack replaceKeysWithValue(ItemStack itemStack, HashMap<String, Object> values){
         if(itemStack != null){
             ItemMeta meta = itemStack.getItemMeta();
@@ -50,10 +63,30 @@ public abstract class Button {
                 String name = meta.getDisplayName();
                 List<String> lore = meta.getLore();
                 for(Map.Entry<String, Object> entry : values.entrySet()){
-                    name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
-                    if (meta.hasLore()) {
-                        for (int i = 0; i < lore.size(); i++) {
-                            lore.set(i, lore.get(i).replace(entry.getKey(), String.valueOf(entry.getValue())));
+                    if(entry.getValue() instanceof List){
+                        List<Object> list = (List<Object>) entry.getValue();
+                        if (meta.hasLore()) {
+                            for (int i = 0; i < lore.size(); i++) {
+                                if(lore.get(i).contains(entry.getKey())){
+                                    if(list.size() > 0){
+                                        lore.set(i, lore.get(i).replace(entry.getKey(), String.valueOf(list.get(list.size()-1))));
+                                    }else{
+                                        lore.set(i, "");
+                                    }
+                                    if(list.size() > 1){
+                                        for(int j = list.size()-2; j >= 0; j--){
+                                            lore.add(i, String.valueOf(list.get(j)));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }else if (entry.getValue() != null){
+                        name = name.replace(entry.getKey(), String.valueOf(entry.getValue()));
+                        if (meta.hasLore()) {
+                            for (int i = 0; i < lore.size(); i++) {
+                                lore.set(i, lore.get(i).replace(entry.getKey(), String.valueOf(entry.getValue())));
+                            }
                         }
                     }
                 }

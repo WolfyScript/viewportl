@@ -70,14 +70,7 @@ public class MultipleChoiceButton extends Button {
     public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) {
         int setting = settings.getOrDefault(guiHandler, 0);
         if (states != null && states.size() > setting) {
-            ItemStack item = states.get(setting).getIcon(help);
-            HashMap<String, Object> values = new HashMap<>();
-            if(states.get(setting).getAction() instanceof ButtonActionRender){
-                item = ((ButtonActionRender) states.get(setting).getAction()).render(values, guiHandler, player, item, slot, help);
-            }else if(states.get(setting).getRenderAction() != null){
-                item = states.get(setting).getRenderAction().render(values, guiHandler, player, item, slot, help);
-            }
-            inventory.setItem(slot, replaceKeysWithValue(item, values));
+            applyItem(guiHandler, player, inventory, states.get(setting), slot, help);
         }
     }
 }

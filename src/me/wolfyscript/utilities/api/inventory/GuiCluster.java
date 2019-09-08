@@ -7,14 +7,15 @@ import java.util.HashMap;
 public class GuiCluster {
 
     private String id;
-    private InventoryAPI inventoryAPI;
-    private HashMap<String, Button> buttons = new HashMap<>();
-    private HashMap<String, GuiWindow> guiWindows = new HashMap<>();
+    private HashMap<String, Button> buttons;
+    private HashMap<String, GuiWindow> guiWindows;
 
     private String mainmenu;
 
-    public GuiCluster(InventoryAPI inventoryAPI){
-        this.inventoryAPI = inventoryAPI;
+    public GuiCluster(){
+        this.buttons = new HashMap<>();
+        this.guiWindows = new HashMap<>();
+        this.mainmenu = "";
     }
 
     public void setMainmenu(String guiWindowID){
@@ -34,6 +35,9 @@ public class GuiCluster {
     }
 
     public void registerGuiWindow(GuiWindow guiWindow){
+        if(this.mainmenu.isEmpty()){
+            this.mainmenu = guiWindow.getNamespace();
+        }
         guiWindow.setClusterID(id);
         guiWindow.onInit();
         guiWindows.put(guiWindow.getNamespace(), guiWindow);

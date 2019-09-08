@@ -10,7 +10,9 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class GuiWindow implements Listener {
 
@@ -156,5 +158,13 @@ public class GuiWindow implements Listener {
 
     public String getClusterID() {
         return clusterID;
+    }
+
+    public List<String> getHelpInformation(){
+        List<String> values = new ArrayList<>();
+        for(String value : getAPI().getLanguageAPI().getActiveLanguage().replaceKey("$inventories."+ clusterID + "." + namespace + ".gui_help$")){
+            values.add(WolfyUtilities.translateColorCodes(value));
+        }
+        return values;
     }
 }

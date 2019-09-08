@@ -103,9 +103,9 @@ public class ButtonState {
 
     public ItemStack getIcon(boolean help) {
         if (help) {
-            return icon[1];
+            return icon[1].clone();
         }
-        return icon[0];
+        return icon[0].clone();
     }
 
     public ButtonAction getAction() {

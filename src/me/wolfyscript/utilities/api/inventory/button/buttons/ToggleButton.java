@@ -66,14 +66,6 @@ public class ToggleButton extends Button {
 
     @Override
     public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) {
-        ButtonState state = states[settings.getOrDefault(guiHandler, defaultState) ? 0 : 1];
-        ItemStack item = state.getIcon(help);
-        HashMap<String, Object> values = new HashMap<>();
-        if(state.getAction() instanceof ButtonActionRender){
-            item = ((ButtonActionRender) state.getAction()).render(values, guiHandler, player, item, slot, help);
-        }else if(state.getRenderAction() != null){
-            item = state.getRenderAction().render(values, guiHandler, player, item, slot, help);
-        }
-        inventory.setItem(slot, replaceKeysWithValue(item, values));
+        applyItem(guiHandler, player, inventory, states[settings.getOrDefault(guiHandler, defaultState) ? 0 : 1], slot, help);
     }
 }
