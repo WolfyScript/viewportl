@@ -217,31 +217,33 @@ public class InventoryAPI implements Listener {
         if (event.getInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
-                for (int rawSlot : event.getRawSlots()) {
-                    if (!guiHandler.verifyInventory(event.getView().getInventory(rawSlot))) {
-                        event.setCancelled(true);
-                        return;
+                if(guiHandler.verifyInventory(event.getView().getTopInventory())){
+                    for (int rawSlot : event.getRawSlots()) {
+                        if (!guiHandler.verifyInventory(event.getView().getInventory(rawSlot))) {
+                            event.setCancelled(true);
+                            return;
+                        }
                     }
-                }
-                GuiWindow guiWindow = guiHandler.getCurrentInv();
-                GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
-                Bukkit.getPluginManager().callEvent(guiItemDragEvent);
-                if (guiItemDragEvent.isCancelled()) {
-                    event.setCancelled(true);
-                }
-                HashMap<Button, Integer> buttons = new HashMap<>();
-                for (int slot : event.getInventorySlots()) {
-                    Button button = guiHandler.getButton(guiWindow, slot);
-                    if (button == null) {
+                    GuiWindow guiWindow = guiHandler.getCurrentInv();
+                    GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
+                    Bukkit.getPluginManager().callEvent(guiItemDragEvent);
+                    if (guiItemDragEvent.isCancelled()) {
                         event.setCancelled(true);
-                        return;
                     }
-                    buttons.put(button, slot);
+                    HashMap<Button, Integer> buttons = new HashMap<>();
+                    for (int slot : event.getInventorySlots()) {
+                        Button button = guiHandler.getButton(guiWindow, slot);
+                        if (button == null) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                        buttons.put(button, slot);
+                    }
+                    for (Map.Entry<Button, Integer> button : buttons.entrySet()) {
+                        event.setCancelled(button.getKey().execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), button.getValue(), new InventoryClickEvent(event.getView(), event.getView().getSlotType(button.getValue()), button.getValue(), ClickType.RIGHT, InventoryAction.PLACE_SOME)));
+                    }
+                    guiHandler.getCurrentInv().update(guiHandler);
                 }
-                for (Map.Entry<Button, Integer> button : buttons.entrySet()) {
-                    event.setCancelled(button.getKey().execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), button.getValue(), new InventoryClickEvent(event.getView(), event.getView().getSlotType(button.getValue()), button.getValue(), ClickType.RIGHT, InventoryAction.PLACE_SOME)));
-                }
-                guiHandler.getCurrentInv().update(guiHandler);
             }
         }
     }
