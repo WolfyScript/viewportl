@@ -13,6 +13,7 @@ public class ConfigAPI {
 
     private Plugin plugin;
     private WolfyUtilities api;
+    private boolean prettyPrinting = false;
 
     private HashMap<String, Configuration> configs;
 
@@ -114,5 +115,13 @@ public class ConfigAPI {
 
     public WolfyUtilities getApi() {
         return api;
+    }
+
+    public void setPrettyPrinting(boolean prettyPrinting) {
+        this.prettyPrinting = prettyPrinting;
+    }
+
+    public boolean isPrettyPrinting() {
+        return prettyPrinting;
     }
 }

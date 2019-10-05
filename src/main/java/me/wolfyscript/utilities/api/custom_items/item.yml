@@ -1,0 +1,7 @@
+item:
+
+fuel:
+  burntime: 0
+  allowed_blocks: []
+durability_cost: 0
+meta: ""

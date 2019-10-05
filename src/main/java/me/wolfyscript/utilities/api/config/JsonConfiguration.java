@@ -187,7 +187,7 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
     public void save() {
-        save(false);
+        save(configAPI.isPrettyPrinting());
     }
 
     public void reload() {

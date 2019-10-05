@@ -53,22 +53,39 @@ public class SQLDataBase {
     }
 
     public void executeUpdate(PreparedStatement preparedStatement) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    preparedStatement.executeUpdate();
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                    api.sendConsoleWarning("Failed to execute SQL Query! " + e.getMessage());
+        executeUpdate(preparedStatement, true);
+    }
+
+    public void executeUpdate(PreparedStatement preparedStatement, boolean async) {
+        if(async){
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        preparedStatement.executeUpdate();
+                        preparedStatement.close();
+                    } catch (SQLException e) {
+                        api.sendConsoleWarning("Failed to execute SQL Query! " + e.getMessage());
+                    }
                 }
+            }.runTaskAsynchronously(api.getPlugin());
+        }else{
+            try {
+                preparedStatement.executeUpdate();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                api.sendConsoleWarning("Failed to execute SQL Query! " + e.getMessage());
             }
-        }.runTaskAsynchronously(api.getPlugin());
+        }
     }
 
     public void executeUpdate(String query) {
+        executeUpdate(query, false);
+    }
+
+    public void executeUpdate(String query, boolean async) {
         try {
-            executeUpdate(connection.prepareStatement(query));
+            executeUpdate(connection.prepareStatement(query), async);
         } catch (SQLException e) {
             e.printStackTrace();
         }

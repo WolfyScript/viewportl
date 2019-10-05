@@ -4,11 +4,13 @@ import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -208,6 +210,7 @@ public class ItemUtils {
     /*
     Sets value to the lore. It will be hidden.
      */
+    @Deprecated
     public static ItemMeta setToItemSettings(ItemMeta itemMeta, String key, Object value) {
         JSONObject obj = getItemSettings(itemMeta);
         List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
@@ -228,11 +231,13 @@ public class ItemUtils {
         return itemMeta;
     }
 
+    @Deprecated
     public static ItemStack setToItemSettings(ItemStack itemStack, String key, Object value) {
         itemStack.setItemMeta(setToItemSettings(itemStack.getItemMeta(), key, value));
         return itemStack;
     }
 
+    @Deprecated
     @Nullable
     public static Object getFromItemSettings(ItemMeta itemMeta, String key) {
         if (hasItemSettings(itemMeta)) {
@@ -241,30 +246,37 @@ public class ItemUtils {
         return null;
     }
 
+    @Deprecated
     public static Object getFromItemSettings(ItemStack itemStack, String key) {
         return getFromItemSettings(itemStack.getItemMeta(), key);
     }
 
+    @Deprecated
     public static boolean isInItemSettings(ItemStack itemStack, String key) {
         return getFromItemSettings(itemStack, key) != null;
     }
 
+    @Deprecated
     public static boolean isInItemSettings(ItemMeta itemMeta, String key) {
         return getFromItemSettings(itemMeta, key) != null;
     }
 
+    @Deprecated
     public static boolean hasItemSettings(@NotNull ItemStack itemStack) {
         return getItemSettings(itemStack.getItemMeta()) != null;
     }
 
+    @Deprecated
     public static boolean hasItemSettings(@Nullable ItemMeta itemMeta) {
         return getItemSettings(itemMeta) != null;
     }
 
+    @Deprecated
     public static JSONObject getItemSettings(@NotNull ItemStack itemStack) {
         return getItemSettings(itemStack.getItemMeta());
     }
 
+    @Deprecated
     @Nullable
     public static JSONObject getItemSettings(@Nullable ItemMeta itemMeta) {
         if (itemMeta != null && itemMeta.hasLore()) {

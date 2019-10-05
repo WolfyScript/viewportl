@@ -7,6 +7,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
 import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
+import me.wolfyscript.utilities.api.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.Legacy;
@@ -58,6 +59,7 @@ public class WolfyUtilities implements Listener {
     private static boolean hasLWC;
     private static boolean hasWorldGuard;
     private static boolean hasPlotSquared;
+    private static CustomItems customItems = new CustomItems();
 
     private HashMap<UUID, PlayerAction> clickDataMap;
 
@@ -116,6 +118,10 @@ public class WolfyUtilities implements Listener {
 
     public boolean hasConfigAPI() {
         return configAPI != null;
+    }
+
+    public static CustomItems getCustomItems() {
+        return customItems;
     }
 
     public Plugin getPlugin() {
@@ -208,7 +214,7 @@ public class WolfyUtilities implements Listener {
                         message = message.replaceAll(replace[0], replace[1]);
                     }
                 }
-            }else{
+            } else {
                 return;
             }
         }
@@ -577,13 +583,17 @@ public class WolfyUtilities implements Listener {
 
     public static String translateColorCodes(String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
-        for (int i = 0; i < b.length - 1; ++i) {
-            if (b[i] == '&' && b[i + 1] != ' ') {
-                b[i] = 167;
-                b[i + 1] = Character.toLowerCase(b[i + 1]);
+        for (int i = 0; i < b.length - 1; i++) {
+            if (b[i] == '&') {
+                if(b[i+1] == '&'){
+                    b[i + 1] = '=';
+                }else{
+                    b[i] = 167;
+                    b[i + 1] = Character.toLowerCase(b[i + 1]);
+                }
             }
         }
-        return new String(b);
+        return new String(b).replace("&=", "&");
     }
 
     public static Enchantment getEnchantment(String enchantNmn) {
