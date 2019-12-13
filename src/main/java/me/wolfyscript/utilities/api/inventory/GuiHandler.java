@@ -3,12 +3,14 @@ package me.wolfyscript.utilities.api.inventory;
 import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
+import me.wolfyscript.utilities.api.inventory.events.GuiCloseEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 
@@ -252,7 +254,15 @@ public class GuiHandler implements Listener {
         if (player.equals(eventPlayer)) {
             if (!clusterHistory.isEmpty() && isWindowOpen()) {
                 if (!changingInv) {
-                    this.isWindowOpen = false;
+                    String cluster = getCurrentGuiCluster();
+                    GuiWindow guiWindow = getCurrentInv();
+                    GuiCloseEvent closeEvent = new GuiCloseEvent(cluster, guiWindow, this, event.getView());
+                    Bukkit.getPluginManager().callEvent(closeEvent);
+                    if(closeEvent.isCancelled()){
+                        Bukkit.getScheduler().runTask(getApi().getPlugin(), (Runnable) this::openCluster);
+                    }else{
+                        this.isWindowOpen = false;
+                    }
                 }
             }
         }

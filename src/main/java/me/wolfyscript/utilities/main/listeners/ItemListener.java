@@ -6,6 +6,7 @@ import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.event.player.PlayerItemMendEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -24,6 +25,18 @@ public class ItemListener implements Listener {
             }else{
                 ItemUtils.setDamage(itemStack, ItemUtils.getDamage(itemStack) + event.getDamage());
             }
+        }
+    }
+
+    @EventHandler
+    public void onMend(PlayerItemMendEvent event){
+        ItemStack itemStack = event.getItem();
+        if (ItemUtils.hasCustomDurability(itemStack)) {
+            int totalDmg = ItemUtils.getDamage(itemStack) - event.getRepairAmount();
+            if(!(totalDmg >= 0)){
+                totalDmg = 0;
+            }
+            ItemUtils.setDamage(itemStack, totalDmg);
         }
     }
 }

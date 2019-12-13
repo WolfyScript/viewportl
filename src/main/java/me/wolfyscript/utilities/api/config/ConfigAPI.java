@@ -1,5 +1,7 @@
 package me.wolfyscript.utilities.api.config;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.plugin.Plugin;
 

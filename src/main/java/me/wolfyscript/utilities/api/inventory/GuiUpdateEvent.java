@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
 public class GuiUpdateEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
@@ -29,10 +30,12 @@ public class GuiUpdateEvent extends Event {
         this.player = guiHandler.getPlayer();
         this.guiWindow = guiWindow;
         if (!guiWindow.hasCachedInventory(guiHandler)) {
+            String guiName = guiWindow.getInventoryName();
+            guiName = guiName.replace("%plugin.version%",wolfyUtilities.getPlugin().getDescription().getVersion()).replace("%plugin.author%",wolfyUtilities.getPlugin().getDescription().getAuthors().toString()).replace("%plugin.name%",wolfyUtilities.getPlugin().getDescription().getName());
             if (guiWindow.getInventoryType() == null) {
-                this.inventory = Bukkit.createInventory(null, guiWindow.getSize(), guiWindow.getInventoryName());
+                this.inventory = Bukkit.createInventory(null, guiWindow.getSize(), guiName);
             } else {
-                this.inventory = Bukkit.createInventory(null, guiWindow.getInventoryType(), guiWindow.getInventoryName());
+                this.inventory = Bukkit.createInventory(null, guiWindow.getInventoryType(), guiName);
             }
         } else {
             this.inventory = guiWindow.getInventory(guiHandler);

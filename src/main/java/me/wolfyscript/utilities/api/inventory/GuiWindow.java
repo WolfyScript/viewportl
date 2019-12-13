@@ -5,6 +5,7 @@ import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.utils.chat.ClickData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -68,7 +69,7 @@ public class GuiWindow implements Listener {
         return true;
     }
 
-    protected void update(GuiHandler guiHandler) {
+    public void update(GuiHandler guiHandler) {
         Bukkit.getScheduler().runTaskLater(inventoryAPI.getPlugin(), () -> {
             if (!guiHandler.isChatEventActive()) {
                 GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
@@ -127,6 +128,28 @@ public class GuiWindow implements Listener {
     }
 
     /*
+    Opens the chat, send the player the defined message, which is set inside of the language under "inventories.<guiCluster>.global_items.<msgKey>"
+    Then it waits for the player's input.
+    When the player sends the message the inputAction method is executed
+     */
+    public void openChat(String guiCluster, String msgKey, GuiHandler guiHandler, ChatInputAction inputAction) {
+        guiHandler.setChatInputAction(inputAction);
+        guiHandler.close();
+        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), "$inventories."+guiCluster+".global_messages."+msgKey+"$");
+    }
+
+    /*
+    Opens the chat, send the player the defined message, which is set inside of the language under "inventories.<guiCluster>.<guiWindow>.<msgKey>"
+    Then it waits for the player's input.
+    When the player sends the message the inputAction method is executed
+     */
+    public void openChat(String msgKey, GuiHandler guiHandler, ChatInputAction inputAction) {
+        guiHandler.setChatInputAction(inputAction);
+        guiHandler.close();
+        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), "$inventories."+getClusterID()+"."+getNamespace()+".messages."+msgKey+"$");
+    }
+
+    /*
     Opens the chat, send the player the defined action messages and waits for the input of the player.
     When the player sends the message the inputAction method is executed
      */
@@ -134,6 +157,25 @@ public class GuiWindow implements Listener {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
         guiHandler.getApi().sendActionMessage(guiHandler.getPlayer(), clickData);
+    }
+
+    /*
+    Sends a message without closing the inventory.
+     */
+    public void sendMessage(GuiHandler guiHandler, String msgKey){
+        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), getClusterID(), getNamespace(), msgKey);
+    }
+
+    public void sendMessage(Player player, String msgKey){
+        inventoryAPI.getWolfyUtilities().sendPlayerMessage(player, getClusterID(), getNamespace(), msgKey);
+    }
+
+    public void sendMessage(GuiHandler guiHandler, String msgKey, String[]... replacements){
+        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), getClusterID(), getNamespace(), msgKey, replacements);
+    }
+
+    public void sendMessage(Player player, String msgKey, String[]... replacements){
+        inventoryAPI.getWolfyUtilities().sendPlayerMessage(player, getClusterID(), getNamespace(), msgKey, replacements);
     }
 
     protected String getInventoryName() {

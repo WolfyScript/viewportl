@@ -1,8 +1,10 @@
 package me.wolfyscript.utilities.api.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.common.base.Utf8;
+import com.google.gson.*;
+import com.google.gson.internal.bind.TypeAdapters;
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.utils.GsonUtil;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +19,10 @@ import java.util.*;
 
 public class JsonConfiguration extends FileConfiguration {
 
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Gson gson = GsonUtil.getGson();
+
+    private JsonObject root;
+
     private String defJsonString;
 
     private char pathSeparator = '.';
@@ -33,6 +38,7 @@ public class JsonConfiguration extends FileConfiguration {
     public JsonConfiguration(ConfigAPI configAPI, String path, String name, String defPath, String defFileName, boolean overwrite) {
         super(configAPI, path, name, defPath, defFileName, Type.JSON);
         this.map = new HashMap<>();
+        this.root = new JsonObject();
         if (!configFile.exists()) {
             try {
                 configFile.getParentFile().mkdirs();
@@ -70,6 +76,7 @@ public class JsonConfiguration extends FileConfiguration {
     public JsonConfiguration(ConfigAPI configAPI, String jsonData, String name) {
         super(configAPI, "", name, "", "", Type.JSON);
         this.map = new HashMap<>();
+        this.root = new JsonObject();
         this.defJsonString = jsonData;
         loadFromString(jsonData);
     }
@@ -80,6 +87,7 @@ public class JsonConfiguration extends FileConfiguration {
     public JsonConfiguration(ConfigAPI configAPI, String name, String defPath, String defFileName) {
         this("{}", configAPI, name, defPath, defFileName);
         this.map = new HashMap<>();
+        this.root = new JsonObject();
         loadDefaults();
     }
 
@@ -89,13 +97,14 @@ public class JsonConfiguration extends FileConfiguration {
     public JsonConfiguration(String jsonData, ConfigAPI configAPI, String name, String defPath, String defFileName) {
         super(configAPI, "", name, defPath, defFileName, Type.JSON);
         this.map = new HashMap<>();
+        this.root = new JsonObject();
         loadFromString(jsonData);
         loadDefaults();
     }
 
     /*
-        Called when the config file didn't exist or whenever the config gets overwritten!
-     */
+      Called when the config file didn't exist or whenever the config gets overwritten!
+    */
     public void onFirstInit() {
 
     }
@@ -121,35 +130,75 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
     public void loadDefaults(boolean overwrite) {
+        gson.fieldNamingStrategy();
         if (defPath != null && defFileName != null && !defPath.isEmpty() && !defFileName.isEmpty()) {
             if (plugin.getResource(defPath + "/" + defFileName + ".json") != null) {
-                HashMap<String, Object> defMap = gson.fromJson(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json")), new HashMap<String, Object>().getClass());
-                if (overwrite) {
-                    this.map.putAll(defMap);
-                } else {
-                    for (Map.Entry<String, Object> entry : defMap.entrySet()) {
-                        this.map.putIfAbsent(entry.getKey(), entry.getValue());
+                HashMap<String, Object> defMap = null;
+                try {
+                    JsonObject jsonObject = (JsonObject) TypeAdapters.JSON_ELEMENT.fromJson(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json"), "UTF-8"));
+                    defMap = gson.fromJson(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json"), "UTF-8"), new HashMap<String, JsonElement>().getClass());
+                    if (overwrite) {
+                        this.map.putAll(defMap);
+                        this.root = jsonObject;
+                    } else {
+                        applyDefaults("", jsonObject);
+                        for (Map.Entry<String, Object> entry : defMap.entrySet()) {
+                            this.map.putIfAbsent(entry.getKey(), entry.getValue());
+                        }
                     }
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         } else {
             try {
-                PrintWriter pw = new PrintWriter(configFile);
+                PrintWriter pw = new PrintWriter(configFile, "UTF-8");
                 pw.write(defJsonString);
                 pw.close();
             } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    /*
+    {
+        "test":{
+            "hi": "hi"
+            "gg": [
+
+            ]
+        },
+        "ggF": 45
+
+    }
+
+     */
+    public void applyDefaults(String pathKey, JsonObject jsonObject){
+        for(Map.Entry<String, JsonElement> entry : jsonObject.entrySet()){
+            String subPath = (pathKey.isEmpty() ? "" : (pathKey+getPathSeparator())) + entry.getKey();
+            if(entry.getValue() instanceof JsonObject){
+                applyDefaults(subPath, (JsonObject) entry.getValue());
+            }else{
+                if(get(subPath) == null){
+                    set(subPath, entry.getValue());
+                }
+            }
+        }
+    }
+
+
     public void loadFromString(String json) {
+        root = gson.fromJson(json, JsonObject.class);
         map = gson.fromJson(json, new HashMap<String, Object>().getClass());
     }
 
     public String toString(boolean prettyPrinting) {
-        Gson gsonBuilder = prettyPrinting ? gson : new GsonBuilder().create();
-        return gsonBuilder.toJson(map);
+        return GsonUtil.getGson(prettyPrinting).toJson(root);
     }
 
     public String toString() {
@@ -159,11 +208,22 @@ public class JsonConfiguration extends FileConfiguration {
     public void load() {
         if (linkedToFile()) {
             try {
-                this.map = gson.fromJson(new FileReader(this.configFile), new HashMap<String, Object>().getClass());
+                try{
+                    JsonElement object = gson.fromJson(new InputStreamReader(new FileInputStream(this.configFile), "UTF-8"), JsonElement.class);
+                    if(object instanceof JsonObject){
+                        this.root = (JsonObject) object;
+                        if(root == null){
+                            this.root = new JsonObject();
+                        }
+                    }
+                }catch (JsonSyntaxException | JsonIOException | IOException ex){
+                    ex.printStackTrace();
+                }
+                this.map = gson.fromJson(new InputStreamReader(new FileInputStream(this.configFile), "UTF-8"), new HashMap<String, Object>().getClass());
                 if (map == null) {
                     this.map = new HashMap<>();
                 }
-            } catch (FileNotFoundException e) {
+            } catch (FileNotFoundException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         }
@@ -173,13 +233,13 @@ public class JsonConfiguration extends FileConfiguration {
         if (linkedToFile()) {
             final String json = toString(prettyPrinting);
             try {
-                PrintWriter pw = new PrintWriter(configFile);
+                PrintWriter pw = new PrintWriter(configFile, "UTF-8");
                 pw.close();
-            } catch (FileNotFoundException e) {
+            } catch (FileNotFoundException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
             try {
-                Files.write(configFile.toPath(), json.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                Files.write(configFile.toPath(), json.getBytes("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -228,23 +288,20 @@ public class JsonConfiguration extends FileConfiguration {
     @Override
     public Set<String> getKeys(boolean deep) {
         if (deep) {
-            return parse("", new HashSet<>());
+            return parse("", this.root, new HashSet<>());
         }
-        return map.keySet();
+        Set<String> keys = new HashSet<>();
+        this.root.entrySet().forEach(entry -> keys.add(entry.getKey()));
+        return keys;
     }
 
-    public Set<String> parse(String currentPath, Set<String> out) {
-        Map<String, Object> values = getValues(currentPath);
-        for (String key : values.keySet()) {
-            String path = (currentPath.isEmpty() ? "" : currentPath + getPathSeparator()) + key;
-            String val = null;
-            if (get(path) instanceof Map) {
-                parse(path, out);
-            } else {
-                val = path;
-            }
-            if (val != null) {
-                out.add(val);
+    public Set<String> parse(String currentPath, JsonObject jsonObject, Set<String> out) {
+        for(Map.Entry<String, JsonElement> entry : jsonObject.entrySet()){
+            String path = (currentPath.isEmpty() ? "" : currentPath + getPathSeparator()) + entry.getKey();
+            if(entry.getValue() instanceof JsonObject){
+                parse(path, (JsonObject) entry.getValue(), out);
+            }else{
+                out.add(path);
             }
         }
         return out;
@@ -275,17 +332,29 @@ public class JsonConfiguration extends FileConfiguration {
         return get(path, null);
     }
 
+    public <T> T get(Class<T> type, String path) {
+        return get(type, path, null);
+    }
+
     public Object get(String path, @Nullable Object def) {
+        return get(Object.class, path, def);
+    }
+
+    public <T> T get(Class<T> type, String path, @Nullable T def) {
         String[] pathKeys = path.split(pathSeparator == '.' ? "\\." : pathSeparator + "");
-        Map<String, Object> currentMap = map;
+        JsonObject jsonObject = root;
         for (int i = 0; i < pathKeys.length; i++) {
-            Object object = currentMap.get(pathKeys[i]);
-            if (i != pathKeys.length - 1) {
-                if (object instanceof Map) {
-                    currentMap = (Map<String, Object>) object;
+            if(jsonObject.has(pathKeys[i])){
+                JsonElement element = jsonObject.get(pathKeys[i]);
+                if (i != pathKeys.length - 1) {
+                    if (element instanceof JsonObject) {
+                        jsonObject = (JsonObject) element;
+                    }else{
+                        return null;
+                    }
+                } else {
+                    return gson.fromJson(element, type);
                 }
-            } else {
-                return object;
             }
         }
         return def;
@@ -294,22 +363,26 @@ public class JsonConfiguration extends FileConfiguration {
     @Override
     public void set(String path, Object value) {
         String[] pathKeys = path.split(pathSeparator == '.' ? "\\." : pathSeparator + "");
-        Map<String, Object> currentMap = this.map;
+        JsonObject jsonObject = root;
         for (int i = 0; i < pathKeys.length; i++) {
-            Object object = currentMap.get(pathKeys[i]);
-            if (object == null && i != pathKeys.length - 1) {
-                currentMap.put(pathKeys[i], new HashMap<>());
-                currentMap = (Map<String, Object>) currentMap.get(pathKeys[i]);
-            } else if (object instanceof Map) {
-                currentMap = (Map<String, Object>) object;
+            if (!jsonObject.has(pathKeys[i]) && i != pathKeys.length - 1) {
+                jsonObject.add(pathKeys[i], new JsonObject());
+                jsonObject = jsonObject.getAsJsonObject(pathKeys[i]);
             } else {
-                currentMap.put(pathKeys[i], value);
-                if (saveAfterValueSet) {
-                    reload();
+                JsonElement element = jsonObject.get(pathKeys[i]);
+                if(i == pathKeys.length - 1){
+                    jsonObject.add(pathKeys[i], gson.toJsonTree(value));
+                    if (saveAfterValueSet) {
+                        reload();
+                    }
+                }else{
+                    if (element instanceof JsonObject) {
+                        jsonObject = (JsonObject) element;
+                    }
                 }
             }
-
         }
+
     }
 
     @Override
@@ -455,9 +528,8 @@ public class JsonConfiguration extends FileConfiguration {
                 }
                 return itemStack;
             }
-            return null;
         }
-        return new ItemStack(Material.STONE);
+        return new ItemStack(Material.AIR);
     }
 
     @Override

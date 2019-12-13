@@ -73,4 +73,8 @@ public class MultipleChoiceButton extends Button {
             applyItem(guiHandler, player, inventory, states.get(setting), slot, help);
         }
     }
+
+    public void setState(GuiHandler guiHandler, int state) {
+        this.settings.put(guiHandler, state);
+    }
 }

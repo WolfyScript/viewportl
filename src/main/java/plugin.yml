@@ -1,11 +1,12 @@
 name: WolfyUtilities
 api-version: 1.13
-version: 1.4.0.2
+version: 1.5.0.0-pre2
 author: WolfyScript
 softdepend:
   - LWC
   - PlotSquared
   - WorldGuard
+  - MythicMobs
 
 main: me.wolfyscript.utilities.main.Main
 

@@ -30,7 +30,7 @@ public class Language {
      */
     public String replaceKeys(String msg) {
         List<String> keys = new ArrayList<>();
-        Pattern pattern = Pattern.compile("[$]([a-z0-9._]*?)[$]");
+        Pattern pattern = Pattern.compile("[$]([a-zA-Z0-9._]*?)[$]");
         Matcher matcher = pattern.matcher(msg);
         while (matcher.find()) {
             keys.add(matcher.group(0));

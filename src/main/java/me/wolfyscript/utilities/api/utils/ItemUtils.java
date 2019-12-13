@@ -19,6 +19,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import javax.annotation.Nullable;
+import javax.management.ReflectionException;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -209,6 +210,7 @@ public class ItemUtils {
 
     /*
     Sets value to the lore. It will be hidden.
+    Deprecated, because 1.14 has an better alternative! It can be accessed via ItemMeta.getPersistentDataContainer()!
      */
     @Deprecated
     public static ItemMeta setToItemSettings(ItemMeta itemMeta, String key, Object value) {

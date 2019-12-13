@@ -6,8 +6,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Reflection {
 
@@ -35,7 +34,7 @@ public class Reflection {
      * Cache of fields that we've found in particular classes
      */
     private static Map<Class<?>, Map<String, Field>> loadedFields = new HashMap<>();
-
+    private static Map<Class<?>, Map<Class, Field>> foundFields = new HashMap<>();
 
     public static String getVersion() {
         return Main.getInstance().getServer().getClass().getPackage().getName().substring(23);
@@ -190,6 +189,41 @@ public class Reflection {
             loadedFields.put(clazz, fields);
             return null;
         }
+    }
+
+    /**
+     * Gets the first Field with the correct return type
+     *
+     * @param clazz     The class
+     * @param type The return type
+     * @return The field object
+     */
+    public static Field findField(Class<?> clazz, Class type) {
+        if (!foundFields.containsKey(clazz)) {
+            foundFields.put(clazz, new HashMap<>());
+        }
+        Map<Class, Field> fields = foundFields.get(clazz);
+        if (fields.containsKey(type)) {
+            return fields.get(type);
+        }
+        try {
+            List<Field> allFields = new ArrayList<>();
+            allFields.addAll(Arrays.asList(clazz.getFields()));
+            allFields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+            for(Field f : allFields){
+                if(type.equals(f.getType())){
+                    fields.put(type, f);
+                    foundFields.put(clazz, fields);
+                    return f;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            fields.put(type, null);
+            foundFields.put(clazz, fields);
+        }
+        return null;
     }
 
 

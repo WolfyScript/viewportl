@@ -27,6 +27,10 @@ public abstract class Configuration {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     protected enum Type {
         YAML, JSON
     }

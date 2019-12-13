@@ -1,13 +1,11 @@
 package me.wolfyscript.utilities.api.custom_items;
 
 import me.wolfyscript.utilities.api.config.ConfigAPI;
+import me.wolfyscript.utilities.api.custom_items.custom_data.CustomData;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class ItemConfig extends CustomConfig {
 
@@ -17,10 +15,6 @@ public class ItemConfig extends CustomConfig {
 
     public ItemConfig(ConfigAPI configAPI, String namespace, String path, String key, String defaultName, boolean override, String fileType) {
         super(configAPI, namespace, key, path, "me/wolfyscript/utilities/custom_items/", defaultName, override, fileType);
-    }
-
-    public ItemConfig(ConfigAPI configAPI, String namespace, String path, String key, String defaultName, boolean override) {
-        super(configAPI, namespace, key, path, "me/wolfyscript/utilities/custom_items/", defaultName, override, "json");
     }
 
     public ItemConfig(ConfigAPI configAPI, String namespace, String path, String key, boolean override, String fileType) {
@@ -43,6 +37,29 @@ public class ItemConfig extends CustomConfig {
         super(configAPI, namespace, key, "me/wolfyscript/utilities/custom_items/", "item");
     }
 
+    /*
+    Constructors for CustomCrafting compatibility
+     */
+    public ItemConfig(String namespace, String key, String defPath, String defName, String fileType, boolean override, ConfigAPI configAPI) {
+        super(configAPI, namespace, key, configAPI.getApi().getPlugin().getDataFolder().getParent() + "/CustomCrafting/recipes/" + namespace + "/items", defPath, defName, override, fileType);
+    }
+
+    public ItemConfig(String namespace, String key, String defPath, String defName, boolean override, ConfigAPI configAPI) {
+        this(namespace, key, defPath, defName, "json", override, configAPI);
+    }
+
+    public ItemConfig(String namespace, String key, String defPath, String defName, String fileType, ConfigAPI configAPI) {
+        this(namespace, key, defPath, defName, fileType, false, configAPI);
+    }
+
+    public ItemConfig(String namespace, String key, String fileType, ConfigAPI configAPI) {
+        this(namespace, key, "me/wolfyscript/utilities/custom_items/", "item", fileType, false, configAPI);
+    }
+
+    public ItemConfig(String namespace, String key, boolean override, ConfigAPI configAPI) {
+        this(namespace, key, "me/wolfyscript/utilities/custom_items/", "item", override, configAPI);
+    }
+
     public ItemStack getCustomItem(boolean replaceLang) {
         return getItem("item", replaceLang);
     }
@@ -58,6 +75,7 @@ public class ItemConfig extends CustomConfig {
         setConsumed(itemStack.isConsumed());
         setRarityPercentage(itemStack.getRarityPercentage());
         setPermission(itemStack.getPermission());
+        setCustomData(itemStack.getCustomDataMap());
         if (itemStack.getReplacement() != null) {
             setReplacementItem(itemStack.getReplacement());
         }
@@ -161,5 +179,30 @@ public class ItemConfig extends CustomConfig {
 
     public String getPermission(){
         return getString("permission", "");
+    }
+
+    public void setCustomData(HashMap<String, CustomData> customDataList){
+        HashMap<String, Map<String, Object>> customDatas = new HashMap<>();
+        for(CustomData customData : customDataList.values()){
+            customDatas.put(customData.getId(), customData.toMap());
+        }
+        set("custom_data", customDatas);
+    }
+
+    public HashMap<String, CustomData> getCustomData(){
+        HashMap<String, CustomData> customDataMap = new HashMap<>();
+        for(CustomData customData : CustomItem.getAvailableCustomData().values()){
+            customDataMap.put(customData.getId(), customData.getDefaultCopy());
+        }
+        Object result = get("custom_data");
+        if(result instanceof Map){
+            Map<String, Map<String, Object>> customDatas = (Map<String, Map<String, Object>>) result;
+            for(Map.Entry<String, Map<String, Object>> entry : customDatas.entrySet()){
+                if(CustomItem.getAvailableCustomData().containsKey(entry.getKey())){
+                    customDataMap.put(entry.getKey(), CustomItem.getAvailableCustomData().get(entry.getKey()).fromMap(entry.getValue()));
+                }
+            }
+        }
+        return customDataMap;
     }
 }

@@ -2,35 +2,49 @@ package me.wolfyscript.utilities.api.custom_items;
 
 import com.sun.istack.internal.Nullable;
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.custom_items.custom_data.CustomData;
 import me.wolfyscript.utilities.api.utils.InventoryUtils;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
+import me.wolfyscript.utilities.main.Main;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CustomItem extends ItemStack implements Cloneable {
 
+    //This HashMap contains all the available CustomData objects, which then can be saved and loaded.
+    //If the config contains CustomData that is not available in this HashMap, then it won't be loaded!
+    private static HashMap<String, CustomData> availableCustomData = new HashMap<>();
+
+    /*
+    Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
+    All registered CustomData is added to this item and cannot be removed!
+    Only the single CustomData objects can be edit in it's values.
+     */
+    private HashMap<String, CustomData> customDataMap = new HashMap<>();
+
     private ItemConfig config;
     private String id;
-
     private String permission;
     private double rarityPercentage;
-
     private int burnTime;
     private ArrayList<Material> allowedBlocks;
-
     private boolean consumed;
     private CustomItem replacement;
-
     private int durabilityCost;
     private MetaSettings metaSettings;
+
 
     public CustomItem(ItemConfig config, boolean replace) {
         super(config.getCustomItem(replace));
@@ -44,6 +58,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.metaSettings = config.getMetaSettings();
         this.permission = config.getPermission();
         this.rarityPercentage = config.getRarityPercentage();
+        this.customDataMap = config.getCustomData();
     }
 
     public CustomItem(ItemConfig config) {
@@ -62,6 +77,9 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.metaSettings = new MetaSettings();
         this.permission = "";
         this.rarityPercentage = 1.0d;
+        for(CustomData customData : CustomItem.getAvailableCustomData().values()){
+            this.customDataMap.put(customData.getId(), customData.getDefaultCopy());
+        }
     }
 
     public CustomItem(Material material) {
@@ -70,17 +88,6 @@ public class CustomItem extends ItemStack implements Cloneable {
 
     public String getId() {
         return id;
-    }
-
-    public CustomItem getRealItem() {
-        if (hasConfig()) {
-            CustomItem customItem = new CustomItem(config, true);
-            if (customItem.getType().equals(this.getType())) {
-                customItem.setAmount(this.getAmount());
-            }
-            return customItem;
-        }
-        return clone();
     }
 
     public boolean hasReplacement() {
@@ -193,7 +200,7 @@ public class CustomItem extends ItemStack implements Cloneable {
                 if (!getMetaSettings().checkMeta(stackMeta, currentMeta)) {
                     return false;
                 }
-                return stackMeta.equals(currentMeta);
+                return stackMeta.equals(currentMeta) || currentMeta.equals(stackMeta);
             }
             return true;
         }
@@ -214,51 +221,66 @@ public class CustomItem extends ItemStack implements Cloneable {
     /*
     This will call the super.clone() method to get the ItemStack.
     All CustomItem variables will get lost!
+    @Deprecated     This will not provide the ItemStack with an NBT which stores the CustomItem id!
+                    So it would be impossible to check to which CustomItem this ItemStack belongs to.
+                    getItemStack() or getRealItem() should be used instead!
      */
+
+    @Deprecated
     public ItemStack getAsItemStack() {
         return super.clone();
     }
 
     /*
+    This just refers to the getRealItem(), but the name might be more useful.
+     */
+    public ItemStack getItemStack(){
+        return getRealItem();
+    }
+
+    public CustomItem getRealItem() {
+        if (hasConfig()) {
+            CustomItem customItem = new CustomItem(config, true);
+            if (customItem.getType().equals(this.getType())) {
+                customItem.setAmount(this.getAmount());
+            }
+            ItemMeta itemMeta = customItem.getItemMeta();
+            if(WolfyUtilities.hasVillagePillageUpdate()){
+                itemMeta.getPersistentDataContainer().set(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING, customItem.getId());
+            }else{
+                ItemUtils.setToItemSettings(itemMeta, "custom_item", customItem.getId());
+            }
+            customItem.setItemMeta(itemMeta);
+            return customItem;
+        }
+        return clone();
+    }
+
+
+
+    /*
     CustomItem static methods
      */
     public static CustomItem getByItemStack(ItemStack itemStack) {
-        String id = "";
-        ItemStack clearedItem = itemStack.clone();
-        if (isIDItem(itemStack) && itemStack.getItemMeta().hasLore()) {
-            ItemMeta clearedMeta = clearedItem.getItemMeta();
-            List<String> clearedLore = clearedMeta.getLore();
-            List<String> lore = itemStack.getItemMeta().getLore();
-            for (int i = 0; i < lore.size(); i++) {
-                String row = lore.get(i);
-                if (row.startsWith("§7[§3§lID_ITEM§r§7]")) {
-                    id = lore.get(i + 1).substring("§3".length());
-                    clearedLore.remove(i - 1);
-                    clearedLore.remove(i);
-                    clearedLore.remove(row);
+        CustomItem customItem = null;
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta != null){
+            if (WolfyUtilities.hasVillagePillageUpdate()) {
+                if (itemMeta.getPersistentDataContainer().has(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
+                    customItem = CustomItems.getCustomItem(itemMeta.getPersistentDataContainer().get(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING));
+                }
+            } else {
+                if (ItemUtils.isInItemSettings(itemMeta, "custom_item")) {
+                    customItem = CustomItems.getCustomItem((String) ItemUtils.getFromItemSettings(itemMeta, "custom_item"));
                 }
             }
-            clearedMeta.setLore(clearedLore);
-            if (WolfyUtilities.unhideString(clearedMeta.getDisplayName()).contains("%NO_NAME%")) {
-                clearedMeta.setDisplayName(null);
-            } else {
-                clearedMeta.setDisplayName(clearedMeta.getDisplayName().replace(WolfyUtilities.hideString(":id_item"), ""));
+            if(customItem != null){
+                customItem.setAmount(itemStack.getAmount());
+                return customItem;
             }
-            clearedItem.setItemMeta(clearedMeta);
-            if (id.isEmpty()) {
-                return new CustomItem(clearedItem);
-            }
+            return new CustomItem(itemStack);
         }
-        CustomItem customItem;
-        if (id.isEmpty()) {
-            customItem = new CustomItem(clearedItem);
-        }else{
-            customItem = CustomItems.getCustomItem(id);
-        }
-        if (clearedItem.getAmount() != customItem.getAmount()) {
-            customItem.setAmount(clearedItem.getAmount());
-        }
-        return customItem;
+        return new CustomItem(itemStack);
     }
 
     private static boolean isIDItem(ItemStack itemStack) {
@@ -351,5 +373,25 @@ public class CustomItem extends ItemStack implements Cloneable {
 
     public void setRarityPercentage(double rarityPercentage) {
         this.rarityPercentage = rarityPercentage;
+    }
+
+    public CustomData getCustomData(String id){
+        return customDataMap.get(id);
+    }
+
+    public HashMap<String, CustomData> getCustomDataMap() {
+        return customDataMap;
+    }
+
+    public void addCustomData(String id, CustomData customData){
+        this.customDataMap.put(id, customData);
+    }
+
+    public static HashMap<String, CustomData> getAvailableCustomData() {
+        return availableCustomData;
+    }
+
+    public static void registerCustomData(CustomData customData) {
+        availableCustomData.put(customData.getId(), customData);
     }
 }

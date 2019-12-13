@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.inventory;
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 
 import java.util.HashMap;
@@ -26,7 +27,8 @@ public class GuiCluster {
         return mainmenu;
     }
 
-    public void registerButton(Button button){
+    public void registerButton(Button button, WolfyUtilities api){
+        button.init(id, api);
         buttons.putIfAbsent(button.getId(), button);
     }
 

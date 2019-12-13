@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.config;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 public abstract class MemoryConfiguration extends Configuration implements ConfigurationSection {
 
@@ -23,5 +24,4 @@ public abstract class MemoryConfiguration extends Configuration implements Confi
     public abstract void setPathSeparator(char pathSeparator);
 
     public abstract char getPathSeparator();
-
 }

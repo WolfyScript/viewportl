@@ -152,8 +152,7 @@ public class InventoryAPI implements Listener {
     Registers an Button globally which then can be accessed in every GUI.
      */
     public void registerButton(String clusterID, Button button) {
-        button.init(clusterID, getWolfyUtilities());
-        getGuiCluster(clusterID).registerButton(button);
+        getGuiCluster(clusterID).registerButton(button, getWolfyUtilities());
     }
 
     /*

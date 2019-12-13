@@ -19,11 +19,9 @@ import me.wolfyscript.utilities.api.utils.chat.PlayerAction;
 import me.wolfyscript.utilities.main.Main;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.StringUtils;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,6 +30,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
@@ -56,10 +55,7 @@ public class WolfyUtilities implements Listener {
     private InventoryAPI inventoryAPI;
     private LanguageAPI languageAPI;
 
-    private static boolean hasLWC;
-    private static boolean hasWorldGuard;
-    private static boolean hasPlotSquared;
-    private static CustomItems customItems = new CustomItems();
+    private static CustomItems customItems;
 
     private HashMap<UUID, PlayerAction> clickDataMap;
 
@@ -68,6 +64,7 @@ public class WolfyUtilities implements Listener {
         this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT) + "_";
         Main.registerWolfyUtilities(this);
         clickDataMap = new HashMap<>();
+        customItems = new CustomItems(plugin);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -76,7 +73,7 @@ public class WolfyUtilities implements Listener {
     }
 
     public static int getVersionNumber() {
-        return Integer.parseInt(getVersion().replace(".", ""));
+        return Integer.parseInt(getVersion().replaceAll("[^0-9]", ""));
     }
 
     public LanguageAPI getLanguageAPI() {
@@ -205,6 +202,27 @@ public class WolfyUtilities implements Listener {
         }
     }
 
+    /*
+    Sends a global message from an GuiCluster to the player!
+     */
+    public void sendPlayerMessage(Player player, String guiCluster, String msgKey) {
+        sendPlayerMessage(player, "$inventories."+guiCluster+".global_messages."+msgKey+"$");
+    }
+
+    public void sendPlayerMessage(Player player, String guiCluster, String guiWindow, String msgKey) {
+        sendPlayerMessage(player, "$inventories."+guiCluster+"."+guiWindow+".messages."+msgKey+"$");
+    }
+
+    public void sendPlayerMessage(Player player, String guiCluster, String msgKey, String[]... replacements) {
+        String message = "$inventories."+guiCluster+".global_messages."+msgKey+"$";
+        sendPlayerMessage(player, message, replacements);
+    }
+
+    public void sendPlayerMessage(Player player, String guiCluster, String guiWindow, String msgKey, String[]... replacements) {
+        String message = "$inventories."+guiCluster+"."+guiWindow+".messages."+msgKey+"$";
+        sendPlayerMessage(player, message, replacements);
+    }
+
     public void sendPlayerMessage(Player player, String message, String[]... replacements) {
         if (replacements != null) {
             if (player != null) {
@@ -222,12 +240,30 @@ public class WolfyUtilities implements Listener {
     }
 
     public void sendActionMessage(Player player, ClickData... clickData) {
+        TextComponent[] textComponents = getActionMessage(CHAT_PREFIX, player, clickData);
+        player.spigot().sendMessage(textComponents);
+    }
+
+    public void openBook(Player player, boolean editable, ClickData[]... clickDatas){
+        ItemStack itemStack = new ItemStack(editable ? Material.BOOK : Material.WRITTEN_BOOK);
+        BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
+        bookMeta.setAuthor("WolfyUtilities");
+        bookMeta.setPages();
+
+        for(ClickData[] clickData : clickDatas){
+            TextComponent[] textComponents = getActionMessage("", player, clickData);
+            bookMeta.spigot().addPage(textComponents);
+        }
+        itemStack.setItemMeta(bookMeta);
+        player.openBook(itemStack);
+    }
+
+    public TextComponent[] getActionMessage(String prefix, Player player, ClickData... clickData){
         TextComponent[] textComponents = new TextComponent[clickData.length + 1];
-        textComponents[0] = new TextComponent(CHAT_PREFIX);
+        textComponents[0] = new TextComponent(prefix);
         for (int i = 1; i < textComponents.length; i++) {
             ClickData data = clickData[i - 1];
             TextComponent component = new TextComponent(WolfyUtilities.translateColorCodes(getLanguageAPI().getActiveLanguage().replaceKeys(data.getMessage())));
-
             if (data.getClickAction() != null) {
                 UUID id = UUID.randomUUID();
                 while (clickDataMap.keySet().contains(id)) {
@@ -237,7 +273,6 @@ public class WolfyUtilities implements Listener {
                 clickDataMap.put(id, playerAction);
                 component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "wu::" + id.toString()));
             }
-
             for (ChatEvent chatEvent : data.getChatEvents()) {
                 if (chatEvent instanceof HoverEvent) {
                     component.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(((HoverEvent) chatEvent).getAction(), ((HoverEvent) chatEvent).getValue()));
@@ -247,7 +282,7 @@ public class WolfyUtilities implements Listener {
             }
             textComponents[i] = component;
         }
-        player.spigot().sendMessage(textComponents);
+        return textComponents;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -306,58 +341,57 @@ public class WolfyUtilities implements Listener {
     static Random random = new Random();
 
     public static boolean hasVillagePillageUpdate() {
-        return hasSpecificUpdate("v1_14_R0");
+        return hasSpecificUpdate(114);
     }
 
     public static boolean hasAquaticUpdate() {
-        return hasSpecificUpdate("v1_13_R0");
+        return hasSpecificUpdate(113);
     }
 
     public static boolean hasCombatUpdate() {
-        return hasSpecificUpdate("v1_9_R0");
+        return hasSpecificUpdate(19);
     }
 
     public static boolean hasSpecificUpdate(String versionString) {
-        String pkgname = Main.getInstance().getServer().getClass().getPackage().getName();
-        String localeVersion = "v" + versionString + "_R0";
-        localeVersion = localeVersion.replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
-        String version = pkgname.substring(pkgname.lastIndexOf('.') + 1).replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
-        return Integer.parseInt(version) >= Integer.parseInt(localeVersion);
+        return Main.getMcUpdateVersionNumber() >= Integer.parseInt(versionString.replace("_", "").replace(".", "").replace("-", ""));
+    }
+
+    public static boolean hasSpecificUpdate(int versionNumber){
+        return Main.getMcUpdateVersionNumber() >= versionNumber;
     }
 
     public static boolean hasSpigot() {
         return hasClass("org.spigotmc.Metrics");
     }
 
-    public static void setLWC() {
-        hasLWC = hasClass("com.griefcraft.lwc.LWC");
-    }
-
-    public static void setPlotSquared() {
-        hasPlotSquared = hasClass("com.intellectualcrafters.plot.api.PlotAPI");
-    }
-
-    public static void setWorldGuard() {
-        hasWorldGuard = hasClass("com.sk89q.worldguard.WorldGuard");
-    }
-
     public static boolean hasWorldGuard() {
-        return hasWorldGuard;
+        return hasClass("com.sk89q.worldguard.WorldGuard");
     }
 
     public static boolean hasPlotSquared() {
-        return hasPlotSquared;
+        return hasClass("com.intellectualcrafters.plot.api.PlotAPI");
     }
 
     public static boolean hasLWC() {
-        return hasLWC;
+        return hasClass("com.griefcraft.lwc.LWC");
     }
 
+    public static boolean hasMythicMobs(){
+        return hasClass("io.lumine.xikage.mythicmobs.MythicMobs");
+    }
+
+    private static HashMap<String, Boolean> classes = new HashMap<>();
+
     public static boolean hasClass(String path) {
+        if(classes.containsKey(path)){
+            return classes.get(path);
+        }
         try {
             Class.forName(path);
+            classes.put(path, true);
             return true;
         } catch (Exception e) {
+            classes.put(path, false);
             return false;
         }
     }
@@ -630,65 +664,62 @@ public class WolfyUtilities implements Listener {
         return false;
     }
 
-    public static boolean checkColumn(ArrayList<String> shape, byte column) {
+    public static boolean checkColumn(ArrayList<String> shape, int column) {
+        boolean blocked = false;
         for (String s : shape) {
             if (s.charAt(column) != ' ') {
-                return false;
+                blocked = true;
             }
         }
-        return true;
-    }
-
-    public static void clearColumn(ArrayList<String> shape, byte column) {
-        for (int i = 0; i < shape.size(); i++) {
-            shape.set(i, shape.get(i).substring(0, column) + shape.get(i).substring(column + 1));
+        if(!blocked){
+            for (int i = 0; i < shape.size(); i++) {
+                shape.set(i, shape.get(i).substring(0, column) + shape.get(i).substring(column + 1));
+            }
         }
+        return blocked;
     }
 
     public static ArrayList<String> formatShape(String... shape) {
         ArrayList<String> cleared = new ArrayList<>(Arrays.asList(shape));
-        List<Byte> columns = new ArrayList<>();
-        List<Byte> rows = new ArrayList<>();
-        if (shape[0].equals("   ") || shape[2].equals("   ")) {
-            if (shape[0].equals("   ")) {
-                rows.add((byte) 0);
-            }
-            if (shape[1].equals("   ")) {
-                rows.add((byte) 1);
-            }
-            if (shape[2].equals("   ")) {
-                rows.add((byte) 2);
+        ListIterator<String> rowIterator = cleared.listIterator();
+        boolean rowBlocked = false;
+        while (!rowBlocked && rowIterator.hasNext()) {
+            String row = rowIterator.next();
+            if(StringUtils.isBlank(row)){
+                rowIterator.remove();
+            }else{
+                rowBlocked = true;
             }
         }
-        if (checkColumn(cleared, (byte) 0) || checkColumn(cleared, (byte) 2)) {
-            if (checkColumn(cleared, (byte) 0)) {
-                columns.add((byte) 0);
-            }
-            if (checkColumn(cleared, (byte) 1)) {
-                columns.add((byte) 1);
-            }
-            if (checkColumn(cleared, (byte) 2)) {
-                columns.add((byte) 2);
+        while(rowIterator.hasNext()){
+            rowIterator.next();
+        }
+        rowBlocked = false;
+        while (!rowBlocked && rowIterator.hasPrevious()) {
+            String row = rowIterator.previous();
+            if(StringUtils.isBlank(row)){
+                rowIterator.remove();
+            }else{
+                rowBlocked = true;
             }
         }
-        int index = 0;
-        Iterator<String> rowIt = cleared.iterator();
-        while (rowIt.hasNext()) {
-            rowIt.next();
-            if (rows.contains((byte) index)) {
-                rowIt.remove();
+        if (!cleared.isEmpty()) {
+            boolean columnBlocked = false;
+            while (!columnBlocked) {
+                if (checkColumn(cleared, 0)) {
+                    columnBlocked = true;
+                }
             }
-            index++;
-        }
-        if (!columns.isEmpty()) {
-            Collections.sort(columns);
-            Collections.reverse(columns);
-            for (byte i : columns) {
-                clearColumn(cleared, i);
+            columnBlocked = false;
+            int column = cleared.get(0).length() - 1;
+            while (!columnBlocked) {
+                if (checkColumn(cleared, column)) {
+                    columnBlocked = true;
+                } else {
+                    column--;
+                }
             }
         }
         return cleared;
     }
-
-
 }

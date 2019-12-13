@@ -2,7 +2,10 @@ package me.wolfyscript.utilities.api.custom_items;
 
 import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
+import me.wolfyscript.utilities.api.config.JsonConfiguration;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Map;
 
 public class CustomConfig extends Config {
 
@@ -65,5 +68,15 @@ public class CustomConfig extends Config {
             return customItem;
         }
         return new CustomItem(getItem(path + ".item"));
+    }
+
+    public void linkToFile(String namespace, String name, String path) {
+        if(this.configuration instanceof JsonConfiguration){
+            this.namespace = namespace;
+            this.setName(name);
+            this.id = namespace + ":" + name;
+            this.configuration.setName(this.id);
+            ((JsonConfiguration) this.configuration).linkToFile(path + "/" + name);
+        }
     }
 }
