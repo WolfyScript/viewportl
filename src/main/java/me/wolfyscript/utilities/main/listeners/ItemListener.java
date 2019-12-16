@@ -1,42 +1,74 @@
 package me.wolfyscript.utilities.main.listeners;
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerItemMendEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemListener implements Listener {
 
     @EventHandler
     public void onDamage(PlayerItemDamageEvent event) {
         ItemStack itemStack = event.getItem();
-        if (ItemUtils.hasCustomDurability(itemStack)) {
+        if (WolfyUtilities.hasVillagePillageUpdate() && CustomItem.hasCustomDurability(itemStack)) {
+            event.setCancelled(true);
+            int totalDmg = CustomItem.getCustomDamage(itemStack) + event.getDamage();
+            if (totalDmg > CustomItem.getCustomDurability(itemStack)) {
+                itemStack.setAmount(itemStack.getAmount() - 1);
+                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+            } else {
+                CustomItem.setCustomDamage(itemStack, CustomItem.getCustomDamage(itemStack) + event.getDamage());
+            }
+        } else if (ItemUtils.hasCustomDurability(itemStack)) {
             event.setCancelled(true);
             int totalDmg = ItemUtils.getDamage(itemStack) + event.getDamage();
-            if(totalDmg > ItemUtils.getCustomDurability(itemStack)){
-                itemStack.setAmount(itemStack.getAmount()-1);
+            int durability = ItemUtils.getCustomDurability(itemStack);
+
+            if (totalDmg > durability) {
+                itemStack.setAmount(itemStack.getAmount() - 1);
                 event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
-            }else{
-                ItemUtils.setDamage(itemStack, ItemUtils.getDamage(itemStack) + event.getDamage());
+            } else {
+                if(WolfyUtilities.hasVillagePillageUpdate()){
+                    //Migrate old data to new 1.14 format!
+                    CustomItem.setCustomDurabilityTag(itemStack, ItemUtils.getDurabilityTag(itemStack));
+                    CustomItem.setCustomDurability(itemStack, durability);
+                    CustomItem.setCustomDamage(itemStack, totalDmg);
+                    ItemUtils.removeItemSettings(itemStack);
+                }else{
+                    ItemUtils.setDamage(itemStack, totalDmg);
+                }
             }
         }
     }
 
     @EventHandler
-    public void onMend(PlayerItemMendEvent event){
+    public void onMend(PlayerItemMendEvent event) {
         ItemStack itemStack = event.getItem();
-        if (ItemUtils.hasCustomDurability(itemStack)) {
-            int totalDmg = ItemUtils.getDamage(itemStack) - event.getRepairAmount();
-            if(!(totalDmg >= 0)){
+        if (WolfyUtilities.hasVillagePillageUpdate() && CustomItem.hasCustomDurability(itemStack)) {
+            int totalDmg = CustomItem.getCustomDamage(itemStack) - event.getRepairAmount();
+            if (!(totalDmg >= 0)) {
                 totalDmg = 0;
             }
-            ItemUtils.setDamage(itemStack, totalDmg);
+            CustomItem.setCustomDamage(itemStack, totalDmg);
+        } else if (ItemUtils.hasCustomDurability(itemStack)) {
+            int totalDmg = ItemUtils.getDamage(itemStack) - event.getRepairAmount();
+            if (!(totalDmg >= 0)) {
+                totalDmg = 0;
+            }
+            if(WolfyUtilities.hasVillagePillageUpdate()){
+                //Migrate old data to new 1.14 format!
+                CustomItem.setCustomDurabilityTag(itemStack, ItemUtils.getDurabilityTag(itemStack));
+                CustomItem.setCustomDurability(itemStack, ItemUtils.getCustomDurability(itemStack));
+                CustomItem.setCustomDamage(itemStack, totalDmg);
+                ItemUtils.removeItemSettings(itemStack);
+            }else{
+                ItemUtils.setDamage(itemStack, totalDmg);
+            }
         }
     }
 }

@@ -35,7 +35,7 @@ public class LoreMeta extends Meta {
             Iterator<String> loreItr = lore.iterator();
             while (loreItr.hasNext()) {
                 String line = WolfyUtilities.unhideString(loreItr.next());
-                if (line.startsWith("durability_tag") || line.startsWith("itemSettings")) {
+                if (line.startsWith("durability_tag") || line.startsWith("itemSettings") || line.startsWith("WU_Durability")) {
                     loreItr.remove();
                 }
             }
