@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 
 import java.lang.reflect.Field;
@@ -9,7 +10,7 @@ import java.lang.reflect.Type;
 
 public final class GsonUtil {
 
-    private static final GsonBuilder gsonBuilder = new GsonBuilder().disableHtmlEscaping().serializeNulls().serializeSpecialFloatingPointValues();
+    private static final GsonBuilder gsonBuilder = new GsonBuilder().disableHtmlEscaping().serializeNulls().serializeSpecialFloatingPointValues().disableInnerClassSerialization();
 
     public static GsonBuilder getGsonBuilder() {
         return gsonBuilder;
@@ -37,7 +38,7 @@ public final class GsonUtil {
         return resultGson;
     }
 
-    public static void registerTypeHierachyAdapter(Class<?> baseType, Object typeAdapter){
+    public static void registerTypeHierarchyAdapter(Class<?> baseType, Object typeAdapter){
         gsonBuilder.registerTypeHierarchyAdapter(baseType, typeAdapter);
     }
 
@@ -45,7 +46,7 @@ public final class GsonUtil {
         gsonBuilder.registerTypeAdapter(type, typeAdapter);
     }
 
-    public static void registerTypeHierachyAdapter(TypeAdapterFactory factory){
+    public static void registerTypeHierarchyAdapter(TypeAdapterFactory factory){
         gsonBuilder.registerTypeAdapterFactory(factory);
     }
 }

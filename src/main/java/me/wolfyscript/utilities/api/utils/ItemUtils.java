@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.utils;
 import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
+import net.minecraft.server.v1_14_R1.MojangsonParser;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -64,6 +65,31 @@ public class ItemUtils {
         // Return a string representation of the serialized object
         return itemAsJsonObject.toString();
     }
+
+    public static ItemStack convertJsontoItemStack(String json) {
+        Class<?> craftItemStackClazz = Reflection.getOBC("inventory.CraftItemStack");
+        Class<?> nmsItemStackClazz = Reflection.getNMS("ItemStack");
+        Class<?> nbtTagCompoundClazz = Reflection.getNMS("NBTTagCompound");
+        Class<?> mojangParser = Reflection.getNMS("MojangsonParser");
+
+        Method parseMethod = Reflection.getMethod(mojangParser, "parse", String.class);
+        Method aMethod = Reflection.getMethod(nmsItemStackClazz, "a", nbtTagCompoundClazz);
+        Method asBukkitCopyMethod = Reflection.getMethod(craftItemStackClazz, "asBukkitCopy", nmsItemStackClazz);
+
+        Object nmsNbtTagCompoundObj;
+        Object nmsItemStackObj;
+        try {
+            nmsNbtTagCompoundObj = parseMethod.invoke(null, json);
+            nmsItemStackObj = aMethod.invoke(null, nmsNbtTagCompoundObj);
+            return (ItemStack) asBukkitCopyMethod.invoke(null, nmsItemStackObj);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /*
     Prepare and configure the ItemStack for the GUI!
@@ -211,6 +237,7 @@ public class ItemUtils {
     /*
     Sets value to the lore. It will be hidden.
     Deprecated, because 1.14 has an better alternative! It can be accessed via ItemMeta.getPersistentDataContainer()!
+    Alternative can be found in the CustomItem class!
      */
     @Deprecated
     public static ItemMeta setToItemSettings(ItemMeta itemMeta, String key, Object value) {
@@ -237,6 +264,26 @@ public class ItemUtils {
     public static ItemStack setToItemSettings(ItemStack itemStack, String key, Object value) {
         itemStack.setItemMeta(setToItemSettings(itemStack.getItemMeta(), key, value));
         return itemStack;
+    }
+
+    public static void removeItemSettings(ItemStack itemStack){
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        removeItemSettings(itemMeta);
+        itemStack.setItemMeta(itemMeta);
+    }
+
+    public static void removeItemSettings(ItemMeta itemMeta){
+        if (itemMeta != null && itemMeta.hasLore()) {
+            List<String> lore = itemMeta.getLore();
+            Iterator<String> iterator = lore.iterator();
+            while (iterator.hasNext()){
+                String cleared = WolfyUtilities.unhideString(iterator.next());
+                if (cleared.startsWith("itemSettings")) {
+                    iterator.remove();
+                }
+            }
+            itemMeta.setLore(lore);
+        }
     }
 
     @Deprecated
@@ -306,10 +353,12 @@ public class ItemUtils {
 
     //itemSettings{"damage":<damage>,"durability":<total_durability>,"durability_tag":""}
 
+    @Deprecated
     public static boolean hasCustomDurability(@NotNull ItemStack itemStack) {
         return hasCustomDurability(itemStack.getItemMeta());
     }
 
+    @Deprecated
     public static boolean hasCustomDurability(@Nullable ItemMeta itemMeta) {
         JSONObject obj = getItemSettings(itemMeta);
         if (obj != null) {
@@ -322,21 +371,25 @@ public class ItemUtils {
     Sets the custom durability to the ItemStack and adds damage of 0 if it not exists.
     Returns the ItemStack with the new lore.
      */
+    @Deprecated
     public static void setCustomDurability(ItemStack itemStack, int durability) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         setCustomDurability(itemMeta, durability);
         itemStack.setItemMeta(itemMeta);
     }
 
+    @Deprecated
     public static void setCustomDurability(ItemMeta itemMeta, int durability) {
         setToItemSettings(itemMeta, "durability", durability);
         setDurabilityTag(itemMeta);
     }
 
+    @Deprecated
     public static int getCustomDurability(ItemStack itemStack) {
         return getCustomDurability(itemStack.getItemMeta());
     }
 
+    @Deprecated
     public static int getCustomDurability(ItemMeta itemMeta) {
         if (getFromItemSettings(itemMeta, "durability") != null) {
             return NumberConversions.toInt(getFromItemSettings(itemMeta, "durability"));
@@ -344,6 +397,7 @@ public class ItemUtils {
         return 0;
     }
 
+    @Deprecated
     public static void setDamage(ItemStack itemStack, int damage) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta instanceof Damageable) {
@@ -353,15 +407,18 @@ public class ItemUtils {
         itemStack.setItemMeta(itemMeta);
     }
 
+    @Deprecated
     public static void setDamage(ItemMeta itemMeta, int damage) {
         setToItemSettings(itemMeta, "damage", damage);
         setDurabilityTag(itemMeta);
     }
 
+    @Deprecated
     public static int getDamage(ItemStack itemStack) {
         return getDamage(itemStack.getItemMeta());
     }
 
+    @Deprecated
     public static int getDamage(ItemMeta itemMeta) {
         if (getFromItemSettings(itemMeta, "damage") != null) {
             int damage = NumberConversions.toInt(getFromItemSettings(itemMeta, "damage"));
@@ -370,12 +427,14 @@ public class ItemUtils {
         return 0;
     }
 
+    @Deprecated
     public static void setDurabilityTag(ItemStack itemStack) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         setDurabilityTag(itemMeta);
         itemStack.setItemMeta(itemMeta);
     }
 
+    @Deprecated
     public static void setDurabilityTag(ItemMeta itemMeta) {
         if (!getDurabilityTag(itemMeta).isEmpty() && !getDurabilityTag(itemMeta).equals("")) {
             List<String> lore = itemMeta.getLore() != null ? itemMeta.getLore() : new ArrayList<>();
@@ -390,21 +449,25 @@ public class ItemUtils {
         }
     }
 
+    @Deprecated
     public static void setDurabilityTag(ItemMeta itemMeta, String value) {
         setToItemSettings(itemMeta, "durability_tag", value);
         setDurabilityTag(itemMeta);
     }
 
+    @Deprecated
     public static void setDurabilityTag(ItemStack itemStack, String value) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         setDurabilityTag(itemMeta, value);
         itemStack.setItemMeta(itemMeta);
     }
 
+    @Deprecated
     public static String getDurabilityTag(ItemStack itemStack) {
         return getDurabilityTag(itemStack.getItemMeta());
     }
 
+    @Deprecated
     public static String getDurabilityTag(ItemMeta itemMeta) {
         if (getFromItemSettings(itemMeta, "durability_tag") != null) {
             return (String) getFromItemSettings(itemMeta, "durability_tag");

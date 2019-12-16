@@ -480,7 +480,7 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public void setItem(String path, ItemStack itemStack) {
-        set(path, ItemUtils.serializeNMSItemStack(itemStack));
+        set(path, itemStack);
     }
 
     @Override
@@ -495,9 +495,8 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public ItemStack getItem(String path, boolean replaceKeys) {
-        String data = getString(path);
-        if (data != null && !data.isEmpty()) {
-            ItemStack itemStack = ItemUtils.deserializeItemStack(data);
+        ItemStack itemStack = get(ItemStack.class, path);
+        if (itemStack != null) {
             if (itemStack != null) {
                 if (itemStack.hasItemMeta()) {
                     ItemMeta itemMeta = itemStack.getItemMeta();

@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.main;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
+import me.wolfyscript.utilities.api.config.serialization.ItemStackSerialization;
 import me.wolfyscript.utilities.api.config.serialization.LocationSerialization;
 import me.wolfyscript.utilities.api.config.templates.LangConfiguration;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
@@ -19,6 +20,8 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -44,7 +47,9 @@ public class Main extends JavaPlugin {
         mcUpdateVersionNumber = Integer.parseInt(mcUpdateVersion);
         Legacy.init();
 
-        GsonUtil.registerTypeHierachyAdapter(Location.class, new LocationSerialization());
+        //ItemStack serialization
+        GsonUtil.registerTypeHierarchyAdapter(ItemStack.class, new ItemStackSerialization());
+        GsonUtil.registerTypeHierarchyAdapter(Location.class, new LocationSerialization());
 
     }
 
@@ -74,8 +79,8 @@ public class Main extends JavaPlugin {
             e.printStackTrace();
         }
         getMainUtil().sendConsoleMessage("Loaded Item Categories: ");
-        for (Map.Entry<String, List<Material>> category : ItemCategory.getMaterials().entrySet()){
-            getMainUtil().sendConsoleMessage("  "+category.getKey()+": "+category.getValue());
+        for (Map.Entry<String, List<Material>> category : ItemCategory.getMaterials().entrySet()) {
+            getMainUtil().sendConsoleMessage("  " + category.getKey() + ": " + category.getValue());
         }
     }
 
