@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.Type;
 
 public class ItemStackSerialization implements JsonSerializer<ItemStack>, JsonDeserializer<ItemStack> {
-    
 
     @Override
     public ItemStack deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {

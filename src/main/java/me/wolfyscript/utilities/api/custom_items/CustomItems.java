@@ -1,7 +1,5 @@
 package me.wolfyscript.utilities.api.custom_items;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.utils.ItemUtils;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -84,7 +82,7 @@ public class CustomItems {
     public static CustomItem getStoredBlockItem(Location location) {
         for (Map.Entry<Location, String> entry : storedBlocks.entrySet()) {
             if (entry.getKey().equals(location)) {
-                return CustomItems.getCustomItem(entry.getValue());
+                return getCustomItem(entry.getValue());
             }
         }
         return null;

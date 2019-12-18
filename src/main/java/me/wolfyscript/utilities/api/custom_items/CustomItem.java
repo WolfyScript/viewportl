@@ -469,8 +469,9 @@ public class CustomItem extends ItemStack implements Cloneable {
 
     public static void setCustomDamage(ItemStack itemStack, int damage) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            setCustomDamage(itemMeta, damage);
+        setCustomDamage(itemMeta, damage);
+        if (itemMeta instanceof Damageable) {
+            ((Damageable) itemMeta).setDamage((int) (itemStack.getType().getMaxDurability() * ((double) damage / (double) getCustomDurability(itemStack))));
         }
         itemStack.setItemMeta(itemMeta);
     }
