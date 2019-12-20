@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.inventory.events;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import org.bukkit.event.Cancellable;
@@ -41,13 +41,13 @@ public class GuiCloseEvent extends InventoryCloseEvent implements Cancellable {
         return guiHandler;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
 
-    @NotNull
+    @Nonnull
     public static HandlerList getHandlerList() {
         return handlers;
     }

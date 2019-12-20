@@ -1,6 +1,5 @@
 package me.wolfyscript.utilities.api.utils;
 
-import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import net.minecraft.server.v1_14_R1.MojangsonParser;
@@ -19,6 +18,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.management.ReflectionException;
 import java.io.*;
@@ -82,9 +82,7 @@ public class ItemUtils {
             nmsNbtTagCompoundObj = parseMethod.invoke(null, json);
             nmsItemStackObj = aMethod.invoke(null, nmsNbtTagCompoundObj);
             return (ItemStack) asBukkitCopyMethod.invoke(null, nmsItemStackObj);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;
@@ -311,7 +309,7 @@ public class ItemUtils {
     }
 
     @Deprecated
-    public static boolean hasItemSettings(@NotNull ItemStack itemStack) {
+    public static boolean hasItemSettings(@Nonnull ItemStack itemStack) {
         return getItemSettings(itemStack.getItemMeta()) != null;
     }
 
@@ -321,7 +319,7 @@ public class ItemUtils {
     }
 
     @Deprecated
-    public static JSONObject getItemSettings(@NotNull ItemStack itemStack) {
+    public static JSONObject getItemSettings(@Nonnull ItemStack itemStack) {
         return getItemSettings(itemStack.getItemMeta());
     }
 
@@ -354,7 +352,7 @@ public class ItemUtils {
     //itemSettings{"damage":<damage>,"durability":<total_durability>,"durability_tag":""}
 
     @Deprecated
-    public static boolean hasCustomDurability(@NotNull ItemStack itemStack) {
+    public static boolean hasCustomDurability(@Nonnull ItemStack itemStack) {
         return hasCustomDurability(itemStack.getItemMeta());
     }
 

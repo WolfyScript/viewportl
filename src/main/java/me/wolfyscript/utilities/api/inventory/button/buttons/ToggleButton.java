@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.inventory.button.buttons;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
@@ -30,14 +30,14 @@ public class ToggleButton extends Button {
         You can add a empty action however, but then you should consider using a normal Button!
      */
 
-    public ToggleButton(String id, boolean defaultState, @NotNull ButtonState state, @NotNull ButtonState state2) {
+    public ToggleButton(String id, boolean defaultState, @Nonnull ButtonState state, @Nonnull ButtonState state2) {
         super(id, ButtonType.TOGGLE);
         this.defaultState = defaultState;
         states = new ButtonState[]{state, state2};
         settings = new HashMap<>();
     }
 
-    public ToggleButton(String id, @NotNull ButtonState state, @NotNull ButtonState state2) {
+    public ToggleButton(String id, @Nonnull ButtonState state, @Nonnull ButtonState state2) {
         this(id, false, state, state2);
     }
 

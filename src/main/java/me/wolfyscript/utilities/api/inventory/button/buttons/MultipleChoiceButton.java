@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.inventory.button.buttons;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
@@ -30,7 +30,7 @@ public class MultipleChoiceButton extends Button {
     Each click the index increases by 1.
     After the index reached the size of the States it is reset to 0!
      */
-    public MultipleChoiceButton(String id, @NotNull ButtonState... states) {
+    public MultipleChoiceButton(String id, @Nonnull ButtonState... states) {
         super(id, ButtonType.CHOICES);
         this.states = Arrays.asList(states);
         settings = new HashMap<>();

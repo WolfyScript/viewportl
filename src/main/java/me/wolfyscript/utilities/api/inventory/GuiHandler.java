@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.inventory;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.events.GuiCloseEvent;
@@ -160,7 +160,7 @@ public class GuiHandler implements Listener {
     /*
     Opens the specific GuiWindow in the specific GuiCluster.
      */
-    public void changeToInv(@NotNull String clusterID, @NotNull String guiWindowID) {
+    public void changeToInv(@Nonnull String clusterID, @Nonnull String guiWindowID) {
         Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
             Player player1 = getPlayer();
             changingInv = true;

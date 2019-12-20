@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.utils.item_builder;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -38,22 +38,22 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addEnchantment(@NotNull Enchantment ench, int level){
+    public ItemBuilder addEnchantment(@Nonnull Enchantment ench, int level){
         this.currentItem.addEnchantment(ench, level);
         return this;
     }
 
-    public ItemBuilder addUnsafeEnchantment(@NotNull Enchantment ench, int level){
+    public ItemBuilder addUnsafeEnchantment(@Nonnull Enchantment ench, int level){
         this.currentItem.addUnsafeEnchantment(ench, level);
         return this;
     }
 
-    public ItemBuilder addEnchantments(@NotNull Map<Enchantment, Integer> enchantments){
+    public ItemBuilder addEnchantments(@Nonnull Map<Enchantment, Integer> enchantments){
         currentItem.addEnchantments(enchantments);
         return this;
     }
 
-    public ItemBuilder addUnsafeEnchantments(@NotNull Map<Enchantment, Integer> enchantments){
+    public ItemBuilder addUnsafeEnchantments(@Nonnull Map<Enchantment, Integer> enchantments){
         currentItem.addUnsafeEnchantments(enchantments);
         return this;
     }

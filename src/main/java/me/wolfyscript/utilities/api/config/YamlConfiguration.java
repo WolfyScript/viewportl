@@ -1,6 +1,5 @@
 package me.wolfyscript.utilities.api.config;
 
-import com.sun.istack.internal.NotNull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
@@ -10,6 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -298,7 +298,7 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         return config.getList(path);
     }
 
-    @NotNull
+    @Nonnull
     public List<String> getStringList(String path) {
         return config.getStringList(path);
     }

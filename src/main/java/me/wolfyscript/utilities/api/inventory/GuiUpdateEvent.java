@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.inventory;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import org.bukkit.Bukkit;
@@ -104,7 +104,7 @@ public class GuiUpdateEvent extends Event {
     /*
     Sets a Button object to the specific slot.
      */
-    public void setButton(int slot, @NotNull Button button) {
+    public void setButton(int slot, @Nonnull Button button) {
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, button.getId());
             button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());

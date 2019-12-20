@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.inventory;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.buttons.ItemInputButton;
@@ -104,7 +104,7 @@ public class InventoryAPI implements Listener {
         }
     }
 
-    @NotNull
+    @Nonnull
     public GuiHandler getGuiHandler(Player player) {
         if (!hasGuiHandler(player)) {
             createGuiHandler(player);

@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.custom_items;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -36,7 +36,7 @@ public class CustomItemPlaceEvent extends Event {
         this.customItem = customItem;
     }
 
-    public CustomItemPlaceEvent(CustomItem customItem, @NotNull Block placedBlock, @NotNull BlockState replacedBlockState, @NotNull Block placedAgainst, @NotNull ItemStack itemInHand, @NotNull Player thePlayer, boolean canBuild, @NotNull EquipmentSlot hand) {
+    public CustomItemPlaceEvent(CustomItem customItem, @Nonnull Block placedBlock, @Nonnull BlockState replacedBlockState, @Nonnull Block placedAgainst, @Nonnull ItemStack itemInHand, @Nonnull Player thePlayer, boolean canBuild, @Nonnull EquipmentSlot hand) {
         this.block = placedBlock;
         this.placedAgainst = placedAgainst;
         this.itemInHand = itemInHand;
@@ -56,37 +56,37 @@ public class CustomItemPlaceEvent extends Event {
         this.cancel = cancel;
     }
 
-    @NotNull
+    @Nonnull
     public final Block getBlock() {
         return this.block;
     }
 
-    @NotNull
+    @Nonnull
     public Player getPlayer() {
         return this.player;
     }
 
-    @NotNull
+    @Nonnull
     public Block getBlockPlaced() {
         return this.getBlock();
     }
 
-    @NotNull
+    @Nonnull
     public BlockState getBlockReplacedState() {
         return this.replacedBlockState;
     }
 
-    @NotNull
+    @Nonnull
     public Block getBlockAgainst() {
         return this.placedAgainst;
     }
 
-    @NotNull
+    @Nonnull
     public ItemStack getItemInHand() {
         return this.itemInHand;
     }
 
-    @NotNull
+    @Nonnull
     public EquipmentSlot getHand() {
         return this.hand;
     }
@@ -99,12 +99,12 @@ public class CustomItemPlaceEvent extends Event {
         this.canBuild = canBuild;
     }
 
-    @NotNull
+    @Nonnull
     public HandlerList getHandlers() {
         return handlers;
     }
 
-    @NotNull
+    @Nonnull
     public static HandlerList getHandlerList() {
         return handlers;
     }

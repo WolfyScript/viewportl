@@ -1,6 +1,5 @@
 package me.wolfyscript.utilities.api.custom_items;
 
-import com.sun.istack.internal.Nullable;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.custom_data.CustomData;
 import me.wolfyscript.utilities.api.utils.InventoryUtils;
@@ -17,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
