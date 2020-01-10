@@ -25,6 +25,9 @@ public class ItemStackSerialization implements JsonSerializer<ItemStack>, JsonDe
 
     @Override
     public JsonElement serialize(ItemStack itemStack, Type type, JsonSerializationContext jsonSerializationContext) {
-        return new JsonPrimitive(ItemUtils.convertItemStackToJson(itemStack));
+        if(itemStack != null){
+            return new JsonPrimitive(ItemUtils.convertItemStackToJson(itemStack));
+        }
+        return null;
     }
 }

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -344,6 +345,7 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         return getItem(path, true);
     }
 
+    @Nullable
     @Override
     public ItemStack getItem(String path, boolean replaceKeys) {
         if (config.isSet(path)) {
@@ -382,7 +384,7 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
             }
             return itemStack;
         }
-        return new ItemStack(Material.STONE);
+        return null;
     }
 
     @Override

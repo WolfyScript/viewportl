@@ -76,9 +76,7 @@ public class ItemConfig extends CustomConfig {
         setRarityPercentage(itemStack.getRarityPercentage());
         setPermission(itemStack.getPermission());
         setCustomData(itemStack.getCustomDataMap());
-        if (itemStack.getReplacement() != null) {
-            setReplacementItem(itemStack.getReplacement());
-        }
+        setReplacementItem(itemStack.getReplacement());
         setDurabilityCost(itemStack.getDurabilityCost());
         if (itemStack.getAllowedBlocks().isEmpty()) {
             setAllowedBlocks(new ArrayList<>(Collections.singleton(Material.FURNACE)));

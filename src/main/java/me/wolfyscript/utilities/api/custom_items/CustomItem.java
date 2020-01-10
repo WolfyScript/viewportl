@@ -91,12 +91,12 @@ public class CustomItem extends ItemStack implements Cloneable {
     }
 
     public boolean hasReplacement() {
-        return replacement != null;
+        return replacement != null && !replacement.getType().equals(Material.AIR);
     }
 
     @Nullable
     public CustomItem getReplacement() {
-        return replacement != null ? replacement.clone() : null;
+        return hasReplacement() ? replacement.getRealItem() : null;
     }
 
     public void setReplacement(@Nullable CustomItem replacement) {
@@ -232,7 +232,7 @@ public class CustomItem extends ItemStack implements Cloneable {
     }
 
     /*
-    This just refers to the getRealItem(), but the name might be more useful.
+    This just refers to the getRealItem() and only returns an ItemStack Object, but the name might be more useful.
      */
     public ItemStack getItemStack() {
         return getRealItem();

@@ -5,7 +5,6 @@ import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.serialization.ItemStackSerialization;
 import me.wolfyscript.utilities.api.config.serialization.LocationSerialization;
 import me.wolfyscript.utilities.api.config.templates.LangConfiguration;
-import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.GsonUtil;
@@ -21,10 +20,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,8 +31,6 @@ public class Main extends JavaPlugin {
 
     private static int mcUpdateVersionNumber;
     private static String mcUpdateVersion;
-
-    private static List<WolfyUtilities> wolfyUtilitiesList = new ArrayList<>();
 
     private static WolfyUtilities mainUtil;
     private static MainConfiguration mainConfig;
@@ -54,14 +49,12 @@ public class Main extends JavaPlugin {
     }
 
     public void onEnable() {
-
-        mainUtil = new WolfyUtilities(instance);
+        mainUtil = WolfyUtilities.getOrCreateAPI(instance);
         mainUtil.setCONSOLE_PREFIX("[WU] ");
         mainUtil.setCHAT_PREFIX("§8[§3WU§8] §7");
 
         ConfigAPI configAPI = mainUtil.getConfigAPI();
         LanguageAPI languageAPI = mainUtil.getLanguageAPI();
-        InventoryAPI inventoryAPI = mainUtil.getInventoryAPI();
 
         mainConfig = new MainConfiguration(configAPI);
         configAPI.registerConfig(mainConfig);
@@ -91,12 +84,6 @@ public class Main extends JavaPlugin {
 
     public static Main getInstance() {
         return instance;
-    }
-
-    public static void registerWolfyUtilities(WolfyUtilities wolfyUtilities) {
-        if (!wolfyUtilitiesList.contains(wolfyUtilities)) {
-            wolfyUtilitiesList.add(wolfyUtilities);
-        }
     }
 
     public static WolfyUtilities getMainUtil() {

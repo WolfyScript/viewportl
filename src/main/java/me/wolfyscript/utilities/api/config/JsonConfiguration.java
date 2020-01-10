@@ -1,16 +1,14 @@
 package me.wolfyscript.utilities.api.config;
 
-import com.google.common.base.Utf8;
 import com.google.gson.*;
 import com.google.gson.internal.bind.TypeAdapters;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.utils.GsonUtil;
-import me.wolfyscript.utilities.api.utils.ItemUtils;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.NumberConversions;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.file.Files;
@@ -178,13 +176,13 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
      */
-    public void applyDefaults(String pathKey, JsonObject jsonObject){
-        for(Map.Entry<String, JsonElement> entry : jsonObject.entrySet()){
-            String subPath = (pathKey.isEmpty() ? "" : (pathKey+getPathSeparator())) + entry.getKey();
-            if(entry.getValue() instanceof JsonObject){
+    public void applyDefaults(String pathKey, JsonObject jsonObject) {
+        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+            String subPath = (pathKey.isEmpty() ? "" : (pathKey + getPathSeparator())) + entry.getKey();
+            if (entry.getValue() instanceof JsonObject) {
                 applyDefaults(subPath, (JsonObject) entry.getValue());
-            }else{
-                if(get(subPath) == null){
+            } else {
+                if (get(subPath) == null) {
                     set(subPath, entry.getValue());
                 }
             }
@@ -208,15 +206,15 @@ public class JsonConfiguration extends FileConfiguration {
     public void load() {
         if (linkedToFile()) {
             try {
-                try{
+                try {
                     JsonElement object = gson.fromJson(new InputStreamReader(new FileInputStream(this.configFile), "UTF-8"), JsonElement.class);
-                    if(object instanceof JsonObject){
+                    if (object instanceof JsonObject) {
                         this.root = (JsonObject) object;
-                        if(root == null){
+                        if (root == null) {
                             this.root = new JsonObject();
                         }
                     }
-                }catch (JsonSyntaxException | JsonIOException | IOException ex){
+                } catch (JsonSyntaxException | JsonIOException | IOException ex) {
                     ex.printStackTrace();
                 }
                 this.map = gson.fromJson(new InputStreamReader(new FileInputStream(this.configFile), "UTF-8"), new HashMap<String, Object>().getClass());
@@ -296,11 +294,11 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
     public Set<String> parse(String currentPath, JsonObject jsonObject, Set<String> out) {
-        for(Map.Entry<String, JsonElement> entry : jsonObject.entrySet()){
+        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             String path = (currentPath.isEmpty() ? "" : currentPath + getPathSeparator()) + entry.getKey();
-            if(entry.getValue() instanceof JsonObject){
+            if (entry.getValue() instanceof JsonObject) {
                 parse(path, (JsonObject) entry.getValue(), out);
-            }else{
+            } else {
                 out.add(path);
             }
         }
@@ -344,17 +342,19 @@ public class JsonConfiguration extends FileConfiguration {
         String[] pathKeys = path.split(pathSeparator == '.' ? "\\." : pathSeparator + "");
         JsonObject jsonObject = root;
         for (int i = 0; i < pathKeys.length; i++) {
-            if(jsonObject.has(pathKeys[i])){
+            if (jsonObject.has(pathKeys[i])) {
                 JsonElement element = jsonObject.get(pathKeys[i]);
                 if (i != pathKeys.length - 1) {
                     if (element instanceof JsonObject) {
                         jsonObject = (JsonObject) element;
-                    }else{
+                    } else {
                         return null;
                     }
                 } else {
                     return gson.fromJson(element, type);
                 }
+            }else{
+                return def;
             }
         }
         return def;
@@ -370,19 +370,18 @@ public class JsonConfiguration extends FileConfiguration {
                 jsonObject = jsonObject.getAsJsonObject(pathKeys[i]);
             } else {
                 JsonElement element = jsonObject.get(pathKeys[i]);
-                if(i == pathKeys.length - 1){
+                if (i == pathKeys.length - 1) {
                     jsonObject.add(pathKeys[i], gson.toJsonTree(value));
                     if (saveAfterValueSet) {
                         reload();
                     }
-                }else{
+                } else {
                     if (element instanceof JsonObject) {
                         jsonObject = (JsonObject) element;
                     }
                 }
             }
         }
-
     }
 
     @Override
@@ -493,42 +492,40 @@ public class JsonConfiguration extends FileConfiguration {
         return getItem(path, true);
     }
 
+    @Nullable
     @Override
     public ItemStack getItem(String path, boolean replaceKeys) {
         ItemStack itemStack = get(ItemStack.class, path);
         if (itemStack != null) {
-            if (itemStack != null) {
-                if (itemStack.hasItemMeta()) {
-                    ItemMeta itemMeta = itemStack.getItemMeta();
-                    if (itemMeta.hasDisplayName()) {
-                        String displayName = itemMeta.getDisplayName();
-                        if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
-                            displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
-                        }
-                        itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
+            if (itemStack.hasItemMeta()) {
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                if (itemMeta.hasDisplayName()) {
+                    String displayName = itemMeta.getDisplayName();
+                    if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
+                        displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
                     }
-                    if (itemMeta.hasLore() && replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
-                        List<String> newLore = new ArrayList<>();
-                        for (String row : itemMeta.getLore()) {
-                            if (row.startsWith("[WU]")) {
-                                newLore.add(api.getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
-                            } else if (row.startsWith("[WU!]")) {
-                                List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
-                                for (String newRow : rows) {
-                                    newLore.add(WolfyUtilities.translateColorCodes(newRow));
-                                }
-                            } else {
-                                newLore.add(row);
-                            }
-                        }
-                        itemMeta.setLore(newLore);
-                    }
-                    itemStack.setItemMeta(itemMeta);
+                    itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
                 }
-                return itemStack;
+                if (itemMeta.hasLore() && replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
+                    List<String> newLore = new ArrayList<>();
+                    for (String row : itemMeta.getLore()) {
+                        if (row.startsWith("[WU]")) {
+                            newLore.add(api.getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
+                        } else if (row.startsWith("[WU!]")) {
+                            for (String newRow : api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()))) {
+                                newLore.add(WolfyUtilities.translateColorCodes(newRow));
+                            }
+                        } else {
+                            newLore.add(row);
+                        }
+                    }
+                    itemMeta.setLore(newLore);
+                }
+                itemStack.setItemMeta(itemMeta);
             }
+            return itemStack;
         }
-        return new ItemStack(Material.AIR);
+        return null;
     }
 
     @Override
