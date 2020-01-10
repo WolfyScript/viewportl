@@ -1,9 +1,10 @@
 package me.wolfyscript.utilities.api.inventory;
 
-import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.buttons.ItemInputButton;
+import me.wolfyscript.utilities.api.inventory.cache.CustomCache;
+import me.wolfyscript.utilities.api.utils.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,19 +18,28 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.Plugin;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InventoryAPI implements Listener {
+public class InventoryAPI<T extends CustomCache> implements Listener {
 
     private Plugin plugin;
     private WolfyUtilities wolfyUtilities;
     private HashMap<String, GuiHandler> guiHandlers = new HashMap<>();
     private HashMap<String, GuiCluster> guiClusters = new HashMap<>();
 
-    public InventoryAPI(Plugin plugin, WolfyUtilities wolfyUtilities) {
+    private Class<T> customCacheClass;
+
+    public InventoryAPI(Plugin plugin, WolfyUtilities wolfyUtilities, Class<T> customCacheClass) {
         this.wolfyUtilities = wolfyUtilities;
         this.plugin = plugin;
+        this.customCacheClass = customCacheClass;
+        try {
+            customCacheClass.newInstance();
+        } catch (IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -113,7 +123,8 @@ public class InventoryAPI implements Listener {
     }
 
     private void createGuiHandler(Player player) {
-        setPlayerGuiStudio(player, new GuiHandler(player, wolfyUtilities));
+        GuiHandler<T> guiHandler = new GuiHandler<>(player, wolfyUtilities, craftCustomCache());
+        setPlayerGuiStudio(player, guiHandler);
     }
 
     private void setPlayerGuiStudio(Player player, GuiHandler guiStudio) {
@@ -148,6 +159,17 @@ public class InventoryAPI implements Listener {
         guiHandlers.clear();
     }
 
+    public T craftCustomCache() {
+        try {
+            return this.customCacheClass.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /*
     Registers an Button globally which then can be accessed in every GUI.
      */
@@ -173,9 +195,9 @@ public class InventoryAPI implements Listener {
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
                     if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
                         event.setCancelled(true);
-                        for(Map.Entry<Integer, String> buttonEntry : guiHandler.getButtons(guiWindow)){
+                        for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
                             Button button = guiWindow.getButton(buttonEntry.getValue());
-                            if(button instanceof ItemInputButton){
+                            if (button instanceof ItemInputButton) {
                                 event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), buttonEntry.getKey(), event));
                             }
                         }
@@ -192,7 +214,7 @@ public class InventoryAPI implements Listener {
                         if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                             int slot = -1;
                             if (event.getCurrentItem() != null) {
-                                slot = event.getView().getTopInventory().first(event.getCurrentItem());
+                                slot = InventoryUtils.firstSimilar(event.getView().getTopInventory(), event.getCurrentItem());
                             }
                             if (slot == -1) {
                                 slot = event.getView().getTopInventory().firstEmpty();
@@ -216,7 +238,7 @@ public class InventoryAPI implements Listener {
         if (event.getInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
-                if(guiHandler.verifyInventory(event.getView().getTopInventory())){
+                if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
                     for (int rawSlot : event.getRawSlots()) {
                         if (!guiHandler.verifyInventory(event.getView().getInventory(rawSlot))) {
                             event.setCancelled(true);

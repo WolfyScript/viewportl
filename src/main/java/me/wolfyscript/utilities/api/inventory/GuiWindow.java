@@ -202,6 +202,10 @@ public class GuiWindow implements Listener {
         return clusterID;
     }
 
+    public String getID(){
+        return clusterID + ":" + namespace;
+    }
+
     public List<String> getHelpInformation(){
         List<String> values = new ArrayList<>();
         for(String value : getAPI().getLanguageAPI().getActiveLanguage().replaceKey("$inventories."+ clusterID + "." + namespace + ".gui_help$")){

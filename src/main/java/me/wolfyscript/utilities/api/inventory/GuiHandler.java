@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.inventory;
 import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
+import me.wolfyscript.utilities.api.inventory.cache.CustomCache;
 import me.wolfyscript.utilities.api.inventory.events.GuiCloseEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,14 +11,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class GuiHandler implements Listener {
+public class GuiHandler<T extends CustomCache> implements Listener {
 
     private WolfyUtilities api;
     private InventoryAPI invAPI;
@@ -30,12 +30,13 @@ public class GuiHandler implements Listener {
     private boolean isWindowOpen = false;
     private boolean helpEnabled = false;
 
-    private HashMap<String, HashMap<Integer, String>> cachedButtons = new HashMap<>();
+    private T customCache;
 
-    public GuiHandler(Player player, WolfyUtilities api) {
+    public GuiHandler(Player player, WolfyUtilities api, T customCache) {
         this.api = api;
         this.invAPI = api.getInventoryAPI();
         this.player = player;
+        this.customCache = customCache;
         Bukkit.getPluginManager().registerEvents(this, api.getPlugin());
     }
 
@@ -174,7 +175,9 @@ public class GuiHandler implements Listener {
                 if (api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID) != null) {
                     currentGuiCluster = clusterID;
                     isWindowOpen = true;
-                    GuiUpdateEvent event = new GuiUpdateEvent(this, api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID));
+                    GuiWindow guiWindow = api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID);
+
+                    GuiUpdateEvent event = new GuiUpdateEvent(this, guiWindow);
                     Bukkit.getPluginManager().callEvent(event);
                     api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).setCachedInventorie(this, event.getInventory());
                     player1.openInventory(event.getInventory());
@@ -231,21 +234,17 @@ public class GuiHandler implements Listener {
     }
 
     public void setButton(GuiWindow guiWindow, int slot, String id) {
-        HashMap<Integer, String> buttons = cachedButtons.getOrDefault(guiWindow.getNamespace(), new HashMap<>());
+        TreeMap<Integer, String> buttons = customCache.getButtons(guiWindow);
         buttons.put(slot, id);
-        cachedButtons.put(guiWindow.getNamespace(), buttons);
+        customCache.setButtons(guiWindow, buttons);
     }
 
     public Button getButton(GuiWindow guiWindow, int slot) {
-        String id = cachedButtons.getOrDefault(guiWindow.getNamespace(), new HashMap<>()).get(slot);
+        String id = customCache.getButtons(guiWindow).get(slot);
         if (id != null && !id.isEmpty() && id.contains(":")) {
             return api.getInventoryAPI().getButton(id.split(":")[0], id.split(":")[1]);
         }
         return guiWindow.getButton(id);
-    }
-
-    public Set<Map.Entry<Integer, String>> getButtons(GuiWindow guiWindow){
-        return cachedButtons.getOrDefault(guiWindow.getNamespace(),  new HashMap<>()).entrySet();
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -268,7 +267,6 @@ public class GuiHandler implements Listener {
         }
     }
 
-
     public void cancelChatEvent() {
         setChatInputAction(null);
     }
@@ -279,5 +277,9 @@ public class GuiHandler implements Listener {
         if(player.getUniqueId().equals(this.player.getUniqueId())){
             this.player = player;
         }
+    }
+
+    public CustomCache getCustomCache() {
+        return customCache;
     }
 }
