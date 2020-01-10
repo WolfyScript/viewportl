@@ -2,15 +2,12 @@ package me.wolfyscript.utilities.api.utils;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
-import net.minecraft.server.v1_14_R1.MojangsonParser;
 import org.bukkit.ChatColor;
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -20,7 +17,6 @@ import org.json.simple.parser.ParseException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.management.ReflectionException;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -66,6 +62,12 @@ public class ItemUtils {
         return itemAsJsonObject.toString();
     }
 
+    /**
+     * Converts the NMS Json Sting to an {@link org.bukkit.inventory.ItemStack}.
+     *
+     * @param json the json to convert
+     * @return the ItemStack representation of the Json String
+     */
     public static ItemStack convertJsontoItemStack(String json) {
         Class<?> craftItemStackClazz = Reflection.getOBC("inventory.CraftItemStack");
         Class<?> nmsItemStackClazz = Reflection.getNMS("ItemStack");
@@ -445,6 +447,23 @@ public class ItemUtils {
             lore.add(lore.size() > 0 ? lore.size() - 1 : 0, WolfyUtilities.hideString("durability_tag") + WolfyUtilities.translateColorCodes(getDurabilityTag(itemMeta).replace("%DUR%", String.valueOf(getCustomDurability(itemMeta) - getDamage(itemMeta))).replace("%MAX_DUR%", String.valueOf(getCustomDurability(itemMeta)))));
             itemMeta.setLore(lore);
         }
+    }
+
+    public static void removeDurabilityTag(ItemStack itemStack){
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        removeDurabilityTag(itemMeta);
+        itemStack.setItemMeta(itemMeta);
+    }
+
+    public static void removeDurabilityTag(ItemMeta itemMeta){
+        List<String> lore = itemMeta.getLore() != null ? itemMeta.getLore() : new ArrayList<>();
+        for (int i = 0; i < lore.size(); i++) {
+            String line = WolfyUtilities.unhideString(lore.get(i));
+            if (line.startsWith("durability_tag")) {
+                lore.remove(i);
+            }
+        }
+        itemMeta.setLore(lore);
     }
 
     @Deprecated

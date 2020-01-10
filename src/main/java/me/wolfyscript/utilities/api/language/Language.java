@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.language;
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.MemoryConfiguration;
 
@@ -47,6 +48,10 @@ public class Language {
             }
         }
         return msg;
+    }
+
+    public String replaceColoredKeys(String msg){
+        return WolfyUtilities.translateColorCodes(replaceKeys(msg));
     }
 
     public List<String> replaceKeys(String... msg) {

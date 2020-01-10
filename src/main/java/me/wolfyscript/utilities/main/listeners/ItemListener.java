@@ -35,10 +35,7 @@ public class ItemListener implements Listener {
             } else {
                 if(WolfyUtilities.hasVillagePillageUpdate()){
                     //Migrate old data to new 1.14 format!
-                    CustomItem.setCustomDurabilityTag(itemStack, ItemUtils.getDurabilityTag(itemStack));
-                    CustomItem.setCustomDurability(itemStack, durability);
-                    CustomItem.setCustomDamage(itemStack, totalDmg);
-                    ItemUtils.removeItemSettings(itemStack);
+                    migrateCustomDurability(itemStack, totalDmg, durability);
                 }else{
                     ItemUtils.setDamage(itemStack, totalDmg);
                 }
@@ -62,13 +59,18 @@ public class ItemListener implements Listener {
             }
             if(WolfyUtilities.hasVillagePillageUpdate()){
                 //Migrate old data to new 1.14 format!
-                CustomItem.setCustomDurabilityTag(itemStack, ItemUtils.getDurabilityTag(itemStack));
-                CustomItem.setCustomDurability(itemStack, ItemUtils.getCustomDurability(itemStack));
-                CustomItem.setCustomDamage(itemStack, totalDmg);
-                ItemUtils.removeItemSettings(itemStack);
+                migrateCustomDurability(itemStack, ItemUtils.getCustomDurability(itemStack), totalDmg);
             }else{
                 ItemUtils.setDamage(itemStack, totalDmg);
             }
         }
+    }
+
+    private static void migrateCustomDurability(ItemStack itemStack, int totalDmg, int durability){
+        CustomItem.setCustomDurabilityTag(itemStack, ItemUtils.getDurabilityTag(itemStack).replace("%DUR%","%dur%").replace("%MAX_DUR%", "%max_dur%"));
+        CustomItem.setCustomDurability(itemStack, durability);
+        CustomItem.setCustomDamage(itemStack, totalDmg);
+        ItemUtils.removeItemSettings(itemStack);
+        ItemUtils.removeDurabilityTag(itemStack);
     }
 }

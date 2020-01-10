@@ -64,6 +64,12 @@ public class ItemBuilder {
         return setItemMeta(itemMeta);
     }
 
+    public ItemBuilder removeItemFlags(ItemFlag... itemFlags){
+        ItemMeta itemMeta = currentItem.getItemMeta();
+        itemMeta.removeItemFlags(itemFlags);
+        return setItemMeta(itemMeta);
+    }
+
     public ItemBuilder setDisplayName(String name){
         ItemMeta itemMeta = currentItem.getItemMeta();
         itemMeta.setDisplayName(name);

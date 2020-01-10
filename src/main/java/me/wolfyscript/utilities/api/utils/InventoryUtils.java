@@ -51,4 +51,19 @@ public class InventoryUtils {
         }
         return empty >= count;
     }
+
+    public static int firstSimilar(Inventory inventory, ItemStack itemStack){
+        for(int i = 0; i < inventory.getSize(); i++){
+            ItemStack slotItem = inventory.getItem(i);
+            if(slotItem == null){
+                return i;
+            }
+            if(slotItem.isSimilar(itemStack) || itemStack.isSimilar(slotItem)){
+                if(slotItem.getAmount() + itemStack.getAmount() <= slotItem.getMaxStackSize()){
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
 }
