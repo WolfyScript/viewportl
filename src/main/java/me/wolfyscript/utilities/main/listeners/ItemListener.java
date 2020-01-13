@@ -2,13 +2,22 @@ package me.wolfyscript.utilities.main.listeners;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
+import me.wolfyscript.utilities.api.custom_items.CustomItems;
+import me.wolfyscript.utilities.api.custom_items.custom_data.ParticleData;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerItemMendEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 public class ItemListener implements Listener {
 
@@ -72,5 +81,36 @@ public class ItemListener implements Listener {
         CustomItem.setCustomDamage(itemStack, totalDmg);
         ItemUtils.removeItemSettings(itemStack);
         ItemUtils.removeDurabilityTag(itemStack);
+    }
+
+    @EventHandler
+    public void onItemHeld(PlayerItemHeldEvent event){
+        if(WolfyUtilities.hasVillagePillageUpdate()){
+            Player player = event.getPlayer();
+            PlayerInventory playerInventory = player.getInventory();
+            ItemStack previouseItem = playerInventory.getItem(event.getPreviousSlot());
+            CustomItem previousCustomItem = CustomItem.getByItemStack(previouseItem);
+            if(previousCustomItem != null && previousCustomItem.hasID()){
+                CustomItems.stopActiveParticleEffect(player, previousCustomItem);
+                ParticleData particleData = (ParticleData) previousCustomItem.getCustomData("particle_data");
+
+                String particleID = particleData.getParticleEffect(ParticleEffect.Action.OFF_HAND);
+                if(particleID != null){
+                    CustomItems.setActiveParticleEffect(player, previousCustomItem, ParticleEffects.spawnEffectOnPlayer(particleID, player));
+                }
+            }
+
+            ItemStack newItem = playerInventory.getItem(event.getNewSlot());
+            CustomItem item = CustomItem.getByItemStack(newItem);
+            if(item != null && item.hasID()) {
+                CustomItems.stopActiveParticleEffect(player, item);
+                ParticleData particleData = (ParticleData) item.getCustomData("particle_data");
+
+                String particleID = particleData.getParticleEffect(ParticleEffect.Action.HAND);
+                if (particleID != null) {
+                    CustomItems.setActiveParticleEffect(player, item, ParticleEffects.spawnEffectOnPlayerHand(particleID, EquipmentSlot.HAND, player));
+                }
+            }
+        }
     }
 }

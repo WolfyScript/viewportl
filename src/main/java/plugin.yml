@@ -13,3 +13,5 @@ main: me.wolfyscript.utilities.main.Main
 commands:
   wolfyutils:
     description: displays version of this plugin
+  spawn_particle:
+    description: spawn particle effects

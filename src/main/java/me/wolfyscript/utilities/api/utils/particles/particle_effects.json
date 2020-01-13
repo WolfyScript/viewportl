@@ -1,0 +1,19 @@
+{
+  "flame_and_magic": {
+    "cooldown": 4,
+    "duration": 20,
+    "scripts": [
+      "function onPlayerHand(){}",
+      "function onPlayer(){}",
+      "function onLocation(){}"
+    ],
+    "particles": [
+      {
+        "particle": "flame"
+      },
+      {
+        "particle": "magic_random"
+      }
+    ]
+  }
+}

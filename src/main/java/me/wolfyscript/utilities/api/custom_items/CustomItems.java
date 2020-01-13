@@ -1,8 +1,13 @@
 package me.wolfyscript.utilities.api.custom_items;
 
+import me.wolfyscript.utilities.api.custom_items.custom_data.ParticleData;
+import me.wolfyscript.utilities.api.utils.Pair;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -17,7 +22,10 @@ import java.util.*;
 public class CustomItems {
 
     private static HashMap<String, CustomItem> customItems = new HashMap<>();
-    private static HashMap<Location, String> storedBlocks = new HashMap<>();
+
+    private static HashMap<Location, Pair<String, UUID>> storedBlocks = new HashMap<>();
+
+    private static HashMap<UUID, HashMap<String, UUID>> playerItemParticles = new HashMap<>();
 
     public CustomItems(Plugin plugin) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::save, 12000, 12000);
@@ -64,6 +72,38 @@ public class CustomItems {
         customItems.put(itemConfig.getId(), new CustomItem(itemConfig));
     }
 
+    public static HashMap<String, UUID> getActiveItemEffects(Player player){
+        if(!hasActiveItemEffects(player)){
+            playerItemParticles.put(player.getUniqueId(), new HashMap<>());
+        }
+        return playerItemParticles.get(player.getUniqueId());
+    }
+
+    public static boolean hasActiveItemEffects(Player player) {
+        return playerItemParticles.containsKey(player.getUniqueId());
+    }
+
+    public static boolean hasActiveItemEffects(Player player, CustomItem customItem) {
+        return playerItemParticles.getOrDefault(player.getUniqueId(), new HashMap<>()).containsKey(customItem.getId());
+    }
+
+    public static UUID getActiveItemEffects(Player player, CustomItem customItem) {
+        return playerItemParticles.getOrDefault(player.getUniqueId(), new HashMap<>()).get(customItem.getId());
+    }
+
+    public static void setActiveParticleEffect(Player player, CustomItem customItem, UUID uuid) {
+        if (hasActiveItemEffects(player, customItem)) {
+            stopActiveParticleEffect(player, customItem);
+        }
+        getActiveItemEffects(player).put(customItem.getId(), uuid);
+    }
+
+    public static void stopActiveParticleEffect(Player player, CustomItem customItem) {
+        ParticleEffects.stopEffect(getActiveItemEffects(player, customItem));
+        getActiveItemEffects(player).remove(customItem.getId());
+    }
+
+
     //StoredBlocks Methods
     public static boolean isBlockStored(Location location) {
         if (storedBlocks.containsKey(location)) {
@@ -80,24 +120,42 @@ public class CustomItems {
 
     @Nullable
     public static CustomItem getStoredBlockItem(Location location) {
-        for (Map.Entry<Location, String> entry : storedBlocks.entrySet()) {
+        for (Map.Entry<Location, Pair<String, UUID>> entry : storedBlocks.entrySet()) {
             if (entry.getKey().equals(location)) {
-                return getCustomItem(entry.getValue());
+                return getCustomItem(entry.getValue().getKey());
             }
         }
         return null;
     }
 
     public static void setStoredBlockItem(Location location, CustomItem customItem) {
-        storedBlocks.put(location, customItem.getId());
-    }
-
-    public static void setStoredBlockItem(Location location, String id) {
-        storedBlocks.put(location, id);
+        ParticleEffects.stopEffect(getStoredBlockEffect(location));
+        ParticleData particleData = (ParticleData) customItem.getCustomData("particle_data");
+        String particle = particleData.getParticleEffect(ParticleEffect.Action.BLOCK);
+        UUID uuid = ParticleEffects.spawnEffectOnBlock(particle, location.getBlock());
+        storedBlocks.put(location, new Pair<>(customItem.getId(), uuid));
     }
 
     public static void removeStoredBlockItem(Location location) {
+        ParticleEffects.stopEffect(getStoredBlockEffect(location));
         storedBlocks.remove(location);
+    }
+
+    @Nullable
+    public static UUID getStoredBlockEffect(Location location) {
+        for (Map.Entry<Location, Pair<String, UUID>> entry : storedBlocks.entrySet()) {
+            if (entry.getKey().equals(location)) {
+                return entry.getValue().getValue();
+            }
+        }
+        return null;
+    }
+
+    public static boolean hasStoredBlockEffect(Location location) {
+        if(isBlockStored(location)){
+            return getStoredBlockEffect(location) != null;
+        }
+        return false;
     }
 
     private static String locationToString(Location location) {
@@ -114,8 +172,8 @@ public class CustomItems {
             FileOutputStream fos = new FileOutputStream(new File(Main.getInstance().getDataFolder() + File.separator + "stored_block_items.dat"));
             BukkitObjectOutputStream oos = new BukkitObjectOutputStream(fos);
             HashMap<String, String> saveMap = new HashMap<>();
-            for (Map.Entry<Location, String> entry : storedBlocks.entrySet()) {
-                saveMap.put(locationToString(entry.getKey()), entry.getValue());
+            for (Map.Entry<Location, Pair<String, UUID>> entry : storedBlocks.entrySet()) {
+                saveMap.put(locationToString(entry.getKey()), entry.getValue().getKey());
             }
             oos.writeObject(saveMap);
             oos.close();
@@ -135,7 +193,7 @@ public class CustomItems {
                     Object object = ois.readObject();
                     HashMap<String, String> loadMap = (HashMap<String, String>) object;
                     for (Map.Entry<String, String> entry : loadMap.entrySet()) {
-                        storedBlocks.put(stringToLocation(entry.getKey()), entry.getValue());
+                        storedBlocks.put(stringToLocation(entry.getKey()), new Pair<>(entry.getValue(), null));
                     }
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();

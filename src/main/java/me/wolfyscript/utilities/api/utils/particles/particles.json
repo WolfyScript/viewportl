@@ -1,0 +1,38 @@
+{
+  "flame": {
+    "particle": "minecraft:flame",
+    "count": 1,
+    "extra": 0.0000001,
+    "relative": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "offset": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "scripts": [
+      "file=scripts/flame.js"
+    ]
+  },
+  "magic_random": {
+    "particle": "minecraft:crit_magic",
+    "count": 1,
+    "extra": 0.0000001,
+    "relative": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "offset": {
+      "x": 2,
+      "y": 0,
+      "z": 2
+    },
+    "scripts": [
+      "function onLocation(location, tick){ location.add(tick * 2, 0, 0); return [location, tick]; }"
+    ]
+  }
+}

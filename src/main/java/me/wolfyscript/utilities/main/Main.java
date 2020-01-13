@@ -4,12 +4,22 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.serialization.ItemStackSerialization;
 import me.wolfyscript.utilities.api.config.serialization.LocationSerialization;
+import me.wolfyscript.utilities.api.config.serialization.ParticleEffectSerialization;
+import me.wolfyscript.utilities.api.config.serialization.ParticleSerialization;
 import me.wolfyscript.utilities.api.config.templates.LangConfiguration;
+import me.wolfyscript.utilities.api.custom_items.CustomItem;
+import me.wolfyscript.utilities.api.custom_items.CustomItems;
+import me.wolfyscript.utilities.api.custom_items.custom_data.ParticleData;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.GsonUtil;
 import me.wolfyscript.utilities.api.utils.ItemCategory;
 import me.wolfyscript.utilities.api.utils.Legacy;
+import me.wolfyscript.utilities.api.utils.particles.Particle;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
+import me.wolfyscript.utilities.api.utils.particles.Particles;
+import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
 import me.wolfyscript.utilities.main.listeners.BlockListener;
 import me.wolfyscript.utilities.main.listeners.ItemListener;
 import me.wolfyscript.utilities.main.metrics.Metrics;
@@ -35,6 +45,9 @@ public class Main extends JavaPlugin {
     private static WolfyUtilities mainUtil;
     private static MainConfiguration mainConfig;
 
+    private static Particles particlesConfig;
+    private static ParticleEffects particleEffectsConfig;
+
     public void onLoad() {
         instance = this;
         String pkgname = Main.getInstance().getServer().getClass().getPackage().getName();
@@ -45,7 +58,11 @@ public class Main extends JavaPlugin {
         //ItemStack serialization
         GsonUtil.registerTypeHierarchyAdapter(ItemStack.class, new ItemStackSerialization());
         GsonUtil.registerTypeHierarchyAdapter(Location.class, new LocationSerialization());
+        GsonUtil.registerTypeHierarchyAdapter(Particle.class, new ParticleSerialization());
+        GsonUtil.registerTypeHierarchyAdapter(ParticleEffect.class, new ParticleEffectSerialization());
 
+        //Register custom item data
+        CustomItem.registerCustomData(new ParticleData());
     }
 
     public void onEnable() {
@@ -63,6 +80,7 @@ public class Main extends JavaPlugin {
         WolfyUtilities.getCustomItems().load();
         Bukkit.getPluginManager().registerEvents(new ItemListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
+        Bukkit.getServer().getPluginCommand("spawn_particle").setExecutor(new SpawnParticleEffectCommand());
 
         Metrics metrics = new Metrics(this);
 
@@ -71,15 +89,30 @@ public class Main extends JavaPlugin {
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
-        getMainUtil().sendConsoleMessage("Loaded Item Categories: ");
+        getMainUtil().sendConsoleMessage("Registering Item Categories...");
         for (Map.Entry<String, List<Material>> category : ItemCategory.getMaterials().entrySet()) {
-            getMainUtil().sendConsoleMessage("  " + category.getKey() + ": " + category.getValue());
+            getMainUtil().sendDebugMessage("  " + category.getKey() + ": " + category.getValue());
+        }
+        getMainUtil().sendConsoleMessage("Registering Particles...");
+        particlesConfig = new Particles(configAPI);
+        particlesConfig.loadParticles();
+        for(Map.Entry<String, Particle> particleEntry : Particles.getParticles().entrySet()){
+            getMainUtil().sendConsoleWarning("  - "+particleEntry.getKey() + ": "+particleEntry.getValue().getParticle());
+        }
+        particleEffectsConfig = new ParticleEffects(configAPI);
+        particleEffectsConfig.loadEffects();
+        for(Map.Entry<String, ParticleEffect> effectEntry : ParticleEffects.getEffects().entrySet()){
+            getMainUtil().sendConsoleWarning("  - "+effectEntry.getKey() + ": "+effectEntry.getValue().getParticles());
         }
     }
 
     public void onDisable() {
         mainUtil.getConfigAPI().saveConfigs();
         WolfyUtilities.getCustomItems().save();
+        particlesConfig.setParticles();
+        particlesConfig.save();
+        particleEffectsConfig.setEffects();
+        particleEffectsConfig.save();
     }
 
     public static Main getInstance() {

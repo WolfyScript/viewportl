@@ -18,6 +18,8 @@ import me.wolfyscript.utilities.api.utils.chat.ClickData;
 import me.wolfyscript.utilities.api.utils.chat.HoverEvent;
 import me.wolfyscript.utilities.api.utils.chat.PlayerAction;
 import me.wolfyscript.utilities.api.utils.exceptions.InvalidCacheTypeException;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
+import me.wolfyscript.utilities.api.utils.particles.Particles;
 import me.wolfyscript.utilities.main.Main;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -48,6 +50,8 @@ public class WolfyUtilities implements Listener {
 
     private static HashMap<Plugin, WolfyUtilities> wolfyUtilitiesList = new HashMap<>();
     private static CustomItems customItems;
+    private static Particles particles;
+    private static ParticleEffects particleEffects;
 
     static Random random = new Random();
 

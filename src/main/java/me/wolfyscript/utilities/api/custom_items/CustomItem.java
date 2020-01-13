@@ -45,7 +45,6 @@ public class CustomItem extends ItemStack implements Cloneable {
     private int durabilityCost;
     private MetaSettings metaSettings;
 
-
     public CustomItem(ItemConfig config, boolean replace) {
         super(config.getCustomItem(replace));
         this.config = config;
@@ -261,25 +260,28 @@ public class CustomItem extends ItemStack implements Cloneable {
     CustomItem static methods
      */
     public static CustomItem getByItemStack(ItemStack itemStack) {
-        CustomItem customItem = null;
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            if (WolfyUtilities.hasVillagePillageUpdate()) {
-                if (itemMeta.getPersistentDataContainer().has(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
-                    customItem = CustomItems.getCustomItem(itemMeta.getPersistentDataContainer().get(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING));
+        if(itemStack != null){
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta != null) {
+                CustomItem customItem = null;
+                if (WolfyUtilities.hasVillagePillageUpdate()) {
+                    if (itemMeta.getPersistentDataContainer().has(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
+                        customItem = CustomItems.getCustomItem(itemMeta.getPersistentDataContainer().get(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING));
+                    }
+                } else {
+                    if (ItemUtils.isInItemSettings(itemMeta, "custom_item")) {
+                        customItem = CustomItems.getCustomItem((String) ItemUtils.getFromItemSettings(itemMeta, "custom_item"));
+                    }
                 }
-            } else {
-                if (ItemUtils.isInItemSettings(itemMeta, "custom_item")) {
-                    customItem = CustomItems.getCustomItem((String) ItemUtils.getFromItemSettings(itemMeta, "custom_item"));
+                if (customItem != null) {
+                    customItem.setAmount(itemStack.getAmount());
+                    return customItem;
                 }
-            }
-            if (customItem != null) {
-                customItem.setAmount(itemStack.getAmount());
-                return customItem;
+                return new CustomItem(itemStack);
             }
             return new CustomItem(itemStack);
         }
-        return new CustomItem(itemStack);
+        return null;
     }
 
     private static boolean isIDItem(ItemStack itemStack) {
