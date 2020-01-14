@@ -6,7 +6,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class CustomItemArmorEquipEvent extends PlayerEvent implements Cancellable {
+public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
 
 
     private static final HandlerList handlers = new HandlerList();
@@ -23,7 +23,7 @@ public class CustomItemArmorEquipEvent extends PlayerEvent implements Cancellabl
      * @param oldArmorPiece The ItemStack of the armor removed.
      * @param newArmorPiece The ItemStack of the armor added.
      */
-    public CustomItemArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final ItemStack oldArmorPiece, final ItemStack newArmorPiece){
+    public ArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final ItemStack oldArmorPiece, final ItemStack newArmorPiece){
         super(player);
         this.equipType = equipType;
         this.type = type;
@@ -73,7 +73,7 @@ public class CustomItemArmorEquipEvent extends PlayerEvent implements Cancellabl
     }
 
     /**
-     * Returns the last equipped armor piece, could be a piece of armor, {@link Material#Air}, or null.
+     * Returns the last equipped armor piece, could be a piece of armor, {@link org.bukkit.Material#AIR}, or null.
      */
     public final ItemStack getOldArmorPiece(){
         return oldArmorPiece;
@@ -84,7 +84,7 @@ public class CustomItemArmorEquipEvent extends PlayerEvent implements Cancellabl
     }
 
     /**
-     * Returns the newly equipped armor, could be a piece of armor, {@link Material#Air}, or null.
+     * Returns the newly equipped armor, could be a piece of armor, {@link org.bukkit.Material#AIR}, or null.
      */
     public final ItemStack getNewArmorPiece(){
         return newArmorPiece;

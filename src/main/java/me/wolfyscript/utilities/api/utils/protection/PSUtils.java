@@ -1,7 +1,8 @@
 package me.wolfyscript.utilities.api.utils.protection;
 
-import com.intellectualcrafters.plot.api.PlotAPI;
-import com.intellectualcrafters.plot.object.Plot;
+
+import com.github.intellectualsites.plotsquared.api.PlotAPI;
+import com.github.intellectualsites.plotsquared.plot.object.Plot;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -14,15 +15,19 @@ public class PSUtils {
 
     private static PlotAPI plotAPI = new PlotAPI();
 
+    @Deprecated
     public static boolean hasPerm(Player player, Location location) {
-        Plot plot = plotAPI.getPlot(location);
+         /*
+        Plot plot = plotAPI.getPlotSquared().getPlotAreaAbs(location);
         if (!isPlotWorld(player.getWorld()))
             return true;
         return hasPlotPerm(player.getUniqueId(), plot);
+         */
+         return false;
     }
 
     public static boolean isPlotWorld(World world) {
-        return plotAPI.isPlotWorld(world);
+        return plotAPI.getPlotSquared().hasPlot(world.getUID());
     }
 
     public static boolean hasPlotPerm(UUID uuid, Plot plot) {
