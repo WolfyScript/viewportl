@@ -9,6 +9,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -18,6 +19,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,6 +46,7 @@ public class CustomItem extends ItemStack implements Cloneable {
     private CustomItem replacement;
     private int durabilityCost;
     private MetaSettings metaSettings;
+    private List<EquipmentSlot> equipmentSlots;
 
     public CustomItem(ItemConfig config, boolean replace) {
         super(config.getCustomItem(replace));
@@ -58,6 +61,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.permission = config.getPermission();
         this.rarityPercentage = config.getRarityPercentage();
         this.customDataMap = config.getCustomData();
+        this.equipmentSlots = new ArrayList<>();
     }
 
     public CustomItem(ItemConfig config) {
@@ -79,6 +83,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         for (CustomData customData : CustomItem.getAvailableCustomData().values()) {
             this.customDataMap.put(customData.getId(), customData.getDefaultCopy());
         }
+        this.equipmentSlots = new ArrayList<>();
     }
 
     public CustomItem(Material material) {
@@ -175,6 +180,26 @@ public class CustomItem extends ItemStack implements Cloneable {
 
     public ArrayList<Material> getAllowedBlocks() {
         return allowedBlocks;
+    }
+
+    public List<EquipmentSlot> getEquipmentSlots(){
+        return equipmentSlots;
+    }
+
+    public boolean hasEquipmentSlot(){
+        return !getEquipmentSlots().isEmpty();
+    }
+
+    public void addEquipmentSlots(EquipmentSlot... slots){
+        for (EquipmentSlot slot : slots){
+            if(!equipmentSlots.contains(slot)){
+                equipmentSlots.add(slot);
+            }
+        }
+    }
+
+    public void removeEquipmentSlots(EquipmentSlot... slots){
+        equipmentSlots.removeAll(Arrays.asList(slots));
     }
 
     @Override

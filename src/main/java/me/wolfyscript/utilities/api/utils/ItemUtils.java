@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.utils;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -490,5 +491,21 @@ public class ItemUtils {
             return (String) getFromItemSettings(itemMeta, "durability_tag");
         }
         return "";
+    }
+
+    public static boolean isEquipable(Material material){
+        if(material.name().endsWith("_CHESTPLATE") || material.name().endsWith("_LEGGINGS") || material.name().endsWith("_HELMET") || material.name().endsWith("_BOOTS")){
+            return true;
+        }
+        switch (material){
+            case ELYTRA:
+            case PLAYER_HEAD:
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean isAirOrNull(ItemStack item){
+        return item == null || item.getType().equals(Material.AIR);
     }
 }
