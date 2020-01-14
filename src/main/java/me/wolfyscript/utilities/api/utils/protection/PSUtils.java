@@ -1,8 +1,8 @@
 package me.wolfyscript.utilities.api.utils.protection;
 
 
-import com.github.intellectualsites.plotsquared.api.PlotAPI;
-import com.github.intellectualsites.plotsquared.plot.object.Plot;
+import com.intellectualcrafters.plot.api.PlotAPI;
+import com.intellectualcrafters.plot.object.Plot;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;

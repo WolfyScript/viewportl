@@ -46,6 +46,7 @@ public class CustomItem extends ItemStack implements Cloneable {
     private CustomItem replacement;
     private int durabilityCost;
     private MetaSettings metaSettings;
+    private boolean blockVanillaEquip;
     private List<EquipmentSlot> equipmentSlots;
 
     public CustomItem(ItemConfig config, boolean replace) {
@@ -62,6 +63,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.rarityPercentage = config.getRarityPercentage();
         this.customDataMap = config.getCustomData();
         this.equipmentSlots = new ArrayList<>();
+        this.blockVanillaEquip = false;
     }
 
     public CustomItem(ItemConfig config) {
@@ -84,6 +86,7 @@ public class CustomItem extends ItemStack implements Cloneable {
             this.customDataMap.put(customData.getId(), customData.getDefaultCopy());
         }
         this.equipmentSlots = new ArrayList<>();
+        this.blockVanillaEquip = false;
     }
 
     public CustomItem(Material material) {
@@ -188,6 +191,14 @@ public class CustomItem extends ItemStack implements Cloneable {
 
     public boolean hasEquipmentSlot(){
         return !getEquipmentSlots().isEmpty();
+    }
+
+    public boolean isBlockVanillaEquip() {
+        return blockVanillaEquip;
+    }
+
+    public void setBlockVanillaEquip(boolean blockVanillaEquip) {
+        this.blockVanillaEquip = blockVanillaEquip;
     }
 
     public void addEquipmentSlots(EquipmentSlot... slots){

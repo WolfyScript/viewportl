@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.custom_items.equipment;
 
+import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -8,12 +9,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
 
-
     private static final HandlerList handlers = new HandlerList();
     private boolean cancel = false;
     private final EquipMethod equipType;
     private final ArmorType type;
-    private ItemStack oldArmorPiece, newArmorPiece;
+    private CustomItem oldArmorPiece, newArmorPiece;
 
     /**
      * Constructor for the ArmorEquipEvent.
@@ -23,7 +23,7 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
      * @param oldArmorPiece The ItemStack of the armor removed.
      * @param newArmorPiece The ItemStack of the armor added.
      */
-    public ArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final ItemStack oldArmorPiece, final ItemStack newArmorPiece){
+    public ArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final CustomItem oldArmorPiece, final CustomItem newArmorPiece){
         super(player);
         this.equipType = equipType;
         this.type = type;
@@ -75,22 +75,22 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
     /**
      * Returns the last equipped armor piece, could be a piece of armor, {@link org.bukkit.Material#AIR}, or null.
      */
-    public final ItemStack getOldArmorPiece(){
+    public final CustomItem getOldArmorPiece(){
         return oldArmorPiece;
     }
 
-    public final void setOldArmorPiece(final ItemStack oldArmorPiece){
+    public final void setOldArmorPiece(final CustomItem oldArmorPiece){
         this.oldArmorPiece = oldArmorPiece;
     }
 
     /**
      * Returns the newly equipped armor, could be a piece of armor, {@link org.bukkit.Material#AIR}, or null.
      */
-    public final ItemStack getNewArmorPiece(){
+    public final CustomItem getNewArmorPiece(){
         return newArmorPiece;
     }
 
-    public final void setNewArmorPiece(final ItemStack newArmorPiece){
+    public final void setNewArmorPiece(final CustomItem newArmorPiece){
         this.newArmorPiece = newArmorPiece;
     }
 
@@ -100,7 +100,6 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
     public EquipMethod getMethod(){
         return equipType;
     }
-
 
     public enum EquipMethod{
         /**
