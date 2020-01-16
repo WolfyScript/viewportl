@@ -27,6 +27,18 @@
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
+
+        <!-- PlotSquared repository -->
+        <repository>
+            <id>p2-repo</id>
+            <url>http://ci.athion.net/job/PlotSquared-Releases/ws/mvn/</url>
+        </repository>
+        <!-- Jenkins4J -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+
     </repositories>
 
     <dependencies>
@@ -52,6 +64,16 @@
             <groupId>org.mozilla</groupId>
             <artifactId>rhino</artifactId>
             <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.intellectualsites.plotsquared</groupId>
+            <artifactId>PlotSquared-BukkitAPI</artifactId>
+            <version>4.400</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.intellectualsites.plotsquared</groupId>
+            <artifactId>PlotSquared-API</artifactId>
+            <version>4.400</version>
         </dependency>
     </dependencies>
 
