@@ -1,14 +1,14 @@
 package me.wolfyscript.utilities.api.utils.particles;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import jdk.nashorn.internal.runtime.ScriptObject;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.util.NumberConversions;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.Scriptable;
 
 import javax.annotation.Nullable;
 import javax.script.Invocable;
@@ -35,8 +35,8 @@ public class Particle {
     private List<String> scripts = new ArrayList<>();
     private String referencePath;
 
-    private ScriptEngineManager engineManager = new ScriptEngineManager();
-    private ScriptEngine engine = engineManager.getEngineByName("JavaScript");
+    private Context context = Context.enter();
+    private Scriptable scope = context.initSafeStandardObjects();
 
     public Particle(Particle preset) {
         this.particle = preset.getParticle();
@@ -146,7 +146,7 @@ public class Particle {
         return superParticle;
     }
 
-    public boolean hasSuperParticle(){
+    public boolean hasSuperParticle() {
         return superParticle != null;
     }
 
@@ -234,93 +234,86 @@ public class Particle {
         this.extra = extra;
     }
 
-    public List<String> getScripts(){
+    public List<String> getScripts() {
         return hasScripts() ? scripts : getSuperParticle().getScripts();
     }
 
-    public boolean hasRelativeX(){
+    public boolean hasRelativeX() {
         return !hasSuperParticle() || this.relativeX != getSuperParticle().relativeX;
     }
 
-    public boolean hasRelativeY(){
+    public boolean hasRelativeY() {
         return !hasSuperParticle() || this.relativeY != getSuperParticle().relativeY;
     }
 
-    public boolean hasRelativeZ(){
+    public boolean hasRelativeZ() {
         return !hasSuperParticle() || this.relativeZ != getSuperParticle().relativeZ;
     }
 
-    public boolean hasOffsetX(){
+    public boolean hasOffsetX() {
         return !hasSuperParticle() || this.offsetX != getSuperParticle().offsetX;
     }
 
-    public boolean hasOffsetY(){
+    public boolean hasOffsetY() {
         return !hasSuperParticle() || this.offsetY != getSuperParticle().offsetY;
     }
 
-    public boolean hasOffsetZ(){
+    public boolean hasOffsetZ() {
         return !hasSuperParticle() || this.offsetZ != getSuperParticle().offsetZ;
     }
 
-    public boolean hasCount(){
+    public boolean hasCount() {
         return !hasSuperParticle() || this.count != getSuperParticle().count;
     }
 
-    public boolean hasExtra(){
+    public boolean hasExtra() {
         return !hasSuperParticle() || this.extra != getSuperParticle().extra;
     }
 
-    public boolean hasParticle(){
+    public boolean hasParticle() {
         return !hasSuperParticle() || this.particle != getSuperParticle().particle;
     }
 
-    public boolean hasData(){
+    public boolean hasData() {
         return !hasSuperParticle() || this.data != getSuperParticle().data;
     }
 
-    public boolean hasDataClass(){
+    public boolean hasDataClass() {
         return !hasSuperParticle() || this.dataClass != getSuperParticle().dataClass;
     }
 
-    public boolean hasScripts(){
-        if(!hasSuperParticle()){
+    public boolean hasScripts() {
+        if (!hasSuperParticle()) {
             return true;
         }
-        if(this.scripts.isEmpty()){
+        if (this.scripts.isEmpty()) {
             return getSuperParticle().getScripts().isEmpty();
         }
         return !this.scripts.equals(getSuperParticle().scripts);
     }
 
-    public void addScript(String script){
+    public void addScript(String script) {
         scripts.add(script);
     }
 
     @Override
     public String toString() {
-        return "Particle["+name+", "+particle.name()+"]";
+        return "Particle[" + name + ", " + particle.name() + "]";
     }
 
-    void prepare(String referencePath){
-        engineManager = new ScriptEngineManager();
-        this.engine = engineManager.getEngineByName("JavaScript");
-        for(String script : getScripts()){
-            if(script.startsWith("file=")){
+    void prepare(String referencePath) {
+        context = Context.enter();
+        for (String script : getScripts()) {
+            if (script.startsWith("file=")) {
                 try {
                     FileInputStream inputStream = new FileInputStream(referencePath + File.separator + script.substring("file=".length()));
-                    if(inputStream != null){
-                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                        this.engine.eval(bufferedReader);
-                    }
-                } catch (FileNotFoundException | ScriptException e) {
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    context.evaluateReader(scope, bufferedReader, "<cmd>", 1, null);
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }else{
-                try {
-                    this.engine.eval(script);
-                } catch (ScriptException e) {
-                    e.printStackTrace();
-                }
+            } else {
+                context.evaluateString(scope, script, "<cmd>",1,null);
             }
         }
     }
@@ -328,12 +321,12 @@ public class Particle {
     public void spawnOnLocation(Location location, int tick) {
         Data particleData = new Data(this);
 
-        if(!getScripts().isEmpty()){
-            Invocable invocableEngine = (Invocable) this.engine;
-            try {
-                invocableEngine.invokeFunction("onLocation", location, particleData, tick);
-            } catch (ScriptException | NoSuchMethodException e) {
-
+        if (!getScripts().isEmpty()) {
+            Object function = scope.get("onLocation", scope);
+            if (function instanceof Function) {
+                Function f = (Function) function;
+                f.call(Context.enter(), scope, scope, new Object[]{location, particleData, tick});
+                Context.exit();
             }
         }
         spawn(location, particleData);
@@ -343,53 +336,39 @@ public class Particle {
         Location location = block.getLocation();
         Data particleData = new Data(this);
 
-        if(!getScripts().isEmpty()){
-            Invocable invocableEngine = (Invocable) this.engine;
-            try {
-                invocableEngine.invokeFunction("onBlock", block, location, particleData, tick);
-            } catch (ScriptException | NoSuchMethodException e) {
-
+        if (!getScripts().isEmpty()) {
+            Object function = scope.get("onBlock", scope);
+            if (function instanceof Function) {
+                Function f = (Function) function;
+                f.call(Context.enter(), scope, scope, new Object[]{block, location, particleData, tick});
+                Context.exit();
             }
         }
         spawn(location, particleData);
     }
 
-    public void spawnOnPlayer(Player player, int tick){
+    public void spawnOnPlayer(Player player, EquipmentSlot slot, int tick) {
         Location location = player.getLocation();
         Data particleData = new Data(this);
 
-        if(!getScripts().isEmpty()){
-            Invocable invocableEngine = (Invocable) this.engine;
-            try {
-                invocableEngine.invokeFunction("onPlayer", player, location, particleData, tick);
-            } catch (ScriptException | NoSuchMethodException e) {
-
+        if (!getScripts().isEmpty()) {
+            Object function = scope.get("onPlayer", scope);
+            if (function instanceof Function) {
+                Function f = (Function) function;
+                f.call(Context.enter(), scope, scope, new Object[]{player, slot, location, particleData, tick});
+                Context.exit();
             }
         }
         spawn(location, particleData);
     }
 
-    public void spawnOnPlayerHand(Player player, EquipmentSlot hand, int tick){
-        Location location = player.getLocation();
-        Data particleData = new Data(this);
-        if(!getScripts().isEmpty()){
-            Invocable invocableEngine = (Invocable) this.engine;
-            try {
-                invocableEngine.invokeFunction("onPlayerHand", hand, player, location, particleData, tick);
-            } catch (ScriptException | NoSuchMethodException e) {
-
-            }
-        }
-        spawn(location, particleData);
-    }
-
-    private void spawn(Location location, Data particleData){
+    private void spawn(Location location, Data particleData) {
         spawn(location, particleData.relativeX, particleData.relativeY, particleData.relativeZ, particleData.count, particleData.offsetX, particleData.offsetY, particleData.offsetZ, particleData.extra, particleData.data);
     }
 
     private void spawn(Location location, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, @Nullable Object data) {
         Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
-            if(location.getWorld() != null){
+            if (location.getWorld() != null) {
                 if (data == null || !getDataClass().isInstance(data)) {
                     location.getWorld().spawnParticle(particle, location.add(x, y, z), count, offsetX, offsetY, offsetZ, extra);
                 } else {
@@ -399,7 +378,7 @@ public class Particle {
         });
     }
 
-    public static class Data{
+    public static class Data {
 
         private Class<?> dataClass;
         private Object data;
@@ -407,7 +386,7 @@ public class Particle {
         private int count;
         private double extra;
 
-        public Data(Particle particle){
+        public Data(Particle particle) {
             this.dataClass = particle.getDataClass();
             if (particle.dataClass.isInstance(particle.getData())) {
                 this.data = particle.getData();

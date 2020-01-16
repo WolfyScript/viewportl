@@ -84,15 +84,9 @@ public class ParticleEffect {
         }
     }
 
-    public void spawnOnPlayer(Player player, int tick) {
+    public void spawnOnPlayer(Player player, EquipmentSlot slot, int tick) {
         for(Particle particle : particles){
-            particle.spawnOnPlayer(player, tick);
-        }
-    }
-
-    public void spawnOnPlayerHand(Player player, EquipmentSlot hand, int tick) {
-        for(Particle particle : particles){
-            particle.spawnOnPlayerHand(player, hand, tick);
+            particle.spawnOnPlayer(player, slot, tick);
         }
     }
 

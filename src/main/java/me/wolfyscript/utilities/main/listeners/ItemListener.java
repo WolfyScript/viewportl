@@ -96,7 +96,7 @@ public class ItemListener implements Listener {
 
                 String particleID = particleData.getParticleEffect(ParticleEffect.Action.OFF_HAND);
                 if(particleID != null){
-                    CustomItems.setActiveParticleEffect(player, previousCustomItem, ParticleEffects.spawnEffectOnPlayer(particleID, player));
+                    CustomItems.setActiveParticleEffect(player, previousCustomItem, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.OFF_HAND, player));
                 }
             }
 
@@ -108,7 +108,7 @@ public class ItemListener implements Listener {
 
                 String particleID = particleData.getParticleEffect(ParticleEffect.Action.HAND);
                 if (particleID != null) {
-                    CustomItems.setActiveParticleEffect(player, item, ParticleEffects.spawnEffectOnPlayerHand(particleID, EquipmentSlot.HAND, player));
+                    CustomItems.setActiveParticleEffect(player, item, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
                 }
             }
         }

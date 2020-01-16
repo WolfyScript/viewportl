@@ -63,12 +63,37 @@ public class EquipListener implements Listener {
         ArmorType armorType = null;
 
         if (shift) {
+            CustomItem newArmorPiece = CustomItem.getByItemStack(event.getCursor());
             if (!event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
                 //Equip
                 System.out.println("Shift Click equip");
                 System.out.println("    " + event.getSlot());
                 System.out.println("    " + event.getRawSlot());
                 //TODO Compute shift clicking!
+                if(!ItemUtils.isAirOrNull(newArmorPiece)){
+                    if(newArmorPiece.hasEquipmentSlot()){
+                        int slot = -1;
+                        for(int i = 39; i > 36; i--){
+                            if(ItemUtils.isAirOrNull(event.getClickedInventory().getItem(i))){
+                                slot = i;
+                            }
+                        }
+                        if(slot == -1){
+                            event.setCancelled(true);
+                            return;
+                        }else{
+                            event.setCancelled(true);
+                            ArmorEquipEvent equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.getBySlot(slot), null, newArmorPiece);
+                            newArmorPiece = equipEvent.getNewArmorPiece();
+                            if(equipEvent.isCancelled()){
+                                return;
+                            }
+                            event.getClickedInventory().setItem(slot, newArmorPiece);
+                            event.getClickedInventory().setItem(event.getSlot(), null);
+
+                        }
+                    }
+                }
 
             } else {
                 //Unequip

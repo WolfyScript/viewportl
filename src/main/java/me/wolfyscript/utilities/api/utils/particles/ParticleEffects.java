@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.utils.particles;
 
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.JsonConfiguration;
+import me.wolfyscript.utilities.api.custom_items.equipment.ArmorType;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -163,7 +164,7 @@ public class ParticleEffects extends JsonConfiguration {
         return null;
     }
 
-    public static UUID spawnEffectOnPlayer(String name, Player player) {
+    public static UUID spawnEffectOnPlayer(String name, EquipmentSlot slot, Player player) {
         ParticleEffect particleEffect = getEffect(name);
         if (particleEffect != null) {
             UUID id = UUID.randomUUID();
@@ -179,41 +180,7 @@ public class ParticleEffects extends JsonConfiguration {
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            particleEffect.spawnOnPlayer(currentPlayer, i.get());
-
-                            if (i.get() < particleEffect.getDuration()) {
-                                i.getAndIncrement();
-                            } else {
-                                cancel();
-                            }
-                        }
-                    }.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
-                }
-            }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1);
-
-            currentEffects.put(id, cooldownTask);
-            return id;
-        }
-        return null;
-    }
-
-    public static UUID spawnEffectOnPlayerHand(String name, EquipmentSlot hand, Player player) {
-        ParticleEffect particleEffect = getEffect(name);
-        if (particleEffect != null) {
-            UUID id = UUID.randomUUID();
-            while (currentEffects.containsKey(id)) {
-                id = UUID.randomUUID();
-            }
-            UUID playerID = player.getUniqueId();
-            BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
-                particleEffect.prepare();
-                Player currentPlayer = Bukkit.getPlayer(playerID);
-                AtomicInteger i = new AtomicInteger();
-                if(currentPlayer != null && currentPlayer.isOnline() && currentPlayer.isValid()){
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            particleEffect.spawnOnPlayerHand(currentPlayer, hand, i.get());
+                            particleEffect.spawnOnPlayer(currentPlayer, slot, i.get());
 
                             if (i.get() < particleEffect.getDuration()) {
                                 i.getAndIncrement();

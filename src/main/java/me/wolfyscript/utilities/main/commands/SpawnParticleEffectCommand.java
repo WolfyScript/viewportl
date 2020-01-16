@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 
 public class SpawnParticleEffectCommand implements CommandExecutor {
 
@@ -18,7 +19,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor {
                 if(args.length >= 1){
                     String effectName = args[0];
                     if(args.length == 2){
-                        ParticleEffects.spawnEffectOnPlayer(effectName, player);
+                        ParticleEffects.spawnEffectOnPlayer(effectName, EquipmentSlot.HAND, player);
                     }else{
                         Block block = player.getTargetBlockExact(10);
                         if(block != null){
