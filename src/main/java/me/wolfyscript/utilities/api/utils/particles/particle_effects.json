@@ -2,10 +2,11 @@
   "flame_and_magic": {
     "cooldown": 4,
     "duration": 20,
-    "scripts": [
-      "function onPlayerHand(){}",
-      "function onPlayer(){}",
-      "function onLocation(){}"
+    "item": "minecraft:fire",
+    "name": "&6Flame and Magic",
+    "description": [
+      "&7Flame outline and",
+      "&7Random Magic Particles"
     ],
     "particles": [
       {

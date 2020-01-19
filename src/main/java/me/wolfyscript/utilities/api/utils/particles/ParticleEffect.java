@@ -4,9 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,15 +13,15 @@ public class ParticleEffect {
 
     private List<Particle> particles = new ArrayList<>();
 
-    private ScriptEngineManager engineManager = new ScriptEngineManager();
-    private ScriptEngine engine = engineManager.getEngineByName("JavaScript");
+    private ItemStack iconItem;
+
     private String referencePath;
 
     private int count;
     private int duration;
     private int cooldown;
 
-    public ParticleEffect(){
+    public ParticleEffect() {
 
     }
 
@@ -34,12 +33,20 @@ public class ParticleEffect {
         this.particles = particles;
     }
 
-    void setReferencePath(String referencePath){
+    void setReferencePath(String referencePath) {
         this.referencePath = referencePath;
     }
 
     public int getCount() {
         return count;
+    }
+
+    public ItemStack getIconItem() {
+        return iconItem.clone();
+    }
+
+    public void setIconItem(ItemStack iconItem) {
+        this.iconItem = iconItem;
     }
 
     public void setCount(int count) {

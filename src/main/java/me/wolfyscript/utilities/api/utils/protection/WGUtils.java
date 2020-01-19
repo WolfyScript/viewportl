@@ -9,7 +9,6 @@ import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import com.sk89q.worldguard.util.Locations;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -29,10 +28,7 @@ public class WGUtils {
     }
 
     public static boolean hasPermBuild(Location location, Player player) {
-        if (hasPermBuild(location, player, Flags.BUILD)) {
-            return true;
-        }
-        return false;
+        return hasPermBuild(location, player, Flags.BUILD);
     }
 
     public static boolean hasPermBuild(Location location, Player player, StateFlag... flag) {

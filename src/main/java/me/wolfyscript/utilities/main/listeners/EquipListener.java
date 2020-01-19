@@ -111,12 +111,17 @@ public class EquipListener implements Listener {
                     // getRawSlot() == The slot the item is going to.
                     // getSlot() == Armor slot, can't use e.getRawSlot() as that gives a hotbar slot ;-;
                     CustomItem hotbarItem = CustomItem.getByItemStack(event.getClickedInventory().getItem(event.getHotbarButton()));
+                    ArmorType type = ArmorType.getBySlot(event.getSlot());
+                    if (type == null) {
+                        return;
+                    }
+
                     if (!ItemUtils.isAirOrNull(hotbarItem)) {
                         //Equip
                         newArmorPiece = hotbarItem;
                         oldArmorPiece = CustomItem.getByItemStack(event.getClickedInventory().getItem(event.getSlot()));
                     }
-                    ArmorEquipEvent equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.HOTBAR_SWAP, ArmorType.getBySlot(event.getSlot()),  oldArmorPiece, newArmorPiece);
+                    ArmorEquipEvent equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.HOTBAR_SWAP, ArmorType.getBySlot(event.getSlot()), oldArmorPiece, newArmorPiece);
                     Bukkit.getPluginManager().callEvent(equipEvent);
                     if (equipEvent.isCancelled()) {
                         event.setCancelled(true);

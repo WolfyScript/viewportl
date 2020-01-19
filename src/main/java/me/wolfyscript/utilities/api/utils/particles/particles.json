@@ -1,6 +1,10 @@
 {
   "flame": {
     "particle": "minecraft:flame",
+    "item": "minecraft:fire",
+    "name": "&6Flame outline",
+    "description": [
+    ],
     "count": 1,
     "extra": 0.0000001,
     "relative": {
@@ -19,6 +23,9 @@
   },
   "magic_random": {
     "particle": "minecraft:crit_magic",
+    "name": "&6Random Magic Crit",
+    "description": [
+    ],
     "count": 1,
     "extra": 0.0000001,
     "relative": {

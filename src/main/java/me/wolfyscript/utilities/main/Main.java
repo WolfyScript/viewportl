@@ -8,13 +8,13 @@ import me.wolfyscript.utilities.api.config.serialization.ParticleEffectSerializa
 import me.wolfyscript.utilities.api.config.serialization.ParticleSerialization;
 import me.wolfyscript.utilities.api.config.templates.LangConfiguration;
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
-import me.wolfyscript.utilities.api.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.custom_items.custom_data.ParticleData;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.GsonUtil;
 import me.wolfyscript.utilities.api.utils.ItemCategory;
 import me.wolfyscript.utilities.api.utils.Legacy;
+import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.particles.Particle;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
@@ -98,13 +98,13 @@ public class Main extends JavaPlugin {
         getMainUtil().sendConsoleMessage("Registering Particles...");
         particlesConfig = new Particles(configAPI);
         particlesConfig.loadParticles();
-        for(Map.Entry<String, Particle> particleEntry : Particles.getParticles().entrySet()){
-            getMainUtil().sendConsoleWarning("  - "+particleEntry.getKey() + ": "+particleEntry.getValue().getParticle());
+        for (Map.Entry<NamespacedKey, Particle> particleEntry : Particles.getParticles().entrySet()) {
+            getMainUtil().sendConsoleWarning("  - " + particleEntry.getKey() + " -> " + particleEntry.getValue().getParticle());
         }
         particleEffectsConfig = new ParticleEffects(configAPI);
         particleEffectsConfig.loadEffects();
-        for(Map.Entry<String, ParticleEffect> effectEntry : ParticleEffects.getEffects().entrySet()){
-            getMainUtil().sendConsoleWarning("  - "+effectEntry.getKey() + ": "+effectEntry.getValue().getParticles());
+        for (Map.Entry<NamespacedKey, ParticleEffect> effectEntry : ParticleEffects.getEffects().entrySet()) {
+            getMainUtil().sendConsoleWarning("  - " + effectEntry.getKey() + " -> " + effectEntry.getValue().getParticles());
         }
     }
 

@@ -1,6 +1,5 @@
 package me.wolfyscript.utilities.api.inventory;
 
-import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.cache.CustomCache;
@@ -14,6 +13,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -279,7 +279,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         }
     }
 
-    public CustomCache getCustomCache() {
+    public T getCustomCache() {
         return customCache;
     }
 }

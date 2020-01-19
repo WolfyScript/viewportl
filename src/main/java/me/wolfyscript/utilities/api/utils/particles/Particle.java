@@ -1,20 +1,20 @@
 package me.wolfyscript.utilities.api.utils.particles;
 
+import me.wolfyscript.utilities.api.utils.NamespacedKey;
+import me.wolfyscript.utilities.api.utils.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 
 import javax.annotation.Nullable;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +24,18 @@ Contains the location, offset, ParticleEffects, etc.
  */
 public class Particle {
 
-    private String name;
+    private NamespacedKey namespacedKey;
     private Particle superParticle;
     private org.bukkit.Particle particle;
+
+    private ItemStack iconItem;
+
     private Class<?> dataClass;
     private Object data;
     private double relativeX, relativeY, relativeZ, offsetX, offsetY, offsetZ;
     private int count;
     private double extra;
     private List<String> scripts = new ArrayList<>();
-    private String referencePath;
 
     private Context context = Context.enter();
     private Scriptable scope = context.initSafeStandardObjects();
@@ -46,6 +48,7 @@ public class Particle {
         } else {
             this.data = null;
         }
+        this.iconItem = preset.getIconItem();
         this.relativeX = preset.getRelativeX();
         this.relativeY = preset.getRelativeY();
         this.relativeZ = preset.getRelativeZ();
@@ -120,6 +123,7 @@ public class Particle {
         } else {
             this.data = null;
         }
+        this.iconItem = new ItemBuilder(Material.FIREWORK_STAR).setDisplayName(particle.name()).create();
         this.relativeX = relativeX;
         this.relativeY = relativeY;
         this.relativeZ = relativeZ;
@@ -130,12 +134,12 @@ public class Particle {
         this.extra = extra;
     }
 
-    public String getName() {
-        return name;
+    public NamespacedKey getNamespacedKey() {
+        return namespacedKey;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNamespacedKey(NamespacedKey namespacedKey) {
+        this.namespacedKey = namespacedKey;
     }
 
     public void setSuperParticle(Particle superParticle) {
@@ -164,6 +168,14 @@ public class Particle {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    public ItemStack getIconItem() {
+        return iconItem;
+    }
+
+    public void setIconItem(ItemStack iconItem) {
+        this.iconItem = iconItem;
     }
 
     public Class<?> getDataClass() {
@@ -298,7 +310,7 @@ public class Particle {
 
     @Override
     public String toString() {
-        return "Particle[" + name + ", " + particle.name() + "]";
+        return "Particle[" + namespacedKey + ", " + particle.name() + "]";
     }
 
     void prepare(String referencePath) {

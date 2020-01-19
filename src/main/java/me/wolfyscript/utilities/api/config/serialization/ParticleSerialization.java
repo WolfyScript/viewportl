@@ -1,10 +1,16 @@
 package me.wolfyscript.utilities.api.config.serialization;
 
 import com.google.gson.*;
+import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.utils.NamespacedKey;
+import me.wolfyscript.utilities.api.utils.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.api.utils.particles.Particle;
 import me.wolfyscript.utilities.api.utils.particles.Particles;
+import org.bukkit.Material;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class ParticleSerialization implements JsonSerializer<Particle>, JsonDeserializer<Particle> {
@@ -14,17 +20,42 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
         if (jsonElement instanceof JsonObject) {
             JsonObject object = (JsonObject) jsonElement;
             Particle resultParticle = new Particle();
+
             if (object.has("particle")) {
                 String particle = object.getAsJsonPrimitive("particle").getAsString();
-                if (particle.startsWith("minecraft:")) {
-                    org.bukkit.Particle particleType = org.bukkit.Particle.valueOf(particle.substring("minecraft:".length()).toUpperCase(Locale.ROOT));
+                NamespacedKey namespacedKey = null;
+                if (particle.contains(":") && particle.split(":").length > 1) {
+                    namespacedKey = new NamespacedKey(particle.split(":")[0].toLowerCase(Locale.ROOT).replace(" ", "_"), particle.split(":")[1].toLowerCase(Locale.ROOT).replace(" ", "_"));
+                } else {
+                    namespacedKey = new NamespacedKey("wolfyutilities", particle);
+                }
+                if (namespacedKey.getNamespace().equalsIgnoreCase("minecraft")) {
+                    org.bukkit.Particle particleType = org.bukkit.Particle.valueOf(namespacedKey.getKey().toUpperCase(Locale.ROOT));
                     resultParticle.setParticle(particleType);
                 } else {
-                    resultParticle = new Particle(Particles.getParticles().get(particle.toLowerCase(Locale.ROOT)));
-                    resultParticle.setSuperParticle(Particles.getParticles().get(particle.toLowerCase(Locale.ROOT)));
+                    resultParticle = new Particle(Particles.getParticles().get(namespacedKey));
+                    resultParticle.setSuperParticle(Particles.getParticles().get(namespacedKey));
                 }
-                resultParticle.setName(particle);
+                resultParticle.setNamespacedKey(namespacedKey);
             }
+
+            ItemBuilder itemBuilder = new ItemBuilder(resultParticle.getIconItem());
+            if (object.has("item")) {
+                itemBuilder.setType(Material.matchMaterial(object.get("item").getAsString()));
+            }
+            if (object.has("name")) {
+                itemBuilder.setDisplayName(WolfyUtilities.translateColorCodes(object.get("name").getAsString()));
+            }
+            if (object.has("description")) {
+                List<String> description = new ArrayList<>();
+                JsonArray lore = object.getAsJsonArray("description");
+                for (JsonElement line : lore) {
+                    description.add(WolfyUtilities.translateColorCodes(line.getAsString()));
+                }
+                itemBuilder.setLore(description);
+            }
+            resultParticle.setIconItem(itemBuilder.create());
+
             if (object.has("count")) {
                 resultParticle.setCount(object.getAsJsonPrimitive("count").getAsInt());
             }
@@ -60,7 +91,7 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
     public JsonElement serialize(Particle particle, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject particleObject = new JsonObject();
         if(particle.hasSuperParticle()){
-            particleObject.addProperty("particle", particle.getSuperParticle().getName());
+            particleObject.addProperty("particle", particle.getSuperParticle().getNamespacedKey().toString());
         }else{
             particleObject.addProperty("particle", "minecraft:"+particle.getParticle().name().toLowerCase(Locale.ROOT));
         }

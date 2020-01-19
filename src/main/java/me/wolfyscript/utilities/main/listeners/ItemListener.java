@@ -5,6 +5,7 @@ import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.custom_items.custom_data.ParticleData;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
+import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
 import org.bukkit.Sound;
@@ -14,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerItemMendEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -94,7 +94,7 @@ public class ItemListener implements Listener {
                 CustomItems.stopActiveParticleEffect(player, previousCustomItem);
                 ParticleData particleData = (ParticleData) previousCustomItem.getCustomData("particle_data");
 
-                String particleID = particleData.getParticleEffect(ParticleEffect.Action.OFF_HAND);
+                NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.OFF_HAND);
                 if(particleID != null){
                     CustomItems.setActiveParticleEffect(player, previousCustomItem, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.OFF_HAND, player));
                 }
@@ -106,7 +106,7 @@ public class ItemListener implements Listener {
                 CustomItems.stopActiveParticleEffect(player, item);
                 ParticleData particleData = (ParticleData) item.getCustomData("particle_data");
 
-                String particleID = particleData.getParticleEffect(ParticleEffect.Action.HAND);
+                NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.HAND);
                 if (particleID != null) {
                     CustomItems.setActiveParticleEffect(player, item, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
                 }

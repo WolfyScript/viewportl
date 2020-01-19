@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.custom_items;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.custom_items.custom_data.CustomData;
 import org.bukkit.Material;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -78,6 +79,7 @@ public class ItemConfig extends CustomConfig {
         setCustomData(itemStack.getCustomDataMap());
         setReplacementItem(itemStack.getReplacement());
         setDurabilityCost(itemStack.getDurabilityCost());
+        setEquipmentSlots(itemStack.getEquipmentSlots().toArray(new EquipmentSlot[0]));
         if (itemStack.getAllowedBlocks().isEmpty()) {
             setAllowedBlocks(new ArrayList<>(Collections.singleton(Material.FURNACE)));
         } else {
@@ -193,14 +195,26 @@ public class ItemConfig extends CustomConfig {
             customDataMap.put(customData.getId(), customData.getDefaultCopy());
         }
         Object result = get("custom_data");
-        if(result instanceof Map){
+        if (result instanceof Map) {
             Map<String, Map<String, Object>> customDatas = (Map<String, Map<String, Object>>) result;
-            for(Map.Entry<String, Map<String, Object>> entry : customDatas.entrySet()){
-                if(CustomItem.getAvailableCustomData().containsKey(entry.getKey())){
+            for (Map.Entry<String, Map<String, Object>> entry : customDatas.entrySet()) {
+                if (CustomItem.getAvailableCustomData().containsKey(entry.getKey())) {
                     customDataMap.put(entry.getKey(), CustomItem.getAvailableCustomData().get(entry.getKey()).fromMap(entry.getValue()));
                 }
             }
         }
         return customDataMap;
+    }
+
+    public List<EquipmentSlot> getEquipmentSlots() {
+        List<EquipmentSlot> slots = new ArrayList<>();
+        getStringList("equipment_slots").forEach(s -> {
+            slots.add(EquipmentSlot.valueOf(s.toUpperCase(Locale.ROOT)));
+        });
+        return slots;
+    }
+
+    public void setEquipmentSlots(EquipmentSlot... slots) {
+        set("equipment_slots", slots);
     }
 }

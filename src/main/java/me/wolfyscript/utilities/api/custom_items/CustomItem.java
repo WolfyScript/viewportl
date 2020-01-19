@@ -62,7 +62,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.permission = config.getPermission();
         this.rarityPercentage = config.getRarityPercentage();
         this.customDataMap = config.getCustomData();
-        this.equipmentSlots = new ArrayList<>();
+        this.equipmentSlots = config.getEquipmentSlots();
         this.blockVanillaEquip = false;
     }
 
@@ -185,12 +185,16 @@ public class CustomItem extends ItemStack implements Cloneable {
         return allowedBlocks;
     }
 
-    public List<EquipmentSlot> getEquipmentSlots(){
+    public List<EquipmentSlot> getEquipmentSlots() {
         return equipmentSlots;
     }
 
-    public boolean hasEquipmentSlot(){
+    public boolean hasEquipmentSlot() {
         return !getEquipmentSlots().isEmpty();
+    }
+
+    public boolean hasEquipmentSlot(EquipmentSlot slot) {
+        return hasEquipmentSlot() && getEquipmentSlots().contains(slot);
     }
 
     public boolean isBlockVanillaEquip() {
@@ -201,7 +205,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.blockVanillaEquip = blockVanillaEquip;
     }
 
-    public void addEquipmentSlots(EquipmentSlot... slots){
+    public void addEquipmentSlots(EquipmentSlot... slots) {
         for (EquipmentSlot slot : slots){
             if(!equipmentSlots.contains(slot)){
                 equipmentSlots.add(slot);

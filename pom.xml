@@ -6,7 +6,7 @@
 
     <groupId>io.github.wolfyscript</groupId>
     <artifactId>wolfyutilities</artifactId>
-    <version>1.4.0.1</version>
+    <version>1.5.0.2</version>
     <properties>
         <!-- Generic properties -->
         <java.version>1.8</java.version>
@@ -27,7 +27,6 @@
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
-
         <!-- PlotSquared repository -->
         <repository>
             <id>p2-repo</id>
@@ -38,6 +37,7 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+
 
     </repositories>
 
@@ -52,13 +52,11 @@
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
             <version>7.0.1-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
             <version>7.0.1-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mozilla</groupId>
