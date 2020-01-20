@@ -3,7 +3,7 @@ package me.wolfyscript.utilities.main.listeners;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
-import me.wolfyscript.utilities.api.custom_items.custom_data.ParticleData;
+import me.wolfyscript.utilities.api.custom_items.ParticleData;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
@@ -92,7 +92,7 @@ public class ItemListener implements Listener {
             CustomItem previousCustomItem = CustomItem.getByItemStack(previouseItem);
             if(previousCustomItem != null && previousCustomItem.hasID()){
                 CustomItems.stopActiveParticleEffect(player, previousCustomItem);
-                ParticleData particleData = (ParticleData) previousCustomItem.getCustomData("particle_data");
+                ParticleData particleData = previousCustomItem.getParticleData();
 
                 NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.OFF_HAND);
                 if(particleID != null){
@@ -104,7 +104,7 @@ public class ItemListener implements Listener {
             CustomItem item = CustomItem.getByItemStack(newItem);
             if(item != null && item.hasID()) {
                 CustomItems.stopActiveParticleEffect(player, item);
-                ParticleData particleData = (ParticleData) item.getCustomData("particle_data");
+                ParticleData particleData = item.getParticleData();
 
                 NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.HAND);
                 if (particleID != null) {

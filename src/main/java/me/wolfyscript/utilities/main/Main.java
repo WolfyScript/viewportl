@@ -2,13 +2,9 @@ package me.wolfyscript.utilities.main;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.config.serialization.ItemStackSerialization;
-import me.wolfyscript.utilities.api.config.serialization.LocationSerialization;
-import me.wolfyscript.utilities.api.config.serialization.ParticleEffectSerialization;
-import me.wolfyscript.utilities.api.config.serialization.ParticleSerialization;
+import me.wolfyscript.utilities.api.config.serialization.*;
 import me.wolfyscript.utilities.api.config.templates.LangConfiguration;
-import me.wolfyscript.utilities.api.custom_items.CustomItem;
-import me.wolfyscript.utilities.api.custom_items.custom_data.ParticleData;
+import me.wolfyscript.utilities.api.custom_items.ParticleData;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.GsonUtil;
@@ -61,9 +57,9 @@ public class Main extends JavaPlugin {
         GsonUtil.registerTypeHierarchyAdapter(Location.class, new LocationSerialization());
         GsonUtil.registerTypeHierarchyAdapter(Particle.class, new ParticleSerialization());
         GsonUtil.registerTypeHierarchyAdapter(ParticleEffect.class, new ParticleEffectSerialization());
+        GsonUtil.registerTypeHierarchyAdapter(ParticleData.class, new ParticleDataSerialization());
 
         //Register custom item data
-        CustomItem.registerCustomData(new ParticleData());
     }
 
     public void onEnable() {

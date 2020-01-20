@@ -48,6 +48,7 @@ public class CustomItem extends ItemStack implements Cloneable {
     private MetaSettings metaSettings;
     private boolean blockVanillaEquip;
     private List<EquipmentSlot> equipmentSlots;
+    private ParticleData particleData;
 
     public CustomItem(ItemConfig config, boolean replace) {
         super(config.getCustomItem(replace));
@@ -63,6 +64,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.rarityPercentage = config.getRarityPercentage();
         this.customDataMap = config.getCustomData();
         this.equipmentSlots = config.getEquipmentSlots();
+        this.particleData = config.getParticleData();
         this.blockVanillaEquip = false;
     }
 
@@ -86,6 +88,7 @@ public class CustomItem extends ItemStack implements Cloneable {
             this.customDataMap.put(customData.getId(), customData.getDefaultCopy());
         }
         this.equipmentSlots = new ArrayList<>();
+        this.particleData = new ParticleData();
         this.blockVanillaEquip = false;
     }
 
@@ -591,4 +594,11 @@ public class CustomItem extends ItemStack implements Cloneable {
         }
     }
 
+    public void setParticleData(ParticleData particleData){
+        this.particleData = particleData;
+    }
+
+    public ParticleData getParticleData() {
+        return particleData;
+    }
 }

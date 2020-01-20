@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.custom_items;
 
 import me.wolfyscript.utilities.api.config.ConfigAPI;
+import me.wolfyscript.utilities.api.config.JsonConfiguration;
 import me.wolfyscript.utilities.api.custom_items.custom_data.CustomData;
 import org.bukkit.Material;
 import org.bukkit.inventory.EquipmentSlot;
@@ -80,6 +81,7 @@ public class ItemConfig extends CustomConfig {
         setReplacementItem(itemStack.getReplacement());
         setDurabilityCost(itemStack.getDurabilityCost());
         setEquipmentSlots(itemStack.getEquipmentSlots().toArray(new EquipmentSlot[0]));
+        setParticleData(itemStack.getParticleData());
         if (itemStack.getAllowedBlocks().isEmpty()) {
             setAllowedBlocks(new ArrayList<>(Collections.singleton(Material.FURNACE)));
         } else {
@@ -216,5 +218,13 @@ public class ItemConfig extends CustomConfig {
 
     public void setEquipmentSlots(EquipmentSlot... slots) {
         set("equipment_slots", slots);
+    }
+
+    public ParticleData getParticleData(){
+        return ((JsonConfiguration) configuration).get(ParticleData.class, "particles");
+    }
+
+    public void setParticleData(ParticleData particleData){
+        set("particles", particleData);
     }
 }

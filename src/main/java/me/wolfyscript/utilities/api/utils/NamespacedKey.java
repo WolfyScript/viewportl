@@ -1,8 +1,8 @@
 package me.wolfyscript.utilities.api.utils;
 
 import com.google.common.base.Preconditions;
-import com.sun.istack.internal.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.regex.Pattern;
 
 public class NamespacedKey {
@@ -21,12 +21,12 @@ public class NamespacedKey {
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters", string);
     }
 
-    @NotNull
+    @Nonnull
     public String getNamespace() {
         return this.namespace;
     }
 
-    @NotNull
+    @Nonnull
     public String getKey() {
         return this.key;
     }

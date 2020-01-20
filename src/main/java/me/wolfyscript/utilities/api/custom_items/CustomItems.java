@@ -1,6 +1,5 @@
 package me.wolfyscript.utilities.api.custom_items;
 
-import me.wolfyscript.utilities.api.custom_items.custom_data.ParticleData;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.Pair;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
@@ -131,7 +130,7 @@ public class CustomItems {
 
     public static void setStoredBlockItem(Location location, CustomItem customItem) {
         ParticleEffects.stopEffect(getStoredBlockEffect(location));
-        ParticleData particleData = (ParticleData) customItem.getCustomData("particle_data");
+        ParticleData particleData = customItem.getParticleData();
         NamespacedKey particle = particleData.getParticleEffect(ParticleEffect.Action.BLOCK);
         UUID uuid = ParticleEffects.spawnEffectOnBlock(particle, location.getBlock());
         storedBlocks.put(location, new Pair<>(customItem.getId(), uuid));

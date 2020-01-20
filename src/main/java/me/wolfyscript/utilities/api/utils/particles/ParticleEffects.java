@@ -150,7 +150,6 @@ public class ParticleEffects extends JsonConfiguration {
                     @Override
                     public void run() {
                         particleEffect.spawnOnLocation(location, i.get());
-
                         if (i.get() < particleEffect.getDuration()) {
                             i.getAndIncrement();
                         } else {
@@ -160,7 +159,6 @@ public class ParticleEffects extends JsonConfiguration {
                 }.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
 
             }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1);
-
             currentEffects.put(id, cooldownTask);
             return id;
         }
