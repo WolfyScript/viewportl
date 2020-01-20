@@ -24,6 +24,10 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
         <repository>
+            <id>mojang</id>
+            <url>https://libraries.minecraft.net/</url>
+        </repository>
+        <repository>
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
@@ -42,9 +46,18 @@
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
+            <artifactId>spigot-api</artifactId>
             <version>1.15.1-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.21</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>5.0.0.Alpha2</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
