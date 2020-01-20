@@ -2,7 +2,7 @@
   "flame_and_magic": {
     "cooldown": 4,
     "duration": 20,
-    "item": "minecraft:fire",
+    "item": "minecraft:torch",
     "name": "&6Flame and Magic",
     "description": [
       "&7Flame outline and",
