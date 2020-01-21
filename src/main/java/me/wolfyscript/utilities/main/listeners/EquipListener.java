@@ -50,7 +50,6 @@ public class EquipListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onClickInventory(InventoryClickEvent event) {
         boolean shift = event.isShiftClick(), numberkey = event.getClick().equals(ClickType.NUMBER_KEY);
-
         if (!(event.getWhoClicked() instanceof Player)) return;
         Player player = (Player) event.getWhoClicked();
         if (event.getClickedInventory() != null && !event.getClickedInventory().getType().equals(InventoryType.PLAYER))
@@ -61,9 +60,8 @@ public class EquipListener implements Listener {
         //if(!item.hasEquipmentSlot() && !ItemUtils.isEquipable(item.getType())) return;
 
         ArmorType armorType = null;
-
+        CustomItem newArmorPiece = CustomItem.getByItemStack(event.getCursor());
         if (shift) {
-            CustomItem newArmorPiece = CustomItem.getByItemStack(event.getCursor());
             if (!event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
                 //Equip
                 System.out.println("Shift Click equip");
@@ -102,7 +100,6 @@ public class EquipListener implements Listener {
 
             }
         } else {
-            CustomItem newArmorPiece = CustomItem.getByItemStack(event.getCursor());
             CustomItem oldArmorPiece = CustomItem.getByItemStack(event.getCurrentItem());
             if (numberkey) {
                 if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {// Prevents checking clicks in the 2x2 crafting grid
