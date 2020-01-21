@@ -24,6 +24,10 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
         <repository>
+            <id>brokko-repo</id>
+            <url>https://www.iani.de/nexus/content/groups/public</url>
+        </repository>
+        <repository>
             <id>mojang</id>
             <url>https://libraries.minecraft.net/</url>
         </repository>
@@ -58,6 +62,11 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>5.0.0.Alpha2</version>
+        </dependency>
+        <dependency>
+            <groupId>de.iani.cubeside</groupId>
+            <artifactId>LWC</artifactId>
+            <version>5.0.16-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
@@ -141,8 +150,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <annotationProcessors>
-                    </annotationProcessors>
+                    <proc>none</proc>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
