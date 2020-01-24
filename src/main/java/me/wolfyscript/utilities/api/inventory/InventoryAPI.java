@@ -162,9 +162,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
     public T craftCustomCache() {
         try {
             return this.customCacheClass.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return null;

@@ -490,6 +490,7 @@ public class WolfyUtilities implements Listener {
         registerAPI(this);
         clickDataMap = new HashMap<>();
         customItems = new CustomItems(plugin);
+        inventoryAPI = new InventoryAPI<>(this.plugin, this, CustomCache.class);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -537,7 +538,7 @@ public class WolfyUtilities implements Listener {
         throw new InvalidCacheTypeException("Cache type "+type.getName()+" expected, got "+inventoryAPI.craftCustomCache().getClass().getName()+"!");
     }
 
-    public void setInventoryAPI(InventoryAPI inventoryAPI){
+    public <T extends CustomCache> void setInventoryAPI(InventoryAPI<T> inventoryAPI){
         this.inventoryAPI = inventoryAPI;
     }
 
