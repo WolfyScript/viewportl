@@ -1,11 +1,17 @@
 package me.wolfyscript.utilities.main.listeners;
 
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
+import me.wolfyscript.utilities.api.custom_items.CustomItems;
+import me.wolfyscript.utilities.api.custom_items.ParticleData;
 import me.wolfyscript.utilities.api.custom_items.equipment.ArmorEquipEvent;
 import me.wolfyscript.utilities.api.custom_items.equipment.ArmorType;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
+import me.wolfyscript.utilities.api.utils.NamespacedKey;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Dispenser;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,6 +23,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 public class EquipListener implements Listener {
 
@@ -25,25 +32,39 @@ public class EquipListener implements Listener {
         CustomItem customItem = CustomItem.getByItemStack(event.getItem());
         if (customItem != null && customItem.hasID() && customItem.hasEquipmentSlot()) {
             Location location = event.getBlock().getLocation();
+            Dispenser dispenser = (Dispenser) event.getBlock().getState();
+
             //TODO Get Player infront of Dispenser!
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onArmorEquip(ArmorEquipEvent event){
-        if(!ItemUtils.isAirOrNull(event.getNewArmorPiece())){
-            CustomItem newItem = event.getNewArmorPiece();
-            if(ItemUtils.isEquipable(newItem.getType())){
-                if(newItem.getType().name().endsWith("_"+event.getType().name()) && newItem.isBlockVanillaEquip()){
+    public void onArmorEquip(ArmorEquipEvent event) {
+        ArmorType type = event.getType();
+        EquipmentSlot equipmentSlot = type.getEquipmentSlot();
+        CustomItem newArmorPiece = event.getNewArmorPiece();
+        if (!ItemUtils.isAirOrNull(newArmorPiece)) {
+            //Equiping new armor!
+            if (ItemUtils.isEquipable(newArmorPiece.getType())) {
+                if (newArmorPiece.getType().name().endsWith("_" + event.getType().name()) && newArmorPiece.isBlockVanillaEquip()) {
                     event.setCancelled(true);
                 }
-            }else{
+            } else {
                 event.setCancelled(true);
             }
-            if(newItem.hasID() && newItem.getEquipmentSlots().contains(event.getType().getEquipmentSlot())){
-                //TODO START AND CANCEL PARTICLE EFFECTS
+            if (newArmorPiece.hasID() && newArmorPiece.getEquipmentSlots().contains(equipmentSlot)) {
+                CustomItems.stopActiveParticleEffect(event.getPlayer(), equipmentSlot);
+                ParticleData particleData = newArmorPiece.getParticleData();
+                if (particleData != null) {
+                    NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.valueOf(equipmentSlot.name()));
+                    if (particleID != null) {
+                        CustomItems.setActiveParticleEffect(event.getPlayer(), equipmentSlot, ParticleEffects.spawnEffectOnPlayer(particleID, equipmentSlot, event.getPlayer()));
+                    }
+                }
                 event.setCancelled(false);
             }
+        } else {
+            CustomItems.stopActiveParticleEffect(event.getPlayer(), equipmentSlot);
         }
     }
 
@@ -60,46 +81,55 @@ public class EquipListener implements Listener {
         //if(!item.hasEquipmentSlot() && !ItemUtils.isEquipable(item.getType())) return;
 
         ArmorType armorType = null;
-        CustomItem newArmorPiece = CustomItem.getByItemStack(event.getCursor());
+
         if (shift) {
             if (!event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
+                CustomItem newArmorPiece = CustomItem.getByItemStack(event.getCurrentItem());
                 //Equip
-                System.out.println("Shift Click equip");
-                System.out.println("    " + event.getSlot());
-                System.out.println("    " + event.getRawSlot());
                 //TODO Compute shift clicking!
-                if(!ItemUtils.isAirOrNull(newArmorPiece)){
-                    if(newArmorPiece.hasEquipmentSlot()){
+                if (!ItemUtils.isAirOrNull(newArmorPiece)) {
+                    if (newArmorPiece.hasEquipmentSlot()) {
                         int slot = -1;
-                        for(int i = 39; i > 36; i--){
-                            if(ItemUtils.isAirOrNull(event.getClickedInventory().getItem(i))){
+                        for (int i = 39; i > 36; i--) {
+                            if (ItemUtils.isAirOrNull(event.getClickedInventory().getItem(i)) && newArmorPiece.hasEquipmentSlot(ArmorType.getBySlot(i).getEquipmentSlot())) {
                                 slot = i;
                             }
                         }
-                        if(slot == -1){
-                            event.setCancelled(true);
+                        event.setCancelled(true);
+                        if (slot == -1) {
                             return;
-                        }else{
-                            event.setCancelled(true);
+                        } else {
                             ArmorEquipEvent equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.getBySlot(slot), null, newArmorPiece);
-                            newArmorPiece = equipEvent.getNewArmorPiece();
-                            if(equipEvent.isCancelled()){
+                            Bukkit.getPluginManager().callEvent(equipEvent);
+                            if (equipEvent.isCancelled()) {
                                 return;
                             }
-                            event.getClickedInventory().setItem(slot, newArmorPiece);
-                            event.getClickedInventory().setItem(event.getSlot(), null);
+                            newArmorPiece = equipEvent.getNewArmorPiece();
+                            CustomItem oldArmorPiece = equipEvent.getOldArmorPiece();
 
+                            event.getClickedInventory().setItem(slot, ItemUtils.isAirOrNull(newArmorPiece) ? null : newArmorPiece.getRealItem());
+                            event.getClickedInventory().setItem(event.getSlot(), ItemUtils.isAirOrNull(oldArmorPiece) ? null : oldArmorPiece.getRealItem());
                         }
                     }
                 }
-
             } else {
+                CustomItem oldArmorPiece = CustomItem.getByItemStack(event.getCurrentItem());
                 //Unequip
-                System.out.println("Shift Click unequip");
-
-
+                event.setCancelled(true);
+                ArmorEquipEvent equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.getBySlot(event.getSlot()), oldArmorPiece, null);
+                Bukkit.getPluginManager().callEvent(equipEvent);
+                if (equipEvent.isCancelled()) {
+                    return;
+                }
+                CustomItem newArmorPiece = equipEvent.getNewArmorPiece();
+                oldArmorPiece = equipEvent.getOldArmorPiece();
+                if (!ItemUtils.isAirOrNull(oldArmorPiece)) {
+                    event.getClickedInventory().addItem(oldArmorPiece.getRealItem());
+                }
+                event.getClickedInventory().setItem(event.getSlot(), ItemUtils.isAirOrNull(newArmorPiece) ? null : newArmorPiece.getRealItem());
             }
         } else {
+            CustomItem newArmorPiece = CustomItem.getByItemStack(event.getCursor());
             CustomItem oldArmorPiece = CustomItem.getByItemStack(event.getCurrentItem());
             if (numberkey) {
                 if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {// Prevents checking clicks in the 2x2 crafting grid

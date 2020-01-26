@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerItemMendEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -85,32 +86,56 @@ public class ItemListener implements Listener {
 
     @EventHandler
     public void onItemHeld(PlayerItemHeldEvent event){
-        if(WolfyUtilities.hasVillagePillageUpdate()){
+        if (WolfyUtilities.hasVillagePillageUpdate()) {
             Player player = event.getPlayer();
             PlayerInventory playerInventory = player.getInventory();
-            ItemStack previouseItem = playerInventory.getItem(event.getPreviousSlot());
-            CustomItem previousCustomItem = CustomItem.getByItemStack(previouseItem);
-            if(previousCustomItem != null && previousCustomItem.hasID()){
-                CustomItems.stopActiveParticleEffect(player, previousCustomItem);
-                ParticleData particleData = previousCustomItem.getParticleData();
-
-                NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.OFF_HAND);
-                if(particleID != null){
-                    CustomItems.setActiveParticleEffect(player, previousCustomItem, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.OFF_HAND, player));
-                }
-            }
-
             ItemStack newItem = playerInventory.getItem(event.getNewSlot());
             CustomItem item = CustomItem.getByItemStack(newItem);
-            if(item != null && item.hasID()) {
-                CustomItems.stopActiveParticleEffect(player, item);
+            if (CustomItems.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
+                CustomItems.stopActiveParticleEffect(player, EquipmentSlot.HAND);
+            }
+            if (item != null && item.hasID()) {
                 ParticleData particleData = item.getParticleData();
-
-                NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.HAND);
-                if (particleID != null) {
-                    CustomItems.setActiveParticleEffect(player, item, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
+                if (particleData != null) {
+                    NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.HAND);
+                    if (particleID != null) {
+                        CustomItems.setActiveParticleEffect(player, EquipmentSlot.HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
+                    }
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onSwitch(PlayerSwapHandItemsEvent event) {
+        Player player = event.getPlayer();
+        if (CustomItems.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
+            CustomItems.stopActiveParticleEffect(player, EquipmentSlot.HAND);
+        }
+        if (CustomItems.hasActiveItemEffects(player, EquipmentSlot.OFF_HAND)) {
+            CustomItems.stopActiveParticleEffect(player, EquipmentSlot.OFF_HAND);
+        }
+        CustomItem mainHand = CustomItem.getByItemStack(event.getMainHandItem());
+        if (mainHand != null && mainHand.hasID()) {
+            ParticleData particleData = mainHand.getParticleData();
+            if (particleData != null) {
+                NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.HAND);
+                if (particleID != null) {
+                    CustomItems.setActiveParticleEffect(player, EquipmentSlot.HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
+                }
+            }
+        }
+
+        CustomItem offHand = CustomItem.getByItemStack(event.getOffHandItem());
+        if (offHand != null && offHand.hasID()) {
+            ParticleData particleData = offHand.getParticleData();
+            if (particleData != null) {
+                NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.OFF_HAND);
+                if (particleID != null) {
+                    CustomItems.setActiveParticleEffect(player, EquipmentSlot.OFF_HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.OFF_HAND, player));
+                }
+            }
+        }
+
     }
 }
