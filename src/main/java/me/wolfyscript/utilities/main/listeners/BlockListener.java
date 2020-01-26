@@ -8,6 +8,7 @@ import me.wolfyscript.utilities.api.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -41,7 +42,9 @@ public class BlockListener implements Listener {
                 storedItem = event1.getCustomItem();
                 if (!event1.isCancelled()) {
                     if (storedItem != null) {
-                        block.getWorld().dropItemNaturally(block.getLocation(), storedItem);
+                        if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
+                            block.getWorld().dropItemNaturally(block.getLocation(), storedItem);
+                        }
                         CustomItems.removeStoredBlockItem(block.getLocation());
                         if (block.getBlockData() instanceof Bisected) {
                             if (((Bisected) block.getBlockData()).getHalf().equals(Bisected.Half.BOTTOM)) {
@@ -49,7 +52,7 @@ public class BlockListener implements Listener {
                             } else {
                                 CustomItems.removeStoredBlockItem(block.getLocation().subtract(0, 1, 0));
                             }
-                        }else if(block.getBlockData() instanceof Bed){
+                        } else if (block.getBlockData() instanceof Bed) {
                             Bed bed = (Bed) block.getBlockData();
                             CustomItems.removeStoredBlockItem(block.getLocation().add(bed.getFacing().getDirection()));
                         }
