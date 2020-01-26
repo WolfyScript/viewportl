@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /*
@@ -113,20 +114,23 @@ public class ParticleEffects extends JsonConfiguration {
                 id = UUID.randomUUID();
             }
             BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
-                particleEffect.prepare();
-                AtomicInteger i = new AtomicInteger();
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        particleEffect.spawnOnBlock(block, i.get());
-                        if (i.get() < particleEffect.getDuration()) {
-                            i.getAndIncrement();
-                        } else {
-                            cancel();
+                AtomicBoolean allow = new AtomicBoolean(true);
+                Bukkit.getScheduler().runTask(Main.getInstance(), () -> allow.set(block.getWorld().getNearbyEntities(block.getLocation(), 25, 25, 25, entity -> entity instanceof Player).isEmpty()));
+                if (allow.get()) {
+                    particleEffect.prepare();
+                    AtomicInteger i = new AtomicInteger();
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            particleEffect.spawnOnBlock(block, i.get());
+                            if (i.get() < particleEffect.getDuration()) {
+                                i.getAndIncrement();
+                            } else {
+                                cancel();
+                            }
                         }
-                    }
-                }.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
-
+                    }.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
+                }
             }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1);
 
             currentEffects.put(id, cooldownTask);
@@ -144,20 +148,23 @@ public class ParticleEffects extends JsonConfiguration {
                 id = UUID.randomUUID();
             }
             BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
-                particleEffect.prepare();
-                AtomicInteger i = new AtomicInteger();
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        particleEffect.spawnOnLocation(location, i.get());
-                        if (i.get() < particleEffect.getDuration()) {
-                            i.getAndIncrement();
-                        } else {
-                            cancel();
+                AtomicBoolean allow = new AtomicBoolean(true);
+                Bukkit.getScheduler().runTask(Main.getInstance(), () -> allow.set(location.getWorld().getNearbyEntities(location, 25, 25, 25, entity -> entity instanceof Player).isEmpty()));
+                if (allow.get()) {
+                    particleEffect.prepare();
+                    AtomicInteger i = new AtomicInteger();
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            particleEffect.spawnOnLocation(location, i.get());
+                            if (i.get() < particleEffect.getDuration()) {
+                                i.getAndIncrement();
+                            } else {
+                                cancel();
+                            }
                         }
-                    }
-                }.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
-
+                    }.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
+                }
             }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1);
             currentEffects.put(id, cooldownTask);
             return id;
@@ -177,7 +184,7 @@ public class ParticleEffects extends JsonConfiguration {
                 particleEffect.prepare();
                 Player currentPlayer = Bukkit.getPlayer(playerID);
                 AtomicInteger i = new AtomicInteger();
-                if(currentPlayer != null && currentPlayer.isOnline() && currentPlayer.isValid()){
+                if (currentPlayer != null && currentPlayer.isOnline() && currentPlayer.isValid()) {
                     new BukkitRunnable() {
                         @Override
                         public void run() {
