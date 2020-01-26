@@ -3,7 +3,6 @@ package me.wolfyscript.utilities.api.config.serialization;
 import com.google.gson.*;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
-import me.wolfyscript.utilities.api.utils.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.api.utils.particles.Particle;
 import me.wolfyscript.utilities.api.utils.particles.Particles;
 import org.bukkit.Material;
@@ -39,12 +38,11 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
                 resultParticle.setNamespacedKey(namespacedKey);
             }
 
-            ItemBuilder itemBuilder = new ItemBuilder(resultParticle.getIconItem());
-            if (object.has("item")) {
-                itemBuilder.setType(Material.matchMaterial(object.get("item").getAsString()));
+            if (object.has("icon")) {
+                resultParticle.setIcon(Material.matchMaterial(object.get("icon").getAsString()));
             }
             if (object.has("name")) {
-                itemBuilder.setDisplayName(WolfyUtilities.translateColorCodes(object.get("name").getAsString()));
+                resultParticle.setName(WolfyUtilities.translateColorCodes(object.get("name").getAsString()));
             }
             if (object.has("description")) {
                 List<String> description = new ArrayList<>();
@@ -52,9 +50,8 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
                 for (JsonElement line : lore) {
                     description.add(WolfyUtilities.translateColorCodes(line.getAsString()));
                 }
-                itemBuilder.setLore(description);
+                resultParticle.setDescription(description);
             }
-            resultParticle.setIconItem(itemBuilder.create());
 
             if (object.has("count")) {
                 resultParticle.setCount(object.getAsJsonPrimitive("count").getAsInt());
@@ -90,20 +87,34 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
     @Override
     public JsonElement serialize(Particle particle, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject particleObject = new JsonObject();
-        if(particle.hasSuperParticle()){
+
+        if (particle.hasSuperParticle()) {
             particleObject.addProperty("particle", particle.getSuperParticle().getNamespacedKey().toString());
-        }else{
-            particleObject.addProperty("particle", "minecraft:"+particle.getParticle().name().toLowerCase(Locale.ROOT));
+        } else {
+            particleObject.addProperty("particle", "minecraft:" + particle.getParticle().name().toLowerCase(Locale.ROOT));
         }
-        if(particle.hasCount()){
+        if (particle.hasIcon()) {
+            particleObject.addProperty("icon", particle.getIcon().getKey().toString());
+        }
+        if (particle.hasName()) {
+            particleObject.addProperty("name", particle.getName());
+        }
+        if (particle.hasDescription()) {
+            JsonArray description = new JsonArray();
+            for (String line : particle.getDescription()) {
+                description.add(line);
+            }
+            particleObject.add("description", description);
+        }
+        if (particle.hasCount()) {
             particleObject.addProperty("count", particle.getCount());
         }
-        if(particle.hasExtra()){
+        if (particle.hasExtra()) {
             particleObject.addProperty("extra", particle.getExtra());
         }
-        if(particle.hasRelativeX() || particle.hasRelativeY() || particle.hasRelativeZ()){
+        if (particle.hasRelativeX() || particle.hasRelativeY() || particle.hasRelativeZ()) {
             JsonObject relative = new JsonObject();
-            if(particle.hasRelativeX()){
+            if (particle.hasRelativeX()) {
                 relative.addProperty("x", particle.getRelativeX());
             }
             if(particle.hasRelativeY()){

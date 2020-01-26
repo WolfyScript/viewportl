@@ -1,9 +1,10 @@
 {
   "flame": {
     "particle": "minecraft:flame",
-    "item": "minecraft:fire",
-    "name": "&6Flame outline",
+    "icon": "minecraft:fire",
+    "name": "&6Flame particle",
     "description": [
+      "&7The vanilla flame particle"
     ],
     "count": 1,
     "extra": 0.0000001,
@@ -16,30 +17,6 @@
       "x": 0,
       "y": 0,
       "z": 0
-    },
-    "scripts": [
-      "file=scripts/flame.js"
-    ]
-  },
-  "magic_random": {
-    "particle": "minecraft:crit_magic",
-    "name": "&6Random Magic Crit",
-    "description": [
-    ],
-    "count": 1,
-    "extra": 0.0000001,
-    "relative": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "offset": {
-      "x": 2,
-      "y": 0,
-      "z": 2
-    },
-    "scripts": [
-      "function onLocation(location, tick){ location.add(tick * 2, 0, 0); return [location, tick]; }"
-    ]
+    }
   }
 }

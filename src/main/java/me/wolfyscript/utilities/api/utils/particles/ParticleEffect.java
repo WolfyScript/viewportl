@@ -1,10 +1,10 @@
 package me.wolfyscript.utilities.api.utils.particles;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,9 @@ public class ParticleEffect {
 
     private List<Particle> particles = new ArrayList<>();
 
-    private ItemStack iconItem;
+    private Material icon;
+    private String name;
+    private List<String> description;
 
     private String referencePath;
 
@@ -41,12 +43,28 @@ public class ParticleEffect {
         return count;
     }
 
-    public ItemStack getIconItem() {
-        return iconItem.clone();
+    public Material getIcon() {
+        return icon;
     }
 
-    public void setIconItem(ItemStack iconItem) {
-        this.iconItem = iconItem;
+    public void setIcon(Material icon) {
+        this.icon = icon;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<String> getDescription() {
+        return description;
+    }
+
+    public void setDescription(List<String> description) {
+        this.description = description;
     }
 
     public void setCount(int count) {

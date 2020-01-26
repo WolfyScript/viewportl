@@ -1,7 +1,6 @@
 package me.wolfyscript.utilities.api.utils.particles;
 
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
-import me.wolfyscript.utilities.api.utils.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
@@ -28,7 +26,14 @@ public class Particle {
     private Particle superParticle;
     private org.bukkit.Particle particle;
 
-    private ItemStack iconItem;
+    private static Scriptable scope;
+
+    static {
+        scope = Context.enter().initSafeStandardObjects();
+        Context.exit();
+    }
+
+    private Material icon;
 
     private Class<?> dataClass;
     private Object data;
@@ -36,9 +41,8 @@ public class Particle {
     private int count;
     private double extra;
     private List<String> scripts = new ArrayList<>();
-
-    private Context context = Context.enter();
-    private Scriptable scope = context.initSafeStandardObjects();
+    private String name;
+    private List<String> description;
 
     public Particle(Particle preset) {
         this.particle = preset.getParticle();
@@ -48,7 +52,9 @@ public class Particle {
         } else {
             this.data = null;
         }
-        this.iconItem = preset.getIconItem();
+        this.icon = preset.getIcon();
+        this.name = preset.getName();
+        this.description = preset.getDescription();
         this.relativeX = preset.getRelativeX();
         this.relativeY = preset.getRelativeY();
         this.relativeZ = preset.getRelativeZ();
@@ -123,7 +129,7 @@ public class Particle {
         } else {
             this.data = null;
         }
-        this.iconItem = new ItemBuilder(Material.FIREWORK_STAR).setDisplayName(particle.name()).create();
+        this.icon = Material.FIREWORK_STAR;
         this.relativeX = relativeX;
         this.relativeY = relativeY;
         this.relativeZ = relativeZ;
@@ -170,12 +176,29 @@ public class Particle {
         this.data = data;
     }
 
-    public ItemStack getIconItem() {
-        return iconItem;
+    public Material getIcon() {
+        return icon;
     }
 
-    public void setIconItem(ItemStack iconItem) {
-        this.iconItem = iconItem;
+    public void setIcon(Material icon) {
+        this.icon = icon;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<String> getDescription() {
+        return description;
+    }
+
+    public void setDescription(List<String> description) {
+        this.description = description;
     }
 
     public Class<?> getDataClass() {
@@ -250,6 +273,18 @@ public class Particle {
         return hasScripts() ? scripts : getSuperParticle().getScripts();
     }
 
+    public boolean hasIcon() {
+        return !hasSuperParticle() || this.icon != getSuperParticle().icon;
+    }
+
+    public boolean hasName() {
+        return !hasSuperParticle() || this.name != getSuperParticle().name;
+    }
+
+    public boolean hasDescription() {
+        return !hasSuperParticle() || this.description != getSuperParticle().description;
+    }
+
     public boolean hasRelativeX() {
         return !hasSuperParticle() || this.relativeX != getSuperParticle().relativeX;
     }
@@ -314,18 +349,20 @@ public class Particle {
     }
 
     void prepare(String referencePath) {
-        context = Context.enter();
+        Context context = Context.enter();
         for (String script : getScripts()) {
             if (script.startsWith("file=")) {
                 try {
                     FileInputStream inputStream = new FileInputStream(referencePath + File.separator + script.substring("file=".length()));
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                     context.evaluateReader(scope, bufferedReader, "<cmd>", 1, null);
+                    Context.exit();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                context.evaluateString(scope, script, "<cmd>",1,null);
+                context.evaluateString(scope, script, "<cmd>", 1, null);
+                Context.exit();
             }
         }
     }

@@ -1,18 +1,11 @@
 package me.wolfyscript.utilities.api.config.serialization;
 
 import com.google.gson.*;
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.ParticleData;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
-import me.wolfyscript.utilities.api.utils.item_builder.ItemBuilder;
-import me.wolfyscript.utilities.api.utils.particles.Particle;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
-import me.wolfyscript.utilities.api.utils.particles.Particles;
-import org.bukkit.Material;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -41,7 +34,7 @@ public class ParticleDataSerialization implements JsonSerializer<ParticleData>, 
             }
             return particleData;
         }
-        return null;
+        return new ParticleData();
     }
 
     @Override

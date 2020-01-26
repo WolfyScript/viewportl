@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.api.config.serialization;
 
 import com.google.gson.*;
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.utils.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.api.utils.particles.Particle;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
 import org.bukkit.Material;
@@ -21,23 +20,20 @@ public class ParticleEffectSerialization implements JsonSerializer<ParticleEffec
             ParticleEffect resultParticleEffect = new ParticleEffect();
 
             Material material;
-            if (object.has("item")) {
-                material = Material.matchMaterial(object.get("item").getAsString());
+            if (object.has("icon")) {
+                material = Material.matchMaterial(object.get("icon").getAsString());
             } else {
                 material = Material.FIREWORK_ROCKET;
             }
-            String name = object.get("name").getAsString();
-            List<String> description = new ArrayList<>();
+            resultParticleEffect.setIcon(material);
+            resultParticleEffect.setName(object.get("name").getAsString());
 
+            List<String> description = new ArrayList<>();
             JsonArray lore = object.getAsJsonArray("description");
             for (JsonElement line : lore) {
                 description.add(WolfyUtilities.translateColorCodes(line.getAsString()));
             }
-            ItemBuilder itemBuilder = new ItemBuilder(material);
-            itemBuilder.setDisplayName(WolfyUtilities.translateColorCodes(name));
-            itemBuilder.setLore(description);
-            resultParticleEffect.setIconItem(itemBuilder.create());
-
+            resultParticleEffect.setDescription(description);
             if (object.has("particles")) {
                 JsonArray jsonArray = object.getAsJsonArray("particles");
                 for (JsonElement element : jsonArray) {
@@ -69,8 +65,16 @@ public class ParticleEffectSerialization implements JsonSerializer<ParticleEffec
         jsonObject.addProperty("count", particleEffect.getCount());
         jsonObject.addProperty("duration", particleEffect.getDuration());
         jsonObject.addProperty("cooldown", particleEffect.getCooldown());
+        jsonObject.addProperty("icon", particleEffect.getIcon().getKey().toString());
+        jsonObject.addProperty("name", particleEffect.getName());
+        JsonArray description = new JsonArray();
+        for (String line : particleEffect.getDescription()) {
+            description.add(line);
+        }
+        jsonObject.add("description", description);
+
         JsonArray particles = new JsonArray();
-        for(Particle particle : particleEffect.getParticles()){
+        for (Particle particle : particleEffect.getParticles()) {
             particles.add(jsonSerializationContext.serialize(particle, Particle.class));
         }
         jsonObject.add("particles", particles);
