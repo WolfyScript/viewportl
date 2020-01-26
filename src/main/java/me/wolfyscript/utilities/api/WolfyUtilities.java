@@ -8,8 +8,8 @@ import io.netty.handler.codec.base64.Base64;
 import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
-import me.wolfyscript.utilities.api.inventory.cache.CustomCache;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
+import me.wolfyscript.utilities.api.inventory.cache.CustomCache;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.utils.Legacy;
 import me.wolfyscript.utilities.api.utils.Reflection;
@@ -78,7 +78,7 @@ public class WolfyUtilities implements Listener {
     }
 
     public static boolean hasBuzzyBeesUpdate() {
-        return hasSpecificUpdate(114);
+        return hasSpecificUpdate(115);
     }
 
     public static boolean hasVillagePillageUpdate() {
@@ -117,14 +117,18 @@ public class WolfyUtilities implements Listener {
         return hasClass("com.griefcraft.lwc.LWC");
     }
 
-    public static boolean hasMythicMobs(){
+    public static boolean hasMythicMobs() {
         return hasClass("io.lumine.xikage.mythicmobs.MythicMobs");
+    }
+
+    public static boolean hasPlaceHolderAPI() {
+        return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
 
     private static HashMap<String, Boolean> classes = new HashMap<>();
 
     public static boolean hasClass(String path) {
-        if(classes.containsKey(path)){
+        if (classes.containsKey(path)) {
             return classes.get(path);
         }
         try {
@@ -698,7 +702,7 @@ public class WolfyUtilities implements Listener {
             TextComponent component = new TextComponent(getLanguageAPI().replaceColoredKeys(data.getMessage()));
             if (data.getClickAction() != null) {
                 UUID id = UUID.randomUUID();
-                while (clickDataMap.keySet().contains(id)) {
+                while (clickDataMap.containsKey(id)) {
                     id = UUID.randomUUID();
                 }
                 PlayerAction playerAction = new PlayerAction(this, player, data);
@@ -726,17 +730,20 @@ public class WolfyUtilities implements Listener {
             } catch (IllegalArgumentException expected) {
                 return;
             }
-            PlayerAction action = clickDataMap.get(uuid);
-            if (action == null)
-                return;
+
             event.setMessage("");
             event.setCancelled(true);
+            PlayerAction action = clickDataMap.get(uuid);
             Player player = event.getPlayer();
-            if (player.getUniqueId().equals(action.getUuid())) {
-                action.run(player);
-                if (action.isDiscard()) {
-                    clickDataMap.remove(uuid);
+            if (action != null) {
+                if (player.getUniqueId().equals(action.getUuid())) {
+                    action.run(player);
+                    if (action.isDiscard()) {
+                        clickDataMap.remove(uuid);
+                    }
                 }
+            } else {
+                sendPlayerMessage(player, "&cInvalid Action");
             }
         }
     }
