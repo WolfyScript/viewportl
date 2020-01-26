@@ -4,6 +4,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.serialization.*;
 import me.wolfyscript.utilities.api.config.templates.LangConfiguration;
+import me.wolfyscript.utilities.api.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.custom_items.ParticleData;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
@@ -78,7 +79,7 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ItemListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new EquipListener(), this);
-        Bukkit.getServer().getPluginCommand("spawn_particle").setExecutor(new SpawnParticleEffectCommand());
+        Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand());
 
         Metrics metrics = new Metrics(this);
 
@@ -102,6 +103,7 @@ public class Main extends JavaPlugin {
         for (Map.Entry<NamespacedKey, ParticleEffect> effectEntry : ParticleEffects.getEffects().entrySet()) {
             getMainUtil().sendConsoleWarning("  - " + effectEntry.getKey() + " -> " + effectEntry.getValue().getParticles());
         }
+        CustomItems.initiateMissingBlockEffects();
     }
 
     public void onDisable() {
