@@ -8,6 +8,7 @@ import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -25,7 +26,7 @@ public class CustomItems {
 
     private static HashMap<Location, Pair<String, UUID>> storedBlocks = new HashMap<>();
 
-    private static HashMap<UUID, HashMap<String, UUID>> playerItemParticles = new HashMap<>();
+    private static HashMap<UUID, HashMap<EquipmentSlot, UUID>> playerItemParticles = new HashMap<>();
 
     public CustomItems(Plugin plugin) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::save, 12000, 12000);
@@ -72,8 +73,8 @@ public class CustomItems {
         customItems.put(itemConfig.getId(), new CustomItem(itemConfig));
     }
 
-    public static HashMap<String, UUID> getActiveItemEffects(Player player){
-        if(!hasActiveItemEffects(player)){
+    public static HashMap<EquipmentSlot, UUID> getActiveItemEffects(Player player) {
+        if (!hasActiveItemEffects(player)) {
             playerItemParticles.put(player.getUniqueId(), new HashMap<>());
         }
         return playerItemParticles.get(player.getUniqueId());
@@ -83,24 +84,24 @@ public class CustomItems {
         return playerItemParticles.containsKey(player.getUniqueId());
     }
 
-    public static boolean hasActiveItemEffects(Player player, CustomItem customItem) {
-        return playerItemParticles.getOrDefault(player.getUniqueId(), new HashMap<>()).containsKey(customItem.getId());
+    public static boolean hasActiveItemEffects(Player player, EquipmentSlot equipmentSlot) {
+        return playerItemParticles.getOrDefault(player.getUniqueId(), new HashMap<>()).containsKey(equipmentSlot);
     }
 
-    public static UUID getActiveItemEffects(Player player, CustomItem customItem) {
-        return playerItemParticles.getOrDefault(player.getUniqueId(), new HashMap<>()).get(customItem.getId());
+    public static UUID getActiveItemEffects(Player player, EquipmentSlot equipmentSlot) {
+        return playerItemParticles.getOrDefault(player.getUniqueId(), new HashMap<>()).get(equipmentSlot);
     }
 
-    public static void setActiveParticleEffect(Player player, CustomItem customItem, UUID uuid) {
-        if (hasActiveItemEffects(player, customItem)) {
-            stopActiveParticleEffect(player, customItem);
+    public static void setActiveParticleEffect(Player player, EquipmentSlot equipmentSlot, UUID uuid) {
+        if (hasActiveItemEffects(player, equipmentSlot)) {
+            stopActiveParticleEffect(player, equipmentSlot);
         }
-        getActiveItemEffects(player).put(customItem.getId(), uuid);
+        getActiveItemEffects(player).put(equipmentSlot, uuid);
     }
 
-    public static void stopActiveParticleEffect(Player player, CustomItem customItem) {
-        ParticleEffects.stopEffect(getActiveItemEffects(player, customItem));
-        getActiveItemEffects(player).remove(customItem.getId());
+    public static void stopActiveParticleEffect(Player player, EquipmentSlot equipmentSlot) {
+        ParticleEffects.stopEffect(getActiveItemEffects(player, equipmentSlot));
+        getActiveItemEffects(player).remove(equipmentSlot);
     }
 
 
@@ -131,8 +132,11 @@ public class CustomItems {
     public static void setStoredBlockItem(Location location, CustomItem customItem) {
         ParticleEffects.stopEffect(getStoredBlockEffect(location));
         ParticleData particleData = customItem.getParticleData();
-        NamespacedKey particle = particleData.getParticleEffect(ParticleEffect.Action.BLOCK);
-        UUID uuid = ParticleEffects.spawnEffectOnBlock(particle, location.getBlock());
+        UUID uuid = null;
+        if (particleData != null) {
+            NamespacedKey particle = particleData.getParticleEffect(ParticleEffect.Action.BLOCK);
+            uuid = ParticleEffects.spawnEffectOnBlock(particle, location.getBlock());
+        }
         storedBlocks.put(location, new Pair<>(customItem.getId(), uuid));
     }
 
@@ -152,11 +156,30 @@ public class CustomItems {
     }
 
     public static boolean hasStoredBlockEffect(Location location) {
-        if(isBlockStored(location)){
+        if (isBlockStored(location)) {
             return getStoredBlockEffect(location) != null;
         }
         return false;
     }
+
+    public static void initiateMissingBlockEffects() {
+        for (Map.Entry<Location, Pair<String, UUID>> entry : storedBlocks.entrySet()) {
+            if (!hasStoredBlockEffect(entry.getKey())) {
+                CustomItem customItem = getCustomItem(entry.getValue().getKey());
+                if (customItem != null) {
+                    if (customItem.getParticleData() != null && customItem.getParticleData().containsKey(ParticleEffect.Action.BLOCK)) {
+                        ParticleData particleData = customItem.getParticleData();
+                        NamespacedKey effectID = particleData.getParticleEffect(ParticleEffect.Action.BLOCK);
+                        if (effectID != null) {
+                            UUID uuid = ParticleEffects.spawnEffectOnBlock(effectID, entry.getKey().getBlock());
+                            storedBlocks.put(entry.getKey(), new Pair<>(customItem.getId(), uuid));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     private static String locationToString(Location location) {
         return location.getWorld().getUID() + ";" + location.getBlockX() + ";" + location.getBlockY() + ";" + location.getBlockZ();
