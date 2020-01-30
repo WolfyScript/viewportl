@@ -52,12 +52,14 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
                 }
                 resultParticle.setDescription(description);
             }
-
             if (object.has("count")) {
                 resultParticle.setCount(object.getAsJsonPrimitive("count").getAsInt());
             }
             if (object.has("extra")) {
                 resultParticle.setExtra(object.getAsJsonPrimitive("extra").getAsDouble());
+            }
+            if (object.has("data")) {
+                resultParticle.setData(jsonDeserializationContext.deserialize(object.get("data"), resultParticle.getDataClass()));
             }
             if (object.has("relative")) {
                 JsonObject relative = object.getAsJsonObject("relative");
@@ -101,8 +103,10 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
         }
         if (particle.hasDescription()) {
             JsonArray description = new JsonArray();
-            for (String line : particle.getDescription()) {
-                description.add(line);
+            if (particle.getDescription() != null) {
+                for (String line : particle.getDescription()) {
+                    description.add(line);
+                }
             }
             particleObject.add("description", description);
         }
@@ -112,15 +116,18 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
         if (particle.hasExtra()) {
             particleObject.addProperty("extra", particle.getExtra());
         }
+        if (particle.hasData()) {
+            particleObject.add("data", jsonSerializationContext.serialize(particle.getData(), particle.getDataClass()));
+        }
         if (particle.hasRelativeX() || particle.hasRelativeY() || particle.hasRelativeZ()) {
             JsonObject relative = new JsonObject();
             if (particle.hasRelativeX()) {
                 relative.addProperty("x", particle.getRelativeX());
             }
-            if(particle.hasRelativeY()){
+            if (particle.hasRelativeY()) {
                 relative.addProperty("y", particle.getRelativeY());
             }
-            if(particle.hasRelativeZ()){
+            if (particle.hasRelativeZ()) {
                 relative.addProperty("z", particle.getRelativeZ());
             }
             particleObject.add("relative", relative);

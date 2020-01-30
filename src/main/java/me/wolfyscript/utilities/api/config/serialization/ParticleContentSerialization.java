@@ -1,7 +1,7 @@
 package me.wolfyscript.utilities.api.config.serialization;
 
 import com.google.gson.*;
-import me.wolfyscript.utilities.api.custom_items.ParticleData;
+import me.wolfyscript.utilities.api.custom_items.ParticleContent;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
 
@@ -9,18 +9,18 @@ import java.lang.reflect.Type;
 import java.util.Locale;
 import java.util.Map;
 
-public class ParticleDataSerialization implements JsonSerializer<ParticleData>, JsonDeserializer<ParticleData> {
+public class ParticleContentSerialization implements JsonSerializer<ParticleContent>, JsonDeserializer<ParticleContent> {
 
     @Override
-    public ParticleData deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public ParticleContent deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         if (jsonElement instanceof JsonObject) {
-            ParticleData particleData = new ParticleData();
+            ParticleContent particleContent = new ParticleContent();
             JsonObject particles = (JsonObject) jsonElement;
-            for(ParticleEffect.Action action : ParticleEffect.Action.values()){
+            for (ParticleEffect.Action action : ParticleEffect.Action.values()) {
                 String id = action.name().toLowerCase(Locale.ROOT);
-                if(particles.has(id) && particles.get(id) instanceof JsonObject){
+                if (particles.has(id) && particles.get(id) instanceof JsonObject) {
                     JsonObject particle = (JsonObject) particles.get(id);
-                    if(particle.has("effect")){
+                    if (particle.has("effect")) {
                         String effect = particle.get("effect").getAsString();
                         NamespacedKey namespacedKey;
                         if(effect.split(":").length > 1){
@@ -28,19 +28,19 @@ public class ParticleDataSerialization implements JsonSerializer<ParticleData>, 
                         }else{
                             namespacedKey = new NamespacedKey("wolfyutilities", effect);
                         }
-                        particleData.addParticleEffect(action, namespacedKey);
+                        particleContent.addParticleEffect(action, namespacedKey);
                     }
                 }
             }
-            return particleData;
+            return particleContent;
         }
-        return new ParticleData();
+        return new ParticleContent();
     }
 
     @Override
-    public JsonElement serialize(ParticleData particleData, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(ParticleContent particleContent, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject result = new JsonObject();
-        for(Map.Entry<ParticleEffect.Action, NamespacedKey> entry : particleData.entrySet()){
+        for (Map.Entry<ParticleEffect.Action, NamespacedKey> entry : particleContent.entrySet()) {
             JsonObject particle = new JsonObject();
             particle.addProperty("effect", entry.getValue().toString());
             result.add(entry.getKey().name().toLowerCase(Locale.ROOT), particle);
