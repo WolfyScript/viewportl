@@ -81,7 +81,7 @@ public class ItemConfig extends CustomConfig {
         setReplacementItem(itemStack.getReplacement());
         setDurabilityCost(itemStack.getDurabilityCost());
         setEquipmentSlots(itemStack.getEquipmentSlots().toArray(new EquipmentSlot[0]));
-        setParticleData(itemStack.getParticleData());
+        setParticleData(itemStack.getParticleContent());
         if (itemStack.getAllowedBlocks().isEmpty()) {
             setAllowedBlocks(new ArrayList<>(Collections.singleton(Material.FURNACE)));
         } else {
@@ -116,6 +116,8 @@ public class ItemConfig extends CustomConfig {
             } else {
                 setItem("replacement.item", new ItemStack(customItem));
             }
+        } else {
+            set("replacement.item", null);
         }
     }
 
@@ -220,11 +222,11 @@ public class ItemConfig extends CustomConfig {
         set("equipment_slots", slots);
     }
 
-    public ParticleData getParticleData(){
-        return ((JsonConfiguration) configuration).get(ParticleData.class, "particles");
+    public ParticleContent getParticleData() {
+        return ((JsonConfiguration) configuration).get(ParticleContent.class, "particles");
     }
 
-    public void setParticleData(ParticleData particleData){
-        set("particles", particleData);
+    public void setParticleData(ParticleContent particleContent) {
+        set("particles", particleContent);
     }
 }
