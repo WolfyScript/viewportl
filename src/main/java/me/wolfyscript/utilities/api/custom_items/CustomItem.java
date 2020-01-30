@@ -48,7 +48,7 @@ public class CustomItem extends ItemStack implements Cloneable {
     private MetaSettings metaSettings;
     private boolean blockVanillaEquip;
     private List<EquipmentSlot> equipmentSlots;
-    private ParticleData particleData;
+    private ParticleContent particleContent;
 
     public CustomItem(ItemConfig config, boolean replace) {
         super(config.getCustomItem(replace));
@@ -64,7 +64,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.rarityPercentage = config.getRarityPercentage();
         this.customDataMap = config.getCustomData();
         this.equipmentSlots = config.getEquipmentSlots();
-        this.particleData = config.getParticleData();
+        this.particleContent = config.getParticleData();
         this.blockVanillaEquip = false;
     }
 
@@ -88,7 +88,7 @@ public class CustomItem extends ItemStack implements Cloneable {
             this.customDataMap.put(customData.getId(), customData.getDefaultCopy());
         }
         this.equipmentSlots = new ArrayList<>();
-        this.particleData = new ParticleData();
+        this.particleContent = new ParticleContent();
         this.blockVanillaEquip = false;
     }
 
@@ -257,6 +257,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         } else {
             customItem = new CustomItem(this);
         }
+        customItem.setAmount(getAmount());
         return customItem;
     }
 
@@ -372,6 +373,35 @@ public class CustomItem extends ItemStack implements Cloneable {
         if (this.hasConfig()) {
             if (this.isConsumed()) {
                 input.setAmount(0);
+            } else {
+                switch (input.getType()) {
+                    case LAVA_BUCKET:
+                    case MILK_BUCKET:
+                    case WATER_BUCKET:
+                    case COD_BUCKET:
+                    case SALMON_BUCKET:
+                    case PUFFERFISH_BUCKET:
+                    case TROPICAL_FISH_BUCKET:
+                        input.setType(Material.BUCKET);
+                        break;
+                    case POTION:
+                        input.setType(Material.GLASS_BOTTLE);
+                        break;
+                    case BEETROOT_SOUP:
+                    case MUSHROOM_STEW:
+                    case RABBIT_STEW:
+                        input.setType(Material.BOWL);
+                }
+                if (WolfyUtilities.hasBuzzyBeesUpdate()) {
+                    if (input.getType().equals(Material.HONEY_BOTTLE)) {
+                        input.setType(Material.GLASS_BOTTLE);
+                    }
+                }
+                if (WolfyUtilities.hasVillagePillageUpdate()) {
+                    if (input.getType().equals(Material.HONEY_BOTTLE)) {
+                        input.setType(Material.BOWL);
+                    }
+                }
             }
             if (this.hasReplacement()) {
                 ItemStack replace = this.getReplacement();
@@ -379,6 +409,7 @@ public class CustomItem extends ItemStack implements Cloneable {
                 input.setItemMeta(replace.getItemMeta());
                 input.setData(replace.getData());
                 input.setAmount(replace.getAmount());
+                return;
             } else if (this.getDurabilityCost() != 0) {
                 if (WolfyUtilities.hasVillagePillageUpdate()) {
                     if (CustomItem.hasCustomDurability(input)) {
@@ -393,16 +424,48 @@ public class CustomItem extends ItemStack implements Cloneable {
                 }
                 ItemMeta itemMeta = input.getItemMeta();
                 if (itemMeta instanceof Damageable) {
-                    ((Damageable) itemMeta).setDamage(((Damageable) itemMeta).getDamage() + this.getDurabilityCost());
+                    int damage = ((Damageable) itemMeta).getDamage() + this.getDurabilityCost();
+                    if (damage > getType().getMaxDurability()) {
+                        input.setAmount(0);
+                    } else {
+                        ((Damageable) itemMeta).setDamage(damage);
+                    }
                 }
                 input.setItemMeta(itemMeta);
             }
         } else {
-            if (input.getType().equals(Material.LAVA_BUCKET) || input.getType().equals(Material.WATER_BUCKET) || input.getType().equals(Material.MILK_BUCKET)) {
-                input.setType(Material.BUCKET);
-            } else {
-                input.setAmount(0);
+            switch (input.getType()) {
+                case LAVA_BUCKET:
+                case MILK_BUCKET:
+                case WATER_BUCKET:
+                case COD_BUCKET:
+                case SALMON_BUCKET:
+                case PUFFERFISH_BUCKET:
+                case TROPICAL_FISH_BUCKET:
+                    input.setType(Material.BUCKET);
+                    return;
+                case POTION:
+                    input.setType(Material.GLASS_BOTTLE);
+                    return;
+                case BEETROOT_SOUP:
+                case MUSHROOM_STEW:
+                case RABBIT_STEW:
+                    input.setType(Material.BOWL);
+                    return;
             }
+            if (WolfyUtilities.hasBuzzyBeesUpdate()) {
+                if (input.getType().equals(Material.HONEY_BOTTLE)) {
+                    input.setType(Material.GLASS_BOTTLE);
+                    return;
+                }
+            }
+            if (WolfyUtilities.hasVillagePillageUpdate()) {
+                if (input.getType().equals(Material.HONEY_BOTTLE)) {
+                    input.setType(Material.BOWL);
+                    return;
+                }
+            }
+            input.setAmount(0);
         }
     }
 
@@ -594,11 +657,11 @@ public class CustomItem extends ItemStack implements Cloneable {
         }
     }
 
-    public void setParticleData(ParticleData particleData){
-        this.particleData = particleData;
+    public ParticleContent getParticleContent() {
+        return particleContent;
     }
 
-    public ParticleData getParticleData() {
-        return particleData;
+    public void setParticleContent(ParticleContent particleContent) {
+        this.particleContent = particleContent;
     }
 }
