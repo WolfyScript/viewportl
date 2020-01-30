@@ -4,9 +4,6 @@ import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.JsonConfiguration;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.Map;
 
 public class CustomConfig extends Config {
 
@@ -53,7 +50,7 @@ public class CustomConfig extends Config {
             } else {
                 setItem(path + ".item", customItem.getItemStack());
             }
-        }else{
+        } else {
             setItem(path + ".item", null);
         }
     }
@@ -62,21 +59,19 @@ public class CustomConfig extends Config {
         String id = getString(path + ".item_key");
         if (id != null && !id.isEmpty()) {
             CustomItem customItem = CustomItems.getCustomItem(id);
-            if (get(path + ".custom_amount") != null) {
-                int i = getInt(path + ".custom_amount");
-                if (i != 0) {
-                    customItem.setAmount(i);
-                }
+            int i = getInt(path + ".custom_amount");
+            if (i != 0) {
+                customItem.setAmount(i);
             }
             return customItem;
-        }else if(getItem(path+".item") != null){
+        } else if (getItem(path + ".item") != null) {
             return new CustomItem(getItem(path + ".item"));
         }
         return new CustomItem(Material.AIR);
     }
 
     public void linkToFile(String namespace, String name, String path) {
-        if(this.configuration instanceof JsonConfiguration){
+        if (this.configuration instanceof JsonConfiguration) {
             this.namespace = namespace;
             this.setName(name);
             this.id = namespace + ":" + name;

@@ -2,7 +2,7 @@ package me.wolfyscript.utilities.main.listeners;
 
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
-import me.wolfyscript.utilities.api.custom_items.ParticleData;
+import me.wolfyscript.utilities.api.custom_items.ParticleContent;
 import me.wolfyscript.utilities.api.custom_items.equipment.ArmorEquipEvent;
 import me.wolfyscript.utilities.api.custom_items.equipment.ArmorType;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
@@ -54,9 +54,9 @@ public class EquipListener implements Listener {
             }
             if (newArmorPiece.hasID() && newArmorPiece.getEquipmentSlots().contains(equipmentSlot)) {
                 CustomItems.stopActiveParticleEffect(event.getPlayer(), equipmentSlot);
-                ParticleData particleData = newArmorPiece.getParticleData();
-                if (particleData != null) {
-                    NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.valueOf(equipmentSlot.name()));
+                ParticleContent particleContent = newArmorPiece.getParticleContent();
+                if (particleContent != null) {
+                    NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.valueOf(equipmentSlot.name()));
                     if (particleID != null) {
                         CustomItems.setActiveParticleEffect(event.getPlayer(), equipmentSlot, ParticleEffects.spawnEffectOnPlayer(particleID, equipmentSlot, event.getPlayer()));
                     }

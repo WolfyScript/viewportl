@@ -22,7 +22,7 @@ import java.util.*;
 
 public class CustomItems {
 
-    private static HashMap<String, CustomItem> customItems = new HashMap<>();
+    private static TreeMap<String, CustomItem> customItems = new TreeMap<>();
 
     private static HashMap<Location, Pair<String, UUID>> storedBlocks = new HashMap<>();
 
@@ -131,10 +131,10 @@ public class CustomItems {
 
     public static void setStoredBlockItem(Location location, CustomItem customItem) {
         ParticleEffects.stopEffect(getStoredBlockEffect(location));
-        ParticleData particleData = customItem.getParticleData();
+        ParticleContent particleContent = customItem.getParticleContent();
         UUID uuid = null;
-        if (particleData != null) {
-            NamespacedKey particle = particleData.getParticleEffect(ParticleEffect.Action.BLOCK);
+        if (particleContent != null) {
+            NamespacedKey particle = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
             uuid = ParticleEffects.spawnEffectOnBlock(particle, location.getBlock());
         }
         storedBlocks.put(location, new Pair<>(customItem.getId(), uuid));
@@ -167,9 +167,9 @@ public class CustomItems {
             if (!hasStoredBlockEffect(entry.getKey())) {
                 CustomItem customItem = getCustomItem(entry.getValue().getKey());
                 if (customItem != null) {
-                    if (customItem.getParticleData() != null && customItem.getParticleData().containsKey(ParticleEffect.Action.BLOCK)) {
-                        ParticleData particleData = customItem.getParticleData();
-                        NamespacedKey effectID = particleData.getParticleEffect(ParticleEffect.Action.BLOCK);
+                    if (customItem.getParticleContent() != null && customItem.getParticleContent().containsKey(ParticleEffect.Action.BLOCK)) {
+                        ParticleContent particleContent = customItem.getParticleContent();
+                        NamespacedKey effectID = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
                         if (effectID != null) {
                             UUID uuid = ParticleEffects.spawnEffectOnBlock(effectID, entry.getKey().getBlock());
                             storedBlocks.put(entry.getKey(), new Pair<>(customItem.getId(), uuid));

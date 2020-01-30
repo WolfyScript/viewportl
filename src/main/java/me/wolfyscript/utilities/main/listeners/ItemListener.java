@@ -3,7 +3,7 @@ package me.wolfyscript.utilities.main.listeners;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
-import me.wolfyscript.utilities.api.custom_items.ParticleData;
+import me.wolfyscript.utilities.api.custom_items.ParticleContent;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
@@ -95,9 +95,9 @@ public class ItemListener implements Listener {
                 CustomItems.stopActiveParticleEffect(player, EquipmentSlot.HAND);
             }
             if (item != null && item.hasID()) {
-                ParticleData particleData = item.getParticleData();
-                if (particleData != null) {
-                    NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.HAND);
+                ParticleContent particleContent = item.getParticleContent();
+                if (particleContent != null) {
+                    NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.HAND);
                     if (particleID != null) {
                         CustomItems.setActiveParticleEffect(player, EquipmentSlot.HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
                     }
@@ -117,9 +117,9 @@ public class ItemListener implements Listener {
         }
         CustomItem mainHand = CustomItem.getByItemStack(event.getMainHandItem());
         if (mainHand != null && mainHand.hasID()) {
-            ParticleData particleData = mainHand.getParticleData();
-            if (particleData != null) {
-                NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.HAND);
+            ParticleContent particleContent = mainHand.getParticleContent();
+            if (particleContent != null) {
+                NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.HAND);
                 if (particleID != null) {
                     CustomItems.setActiveParticleEffect(player, EquipmentSlot.HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
                 }
@@ -128,9 +128,9 @@ public class ItemListener implements Listener {
 
         CustomItem offHand = CustomItem.getByItemStack(event.getOffHandItem());
         if (offHand != null && offHand.hasID()) {
-            ParticleData particleData = offHand.getParticleData();
-            if (particleData != null) {
-                NamespacedKey particleID = particleData.getParticleEffect(ParticleEffect.Action.OFF_HAND);
+            ParticleContent particleContent = offHand.getParticleContent();
+            if (particleContent != null) {
+                NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.OFF_HAND);
                 if (particleID != null) {
                     CustomItems.setActiveParticleEffect(player, EquipmentSlot.OFF_HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.OFF_HAND, player));
                 }
