@@ -39,6 +39,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
@@ -65,16 +66,17 @@ public class WolfyUtilities implements Listener {
         }
     }
 
-    public static boolean hasAPI(Plugin plugin){
+    private static HashMap<UUID, PlayerAction> clickDataMap = new HashMap<>();
+
+    public static boolean hasAPI(Plugin plugin) {
         return wolfyUtilitiesList.containsKey(plugin);
     }
 
-    public static WolfyUtilities getOrCreateAPI(Plugin plugin){
-        return wolfyUtilitiesList.getOrDefault(plugin, new WolfyUtilities(plugin));
-    }
-
-    public static WolfyUtilities getAPI(Plugin plugin){
-        return wolfyUtilitiesList.getOrDefault(plugin, new WolfyUtilities(plugin));
+    public static WolfyUtilities getOrCreateAPI(Plugin plugin) {
+        if (!hasAPI(plugin)) {
+            registerAPI(new WolfyUtilities(plugin));
+        }
+        return wolfyUtilitiesList.get(plugin);
     }
 
     public static boolean hasBuzzyBeesUpdate() {
@@ -468,6 +470,37 @@ public class WolfyUtilities implements Listener {
         return cleared;
     }
 
+    @Nullable
+    public static WolfyUtilities getAPI(Plugin plugin) {
+        return wolfyUtilitiesList.get(plugin);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void actionCommands(AsyncPlayerChatEvent event) {
+        if (event.getMessage() != null && event.getMessage().startsWith("wu::")) {
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(event.getMessage().substring("wu::".length()));
+            } catch (IllegalArgumentException expected) {
+                return;
+            }
+            PlayerAction action = clickDataMap.get(uuid);
+            Player player = event.getPlayer();
+            event.setMessage("");
+            event.setCancelled(true);
+            if (action != null) {
+                if (player.getUniqueId().equals(action.getUuid())) {
+                    action.run(player);
+                    if (action.isDiscard()) {
+                        clickDataMap.remove(uuid);
+                    }
+                }
+            } else {
+                sendDebugMessage(player.getName() + "&c tried to use a invalid action!");
+            }
+        }
+    }
+
 
     /*
         Non Static methods and constructor down below!
@@ -486,16 +519,17 @@ public class WolfyUtilities implements Listener {
 
     private LanguageAPI languageAPI;
 
-    private HashMap<UUID, PlayerAction> clickDataMap;
+    @EventHandler
+    public void actionRemoval(PlayerQuitEvent event) {
+        clickDataMap.keySet().removeIf(uuid -> clickDataMap.get(uuid).getUuid().equals(event.getPlayer().getUniqueId()));
+    }
 
     public WolfyUtilities(Plugin plugin) {
         this.plugin = plugin;
         this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT) + "_";
         registerAPI(this);
-        clickDataMap = new HashMap<>();
         customItems = new CustomItems(plugin);
         inventoryAPI = new InventoryAPI<>(this.plugin, this, CustomCache.class);
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     public static String getVersion() {
@@ -681,12 +715,12 @@ public class WolfyUtilities implements Listener {
         player.spigot().sendMessage(textComponents);
     }
 
-    public void openBook(Player player, boolean editable, ClickData[]... clickDatas){
+    public void openBook(Player player, String author, String title, boolean editable, ClickData[]... clickDatas) {
         ItemStack itemStack = new ItemStack(editable ? Material.BOOK : Material.WRITTEN_BOOK);
         BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
-        bookMeta.setAuthor("WolfyUtilities");
-        bookMeta.setTitle("Blank");
-        for(ClickData[] clickData : clickDatas){
+        bookMeta.setAuthor(author);
+        bookMeta.setTitle(title);
+        for (ClickData[] clickData : clickDatas) {
             TextComponent[] textComponents = getActionMessage("", player, clickData);
             bookMeta.spigot().addPage(textComponents);
         }
@@ -694,7 +728,11 @@ public class WolfyUtilities implements Listener {
         player.openBook(itemStack);
     }
 
-    public TextComponent[] getActionMessage(String prefix, Player player, ClickData... clickData){
+    public void openBook(Player player, boolean editable, ClickData[]... clickDatas) {
+        openBook(player, "WolfyUtilities", "Blank", editable, clickDatas);
+    }
+
+    public TextComponent[] getActionMessage(String prefix, Player player, ClickData... clickData) {
         TextComponent[] textComponents = new TextComponent[clickData.length + 1];
         textComponents[0] = new TextComponent(prefix);
         for (int i = 1; i < textComponents.length; i++) {
@@ -721,37 +759,7 @@ public class WolfyUtilities implements Listener {
         return textComponents;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void actionCommands(AsyncPlayerChatEvent event) {
-        if (event.getMessage() != null && event.getMessage().startsWith("wu::")) {
-            UUID uuid;
-            try {
-                uuid = UUID.fromString(event.getMessage().split("::")[1]);
-            } catch (IllegalArgumentException expected) {
-                return;
-            }
 
-            event.setMessage("");
-            event.setCancelled(true);
-            PlayerAction action = clickDataMap.get(uuid);
-            Player player = event.getPlayer();
-            if (action != null) {
-                if (player.getUniqueId().equals(action.getUuid())) {
-                    action.run(player);
-                    if (action.isDiscard()) {
-                        clickDataMap.remove(uuid);
-                    }
-                }
-            } else {
-                sendPlayerMessage(player, "&cInvalid Action");
-            }
-        }
-    }
-
-    @EventHandler
-    public void actionRemoval(PlayerQuitEvent event) {
-        clickDataMap.keySet().removeIf(uuid -> clickDataMap.get(uuid).getUuid().equals(event.getPlayer().getUniqueId()));
-    }
 
     public void sendDebugMessage(String message) {
         if (hasDebuggingMode()) {
