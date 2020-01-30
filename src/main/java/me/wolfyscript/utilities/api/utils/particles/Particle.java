@@ -90,7 +90,7 @@ public class Particle {
     }
 
     public Particle(org.bukkit.Particle particle, int count, double extra, Object data) {
-        this(particle, count, 0, 0, 0, extra, data);
+        this(particle, 0, 0, 0, count, extra, data);
     }
 
     public Particle(org.bukkit.Particle particle, double relativeX, double relativeY, double relativeZ, int count) {
@@ -177,7 +177,7 @@ public class Particle {
     }
 
     public Material getIcon() {
-        return icon;
+        return hasIcon() ? this.icon : getSuperParticle().getIcon();
     }
 
     public void setIcon(Material icon) {
@@ -186,7 +186,7 @@ public class Particle {
 
 
     public String getName() {
-        return name;
+        return hasName() ? this.name : getSuperParticle().getName();
     }
 
     public void setName(String name) {
@@ -194,7 +194,7 @@ public class Particle {
     }
 
     public List<String> getDescription() {
-        return description;
+        return hasDescription() ? this.description : getSuperParticle().getDescription();
     }
 
     public void setDescription(List<String> description) {
@@ -358,7 +358,7 @@ public class Particle {
                     context.evaluateReader(scope, bufferedReader, "<cmd>", 1, null);
                     Context.exit();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Main.getMainUtil().sendDebugMessage(e.getMessage());
                 }
             } else {
                 context.evaluateString(scope, script, "<cmd>", 1, null);

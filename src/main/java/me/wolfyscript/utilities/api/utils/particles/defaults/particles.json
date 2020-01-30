@@ -1,0 +1,12 @@
+{
+  "flame": {
+    "particle": "minecraft:flame",
+    "icon": "minecraft:blaze_powder",
+    "name": "&6Flame particle",
+    "description": [
+      "&7Vanilla flame particle"
+    ],
+    "count": 1,
+    "extra": 1
+  }
+}

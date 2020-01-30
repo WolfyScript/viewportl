@@ -28,22 +28,30 @@ public class ParticleEffects extends JsonConfiguration {
     private String namespace;
 
     public ParticleEffects(ConfigAPI configAPI) {
-        this(configAPI, configAPI.getPlugin().getDataFolder().getPath(), "", "me/wolfyscript/utilities/api/utils/particles");
+        this(configAPI, "", configAPI.getPlugin().getDataFolder().getPath(), "me/wolfyscript/utilities/api/utils/particles/defaults");
     }
 
     public ParticleEffects(ConfigAPI configAPI, String namespace) {
-        this(configAPI, configAPI.getPlugin().getDataFolder().getPath(), namespace, "me/wolfyscript/utilities/api/utils/particles", false);
+        this(configAPI, namespace, false);
     }
 
-    public ParticleEffects(ConfigAPI configAPI, String namespace, String defPath) {
-        this(configAPI, configAPI.getPlugin().getDataFolder().getPath(), namespace, defPath, false);
+    public ParticleEffects(ConfigAPI configAPI, String namespace, boolean override) {
+        this(configAPI, namespace, configAPI.getPlugin().getDataFolder().getPath(), override);
     }
 
-    public ParticleEffects(ConfigAPI configAPI, String path, String namespace, String defPath) {
-        this(configAPI, path, namespace, defPath, false);
+    public ParticleEffects(ConfigAPI configAPI, String namespace, String path) {
+        this(configAPI, namespace, path, false);
     }
 
-    public ParticleEffects(ConfigAPI configAPI, String path, String namespace, String defPath, boolean override) {
+    public ParticleEffects(ConfigAPI configAPI, String namespace, String path, boolean override) {
+        this(configAPI, namespace, path, "me/wolfyscript/utilities/api/utils/particles/defaults", override);
+    }
+
+    public ParticleEffects(ConfigAPI configAPI, String namespace, String path, String defPath) {
+        this(configAPI, namespace, path, defPath, false);
+    }
+
+    public ParticleEffects(ConfigAPI configAPI, String namespace, String path, String defPath, boolean override) {
         super(configAPI, path + File.separator + (namespace.isEmpty() ? "" : namespace + File.separator) + "particles", "particle_effects", defPath, "particle_effects", override);
         this.namespace = namespace.isEmpty() ? configAPI.getPlugin().getName().toLowerCase(Locale.ROOT).replace(" ", "_") : namespace;
     }
