@@ -5,12 +5,18 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
+/**
+ * This wrapper Config won't be supported in the upcoming major updates and is going to be removed soon, due the differences between YAML and JSON.
+ * Json is faster and easier to use therefor {@link JsonConfiguration} should be used instead from now on.
+ * {@link org.bukkit.configuration.file.YamlConfiguration} will stay for compatibility reasons, but won't be supported like Json Configs.
+ */
+@Deprecated
 public class Config extends FileConfiguration implements ConfigurationSection {
 
     public FileConfiguration configuration;
 
+    @Deprecated
     public Config(ConfigAPI configAPI, String path, String name, String defPath, String defFileName, String fileType, boolean overwrite) {
         super(configAPI, path, name, defPath, defFileName, fileType.equalsIgnoreCase("json") ? Type.JSON : Type.YAML);
         if (getType().equals(Configuration.Type.JSON)) {
