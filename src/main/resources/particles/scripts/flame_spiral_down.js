@@ -1,5 +1,5 @@
 /*
- * This JavaScript was created to give the first documentation about the scripting of Particle Effects.
+ * This JavaScript file was created to give the first documentation about the scripting of Particle Effects.
  * Any changes in this file will be overwritten on the next server start-up!
  * More documentation and features will be added in the future.
  * This system is still experimental and might change!

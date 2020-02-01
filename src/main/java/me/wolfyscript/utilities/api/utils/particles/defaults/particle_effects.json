@@ -29,6 +29,7 @@
     "particles": [
       {
         "particle": "minecraft:enchantment_table",
+        "name": "",
         "count": 2,
         "extra": 0.5,
         "relative": {
