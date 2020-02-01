@@ -8,6 +8,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * This class contaions enums for the creative menu categories.
+ * Each enum contaions the corresponding Materials of that category.
+ */
 public enum ItemCategory {
 
     BREWING,
@@ -47,7 +51,6 @@ public enum ItemCategory {
                             //Main.getMainUtil().sendConsoleMessage(" register " + material + " -> " + name);
                             materials.put(name, category);
                         }
-
                     }
                 }
             } catch (IllegalAccessException | InvocationTargetException e) {
