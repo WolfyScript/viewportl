@@ -7,6 +7,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.HashMap;
 import java.util.Locale;
 
+@Deprecated
 public class Legacy {
 
     private static HashMap<String, Enchantment> enchantments = new HashMap<>();
@@ -39,8 +40,14 @@ public class Legacy {
         if (WolfyUtilities.hasSpecificUpdate("1_10")) {
             enchantments.put("sweeping", Enchantment.SWEEPING_EDGE);
         }
+
     }
 
+    /**
+     * @param name The in-game name of the enchantment
+     * @return null or the Enchantment
+     */
+    @Deprecated
     public static Enchantment getEnchantment(String name) {
         if (!enchantments.containsKey(name)) {
             return Enchantment.getByName(name);
@@ -48,6 +55,7 @@ public class Legacy {
         return enchantments.get(name);
     }
 
+    @Deprecated
     public static String getEnchantName(Enchantment enchantment) {
         if (!enchantments.containsValue(enchantment)) {
             return enchantment.getName().toLowerCase(Locale.ENGLISH);
@@ -62,6 +70,7 @@ public class Legacy {
 
     private static HashMap<String, PotionEffectType> potions = new HashMap<>();
 
+    @Deprecated
     private static void initPotions() {
         potions.put("slowness", PotionEffectType.SLOW);
         potions.put("haste", PotionEffectType.FAST_DIGGING);
@@ -74,6 +83,7 @@ public class Legacy {
         potions.put("resistance", PotionEffectType.DAMAGE_RESISTANCE);
     }
 
+    @Deprecated
     public static PotionEffectType getPotion(String name) {
         if (!potions.containsKey(name)) {
             return PotionEffectType.getByName(name);
@@ -81,6 +91,7 @@ public class Legacy {
         return potions.get(name);
     }
 
+    @Deprecated
     public static String getPotionName(PotionEffectType potion) {
         if (!potions.containsValue(potion)) {
             return potion.getName().toLowerCase(Locale.ENGLISH);

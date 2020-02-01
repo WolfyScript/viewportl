@@ -11,7 +11,6 @@ import me.wolfyscript.utilities.api.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.inventory.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.cache.CustomCache;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
-import me.wolfyscript.utilities.api.utils.Legacy;
 import me.wolfyscript.utilities.api.utils.Reflection;
 import me.wolfyscript.utilities.api.utils.chat.ChatEvent;
 import me.wolfyscript.utilities.api.utils.chat.ClickData;
@@ -379,11 +378,7 @@ public class WolfyUtilities implements Listener {
 
     public static Enchantment getEnchantment(String enchantNmn) {
         try {
-            if (!WolfyUtilities.hasAquaticUpdate()) {
-                return Legacy.getEnchantment(enchantNmn);
-            } else {
-                return Enchantment.getByKey(NamespacedKey.minecraft(enchantNmn.toLowerCase()));
-            }
+            return Enchantment.getByKey(NamespacedKey.minecraft(enchantNmn.toLowerCase()));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -394,6 +389,7 @@ public class WolfyUtilities implements Listener {
         return Sound.valueOf(sound);
     }
 
+    @Deprecated
     public static Sound getSound(String legacy, String notLegacy) {
         if (WolfyUtilities.hasAquaticUpdate()) {
             return Sound.valueOf(notLegacy);
@@ -402,13 +398,13 @@ public class WolfyUtilities implements Listener {
         }
     }
 
+    @Deprecated
     public static boolean isSkull(ItemStack itemStack) {
-        if (itemStack.getType() == Material.PLAYER_HEAD) {
-            if (WolfyUtilities.hasAquaticUpdate()) {
-                return true;
-            } else return itemStack.getData().getData() == (byte) 3;
-        }
-        return false;
+        return itemStack.getType() == Material.PLAYER_HEAD;
+    }
+
+    public static boolean isPlayerHead(ItemStack itemStack) {
+        return itemStack.getType() == Material.PLAYER_HEAD;
     }
 
     public static boolean checkColumn(ArrayList<String> shape, int column) {
@@ -418,7 +414,7 @@ public class WolfyUtilities implements Listener {
                 blocked = true;
             }
         }
-        if(!blocked){
+        if (!blocked) {
             for (int i = 0; i < shape.size(); i++) {
                 shape.set(i, shape.get(i).substring(0, column) + shape.get(i).substring(column + 1));
             }
