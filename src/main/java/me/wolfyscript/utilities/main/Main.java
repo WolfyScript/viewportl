@@ -20,7 +20,7 @@ import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
 import me.wolfyscript.utilities.main.listeners.BlockListener;
 import me.wolfyscript.utilities.main.listeners.EquipListener;
 import me.wolfyscript.utilities.main.listeners.ItemListener;
-import me.wolfyscript.utilities.main.metrics.Metrics;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -67,6 +67,7 @@ public class Main extends JavaPlugin {
         String pkgname = Main.getInstance().getServer().getClass().getPackage().getName();
         mcUpdateVersion = pkgname.substring(pkgname.lastIndexOf('.') + 1).replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
         mcUpdateVersionNumber = Integer.parseInt(mcUpdateVersion);
+
         Legacy.init();
 
         //Custom serializations
@@ -117,7 +118,7 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new WolfyUtilities(this), this);
         Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand());
 
-        Metrics metrics = new Metrics(this);
+        Metrics metrics = new Metrics(this, 5114);
 
         try {
             ItemCategory.init();
@@ -130,6 +131,7 @@ public class Main extends JavaPlugin {
         }
 
         saveResource("particles/scripts/flame_spiral_down.js", true);
+        saveResource("particles/README.txt", true);
         loadParticleEffects(configAPI);
     }
 
