@@ -37,36 +37,18 @@ public class Particle {
 
     private Class<?> dataClass;
     private Object data;
-    private double relativeX, relativeY, relativeZ, offsetX, offsetY, offsetZ;
-    private int count;
-    private double extra;
-    private List<String> scripts = new ArrayList<>();
+    private Double relativeX, relativeY, relativeZ, offsetX, offsetY, offsetZ;
+    private Integer count;
+    private Double extra;
+    private List<String> scripts;
     private String name;
     private List<String> description;
 
-    public Particle(Particle preset) {
-        this.particle = preset.getParticle();
-        this.dataClass = particle.getDataType();
-        if (this.dataClass.isInstance(preset.getData())) {
-            this.data = preset.getData();
-        } else {
-            this.data = null;
-        }
-        this.icon = preset.getIcon();
-        this.name = preset.getName();
-        this.description = preset.getDescription();
-        this.relativeX = preset.getRelativeX();
-        this.relativeY = preset.getRelativeY();
-        this.relativeZ = preset.getRelativeZ();
-        this.offsetX = preset.getOffsetX();
-        this.offsetY = preset.getOffsetY();
-        this.offsetZ = preset.getOffsetZ();
-        this.count = preset.getCount();
-        this.extra = preset.getExtra();
+    public Particle(Particle superParticle) {
+        setSuperParticle(superParticle);
     }
 
     public Particle() {
-        this(org.bukkit.Particle.BARRIER);
     }
 
     public Particle(org.bukkit.Particle particle) {
@@ -124,11 +106,8 @@ public class Particle {
     public Particle(org.bukkit.Particle particle, double relativeX, double relativeY, double relativeZ, int count, double offsetX, double offsetY, double offsetZ, double extra, Object data) {
         this.particle = particle;
         this.dataClass = particle.getDataType();
-        if (this.dataClass.isInstance(data)) {
-            this.data = data;
-        } else {
-            this.data = null;
-        }
+        this.scripts = new ArrayList<>();
+        this.data = data;
         this.icon = Material.FIREWORK_STAR;
         this.relativeX = relativeX;
         this.relativeY = relativeY;
@@ -161,15 +140,16 @@ public class Particle {
     }
 
     public org.bukkit.Particle getParticle() {
-        return hasParticle() ? particle : getSuperParticle().getParticle();
+        return hasParticle() || !hasSuperParticle() ? particle : getSuperParticle().getParticle();
     }
 
     public void setParticle(org.bukkit.Particle particle) {
         this.particle = particle;
+        this.dataClass = particle.getDataType();
     }
 
     public Object getData() {
-        return hasData() ? data : getSuperParticle().getData();
+        return hasData() || !hasSuperParticle() ? data : getSuperParticle().getData();
     }
 
     public void setData(Object data) {
@@ -177,16 +157,15 @@ public class Particle {
     }
 
     public Material getIcon() {
-        return hasIcon() ? this.icon : getSuperParticle().getIcon();
+        return hasIcon() || !hasSuperParticle() ? this.icon : getSuperParticle().getIcon();
     }
 
     public void setIcon(Material icon) {
         this.icon = icon;
     }
 
-
     public String getName() {
-        return hasName() ? this.name : getSuperParticle().getName();
+        return hasName() || !hasSuperParticle() ? this.name : getSuperParticle().getName();
     }
 
     public void setName(String name) {
@@ -194,7 +173,7 @@ public class Particle {
     }
 
     public List<String> getDescription() {
-        return hasDescription() ? this.description : getSuperParticle().getDescription();
+        return hasDescription() || !hasSuperParticle() ? this.description : getSuperParticle().getDescription();
     }
 
     public void setDescription(List<String> description) {
@@ -202,67 +181,67 @@ public class Particle {
     }
 
     public Class<?> getDataClass() {
-        return hasDataClass() ? dataClass : getSuperParticle().getDataClass();
+        return hasDataClass() || !hasSuperParticle() ? this.dataClass : getSuperParticle().getDataClass();
     }
 
-    public double getRelativeX() {
-        return hasRelativeX() ? relativeX : getSuperParticle().getRelativeX();
+    public Double getRelativeX() {
+        return hasRelativeX() || !hasSuperParticle() ? this.relativeX : getSuperParticle().getRelativeX();
     }
 
     public void setRelativeX(double relativeX) {
         this.relativeX = relativeX;
     }
 
-    public double getRelativeY() {
-        return hasRelativeY() ? relativeY : getSuperParticle().getRelativeY();
+    public Double getRelativeY() {
+        return hasRelativeY() || !hasSuperParticle() ? this.relativeY : getSuperParticle().getRelativeY();
     }
 
     public void setRelativeY(double relativeY) {
         this.relativeY = relativeY;
     }
 
-    public double getRelativeZ() {
-        return hasRelativeZ() ? relativeZ : getSuperParticle().getRelativeZ();
+    public Double getRelativeZ() {
+        return hasRelativeZ() || !hasSuperParticle() ? this.relativeZ : getSuperParticle().getRelativeZ();
     }
 
     public void setRelativeZ(double relativeZ) {
         this.relativeZ = relativeZ;
     }
 
-    public double getOffsetX() {
-        return hasOffsetX() ? offsetX : getSuperParticle().getOffsetX();
+    public Double getOffsetX() {
+        return hasOffsetX() || !hasSuperParticle() ? this.offsetX : getSuperParticle().getOffsetX();
     }
 
     public void setOffsetX(double offsetX) {
         this.offsetX = offsetX;
     }
 
-    public double getOffsetY() {
-        return hasOffsetY() ? offsetY : getSuperParticle().getOffsetY();
+    public Double getOffsetY() {
+        return hasOffsetY() || !hasSuperParticle() ? this.offsetY : getSuperParticle().getOffsetY();
     }
 
     public void setOffsetY(double offsetY) {
         this.offsetY = offsetY;
     }
 
-    public double getOffsetZ() {
-        return hasOffsetZ() ? offsetZ : getSuperParticle().getOffsetZ();
+    public Double getOffsetZ() {
+        return hasOffsetZ() || !hasSuperParticle() ? this.offsetZ : getSuperParticle().getOffsetZ();
     }
 
     public void setOffsetZ(double offsetZ) {
         this.offsetZ = offsetZ;
     }
 
-    public int getCount() {
-        return hasCount() ? count : getSuperParticle().getCount();
+    public Integer getCount() {
+        return hasCount() || !hasSuperParticle() ? this.count : getSuperParticle().getCount();
     }
 
     public void setCount(int count) {
         this.count = count;
     }
 
-    public double getExtra() {
-        return hasExtra() ? extra : getSuperParticle().getExtra();
+    public Double getExtra() {
+        return hasExtra() || !hasSuperParticle() ? this.extra : getSuperParticle().getExtra();
     }
 
     public void setExtra(double extra) {
@@ -270,107 +249,105 @@ public class Particle {
     }
 
     public List<String> getScripts() {
-        return hasScripts() ? scripts : getSuperParticle().getScripts();
+        return hasScripts() || !hasSuperParticle() ? this.scripts : getSuperParticle().getScripts();
     }
 
     public boolean hasIcon() {
-        return !hasSuperParticle() || this.icon != getSuperParticle().icon;
+        return this.icon != null;
     }
 
     public boolean hasName() {
-        return !hasSuperParticle() || this.name != getSuperParticle().name;
+        return this.name != null;
     }
 
     public boolean hasDescription() {
-        return !hasSuperParticle() || this.description != getSuperParticle().description;
+        return this.description != null;
     }
 
     public boolean hasRelativeX() {
-        return !hasSuperParticle() || this.relativeX != getSuperParticle().relativeX;
+        return this.relativeX != null;
     }
 
     public boolean hasRelativeY() {
-        return !hasSuperParticle() || this.relativeY != getSuperParticle().relativeY;
+        return this.relativeY != null;
     }
 
     public boolean hasRelativeZ() {
-        return !hasSuperParticle() || this.relativeZ != getSuperParticle().relativeZ;
+        return this.relativeZ != null;
     }
 
     public boolean hasOffsetX() {
-        return !hasSuperParticle() || this.offsetX != getSuperParticle().offsetX;
+        return this.offsetX != null;
     }
 
     public boolean hasOffsetY() {
-        return !hasSuperParticle() || this.offsetY != getSuperParticle().offsetY;
+        return this.offsetY != null;
     }
 
     public boolean hasOffsetZ() {
-        return !hasSuperParticle() || this.offsetZ != getSuperParticle().offsetZ;
+        return this.offsetZ != null;
     }
 
     public boolean hasCount() {
-        return !hasSuperParticle() || this.count != getSuperParticle().count;
+        return this.count != null;
     }
 
     public boolean hasExtra() {
-        return !hasSuperParticle() || this.extra != getSuperParticle().extra;
+        return this.extra != null;
     }
 
     public boolean hasParticle() {
-        return !hasSuperParticle() || this.particle != getSuperParticle().particle;
+        return this.particle != null;
     }
 
     public boolean hasData() {
-        return !hasSuperParticle() || this.data != getSuperParticle().data;
+        return this.data != null;
     }
 
     public boolean hasDataClass() {
-        return !hasSuperParticle() || this.dataClass != getSuperParticle().dataClass;
+        return this.dataClass != null;
     }
 
     public boolean hasScripts() {
-        if (!hasSuperParticle()) {
-            return true;
-        }
-        if (this.scripts.isEmpty()) {
-            return getSuperParticle().getScripts().isEmpty();
-        }
-        return !this.scripts.equals(getSuperParticle().scripts);
+        return this.scripts != null;
     }
 
     public void addScript(String script) {
+        if (scripts == null) {
+            scripts = new ArrayList<>();
+        }
         scripts.add(script);
     }
 
     @Override
     public String toString() {
-        return "Particle[" + namespacedKey + ", " + particle.name() + "]";
+        return "Particle[" + namespacedKey + ", extends:{" + getSuperParticle() + "}, particle: " + getParticle() + ", scripts:" + getScripts() + "]";
     }
 
     void prepare(String referencePath) {
         Context context = Context.enter();
-        for (String script : getScripts()) {
-            if (script.startsWith("file=")) {
-                try {
-                    FileInputStream inputStream = new FileInputStream(referencePath + File.separator + script.substring("file=".length()));
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    context.evaluateReader(scope, bufferedReader, "<cmd>", 1, null);
+        if (getScripts() != null) {
+            for (String script : getScripts()) {
+                if (script.startsWith("file=")) {
+                    try {
+                        FileInputStream inputStream = new FileInputStream(referencePath + File.separator + script.substring("file=".length()));
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                        context.evaluateReader(scope, bufferedReader, "<cmd>", 1, null);
+                        Context.exit();
+                    } catch (IOException e) {
+                        Main.getMainUtil().sendDebugMessage(e.getMessage());
+                    }
+                } else {
+                    context.evaluateString(scope, script, "<cmd>", 1, null);
                     Context.exit();
-                } catch (IOException e) {
-                    Main.getMainUtil().sendDebugMessage(e.getMessage());
                 }
-            } else {
-                context.evaluateString(scope, script, "<cmd>", 1, null);
-                Context.exit();
             }
         }
     }
 
     public void spawnOnLocation(Location location, int tick) {
         Data particleData = new Data(this);
-
-        if (!getScripts().isEmpty()) {
+        if (getScripts() != null && !getScripts().isEmpty()) {
             Object function = scope.get("onLocation", scope);
             if (function instanceof Function) {
                 Function f = (Function) function;
@@ -384,8 +361,7 @@ public class Particle {
     public void spawnOnBlock(Block block, int tick) {
         Location location = block.getLocation();
         Data particleData = new Data(this);
-
-        if (!getScripts().isEmpty()) {
+        if (getScripts() != null && !getScripts().isEmpty()) {
             Object function = scope.get("onBlock", scope);
             if (function instanceof Function) {
                 Function f = (Function) function;
@@ -399,8 +375,7 @@ public class Particle {
     public void spawnOnPlayer(Player player, EquipmentSlot slot, int tick) {
         Location location = player.getLocation();
         Data particleData = new Data(this);
-
-        if (!getScripts().isEmpty()) {
+        if (getScripts() != null && !getScripts().isEmpty()) {
             Object function = scope.get("onPlayer", scope);
             if (function instanceof Function) {
                 Function f = (Function) function;
@@ -418,10 +393,10 @@ public class Particle {
     private void spawn(Location location, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, @Nullable Object data) {
         Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
             if (location.getWorld() != null) {
-                if (data == null || !getDataClass().isInstance(data)) {
-                    location.getWorld().spawnParticle(particle, location.add(x, y, z), count, offsetX, offsetY, offsetZ, extra);
+                if (data == null || getDataClass() == null || !getDataClass().isInstance(data)) {
+                    location.getWorld().spawnParticle(getParticle(), location.add(x, y, z), count, offsetX, offsetY, offsetZ, extra);
                 } else {
-                    location.getWorld().spawnParticle(particle, location.add(x, y, z), count, offsetX, offsetY, offsetZ, extra, data);
+                    location.getWorld().spawnParticle(getParticle(), location.add(x, y, z), count, offsetX, offsetY, offsetZ, extra, data);
                 }
             }
         });
@@ -437,19 +412,15 @@ public class Particle {
 
         public Data(Particle particle) {
             this.dataClass = particle.getDataClass();
-            if (particle.dataClass.isInstance(particle.getData())) {
-                this.data = particle.getData();
-            } else {
-                this.data = null;
-            }
-            this.relativeX = particle.getRelativeX();
-            this.relativeY = particle.getRelativeY();
-            this.relativeZ = particle.getRelativeZ();
-            this.offsetX = particle.getOffsetX();
-            this.offsetY = particle.getOffsetY();
-            this.offsetZ = particle.getOffsetZ();
-            this.count = particle.getCount();
-            this.extra = particle.getExtra();
+            this.data = particle.getData();
+            this.relativeX = particle.getRelativeX() == null ? 0 : particle.getRelativeX();
+            this.relativeY = particle.getRelativeY() == null ? 0 : particle.getRelativeY();
+            this.relativeZ = particle.getRelativeZ() == null ? 0 : particle.getRelativeZ();
+            this.offsetX = particle.getOffsetX() == null ? 0 : particle.getOffsetX();
+            this.offsetY = particle.getOffsetY() == null ? 0 : particle.getOffsetY();
+            this.offsetZ = particle.getOffsetZ() == null ? 0 : particle.getOffsetZ();
+            this.count = particle.getCount() == null ? 1 : particle.getCount();
+            this.extra = particle.getExtra() == null ? 1 : particle.getExtra();
         }
 
         public Object getData() {

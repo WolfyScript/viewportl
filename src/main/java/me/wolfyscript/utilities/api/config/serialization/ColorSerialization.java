@@ -11,10 +11,10 @@ public class ColorSerialization implements JsonSerializer<Color>, JsonDeserializ
     @Override
     public Color deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         if (jsonElement instanceof JsonObject) {
-            int red = ((JsonObject) jsonElement).get("red").getAsByte();
-            int green = ((JsonObject) jsonElement).get("green").getAsByte();
-            int blue = ((JsonObject) jsonElement).get("blue").getAsByte();
-            return Color.fromBGR(red, green, blue);
+            int red = ((JsonObject) jsonElement).get("red").getAsInt();
+            int green = ((JsonObject) jsonElement).get("green").getAsInt();
+            int blue = ((JsonObject) jsonElement).get("blue").getAsInt();
+            return Color.fromBGR(blue, green, red);
         } else {
             Main.getMainUtil().sendConsoleWarning("Error Deserializing Color! Invalid Color object!");
         }

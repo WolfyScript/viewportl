@@ -39,5 +39,17 @@
         }
       }
     ]
+  },
+  "green_redstone": {
+    "cooldown": 0,
+    "duration": 3,
+    "icon": "minecraft:redstone",
+    "name": "&aGreen Redstone",
+    "description": [],
+    "particles": [
+      {
+        "particle": "wolfyutilities:green_redstone"
+      }
+    ]
   }
 }

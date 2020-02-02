@@ -34,7 +34,7 @@ public class Particles extends JsonConfiguration {
     }
 
     public Particles(ConfigAPI configAPI, String namespace, String path, boolean override) {
-        this(configAPI, namespace, path, "me/wolfyscript/utilities/api/utils/particles", override);
+        this(configAPI, namespace, path, "me/wolfyscript/utilities/api/utils/particles/defaults", override);
     }
 
     public Particles(ConfigAPI configAPI, String namespace, String path, String defPath) {

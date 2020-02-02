@@ -19,7 +19,6 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
         if (jsonElement instanceof JsonObject) {
             JsonObject object = (JsonObject) jsonElement;
             Particle resultParticle = new Particle();
-
             if (object.has("particle")) {
                 String particle = object.getAsJsonPrimitive("particle").getAsString();
                 NamespacedKey namespacedKey = null;
@@ -32,12 +31,11 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
                     org.bukkit.Particle particleType = org.bukkit.Particle.valueOf(namespacedKey.getKey().toUpperCase(Locale.ROOT));
                     resultParticle.setParticle(particleType);
                 } else {
-                    resultParticle = new Particle(Particles.getParticles().get(namespacedKey));
-                    resultParticle.setSuperParticle(Particles.getParticles().get(namespacedKey));
+                    Particle particle1 = Particles.getParticles().get(namespacedKey);
+                    resultParticle = new Particle(particle1);
                 }
                 resultParticle.setNamespacedKey(namespacedKey);
             }
-
             if (object.has("icon")) {
                 resultParticle.setIcon(Material.matchMaterial(object.get("icon").getAsString()));
             }
@@ -59,7 +57,11 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
                 resultParticle.setExtra(object.getAsJsonPrimitive("extra").getAsDouble());
             }
             if (object.has("data")) {
-                resultParticle.setData(jsonDeserializationContext.deserialize(object.get("data"), resultParticle.getDataClass()));
+                if (resultParticle.getParticle().equals(org.bukkit.Particle.REDSTONE)) {
+                    resultParticle.setData(jsonDeserializationContext.deserialize(object.get("data"), org.bukkit.Particle.DustOptions.class));
+                } else {
+                    resultParticle.setData(jsonDeserializationContext.deserialize(object.get("data"), resultParticle.getDataClass()));
+                }
             }
             if (object.has("relative")) {
                 JsonObject relative = object.getAsJsonObject("relative");
@@ -89,7 +91,6 @@ public class ParticleSerialization implements JsonSerializer<Particle>, JsonDese
     @Override
     public JsonElement serialize(Particle particle, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject particleObject = new JsonObject();
-
         if (particle.hasSuperParticle()) {
             particleObject.addProperty("particle", particle.getSuperParticle().getNamespacedKey().toString());
         } else {

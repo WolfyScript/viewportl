@@ -49,15 +49,15 @@ public class Main extends JavaPlugin {
 
     public static void loadParticleEffects(ConfigAPI configAPI) {
         getMainUtil().sendConsoleMessage("Loading Particles...");
-        particlesConfig = new Particles(configAPI);
+        particlesConfig = new Particles(configAPI, "", true);
         particlesConfig.loadParticles();
         for (Map.Entry<NamespacedKey, Particle> particleEntry : Particles.getParticles().entrySet()) {
-            getMainUtil().sendConsoleWarning("  - " + particleEntry.getKey() + " -> " + particleEntry.getValue().getParticle());
+            getMainUtil().sendDebugMessage("  - " + particleEntry.getKey() + " -> " + particleEntry.getValue());
         }
-        particleEffectsConfig = new ParticleEffects(configAPI);
+        particleEffectsConfig = new ParticleEffects(configAPI, "", true);
         particleEffectsConfig.loadEffects();
         for (Map.Entry<NamespacedKey, ParticleEffect> effectEntry : ParticleEffects.getEffects().entrySet()) {
-            getMainUtil().sendConsoleWarning("  - " + effectEntry.getKey() + " -> " + effectEntry.getValue().getParticles());
+            getMainUtil().sendDebugMessage("  - " + effectEntry.getKey() + " -> " + effectEntry.getValue().getParticles());
         }
         CustomItems.initiateMissingBlockEffects();
     }
@@ -67,7 +67,6 @@ public class Main extends JavaPlugin {
         String pkgname = Main.getInstance().getServer().getClass().getPackage().getName();
         mcUpdateVersion = pkgname.substring(pkgname.lastIndexOf('.') + 1).replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
         mcUpdateVersionNumber = Integer.parseInt(mcUpdateVersion);
-
         Legacy.init();
 
         //Custom serializations
