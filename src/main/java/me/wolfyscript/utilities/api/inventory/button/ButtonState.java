@@ -40,20 +40,20 @@ public class ButtonState {
     }
 
     public ButtonState(String key, ItemStack presetIcon) {
-        this(key, presetIcon, (guiHandler, player, inventory, slot, event) -> true);
+        this(key, presetIcon, null);
     }
 
     public ButtonState(String key, Material presetIcon) {
-        this(key, new ItemStack(presetIcon), (guiHandler, player, inventory, slot, event) -> true);
+        this(key, new ItemStack(presetIcon), null);
     }
 
     public ButtonState(String key, ItemStack presetIcon, ButtonRender render) {
-        this(key, presetIcon, (guiHandler, player, inventory, slot, event) -> true);
+        this(key, presetIcon, null);
         setRenderAction(render);
     }
 
     public ButtonState(String key, Material presetIcon, ButtonRender render) {
-        this(key, new ItemStack(presetIcon), (guiHandler, player, inventory, slot, event) -> true);
+        this(key, new ItemStack(presetIcon), null);
         setRenderAction(render);
     }
 

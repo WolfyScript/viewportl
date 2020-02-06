@@ -46,7 +46,7 @@ public class EquipListener implements Listener {
         if (!ItemUtils.isAirOrNull(newArmorPiece)) {
             //Equiping new armor!
             if (ItemUtils.isEquipable(newArmorPiece.getType())) {
-                if (newArmorPiece.getType().name().endsWith("_" + event.getType().name()) && newArmorPiece.isBlockVanillaEquip()) {
+                if (!(newArmorPiece.getType().name().endsWith("_" + event.getType().name()) || (event.getType().equals(ArmorType.HELMET) && (newArmorPiece.getType().name().endsWith("_HEAD") || newArmorPiece.getType().name().endsWith("SKULL")) && !newArmorPiece.isBlockVanillaEquip())) && !newArmorPiece.isBlockVanillaEquip()) {
                     event.setCancelled(true);
                 }
             } else {
