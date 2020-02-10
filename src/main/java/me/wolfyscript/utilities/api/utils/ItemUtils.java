@@ -520,6 +520,7 @@ public class ItemUtils {
             case DIAMOND_LEGGINGS:
             case DIAMOND_CHESTPLATE:
             case ELYTRA:
+            case CARVED_PUMPKIN:
             case PLAYER_HEAD:
                 return true;
         }
