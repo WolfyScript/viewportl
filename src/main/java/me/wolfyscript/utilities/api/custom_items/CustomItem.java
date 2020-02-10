@@ -397,11 +397,6 @@ public class CustomItem extends ItemStack implements Cloneable {
                         input.setType(Material.GLASS_BOTTLE);
                     }
                 }
-                if (WolfyUtilities.hasVillagePillageUpdate()) {
-                    if (input.getType().equals(Material.HONEY_BOTTLE)) {
-                        input.setType(Material.BOWL);
-                    }
-                }
             }
             if (this.hasReplacement()) {
                 ItemStack replace = this.getReplacement();
@@ -456,12 +451,6 @@ public class CustomItem extends ItemStack implements Cloneable {
             if (WolfyUtilities.hasBuzzyBeesUpdate()) {
                 if (input.getType().equals(Material.HONEY_BOTTLE)) {
                     input.setType(Material.GLASS_BOTTLE);
-                    return;
-                }
-            }
-            if (WolfyUtilities.hasVillagePillageUpdate()) {
-                if (input.getType().equals(Material.HONEY_BOTTLE)) {
-                    input.setType(Material.BOWL);
                     return;
                 }
             }
