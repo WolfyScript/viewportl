@@ -9,6 +9,7 @@ import me.wolfyscript.utilities.api.utils.ItemUtils;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
+import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Dispenser;
@@ -79,7 +80,16 @@ public class EquipListener implements Listener {
         CustomItem item = CustomItem.getByItemStack(event.isShiftClick() ? event.getCurrentItem() : event.getCursor());
 
         if (item == null) return;
-        //if(!item.hasEquipmentSlot() && !ItemUtils.isEquipable(item.getType())) return;
+
+        /* Some Debug stuff!
+        System.out.println("Slot: "+event.getSlot());
+        System.out.println("RawSlot: "+event.getRawSlot());
+        System.out.println("Click: "+event.getClick());
+        System.out.println("HotbarSlot: "+event.getHotbarButton());
+        System.out.println("Shift: "+shift);
+        System.out.println("Numerkey: "+numberkey);
+        System.out.println("Action: "+event.getAction());
+         */
 
         if (shift) {
             if (!event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
@@ -103,12 +113,14 @@ public class EquipListener implements Listener {
                         if (equipEvent.isCancelled()) {
                             return;
                         }
-                        newArmorPiece = equipEvent.getNewArmorPiece();
+                        int finalSlot = slot;
+                        CustomItem newArmor = equipEvent.getNewArmorPiece();
                         CustomItem oldArmorPiece = equipEvent.getOldArmorPiece();
 
-                        event.getClickedInventory().setItem(slot, ItemUtils.isAirOrNull(newArmorPiece) ? null : newArmorPiece.getRealItem());
-                        event.getClickedInventory().setItem(event.getSlot(), ItemUtils.isAirOrNull(oldArmorPiece) ? null : oldArmorPiece.getRealItem());
-
+                        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+                            event.getClickedInventory().setItem(finalSlot, ItemUtils.isAirOrNull(newArmor) ? null : newArmor.getRealItem());
+                            event.getClickedInventory().setItem(event.getSlot(), ItemUtils.isAirOrNull(oldArmorPiece) ? null : oldArmorPiece.getRealItem());
+                        });
                     }
                 }
             } else {
@@ -156,15 +168,17 @@ public class EquipListener implements Listener {
                         event.setCancelled(true);
                         return;
                     }
-                    newArmorPiece = equipEvent.getNewArmorPiece();
-                    oldArmorPiece = equipEvent.getOldArmorPiece();
-                    if (newArmorPiece != null && ItemUtils.isEquipable(newArmorPiece.getType()) && newArmorPiece.getType().name().endsWith("_" + equipEvent.getType().name())) {
+                    CustomItem newArmor = equipEvent.getNewArmorPiece();
+                    CustomItem oldArmor = equipEvent.getOldArmorPiece();
+                    if (newArmor != null && ItemUtils.isEquipable(newArmor.getType()) && newArmor.getType().name().endsWith("_" + equipEvent.getType().name())) {
                         return;
                     }
                     event.setCancelled(true);
-                    event.getClickedInventory().setItem(event.getSlot(), newArmorPiece.getRealItem());
-                    event.getClickedInventory().setItem(event.getHotbarButton(), ItemUtils.isAirOrNull(oldArmorPiece) ? null : oldArmorPiece.getRealItem());
-                    player.updateInventory();
+                    Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+                        event.getClickedInventory().setItem(event.getSlot(), newArmor.getRealItem());
+                        event.getClickedInventory().setItem(event.getHotbarButton(), ItemUtils.isAirOrNull(oldArmor) ? null : oldArmor.getRealItem());
+                        player.updateInventory();
+                    });
                 }
             } else {
                 // e.getCurrentItem() == Unequip
@@ -187,19 +201,12 @@ public class EquipListener implements Listener {
 
                     ArmorEquipEvent equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.PICK_DROP, ArmorType.getBySlot(event.getSlot()), oldArmorPiece, newArmorPiece);
                     Bukkit.getPluginManager().callEvent(equipEvent);
-                    if (equipEvent.isCancelled()) {
-                        event.setCancelled(true);
-                        return;
-                    }
-                    newArmorPiece = equipEvent.getNewArmorPiece();
-                    oldArmorPiece = equipEvent.getOldArmorPiece();
-                    if (ItemUtils.isEquipable(newArmorPiece.getType()) && newArmorPiece.getType().name().endsWith("_" + armorType.name())) {
-                        return;
-                    }
                     event.setCancelled(true);
-                    event.getClickedInventory().setItem(event.getSlot(), newArmorPiece);
-                    event.getView().setCursor(oldArmorPiece);
-                    player.updateInventory();
+                    if (equipEvent.isCancelled()) {
+                        return;
+                    }
+                    event.getClickedInventory().setItem(event.getSlot(), equipEvent.getNewArmorPiece());
+                    event.setCursor(equipEvent.getOldArmorPiece());
                 }
             }
         }
