@@ -96,14 +96,18 @@ public class BlockListener implements Listener {
     }
 
     private String getCustomItemID(ItemStack itemStack){
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (WolfyUtilities.hasVillagePillageUpdate()) {
-            if (itemMeta.getPersistentDataContainer().has(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
-                return itemMeta.getPersistentDataContainer().get(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING);
-            }
-        } else {
-            if (ItemUtils.isInItemSettings(itemMeta, "custom_item")) {
-                return (String) ItemUtils.getFromItemSettings(itemMeta, "custom_item");
+        if (!ItemUtils.isAirOrNull(itemStack)) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta != null) {
+                if (WolfyUtilities.hasVillagePillageUpdate()) {
+                    if (itemMeta.getPersistentDataContainer().has(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
+                        return itemMeta.getPersistentDataContainer().get(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING);
+                    }
+                } else {
+                    if (ItemUtils.isInItemSettings(itemMeta, "custom_item")) {
+                        return (String) ItemUtils.getFromItemSettings(itemMeta, "custom_item");
+                    }
+                }
             }
         }
         return "";
