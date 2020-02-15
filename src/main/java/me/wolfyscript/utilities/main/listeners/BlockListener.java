@@ -13,6 +13,8 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.type.Bed;
 import org.bukkit.event.EventHandler;
@@ -23,6 +25,7 @@ import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -42,10 +45,24 @@ public class BlockListener implements Listener {
                 storedItem = event1.getCustomItem();
                 if (!event1.isCancelled()) {
                     if (storedItem != null) {
+                        CustomItems.removeStoredBlockItem(block.getLocation());
+                        if (block.getState() instanceof Container) {
+                            Container container = (Container) block.getState();
+                            BlockStateMeta blockStateMeta = (BlockStateMeta) storedItem.getItemMeta();
+                            if (container instanceof ShulkerBox) {
+                                ShulkerBox shulkerBox = (ShulkerBox) blockStateMeta.getBlockState();
+                                shulkerBox.getInventory().setContents(container.getInventory().getContents());
+                                blockStateMeta.setBlockState(shulkerBox);
+                            } else {
+                                Container itemContainer = (Container) blockStateMeta.getBlockState();
+                                itemContainer.getInventory().clear();
+                                blockStateMeta.setBlockState(itemContainer);
+                            }
+                            storedItem.setItemMeta(blockStateMeta);
+                        }
                         if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
                             block.getWorld().dropItemNaturally(block.getLocation(), storedItem);
                         }
-                        CustomItems.removeStoredBlockItem(block.getLocation());
                         if (block.getBlockData() instanceof Bisected) {
                             if (((Bisected) block.getBlockData()).getHalf().equals(Bisected.Half.BOTTOM)) {
                                 CustomItems.removeStoredBlockItem(block.getLocation().add(0, 1, 0));
