@@ -166,9 +166,9 @@ public class GuiHandler<T extends CustomCache> implements Listener {
             Player player1 = getPlayer();
             changingInv = true;
             player1.closeInventory();
-            if (WolfyUtilities.hasPermission(player1, getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT))) {
+            if (WolfyUtilities.hasPermission(player1, getApi().getPlugin().getDescription().getName().toLowerCase(Locale.ROOT) + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT))) {
                 List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
-                if(getCurrentInv(clusterID) == null || !getCurrentInv(clusterID).getNamespace().equals(guiWindowID)){
+                if (getCurrentInv(clusterID) == null || !getCurrentInv(clusterID).getNamespace().equals(guiWindowID)) {
                     history.add(guiWindowID);
                 }
                 clusterHistory.put(clusterID, history);

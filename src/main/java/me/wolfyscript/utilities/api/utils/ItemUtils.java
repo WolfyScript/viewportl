@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.utils;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.custom_items.equipment.ArmorType;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -494,18 +495,53 @@ public class ItemUtils {
     }
 
     public static boolean isEquipable(Material material){
-        if(material.name().endsWith("_CHESTPLATE") || material.name().endsWith("_LEGGINGS") || material.name().endsWith("_HELMET") || material.name().endsWith("_BOOTS")){
+        if (material.name().endsWith("_CHESTPLATE") || material.name().endsWith("_LEGGINGS") || material.name().endsWith("_HELMET") || material.name().endsWith("_BOOTS") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL")) {
             return true;
         }
-        switch (material){
+        switch (material) {
+            case LEATHER_BOOTS:
+            case LEATHER_HELMET:
+            case LEATHER_LEGGINGS:
+            case LEATHER_CHESTPLATE:
+            case IRON_BOOTS:
+            case IRON_HELMET:
+            case IRON_LEGGINGS:
+            case IRON_CHESTPLATE:
+            case GOLDEN_BOOTS:
+            case GOLDEN_HELMET:
+            case GOLDEN_LEGGINGS:
+            case GOLDEN_CHESTPLATE:
+            case CHAINMAIL_BOOTS:
+            case CHAINMAIL_HELMET:
+            case CHAINMAIL_LEGGINGS:
+            case CHAINMAIL_CHESTPLATE:
+            case DIAMOND_BOOTS:
+            case DIAMOND_HELMET:
+            case DIAMOND_LEGGINGS:
+            case DIAMOND_CHESTPLATE:
             case ELYTRA:
+            case CARVED_PUMPKIN:
             case PLAYER_HEAD:
                 return true;
         }
         return false;
     }
 
-    public static boolean isAirOrNull(ItemStack item){
+    public static boolean isEquipable(Material material, ArmorType type) {
+        switch (type) {
+            case HELMET:
+                return material.name().endsWith("_HELMET") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL");
+            case CHESTPLATE:
+                return material.equals(Material.ELYTRA) || material.name().endsWith("_CHESTPLATE");
+            case LEGGINGS:
+                return material.name().endsWith("_LEGGINGS");
+            case BOOTS:
+                return material.name().endsWith("_BOOTS");
+        }
+        return false;
+    }
+
+    public static boolean isAirOrNull(ItemStack item) {
         return item == null || item.getType().equals(Material.AIR);
     }
 }
