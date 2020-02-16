@@ -98,15 +98,17 @@ public class BlockListener implements Listener {
             String customItemID = getCustomItemID(event.getItemInHand());
             if (customItemID != null && !customItemID.isEmpty()) {
                 CustomItem customItem = CustomItems.getCustomItem(customItemID);
-                CustomItemPlaceEvent event1 = new CustomItemPlaceEvent(customItem, event);
-                Bukkit.getPluginManager().callEvent(event1);
-                customItem = event1.getCustomItem();
-                if (!event1.isCancelled()) {
-                    if (customItem != null) {
-                        CustomItems.setStoredBlockItem(event.getBlockPlaced().getLocation(), customItem);
+                if (customItem != null && customItem.getType().isBlock()) {
+                    CustomItemPlaceEvent event1 = new CustomItemPlaceEvent(customItem, event);
+                    Bukkit.getPluginManager().callEvent(event1);
+                    customItem = event1.getCustomItem();
+                    if (!event1.isCancelled()) {
+                        if (customItem != null) {
+                            CustomItems.setStoredBlockItem(event.getBlockPlaced().getLocation(), customItem);
+                        }
+                    } else {
+                        event.setCancelled(true);
                     }
-                } else {
-                    event.setCancelled(true);
                 }
             }
         }
