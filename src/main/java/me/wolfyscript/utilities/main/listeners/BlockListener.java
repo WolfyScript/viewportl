@@ -7,10 +7,7 @@ import me.wolfyscript.utilities.api.custom_items.CustomItemPlaceEvent;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
 import me.wolfyscript.utilities.main.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
@@ -21,13 +18,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class BlockListener implements Listener {
 
@@ -178,6 +179,70 @@ public class BlockListener implements Listener {
     }
 
     @EventHandler
+    public void onPistonExtend(BlockPistonExtendEvent event) {
+        if (!event.isCancelled()) {
+            List<Block> blocks = event.getBlocks();
+            HashMap<Location, CustomItem> newLocations = new HashMap<>();
+            for (Block block : blocks) {
+                CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+                if (storedItem != null) {
+                    CustomItems.removeStoredBlockItem(block.getLocation());
+                    newLocations.put(block.getRelative(event.getDirection()).getLocation(), storedItem);
+                }
+            }
+            for (Map.Entry<Location, CustomItem> entry : newLocations.entrySet()) {
+                CustomItems.setStoredBlockItem(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPistonExtend(BlockPistonRetractEvent event) {
+        if (!event.isCancelled() && event.isSticky()) {
+            List<Block> blocks = event.getBlocks();
+            HashMap<Location, CustomItem> newLocations = new HashMap<>();
+            for (Block block : blocks) {
+                CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+                if (storedItem != null) {
+                    CustomItems.removeStoredBlockItem(block.getLocation());
+                    newLocations.put(block.getRelative(event.getDirection()).getLocation(), storedItem);
+                }
+            }
+            for (Map.Entry<Location, CustomItem> entry : newLocations.entrySet()) {
+                CustomItems.setStoredBlockItem(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    /*
+    Unregisters the placed CustomItem when the block is burned by fire.
+     */
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent event) {
+        if (!event.isCancelled()) {
+            Block block = event.getBlock();
+            CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+            if (storedItem != null) {
+                CustomItems.removeStoredBlockItem(block.getLocation());
+            }
+        }
+    }
+
+    /*
+    Unregisters the placed CustomItem when the CustomItem is a leaf and decays.
+     */
+    @EventHandler
+    public void onBlockBurn(LeavesDecayEvent event) {
+        if (!event.isCancelled()) {
+            Block block = event.getBlock();
+            CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+            if (storedItem != null) {
+                CustomItems.removeStoredBlockItem(block.getLocation());
+            }
+        }
+    }
+
+    @EventHandler
     public void onBlockFade(BlockFadeEvent event) {
         if (!event.isCancelled()) {
             if (event.getNewState().getType().equals(Material.AIR)) {
@@ -189,6 +254,12 @@ public class BlockListener implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void test(EntityChangeBlockEvent event) {
+
+    }
+
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
