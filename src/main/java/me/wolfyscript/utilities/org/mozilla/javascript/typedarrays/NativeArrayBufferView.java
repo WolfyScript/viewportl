@@ -18,14 +18,10 @@ import me.wolfyscript.utilities.org.mozilla.javascript.Undefined;
 
 public abstract class NativeArrayBufferView
         extends IdScriptableObject {
+    protected static final int MAX_INSTANCE_ID = Id_byteLength;
     // to be visible by subclasses
-    protected static final int
-            MAX_INSTANCE_ID = Id_byteLength;
+    private static final int Id_buffer = 1, Id_byteOffset = 2, Id_byteLength = 3;
     private static final long serialVersionUID = 6884475582973958419L;
-    private static final int
-            Id_buffer = 1,
-            Id_byteOffset = 2,
-            Id_byteLength = 3;
     private static Boolean useLittleEndian = null;
     /**
      * Many view objects can share the same backing array

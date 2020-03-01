@@ -18,17 +18,11 @@ import java.util.*;
  */
 
 public abstract class NativeTypedArrayView<T> extends NativeArrayBufferView implements List<T>, RandomAccess, ExternalArrayData {
+    private static final int Id_constructor = 1, Id_toString = 2, Id_get = 3, Id_set = 4, Id_subarray = 5, SymbolId_iterator = 6;
     protected static final int
             MAX_PROTOTYPE_ID = SymbolId_iterator;
     private static final long serialVersionUID = -4963053773152251274L;
     // Table of all functions
-    private static final int
-            Id_constructor = 1,
-            Id_toString = 2,
-            Id_get = 3,
-            Id_set = 4,
-            Id_subarray = 5,
-            SymbolId_iterator = 6;
     /*
      * These must not conflict with ids in the parent since we delegate there for property dispatching.
      */
