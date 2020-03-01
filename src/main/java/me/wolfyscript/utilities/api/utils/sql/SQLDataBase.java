@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.utils.sql;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.*;
@@ -42,7 +43,7 @@ public class SQLDataBase {
         }
     }
 
-    public void openConnection() {
+    public void openConnectionAsync() {
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
@@ -52,23 +53,24 @@ public class SQLDataBase {
         runnable.runTaskAsynchronously(api.getPlugin());
     }
 
+    public void openConnection() {
+        openConnectionAsync();
+    }
+
     public void executeUpdate(PreparedStatement preparedStatement) {
         executeUpdate(preparedStatement, true);
     }
 
     public void executeUpdate(PreparedStatement preparedStatement, boolean async) {
-        if(async){
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    try {
-                        preparedStatement.executeUpdate();
-                        preparedStatement.close();
-                    } catch (SQLException e) {
-                        api.sendConsoleWarning("Failed to execute SQL Query! " + e.getMessage());
-                    }
+        if (async) {
+            Bukkit.getScheduler().runTaskAsynchronously(api.getPlugin(), () -> {
+                try {
+                    preparedStatement.executeUpdate();
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    api.sendConsoleWarning("Failed to execute SQL Query! " + e.getMessage());
                 }
-            }.runTaskAsynchronously(api.getPlugin());
+            });
         }else{
             try {
                 preparedStatement.executeUpdate();

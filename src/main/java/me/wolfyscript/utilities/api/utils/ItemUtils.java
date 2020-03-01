@@ -528,9 +528,10 @@ public class ItemUtils {
     }
 
     public static boolean isEquipable(Material material, ArmorType type) {
+
         switch (type) {
             case HELMET:
-                return material.name().endsWith("_HELMET") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL");
+                return material.name().endsWith("_HELMET") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL") || material.equals(Material.CARVED_PUMPKIN);
             case CHESTPLATE:
                 return material.equals(Material.ELYTRA) || material.name().endsWith("_CHESTPLATE");
             case LEGGINGS:
@@ -543,5 +544,38 @@ public class ItemUtils {
 
     public static boolean isAirOrNull(ItemStack item) {
         return item == null || item.getType().equals(Material.AIR);
+    }
+
+    public static boolean isTool(Material material) {
+        switch (material) {
+            case WOODEN_AXE:
+            case WOODEN_HOE:
+            case WOODEN_SWORD:
+            case WOODEN_SHOVEL:
+            case WOODEN_PICKAXE:
+            case GOLDEN_AXE:
+            case GOLDEN_HOE:
+            case GOLDEN_SWORD:
+            case GOLDEN_SHOVEL:
+            case GOLDEN_PICKAXE:
+            case STONE_AXE:
+            case STONE_HOE:
+            case STONE_SWORD:
+            case STONE_SHOVEL:
+            case STONE_PICKAXE:
+            case IRON_AXE:
+            case IRON_HOE:
+            case IRON_SWORD:
+            case IRON_SHOVEL:
+            case IRON_PICKAXE:
+            case DIAMOND_AXE:
+            case DIAMOND_HOE:
+            case DIAMOND_SWORD:
+            case DIAMOND_SHOVEL:
+            case DIAMOND_PICKAXE:
+                return true;
+            default:
+                return false;
+        }
     }
 }

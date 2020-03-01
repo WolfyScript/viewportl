@@ -271,6 +271,7 @@ public class BlockListener implements Listener {
                     CustomItemPlaceEvent event1 = new CustomItemPlaceEvent(customItem, event);
                     Bukkit.getPluginManager().callEvent(event1);
                     customItem = event1.getCustomItem();
+
                     if (!event1.isCancelled()) {
                         if (customItem != null) {
                             CustomItems.setStoredBlockItem(event.getBlockPlaced().getLocation(), customItem);
