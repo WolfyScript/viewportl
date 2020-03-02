@@ -18,9 +18,9 @@ import me.wolfyscript.utilities.org.mozilla.javascript.Undefined;
 
 public abstract class NativeArrayBufferView
         extends IdScriptableObject {
+    private static final int Id_buffer = 1, Id_byteOffset = 2, Id_byteLength = 3;
     protected static final int MAX_INSTANCE_ID = Id_byteLength;
     // to be visible by subclasses
-    private static final int Id_buffer = 1, Id_byteOffset = 2, Id_byteLength = 3;
     private static final long serialVersionUID = 6884475582973958419L;
     private static Boolean useLittleEndian = null;
     /**

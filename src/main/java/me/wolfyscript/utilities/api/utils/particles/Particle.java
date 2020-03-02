@@ -2,15 +2,15 @@ package me.wolfyscript.utilities.api.utils.particles;
 
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.org.mozilla.javascript.Context;
+import me.wolfyscript.utilities.org.mozilla.javascript.Function;
+import me.wolfyscript.utilities.org.mozilla.javascript.Scriptable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
 
 import javax.annotation.Nullable;
 import java.io.*;
