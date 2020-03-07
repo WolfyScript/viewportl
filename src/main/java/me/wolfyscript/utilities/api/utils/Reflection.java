@@ -29,11 +29,13 @@ public class Reflection {
      * Cache of methods that we've found in particular classes
      */
     private static Map<Class<?>, Map<String, Method>> loadedMethods = new HashMap<>();
+    private static Map<Class<?>, Map<String, Method>> loadedDeclaredMethods = new HashMap<>();
 
     /*
      * Cache of fields that we've found in particular classes
      */
     private static Map<Class<?>, Map<String, Field>> loadedFields = new HashMap<>();
+    private static Map<Class<?>, Map<String, Field>> loadedDeclaredFields = new HashMap<>();
     private static Map<Class<?>, Map<Class, Field>> foundFields = new HashMap<>();
 
     public static String getVersion() {
@@ -140,13 +142,10 @@ public class Reflection {
         if (!loadedMethods.containsKey(clazz)) {
             loadedMethods.put(clazz, new HashMap<String, Method>());
         }
-
         Map<String, Method> methods = loadedMethods.get(clazz);
-
         if (methods.containsKey(methodName)) {
             return methods.get(methodName);
         }
-
         try {
             Method method = clazz.getMethod(methodName, params);
             methods.put(methodName, method);
@@ -156,6 +155,35 @@ public class Reflection {
             e.printStackTrace();
             methods.put(methodName, null);
             loadedMethods.put(clazz, methods);
+            return null;
+        }
+    }
+
+    /**
+     * Get a declared method from a class that has the specific paramaters
+     *
+     * @param clazz      The class we are searching
+     * @param methodName The name of the method
+     * @param params     Any parameters that the method has
+     * @return The method with appropriate paramaters
+     */
+    public static Method getDeclaredMethod(Class<?> clazz, String methodName, Class<?>... params) {
+        if (!loadedDeclaredMethods.containsKey(clazz)) {
+            loadedDeclaredMethods.put(clazz, new HashMap<String, Method>());
+        }
+        Map<String, Method> methods = loadedDeclaredMethods.get(clazz);
+        if (methods.containsKey(methodName)) {
+            return methods.get(methodName);
+        }
+        try {
+            Method method = clazz.getDeclaredMethod(methodName, params);
+            methods.put(methodName, method);
+            loadedDeclaredMethods.put(clazz, methods);
+            return method;
+        } catch (Exception e) {
+            e.printStackTrace();
+            methods.put(methodName, null);
+            loadedDeclaredMethods.put(clazz, methods);
             return null;
         }
     }
@@ -187,6 +215,36 @@ public class Reflection {
             e.printStackTrace();
             fields.put(fieldName, null);
             loadedFields.put(clazz, fields);
+            return null;
+        }
+    }
+
+    /**
+     * Get a declared field with a particular name from a class
+     *
+     * @param clazz     The class
+     * @param fieldName The name of the field
+     * @return The field object
+     */
+    public static Field getDeclaredField(Class<?> clazz, String fieldName) {
+        if (!loadedDeclaredFields.containsKey(clazz)) {
+            loadedDeclaredFields.put(clazz, new HashMap<String, Field>());
+        }
+        Map<String, Field> fields = loadedDeclaredFields.get(clazz);
+
+        if (fields.containsKey(fieldName)) {
+            return fields.get(fieldName);
+        }
+
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+            fields.put(fieldName, field);
+            loadedDeclaredFields.put(clazz, fields);
+            return field;
+        } catch (Exception e) {
+            e.printStackTrace();
+            fields.put(fieldName, null);
+            loadedDeclaredFields.put(clazz, fields);
             return null;
         }
     }
