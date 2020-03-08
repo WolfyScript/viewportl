@@ -9,13 +9,10 @@ public class CustomConfig extends JsonConfiguration {
     private String namespace;
     private String id;
 
-    public CustomConfig(ConfigAPI configAPI, String namespace, String name, String path, String defaultPath, String defaultName, boolean override, String fileType) {
+    public CustomConfig(ConfigAPI configAPI, String namespace, String name, String path, String defaultPath, String defaultName, boolean override) {
         super(configAPI, path, name, defaultPath, defaultName, override);
         this.namespace = namespace;
         this.id = namespace + ":" + name;
-        if (getType().equals(Type.YAML)) {
-            setSaveAfterValueSet(true);
-        }
         setPathSeparator('.');
     }
 

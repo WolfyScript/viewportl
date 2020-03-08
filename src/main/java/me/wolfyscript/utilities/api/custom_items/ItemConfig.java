@@ -10,24 +10,20 @@ import java.util.*;
 
 public class ItemConfig extends CustomConfig {
 
-    public ItemConfig(ConfigAPI configAPI, String namespace, String path, String key, String defaultPath, String defaultName, boolean override, String fileType) {
-        super(configAPI, namespace, key, path, defaultPath, defaultName, override, fileType);
+    public ItemConfig(ConfigAPI configAPI, String namespace, String path, String key, String defaultPath, String defaultName, boolean override) {
+        super(configAPI, namespace, key, path, defaultPath, defaultName, override);
     }
 
-    public ItemConfig(ConfigAPI configAPI, String namespace, String path, String key, String defaultName, boolean override, String fileType) {
-        super(configAPI, namespace, key, path, "me/wolfyscript/utilities/custom_items/", defaultName, override, fileType);
-    }
-
-    public ItemConfig(ConfigAPI configAPI, String namespace, String path, String key, boolean override, String fileType) {
-        super(configAPI, namespace, key, path, "me/wolfyscript/utilities/custom_items/", "item", override, fileType);
+    public ItemConfig(ConfigAPI configAPI, String namespace, String path, String key, String defaultName, boolean override) {
+        super(configAPI, namespace, key, path, "me/wolfyscript/utilities/custom_items/", defaultName, override);
     }
 
     public ItemConfig(ConfigAPI configAPI, String namespace, String path, String key, boolean override) {
-        super(configAPI, namespace, key, path, "me/wolfyscript/utilities/custom_items/", "item", override, "json");
+        super(configAPI, namespace, key, path, "me/wolfyscript/utilities/custom_items/", "item", override);
     }
 
     public ItemConfig(ConfigAPI configAPI, String namespace, String path, String key) {
-        super(configAPI, namespace, key, path, "me/wolfyscript/utilities/custom_items/", "item", false, "json");
+        super(configAPI, namespace, key, path, "me/wolfyscript/utilities/custom_items/", "item", false);
     }
 
     public ItemConfig(String jsonData, ConfigAPI configAPI, String namespace, String key) {
@@ -42,7 +38,7 @@ public class ItemConfig extends CustomConfig {
     Constructors for CustomCrafting compatibility
      */
     public ItemConfig(String namespace, String key, String defPath, String defName, String fileType, boolean override, ConfigAPI configAPI) {
-        super(configAPI, namespace, key, configAPI.getApi().getPlugin().getDataFolder().getParent() + "/CustomCrafting/recipes/" + namespace + "/items", defPath, defName, override, fileType);
+        super(configAPI, namespace, key, configAPI.getApi().getPlugin().getDataFolder().getParent() + "/CustomCrafting/recipes/" + namespace + "/items", defPath, defName, override);
     }
 
     public ItemConfig(String namespace, String key, String defPath, String defName, boolean override, ConfigAPI configAPI) {
