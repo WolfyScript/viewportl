@@ -1,17 +1,16 @@
 package me.wolfyscript.utilities.api.custom_items;
 
-import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.JsonConfiguration;
 import org.bukkit.Material;
 
-public class CustomConfig extends Config {
+public class CustomConfig extends JsonConfiguration {
 
     private String namespace;
     private String id;
 
     public CustomConfig(ConfigAPI configAPI, String namespace, String name, String path, String defaultPath, String defaultName, boolean override, String fileType) {
-        super(configAPI, path, name, defaultPath, defaultName, fileType, override);
+        super(configAPI, path, name, defaultPath, defaultName, override);
         this.namespace = namespace;
         this.id = namespace + ":" + name;
         if (getType().equals(Type.YAML)) {
@@ -71,12 +70,10 @@ public class CustomConfig extends Config {
     }
 
     public void linkToFile(String namespace, String name, String path) {
-        if (this.configuration instanceof JsonConfiguration) {
-            this.namespace = namespace;
-            this.setName(name);
-            this.id = namespace + ":" + name;
-            this.configuration.setName(this.id);
-            ((JsonConfiguration) this.configuration).linkToFile(path + "/" + name);
-        }
+        this.namespace = namespace;
+        this.setName(name);
+        this.id = namespace + ":" + name;
+        setName(this.id);
+        linkToFile(path + "/" + name);
     }
 }

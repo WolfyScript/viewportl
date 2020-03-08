@@ -1,7 +1,6 @@
 package me.wolfyscript.utilities.api.custom_items;
 
 import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.config.JsonConfiguration;
 import me.wolfyscript.utilities.api.custom_items.custom_data.CustomData;
 import org.bukkit.Material;
 import org.bukkit.inventory.EquipmentSlot;
@@ -223,7 +222,7 @@ public class ItemConfig extends CustomConfig {
     }
 
     public ParticleContent getParticleData() {
-        return ((JsonConfiguration) configuration).get(ParticleContent.class, "particles");
+        return get(ParticleContent.class, "particles");
     }
 
     public void setParticleData(ParticleContent particleContent) {
