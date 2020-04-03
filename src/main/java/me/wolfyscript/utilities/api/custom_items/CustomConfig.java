@@ -9,6 +9,7 @@ public class CustomConfig extends JsonConfiguration {
     private String namespace;
     private String id;
 
+
     public CustomConfig(ConfigAPI configAPI, String namespace, String name, String path, String defaultPath, String defaultName, boolean override) {
         super(configAPI, path, name, defaultPath, defaultName, override);
         this.namespace = namespace;
@@ -28,6 +29,15 @@ public class CustomConfig extends JsonConfiguration {
         this.namespace = namespace;
         this.id = namespace + ":" + name;
         setPathSeparator('.');
+    }
+
+    /*
+    Should no longer be used!
+    Won't be used in the upcoming updates! fileType variable is unused, due to the change to Json only config.
+     */
+    @Deprecated
+    public CustomConfig(ConfigAPI configAPI, String namespace, String name, String path, String defaultPath, String defaultName, boolean override, String fileType) {
+        this(configAPI, namespace, name, path, defaultPath, defaultName, override);
     }
 
     public String getNamespace() {
@@ -70,7 +80,6 @@ public class CustomConfig extends JsonConfiguration {
         this.namespace = namespace;
         this.setName(name);
         this.id = namespace + ":" + name;
-        setName(this.id);
         linkToFile(path + "/" + name);
     }
 }
