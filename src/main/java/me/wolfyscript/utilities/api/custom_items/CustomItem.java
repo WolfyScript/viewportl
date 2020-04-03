@@ -231,12 +231,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         } else if (stack == this) {
             return true;
         } else if (stack.getType().equals(this.getType()) && stack.getAmount() >= this.getAmount()) {
-            if (exactMeta || this.hasItemMeta()) {
-                if (this.hasItemMeta() && !stack.hasItemMeta()) {
-                    return false;
-                } else if (!this.hasItemMeta() && stack.hasItemMeta()) {
-                    return false;
-                }
+            if (exactMeta || this.hasItemMeta() || this.hasConfig()) {
                 ItemMeta stackMeta = stack.getItemMeta();
                 ItemMeta currentMeta = this.getItemMeta();
                 if (!getMetaSettings().checkMeta(stackMeta, currentMeta)) {
