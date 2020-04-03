@@ -98,7 +98,7 @@ public class WolfyUtilities implements Listener {
         return Main.getMcUpdateVersionNumber() >= Integer.parseInt(versionString.replace("_", "").replace(".", "").replace("-", ""));
     }
 
-    public static boolean hasSpecificUpdate(int versionNumber){
+    public static boolean hasSpecificUpdate(int versionNumber) {
         return Main.getMcUpdateVersionNumber() >= versionNumber;
     }
 
@@ -365,9 +365,9 @@ public class WolfyUtilities implements Listener {
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
             if (b[i] == '&') {
-                if(b[i+1] == '&'){
+                if (b[i + 1] == '&') {
                     b[i + 1] = '=';
-                }else{
+                } else {
                     b[i] = 167;
                     b[i + 1] = Character.toLowerCase(b[i + 1]);
                 }
@@ -428,21 +428,21 @@ public class WolfyUtilities implements Listener {
         boolean rowBlocked = false;
         while (!rowBlocked && rowIterator.hasNext()) {
             String row = rowIterator.next();
-            if(StringUtils.isBlank(row)){
+            if (StringUtils.isBlank(row)) {
                 rowIterator.remove();
-            }else{
+            } else {
                 rowBlocked = true;
             }
         }
-        while(rowIterator.hasNext()){
+        while (rowIterator.hasNext()) {
             rowIterator.next();
         }
         rowBlocked = false;
         while (!rowBlocked && rowIterator.hasPrevious()) {
             String row = rowIterator.previous();
-            if(StringUtils.isBlank(row)){
+            if (StringUtils.isBlank(row)) {
                 rowIterator.remove();
-            }else{
+            } else {
                 rowBlocked = true;
             }
         }
@@ -558,22 +558,22 @@ public class WolfyUtilities implements Listener {
         return languageAPI != null;
     }
 
-    public InventoryAPI getInventoryAPI(){
+    public InventoryAPI getInventoryAPI() {
         return getInventoryAPI(inventoryAPI.craftCustomCache().getClass());
     }
 
-    public <T extends CustomCache> InventoryAPI<T> getInventoryAPI(Class<T> type){
-        if(hasInventoryAPI() && type.isInstance(inventoryAPI.craftCustomCache())){
+    public <T extends CustomCache> void setInventoryAPI(InventoryAPI<T> inventoryAPI) {
+        this.inventoryAPI = inventoryAPI;
+    }
+
+    public <T extends CustomCache> InventoryAPI<T> getInventoryAPI(Class<T> type) {
+        if (hasInventoryAPI() && type.isInstance(inventoryAPI.craftCustomCache())) {
             return (InventoryAPI<T>) inventoryAPI;
-        }else if(!hasInventoryAPI()){
+        } else if (!hasInventoryAPI()) {
             inventoryAPI = new InventoryAPI<>(plugin, this, type);
             return inventoryAPI;
         }
-        throw new InvalidCacheTypeException("Cache type "+type.getName()+" expected, got "+inventoryAPI.craftCustomCache().getClass().getName()+"!");
-    }
-
-    public <T extends CustomCache> void setInventoryAPI(InventoryAPI<T> inventoryAPI){
-        this.inventoryAPI = inventoryAPI;
+        throw new InvalidCacheTypeException("Cache type " + type.getName() + " expected, got " + inventoryAPI.craftCustomCache().getClass().getName() + "!");
     }
 
     public boolean hasInventoryAPI() {
@@ -673,20 +673,20 @@ public class WolfyUtilities implements Listener {
     Sends a global message from an GuiCluster to the player!
      */
     public void sendPlayerMessage(Player player, String guiCluster, String msgKey) {
-        sendPlayerMessage(player, "$inventories."+guiCluster+".global_messages."+msgKey+"$");
+        sendPlayerMessage(player, "$inventories." + guiCluster + ".global_messages." + msgKey + "$");
     }
 
     public void sendPlayerMessage(Player player, String guiCluster, String guiWindow, String msgKey) {
-        sendPlayerMessage(player, "$inventories."+guiCluster+"."+guiWindow+".messages."+msgKey+"$");
+        sendPlayerMessage(player, "$inventories." + guiCluster + "." + guiWindow + ".messages." + msgKey + "$");
     }
 
     public void sendPlayerMessage(Player player, String guiCluster, String msgKey, String[]... replacements) {
-        String message = "$inventories."+guiCluster+".global_messages."+msgKey+"$";
+        String message = "$inventories." + guiCluster + ".global_messages." + msgKey + "$";
         sendPlayerMessage(player, message, replacements);
     }
 
     public void sendPlayerMessage(Player player, String guiCluster, String guiWindow, String msgKey, String[]... replacements) {
-        String message = "$inventories."+guiCluster+"."+guiWindow+".messages."+msgKey+"$";
+        String message = "$inventories." + guiCluster + "." + guiWindow + ".messages." + msgKey + "$";
         sendPlayerMessage(player, message, replacements);
     }
 
@@ -756,7 +756,6 @@ public class WolfyUtilities implements Listener {
     }
 
 
-
     public void sendDebugMessage(String message) {
         if (hasDebuggingMode()) {
             String prefix = ChatColor.translateAlternateColorCodes('&', "[&4CC&r] ");
@@ -779,6 +778,38 @@ public class WolfyUtilities implements Listener {
                 Main.getInstance().getServer().getConsoleSender().sendMessage(message);
             }
         }
+    }
+
+    public ItemStack translateItemStack(ItemStack itemStack) {
+        if (itemStack != null) {
+            if (itemStack.hasItemMeta()) {
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                if (itemMeta.hasDisplayName()) {
+                    String displayName = itemMeta.getDisplayName();
+                    if (getLanguageAPI().getActiveLanguage() != null) {
+                        displayName = getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
+                    }
+                    itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
+                }
+                if (itemMeta.hasLore() && getLanguageAPI().getActiveLanguage() != null) {
+                    List<String> newLore = new ArrayList<>();
+                    for (String row : itemMeta.getLore()) {
+                        if (row.startsWith("[WU]")) {
+                            newLore.add(getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
+                        } else if (row.startsWith("[WU!]")) {
+                            for (String newRow : getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()))) {
+                                newLore.add(WolfyUtilities.translateColorCodes(newRow));
+                            }
+                        } else {
+                            newLore.add(row);
+                        }
+                    }
+                    itemMeta.setLore(newLore);
+                }
+                itemStack.setItemMeta(itemMeta);
+            }
+        }
+        return itemStack;
     }
 
 

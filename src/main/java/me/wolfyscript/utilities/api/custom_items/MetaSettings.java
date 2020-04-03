@@ -7,7 +7,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 public class MetaSettings {
 
@@ -28,6 +31,7 @@ public class MetaSettings {
         addMeta(new UnbreakableMeta());
         addMeta(new CustomDamageMeta());
         addMeta(new CustomDurabilityMeta());
+        addMeta(new CustomItemTagMeta());
     }
 
     public MetaSettings(String jsonString) {
