@@ -13,22 +13,25 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
     private boolean cancel = false;
     private final EquipMethod equipType;
     private final ArmorType type;
-    private CustomItem oldArmorPiece, newArmorPiece;
+    private final CustomItem oldCustomArmorPiece, newCustomArmorPiece;
+    private ItemStack oldArmorPiece, newArmorPiece;
 
     /**
      * Constructor for the ArmorEquipEvent.
      *
-     * @param player The player who put on / removed the armor.
-     * @param type The ArmorType of the armor added
+     * @param player        The player who put on / removed the armor.
+     * @param type          The ArmorType of the armor added
      * @param oldArmorPiece The ItemStack of the armor removed.
      * @param newArmorPiece The ItemStack of the armor added.
      */
-    public ArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final CustomItem oldArmorPiece, final CustomItem newArmorPiece){
+    public ArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final ItemStack oldArmorPiece, final ItemStack newArmorPiece, CustomItem oldCustomArmorPiece, CustomItem newCustomArmorPiece) {
         super(player);
         this.equipType = equipType;
         this.type = type;
         this.oldArmorPiece = oldArmorPiece;
         this.newArmorPiece = newArmorPiece;
+        this.oldCustomArmorPiece = oldCustomArmorPiece;
+        this.newCustomArmorPiece = newCustomArmorPiece;
     }
 
     /**
@@ -75,29 +78,29 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
     /**
      * Returns the last equipped armor piece, could be a piece of armor, {@link org.bukkit.Material#AIR}, or null.
      */
-    public final CustomItem getOldArmorPiece(){
+    public final ItemStack getOldArmorPiece() {
         return oldArmorPiece;
-    }
-
-    public final void setOldArmorPiece(final CustomItem oldArmorPiece){
-        this.oldArmorPiece = oldArmorPiece;
     }
 
     /**
      * Returns the newly equipped armor, could be a piece of armor, {@link org.bukkit.Material#AIR}, or null.
      */
-    public final CustomItem getNewArmorPiece(){
+    public final ItemStack getNewArmorPiece() {
         return newArmorPiece;
     }
 
-    public final void setNewArmorPiece(final CustomItem newArmorPiece){
-        this.newArmorPiece = newArmorPiece;
+    public CustomItem getOldCustomArmorPiece() {
+        return oldCustomArmorPiece;
+    }
+
+    public CustomItem getNewCustomArmorPiece() {
+        return newCustomArmorPiece;
     }
 
     /**
      * Gets the method used to either equip or unequip an armor piece.
      */
-    public EquipMethod getMethod(){
+    public EquipMethod getMethod() {
         return equipType;
     }
 
