@@ -78,6 +78,7 @@ public class ItemConfig extends CustomConfig {
         } else {
             setAllowedBlocks(itemStack.getAllowedBlocks());
         }
+
     }
 
     public void setItem(ItemStack itemStack) {

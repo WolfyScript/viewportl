@@ -37,18 +37,19 @@ public class CustomItem extends ItemStack implements Cloneable {
     private HashMap<String, CustomData> customDataMap = new HashMap<>();
 
     private ItemConfig config;
+    private CustomItem replacement;
     private String id;
     private String permission;
     private double rarityPercentage;
     private int burnTime;
-    private ArrayList<Material> allowedBlocks;
-    private boolean consumed;
-    private CustomItem replacement;
     private int durabilityCost;
-    private MetaSettings metaSettings;
+    private boolean consumed;
+    private boolean canBePlaced;
     private boolean blockVanillaEquip;
+    private ArrayList<Material> allowedBlocks;
     private List<EquipmentSlot> equipmentSlots;
     private ParticleContent particleContent;
+    private MetaSettings metaSettings;
 
     public CustomItem(ItemConfig config, boolean replace) {
         super(config.getCustomItem(replace));
@@ -90,6 +91,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.equipmentSlots = new ArrayList<>();
         this.particleContent = new ParticleContent();
         this.blockVanillaEquip = false;
+        this.canBePlaced = true;
     }
 
     public CustomItem(Material material) {

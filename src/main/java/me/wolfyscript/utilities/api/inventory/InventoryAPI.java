@@ -267,16 +267,6 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getMessage() != null) {
-            if (event.getMessage().equals("[WolfyUtilities CANCELED]")) {
-                event.setMessage("");
-                event.setCancelled(true);
-            }
-        }
-    }
-
     /*
     Checks if the player sending the message has active chat events. If he has, it's executed!
     It sets the message to a canceled string, so the following event knows to cancel it.
@@ -288,13 +278,10 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
         if (event.getMessage() != null) {
             if (hasGuiHandler(event.getPlayer())) {
                 GuiHandler guiHandler = getGuiHandler(event.getPlayer());
-                if (guiHandler.isChatEventActive() && !event.getMessage().startsWith("wu::")) {
-                    if (guiHandler.getChatInputAction() != null && !guiHandler.getChatInputAction().onChat(guiHandler, event.getPlayer(), event.getMessage(), event.getMessage().split(" "))) {
-                        guiHandler.setChatInputAction(null);
-                        guiHandler.openCluster();
-                    }
-                    event.setMessage("[WolfyUtilities CANCELED]");
+                if (guiHandler.isChatEventActive()) {
+                    //Wraps normal written message into command to be executed
                     event.setCancelled(true);
+                    Bukkit.getScheduler().runTask(plugin, () -> event.getPlayer().chat("/wui " + event.getMessage()));
                 }
             }
         }
@@ -302,8 +289,20 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
 
     @EventHandler
     public void onCancel(PlayerCommandPreprocessEvent event) {
-        if (hasGuiHandler(event.getPlayer())) {
+        if (!event.getMessage().startsWith("/wua") && hasGuiHandler(event.getPlayer())) {
             GuiHandler guiHandler = getGuiHandler(event.getPlayer());
+            if (event.getMessage().startsWith("/wui")) {
+                //Handles ChatInput
+                if (guiHandler.isChatEventActive()) {
+                    String message = event.getMessage().substring("/wui".length()).trim();
+                    if (guiHandler.getChatInputAction() != null && !guiHandler.getChatInputAction().onChat(guiHandler, event.getPlayer(), message, message.split(" "))) {
+                        guiHandler.setChatInputAction(null);
+                        guiHandler.openCluster();
+                    }
+                    event.setCancelled(true);
+                }
+                return;
+            }
             if (guiHandler.isChatEventActive()) {
                 guiHandler.cancelChatEvent();
             }
