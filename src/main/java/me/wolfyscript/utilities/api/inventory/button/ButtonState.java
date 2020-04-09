@@ -5,6 +5,7 @@ import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class ButtonState {
 
@@ -25,18 +26,44 @@ public class ButtonState {
         this.action = action;
     }
 
-    public ButtonState(String key, Material presetIcon, ButtonAction action) {
-        this(key, new ItemStack(presetIcon), action);
-    }
-
     public ButtonState(String key, ItemStack presetIcon, ButtonActionRender action) {
         this.key = key;
         this.presetIcon = presetIcon;
         this.action = action;
     }
 
+    public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonAction action) {
+        this.key = key;
+        this.presetIcon = presetIcon;
+        ItemMeta itemMeta = this.presetIcon.getItemMeta();
+        itemMeta.setCustomModelData(customModelData);
+        this.presetIcon.setItemMeta(itemMeta);
+        this.action = action;
+    }
+
+    public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonActionRender action) {
+        this.key = key;
+        this.presetIcon = presetIcon;
+        ItemMeta itemMeta = this.presetIcon.getItemMeta();
+        itemMeta.setCustomModelData(customModelData);
+        this.presetIcon.setItemMeta(itemMeta);
+        this.action = action;
+    }
+
+    public ButtonState(String key, Material presetIcon, ButtonAction action) {
+        this(key, new ItemStack(presetIcon), action);
+    }
+
     public ButtonState(String key, Material presetIcon, ButtonActionRender action) {
         this(key, new ItemStack(presetIcon), action);
+    }
+
+    public ButtonState(String key, Material presetIcon, int customModelData, ButtonAction action) {
+        this(key, new ItemStack(presetIcon), customModelData, action);
+    }
+
+    public ButtonState(String key, Material presetIcon, int customModelData, ButtonActionRender action) {
+        this(key, new ItemStack(presetIcon), customModelData, action);
     }
 
     public ButtonState(String key, ItemStack presetIcon) {
@@ -64,9 +91,28 @@ public class ButtonState {
         this.key = key;
     }
 
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonAction action) {
+        this.action = action;
+        this.presetIcon = presetIcon;
+        ItemMeta itemMeta = this.presetIcon.getItemMeta();
+        itemMeta.setCustomModelData(customModelData);
+        this.presetIcon.setItemMeta(itemMeta);
+        this.clusterID = clusterID;
+        this.key = key;
+    }
+
     public ButtonState(String clusterID, String key, Material presetIcon, ButtonAction action) {
         this(clusterID, key, new ItemStack(presetIcon), action);
     }
+
+    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonAction action) {
+        this(clusterID, key, new ItemStack(presetIcon), customModelData, action);
+    }
+
+
+    /*
+    Not linked to language file
+     */
 
     public ButtonState(ItemStack presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action) {
         this.action = action;
@@ -78,11 +124,13 @@ public class ButtonState {
         this(new ItemStack(presetIcon), displayName, helpLore, normalLore, action);
     }
 
+    //------------------------------------------------
+
     public void init(GuiWindow window) {
         if (key != null && !key.isEmpty()) {
-            String path = "inventories."+ window.getClusterID() + "." + window.getNamespace() + ".items." + key;
-            if(clusterID != null && !clusterID.isEmpty()){
-                path = "inventories."+ clusterID + ".global_items." + key;
+            String path = "inventories." + window.getClusterID() + "." + window.getNamespace() + ".items." + key;
+            if (clusterID != null && !clusterID.isEmpty()) {
+                path = "inventories." + clusterID + ".global_items." + key;
             }
             displayName = window.getAPI().getLanguageAPI().getActiveLanguage().replaceKeys("$" + path + ".name" + "$");
             helpLore = window.getAPI().getLanguageAPI().getActiveLanguage().getConfig().get(path + ".help") != null ? window.getAPI().getLanguageAPI().getActiveLanguage().replaceKey(path + ".help").toArray(new String[0]) : new String[0];
