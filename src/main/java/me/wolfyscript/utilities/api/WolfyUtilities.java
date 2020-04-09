@@ -30,7 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
 
 public class WolfyUtilities implements Listener {
 
-    private static HashMap<Plugin, WolfyUtilities> wolfyUtilitiesList = new HashMap<>();
+    private static final HashMap<Plugin, WolfyUtilities> wolfyUtilitiesList = new HashMap<>();
     private static CustomItems customItems;
     private static Particles particles;
     private static ParticleEffects particleEffects;
@@ -124,6 +124,10 @@ public class WolfyUtilities implements Listener {
 
     public static boolean hasPlaceHolderAPI() {
         return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
+    }
+
+    public static boolean hasMcMMO() {
+        return hasClass("com.gmail.nossr50.mcMMO");
     }
 
     private static HashMap<String, Boolean> classes = new HashMap<>();
@@ -472,17 +476,16 @@ public class WolfyUtilities implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void actionCommands(AsyncPlayerChatEvent event) {
-        if (event.getMessage() != null && event.getMessage().startsWith("wu::")) {
+    public void actionCommands(PlayerCommandPreprocessEvent event) {
+        if (event.getMessage().startsWith("/wua ")) {
             UUID uuid;
             try {
-                uuid = UUID.fromString(event.getMessage().substring("wu::".length()));
+                uuid = UUID.fromString(event.getMessage().substring("/wua ".length()));
             } catch (IllegalArgumentException expected) {
                 return;
             }
             PlayerAction action = clickDataMap.get(uuid);
             Player player = event.getPlayer();
-            event.setMessage("");
             event.setCancelled(true);
             if (action != null) {
                 if (player.getUniqueId().equals(action.getUuid())) {
@@ -496,7 +499,6 @@ public class WolfyUtilities implements Listener {
             }
         }
     }
-
 
     /*
         Non Static methods and constructor down below!
@@ -741,7 +743,7 @@ public class WolfyUtilities implements Listener {
                 }
                 PlayerAction playerAction = new PlayerAction(this, player, data);
                 clickDataMap.put(id, playerAction);
-                component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "wu::" + id.toString()));
+                component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/wua " + id.toString()));
             }
             for (ChatEvent chatEvent : data.getChatEvents()) {
                 if (chatEvent instanceof HoverEvent) {

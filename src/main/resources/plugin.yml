@@ -8,6 +8,7 @@ softdepend:
   - WorldGuard
   - MythicMobs
   - BungeeChat
+  - mcMMO
 
 main: me.wolfyscript.utilities.main.Main
 
@@ -16,3 +17,7 @@ commands:
     description: displays version of this plugin
   particle_effect:
     description: spawn/stop particle effects
+  wua:
+    description: handles and executes ChatClickActions
+  wui:
+    description: handles and executes ChatInputs
