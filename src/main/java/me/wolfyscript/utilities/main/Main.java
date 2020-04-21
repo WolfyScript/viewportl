@@ -16,6 +16,7 @@ import me.wolfyscript.utilities.api.utils.particles.Particle;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
 import me.wolfyscript.utilities.api.utils.particles.Particles;
+import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
 import me.wolfyscript.utilities.main.listeners.BlockListener;
 import me.wolfyscript.utilities.main.listeners.EquipListener;
@@ -116,6 +117,8 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EquipListener(), this);
         Bukkit.getPluginManager().registerEvents(new WolfyUtilities(this), this);
         Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand());
+        Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand());
+        Bukkit.getServer().getPluginCommand("wui").setTabCompleter(new InputCommand());
 
         Metrics metrics = new Metrics(this, 5114);
 

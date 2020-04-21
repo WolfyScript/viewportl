@@ -7,6 +7,7 @@ import me.wolfyscript.utilities.api.config.MemoryConfiguration;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Language {
 
@@ -50,7 +51,44 @@ public class Language {
         return msg;
     }
 
-    public String replaceColoredKeys(String msg){
+    public List<String> replaceKeys(List<String> msg) {
+        Pattern pattern = Pattern.compile("[$]([a-zA-Z0-9._]*?)[$]");
+        List<String> result = new ArrayList<>();
+
+        msg.forEach(s -> {
+            List<String> keys = new ArrayList<>();
+            Matcher matcher = pattern.matcher(s);
+            while (matcher.find()) {
+                keys.add(matcher.group(0));
+            }
+            if (keys.size() > 1) {
+                for (String key : keys) {
+                    Object object = messages.get(key.replace("$", ""));
+                    if (object instanceof String) {
+                        result.add(WolfyUtilities.translateColorCodes(s.replace(key, (String) object)));
+                    } else if (object instanceof List) {
+                        StringBuilder sB = new StringBuilder();
+                        List<String> list = (List<String>) object;
+                        list.forEach(translatedS -> sB.append(' ').append(translatedS));
+                        result.add(WolfyUtilities.translateColorCodes(s.replace(key, sB.toString())));
+                    }
+                }
+            } else {
+                String key = keys.get(0);
+                Object object = messages.get(key.replace("$", ""));
+
+                if (object instanceof String) {
+                    result.add(WolfyUtilities.translateColorCodes(s.replace(key, (String) object)));
+                } else if (object instanceof List) {
+                    List<String> list = (List<String>) object;
+                    result.addAll(list.stream().map(s1 -> WolfyUtilities.translateColorCodes(s1)).collect(Collectors.toList()));
+                }
+            }
+        });
+        return result;
+    }
+
+    public String replaceColoredKeys(String msg) {
         return WolfyUtilities.translateColorCodes(replaceKeys(msg));
     }
 

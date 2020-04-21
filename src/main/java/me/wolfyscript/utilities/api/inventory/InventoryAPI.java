@@ -15,7 +15,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.Plugin;
 
 import javax.annotation.Nonnull;
@@ -279,32 +278,11 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
             if (hasGuiHandler(event.getPlayer())) {
                 GuiHandler guiHandler = getGuiHandler(event.getPlayer());
                 if (guiHandler.isChatEventActive()) {
+                    final String message = event.getMessage();
                     //Wraps normal written message into command to be executed
-                    event.setCancelled(true);
-                    Bukkit.getScheduler().runTask(plugin, () -> event.getPlayer().chat("/wui " + event.getMessage()));
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onCancel(PlayerCommandPreprocessEvent event) {
-        if (!event.getMessage().startsWith("/wua") && hasGuiHandler(event.getPlayer())) {
-            GuiHandler guiHandler = getGuiHandler(event.getPlayer());
-            if (event.getMessage().startsWith("/wui")) {
-                //Handles ChatInput
-                if (guiHandler.isChatEventActive()) {
-                    String message = event.getMessage().substring("/wui".length()).trim();
-                    if (guiHandler.getChatInputAction() != null && !guiHandler.getChatInputAction().onChat(guiHandler, event.getPlayer(), message, message.split(" "))) {
-                        guiHandler.setChatInputAction(null);
-                        guiHandler.openCluster();
-                    }
+                    Bukkit.getScheduler().runTask(getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wui " + getPlugin().getName() + " " + event.getPlayer().getUniqueId().toString() + " " + message));
                     event.setCancelled(true);
                 }
-                return;
-            }
-            if (guiHandler.isChatEventActive()) {
-                guiHandler.cancelChatEvent();
             }
         }
     }

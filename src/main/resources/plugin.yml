@@ -2,6 +2,11 @@ name: WolfyUtilities
 api-version: 1.13
 version: ${project.version}
 author: WolfyScript
+
+loadbefore:
+  - ChatColor
+  - ChatColor2
+
 softdepend:
   - LWC
   - PlotSquared
