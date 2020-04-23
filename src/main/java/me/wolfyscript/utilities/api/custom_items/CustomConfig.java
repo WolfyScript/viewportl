@@ -61,9 +61,9 @@ public class CustomConfig extends JsonConfiguration {
 
     public void saveCustomItem(String path, CustomItem customItem) {
         if (customItem != null) {
-            if (!customItem.getId().isEmpty() && !customItem.getId().equals("NULL")) {
-                set(path + ".item_key", customItem.getId());
-                set(path + ".custom_amount", customItem.getAmount() != CustomItems.getCustomItem(customItem.getId()).getAmount() ? customItem.getAmount() : 0);
+            if (customItem.getNamespacedKey() != null) {
+                set(path + ".item_key", customItem.getNamespacedKey().toString());
+                set(path + ".custom_amount", customItem.getAmount() != CustomItems.getCustomItem(customItem.getNamespacedKey()).getAmount() ? customItem.getAmount() : 0);
             } else {
                 setItem(path + ".item", customItem.getItemStack());
             }
@@ -75,7 +75,7 @@ public class CustomConfig extends JsonConfiguration {
     public CustomItem getCustomItem(String path) {
         String id = getString(path + ".item_key");
         if (id != null && !id.isEmpty()) {
-            CustomItem customItem = CustomItems.getCustomItem(id);
+            CustomItem customItem = CustomItems.getCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
             int i = getInt(path + ".custom_amount");
             if (i != 0) {
                 customItem.setAmount(i);

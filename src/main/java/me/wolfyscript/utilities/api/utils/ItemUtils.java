@@ -27,6 +27,7 @@ import java.util.*;
 
 public class ItemUtils {
 
+
     /**
      * Converts an {@link org.bukkit.inventory.ItemStack} to a Json string
      * for sending with {@link net.md_5.bungee.api.chat.BaseComponent}'s.

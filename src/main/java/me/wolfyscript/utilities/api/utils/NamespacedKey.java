@@ -1,8 +1,11 @@
 package me.wolfyscript.utilities.api.utils;
 
 import com.google.common.base.Preconditions;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class NamespacedKey {
@@ -19,6 +22,17 @@ public class NamespacedKey {
         this.key = key;
         String string = this.toString();
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters", string);
+    }
+
+    public NamespacedKey(@NotNull Plugin plugin, @NotNull String key) {
+        Preconditions.checkArgument(plugin != null, "Plugin cannot be null");
+        Preconditions.checkArgument(key != null, "Key cannot be null");
+        this.namespace = plugin.getName().toLowerCase(Locale.ROOT);
+        this.key = key.toLowerCase(Locale.ROOT);
+        Preconditions.checkArgument(VALID_NAMESPACE.matcher(this.namespace).matches(), "Invalid namespace. Must be [a-z0-9._-]: %s", this.namespace);
+        Preconditions.checkArgument(VALID_KEY.matcher(this.key).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", this.key);
+        String string = this.toString();
+        Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters (%s)", string);
     }
 
     @Nonnull

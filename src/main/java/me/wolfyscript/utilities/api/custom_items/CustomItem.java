@@ -4,11 +4,11 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.custom_data.CustomData;
 import me.wolfyscript.utilities.api.utils.InventoryUtils;
 import me.wolfyscript.utilities.api.utils.ItemUtils;
+import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.main.Main;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -38,6 +38,7 @@ public class CustomItem extends ItemStack implements Cloneable {
 
     private ItemConfig config;
     private CustomItem replacement;
+    private NamespacedKey namespacedKey;
     private String id;
     private String permission;
     private double rarityPercentage;
@@ -54,6 +55,7 @@ public class CustomItem extends ItemStack implements Cloneable {
     public CustomItem(ItemConfig config, boolean replace) {
         super(config.getCustomItem(replace));
         this.config = config;
+        this.namespacedKey = config.getNamespacedKey();
         this.id = config.getId();
         this.burnTime = config.getBurnTime();
         this.allowedBlocks = config.getAllowedBlocks();
@@ -77,6 +79,7 @@ public class CustomItem extends ItemStack implements Cloneable {
         super(itemStack);
         this.config = null;
         this.id = "";
+        this.namespacedKey = null;
         this.burnTime = 0;
         this.allowedBlocks = new ArrayList<>();
         this.replacement = null;
@@ -98,8 +101,43 @@ public class CustomItem extends ItemStack implements Cloneable {
         this(new ItemStack(material));
     }
 
-    public String getId() {
-        return id;
+    /*
+    CustomItem static methods
+     */
+    public static CustomItem getByItemStack(ItemStack itemStack) {
+        if (itemStack != null) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta != null) {
+                CustomItem customItem = null;
+                if (WolfyUtilities.hasVillagePillageUpdate()) {
+                    if (itemMeta.getPersistentDataContainer().has(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
+                        customItem = CustomItems.getCustomItem(itemMeta.getPersistentDataContainer().get(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING));
+                    }
+                } else {
+                    if (ItemUtils.isInItemSettings(itemMeta, "custom_item")) {
+                        customItem = CustomItems.getCustomItem((String) ItemUtils.getFromItemSettings(itemMeta, "custom_item"));
+                    }
+                }
+                if (customItem != null) {
+                    customItem.setAmount(itemStack.getAmount());
+                    return customItem;
+                }
+                return new CustomItem(itemStack);
+            }
+            return new CustomItem(itemStack);
+        }
+        return null;
+    }
+
+    /*
+        Checks if the itemmeta has Custom Durability set.
+    */
+    public static boolean hasCustomDurability(ItemMeta itemMeta) {
+        if (itemMeta != null) {
+            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            return dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER);
+        }
+        return false;
     }
 
     public boolean hasReplacement() {
@@ -139,9 +177,26 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.metaSettings = metaSettings;
     }
 
-    public boolean hasID() {
-        return !id.isEmpty();
+    public static void setCustomDurability(ItemMeta itemMeta, int durability) {
+        if (itemMeta != null) {
+            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER, durability);
+            if (!dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER)) {
+                dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER, 0);
+            }
+            setDurabilityTag(itemMeta);
+        }
     }
+
+    public static void removeCustomDurability(ItemMeta itemMeta) {
+        if (itemMeta != null) {
+            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            dataContainer.remove(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"));
+            dataContainer.remove(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"));
+            dataContainer.remove(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"));
+        }
+    }
+
 
     public boolean hasConfig() {
         return config != null;
@@ -278,51 +333,22 @@ public class CustomItem extends ItemStack implements Cloneable {
         return getRealItem();
     }
 
-    public CustomItem getRealItem() {
-        if (hasConfig()) {
-            CustomItem customItem = new CustomItem(config, true);
-            if (customItem.getType().equals(this.getType())) {
-                customItem.setAmount(this.getAmount());
+    public static int getCustomDurability(ItemMeta itemMeta) {
+        if (itemMeta != null) {
+            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            if (dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER)) {
+                return dataContainer.get(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER);
             }
-            ItemMeta itemMeta = customItem.getItemMeta();
-            if (WolfyUtilities.hasVillagePillageUpdate()) {
-                itemMeta.getPersistentDataContainer().set(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING, customItem.getId());
-            } else {
-                ItemUtils.setToItemSettings(itemMeta, "custom_item", customItem.getId());
-            }
-            customItem.setItemMeta(itemMeta);
-            return customItem;
         }
-        return clone();
+        return 0;
     }
 
-
-    /*
-    CustomItem static methods
-     */
-    public static CustomItem getByItemStack(ItemStack itemStack) {
-        if(itemStack != null){
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            if (itemMeta != null) {
-                CustomItem customItem = null;
-                if (WolfyUtilities.hasVillagePillageUpdate()) {
-                    if (itemMeta.getPersistentDataContainer().has(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
-                        customItem = CustomItems.getCustomItem(itemMeta.getPersistentDataContainer().get(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING));
-                    }
-                } else {
-                    if (ItemUtils.isInItemSettings(itemMeta, "custom_item")) {
-                        customItem = CustomItems.getCustomItem((String) ItemUtils.getFromItemSettings(itemMeta, "custom_item"));
-                    }
-                }
-                if (customItem != null) {
-                    customItem.setAmount(itemStack.getAmount());
-                    return customItem;
-                }
-                return new CustomItem(itemStack);
-            }
-            return new CustomItem(itemStack);
+    public static void setCustomDamage(ItemMeta itemMeta, int damage) {
+        if (itemMeta != null) {
+            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER, damage);
+            setDurabilityTag(itemMeta);
         }
-        return null;
     }
 
     private static boolean isIDItem(ItemStack itemStack) {
@@ -502,15 +528,14 @@ public class CustomItem extends ItemStack implements Cloneable {
         return hasCustomDurability(itemStack.getItemMeta());
     }
 
-    /*
-        Checks if the itemmeta has Custom Durability set.
-    */
-    public static boolean hasCustomDurability(ItemMeta itemMeta) {
+    public static int getCustomDamage(ItemMeta itemMeta) {
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            return dataContainer.has(new NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER);
+            if (dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER)) {
+                return dataContainer.get(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER);
+            }
         }
-        return false;
+        return 0;
     }
 
     public static void setCustomDurability(ItemStack itemStack, int durability) {
@@ -521,13 +546,10 @@ public class CustomItem extends ItemStack implements Cloneable {
         itemStack.setItemMeta(itemMeta);
     }
 
-    public static void setCustomDurability(ItemMeta itemMeta, int durability) {
+    public static void setCustomDurabilityTag(ItemMeta itemMeta, String tag) {
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.set(new NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER, durability);
-            if (!dataContainer.has(new NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER)) {
-                dataContainer.set(new NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER, 0);
-            }
+            dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING, tag);
             setDurabilityTag(itemMeta);
         }
     }
@@ -538,27 +560,22 @@ public class CustomItem extends ItemStack implements Cloneable {
         itemStack.setItemMeta(itemMeta);
     }
 
-    public static void removeCustomDurability(ItemMeta itemMeta) {
+    public static String getCustomDurabilityTag(ItemMeta itemMeta) {
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.remove(new NamespacedKey(Main.getInstance(), "customDurability.value"));
-            dataContainer.remove(new NamespacedKey(Main.getInstance(), "customDurability.damage"));
-            dataContainer.remove(new NamespacedKey(Main.getInstance(), "customDurability.tag"));
+            if (dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING)) {
+                return dataContainer.get(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING);
+            }
         }
+        return "";
     }
 
     public static int getCustomDurability(ItemStack itemStack) {
         return getCustomDurability(itemStack.getItemMeta());
     }
 
-    public static int getCustomDurability(ItemMeta itemMeta) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            if (dataContainer.has(new NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER)) {
-                return dataContainer.get(new NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER);
-            }
-        }
-        return 0;
+    public NamespacedKey getNamespacedKey() {
+        return namespacedKey;
     }
 
     public static void setCustomDamage(ItemStack itemStack, int damage) {
@@ -570,26 +587,18 @@ public class CustomItem extends ItemStack implements Cloneable {
         itemStack.setItemMeta(itemMeta);
     }
 
-    public static void setCustomDamage(ItemMeta itemMeta, int damage) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.set(new NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER, damage);
-            setDurabilityTag(itemMeta);
-        }
+    @Deprecated
+    public String getId() {
+        return id;
     }
 
     public static int getCustomDamage(ItemStack itemStack) {
         return getCustomDamage(itemStack.getItemMeta());
     }
 
-    public static int getCustomDamage(ItemMeta itemMeta) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            if (dataContainer.has(new NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER)) {
-                return dataContainer.get(new NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER);
-            }
-        }
-        return 0;
+    @Deprecated
+    public boolean hasID() {
+        return !id.isEmpty();
     }
 
     public static void setCustomDurabilityTag(ItemStack itemStack, String tag) {
@@ -598,26 +607,30 @@ public class CustomItem extends ItemStack implements Cloneable {
         itemStack.setItemMeta(itemMeta);
     }
 
-    public static void setCustomDurabilityTag(ItemMeta itemMeta, String tag) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.set(new NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING, tag);
-            setDurabilityTag(itemMeta);
-        }
+    public boolean hasNamespacedKey() {
+        return namespacedKey != null;
     }
 
     public static String getCustomDurabilityTag(ItemStack itemStack) {
         return getCustomDurabilityTag(itemStack.getItemMeta());
     }
 
-    public static String getCustomDurabilityTag(ItemMeta itemMeta) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            if (dataContainer.has(new NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING)) {
-                return dataContainer.get(new NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING);
+    public CustomItem getRealItem() {
+        if (hasConfig()) {
+            CustomItem customItem = new CustomItem(config, true);
+            if (customItem.getType().equals(this.getType())) {
+                customItem.setAmount(this.getAmount());
             }
+            ItemMeta itemMeta = customItem.getItemMeta();
+            if (WolfyUtilities.hasVillagePillageUpdate()) {
+                itemMeta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING, customItem.getNamespacedKey().toString());
+            } else {
+                ItemUtils.setToItemSettings(itemMeta, "custom_item", customItem.getNamespacedKey().toString());
+            }
+            customItem.setItemMeta(itemMeta);
+            return customItem;
         }
-        return "";
+        return clone();
     }
 
     public static void setDurabilityTag(ItemStack itemStack) {
