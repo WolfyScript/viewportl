@@ -36,6 +36,31 @@ public class CustomItems {
         return new ArrayList<>(customItems.values());
     }
 
+    @Deprecated
+    public static CustomItem getCustomItem(String id) {
+        return getCustomItem(id, true);
+    }
+
+    @Deprecated
+    public static CustomItem getCustomItem(String id, boolean replace) {
+        return getCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]), replace);
+    }
+
+    @Deprecated
+    public static CustomItem getCustomItem(String key, String name) {
+        return getCustomItem(key + ":" + name);
+    }
+
+    @Deprecated
+    public static CustomItem getCustomItem(String key, String name, boolean replace) {
+        return getCustomItem(key + ":" + name, replace);
+    }
+
+    @Deprecated
+    public static void removeCustomItem(String id) {
+        removeCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
+    }
+
     public static CustomItem getCustomItem(NamespacedKey namespacedKey) {
         return getCustomItem(namespacedKey, true);
     }
@@ -49,34 +74,16 @@ public class CustomItems {
         return null;
     }
 
-    @Deprecated
-    public static CustomItem getCustomItem(String key) {
-        return getCustomItem(key, true);
-    }
-
-    @Deprecated
-    public static CustomItem getCustomItem(String key, boolean replace) {
-        return getCustomItem(new NamespacedKey(key.split(":")[0], key.split(":")[1]), replace);
+    public static void removeCustomItem(NamespacedKey namespacedKey) {
+        customItems.remove(namespacedKey);
     }
 
     public static void addCustomItem(CustomItem item) {
         customItems.put(item.getNamespacedKey(), item);
     }
 
-    public static void removeCustomItem(String id) {
-        customItems.remove(id);
-    }
-
     public static void removeCustomItem(CustomItem item) {
         customItems.remove(item.getNamespacedKey());
-    }
-
-    public static CustomItem getCustomItem(String key, String name) {
-        return getCustomItem(key + ":" + name);
-    }
-
-    public static CustomItem getCustomItem(String key, String name, boolean replace) {
-        return getCustomItem(key + ":" + name, replace);
     }
 
     public static void setCustomItem(ItemConfig itemConfig) {
