@@ -5,6 +5,8 @@ import me.wolfyscript.utilities.api.config.JsonConfiguration;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import org.bukkit.Material;
 
+import java.util.Locale;
+
 public class CustomConfig extends JsonConfiguration {
 
     private String namespace;
@@ -33,6 +35,20 @@ public class CustomConfig extends JsonConfiguration {
         this.namespace = namespace;
         this.namespacedKey = new NamespacedKey(namespace, name);
         this.id = namespace + ":" + name;
+        setPathSeparator('.');
+    }
+
+    /*
+    Only use this constructor when linkToFile() is being invoked later.
+
+    As long as linkTofile() isn't invoked, getNamespacedKey() will return null
+    and getNamespace(), getId() will return an empty String!
+     */
+    public CustomConfig(ConfigAPI configAPI, String defaultPath, String defaultName) {
+        super(configAPI, "", defaultPath, defaultName);
+        this.namespace = "";
+        this.namespacedKey = null;
+        this.id = "";
         setPathSeparator('.');
     }
 
@@ -75,7 +91,7 @@ public class CustomConfig extends JsonConfiguration {
     public CustomItem getCustomItem(String path) {
         String id = getString(path + ".item_key");
         if (id != null && !id.isEmpty()) {
-            CustomItem customItem = CustomItems.getCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
+            CustomItem customItem = CustomItems.getCustomItem(new NamespacedKey(id.split(":")[0].toLowerCase(Locale.ROOT), id.split(":")[1].toLowerCase(Locale.ROOT)));
             int i = getInt(path + ".custom_amount");
             if (i != 0) {
                 customItem.setAmount(i);
@@ -87,10 +103,20 @@ public class CustomConfig extends JsonConfiguration {
         return new CustomItem(Material.AIR);
     }
 
+    public void linkToFile(NamespacedKey namespacedKey, String path) {
+        this.namespace = namespacedKey.getNamespace();
+        this.setName(namespacedKey.getKey());
+        this.id = namespacedKey.getNamespace() + ":" + namespacedKey.getKey();
+        this.namespacedKey = namespacedKey;
+        linkToFile(path + "/" + namespacedKey.getKey());
+    }
+
+    @Deprecated
     public void linkToFile(String namespace, String name, String path) {
         this.namespace = namespace;
         this.setName(name);
         this.id = namespace + ":" + name;
+        this.namespacedKey = new NamespacedKey(namespace, name);
         linkToFile(path + "/" + name);
     }
 }
