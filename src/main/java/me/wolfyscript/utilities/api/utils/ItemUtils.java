@@ -28,6 +28,11 @@ import java.util.*;
 public class ItemUtils {
 
 
+    private static Class<?> craftItemStackClazz = Reflection.getOBC("inventory.CraftItemStack");
+    private static Class<?> nmsItemStackClazz = Reflection.getNMS("ItemStack");
+    private static Class<?> nbtTagCompoundClazz = Reflection.getNMS("NBTTagCompound");
+
+
     /**
      * Converts an {@link org.bukkit.inventory.ItemStack} to a Json string
      * for sending with {@link net.md_5.bungee.api.chat.BaseComponent}'s.
@@ -37,11 +42,9 @@ public class ItemUtils {
      */
     public static String convertItemStackToJson(ItemStack itemStack) {
         // ItemStack methods to get a net.minecraft.server.ItemStack object for serialization
-        Class<?> craftItemStackClazz = Reflection.getOBC("inventory.CraftItemStack");
         Method asNMSCopyMethod = Reflection.getMethod(craftItemStackClazz, "asNMSCopy", ItemStack.class);
 
         // NMS Method to serialize a net.minecraft.server.ItemStack to a valid Json string
-        Class<?> nmsItemStackClazz = Reflection.getNMS("ItemStack");
         Class<?> nbtTagCompoundClazz = Reflection.getNMS("NBTTagCompound");
         Method saveNmsItemStackMethod = Reflection.getMethod(nmsItemStackClazz, "save", nbtTagCompoundClazz);
 
@@ -72,9 +75,6 @@ public class ItemUtils {
      * @return the ItemStack representation of the Json String
      */
     public static ItemStack convertJsontoItemStack(String json) {
-        Class<?> craftItemStackClazz = Reflection.getOBC("inventory.CraftItemStack");
-        Class<?> nmsItemStackClazz = Reflection.getNMS("ItemStack");
-        Class<?> nbtTagCompoundClazz = Reflection.getNMS("NBTTagCompound");
         Class<?> mojangParser = Reflection.getNMS("MojangsonParser");
 
         Method parseMethod = Reflection.getMethod(mojangParser, "parse", String.class);
