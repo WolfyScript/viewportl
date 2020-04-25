@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-public class NamespacedKey {
+public class NamespacedKey implements Comparable<NamespacedKey> {
 
     private static final Pattern VALID_NAMESPACE = Pattern.compile("[a-z0-9._-]+");
     private static final Pattern VALID_KEY = Pattern.compile("[a-z0-9/._-]+");
@@ -66,5 +66,11 @@ public class NamespacedKey {
 
     public String toString() {
         return this.namespace + ":" + this.key;
+    }
+
+    @Override
+    public int compareTo(@NotNull NamespacedKey namespacedKey) {
+        int namepsaceDifference = getNamespace().compareTo(namespacedKey.getNamespace());
+        return namepsaceDifference == 0 ? getKey().compareTo(namespacedKey.getKey()) : namepsaceDifference;
     }
 }
