@@ -13,6 +13,7 @@ import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Dispenser;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -128,6 +129,9 @@ public class EquipListener implements Listener {
                 //Unequip
 
                 ArmorEquipEvent equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.getBySlot(event.getSlot()), event.getCurrentItem(), null, oldArmorPiece, null);
+                if (oldArmorPiece != null && oldArmorPiece.hasItemMeta() && oldArmorPiece.getItemMeta().hasEnchant(Enchantment.BINDING_CURSE)) {
+                    equipEvent.setCancelled(true);
+                }
                 Bukkit.getPluginManager().callEvent(equipEvent);
                 if (equipEvent.isCancelled()) {
                     event.setCancelled(true);
@@ -170,6 +174,9 @@ public class EquipListener implements Listener {
                         oldCustomArmorPiece = CustomItem.getByItemStack(oldArmorPiece);
                     }
                     ArmorEquipEvent equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.HOTBAR_SWAP, ArmorType.getBySlot(event.getSlot()), oldArmorPiece, newArmorPiece, oldCustomArmorPiece, newCustomArmorPiece);
+                    if (oldArmorPiece != null && oldArmorPiece.hasItemMeta() && oldArmorPiece.getItemMeta().hasEnchant(Enchantment.BINDING_CURSE)) {
+                        equipEvent.setCancelled(true);
+                    }
                     Bukkit.getPluginManager().callEvent(equipEvent);
                     if (equipEvent.isCancelled()) {
                         event.setCancelled(true);
@@ -207,6 +214,9 @@ public class EquipListener implements Listener {
                     }
 
                     ArmorEquipEvent equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.PICK_DROP, ArmorType.getBySlot(event.getSlot()), oldArmorPiece, newArmorPiece, oldCustomArmorPiece, newCustomArmorPiece);
+                    if (oldArmorPiece != null && oldArmorPiece.hasItemMeta() && oldArmorPiece.getItemMeta().hasEnchant(Enchantment.BINDING_CURSE)) {
+                        equipEvent.setCancelled(true);
+                    }
                     Bukkit.getPluginManager().callEvent(equipEvent);
                     event.setCancelled(true);
                     if (equipEvent.isCancelled()) {

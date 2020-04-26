@@ -32,7 +32,6 @@ public class EnityUtils {
 
     @Deprecated
     public Entity convertJsonToEntity(String json) {
-
         return null;
     }
 }

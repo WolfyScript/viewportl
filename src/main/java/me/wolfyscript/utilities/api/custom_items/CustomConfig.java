@@ -33,7 +33,11 @@ public class CustomConfig extends JsonConfiguration {
     public CustomConfig(ConfigAPI configAPI, String namespace, String name, String defaultPath, String defaultName) {
         super(configAPI, name, defaultPath, defaultName);
         this.namespace = namespace;
-        this.namespacedKey = new NamespacedKey(namespace, name);
+        if (namespace.isEmpty() || name.isEmpty()) {
+            this.namespacedKey = null;
+        } else {
+            this.namespacedKey = new NamespacedKey(namespace, name);
+        }
         this.id = namespace + ":" + name;
         setPathSeparator('.');
     }
