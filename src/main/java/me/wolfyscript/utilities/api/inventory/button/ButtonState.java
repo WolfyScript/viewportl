@@ -94,9 +94,11 @@ public class ButtonState {
     public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonAction action) {
         this.action = action;
         this.presetIcon = presetIcon;
-        ItemMeta itemMeta = this.presetIcon.getItemMeta();
-        itemMeta.setCustomModelData(customModelData);
-        this.presetIcon.setItemMeta(itemMeta);
+        if (WolfyUtilities.hasVillagePillageUpdate()) {
+            ItemMeta itemMeta = this.presetIcon.getItemMeta();
+            itemMeta.setCustomModelData(customModelData);
+            this.presetIcon.setItemMeta(itemMeta);
+        }
         this.clusterID = clusterID;
         this.key = key;
     }
