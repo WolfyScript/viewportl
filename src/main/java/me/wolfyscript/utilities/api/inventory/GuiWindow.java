@@ -4,12 +4,10 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.utils.chat.ClickData;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,16 +16,15 @@ import java.util.List;
 public class GuiWindow implements Listener {
 
     private String clusterID;
-    private String namespace;
+    private final String namespace;
     public String itemKey;
-    private InventoryAPI inventoryAPI;
-    private HashMap<GuiHandler, Inventory> cachedInventories;
-    private HashMap<String, Button> buttons = new HashMap<>();
-
+    private final InventoryAPI inventoryAPI;
+    private final HashMap<GuiHandler, Inventory> cachedInventories;
+    private final HashMap<String, Button> buttons = new HashMap<>();
 
     //Inventory
-    private InventoryType inventoryType;
-    private int size;
+    private final InventoryType inventoryType;
+    private final int size;
 
     public GuiWindow(String namespace, InventoryAPI inventoryAPI, int size) {
         this(namespace, namespace, inventoryAPI, null, size);

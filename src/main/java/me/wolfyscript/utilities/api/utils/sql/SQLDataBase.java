@@ -2,18 +2,20 @@ package me.wolfyscript.utilities.api.utils.sql;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.*;
 
 public class SQLDataBase {
 
-    private WolfyUtilities api;
+    private final WolfyUtilities api;
 
     private Connection connection;
 
-    private String host, database, username, password;
-    private int port;
+    private final String host;
+    private final String database;
+    private final String username;
+    private final String password;
+    private final int port;
 
     public SQLDataBase(WolfyUtilities api, String host, String database, String username, String password, int port) {
         this.api = api;
@@ -35,7 +37,7 @@ public class SQLDataBase {
                     return;
                 }
                 Class.forName("com.mysql.jdbc.Driver");
-                connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
+                connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database + "?useUnicode=true&characterEncoding=utf8", username, password);
                 api.sendConsoleMessage("Connected to MySQL DataBase");
             }
         } catch (ClassNotFoundException | SQLException e) {
@@ -44,13 +46,7 @@ public class SQLDataBase {
     }
 
     public void openConnectionAsync() {
-        BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                openConnectionOnMainThread();
-            }
-        };
-        runnable.runTaskAsynchronously(api.getPlugin());
+        Bukkit.getScheduler().runTaskAsynchronously(api.getPlugin(), this::openConnectionOnMainThread);
     }
 
     public void openConnection() {
