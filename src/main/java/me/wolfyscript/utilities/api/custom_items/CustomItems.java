@@ -22,11 +22,11 @@ import java.util.*;
 
 public class CustomItems {
 
-    private static TreeMap<NamespacedKey, CustomItem> customItems = new TreeMap<>();
+    private static final TreeMap<NamespacedKey, CustomItem> customItems = new TreeMap<>();
 
-    private static HashMap<Location, Pair<NamespacedKey, UUID>> storedBlocks = new HashMap<>();
+    private static final HashMap<Location, Pair<NamespacedKey, UUID>> storedBlocks = new HashMap<>();
 
-    private static HashMap<UUID, HashMap<EquipmentSlot, UUID>> playerItemParticles = new HashMap<>();
+    private static final HashMap<UUID, HashMap<EquipmentSlot, UUID>> playerItemParticles = new HashMap<>();
 
     public CustomItems(Plugin plugin) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::save, 12000, 12000);
@@ -196,7 +196,6 @@ public class CustomItems {
             }
         }
     }
-
 
     private static String locationToString(Location location) {
         return location.getWorld().getUID() + ";" + location.getBlockX() + ";" + location.getBlockY() + ";" + location.getBlockZ();

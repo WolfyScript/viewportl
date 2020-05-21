@@ -27,7 +27,7 @@ public class CustomItem extends ItemStack implements Cloneable {
 
     //This HashMap contains all the available CustomData objects, which then can be saved and loaded.
     //If the config contains CustomData that is not available in this HashMap, then it won't be loaded!
-    private static HashMap<String, CustomData> availableCustomData = new HashMap<>();
+    private static final HashMap<String, CustomData> availableCustomData = new HashMap<>();
 
     /*
     Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
@@ -35,11 +35,11 @@ public class CustomItem extends ItemStack implements Cloneable {
     Only the single CustomData objects can be edit in it's values.
      */
     private HashMap<String, CustomData> customDataMap = new HashMap<>();
-
-    private ItemConfig config;
+    private final ItemConfig config;
+    private final NamespacedKey namespacedKey;
     private CustomItem replacement;
-    private NamespacedKey namespacedKey;
-    private String id;
+    private final String id;
+    private final ArrayList<Material> allowedBlocks;
     private String permission;
     private double rarityPercentage;
     private int burnTime;
@@ -47,8 +47,14 @@ public class CustomItem extends ItemStack implements Cloneable {
     private boolean consumed;
     private boolean canBePlaced;
     private boolean blockVanillaEquip;
-    private ArrayList<Material> allowedBlocks;
-    private List<EquipmentSlot> equipmentSlots;
+    private final List<EquipmentSlot> equipmentSlots;
+    /**
+     * Upcoming change to CustomItem will include an APIReference to link it
+     * to other external APIs.
+     *
+     * @see APIReference
+     */
+    private APIReference apiReference;
     private ParticleContent particleContent;
     private MetaSettings metaSettings;
 
@@ -206,32 +212,6 @@ public class CustomItem extends ItemStack implements Cloneable {
         return config;
     }
 
-    public ItemStack getIDItem(int amount) {
-        if (getType().equals(Material.AIR)) {
-            return new ItemStack(Material.AIR);
-        }
-        ItemStack idItem = new ItemStack(this.clone());
-        if (!this.id.isEmpty()) {
-            ItemMeta idItemMeta = idItem.getItemMeta();
-            if (idItemMeta.hasDisplayName() && !WolfyUtilities.unhideString(idItemMeta.getDisplayName()).endsWith(":id_item")) {
-                idItemMeta.setDisplayName(idItemMeta.getDisplayName() + WolfyUtilities.hideString(":id_item"));
-            } else {
-                idItemMeta.setDisplayName(WolfyUtilities.hideString("%NO_NAME%") + "§r" + WordUtils.capitalizeFully(idItem.getType().name().replace("_", " ")) + WolfyUtilities.hideString(":id_item"));
-            }
-            List<String> lore = idItemMeta.hasLore() ? idItemMeta.getLore() : new ArrayList<>();
-            lore.add("");
-            lore.add("§7[§3§lID_ITEM§r§7]");
-            lore.add("§3" + this.id);
-            idItemMeta.setLore(lore);
-            idItem.setItemMeta(idItemMeta);
-        }
-        idItem.setAmount(amount);
-        return idItem;
-    }
-
-    public ItemStack getIDItem() {
-        return getIDItem(this.getAmount());
-    }
 
     public int getBurnTime() {
         return burnTime;
@@ -266,14 +246,14 @@ public class CustomItem extends ItemStack implements Cloneable {
     }
 
     public void addEquipmentSlots(EquipmentSlot... slots) {
-        for (EquipmentSlot slot : slots){
-            if(!equipmentSlots.contains(slot)){
+        for (EquipmentSlot slot : slots) {
+            if (!equipmentSlots.contains(slot)) {
                 equipmentSlots.add(slot);
             }
         }
     }
 
-    public void removeEquipmentSlots(EquipmentSlot... slots){
+    public void removeEquipmentSlots(EquipmentSlot... slots) {
         equipmentSlots.removeAll(Arrays.asList(slots));
     }
 
@@ -301,6 +281,13 @@ public class CustomItem extends ItemStack implements Cloneable {
         return false;
     }
 
+
+    /**
+     * If linked to config it will create a new instance with the values of the config,
+     * else copys this instance ItemStack.
+     *
+     * @return exact copy of this instance
+     */
     @Override
     public CustomItem clone() {
         CustomItem customItem;
@@ -313,24 +300,92 @@ public class CustomItem extends ItemStack implements Cloneable {
         return customItem;
     }
 
-    /*
-    This will call the super.clone() method to get the ItemStack.
-    All CustomItem variables will get lost!
-    @Deprecated     This will not provide the ItemStack with an NBT which stores the CustomItem id!
-                    So it would be impossible to check to which CustomItem this ItemStack belongs to.
-                    getItemStack() or getRealItem() should be used instead!
+    /**
+     * This will call the super.clone() method to get the ItemStack.
+     * All CustomItem variables will get lost!
+     *
+     * @deprecated This will not provide the ItemStack with an NBT Tag which stores the CustomItem id!
+     * So it would be impossible to check to which CustomItem this ItemStack belongs to.
+     * {@link #getItemStack()} or {@link #getRealItem()} should be used instead!
      */
-
     @Deprecated
     public ItemStack getAsItemStack() {
         return super.clone();
     }
 
-    /*
-    This just refers to the getRealItem() and only returns an ItemStack Object, but the name might be more useful.
+    /**
+     * This just refers to the getRealItem() and only returns an ItemStack Object, but the name might be more useful.
+     *
+     * @see #getRealItem()
      */
     public ItemStack getItemStack() {
         return getRealItem();
+    }
+
+
+    /**
+     * If this CustomItem instance is linked to a config it creates a new instance of the CustomItem and translates language keys
+     * and adds a NBT Tag containing the namespacekey of the item,
+     * else invokes the {@link #clone()} method.
+     *
+     * @return CustomItem including a NBT Tag with the namespacekey or {@link #clone()}
+     */
+    public CustomItem getRealItem() {
+        if (hasConfig()) {
+            CustomItem customItem = new CustomItem(config, true);
+            if (customItem.getType().equals(this.getType())) {
+                customItem.setAmount(this.getAmount());
+            }
+            ItemMeta itemMeta = customItem.getItemMeta();
+            if (WolfyUtilities.hasVillagePillageUpdate()) {
+                itemMeta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING, customItem.getNamespacedKey().toString());
+            } else {
+                ItemUtils.setToItemSettings(itemMeta, "custom_item", customItem.getNamespacedKey().toString());
+            }
+            customItem.setItemMeta(itemMeta);
+            return customItem;
+        }
+        return clone();
+    }
+
+    /**
+     * This item should only be used to visulize the namespacekey!
+     * It doesn't include a NBT Tag with the namspacekey and non of the WU features!
+     *
+     * @param amount The stacksize of the item
+     * @return ItemStack that visually represents the namespacekey
+     */
+    public ItemStack getIDItem(int amount) {
+        if (getType().equals(Material.AIR)) {
+            return new ItemStack(Material.AIR);
+        }
+        ItemStack idItem = new ItemStack(this.clone());
+        if (!this.id.isEmpty()) {
+            ItemMeta idItemMeta = idItem.getItemMeta();
+            if (idItemMeta.hasDisplayName() && !WolfyUtilities.unhideString(idItemMeta.getDisplayName()).endsWith(":id_item")) {
+                idItemMeta.setDisplayName(idItemMeta.getDisplayName() + WolfyUtilities.hideString(":id_item"));
+            } else {
+                idItemMeta.setDisplayName(WolfyUtilities.hideString("%NO_NAME%") + "§r" + WordUtils.capitalizeFully(idItem.getType().name().replace("_", " ")) + WolfyUtilities.hideString(":id_item"));
+            }
+            List<String> lore = idItemMeta.hasLore() ? idItemMeta.getLore() : new ArrayList<>();
+            lore.add("");
+            lore.add("§7[§3§lID_ITEM§r§7]");
+            lore.add("§3" + this.id);
+            idItemMeta.setLore(lore);
+            idItem.setItemMeta(idItemMeta);
+        }
+        idItem.setAmount(amount);
+        return idItem;
+    }
+
+    /**
+     * Returns the id item with the default stacksize of this instance!
+     *
+     * @return ItemStack that visually represents the namespacekey
+     * @see #getIDItem(int)
+     */
+    public ItemStack getIDItem() {
+        return getIDItem(this.getAmount());
     }
 
     public static int getCustomDurability(ItemMeta itemMeta) {
@@ -520,10 +575,10 @@ public class CustomItem extends ItemStack implements Cloneable {
     public static void registerCustomData(CustomData customData) {
         availableCustomData.put(customData.getId(), customData);
     }
-
     /*
     Checks if the itemstack has Custom Durability set.
      */
+
     public static boolean hasCustomDurability(ItemStack itemStack) {
         return hasCustomDurability(itemStack.getItemMeta());
     }
@@ -615,24 +670,6 @@ public class CustomItem extends ItemStack implements Cloneable {
         return getCustomDurabilityTag(itemStack.getItemMeta());
     }
 
-    public CustomItem getRealItem() {
-        if (hasConfig()) {
-            CustomItem customItem = new CustomItem(config, true);
-            if (customItem.getType().equals(this.getType())) {
-                customItem.setAmount(this.getAmount());
-            }
-            ItemMeta itemMeta = customItem.getItemMeta();
-            if (WolfyUtilities.hasVillagePillageUpdate()) {
-                itemMeta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING, customItem.getNamespacedKey().toString());
-            } else {
-                ItemUtils.setToItemSettings(itemMeta, "custom_item", customItem.getNamespacedKey().toString());
-            }
-            customItem.setItemMeta(itemMeta);
-            return customItem;
-        }
-        return clone();
-    }
-
     public static void setDurabilityTag(ItemStack itemStack) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         setDurabilityTag(itemMeta);
@@ -663,4 +700,17 @@ public class CustomItem extends ItemStack implements Cloneable {
     public void setParticleContent(ParticleContent particleContent) {
         this.particleContent = particleContent;
     }
+
+    /**
+     * These enums are used to link the CustomItem to other external API!
+     * <p>
+     * CustomItems with DEFAULT can use the internal features of WU like customData, Equipment, etc.
+     *
+     * @deprecated This feature is not yet implemented and might change completely!
+     */
+    @Deprecated
+    public enum APIReference {
+        DEFAULT, ORAXEN, ITEMSADDER, MYTHICMOBS, MMOITEMS
+    }
+
 }

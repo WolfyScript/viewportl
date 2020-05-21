@@ -11,7 +11,7 @@ public class ButtonState {
 
     private String clusterID;
     private String key;
-    private ItemStack presetIcon;
+    private final ItemStack presetIcon;
     private ItemStack[] icon;
     private ButtonAction action;
     private ButtonRender buttonRender = null;
@@ -35,18 +35,22 @@ public class ButtonState {
     public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonAction action) {
         this.key = key;
         this.presetIcon = presetIcon;
-        ItemMeta itemMeta = this.presetIcon.getItemMeta();
-        itemMeta.setCustomModelData(customModelData);
-        this.presetIcon.setItemMeta(itemMeta);
+        if (WolfyUtilities.hasVillagePillageUpdate()) {
+            ItemMeta itemMeta = this.presetIcon.getItemMeta();
+            itemMeta.setCustomModelData(customModelData);
+            this.presetIcon.setItemMeta(itemMeta);
+        }
         this.action = action;
     }
 
     public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonActionRender action) {
         this.key = key;
         this.presetIcon = presetIcon;
-        ItemMeta itemMeta = this.presetIcon.getItemMeta();
-        itemMeta.setCustomModelData(customModelData);
-        this.presetIcon.setItemMeta(itemMeta);
+        if (WolfyUtilities.hasVillagePillageUpdate()) {
+            ItemMeta itemMeta = this.presetIcon.getItemMeta();
+            itemMeta.setCustomModelData(customModelData);
+            this.presetIcon.setItemMeta(itemMeta);
+        }
         this.action = action;
     }
 
@@ -115,7 +119,6 @@ public class ButtonState {
     /*
     Not linked to language file
      */
-
     public ButtonState(ItemStack presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action) {
         this.action = action;
         this.presetIcon = presetIcon;
