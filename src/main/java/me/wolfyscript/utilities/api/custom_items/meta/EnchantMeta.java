@@ -3,7 +3,7 @@ package me.wolfyscript.utilities.api.custom_items.meta;
 
 import me.wolfyscript.utilities.api.custom_items.Meta;
 import me.wolfyscript.utilities.api.custom_items.MetaSettings;
-import org.bukkit.inventory.meta.ItemMeta;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 
 public class EnchantMeta extends Meta {
 
@@ -14,14 +14,10 @@ public class EnchantMeta extends Meta {
     }
 
     @Override
-    public boolean check(ItemMeta meta1, ItemMeta meta2) {
+    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
         if (option.equals(MetaSettings.Option.IGNORE)) {
-            if (meta1.hasEnchants()) {
-                meta1.getEnchants().keySet().forEach(meta1::removeEnchant);
-            }
-            if (meta2.hasEnchants()) {
-                meta2.getEnchants().keySet().forEach(meta2::removeEnchant);
-            }
+            itemOther.getItemMeta().getEnchants().keySet().forEach(itemOther::removeEnchantment);
+            item.getItemMeta().getEnchants().keySet().forEach(item::removeEnchantment);
         }
         return true;
     }

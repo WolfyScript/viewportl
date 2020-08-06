@@ -1,18 +1,24 @@
 package me.wolfyscript.utilities.api.utils.particles;
 
-import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.config.JsonConfiguration;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
+import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,40 +26,29 @@ import java.util.concurrent.atomic.AtomicInteger;
 /*
 Contains the ParticleEffects
  */
-public class ParticleEffects extends JsonConfiguration {
+@JsonSerialize(using = ParticleEffects.Serializer.class)
+public class ParticleEffects {
 
-    private static Map<NamespacedKey, ParticleEffect> particleEffects = new HashMap<>();
+    private static final Map<NamespacedKey, ParticleEffect> particleEffects = new HashMap<>();
 
-    private static LinkedHashMap<UUID, BukkitTask> currentEffects = new LinkedHashMap<>();
-    private String namespace;
+    private static final LinkedHashMap<UUID, BukkitTask> currentEffects = new LinkedHashMap<>();
 
-    public ParticleEffects(ConfigAPI configAPI) {
-        this(configAPI, "", configAPI.getPlugin().getDataFolder().getPath(), "me/wolfyscript/utilities/api/utils/particles/defaults");
+    private final String namespace;
+    private final String path;
+    private final Plugin plugin;
+
+    public ParticleEffects(Plugin plugin){
+        this(plugin, plugin.getName().toLowerCase(Locale.ROOT).replace(" ", "_"));
     }
 
-    public ParticleEffects(ConfigAPI configAPI, String namespace) {
-        this(configAPI, namespace, false);
+    public ParticleEffects(Plugin plugin, String namespace){
+        this(plugin, namespace, "");
     }
 
-    public ParticleEffects(ConfigAPI configAPI, String namespace, boolean override) {
-        this(configAPI, namespace, configAPI.getPlugin().getDataFolder().getPath(), override);
-    }
-
-    public ParticleEffects(ConfigAPI configAPI, String namespace, String path) {
-        this(configAPI, namespace, path, false);
-    }
-
-    public ParticleEffects(ConfigAPI configAPI, String namespace, String path, boolean override) {
-        this(configAPI, namespace, path, "me/wolfyscript/utilities/api/utils/particles/defaults", override);
-    }
-
-    public ParticleEffects(ConfigAPI configAPI, String namespace, String path, String defPath) {
-        this(configAPI, namespace, path, defPath, false);
-    }
-
-    public ParticleEffects(ConfigAPI configAPI, String namespace, String path, String defPath, boolean override) {
-        super(configAPI, path + File.separator + (namespace.isEmpty() ? "" : namespace + File.separator) + "particles", "particle_effects", defPath, "particle_effects", override);
-        this.namespace = namespace.isEmpty() ? configAPI.getPlugin().getName().toLowerCase(Locale.ROOT).replace(" ", "_") : namespace;
+    public ParticleEffects(Plugin plugin, String namespace, String path){
+        this.plugin = plugin;
+        this.namespace = namespace;
+        this.path = plugin.getDataFolder().getPath() + path;
     }
 
     /*
@@ -88,14 +83,12 @@ public class ParticleEffects extends JsonConfiguration {
         }
     }
 
-    @Override
-    public void reload() {
-        super.reload(true);
-    }
-
-    @Override
-    public void save() {
-        super.save(true);
+    public void save(String path) throws IOException {
+        File file = new File(path + File.separator + namespace + File.separator + "particles", "particle_effects.json");
+        file.getParentFile().getParentFile().mkdirs();
+        if(file.exists() || file.createNewFile()){
+            JacksonUtil.getObjectMapper().writeValue(file, this);
+        }
     }
 
     /**
@@ -214,27 +207,65 @@ public class ParticleEffects extends JsonConfiguration {
         return null;
     }
 
-    /**
-     * Loads the effects out of this config into the global Effects List.
-     */
-    public void loadEffects() {
-        for (String key : getKeys()) {
-            ParticleEffect particleEffect = get(ParticleEffect.class, key);
-            if (particleEffect != null) {
-                particleEffect.setReferencePath(this.getConfigFile().getParent());
-                particleEffects.put(new NamespacedKey(namespace, key), particleEffect);
-            }
-        }
+    public void save() throws IOException {
+        save(true);
     }
 
     /**
-     * Sets the Effects which correspond to the current namespace into this config.
+     *
+     * @param addNamespace If true the namespace is appended to the path
+     * @throws IOException
      */
-    public void setEffects() {
-        for (Map.Entry<NamespacedKey, ParticleEffect> particleEntry : particleEffects.entrySet()) {
-            if (particleEntry.getKey().getNamespace().equalsIgnoreCase(namespace)) {
-                set(particleEntry.getKey().getKey(), particleEntry.getValue());
+    public void save(boolean addNamespace) throws IOException {
+        File file = new File(path + (addNamespace ? File.separator + namespace : "") + File.separator + "particles", "particle_effects.json");
+        file.getParentFile().getParentFile().mkdirs();
+        if(file.exists() || file.createNewFile()){
+            JacksonUtil.getObjectMapper().writeValue(file, this);
+        }
+    }
+
+    public void load() throws IOException {
+        load(true);
+    }
+
+    /**
+     *
+     * @param addNamespace If true the namespace is appended to the path
+     * @throws IOException
+     */
+    public void load(boolean addNamespace) throws IOException {
+        File file = new File(path + (addNamespace ? File.separator + namespace : "") + File.separator + "particles", "particle_effects.json");
+        if(file.exists()){
+            JsonNode node = JacksonUtil.getObjectMapper().readTree(file);
+            node.fields().forEachRemaining(entry -> {
+                ParticleEffect particle = JacksonUtil.getObjectMapper().convertValue(entry.getValue(), ParticleEffect.class);
+                if(particle != null){
+                    particle.setReferencePath(file.getParent());
+                    addEffect(new NamespacedKey(namespace, entry.getKey()), particle);
+                }
+            });
+        }
+    }
+
+    public static class Serializer extends StdSerializer<ParticleEffects> {
+
+        public Serializer(){
+            super(ParticleEffects.class);
+        }
+
+        protected Serializer(Class<ParticleEffects> t) {
+            super(t);
+        }
+
+        @Override
+        public void serialize(ParticleEffects value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            gen.writeStartObject();
+            for (Map.Entry<NamespacedKey, ParticleEffect> entry : particleEffects.entrySet()) {
+                if(entry.getKey().getNamespace().equals(value.namespace)){
+                    gen.writeObjectField(entry.getKey().getKey(), entry.getValue());
+                }
             }
+            gen.writeEndObject();
         }
     }
 }

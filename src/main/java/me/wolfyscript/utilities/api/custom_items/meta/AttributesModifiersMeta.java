@@ -4,6 +4,7 @@ package me.wolfyscript.utilities.api.custom_items.meta;
 import com.google.common.collect.Multimap;
 import me.wolfyscript.utilities.api.custom_items.Meta;
 import me.wolfyscript.utilities.api.custom_items.MetaSettings;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,17 +18,21 @@ public class AttributesModifiersMeta extends Meta {
     }
 
     @Override
-    public boolean check(ItemMeta meta1, ItemMeta meta2) {
+    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+        ItemMeta metaOther = itemOther.getItemMeta();
+        ItemMeta meta = item.getItemMeta();
         if (option.equals(MetaSettings.Option.IGNORE)) {
-            if (meta1.hasAttributeModifiers()) {
-                Multimap<Attribute, AttributeModifier> modifiers = meta1.getAttributeModifiers();
-                modifiers.keySet().forEach(meta1::removeAttributeModifier);
+            if (metaOther.hasAttributeModifiers()) {
+                Multimap<Attribute, AttributeModifier> modifiers = metaOther.getAttributeModifiers();
+                modifiers.keySet().forEach(metaOther::removeAttributeModifier);
             }
-            if (meta2.hasAttributeModifiers()) {
-                Multimap<Attribute, AttributeModifier> modifiers = meta2.getAttributeModifiers();
-                modifiers.keySet().forEach(meta2::removeAttributeModifier);
+            if (meta.hasAttributeModifiers()) {
+                Multimap<Attribute, AttributeModifier> modifiers = metaOther.getAttributeModifiers();
+                modifiers.keySet().forEach(metaOther::removeAttributeModifier);
             }
         }
+        itemOther.setItemMeta(metaOther);
+        item.setItemMeta(meta);
         return true;
     }
 }

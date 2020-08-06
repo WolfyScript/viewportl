@@ -6,11 +6,15 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
 
+/**
+ * @deprecated not finished! No posible solution to convert Json to Entity found yet.
+ */
+@Deprecated
 public class EnityUtils {
 
-    private static Class<?> craftEntityClazz = Reflection.getOBC("entity.CraftEntity");
-    private static Class<?> nmsEntityClazz = Reflection.getNMS("Entity");
-    private static Class<?> nbtTagCompoundClazz = Reflection.getNMS("NBTTagCompound");
+    private static final Class<?> craftEntityClazz = Reflection.getOBC("entity.CraftEntity");
+    private static final Class<?> nmsEntityClazz = Reflection.getNMS("Entity");
+    private static final Class<?> nbtTagCompoundClazz = Reflection.getNMS("NBTTagCompound");
 
     public String convertEntityToJson(Entity entity) {
 

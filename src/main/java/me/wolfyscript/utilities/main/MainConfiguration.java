@@ -1,8 +1,8 @@
 package me.wolfyscript.utilities.main;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.YamlConfiguration;
+import me.wolfyscript.utilities.api.utils.EncryptionUtils;
 
 public class MainConfiguration extends YamlConfiguration {
 
@@ -13,7 +13,7 @@ public class MainConfiguration extends YamlConfiguration {
 
     @Override
     public void onFirstInit() {
-        set("securityCode", WolfyUtilities.getCode());
+        set("securityCode", EncryptionUtils.getCode());
     }
 
     @Override

@@ -1,23 +1,31 @@
 package me.wolfyscript.utilities.api.custom_items;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.custom_items.meta.*;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.main.Main;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
+@JsonSerialize(using = MetaSettings.Serializer.class)
+@JsonDeserialize(using = MetaSettings.Deserializer.class)
 public class MetaSettings {
 
-    private HashMap<String, Meta> metas = new HashMap<>();
+    private final HashMap<String, Meta> metas = new HashMap<>();
 
     //Meta initialization
-    public MetaSettings(){
+    public MetaSettings() {
         addMeta(new AttributesModifiersMeta());
         addMeta(new CustomModelDataMeta());
         addMeta(new DamageMeta());
@@ -34,6 +42,7 @@ public class MetaSettings {
         addMeta(new CustomItemTagMeta());
     }
 
+    @Deprecated
     public MetaSettings(String jsonString) {
         this();
         JSONParser parser = new JSONParser();
@@ -55,7 +64,12 @@ public class MetaSettings {
         }
     }
 
-    private void addMeta(Meta meta){
+    public MetaSettings(JsonNode node) {
+        this();
+        node.fields().forEachRemaining(entry -> getMetaByID(entry.getKey()).readFromJson(entry.getValue()));
+    }
+
+    private void addMeta(Meta meta) {
         this.metas.put(meta.getId(), meta);
     }
 
@@ -63,19 +77,33 @@ public class MetaSettings {
         return metas.get(id);
     }
 
-    public List<String> getMetas(){
+    public List<String> getMetas() {
         return new ArrayList<>(metas.keySet());
     }
 
-    public boolean checkMeta(ItemMeta input, ItemMeta customItem) {
+    public boolean checkMeta(ItemBuilder itemOther, ItemBuilder item) {
         for (Meta meta : metas.values()) {
-            if (!meta.check(input, customItem)) {
+            if (!meta.check(itemOther, item)) {
                 return false;
             }
         }
         return true;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MetaSettings)) return false;
+        MetaSettings that = (MetaSettings) o;
+        return Objects.equals(metas, that.metas);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(metas);
+    }
+
+    @Deprecated
     @Override
     public String toString() {
         HashMap<String, String> map = new HashMap<>();
@@ -88,6 +116,50 @@ public class MetaSettings {
 
     public enum Option {
         EXACT, IGNORE, HIGHER, HIGHER_EXACT, LOWER, LOWER_EXACT, HIGHER_LOWER
+
+
     }
 
+    public static class Serializer extends StdSerializer<MetaSettings>{
+
+        public Serializer(){
+            super(MetaSettings.class);
+        }
+
+        protected Serializer(Class<MetaSettings> t) {
+            super(t);
+        }
+
+        @Override
+        public void serialize(MetaSettings value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            gen.writeStartObject();
+            for (Map.Entry<String, Meta> entry : value.metas.entrySet()) {
+                gen.writeFieldName(entry.getKey());
+                entry.getValue().writeToJson(gen);
+            }
+            gen.writeEndObject();
+        }
+    }
+
+    public static class Deserializer extends StdDeserializer<MetaSettings> {
+
+        public Deserializer(){
+            super(MetaSettings.class);
+        }
+
+        @Override
+        public MetaSettings deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
+            JsonNode node = p.readValueAsTree();
+            if (node.isTextual()) {
+                //Old String style meta
+                return new MetaSettings(node.asText());
+            }
+            //New Json style meta
+            return new MetaSettings(node);
+        }
+
+        protected Deserializer(Class<MetaSettings> t) {
+            super(t);
+        }
+    }
 }

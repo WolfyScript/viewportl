@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.custom_items.meta;
 
 import me.wolfyscript.utilities.api.custom_items.Meta;
 import me.wolfyscript.utilities.api.custom_items.MetaSettings;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class UnbreakableMeta extends Meta {
@@ -14,10 +15,14 @@ public class UnbreakableMeta extends Meta {
     }
 
     @Override
-    public boolean check(ItemMeta meta1, ItemMeta meta2) {
+    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+        ItemMeta meta1 = itemOther.getItemMeta();
+        ItemMeta meta2 = item.getItemMeta();
         if (option.equals(MetaSettings.Option.IGNORE)) {
             meta1.setUnbreakable(false);
             meta2.setUnbreakable(false);
+            itemOther.setItemMeta(meta1);
+            item.setItemMeta(meta2);
         }
         return true;
     }

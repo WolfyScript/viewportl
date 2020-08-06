@@ -1,139 +1,64 @@
 package me.wolfyscript.utilities.api.language;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.config.MemoryConfiguration;
+import com.fasterxml.jackson.databind.JsonNode;
+import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
+import org.bukkit.plugin.Plugin;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Language {
 
-    private String lang;
-    private MemoryConfiguration config;
+    private final String lang;
+    private JsonNode root;
 
-    private HashMap<String, Object> messages;
+    private final HashMap<String, JsonNode> cachedNodes = new HashMap<>();
 
-    public Language(String lang, MemoryConfiguration config, ConfigAPI configAPI) {
+    public Language(Plugin plugin, String lang) throws IOException {
         this.lang = lang;
-        this.config = config;
-        this.messages = new HashMap<>();
-        configAPI.registerConfig(config);
-
-        reloadKeys();
+        File file = new File(plugin.getDataFolder(), "lang/" + lang + ".json");
+        file.getParentFile().mkdirs();
+        this.root = null;
+        if (file.exists() || file.createNewFile()) {
+            this.root = JacksonUtil.getObjectMapper().readTree(file);
+        }
+        if (this.root == null) {
+            throw new IOException("Couldn't load language from file!");
+        }
     }
 
-    /*
-        Only keys with String language settings allowed!
-
-        $general.items.debug$ -> §4Debug
-     */
-    public String replaceKeys(String msg) {
-        List<String> keys = new ArrayList<>();
-        Pattern pattern = Pattern.compile("[$]([a-zA-Z0-9._]*?)[$]");
-        Matcher matcher = pattern.matcher(msg);
-        while (matcher.find()) {
-            keys.add(matcher.group(0));
+    JsonNode getNodeAt(String path) {
+        if (cachedNodes.containsKey(path)) {
+            return cachedNodes.get(path);
         }
+        String[] keys = path.split("\\.");
+        JsonNode currentNode = this.root;
         for (String key : keys) {
-            Object object = messages.get(key.replace("$", ""));
-            if (object instanceof String) {
-                msg = msg.replace(key, (String) object);
-            } else if (object instanceof List) {
-                StringBuilder sB = new StringBuilder();
-                List<String> list = (List<String>) object;
-                list.forEach(s -> sB.append(' ').append(s));
-                msg = msg.replace(key, sB.toString());
-            }
+            currentNode = currentNode.path(key);
         }
-        return msg;
-    }
-
-    public List<String> replaceKeys(List<String> msg) {
-        Pattern pattern = Pattern.compile("[$]([a-zA-Z0-9._]*?)[$]");
-        List<String> result = new ArrayList<>();
-
-        msg.forEach(s -> {
-            List<String> keys = new ArrayList<>();
-            Matcher matcher = pattern.matcher(s);
-            while (matcher.find()) {
-                keys.add(matcher.group(0));
-            }
-            if (keys.size() > 1) {
-                for (String key : keys) {
-                    Object object = messages.get(key.replace("$", ""));
-                    if (object instanceof String) {
-                        result.add(WolfyUtilities.translateColorCodes(s.replace(key, (String) object)));
-                    } else if (object instanceof List) {
-                        StringBuilder sB = new StringBuilder();
-                        List<String> list = (List<String>) object;
-                        list.forEach(translatedS -> sB.append(' ').append(translatedS));
-                        result.add(WolfyUtilities.translateColorCodes(s.replace(key, sB.toString())));
-                    }
-                }
-            } else {
-                String key = keys.get(0);
-                Object object = messages.get(key.replace("$", ""));
-
-                if (object instanceof String) {
-                    result.add(WolfyUtilities.translateColorCodes(s.replace(key, (String) object)));
-                } else if (object instanceof List) {
-                    List<String> list = (List<String>) object;
-                    result.addAll(list.stream().map(s1 -> WolfyUtilities.translateColorCodes(s1)).collect(Collectors.toList()));
-                }
-            }
-        });
-        return result;
-    }
-
-    public String replaceColoredKeys(String msg) {
-        return WolfyUtilities.translateColorCodes(replaceKeys(msg));
-    }
-
-    public List<String> replaceKeys(String... msg) {
-        List<String> list = Arrays.asList(msg);
-        for (int i = 0; i < msg.length; i++) {
-            list.set(i, replaceKeys(msg[i]));
-        }
-        return list;
-    }
-
-    /*
-        Get's the List<String> from the language file for this key!
-     */
-    public List<String> replaceKey(String key) {
-        List<String> message = new ArrayList<>();
-        if (key != null) {
-            if (key.contains("$")) {
-                key = key.replace("$", "");
-            }
-
-            if (messages.get(key) instanceof ArrayList) {
-                message.addAll((ArrayList<String>) messages.get(key));
-            }
-        }
-        return message;
-    }
-
-    public MemoryConfiguration getConfig() {
-        return config;
-    }
-
-    public void reloadKeys() {
-        Set<String> keys = this.config.getKeys(true);
-
-        for (String key : keys) {
-            if (this.config.get(key) instanceof ArrayList) {
-                messages.put(key, this.config.getStringList(key));
-            } else {
-                messages.put(key, this.config.getString(key));
-            }
-        }
+        cachedNodes.put(path, currentNode);
+        return currentNode;
     }
 
     public String getName() {
         return lang;
+    }
+
+    public String getVersion(){
+        return this.root.path("version").asText();
+    }
+
+    public List<String> getAuthors() {
+        List<String> list = new ArrayList<>();
+        JsonNode node = this.root.path("author");
+        if (node.isTextual()) {
+            list.add(node.asText());
+        } else {
+            node.elements().forEachRemaining(n -> list.add(n.asText()));
+        }
+        return list;
     }
 }

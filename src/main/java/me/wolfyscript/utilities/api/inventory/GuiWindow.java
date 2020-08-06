@@ -176,7 +176,7 @@ public class GuiWindow implements Listener {
     }
 
     protected String getInventoryName() {
-        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories."+ clusterID + "." + namespace + ".gui_name$"));
+        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().replaceKeys("$inventories."+ clusterID + "." + namespace + ".gui_name$"));
     }
 
     public void setClusterID(String clusterID){
@@ -205,7 +205,7 @@ public class GuiWindow implements Listener {
 
     public List<String> getHelpInformation(){
         List<String> values = new ArrayList<>();
-        for(String value : getAPI().getLanguageAPI().getActiveLanguage().replaceKey("$inventories."+ clusterID + "." + namespace + ".gui_help$")){
+        for(String value : getAPI().getLanguageAPI().replaceKey("$inventories."+ clusterID + "." + namespace + ".gui_help$")){
             values.add(WolfyUtilities.translateColorCodes(value));
         }
         return values;

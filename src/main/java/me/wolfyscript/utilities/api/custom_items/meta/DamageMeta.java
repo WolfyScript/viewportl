@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.custom_items.meta;
 
 import me.wolfyscript.utilities.api.custom_items.Meta;
 import me.wolfyscript.utilities.api.custom_items.MetaSettings;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -15,18 +16,22 @@ public class DamageMeta extends Meta {
     }
 
     @Override
-    public boolean check(ItemMeta metaOther, ItemMeta meta2) {
+    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+        ItemMeta metaOther = itemOther.getItemMeta();
+        ItemMeta meta = item.getItemMeta();
         switch (option) {
             case EXACT:
-                return ((Damageable) metaOther).getDamage() == ((Damageable) meta2).getDamage();
+                return ((Damageable)metaOther).getDamage() == ((Damageable)meta).getDamage();
             case IGNORE:
-                ((Damageable) metaOther).setDamage(0);
-                ((Damageable) meta2).setDamage(0);
+                ((Damageable)metaOther).setDamage(0);
+                ((Damageable)meta).setDamage(0);
+                itemOther.setItemMeta(metaOther);
+                item.setItemMeta(meta);
                 return true;
             case LOWER:
-                return ((Damageable) metaOther).getDamage() < ((Damageable) meta2).getDamage();
+                return ((Damageable)metaOther).getDamage() < ((Damageable)meta).getDamage();
             case HIGHER:
-                return ((Damageable) metaOther).getDamage() > ((Damageable) meta2).getDamage();
+                return ((Damageable)metaOther).getDamage() > ((Damageable)meta).getDamage();
         }
         return false;
     }

@@ -1,10 +1,10 @@
 package me.wolfyscript.utilities.api.custom_items.meta;
 
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.Meta;
 import me.wolfyscript.utilities.api.custom_items.MetaSettings;
-import me.wolfyscript.utilities.api.WolfyUtilities;
-import org.bukkit.inventory.meta.ItemMeta;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,19 +19,19 @@ public class LoreMeta extends Meta {
     }
 
     @Override
-    public boolean check(ItemMeta meta1, ItemMeta meta2) {
+    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
         if (option.equals(MetaSettings.Option.IGNORE)) {
-            meta1.setLore(new ArrayList<>());
-            meta2.setLore(new ArrayList<>());
+            itemOther.setLore(new ArrayList<>());
+            item.setLore(new ArrayList<>());
         }
-        clearLore(meta1);
-        clearLore(meta2);
+        clearLore(itemOther);
+        clearLore(item);
         return true;
     }
 
-    private ItemMeta clearLore(ItemMeta itemMeta) {
-        if (itemMeta.hasLore()) {
-            List<String> lore = itemMeta.getLore();
+    private void clearLore(ItemBuilder itemBuilder) {
+        if (itemBuilder.getItemMeta().hasLore()) {
+            List<String> lore = itemBuilder.getItemMeta().getLore();
             Iterator<String> loreItr = lore.iterator();
             while (loreItr.hasNext()) {
                 String line = WolfyUtilities.unhideString(loreItr.next());
@@ -39,8 +39,7 @@ public class LoreMeta extends Meta {
                     loreItr.remove();
                 }
             }
-            itemMeta.setLore(lore);
+            itemBuilder.setLore(lore);
         }
-        return itemMeta;
     }
 }

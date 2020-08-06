@@ -3,7 +3,6 @@ package me.wolfyscript.utilities.api.config;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +19,7 @@ import java.util.*;
 
 public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileConfiguration {
 
-    private org.bukkit.configuration.file.YamlConfiguration config;
+    private final org.bukkit.configuration.file.YamlConfiguration config;
     private int intervalsToPass = 0;
     private int passedIntervals;
     private boolean firstInit = false;
@@ -351,13 +350,14 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         if (config.isSet(path)) {
             Map<String, Object> data = getValues(path);
             data.put("v", Bukkit.getUnsafe().getDataVersion());
+
             ItemStack itemStack = ItemStack.deserialize(data);
             if (itemStack.hasItemMeta()) {
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 if (itemMeta.hasDisplayName()) {
                     String displayName = itemMeta.getDisplayName();
                     if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
-                        displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
+                        displayName = api.getLanguageAPI().replaceKeys(displayName);
                     }
                     itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
                 }
@@ -367,9 +367,9 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
                         if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
                             if (row.startsWith("[WU]")) {
                                 row = row.substring("[WU]".length());
-                                row = api.getLanguageAPI().getActiveLanguage().replaceKeys(row);
+                                row = api.getLanguageAPI().replaceKeys(row);
                             } else if (row.startsWith("[WU!]")) {
-                                List<String> rows = api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()));
+                                List<String> rows = api.getLanguageAPI().replaceKey(row.substring("[WU!]".length()));
                                 for (String newRow : rows) {
                                     newLore.add(WolfyUtilities.translateColorCodes(newRow));
                                 }

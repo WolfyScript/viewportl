@@ -1,10 +1,5 @@
 package me.wolfyscript.utilities.api;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.base64.Base64;
 import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
@@ -35,13 +30,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,7 +57,7 @@ public class WolfyUtilities implements Listener {
         }
     }
 
-    private static HashMap<UUID, PlayerAction> clickDataMap = new HashMap<>();
+    private static final HashMap<UUID, PlayerAction> clickDataMap = new HashMap<>();
 
     public static boolean hasAPI(Plugin plugin) {
         return wolfyUtilitiesList.containsKey(plugin);
@@ -78,20 +70,38 @@ public class WolfyUtilities implements Listener {
         return wolfyUtilitiesList.get(plugin);
     }
 
+    /**
+     *
+     * @return if the minecraft version is 1.16 or higher
+     */
+    public static boolean hasNetherUpdate() {
+        return hasSpecificUpdate(116);
+    }
+
+    /**
+     *
+     * @return if the minecraft version is 1.15 or higher
+     */
     public static boolean hasBuzzyBeesUpdate() {
         return hasSpecificUpdate(115);
     }
 
+    /**
+     * This can be used to make sure that this API is running on a supported Minecraft version, because pre-1.14 MC versions are no longer supported!
+     *
+     * @return if the minecraft version is 1.14 or higher
+     */
     public static boolean hasVillagePillageUpdate() {
         return hasSpecificUpdate(114);
     }
 
+    /**
+     * @return if the minecraft version is 1.13 or higher
+     * @deprecated This plugin no longer supports pre-1.14 versions therefore making this method useless!
+     */
+    @Deprecated
     public static boolean hasAquaticUpdate() {
         return hasSpecificUpdate(113);
-    }
-
-    public static boolean hasCombatUpdate() {
-        return hasSpecificUpdate(19);
     }
 
     public static boolean hasSpecificUpdate(String versionString) {
@@ -107,30 +117,34 @@ public class WolfyUtilities implements Listener {
     }
 
     public static boolean hasWorldGuard() {
-        return hasClass("com.sk89q.worldguard.WorldGuard");
+        return hasPlugin("WorldGuard");
     }
 
     public static boolean hasPlotSquared() {
-        return hasClass("com.intellectualcrafters.plot.api.PlotAPI");
+        return hasPlugin("PlotSquared");
     }
 
     public static boolean hasLWC() {
-        return hasClass("com.griefcraft.lwc.LWC");
+        return hasPlugin("LWC");
     }
 
     public static boolean hasMythicMobs() {
-        return hasClass("io.lumine.xikage.mythicmobs.MythicMobs");
+        return hasPlugin("MythicMobs");
     }
 
     public static boolean hasPlaceHolderAPI() {
-        return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
+        return hasPlugin("PlaceholderAPI");
     }
 
     public static boolean hasMcMMO() {
-        return hasClass("com.gmail.nossr50.mcMMO");
+        return hasPlugin("mcMMO");
     }
 
-    private static HashMap<String, Boolean> classes = new HashMap<>();
+    public static boolean hasPlugin(String pluginName){
+        return Bukkit.getPluginManager().isPluginEnabled(pluginName);
+    }
+
+    private static final HashMap<String, Boolean> classes = new HashMap<>();
 
     public static boolean hasClass(String path) {
         if (classes.containsKey(path)) {
@@ -167,7 +181,6 @@ public class WolfyUtilities implements Listener {
     }
 
     //Not tested yet!!
-
     public static void sendParticles(Player player, String particle, boolean biggerRadius, float x, float y, float z, float xOffset, float yOffset, float zOffset, int count, float particledata, int... data) {
         try {
             Object enumParticles = Reflection.getNMS("EnumParticle").getField(particle).get(null);
@@ -190,167 +203,12 @@ public class WolfyUtilities implements Listener {
         }
     }
 
-    public static String getCode() {
-        Random random = new Random();
-        String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        final int x = alphabet.length();
-        StringBuilder sB = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            sB.append(alphabet.charAt(random.nextInt(x)));
-        }
-        return sB.toString();
-    }
-
-    public static ItemStack getCustomHead(String value) {
-        if (value.startsWith("http://textures")) {
-            value = getBase64EncodedString(String.format("{textures:{SKIN:{url:\"%s\"}}}", value));
-        }
-        return getSkullByValue(value);
-    }
-
-    public static ItemStack getSkullViaURL(String value) {
-        return getCustomHead("http://textures.minecraft.net/texture/" + value);
-    }
-
-    public static ItemStack getSkullByValue(String value) {
-        ItemStack itemStack;
-        if (WolfyUtilities.hasAquaticUpdate()) {
-            itemStack = new ItemStack(Material.PLAYER_HEAD);
-        } else {
-            itemStack = new ItemStack(Material.PLAYER_HEAD, 1, (short) 0, (byte) 3);
-        }
-        if (value != null && !value.isEmpty()) {
-            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-            profile.getProperties().put("textures", new Property("textures", value));
-            Field profileField = null;
-            try {
-                profileField = skullMeta.getClass().getDeclaredField("profile");
-                profileField.setAccessible(true);
-            } catch (NoSuchFieldException | SecurityException e) {
-                e.printStackTrace();
-            }
-            try {
-                profileField.set(skullMeta, profile);
-                itemStack.setItemMeta(skullMeta);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return itemStack;
-    }
-
-    public static SkullMeta getSkullmeta(String value, SkullMeta skullMeta) {
-        if (value != null && !value.isEmpty()) {
-            String texture = value;
-            if (value.startsWith("https://") || value.startsWith("http://")) {
-                texture = getBase64EncodedString(String.format("{textures:{SKIN:{url:\"%s\"}}}", value));
-            }
-            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-            profile.getProperties().put("textures", new Property("textures", texture));
-            Field profileField = null;
-            try {
-                profileField = skullMeta.getClass().getDeclaredField("profile");
-                profileField.setAccessible(true);
-            } catch (NoSuchFieldException | SecurityException e) {
-                e.printStackTrace();
-            }
-            try {
-                profileField.set(skullMeta, profile);
-                return skullMeta;
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return skullMeta;
-    }
-
-    private static String getBase64EncodedString(String str) {
-        ByteBuf byteBuf = null;
-        ByteBuf encodedByteBuf = null;
-        String var3;
-        try {
-            byteBuf = Unpooled.wrappedBuffer(str.getBytes(StandardCharsets.UTF_8));
-            encodedByteBuf = Base64.encode(byteBuf);
-            var3 = encodedByteBuf.toString(StandardCharsets.UTF_8);
-        } finally {
-            if (byteBuf != null) {
-                byteBuf.release();
-                if (encodedByteBuf != null) {
-                    encodedByteBuf.release();
-                }
-            }
-        }
-        return var3;
-    }
-
-
-    public static String getSkullValue(SkullMeta skullMeta) {
-        GameProfile profile = null;
-        Field profileField;
-        try {
-            profileField = skullMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            try {
-                profile = (GameProfile) profileField.get(skullMeta);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        } catch (NoSuchFieldException | SecurityException ex) {
-            ex.printStackTrace();
-        }
-        if (profile != null) {
-            if (!profile.getProperties().get("textures").isEmpty()) {
-                for (Property property : profile.getProperties().get("textures")) {
-                    if (!property.getValue().isEmpty())
-                        return property.getValue();
-                }
-            }
-        }
-        return null;
-    }
-
-
-    /*
-    Both items Material must be equal to PLAYER_HEAD!
-
-    Returns result with the texture from the input
-
-    Returns result when one of the items is not Player Head
-     */
-    public static ItemStack migrateSkullTexture(ItemStack input, ItemStack result) {
-        if (input.getType().equals(Material.PLAYER_HEAD) && result.getType().equals(Material.PLAYER_HEAD)) {
-            SkullMeta inputMeta = (SkullMeta) input.getItemMeta();
-            String value = getSkullValue(inputMeta);
-            if (value != null && !value.isEmpty()) {
-                result.setItemMeta(getSkullmeta(value, (SkullMeta) result.getItemMeta()));
-            }
-        }
-        return result;
-    }
-
-    /*
-    Result's Material must be equal to PLAYER_HEAD!
-
-    Returns ItemMeta with the texture from the input
-
-     */
-    public static ItemMeta migrateSkullTexture(SkullMeta input, ItemStack result) {
-        if (result.getType().equals(Material.PLAYER_HEAD)) {
-            String value = getSkullValue(input);
-            if (value != null && !value.isEmpty()) {
-                return getSkullmeta(value, (SkullMeta) result.getItemMeta());
-            }
-        }
-        return result.getItemMeta();
-    }
-
-    /*
-    Sets a § before every letter!
-    example:
-        Hello World -> §H§e§l§l§o§ §W§o§r§l§d
-
-    Because of this the String will be invisible in Minecraft!
+    /**
+     * Sets a § before every letter!
+     * example:
+     * Hello World -> §H§e§l§l§o§ §W§o§r§l§d
+     * <p>
+     * Because of this the String will be invisible in Minecraft!
      */
     public static String hideString(String hide) {
         char[] data = new char[hide.length() * 2];
@@ -395,60 +253,54 @@ public class WolfyUtilities implements Listener {
 
     @Deprecated
     public static Sound getSound(String legacy, String notLegacy) {
-        if (WolfyUtilities.hasAquaticUpdate()) {
-            return Sound.valueOf(notLegacy);
-        } else {
-            return Sound.valueOf(legacy);
-        }
+        return Sound.valueOf(notLegacy);
     }
 
-    @Deprecated
-    public static boolean isSkull(ItemStack itemStack) {
-        return itemStack.getType() == Material.PLAYER_HEAD;
-    }
-
-    public static boolean isPlayerHead(ItemStack itemStack) {
-        return itemStack.getType() == Material.PLAYER_HEAD;
-    }
-
+    /**
+     * Checks if the column of the recipe shape is blocked by items.
+     * When the column is empty it will be removed from the shape ArrayList!
+     *
+     * @param shape  the shape of the recipe
+     * @param column the index of the column
+     * @return true if the column is blocked
+     */
     public static boolean checkColumn(ArrayList<String> shape, int column) {
-        boolean blocked = false;
-        for (String s : shape) {
-            if (s.charAt(column) != ' ') {
-                blocked = true;
-            }
-        }
+        boolean blocked = shape.stream().anyMatch(s -> column < s.length() && s.charAt(column) != ' ');
         if (!blocked) {
             for (int i = 0; i < shape.size(); i++) {
-                shape.set(i, shape.get(i).substring(0, column) + shape.get(i).substring(column + 1));
+                if(column < shape.get(i).length()){
+                    shape.set(i, shape.get(i).substring(0, column) + shape.get(i).substring(column + 1));
+                }
             }
         }
         return blocked;
     }
 
+    /**
+     * Formats the recipe shape to it's smallest possible size.
+     * That means if a recipe that was created inside a 3x3 grid only takes up 2x1
+     * this method will shrink the array down from a 3x3 to 2x1 array
+     *
+     * @param shape the recipe that should be formatted
+     * @return the shrunken ArrayList of the recipe shape
+     */
     public static ArrayList<String> formatShape(String... shape) {
         ArrayList<String> cleared = new ArrayList<>(Arrays.asList(shape));
         ListIterator<String> rowIterator = cleared.listIterator();
-        boolean rowBlocked = false;
-        while (!rowBlocked && rowIterator.hasNext()) {
-            String row = rowIterator.next();
-            if (StringUtils.isBlank(row)) {
-                rowIterator.remove();
-            } else {
-                rowBlocked = true;
+        while (rowIterator.hasNext()) {
+            if (!StringUtils.isBlank(rowIterator.next())) {
+                break;
             }
+            rowIterator.remove();
         }
         while (rowIterator.hasNext()) {
             rowIterator.next();
         }
-        rowBlocked = false;
-        while (!rowBlocked && rowIterator.hasPrevious()) {
-            String row = rowIterator.previous();
-            if (StringUtils.isBlank(row)) {
-                rowIterator.remove();
-            } else {
-                rowBlocked = true;
+        while (rowIterator.hasPrevious()) {
+            if (!StringUtils.isBlank(rowIterator.previous())) {
+                break;
             }
+            rowIterator.remove();
         }
         if (!cleared.isEmpty()) {
             boolean columnBlocked = false;
@@ -470,6 +322,13 @@ public class WolfyUtilities implements Listener {
         return cleared;
     }
 
+    /**
+     * Gets the current registered API for that plugin.
+     * Can be null when no API is registered!
+     *
+     * @param plugin the plugin
+     * @return the current API of the plugin
+     */
     @Nullable
     public static WolfyUtilities getAPI(Plugin plugin) {
         return wolfyUtilitiesList.get(plugin);
@@ -503,8 +362,7 @@ public class WolfyUtilities implements Listener {
     /*
         Non Static methods and constructor down below!
      */
-
-    private Plugin plugin;
+    private final Plugin plugin;
 
     private String CONSOLE_PREFIX;
 
@@ -626,19 +484,19 @@ public class WolfyUtilities implements Listener {
     }
 
     public void sendConsoleMessage(String message) {
-        message = CONSOLE_PREFIX + getLanguageAPI().getActiveLanguage().replaceKeys(message);
+        message = CONSOLE_PREFIX + getLanguageAPI().replaceKeys(message);
         message = ChatColor.translateAlternateColorCodes('&', message);
         Main.getInstance().getServer().getConsoleSender().sendMessage(message);
     }
 
     public void sendConsoleWarning(String message) {
-        message = CONSOLE_PREFIX + "[WARN] " + getLanguageAPI().getActiveLanguage().replaceKeys(message);
+        message = CONSOLE_PREFIX + "[WARN] " + getLanguageAPI().replaceKeys(message);
         message = ChatColor.translateAlternateColorCodes('&', message);
         Main.getInstance().getServer().getConsoleSender().sendMessage(message);
     }
 
     public void sendConsoleMessage(String message, String... replacements) {
-        message = CONSOLE_PREFIX + getLanguageAPI().getActiveLanguage().replaceKeys(message);
+        message = CONSOLE_PREFIX + getLanguageAPI().replaceKeys(message);
         List<String> keys = new ArrayList<>();
         Pattern pattern = Pattern.compile("%([A-Z]*?)(_*?)%");
         Matcher matcher = pattern.matcher(message);
@@ -653,7 +511,7 @@ public class WolfyUtilities implements Listener {
 
     public void sendConsoleMessage(String message, String[]... replacements) {
         if (replacements != null) {
-            message = CHAT_PREFIX + getLanguageAPI().getActiveLanguage().replaceKeys(message);
+            message = CHAT_PREFIX + getLanguageAPI().replaceColoredKeys(message);
             for (String[] replace : replacements) {
                 if (replace.length > 1) {
                     message = message.replaceAll(replace[0], replace[1]);
@@ -665,7 +523,7 @@ public class WolfyUtilities implements Listener {
 
     public void sendPlayerMessage(Player player, String message) {
         if (player != null) {
-            message = CHAT_PREFIX + getLanguageAPI().getActiveLanguage().replaceKeys(message);
+            message = CHAT_PREFIX + getLanguageAPI().replaceKeys(message);
             message = WolfyUtilities.translateColorCodes(message);
             player.sendMessage(message);
         }
@@ -695,7 +553,7 @@ public class WolfyUtilities implements Listener {
     public void sendPlayerMessage(Player player, String message, String[]... replacements) {
         if (replacements != null) {
             if (player != null) {
-                message = CHAT_PREFIX + getLanguageAPI().getActiveLanguage().replaceKeys(message);
+                message = CHAT_PREFIX + getLanguageAPI().replaceColoredKeys(message);
                 for (String[] replace : replacements) {
                     if (replace.length > 1) {
                         message = message.replaceAll(replace[0], replace[1]);
@@ -757,7 +615,6 @@ public class WolfyUtilities implements Listener {
         return textComponents;
     }
 
-
     public void sendDebugMessage(String message) {
         if (hasDebuggingMode()) {
             String prefix = ChatColor.translateAlternateColorCodes('&', "[&4CC&r] ");
@@ -789,7 +646,7 @@ public class WolfyUtilities implements Listener {
                 if (itemMeta.hasDisplayName()) {
                     String displayName = itemMeta.getDisplayName();
                     if (getLanguageAPI().getActiveLanguage() != null) {
-                        displayName = getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
+                        displayName = getLanguageAPI().replaceKeys(displayName);
                     }
                     itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
                 }
@@ -797,9 +654,9 @@ public class WolfyUtilities implements Listener {
                     List<String> newLore = new ArrayList<>();
                     for (String row : itemMeta.getLore()) {
                         if (row.startsWith("[WU]")) {
-                            newLore.add(getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
+                            newLore.add(getLanguageAPI().replaceKeys(row.substring("[WU]".length())));
                         } else if (row.startsWith("[WU!]")) {
-                            for (String newRow : getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()))) {
+                            for (String newRow : getLanguageAPI().replaceKey(row.substring("[WU!]".length()))) {
                                 newLore.add(WolfyUtilities.translateColorCodes(newRow));
                             }
                         } else {
@@ -813,6 +670,4 @@ public class WolfyUtilities implements Listener {
         }
         return itemStack;
     }
-
-
 }

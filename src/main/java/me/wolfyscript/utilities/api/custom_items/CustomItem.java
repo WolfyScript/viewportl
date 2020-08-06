@@ -1,14 +1,29 @@
 package me.wolfyscript.utilities.api.custom_items;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import dev.lone.itemsadder.api.ItemsAdder;
+import io.th0rgal.oraxen.items.OraxenItems;
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.custom_items.api_references.*;
 import me.wolfyscript.utilities.api.custom_items.custom_data.CustomData;
-import me.wolfyscript.utilities.api.utils.InventoryUtils;
-import me.wolfyscript.utilities.api.utils.ItemUtils;
-import me.wolfyscript.utilities.api.utils.NamespacedKey;
+import me.wolfyscript.utilities.api.utils.inventory.InventoryUtils;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.AbstractItemBuilder;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
+import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.main.Main;
-import org.apache.commons.lang.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -18,73 +33,79 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
-public class CustomItem extends ItemStack implements Cloneable {
+@JsonSerialize(using = CustomItem.Serializer.class)
+@JsonDeserialize(using = CustomItem.Deserializer.class)
+public class CustomItem extends AbstractItemBuilder<CustomItem> implements Cloneable {
 
-    //This HashMap contains all the available CustomData objects, which then can be saved and loaded.
-    //If the config contains CustomData that is not available in this HashMap, then it won't be loaded!
-    private static final HashMap<String, CustomData> availableCustomData = new HashMap<>();
-
-    /*
-    Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
-    All registered CustomData is added to this item and cannot be removed!
-    Only the single CustomData objects can be edit in it's values.
+    /**
+     * This HashMap contains all the available CustomData objects, which then can be saved and loaded.
+     * If the config contains CustomData that is not available in this HashMap, then it won't be loaded!
      */
-    private HashMap<String, CustomData> customDataMap = new HashMap<>();
-    private final ItemConfig config;
-    private final NamespacedKey namespacedKey;
-    private CustomItem replacement;
-    private final String id;
-    private final ArrayList<Material> allowedBlocks;
+    private static final HashMap<String, CustomData> availableCustomData = new HashMap<>();
+    /**
+     * Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
+     * All registered CustomData is added to this item and cannot be removed!
+     * Only the single CustomData objects can be edit in it's values.
+     */
+    private final HashMap<String, CustomData> customDataMap = new HashMap<>();
+
+    /**
+     * This namespacedKey can either be null or non-null.
+     *
+     * If it's non-null the item is saved and the variables of this Object will be persistent </p>
+     * when converted to ItemStack via {@link #create()}.
+     *
+     * If it is null the item isn't saved and the variables of this Object will get lost when {@link #create()} is called!
+     */
+    private me.wolfyscript.utilities.api.utils.NamespacedKey namespacedKey;
+
+
+    private APIReference replacement;
+    private List<Material> allowedBlocks;
     private String permission;
     private double rarityPercentage;
     private int burnTime;
     private int durabilityCost;
     private boolean consumed;
-    private boolean canBePlaced;
+    private final boolean canBePlaced;
     private boolean blockVanillaEquip;
     private final List<EquipmentSlot> equipmentSlots;
+
     /**
      * Upcoming change to CustomItem will include an APIReference to link it
      * to other external APIs.
      *
      * @see APIReference
      */
-    private APIReference apiReference;
+    private final APIReference apiReference;
+
     private ParticleContent particleContent;
     private MetaSettings metaSettings;
 
-    public CustomItem(ItemConfig config, boolean replace) {
-        super(config.getCustomItem(replace));
-        this.config = config;
-        this.namespacedKey = config.getNamespacedKey();
-        this.id = config.getId();
-        this.burnTime = config.getBurnTime();
-        this.allowedBlocks = config.getAllowedBlocks();
-        this.replacement = config.getReplacementItem();
-        this.durabilityCost = config.getDurabilityCost();
-        this.consumed = config.isConsumed();
-        this.metaSettings = config.getMetaSettings();
-        this.permission = config.getPermission();
-        this.rarityPercentage = config.getRarityPercentage();
-        this.customDataMap = config.getCustomData();
-        this.equipmentSlots = config.getEquipmentSlots();
-        this.particleContent = config.getParticleData();
-        this.blockVanillaEquip = false;
-    }
-
-    public CustomItem(ItemConfig config) {
-        this(config, false);
-    }
-
+    /**
+     * Creates a CustomItem with a Vanilla Reference to the itemstack
+     *
+     * @param itemStack the itemstack this CustomItem will be linked to
+     */
     public CustomItem(ItemStack itemStack) {
-        super(itemStack);
-        this.config = null;
-        this.id = "";
+        this(new VanillaRef(itemStack));
+    }
+
+    /**
+     * Creates a CustomItem with a Vanilla Reference to an itemstack of the material
+     *
+     * @param material the material of the itemstack this CustomItem will be linked to
+     */
+    public CustomItem(Material material) {
+        this(new ItemStack(material));
+    }
+
+    public CustomItem(APIReference apiReference) {
+        this.apiReference = apiReference;
+
         this.namespacedKey = null;
         this.burnTime = 0;
         this.allowedBlocks = new ArrayList<>();
@@ -99,34 +120,55 @@ public class CustomItem extends ItemStack implements Cloneable {
         }
         this.equipmentSlots = new ArrayList<>();
         this.particleContent = new ParticleContent();
-        this.blockVanillaEquip = false;
         this.canBePlaced = true;
+        this.blockVanillaEquip = false;
     }
 
-    public CustomItem(Material material) {
-        this(new ItemStack(material));
+    public void setNamespacedKey(me.wolfyscript.utilities.api.utils.NamespacedKey namespacedKey) {
+        this.namespacedKey = namespacedKey;
     }
 
-    /*
-    CustomItem static methods
+    public boolean hasNamespacedKey(){
+        return namespacedKey != null;
+    }
+
+    public me.wolfyscript.utilities.api.utils.NamespacedKey getNamespacedKey() {
+        return namespacedKey;
+    }
+
+    /**
+     * Get the CustomItem via ItemStack.
+     * It checks for the PersistentData containing the NamespacedKey of WolfyUtilities.
+     * When that isn't found it checks for ItemsAdder and Oraxen values saved in the Items NBT.
+     *
+     * @param itemStack the ItemStack to check
+     * @return the CustomItem linked to the specific API this Item is from.
      */
-    public static CustomItem getByItemStack(ItemStack itemStack) {
+    public static CustomItem getReferenceByItemStack(ItemStack itemStack) {
         if (itemStack != null) {
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                CustomItem customItem = null;
-                if (WolfyUtilities.hasVillagePillageUpdate()) {
-                    if (itemMeta.getPersistentDataContainer().has(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
-                        customItem = CustomItems.getCustomItem(itemMeta.getPersistentDataContainer().get(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING));
-                    }
-                } else {
-                    if (ItemUtils.isInItemSettings(itemMeta, "custom_item")) {
-                        customItem = CustomItems.getCustomItem((String) ItemUtils.getFromItemSettings(itemMeta, "custom_item"));
+                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+                APIReference apiReference = null;
+                NamespacedKey namespacedKey = new NamespacedKey(Main.getInstance(), "custom_item");
+                if (container.has(namespacedKey, PersistentDataType.STRING)) {
+                    apiReference = new WolfyUtilitiesRef(me.wolfyscript.utilities.api.utils.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
+                }
+                if(apiReference == null){
+                    if (WolfyUtilities.hasPlugin("ItemsAdder")) {
+                        if (ItemsAdder.isCustomItem(itemStack)) {
+                            apiReference = new ItemsAdderRef(ItemsAdder.getCustomItemName(itemStack));
+                        }
+                    } else if (WolfyUtilities.hasPlugin("Oraxen")) {
+                        String itemId = OraxenItems.getIdByItem(itemStack);
+                        if (itemId != null && !itemId.isEmpty()) {
+                            apiReference = new OraxenRef(itemId);
+                        }
                     }
                 }
-                if (customItem != null) {
-                    customItem.setAmount(itemStack.getAmount());
-                    return customItem;
+                if (apiReference != null) {
+                    apiReference.setAmount(itemStack.getAmount());
+                    return new CustomItem(apiReference);
                 }
                 return new CustomItem(itemStack);
             }
@@ -135,27 +177,45 @@ public class CustomItem extends ItemStack implements Cloneable {
         return null;
     }
 
-    /*
-        Checks if the itemmeta has Custom Durability set.
-    */
-    public static boolean hasCustomDurability(ItemMeta itemMeta) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            return dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER);
+    /**
+     * This method return the original CustomItem from the ItemStack.
+     * This only works if the itemStack contains a NamespacedKey corresponding to a CustomItem
+     * that is saved!
+     *
+     * If you need access to the original CustomItem variables use this method.
+     *
+     * If you want to detect what plugin this ItemStack is from and use it's corresponding Reference use {@link #getReferenceByItemStack(ItemStack)} instead!
+     *
+     *
+     * @param itemStack
+     * @return CustomItem the ItemStack is linked, only if it is saved, else returns null
+     */
+    @org.jetbrains.annotations.Nullable
+    public static CustomItem getByItemStack(ItemStack itemStack){
+        if (itemStack != null) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta != null) {
+                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+                NamespacedKey namespacedKey = new NamespacedKey(Main.getInstance(), "custom_item");
+                if (container.has(namespacedKey, PersistentDataType.STRING)) {
+                    return CustomItems.getCustomItem(me.wolfyscript.utilities.api.utils.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
+                }
+            }
         }
-        return false;
+        return null;
+
     }
 
     public boolean hasReplacement() {
-        return replacement != null && !replacement.getType().equals(Material.AIR);
+        return replacement != null && !replacement.getLinkedItem().getType().equals(Material.AIR);
     }
 
     @Nullable
-    public CustomItem getReplacement() {
-        return hasReplacement() ? replacement.getRealItem() : null;
+    public APIReference getReplacement() {
+        return hasReplacement() ? replacement : null;
     }
 
-    public void setReplacement(@Nullable CustomItem replacement) {
+    public void setReplacement(@Nullable APIReference replacement) {
         this.replacement = replacement;
     }
 
@@ -183,36 +243,6 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.metaSettings = metaSettings;
     }
 
-    public static void setCustomDurability(ItemMeta itemMeta, int durability) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER, durability);
-            if (!dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER)) {
-                dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER, 0);
-            }
-            setDurabilityTag(itemMeta);
-        }
-    }
-
-    public static void removeCustomDurability(ItemMeta itemMeta) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.remove(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"));
-            dataContainer.remove(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"));
-            dataContainer.remove(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"));
-        }
-    }
-
-
-    public boolean hasConfig() {
-        return config != null;
-    }
-
-    public ItemConfig getConfig() {
-        return config;
-    }
-
-
     public int getBurnTime() {
         return burnTime;
     }
@@ -221,8 +251,12 @@ public class CustomItem extends ItemStack implements Cloneable {
         this.burnTime = burnTime;
     }
 
-    public ArrayList<Material> getAllowedBlocks() {
+    public List<Material> getAllowedBlocks() {
         return allowedBlocks;
+    }
+
+    public void setAllowedBlocks(List<Material> allowedBlocks) {
+        this.allowedBlocks = allowedBlocks;
     }
 
     public List<EquipmentSlot> getEquipmentSlots() {
@@ -257,95 +291,144 @@ public class CustomItem extends ItemStack implements Cloneable {
         equipmentSlots.removeAll(Arrays.asList(slots));
     }
 
-    @Override
-    public boolean isSimilar(ItemStack stack) {
-        return isSimilar(stack, true);
+    /**
+     * Checks if the ItemStack is a similar to this CustomItem.
+     * This method checks all the available ItemMeta on similarity and uses the meta options
+     * when they are available. <p><b>
+     * Use {@link #isSimilar(ItemStack, boolean)} to only check for Material and Amount!
+     *
+     * @param otherItem the ItemStack that should be checked
+     * @return true if the ItemStack is exactly the same as this CustomItem's ItemStack
+     */
+    public boolean isSimilar(ItemStack otherItem) {
+        return isSimilar(otherItem, true);
     }
 
-    public boolean isSimilar(ItemStack stack, boolean exactMeta) {
-        if (stack == null) {
+    /**
+     * Checks if the ItemStack is a similar to this CustomItem.
+     * <p>If exactMeta is false it only checks for Material and amount.
+     * <p>If exactMeta is true it checks all the available ItemMeta and uses the meta options
+     * when they are available.
+     *
+     * @param otherItem the ItemStack that should be checked
+     * @param exactMeta if the ItemMeta should be checked. If false only checks Material and Amount!
+     * @return true if the ItemStack is equal to this CustomItems ItemStack
+     */
+    public boolean isSimilar(ItemStack otherItem, boolean exactMeta) {
+        ItemStack currentItem = create();
+        if (otherItem == null) {
             return false;
-        } else if (stack == this) {
+        } else if (otherItem == currentItem) {
             return true;
-        } else if (stack.getType().equals(this.getType()) && stack.getAmount() >= this.getAmount()) {
-            if (exactMeta || this.hasItemMeta() || this.hasConfig()) {
-                ItemMeta stackMeta = stack.getItemMeta();
-                ItemMeta currentMeta = this.getItemMeta();
-                if (!getMetaSettings().checkMeta(stackMeta, currentMeta)) {
+        } else if (otherItem.getType().equals(currentItem.getType()) && otherItem.getAmount() >= currentItem.getAmount()) {
+            if (exactMeta || currentItem.hasItemMeta()) {
+                ItemBuilder customItem = new ItemBuilder(currentItem);
+                ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
+                if (!getMetaSettings().checkMeta(customItemOther, customItem)) {
                     return false;
                 }
-                return stackMeta.equals(currentMeta) || currentMeta.equals(stackMeta);
+                return Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
             }
             return true;
         }
         return false;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomItem that = (CustomItem) o;
+        return Double.compare(that.rarityPercentage, rarityPercentage) == 0 &&
+                burnTime == that.burnTime &&
+                durabilityCost == that.durabilityCost &&
+                consumed == that.consumed &&
+                canBePlaced == that.canBePlaced &&
+                blockVanillaEquip == that.blockVanillaEquip &&
+                Objects.equals(customDataMap, that.customDataMap) &&
+                Objects.equals(namespacedKey, that.namespacedKey) &&
+                Objects.equals(replacement, that.replacement) &&
+                Objects.equals(allowedBlocks, that.allowedBlocks) &&
+                Objects.equals(permission, that.permission) &&
+                Objects.equals(equipmentSlots, that.equipmentSlots) &&
+                Objects.equals(apiReference, that.apiReference) &&
+                Objects.equals(particleContent, that.particleContent) &&
+                Objects.equals(metaSettings, that.metaSettings);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getCustomDataMap(), getNamespacedKey(), getReplacement(), getAllowedBlocks(), getPermission(), getRarityPercentage(), getBurnTime(), getDurabilityCost(), isConsumed(), canBePlaced, isBlockVanillaEquip(), getEquipmentSlots(), getApiReference(), getParticleContent(), getMetaSettings());
+    }
 
     /**
-     * If linked to config it will create a new instance with the values of the config,
-     * else copys this instance ItemStack.
+     * If linked to config it will create a new instance with the values from the config,
+     * else copys this instance of the ItemStack.
      *
      * @return exact copy of this instance
      */
     @Override
     public CustomItem clone() {
-        CustomItem customItem;
-        if (hasConfig()) {
-            customItem = new CustomItem(getConfig());
-        } else {
-            customItem = new CustomItem(this);
+        //TODO
+        if(hasNamespacedKey()){
+
         }
+
+
+        CustomItem customItem = new CustomItem(getApiReference());
+        //TODO: check if linked to file?!
         customItem.setAmount(getAmount());
         return customItem;
     }
 
     /**
-     * This will call the super.clone() method to get the ItemStack.
-     * All CustomItem variables will get lost!
+     * Other than {@link #create()} it returns the real item and no copy!
+     * Any changes made to this item may change the source Item!
      *
-     * @deprecated This will not provide the ItemStack with an NBT Tag which stores the CustomItem id!
-     * So it would be impossible to check to which CustomItem this ItemStack belongs to.
-     * {@link #getItemStack()} or {@link #getRealItem()} should be used instead!
+     * @return the linked item of the API reference
      */
-    @Deprecated
-    public ItemStack getAsItemStack() {
-        return super.clone();
-    }
-
-    /**
-     * This just refers to the getRealItem() and only returns an ItemStack Object, but the name might be more useful.
-     *
-     * @see #getRealItem()
-     */
+    @Override
     public ItemStack getItemStack() {
-        return getRealItem();
+        return apiReference.getLinkedItem();
     }
 
+    /**
+     * Gets a copy of the current version of the external linked item.
+     * The item can be linked to Vanilla, WolfyUtilities, ItemsAdder, Oraxen, MythicMobs or MMOItems
+     *
+     * @return the item from the external API that is linked to this object
+     */
+    public ItemStack create() {
+        return create(getAmount());
+    }
 
     /**
-     * If this CustomItem instance is linked to a config it creates a new instance of the CustomItem and translates language keys
-     * and adds a NBT Tag containing the namespacekey of the item,
-     * else invokes the {@link #clone()} method.
+     * Gets a copy of the current version of the external linked item.
+     * The item can be linked to Vanilla, WolfyUtilities, ItemsAdder, Oraxen, MythicMobs or MMOItems
      *
-     * @return CustomItem including a NBT Tag with the namespacekey or {@link #clone()}
+     * @return the item from the external API that is linked to this object
      */
-    public CustomItem getRealItem() {
-        if (hasConfig()) {
-            CustomItem customItem = new CustomItem(config, true);
-            if (customItem.getType().equals(this.getType())) {
-                customItem.setAmount(this.getAmount());
-            }
-            ItemMeta itemMeta = customItem.getItemMeta();
-            if (WolfyUtilities.hasVillagePillageUpdate()) {
-                itemMeta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING, customItem.getNamespacedKey().toString());
-            } else {
-                ItemUtils.setToItemSettings(itemMeta, "custom_item", customItem.getNamespacedKey().toString());
-            }
-            customItem.setItemMeta(itemMeta);
-            return customItem;
+    public ItemStack create(int amount) {
+        ItemStack itemStack = apiReference.getLinkedItem().clone();
+        if (this.hasNamespacedKey()) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING, namespacedKey.toString());
+            itemStack.setItemMeta(itemMeta);
         }
-        return clone();
+        if (amount > 0) {
+            itemStack.setAmount(amount);
+        }
+        return itemStack;
+    }
+
+    /**
+     * Returns the id item with the default stacksize of this instance!
+     *
+     * @return ItemStack that visually represents the namespacekey
+     * @see #getIDItem(int)
+     */
+    public ItemStack getIDItem() {
+        return getIDItem(getAmount());
     }
 
     /**
@@ -356,80 +439,44 @@ public class CustomItem extends ItemStack implements Cloneable {
      * @return ItemStack that visually represents the namespacekey
      */
     public ItemStack getIDItem(int amount) {
-        if (getType().equals(Material.AIR)) {
-            return new ItemStack(Material.AIR);
+        ItemStack itemStack = apiReference.getIdItem();
+        if (amount > 0) {
+            itemStack.setAmount(amount);
         }
-        ItemStack idItem = new ItemStack(this.clone());
-        if (!this.id.isEmpty()) {
-            ItemMeta idItemMeta = idItem.getItemMeta();
-            if (idItemMeta.hasDisplayName() && !WolfyUtilities.unhideString(idItemMeta.getDisplayName()).endsWith(":id_item")) {
-                idItemMeta.setDisplayName(idItemMeta.getDisplayName() + WolfyUtilities.hideString(":id_item"));
-            } else {
-                idItemMeta.setDisplayName(WolfyUtilities.hideString("%NO_NAME%") + "§r" + WordUtils.capitalizeFully(idItem.getType().name().replace("_", " ")) + WolfyUtilities.hideString(":id_item"));
-            }
-            List<String> lore = idItemMeta.hasLore() ? idItemMeta.getLore() : new ArrayList<>();
-            lore.add("");
-            lore.add("§7[§3§lID_ITEM§r§7]");
-            lore.add("§3" + this.id);
-            idItemMeta.setLore(lore);
-            idItem.setItemMeta(idItemMeta);
-        }
-        idItem.setAmount(amount);
-        return idItem;
+        return itemStack;
+    }
+
+    public APIReference getApiReference() {
+        return apiReference;
     }
 
     /**
-     * Returns the id item with the default stacksize of this instance!
+     * Consumes the totalAmount of the input!
+     * This method directly changes the input ItemStack values!
+     * TODO: description!
      *
-     * @return ItemStack that visually represents the namespacekey
-     * @see #getIDItem(int)
+     * @param input
+     * @param totalAmount
+     * @param inventory
+     * @param location
      */
-    public ItemStack getIDItem() {
-        return getIDItem(this.getAmount());
-    }
-
-    public static int getCustomDurability(ItemMeta itemMeta) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            if (dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER)) {
-                return dataContainer.get(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER);
-            }
-        }
-        return 0;
-    }
-
-    public static void setCustomDamage(ItemMeta itemMeta, int damage) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER, damage);
-            setDurabilityTag(itemMeta);
-        }
-    }
-
-    private static boolean isIDItem(ItemStack itemStack) {
-        if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()) {
-            String name = WolfyUtilities.unhideString(itemStack.getItemMeta().getDisplayName());
-            return name.endsWith(":id_item");
-        }
-        return false;
-    }
-
     public void consumeItem(ItemStack input, int totalAmount, Inventory inventory, Location location) {
-        if (this.getMaxStackSize() > 1) {
-            int amount = input.getAmount() - this.getAmount() * totalAmount;
+        if (this.create().getMaxStackSize() > 1) {
+            int amount = input.getAmount() - getAmount() * totalAmount;
             if (this.isConsumed()) {
                 input.setAmount(amount);
             }
             if (this.hasReplacement()) {
-                ItemStack replacement = this.getReplacement();
+                ItemStack replacement = new CustomItem(this.getReplacement()).create();
                 replacement.setAmount(replacement.getAmount() * totalAmount);
                 if (location == null) {
                     if (InventoryUtils.hasInventorySpace(inventory, replacement)) {
                         inventory.addItem(replacement);
-                    } else {
-                        inventory.getLocation().getWorld().dropItemNaturally(inventory.getLocation().add(0.5, 1.0, 0.5), replacement);
+                        return;
                     }
-                } else {
+                    location = inventory.getLocation();
+                }
+                if(location != null && location.getWorld() != null){
                     location.getWorld().dropItemNaturally(location.add(0.5, 1.0, 0.5), replacement);
                 }
             }
@@ -448,7 +495,7 @@ public class CustomItem extends ItemStack implements Cloneable {
     }
 
     public void consumeUnstackableItem(ItemStack input) {
-        if (this.hasConfig()) {
+        if (this.hasNamespacedKey()) {
             if (this.isConsumed()) {
                 input.setAmount(0);
             } else {
@@ -477,28 +524,22 @@ public class CustomItem extends ItemStack implements Cloneable {
                 }
             }
             if (this.hasReplacement()) {
-                ItemStack replace = this.getReplacement();
+                ItemStack replace = new CustomItem(this.getReplacement()).create();
                 input.setType(replace.getType());
                 input.setItemMeta(replace.getItemMeta());
                 input.setData(replace.getData());
                 input.setAmount(replace.getAmount());
                 return;
             } else if (this.getDurabilityCost() != 0) {
-                if (WolfyUtilities.hasVillagePillageUpdate()) {
-                    if (CustomItem.hasCustomDurability(input)) {
-                        CustomItem.setCustomDamage(input, CustomItem.getCustomDamage(input) + this.getDurabilityCost());
-                        return;
-                    }
-                } else {
-                    if (ItemUtils.hasCustomDurability(input)) {
-                        ItemUtils.setDamage(input, ItemUtils.getDamage(input) + this.getDurabilityCost());
-                        return;
-                    }
+                CustomItem customInput = new CustomItem(input);
+                if (customInput.hasCustomDurability()) {
+                    customInput.setCustomDamage(customInput.getCustomDamage() + this.getDurabilityCost());
+                    return;
                 }
                 ItemMeta itemMeta = input.getItemMeta();
                 if (itemMeta instanceof Damageable) {
                     int damage = ((Damageable) itemMeta).getDamage() + this.getDurabilityCost();
-                    if (damage > getType().getMaxDurability()) {
+                    if (damage > create().getType().getMaxDurability()) {
                         input.setAmount(0);
                     } else {
                         ((Damageable) itemMeta).setDamage(damage);
@@ -575,123 +616,6 @@ public class CustomItem extends ItemStack implements Cloneable {
     public static void registerCustomData(CustomData customData) {
         availableCustomData.put(customData.getId(), customData);
     }
-    /*
-    Checks if the itemstack has Custom Durability set.
-     */
-
-    public static boolean hasCustomDurability(ItemStack itemStack) {
-        return hasCustomDurability(itemStack.getItemMeta());
-    }
-
-    public static int getCustomDamage(ItemMeta itemMeta) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            if (dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER)) {
-                return dataContainer.get(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER);
-            }
-        }
-        return 0;
-    }
-
-    public static void setCustomDurability(ItemStack itemStack, int durability) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta != null) {
-            setCustomDurability(itemMeta, durability);
-        }
-        itemStack.setItemMeta(itemMeta);
-    }
-
-    public static void setCustomDurabilityTag(ItemMeta itemMeta, String tag) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING, tag);
-            setDurabilityTag(itemMeta);
-        }
-    }
-
-    public static void removeCustomDurability(ItemStack itemStack) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        removeCustomDurability(itemMeta);
-        itemStack.setItemMeta(itemMeta);
-    }
-
-    public static String getCustomDurabilityTag(ItemMeta itemMeta) {
-        if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            if (dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING)) {
-                return dataContainer.get(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING);
-            }
-        }
-        return "";
-    }
-
-    public static int getCustomDurability(ItemStack itemStack) {
-        return getCustomDurability(itemStack.getItemMeta());
-    }
-
-    public NamespacedKey getNamespacedKey() {
-        return namespacedKey;
-    }
-
-    public static void setCustomDamage(ItemStack itemStack, int damage) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        setCustomDamage(itemMeta, damage);
-        if (itemMeta instanceof Damageable) {
-            ((Damageable) itemMeta).setDamage((int) (itemStack.getType().getMaxDurability() * ((double) damage / (double) getCustomDurability(itemStack))));
-        }
-        itemStack.setItemMeta(itemMeta);
-    }
-
-    @Deprecated
-    public String getId() {
-        return id;
-    }
-
-    public static int getCustomDamage(ItemStack itemStack) {
-        return getCustomDamage(itemStack.getItemMeta());
-    }
-
-    @Deprecated
-    public boolean hasID() {
-        return !id.isEmpty();
-    }
-
-    public static void setCustomDurabilityTag(ItemStack itemStack, String tag) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        setCustomDurabilityTag(itemMeta, tag);
-        itemStack.setItemMeta(itemMeta);
-    }
-
-    public boolean hasNamespacedKey() {
-        return namespacedKey != null;
-    }
-
-    public static String getCustomDurabilityTag(ItemStack itemStack) {
-        return getCustomDurabilityTag(itemStack.getItemMeta());
-    }
-
-    public static void setDurabilityTag(ItemStack itemStack) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        setDurabilityTag(itemMeta);
-        itemStack.setItemMeta(itemMeta);
-    }
-
-    public static void setDurabilityTag(ItemMeta itemMeta) {
-        if (itemMeta != null) {
-            String tag = WolfyUtilities.hideString("WU_Durability") + WolfyUtilities.translateColorCodes(getCustomDurabilityTag(itemMeta).replace("%dur%", String.valueOf(getCustomDurability(itemMeta) - getCustomDamage(itemMeta))).replace("%max_dur%", String.valueOf(getCustomDurability(itemMeta))));
-            List<String> lore = itemMeta.getLore() != null ? itemMeta.getLore() : new ArrayList<>();
-            for (int i = 0; i < lore.size(); i++) {
-                String line = WolfyUtilities.unhideString(lore.get(i));
-                if (line.startsWith("WU_Durability")) {
-                    lore.set(i, tag);
-                    itemMeta.setLore(lore);
-                    return;
-                }
-            }
-            lore.add(tag);
-            itemMeta.setLore(lore);
-        }
-    }
 
     public ParticleContent getParticleContent() {
         return particleContent;
@@ -702,15 +626,126 @@ public class CustomItem extends ItemStack implements Cloneable {
     }
 
     /**
-     * These enums are used to link the CustomItem to other external API!
-     * <p>
-     * CustomItems with DEFAULT can use the internal features of WU like customData, Equipment, etc.
+     * Gets the amount of the linked ItemStack or if the custom amount
+     * is bigger than 0 gets the custom amount.
      *
-     * @deprecated This feature is not yet implemented and might change completely!
+     * @return actual amount of CustomItem
      */
-    @Deprecated
-    public enum APIReference {
-        DEFAULT, ORAXEN, ITEMSADDER, MYTHICMOBS, MMOITEMS
+    public int getAmount() {
+        return getApiReference().getAmount();
     }
 
+    public void setAmount(int amount) {
+        getApiReference().setAmount(amount);
+    }
+
+    /**
+     *
+     */
+    public static class Serializer extends StdSerializer<CustomItem> {
+
+        public Serializer() {
+            this(CustomItem.class);
+        }
+
+        protected Serializer(Class<CustomItem> t) {
+            super(t);
+        }
+
+        @Override
+        public void serialize(CustomItem customItem, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            gen.writeStartObject();
+            gen.writeObjectField("api_reference", customItem.getApiReference());
+            gen.writeBooleanField("consumed", customItem.isConsumed());
+            gen.writeNumberField("rarity_percentage", customItem.getRarityPercentage());
+            gen.writeStringField("permission", customItem.getPermission());
+            gen.writeObjectField("meta", customItem.getMetaSettings());
+            gen.writeObjectFieldStart("fuel");
+            {
+                gen.writeNumberField("burntime", customItem.getBurnTime());
+                gen.writeArrayFieldStart("allowed_blocks");
+                for (Material material : customItem.getAllowedBlocks()) {
+                    gen.writeString(material.toString());
+                }
+                gen.writeEndArray();
+            }
+            gen.writeEndObject();
+            gen.writeObjectFieldStart("custom_data");
+            {
+                for (CustomData value : customItem.getCustomDataMap().values()) {
+                    gen.writeObjectFieldStart(value.getId());
+                    value.writeToJson(gen);
+                    gen.writeEndObject();
+                }
+            }
+            gen.writeEndObject();
+            gen.writeObjectField("replacement", customItem.getReplacement());
+            gen.writeNumberField("durability_cost", customItem.getDurabilityCost());
+            gen.writeArrayFieldStart("equipment_slots");
+            {
+                for (EquipmentSlot equipmentSlot : customItem.getEquipmentSlots()) {
+                    gen.writeString(equipmentSlot.toString());
+                }
+            }
+            gen.writeEndArray();
+            gen.writeObjectField("particles", customItem.getParticleContent());
+            gen.writeEndObject();
+        }
+    }
+
+    public static class Deserializer extends StdDeserializer<CustomItem> {
+
+        public Deserializer() {
+            this(CustomItem.class);
+        }
+
+        protected Deserializer(Class<CustomItem> t) {
+            super(t);
+        }
+
+        @Override
+        public CustomItem deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            ObjectMapper mapper = JacksonUtil.getObjectMapper();
+            JsonNode node = p.readValueAsTree();
+            if (node.isObject()) {
+                APIReference apiReference;
+                if (node.has("api_reference")) {
+                    apiReference = mapper.convertValue(node.path("api_reference"), APIReference.class);
+                } else {
+                    apiReference = mapper.convertValue(node.path("item"), APIReference.class);
+                }
+                CustomItem customItem = new CustomItem(apiReference);
+                customItem.setConsumed(node.path("consumed").asBoolean());
+                customItem.setRarityPercentage(node.path("rarity_percentage").asDouble(1.0));
+                customItem.setPermission(node.path("permission").asText());
+                customItem.setMetaSettings(mapper.convertValue(node.path("meta"), MetaSettings.class));
+                JsonNode fuelNode = node.path("fuel");
+                {
+                    customItem.setBurnTime(fuelNode.path("burntime").asInt());
+                    List<Material> allowedBlocks = new ArrayList<>();
+                    fuelNode.path("allowed_blocks").elements().forEachRemaining(n -> allowedBlocks.add(Material.matchMaterial(n.asText())));
+                    customItem.setAllowedBlocks(allowedBlocks);
+                }
+                JsonNode customDataNode = node.path("custom_data");
+                {
+                    customDataNode.fields().forEachRemaining(entry -> {
+                        if (CustomItem.getAvailableCustomData().containsKey(entry.getKey())) {
+                            try {
+                                CustomData customData = CustomItem.getAvailableCustomData().get(entry.getKey()).readFromJson(entry.getValue());
+                                customItem.getCustomDataMap().put(entry.getKey(), customData);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+                customItem.setReplacement(mapper.convertValue(node.path("replacement"), APIReference.class));
+                customItem.setDurabilityCost(node.path("durability_cost").asInt());
+                node.path("equipment_slots").elements().forEachRemaining(n -> customItem.addEquipmentSlots(EquipmentSlot.valueOf(n.asText())));
+                customItem.setParticleContent(mapper.convertValue(node.path("particles"), ParticleContent.class));
+                return customItem;
+            }
+            return new CustomItem(Material.AIR);
+        }
+    }
 }

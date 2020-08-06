@@ -1,10 +1,16 @@
 package me.wolfyscript.utilities.api.utils.particles;
 
-import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.config.JsonConfiguration;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
+import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -12,38 +18,27 @@ import java.util.Map;
 /*
 Contains the Particle classes.
  */
-public class Particles extends JsonConfiguration {
+@JsonSerialize(using = Particles.Serializer.class)
+public class Particles {
 
-    private static LinkedHashMap<NamespacedKey, Particle> particles = new LinkedHashMap<>();
-    private String namespace;
+    private static final LinkedHashMap<NamespacedKey, Particle> particles = new LinkedHashMap<>();
 
-    public Particles(ConfigAPI configAPI) {
-        this(configAPI, "", configAPI.getPlugin().getDataFolder().getPath(), "me/wolfyscript/utilities/api/utils/particles/defaults");
+    private final String namespace;
+    private final String path;
+    private final Plugin plugin;
+
+    public Particles(Plugin plugin){
+        this(plugin, plugin.getName().toLowerCase(Locale.ROOT).replace(" ", "_"));
     }
 
-    public Particles(ConfigAPI configAPI, String namespace) {
-        this(configAPI, namespace, false);
+    public Particles(Plugin plugin, String namespace){
+        this(plugin, namespace, "");
     }
 
-    public Particles(ConfigAPI configAPI, String namespace, boolean override) {
-        this(configAPI, namespace, configAPI.getPlugin().getDataFolder().getPath(), override);
-    }
-
-    public Particles(ConfigAPI configAPI, String namespace, String path) {
-        this(configAPI, namespace, path, false);
-    }
-
-    public Particles(ConfigAPI configAPI, String namespace, String path, boolean override) {
-        this(configAPI, namespace, path, "me/wolfyscript/utilities/api/utils/particles/defaults", override);
-    }
-
-    public Particles(ConfigAPI configAPI, String namespace, String path, String defPath) {
-        this(configAPI, namespace, path, defPath, false);
-    }
-
-    public Particles(ConfigAPI configAPI, String namespace, String path, String defPath, boolean override) {
-        super(configAPI, path + File.separator + (namespace.isEmpty() ? "" : namespace + File.separator) + "particles", "particles", defPath, "particles", override);
-        this.namespace = namespace.isEmpty() ? configAPI.getPlugin().getName().toLowerCase(Locale.ROOT).replace(" ", "_") : namespace;
+    public Particles(Plugin plugin, String namespace, String path){
+        this.plugin = plugin;
+        this.namespace = namespace;
+        this.path = plugin.getDataFolder().getPath() + path;
     }
 
     /*
@@ -78,32 +73,66 @@ public class Particles extends JsonConfiguration {
         }
     }
 
-    @Override
-    public void reload() {
-        super.reload(true);
+    public void save() throws IOException {
+        save(true);
     }
 
-    @Override
-    public void save() {
-        super.save(true);
-    }
-
-    public void loadParticles(){
-        for(String particleName : getKeys()){
-            Particle particle = get(Particle.class, particleName);
-            if(particle != null) {
-                NamespacedKey namespacedKey = new NamespacedKey(namespace, particleName);
-                particle.setNamespacedKey(namespacedKey);
-                particles.put(namespacedKey, particle);
-            }
+    /**
+     *
+     * @param addNamespace If true the namespace is appended to the path
+     * @throws IOException
+     */
+    public void save(boolean addNamespace) throws IOException {
+        File file = new File(path + (addNamespace ? File.separator + namespace : "") + File.separator + "particles", "particles.json");
+        file.getParentFile().getParentFile().mkdirs();
+        if(file.exists() || file.createNewFile()){
+            JacksonUtil.getObjectMapper().writeValue(file, this);
         }
     }
 
-    public void setParticles() {
-        for (Map.Entry<NamespacedKey, Particle> particleEntry : particles.entrySet()) {
-            if (particleEntry.getKey().getNamespace().equalsIgnoreCase(namespace)) {
-                set(particleEntry.getKey().getKey(), particleEntry.getValue());
+    public void load() throws IOException {
+        load(true);
+    }
+
+    /**
+     *
+     * @param addNamespace If true the namespace is appended to the path
+     * @throws IOException
+     */
+    public void load(boolean addNamespace) throws IOException {
+        File file = new File(path + (addNamespace ? File.separator + namespace : "") + File.separator + "particles", "particles.json");
+        if(file.exists()){
+            JsonNode node = JacksonUtil.getObjectMapper().readTree(file);
+            node.fields().forEachRemaining(entry -> {
+                Particle particle = JacksonUtil.getObjectMapper().convertValue(entry.getValue(), Particle.class);
+                if(particle != null){
+                    NamespacedKey namespacedKey = new NamespacedKey(namespace, entry.getKey());
+                    particle.setNamespacedKey(namespacedKey);
+                    addParticle(namespacedKey, particle);
+                }
+            });
+        }
+    }
+
+    public static class Serializer extends StdSerializer<Particles> {
+
+        public Serializer(){
+            super(Particles.class);
+        }
+
+        protected Serializer(Class<Particles> t) {
+            super(t);
+        }
+
+        @Override
+        public void serialize(Particles value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            gen.writeStartObject();
+            for (Map.Entry<NamespacedKey, Particle> entry : particles.entrySet()) {
+                if(entry.getKey().getNamespace().equals(value.namespace)){
+                    gen.writeObjectField(entry.getKey().getKey(), entry.getValue());
+                }
             }
+            gen.writeEndObject();
         }
     }
 }

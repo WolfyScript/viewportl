@@ -1,14 +1,14 @@
 package me.wolfyscript.utilities.api.utils.chat;
 
-import me.wolfyscript.utilities.api.utils.ItemUtils;
+import me.wolfyscript.utilities.api.utils.inventory.ItemUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.inventory.ItemStack;
 
 public class HoverEvent implements ChatEvent<net.md_5.bungee.api.chat.HoverEvent.Action, BaseComponent[]> {
 
-    private net.md_5.bungee.api.chat.HoverEvent.Action action;
-    private BaseComponent[] value;
+    private final net.md_5.bungee.api.chat.HoverEvent.Action action;
+    private final BaseComponent[] value;
 
     public HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action action, BaseComponent[] value) {
         this.action = action;

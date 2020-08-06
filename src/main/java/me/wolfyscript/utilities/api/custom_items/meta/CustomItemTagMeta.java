@@ -1,9 +1,9 @@
 package me.wolfyscript.utilities.api.custom_items.meta;
 
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.Meta;
 import me.wolfyscript.utilities.api.custom_items.MetaSettings;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,17 +18,19 @@ public class CustomItemTagMeta extends Meta {
     }
 
     @Override
-    public boolean check(ItemMeta meta1, ItemMeta meta2) {
+    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+        ItemMeta meta1 = itemOther.getItemMeta();
+        ItemMeta meta2 = item.getItemMeta();
         if (option.equals(MetaSettings.Option.IGNORE)) {
-            if (WolfyUtilities.hasVillagePillageUpdate()) {
-                if (meta1.getPersistentDataContainer().has(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
-                    meta1.getPersistentDataContainer().remove(new NamespacedKey(Main.getInstance(), "custom_item"));
-                }
-                if (meta2.getPersistentDataContainer().has(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
-                    meta2.getPersistentDataContainer().remove(new NamespacedKey(Main.getInstance(), "custom_item"));
-                }
+            if (meta1.getPersistentDataContainer().has(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
+                meta1.getPersistentDataContainer().remove(new NamespacedKey(Main.getInstance(), "custom_item"));
+            }
+            if (meta2.getPersistentDataContainer().has(new NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
+                meta2.getPersistentDataContainer().remove(new NamespacedKey(Main.getInstance(), "custom_item"));
             }
         }
+        itemOther.setItemMeta(meta1);
+        item.setItemMeta(meta2);
         return true;
     }
 }

@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.custom_items.meta;
 
 import me.wolfyscript.utilities.api.custom_items.Meta;
 import me.wolfyscript.utilities.api.custom_items.MetaSettings;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
@@ -15,19 +16,23 @@ public class RepairCostMeta extends Meta {
     }
 
     @Override
-    public boolean check(ItemMeta meta1, ItemMeta meta2) {
-        if (meta1 instanceof Repairable && meta2 instanceof Repairable) {
+    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+        ItemMeta metaOther = itemOther.getItemMeta();
+        ItemMeta meta = item.getItemMeta();
+        if (metaOther instanceof Repairable && meta instanceof Repairable) {
             switch (option) {
                 case EXACT:
-                    return ((Repairable) meta1).getRepairCost() == ((Repairable) meta2).getRepairCost();
+                    return ((Repairable) metaOther).getRepairCost() == ((Repairable) meta).getRepairCost();
                 case IGNORE:
-                    ((Repairable) meta1).setRepairCost(0);
-                    ((Repairable) meta2).setRepairCost(0);
+                    ((Repairable) metaOther).setRepairCost(0);
+                    ((Repairable) meta).setRepairCost(0);
+                    itemOther.setItemMeta(metaOther);
+                    item.setItemMeta(meta);
                     return true;
                 case LOWER:
-                    return ((Repairable) meta1).getRepairCost() < ((Repairable) meta2).getRepairCost();
+                    return ((Repairable) metaOther).getRepairCost() < ((Repairable) meta).getRepairCost();
                 case HIGHER:
-                    return ((Repairable) meta1).getRepairCost() > ((Repairable) meta2).getRepairCost();
+                    return ((Repairable) metaOther).getRepairCost() > ((Repairable) meta).getRepairCost();
             }
         }
         return true;

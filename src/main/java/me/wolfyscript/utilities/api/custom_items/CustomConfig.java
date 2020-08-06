@@ -3,9 +3,6 @@ package me.wolfyscript.utilities.api.custom_items;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.JsonConfiguration;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
-import org.bukkit.Material;
-
-import java.util.Locale;
 
 public class CustomConfig extends JsonConfiguration {
 
@@ -80,31 +77,11 @@ public class CustomConfig extends JsonConfiguration {
     }
 
     public void saveCustomItem(String path, CustomItem customItem) {
-        if (customItem != null) {
-            if (customItem.getNamespacedKey() != null) {
-                set(path + ".item_key", customItem.getNamespacedKey().toString());
-                set(path + ".custom_amount", customItem.getAmount() != CustomItems.getCustomItem(customItem.getNamespacedKey()).getAmount() ? customItem.getAmount() : 0);
-            } else {
-                setItem(path + ".item", customItem.getItemStack());
-            }
-        } else {
-            setItem(path + ".item", null);
-        }
+        set(path, customItem);
     }
 
     public CustomItem getCustomItem(String path) {
-        String id = getString(path + ".item_key");
-        if (id != null && !id.isEmpty()) {
-            CustomItem customItem = CustomItems.getCustomItem(new NamespacedKey(id.split(":")[0].toLowerCase(Locale.ROOT), id.split(":")[1].toLowerCase(Locale.ROOT)));
-            int i = getInt(path + ".custom_amount");
-            if (i != 0) {
-                customItem.setAmount(i);
-            }
-            return customItem;
-        } else if (getItem(path + ".item") != null) {
-            return new CustomItem(getItem(path + ".item"));
-        }
-        return new CustomItem(Material.AIR);
+        return get(CustomItem.class, path);
     }
 
     public void linkToFile(NamespacedKey namespacedKey, String path) {

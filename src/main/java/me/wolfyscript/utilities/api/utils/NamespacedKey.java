@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class NamespacedKey implements Comparable<NamespacedKey> {
@@ -45,23 +46,22 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         return this.key;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else if (this.getClass() != obj.getClass()) {
-            return false;
-        } else {
-            NamespacedKey other = (NamespacedKey) obj;
-            return this.namespace.equals(other.namespace) && this.key.equals(other.key);
-        }
+    public static NamespacedKey getByString(String namespaceKey){
+        return new NamespacedKey(namespaceKey.split(":")[0].toLowerCase(Locale.ROOT), namespaceKey.split(":")[1].toLowerCase(Locale.ROOT));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NamespacedKey)) return false;
+        NamespacedKey that = (NamespacedKey) o;
+        return Objects.equals(namespace, that.namespace) &&
+                Objects.equals(key, that.key);
+    }
+
+    @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 47 * hash + this.namespace.hashCode();
-        hash = 47 * hash + this.key.hashCode();
-        return hash;
+        return Objects.hash(namespace, key);
     }
 
     public String toString() {

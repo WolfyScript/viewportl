@@ -8,8 +8,8 @@ import java.util.HashMap;
 public class GuiCluster {
 
     private String id;
-    private HashMap<String, Button> buttons;
-    private HashMap<String, GuiWindow> guiWindows;
+    private final HashMap<String, Button> buttons;
+    private final HashMap<String, GuiWindow> guiWindows;
 
     private String mainmenu;
 
