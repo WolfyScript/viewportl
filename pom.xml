@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.wolfyscript</groupId>
+    <groupId>com.wolfyscript</groupId>
     <artifactId>wolfyutilities</artifactId>
-    <version>1.6.0.1</version>
+    <version>1.6.0.2</version>
     <properties>
         <!-- Generic properties -->
         <java.version>1.8</java.version>
@@ -50,7 +50,11 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-
+        <!--WolfyScript private repo-->
+        <repository>
+            <id>wolfyscript-private</id>
+            <url>https://maven.wolfyscript.com/repository/private/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -157,16 +161,17 @@
             <version>2.1.139-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <!--Dependencies from private repo! They require credentials to access!-->
         <dependency>
             <groupId>io.th0rgal</groupId>
             <artifactId>oraxen</artifactId>
-            <version>1.28.1</version>
+            <version>1.40.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>dev.lone</groupId>
             <artifactId>itemsadder</artifactId>
-            <version>2.0.31</version>
+            <version>2.0.41</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -237,14 +242,14 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>nexus</id>
+            <id>wolfyscript-private</id>
             <name>Releases</name>
-            <url>https://www.iani.de/nexus/content/repositories/releases/</url>
+            <url>https://maven.wolfyscript.com/repository/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>nexus</id>
+            <id>wolfyscript-private</id>
             <name>Snapshot</name>
-            <url>https://www.iani.de/nexus/content/repositories/snapshots/</url>
+            <url>https://maven.wolfyscript.com/repository/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
