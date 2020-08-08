@@ -1,32 +1,39 @@
 package me.wolfyscript.utilities.api.config;
 
-import com.google.gson.*;
-import com.google.gson.internal.bind.TypeAdapters;
+import com.fasterxml.jackson.core.JsonPointer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.utils.GsonUtil;
+import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.NumberConversions;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JsonConfiguration extends FileConfiguration {
 
-    private final Gson gson = GsonUtil.getGson();
+    private final ObjectMapper mapper = JacksonUtil.getObjectMapper();
+    private final HashMap<String, JsonPointer> cachedPointers = new HashMap<>();
 
-    private JsonObject root;
+    protected JsonNode root;
 
     private String defJsonString;
 
     private char pathSeparator = '.';
 
     /*
-        Creates a json YamlConfiguration file. The default is set inside of the jar at the specified path.
+        Creates a Json Configuration file. The default is set inside of the jar at the specified path.
         path - the config file path
         filename - config file name without ".json" and the key of this config (if it's registered)
         defPath - file path of the file containing the defaults
@@ -36,7 +43,7 @@ public class JsonConfiguration extends FileConfiguration {
     public JsonConfiguration(ConfigAPI configAPI, String path, String name, String defPath, String defFileName, boolean overwrite) {
         super(configAPI, path, name, defPath, defFileName, Type.JSON);
         this.map = new HashMap<>();
-        this.root = new JsonObject();
+        this.root = mapper.createObjectNode();
         if (!configFile.exists()) {
             try {
                 configFile.getParentFile().mkdirs();
@@ -74,9 +81,13 @@ public class JsonConfiguration extends FileConfiguration {
     public JsonConfiguration(ConfigAPI configAPI, String jsonData, String name) {
         super(configAPI, "", name, "", "", Type.JSON);
         this.map = new HashMap<>();
-        this.root = new JsonObject();
+        this.root = mapper.createObjectNode();
         this.defJsonString = jsonData;
-        loadFromString(jsonData);
+        try {
+            loadFromString(jsonData);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     /*
@@ -85,7 +96,7 @@ public class JsonConfiguration extends FileConfiguration {
     public JsonConfiguration(ConfigAPI configAPI, String name, String defPath, String defFileName) {
         this("{}", configAPI, name, defPath, defFileName);
         this.map = new HashMap<>();
-        this.root = new JsonObject();
+        this.root = mapper.createObjectNode();
         loadDefaults();
     }
 
@@ -95,8 +106,12 @@ public class JsonConfiguration extends FileConfiguration {
     public JsonConfiguration(String jsonData, ConfigAPI configAPI, String name, String defPath, String defFileName) {
         super(configAPI, "", name, defPath, defFileName, Type.JSON);
         this.map = new HashMap<>();
-        this.root = new JsonObject();
-        loadFromString(jsonData);
+        this.root = mapper.createObjectNode();
+        try {
+            loadFromString(jsonData);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         loadDefaults();
     }
 
@@ -128,18 +143,22 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
     public void loadDefaults(boolean overwrite) {
-        gson.fieldNamingStrategy();
+        //gson.fieldNamingStrategy();
+
         if (defPath != null && defFileName != null && !defPath.isEmpty() && !defFileName.isEmpty()) {
             if (plugin.getResource(defPath + "/" + defFileName + ".json") != null) {
-                HashMap<String, Object> defMap = null;
+                HashMap<String, Object> defMap;
                 try {
-                    JsonObject jsonObject = (JsonObject) TypeAdapters.JSON_ELEMENT.fromJson(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json"), "UTF-8"));
-                    defMap = gson.fromJson(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json"), "UTF-8"), new HashMap<String, JsonElement>().getClass());
+                    JsonNode node = mapper.readTree(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json"), StandardCharsets.UTF_8));
+                    defMap = mapper.readValue(new InputStreamReader(plugin.getResource(defPath + "/" + defFileName + ".json"), StandardCharsets.UTF_8), new TypeReference<HashMap<String, Object>>() {
+                    });
                     if (overwrite) {
                         this.map.putAll(defMap);
-                        this.root = jsonObject;
+                        this.root = node;
                     } else {
-                        applyDefaults("", jsonObject);
+                        if (node.isObject()) {
+                            applyDefaults("", (ObjectNode) node);
+                        }
                         for (Map.Entry<String, Object> entry : defMap.entrySet()) {
                             this.map.putIfAbsent(entry.getKey(), entry.getValue());
                         }
@@ -176,27 +195,33 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
      */
-    public void applyDefaults(String pathKey, JsonObject jsonObject) {
-        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+    public void applyDefaults(String pathKey, ObjectNode node) {
+        node.fields().forEachRemaining(entry -> {
             String subPath = (pathKey.isEmpty() ? "" : (pathKey + getPathSeparator())) + entry.getKey();
-            if (entry.getValue() instanceof JsonObject) {
-                applyDefaults(subPath, (JsonObject) entry.getValue());
+
+            if (entry.getValue().isObject()) {
+                applyDefaults(subPath, (ObjectNode) entry.getValue());
             } else {
                 if (get(subPath) == null) {
                     set(subPath, entry.getValue());
                 }
             }
-        }
+        });
     }
 
 
-    public void loadFromString(String json) {
-        root = gson.fromJson(json, JsonObject.class);
-        map = gson.fromJson(json, new HashMap<String, Object>().getClass());
+    public void loadFromString(String jsonString) throws JsonProcessingException {
+        root = mapper.readTree(jsonString);
+        map = mapper.readValue(jsonString, new TypeReference<HashMap<String, Object>>() {});
     }
 
     public String toString(boolean prettyPrinting) {
-        return GsonUtil.getGson(prettyPrinting).toJson(root);
+        try {
+            return prettyPrinting ? mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root) : mapper.writeValueAsString(root);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return "{}";
+        }
     }
 
     public String toString() {
@@ -205,39 +230,25 @@ public class JsonConfiguration extends FileConfiguration {
 
     public void load() {
         if (linkedToFile()) {
+            JsonNode node = null;
             try {
-                try {
-                    JsonElement object = gson.fromJson(new InputStreamReader(new FileInputStream(this.configFile), "UTF-8"), JsonElement.class);
-                    if (object instanceof JsonObject) {
-                        this.root = (JsonObject) object;
-                        if (root == null) {
-                            this.root = new JsonObject();
-                        }
-                    }
-                } catch (JsonSyntaxException | JsonIOException | IOException ex) {
-                    ex.printStackTrace();
-                }
-                this.map = gson.fromJson(new InputStreamReader(new FileInputStream(this.configFile), "UTF-8"), new HashMap<String, Object>().getClass());
-                if (map == null) {
-                    this.map = new HashMap<>();
-                }
-            } catch (FileNotFoundException | UnsupportedEncodingException e) {
+                node = mapper.readTree(this.configFile);
+                this.root = node;
+            } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                if (node == null || node.isNull()) {
+                    this.root = mapper.createObjectNode();
+                }
             }
         }
     }
 
     public void save(boolean prettyPrinting) {
         if (linkedToFile()) {
-            final String json = toString(prettyPrinting);
             try {
-                PrintWriter pw = new PrintWriter(configFile, "UTF-8");
-                pw.close();
-            } catch (FileNotFoundException | UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            try {
-                Files.write(configFile.toPath(), json.getBytes("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                ObjectWriter writer = mapper.writer(prettyPrinting ? new DefaultPrettyPrinter() : null);
+                writer.writeValue(configFile, root);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -289,19 +300,19 @@ public class JsonConfiguration extends FileConfiguration {
             return parse("", this.root, new HashSet<>());
         }
         Set<String> keys = new HashSet<>();
-        this.root.entrySet().forEach(entry -> keys.add(entry.getKey()));
+        this.root.fieldNames().forEachRemaining(keys::add);
         return keys;
     }
 
-    public Set<String> parse(String currentPath, JsonObject jsonObject, Set<String> out) {
-        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-            String path = (currentPath.isEmpty() ? "" : currentPath + getPathSeparator()) + entry.getKey();
-            if (entry.getValue() instanceof JsonObject) {
-                parse(path, (JsonObject) entry.getValue(), out);
-            } else {
+    public Set<String> parse(String currentPath, JsonNode jsonNode, Set<String> out) {
+        jsonNode.fields().forEachRemaining(e -> {
+            String path = (currentPath.isEmpty() ? "" : currentPath + getPathSeparator()) + e.getKey();
+            if (e.getValue().isValueNode() || e.getValue().isArray()) {
                 out.add(path);
+            } else {
+                parse(path, e.getValue(), out);
             }
-        }
+        });
         return out;
     }
 
@@ -339,49 +350,128 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
     public <T> T get(Class<T> type, String path, @Nullable T def) {
-        String[] pathKeys = path.split(pathSeparator == '.' ? "\\." : pathSeparator + "");
-        JsonObject jsonObject = root;
-        for (int i = 0; i < pathKeys.length; i++) {
-            if (jsonObject.has(pathKeys[i])) {
-                JsonElement element = jsonObject.get(pathKeys[i]);
-                if (i != pathKeys.length - 1) {
-                    if (element instanceof JsonObject) {
-                        jsonObject = (JsonObject) element;
-                    } else {
-                        return null;
-                    }
-                } else {
-                    return gson.fromJson(element, type);
-                }
-            }else{
-                return def;
-            }
+        JsonNode node = getJsonNode(path);
+        if (node == null || node.isMissingNode() || node.isNull()) {
+            return def;
         }
-        return def;
+        return mapper.convertValue(node, type);
     }
 
+    /**
+     * @param path
+     * @param value
+     */
+    public void set(String path, Object value, boolean useDotSeperator) {
+        try {
+            setNode(path, JacksonUtil.getObjectMapper().convertValue(value, JsonNode.class), useDotSeperator);
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Couldn't convert value to JsonNode!");
+        }
+    }
+
+    /**
+     * @param path
+     * @param value
+     */
     @Override
     public void set(String path, Object value) {
-        String[] pathKeys = path.split(pathSeparator == '.' ? "\\." : pathSeparator + "");
-        JsonObject jsonObject = root;
-        for (int i = 0; i < pathKeys.length; i++) {
-            if (!jsonObject.has(pathKeys[i]) && i != pathKeys.length - 1) {
-                jsonObject.add(pathKeys[i], new JsonObject());
-                jsonObject = jsonObject.getAsJsonObject(pathKeys[i]);
-            } else {
-                JsonElement element = jsonObject.get(pathKeys[i]);
-                if (i == pathKeys.length - 1) {
-                    jsonObject.add(pathKeys[i], gson.toJsonTree(value));
-                    if (saveAfterValueSet) {
-                        reload();
-                    }
-                } else {
-                    if (element instanceof JsonObject) {
-                        jsonObject = (JsonObject) element;
-                    }
-                }
+        set(path, value, true);
+    }
+
+    public void setPOJO(String path, Object value, boolean useDotSeperator) {
+        try {
+            if(useDotSeperator){
+                path = path.replace(pathSeparator, '/');
             }
+            JsonPointer pointer;
+            if(cachedPointers.containsKey(path)){
+                pointer = cachedPointers.get(path);
+            }else{
+                pointer = JsonPointer.compile((path.startsWith("/") ? "" : "/")+path);
+                cachedPointers.put(path, pointer);
+            }
+            ObjectNode node = JacksonUtil.getObjectMapper().convertValue(this.root.at(pointer.head()), ObjectNode.class);
+            if(node != null && node.isObject()){
+                node.putPOJO(pointer.last().toString().substring(1), value);
+            }
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Parent node is not a ObjectNode!");
         }
+    }
+
+    public void setNode(String path, JsonNode value){
+        setNode(path, value, true);
+    }
+
+    public void setNode(String path, JsonNode value, boolean useDotSeperator) {
+        try {
+            if(useDotSeperator){
+                path = path.replace(pathSeparator, '/');
+            }
+            JsonPointer pointer;
+            if(cachedPointers.containsKey(path)){
+                pointer = cachedPointers.get(path);
+            }else{
+                pointer = JsonPointer.compile((path.startsWith("/") ? "" : "/")+path);
+                cachedPointers.put(path, pointer);
+            }
+            JsonPointer head = pointer.head();
+            JsonNode testNode;
+            do{
+                testNode = this.root.at(head);
+                head = head.head();
+            }while(testNode.isMissingNode());
+
+            ObjectNode node = JacksonUtil.getObjectMapper().convertValue(this.root.at(pointer.head()), ObjectNode.class);
+            if(node != null && node.isObject()){
+                node.set(pointer.last().toString().substring(1), value);
+            }
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Parent node is not a ObjectNode!");
+        }
+    }
+
+    /**
+     *  This method will replace all occurrences of the {@link #pathSeparator} with '/',<p>
+     *  <b>Only use this method when you are sure that the field names
+     *  don't contain the character of {@link #pathSeparator}!</b>
+     *  <p>
+     *  Else use {@link #getJsonNode(String, boolean)} instead!
+     *
+     * @param path
+     * @return
+     */
+    public JsonNode getJsonNode(String path) {
+        return getJsonNode(path, true);
+    }
+
+    /**
+     * This method will replace all occurrences of the {@link #pathSeparator} with '/',<p>
+     * if useDotSeperator is set to true.<p>
+     * <b>Only set <a>useDotSeperator</a> to true when you are sure that the field names
+     * don't contain the character of {@link #pathSeparator}!</b>
+     *
+     * @param path the path of the JsonNode
+     * @param useDotSeperator use the {@link #pathSeparator} instead of '/'. Replaces all occurrences of {@link #pathSeparator} with '/'
+     * @return The JsonNode at the specific path or {@link TreeNode#isMissingNode()}
+     */
+    public JsonNode getJsonNode(@NotNull String path, boolean useDotSeperator) {
+        try {
+            if(useDotSeperator){
+                path = path.replace(pathSeparator, '/');
+            }
+            JsonPointer pointer;
+            if(cachedPointers.containsKey(path)){
+                pointer = cachedPointers.get(path);
+            }else{
+                pointer = JsonPointer.compile(path.startsWith("/") ? "" : "/"+path);
+                cachedPointers.put(path, pointer);
+            }
+            return JacksonUtil.getObjectMapper().convertValue(this.root.at(pointer), JsonNode.class);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+        }
+        return mapper.missingNode();
     }
 
     @Override
@@ -391,10 +481,7 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public String getString(String path, String def) {
-        if (get(path) != null) {
-            return get(path).toString();
-        }
-        return def;
+        return getJsonNode(path).asText(def);
     }
 
     @Override
@@ -404,25 +491,23 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public int getInt(String path, int def) {
-        Object val = this.get(path);
-        return val instanceof Number ? NumberConversions.toInt(get(path)) : def;
+        return getJsonNode(path).asInt(def);
     }
 
     @Override
     public boolean getBoolean(String path) {
-        Object val = this.get(path);
-        return val instanceof Boolean && (Boolean) val;
+        return getJsonNode(path).booleanValue();
     }
 
     @Override
     public double getDouble(String path) {
+
         return getDouble(path, 0.0d);
     }
 
     @Override
     public double getDouble(String path, double def) {
-        Object val = this.get(path);
-        return val instanceof Number ? NumberConversions.toDouble(val) : def;
+        return getJsonNode(path).asDouble(def);
     }
 
     @Override
@@ -432,8 +517,7 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public long getLong(String path, long def) {
-        Object val = this.get(path);
-        return val instanceof Number ? NumberConversions.toLong(val) : def;
+        return getJsonNode(path).asLong(def);
     }
 
     @Override
@@ -500,26 +584,10 @@ public class JsonConfiguration extends FileConfiguration {
             if (itemStack.hasItemMeta()) {
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 if (itemMeta.hasDisplayName()) {
-                    String displayName = itemMeta.getDisplayName();
-                    if (replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
-                        displayName = api.getLanguageAPI().getActiveLanguage().replaceKeys(displayName);
-                    }
-                    itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
+                    itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(replaceKeys && api.getLanguageAPI().getActiveLanguage() != null ? api.getLanguageAPI().replaceKeys(itemMeta.getDisplayName()) : itemMeta.getDisplayName()));
                 }
                 if (itemMeta.hasLore() && replaceKeys && api.getLanguageAPI().getActiveLanguage() != null) {
-                    List<String> newLore = new ArrayList<>();
-                    for (String row : itemMeta.getLore()) {
-                        if (row.startsWith("[WU]")) {
-                            newLore.add(api.getLanguageAPI().getActiveLanguage().replaceKeys(row.substring("[WU]".length())));
-                        } else if (row.startsWith("[WU!]")) {
-                            for (String newRow : api.getLanguageAPI().getActiveLanguage().replaceKey(row.substring("[WU!]".length()))) {
-                                newLore.add(WolfyUtilities.translateColorCodes(newRow));
-                            }
-                        } else {
-                            newLore.add(row);
-                        }
-                    }
-                    itemMeta.setLore(newLore);
+                    itemMeta.setLore(itemMeta.getLore().stream().map(row -> WolfyUtilities.translateColorCodes(row)).collect(Collectors.toList()));
                 }
                 itemStack.setItemMeta(itemMeta);
             }

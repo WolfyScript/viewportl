@@ -1,5 +1,8 @@
 package me.wolfyscript.utilities.api.utils.particles;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleEffectSerialization;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,6 +12,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonSerialize(using = ParticleEffectSerialization.Serializer.class)
+@JsonDeserialize(using = ParticleEffectSerialization.Deserializer.class)
 public class ParticleEffect {
 
     private List<Particle> particles = new ArrayList<>();

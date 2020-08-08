@@ -4,7 +4,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.cache.CustomCache;
-import me.wolfyscript.utilities.api.utils.InventoryUtils;
+import me.wolfyscript.utilities.api.utils.inventory.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,21 +15,21 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.Plugin;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class InventoryAPI<T extends CustomCache> implements Listener {
 
-    private Plugin plugin;
-    private WolfyUtilities wolfyUtilities;
-    private HashMap<String, GuiHandler> guiHandlers = new HashMap<>();
-    private HashMap<String, GuiCluster> guiClusters = new HashMap<>();
+    private final Plugin plugin;
+    private final WolfyUtilities wolfyUtilities;
+    private final HashMap<UUID, GuiHandler> guiHandlers = new HashMap<>();
+    private final HashMap<String, GuiCluster> guiClusters = new HashMap<>();
 
-    private Class<T> customCacheClass;
+    private final Class<T> customCacheClass;
 
     public InventoryAPI(Plugin plugin, WolfyUtilities wolfyUtilities, Class<T> customCacheClass) {
         this.wolfyUtilities = wolfyUtilities;
@@ -119,7 +119,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
         if (!hasGuiHandler(player)) {
             createGuiHandler(player);
         }
-        return guiHandlers.get(player.getUniqueId().toString());
+        return guiHandlers.get(player.getUniqueId());
     }
 
     private void createGuiHandler(Player player) {
@@ -128,23 +128,23 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
     }
 
     private void setPlayerGuiStudio(Player player, GuiHandler guiStudio) {
-        guiHandlers.put(player.getUniqueId().toString(), guiStudio);
+        guiHandlers.put(player.getUniqueId(), guiStudio);
     }
 
     private void removePlayerGuiHandler(Player player, GuiHandler guiStudio) {
-        guiHandlers.remove(player.getUniqueId().toString(), guiStudio);
+        guiHandlers.remove(player.getUniqueId(), guiStudio);
     }
 
     private void removePlayerGuiHandler(Player player) {
-        guiHandlers.remove(player.getUniqueId().toString());
+        guiHandlers.remove(player.getUniqueId());
     }
 
     public boolean hasGuiHandler(Player player) {
-        return guiHandlers.containsKey(player.getUniqueId().toString()) && guiHandlers.get(player.getUniqueId().toString()) != null;
+        return guiHandlers.containsKey(player.getUniqueId()) && guiHandlers.get(player.getUniqueId()) != null;
     }
 
     public boolean hasGuiHandlerAndInv(Player player) {
-        return guiHandlers.containsKey(player.getUniqueId().toString()) && guiHandlers.get(player.getUniqueId().toString()) != null && guiHandlers.get(player.getUniqueId().toString()).getCurrentInv() != null;
+        return guiHandlers.containsKey(player.getUniqueId()) && guiHandlers.get(player.getUniqueId()) != null && guiHandlers.get(player.getUniqueId()).getCurrentInv() != null;
     }
 
     public Plugin getPlugin() {
@@ -237,11 +237,9 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
                 if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
-                    for (int rawSlot : event.getRawSlots()) {
-                        if (!guiHandler.verifyInventory(event.getView().getInventory(rawSlot))) {
-                            event.setCancelled(true);
-                            return;
-                        }
+                    if (event.getRawSlots().stream().anyMatch(rawSlot -> !guiHandler.verifyInventory(event.getView().getInventory(rawSlot)))) {
+                        event.setCancelled(true);
+                        return;
                     }
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
                     GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
@@ -267,45 +265,21 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getMessage() != null) {
-            if (event.getMessage().equals("[WolfyUtilities CANCELED]")) {
-                event.setMessage("");
-                event.setCancelled(true);
-            }
-        }
-    }
-
     /*
     Checks if the player sending the message has active chat events. If he has, it's executed!
-    It sets the message to a canceled string, so the following event knows to cancel it.
-    This allows the message to bypass other Chat Plugins.
-    Maybe I find another way to do it someday...
+    It cancels the event and parses the message into the /wui command.
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPreChat(AsyncPlayerChatEvent event) {
         if (event.getMessage() != null) {
             if (hasGuiHandler(event.getPlayer())) {
                 GuiHandler guiHandler = getGuiHandler(event.getPlayer());
-                if (guiHandler.isChatEventActive() && !event.getMessage().startsWith("wu::")) {
-                    if (guiHandler.getChatInputAction() != null && !guiHandler.getChatInputAction().onChat(guiHandler, event.getPlayer(), event.getMessage(), event.getMessage().split(" "))) {
-                        guiHandler.setChatInputAction(null);
-                        guiHandler.openCluster();
-                    }
-                    event.setMessage("[WolfyUtilities CANCELED]");
+                if (guiHandler.isChatEventActive()) {
+                    final String message = event.getMessage();
+                    //Wraps normal written message into command to be executed
+                    Bukkit.getScheduler().runTask(getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wui " + getPlugin().getName() + " " + event.getPlayer().getUniqueId().toString() + " " + message));
                     event.setCancelled(true);
                 }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onCancel(PlayerCommandPreprocessEvent event) {
-        if (hasGuiHandler(event.getPlayer())) {
-            GuiHandler guiHandler = getGuiHandler(event.getPlayer());
-            if (guiHandler.isChatEventActive()) {
-                guiHandler.cancelChatEvent();
             }
         }
     }

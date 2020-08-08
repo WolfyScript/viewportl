@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.custom_items;
 
+import me.wolfyscript.utilities.api.custom_items.api_references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.Pair;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
@@ -7,70 +8,105 @@ import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
 
 public class CustomItems {
 
-    private static TreeMap<String, CustomItem> customItems = new TreeMap<>();
+    private static final TreeMap<NamespacedKey, CustomItem> customItems = new TreeMap<>();
 
-    private static HashMap<Location, Pair<String, UUID>> storedBlocks = new HashMap<>();
+    private static final HashMap<Location, Pair<NamespacedKey, UUID>> storedBlocks = new HashMap<>();
 
-    private static HashMap<UUID, HashMap<EquipmentSlot, UUID>> playerItemParticles = new HashMap<>();
+    private static final HashMap<UUID, HashMap<EquipmentSlot, UUID>> playerItemParticles = new HashMap<>();
 
     public CustomItems(Plugin plugin) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::save, 12000, 12000);
     }
 
-    public static List<CustomItem> getCustomItems() {
-        return new ArrayList<>(customItems.values());
+    public static TreeMap<NamespacedKey, CustomItem> getCustomItems() {
+        return customItems;
     }
 
-    public static CustomItem getCustomItem(String key) {
-        return getCustomItem(key, true);
+    @Deprecated
+    public static CustomItem getCustomItem(String id) {
+        return getCustomItem(id, true);
     }
 
-    public static CustomItem getCustomItem(String key, boolean replace) {
-        if (customItems.containsKey(key) && customItems.get(key) != null) {
-            if (replace)
-                return customItems.get(key).getRealItem();
-            return customItems.get(key).clone();
-        }
-        return null;
+    @Deprecated
+    public static CustomItem getCustomItem(String id, boolean replace) {
+        return getCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
     }
 
-    public static void addCustomItem(CustomItem item) {
-        customItems.put(item.getId(), item);
-    }
-
-    public static void removeCustomItem(String id) {
-        customItems.remove(id);
-    }
-
-    public static void removeCustomItem(CustomItem item) {
-        customItems.remove(item.getId());
-    }
-
+    @Deprecated
     public static CustomItem getCustomItem(String key, String name) {
         return getCustomItem(key + ":" + name);
     }
 
+    @Deprecated
     public static CustomItem getCustomItem(String key, String name, boolean replace) {
         return getCustomItem(key + ":" + name, replace);
     }
 
-    public static void setCustomItem(ItemConfig itemConfig) {
-        customItems.put(itemConfig.getId(), new CustomItem(itemConfig));
+    @Deprecated
+    public static void removeCustomItem(String id) {
+        removeCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
+    }
+
+    /**
+     *
+     * @param namespacedKey NamespacedKey of the item
+     * @return true if there is an CustomItem for the NamespacedKey
+     */
+    public static boolean hasCustomItem(NamespacedKey namespacedKey){
+        return customItems.containsKey(namespacedKey);
+    }
+
+    /**
+     * Used to get the CustomItem from WolfyUtilities by NamespacedKey.
+     * Can return null when the CustomItem doesn't exist!
+     * <p>Use {@link #hasCustomItem(NamespacedKey)} to make the CustomItem exists!
+     *
+     * @param namespacedKey
+     * @return CustomItem of the NamespacedKey or null if it doesn't exist
+     */
+    @Nullable
+    public static CustomItem getCustomItem(NamespacedKey namespacedKey) {
+        return customItems.get(namespacedKey);
+    }
+
+    public static void removeCustomItem(NamespacedKey namespacedKey) {
+        customItems.remove(namespacedKey);
+    }
+
+    /**
+     * Add or Update an CustomItem.
+     * If the CustomItem has a WolfyUtilitiesRef and it's NamespacedKey is the same as the parsed in NamespacedKey, the CustomItem will neither be added or updated!
+     *
+     * @param namespacedKey the NamspacedKey the CustomItem will be saved under.
+     * @param item the CustomItem to add or update.
+     * @return true if the CustomItem was added or updated.
+     */
+    public static boolean addCustomItem(NamespacedKey namespacedKey, CustomItem item) {
+        if(item == null || (item.getApiReference() instanceof WolfyUtilitiesRef && ((WolfyUtilitiesRef) item.getApiReference()).getNamespacedKey().equals(namespacedKey))){
+            return false;
+        }
+        item.setNamespacedKey(namespacedKey);
+        customItems.put(namespacedKey, item);
+        return true;
     }
 
     public static HashMap<EquipmentSlot, UUID> getActiveItemEffects(Player player) {
@@ -104,7 +140,6 @@ public class CustomItems {
         getActiveItemEffects(player).remove(equipmentSlot);
     }
 
-
     //StoredBlocks Methods
     public static boolean isBlockStored(Location location) {
         if (storedBlocks.containsKey(location)) {
@@ -121,7 +156,7 @@ public class CustomItems {
 
     @Nullable
     public static CustomItem getStoredBlockItem(Location location) {
-        for (Map.Entry<Location, Pair<String, UUID>> entry : storedBlocks.entrySet()) {
+        for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
             if (entry.getKey().equals(location)) {
                 return getCustomItem(entry.getValue().getKey());
             }
@@ -131,13 +166,15 @@ public class CustomItems {
 
     public static void setStoredBlockItem(Location location, CustomItem customItem) {
         ParticleEffects.stopEffect(getStoredBlockEffect(location));
-        ParticleContent particleContent = customItem.getParticleContent();
-        UUID uuid = null;
-        if (particleContent != null) {
-            NamespacedKey particle = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
-            uuid = ParticleEffects.spawnEffectOnBlock(particle, location.getBlock());
+        if(customItem.getApiReference() instanceof WolfyUtilitiesRef || customItem.hasNamespacedKey()){
+            ParticleContent particleContent = customItem.getParticleContent();
+            UUID uuid = null;
+            if (particleContent != null) {
+                NamespacedKey particle = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
+                uuid = ParticleEffects.spawnEffectOnBlock(particle, location.getBlock());
+            }
+            storedBlocks.put(location, new Pair<>( customItem.getApiReference() instanceof WolfyUtilitiesRef ? ((WolfyUtilitiesRef) customItem.getApiReference()).getNamespacedKey() : customItem.getNamespacedKey(), uuid));
         }
-        storedBlocks.put(location, new Pair<>(customItem.getId(), uuid));
     }
 
     public static void removeStoredBlockItem(Location location) {
@@ -147,7 +184,7 @@ public class CustomItems {
 
     @Nullable
     public static UUID getStoredBlockEffect(Location location) {
-        for (Map.Entry<Location, Pair<String, UUID>> entry : storedBlocks.entrySet()) {
+        for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
             if (entry.getKey().equals(location)) {
                 return entry.getValue().getValue();
             }
@@ -163,16 +200,16 @@ public class CustomItems {
     }
 
     public static void initiateMissingBlockEffects() {
-        for (Map.Entry<Location, Pair<String, UUID>> entry : storedBlocks.entrySet()) {
+        for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
             if (!hasStoredBlockEffect(entry.getKey())) {
                 CustomItem customItem = getCustomItem(entry.getValue().getKey());
-                if (customItem != null) {
+                if (customItem != null && customItem.getApiReference() instanceof WolfyUtilitiesRef) {
                     if (customItem.getParticleContent() != null && customItem.getParticleContent().containsKey(ParticleEffect.Action.BLOCK)) {
                         ParticleContent particleContent = customItem.getParticleContent();
                         NamespacedKey effectID = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
                         if (effectID != null) {
                             UUID uuid = ParticleEffects.spawnEffectOnBlock(effectID, entry.getKey().getBlock());
-                            storedBlocks.put(entry.getKey(), new Pair<>(customItem.getId(), uuid));
+                            storedBlocks.put(entry.getKey(), new Pair<>(((WolfyUtilitiesRef) customItem.getApiReference()).getNamespacedKey(), uuid));
                         }
                     }
                 }
@@ -180,14 +217,23 @@ public class CustomItems {
         }
     }
 
-
     private static String locationToString(Location location) {
+        if(location == null || location.getWorld() == null) return null;
         return location.getWorld().getUID() + ";" + location.getBlockX() + ";" + location.getBlockY() + ";" + location.getBlockZ();
     }
 
     private static Location stringToLocation(String loc) {
         String[] args = loc.split(";");
-        return new Location(Bukkit.getWorld(UUID.fromString(args[0])), Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+        try{
+            UUID uuid = UUID.fromString(args[0]);
+            World world = Bukkit.getWorld(uuid);
+            if(world != null){
+                return new Location(world, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+            }
+        }catch (IllegalArgumentException e){
+            Bukkit.getLogger().warning("Couldn't find world "+args[0]);
+        }
+        return null;
     }
 
     public void save() {
@@ -195,8 +241,13 @@ public class CustomItems {
             FileOutputStream fos = new FileOutputStream(new File(Main.getInstance().getDataFolder() + File.separator + "stored_block_items.dat"));
             BukkitObjectOutputStream oos = new BukkitObjectOutputStream(fos);
             HashMap<String, String> saveMap = new HashMap<>();
-            for (Map.Entry<Location, Pair<String, UUID>> entry : storedBlocks.entrySet()) {
-                saveMap.put(locationToString(entry.getKey()), entry.getValue().getKey());
+            for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
+                if (entry.getKey() != null) {
+                    String loc = locationToString(entry.getKey());
+                    if(loc != null){
+                        saveMap.put(loc, entry.getValue().getKey().toString());
+                    }
+                }
             }
             oos.writeObject(saveMap);
             oos.close();
@@ -216,7 +267,11 @@ public class CustomItems {
                     Object object = ois.readObject();
                     HashMap<String, String> loadMap = (HashMap<String, String>) object;
                     for (Map.Entry<String, String> entry : loadMap.entrySet()) {
-                        storedBlocks.put(stringToLocation(entry.getKey()), new Pair<>(entry.getValue(), null));
+                        String[] key = entry.getValue().split(":");
+                        Location location = stringToLocation(entry.getKey());
+                        if(location != null){
+                            storedBlocks.put(location, new Pair<>(new NamespacedKey(key[0], key[1]), null));
+                        }
                     }
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();

@@ -4,12 +4,10 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.utils.chat.ClickData;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,16 +16,15 @@ import java.util.List;
 public class GuiWindow implements Listener {
 
     private String clusterID;
-    private String namespace;
+    private final String namespace;
     public String itemKey;
-    private InventoryAPI inventoryAPI;
-    private HashMap<GuiHandler, Inventory> cachedInventories;
-    private HashMap<String, Button> buttons = new HashMap<>();
-
+    private final InventoryAPI inventoryAPI;
+    private final HashMap<GuiHandler, Inventory> cachedInventories;
+    private final HashMap<String, Button> buttons = new HashMap<>();
 
     //Inventory
-    private InventoryType inventoryType;
-    private int size;
+    private final InventoryType inventoryType;
+    private final int size;
 
     public GuiWindow(String namespace, InventoryAPI inventoryAPI, int size) {
         this(namespace, namespace, inventoryAPI, null, size);
@@ -179,7 +176,7 @@ public class GuiWindow implements Listener {
     }
 
     protected String getInventoryName() {
-        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().getActiveLanguage().replaceKeys("$inventories."+ clusterID + "." + namespace + ".gui_name$"));
+        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().replaceKeys("$inventories."+ clusterID + "." + namespace + ".gui_name$"));
     }
 
     public void setClusterID(String clusterID){
@@ -208,7 +205,7 @@ public class GuiWindow implements Listener {
 
     public List<String> getHelpInformation(){
         List<String> values = new ArrayList<>();
-        for(String value : getAPI().getLanguageAPI().getActiveLanguage().replaceKey("$inventories."+ clusterID + "." + namespace + ".gui_help$")){
+        for(String value : getAPI().getLanguageAPI().replaceKey("$inventories."+ clusterID + "." + namespace + ".gui_help$")){
             values.add(WolfyUtilities.translateColorCodes(value));
         }
         return values;

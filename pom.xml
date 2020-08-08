@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.wolfyscript</groupId>
+    <groupId>com.wolfyscript</groupId>
     <artifactId>wolfyutilities</artifactId>
-    <version>1.5.6.2</version>
+    <version>1.6.0.4</version>
     <properties>
         <!-- Generic properties -->
         <java.version>1.8</java.version>
@@ -35,42 +35,34 @@
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
         </repository>
-        <!-- PlotSquared repository -->
+        <!-- WorldEdit -->
         <repository>
-            <id>p2-repo</id>
-            <url>http://ci.athion.net/job/PlotSquared-Releases/ws/mvn/</url>
+            <id>enginehub</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
+        <!-- PlotSquared -->
+        <repository>
+            <id>IntellectualSites</id>
+            <url>https://mvn.intellectualsites.com/content/groups/public/</url>
         </repository>
         <!-- Jenkins4J -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <!--WolfyScript private repo-->
         <repository>
-            <id>CodeMC</id>
-            <url>https://repo.codemc.org/repository/maven-public</url>
+            <id>wolfyscript-private</id>
+            <url>https://maven.wolfyscript.com/repository/private/</url>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.mojang</groupId>
-            <artifactId>authlib</artifactId>
-            <version>1.5.21</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>5.0.0.Alpha2</version>
-        </dependency>
-        <dependency>
-            <groupId>de.iani.cubeside</groupId>
-            <artifactId>LWC</artifactId>
-            <version>5.0.16-SNAPSHOT</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.11.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
@@ -79,77 +71,108 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.16.1-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.21</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>5.0.0.Alpha2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>19.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.iani.cubeside</groupId>
+            <artifactId>LWC</artifactId>
+            <version>5.0.16-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
-            <version>7.0.1-SNAPSHOT</version>
+            <version>7.1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
             <version>7.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
+        <!-- PlotSquared API -->
         <dependency>
-            <groupId>org.mozilla</groupId>
-            <artifactId>rhino</artifactId>
-            <version>1.7.12</version>
+            <groupId>com.plotsquared</groupId>
+            <artifactId>PlotSquared-Core</artifactId>
+            <version>5.13.0</version>
+            <scope>provided</scope>
         </dependency>
+        <!-- PlotSquared Bukkit API -->
         <dependency>
-            <groupId>com.github.intellectualsites.plotsquared</groupId>
-            <artifactId>PlotSquared-BukkitAPI</artifactId>
-            <version>4.400</version>
+            <groupId>com.plotsquared</groupId>
+            <artifactId>PlotSquared-Bukkit</artifactId>
+            <version>5.13.0</version>
             <exclusions>
                 <exclusion>
-                    <groupId>com.destroystokyo.paper</groupId>
-                    <artifactId>paper-api</artifactId>
+                    <artifactId>PlotSquared-Core</artifactId>
+                    <groupId>*</groupId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.github.intellectualsites.plotsquared</groupId>
-                    <artifactId>Core</artifactId>
+                    <groupId>be.maximvdw</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>io.papermc</groupId>
-                    <artifactId>paperlib</artifactId>
+                    <groupId>me.clip</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.destroystoko.paper</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.ess3</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.alpenblock</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>com.sk89q.worldedit</groupId>
-                    <artifactId>worldedit-bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sk89q.worldedit</groupId>
-                    <artifactId>worldedit-core</artifactId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.github.intellectualsites.plotsquared</groupId>
-            <artifactId>PlotSquared-API</artifactId>
-            <version>4.400</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sk89q.worldedit</groupId>
-                    <artifactId>worldedit-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.kyori</groupId>
-                    <artifactId>text-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.kyori</groupId>
-                    <artifactId>text-serializer-gson</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.kyori</groupId>
-                    <artifactId>text-serializer-legacy</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.kyori</groupId>
-                    <artifactId>text-serializer-plain</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.gmail.nossr50.mcMMO</groupId>
+            <artifactId>mcMMO</artifactId>
+            <version>2.1.139-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--Dependencies from private repo! They require credentials to access!-->
+        <dependency>
+            <groupId>io.th0rgal</groupId>
+            <artifactId>oraxen</artifactId>
+            <version>1.40.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.lone</groupId>
+            <artifactId>itemsadder</artifactId>
+            <version>2.0.41</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -175,7 +198,12 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>me.wolfyscript.utilities.main.metrics</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>com.fasterxml.jackson</pattern>
+                            <shadedPattern>me.wolfyscript.utilities.libraries.com.fasterxml.jackson</shadedPattern>
+                        </relocation>
                     </relocations>
+                    <shadeSourcesContent>true</shadeSourcesContent>
                 </configuration>
                 <executions>
                     <execution>
@@ -186,8 +214,8 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.mozilla:rhino</include>
                                     <include>org.bstats</include>
+                                    <include>com.fasterxml.jackson.core</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -214,14 +242,14 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>nexus</id>
+            <id>wolfyscript-private</id>
             <name>Releases</name>
-            <url>https://www.iani.de/nexus/content/repositories/releases/</url>
+            <url>https://maven.wolfyscript.com/repository/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>nexus</id>
+            <id>wolfyscript-private</id>
             <name>Snapshot</name>
-            <url>https://www.iani.de/nexus/content/repositories/snapshots/</url>
+            <url>https://maven.wolfyscript.com/repository/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>

@@ -1,7 +1,7 @@
 package me.wolfyscript.utilities.api.inventory.button;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.inventory.*;
+import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -15,8 +15,8 @@ import java.util.Map;
 
 public abstract class Button {
 
-    private String id;
-    private ButtonType type;
+    private final String id;
+    private final ButtonType type;
 
     public Button(String id, ButtonType type) {
         this.id = id;

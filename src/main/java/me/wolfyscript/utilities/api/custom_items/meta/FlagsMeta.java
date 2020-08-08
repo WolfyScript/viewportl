@@ -3,7 +3,7 @@ package me.wolfyscript.utilities.api.custom_items.meta;
 
 import me.wolfyscript.utilities.api.custom_items.Meta;
 import me.wolfyscript.utilities.api.custom_items.MetaSettings;
-import org.bukkit.inventory.meta.ItemMeta;
+import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 
 public class FlagsMeta extends Meta {
 
@@ -14,10 +14,10 @@ public class FlagsMeta extends Meta {
     }
 
     @Override
-    public boolean check(ItemMeta meta1, ItemMeta meta2) {
+    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
         if (option.equals(MetaSettings.Option.IGNORE)) {
-            meta1.getItemFlags().forEach(meta1::removeItemFlags);
-            meta2.getItemFlags().forEach(meta2::removeItemFlags);
+            itemOther.getItemMeta().getItemFlags().forEach(itemOther::removeItemFlags);
+            item.getItemMeta().getItemFlags().forEach(item::removeItemFlags);
         }
         return true;
     }

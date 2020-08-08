@@ -2,12 +2,20 @@ name: WolfyUtilities
 api-version: 1.13
 version: ${project.version}
 author: WolfyScript
+
+loadbefore:
+  - ChatColor
+  - ChatColor2
+
 softdepend:
   - LWC
   - PlotSquared
   - WorldGuard
   - MythicMobs
   - BungeeChat
+  - mcMMO
+  - Oraxen
+  - ItemsAdder
 
 main: me.wolfyscript.utilities.main.Main
 
@@ -16,3 +24,7 @@ commands:
     description: displays version of this plugin
   particle_effect:
     description: spawn/stop particle effects
+  wua:
+    description: handles and executes ChatClickActions
+  wui:
+    description: handles and executes ChatInputs

@@ -1,10 +1,18 @@
 package me.wolfyscript.utilities.api.custom_items.equipment;
 
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
+import me.wolfyscript.utilities.api.custom_items.CustomItems;
+import me.wolfyscript.utilities.api.custom_items.ParticleContent;
+import me.wolfyscript.utilities.api.utils.NamespacedKey;
+import me.wolfyscript.utilities.api.utils.inventory.ItemUtils;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
+import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
@@ -13,22 +21,55 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
     private boolean cancel = false;
     private final EquipMethod equipType;
     private final ArmorType type;
-    private CustomItem oldArmorPiece, newArmorPiece;
+    private final CustomItem oldCustomArmorPiece, newCustomArmorPiece;
+    private final ItemStack oldArmorPiece;
+    private final ItemStack newArmorPiece;
 
     /**
      * Constructor for the ArmorEquipEvent.
      *
-     * @param player The player who put on / removed the armor.
-     * @param type The ArmorType of the armor added
+     * @param player        The player who put on / removed the armor.
+     * @param type          The ArmorType of the armor added
      * @param oldArmorPiece The ItemStack of the armor removed.
      * @param newArmorPiece The ItemStack of the armor added.
      */
-    public ArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final CustomItem oldArmorPiece, final CustomItem newArmorPiece){
+    public ArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final ItemStack oldArmorPiece, final ItemStack newArmorPiece, final CustomItem oldCustomArmorPiece, final CustomItem newCustomArmorPiece) {
         super(player);
+
         this.equipType = equipType;
         this.type = type;
         this.oldArmorPiece = oldArmorPiece;
         this.newArmorPiece = newArmorPiece;
+        this.oldCustomArmorPiece = oldCustomArmorPiece;
+        this.newCustomArmorPiece = newCustomArmorPiece;
+
+        EquipmentSlot equipmentSlot = type.getEquipmentSlot();
+        if (!ItemUtils.isAirOrNull(newArmorPiece)) {
+            //Equiping new armor!
+            if (ItemUtils.isEquipable(newArmorPiece.getType())) {
+                if (!ItemUtils.isEquipable(newArmorPiece.getType(), type) && !newCustomArmorPiece.isBlockVanillaEquip()) {
+                    setCancelled(true);
+                }
+            } else {
+                setCancelled(true);
+            }
+            if (!ItemUtils.isAirOrNull(newCustomArmorPiece) && newCustomArmorPiece.hasEquipmentSlot(equipmentSlot)) {
+                CustomItems.stopActiveParticleEffect(getPlayer(), equipmentSlot);
+                ParticleContent particleContent = newCustomArmorPiece.getParticleContent();
+                if (particleContent != null) {
+                    NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.valueOf(equipmentSlot.name()));
+                    if (particleID != null) {
+                        CustomItems.setActiveParticleEffect(getPlayer(), equipmentSlot, ParticleEffects.spawnEffectOnPlayer(particleID, equipmentSlot, getPlayer()));
+                    }
+                }
+                setCancelled(false);
+            }
+        } else {
+            CustomItems.stopActiveParticleEffect(getPlayer(), equipmentSlot);
+        }
+        if (oldArmorPiece != null && oldArmorPiece.hasItemMeta() && oldArmorPiece.getItemMeta().hasEnchant(Enchantment.BINDING_CURSE)) {
+            setCancelled(true);
+        }
     }
 
     /**
@@ -75,29 +116,29 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
     /**
      * Returns the last equipped armor piece, could be a piece of armor, {@link org.bukkit.Material#AIR}, or null.
      */
-    public final CustomItem getOldArmorPiece(){
+    public final ItemStack getOldArmorPiece() {
         return oldArmorPiece;
-    }
-
-    public final void setOldArmorPiece(final CustomItem oldArmorPiece){
-        this.oldArmorPiece = oldArmorPiece;
     }
 
     /**
      * Returns the newly equipped armor, could be a piece of armor, {@link org.bukkit.Material#AIR}, or null.
      */
-    public final CustomItem getNewArmorPiece(){
+    public final ItemStack getNewArmorPiece() {
         return newArmorPiece;
     }
 
-    public final void setNewArmorPiece(final CustomItem newArmorPiece){
-        this.newArmorPiece = newArmorPiece;
+    public CustomItem getOldCustomArmorPiece() {
+        return oldCustomArmorPiece;
+    }
+
+    public CustomItem getNewCustomArmorPiece() {
+        return newCustomArmorPiece;
     }
 
     /**
      * Gets the method used to either equip or unequip an armor piece.
      */
-    public EquipMethod getMethod(){
+    public EquipMethod getMethod() {
         return equipType;
     }
 

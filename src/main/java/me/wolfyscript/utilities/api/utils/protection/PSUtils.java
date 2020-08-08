@@ -1,9 +1,9 @@
 package me.wolfyscript.utilities.api.utils.protection;
 
-import com.github.intellectualsites.plotsquared.api.PlotAPI;
-import com.github.intellectualsites.plotsquared.bukkit.util.BukkitUtil;
-import com.github.intellectualsites.plotsquared.plot.object.Location;
-import com.github.intellectualsites.plotsquared.plot.object.Plot;
+import com.plotsquared.bukkit.util.BukkitUtil;
+import com.plotsquared.core.api.PlotAPI;
+import com.plotsquared.core.location.Location;
+import com.plotsquared.core.plot.Plot;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -12,8 +12,7 @@ import java.util.UUID;
 public class PSUtils {
 
     //PlotSquared API Utils
-
-    private static PlotAPI plotAPI = new PlotAPI();
+    private static final PlotAPI plotAPI = new PlotAPI();
 
     @Deprecated
     public static boolean hasPerm(Player player, org.bukkit.Location location) {

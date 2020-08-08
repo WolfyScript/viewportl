@@ -1,6 +1,12 @@
 package me.wolfyscript.utilities.api.utils.particles;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
+import me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleSerialization;
+import me.wolfyscript.utilities.libraries.org.mozilla.javascript.Context;
+import me.wolfyscript.utilities.libraries.org.mozilla.javascript.Function;
+import me.wolfyscript.utilities.libraries.org.mozilla.javascript.Scriptable;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -8,9 +14,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -20,13 +23,15 @@ import java.util.List;
 /*
 Contains the location, offset, ParticleEffects, etc.
  */
+@JsonSerialize(using = ParticleSerialization.Serializer.class)
+@JsonDeserialize(using = ParticleSerialization.Deserializer.class)
 public class Particle {
 
     private NamespacedKey namespacedKey;
     private Particle superParticle;
     private org.bukkit.Particle particle;
 
-    private static Scriptable scope;
+    private static final Scriptable scope;
 
     static {
         scope = Context.enter().initSafeStandardObjects();
@@ -404,7 +409,7 @@ public class Particle {
 
     public static class Data {
 
-        private Class<?> dataClass;
+        private final Class<?> dataClass;
         private Object data;
         private double relativeX, relativeY, relativeZ, offsetX, offsetY, offsetZ;
         private int count;
