@@ -1,6 +1,8 @@
 package me.wolfyscript.utilities.main.listeners.custom_item;
 
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
+import me.wolfyscript.utilities.main.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,11 +33,13 @@ public class CustomDurabilityListener implements Listener {
     public void onMend(PlayerItemMendEvent event) {
         CustomItem customItem = new CustomItem(event.getItem());
         if (customItem.hasCustomDurability()) {
-            int totalDmg = customItem.getCustomDamage() - event.getRepairAmount();
+            int repairAmount = Math.min(event.getExperienceOrb().getExperience() * 2, customItem.getCustomDamage());
+            int totalDmg = customItem.getCustomDamage() - repairAmount;
             if (!(totalDmg >= 0)) {
                 totalDmg = 0;
             }
-            customItem.setCustomDamage(totalDmg);
+            int finalTotalDmg = totalDmg;
+            Bukkit.getScheduler().runTask(Main.getInstance(), () -> customItem.setCustomDamage(finalTotalDmg));
         }
     }
 }

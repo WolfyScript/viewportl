@@ -8,7 +8,7 @@ import java.util.Set;
 
 /**
  * This wrapper Config won't be supported in the upcoming major updates and is going to be removed soon, due the differences between YAML and JSON.
- * Json is faster and easier to use therefor {@link JsonConfiguration} should be used instead from now on.
+ * Json is faster and easier to use therefore {@link JsonConfiguration} should be used instead from now on.
  * {@link org.bukkit.configuration.file.YamlConfiguration} will stay for compatibility reasons, but won't be supported like Json Configs.
  */
 @Deprecated

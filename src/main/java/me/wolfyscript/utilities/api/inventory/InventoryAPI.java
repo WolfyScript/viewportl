@@ -20,12 +20,13 @@ import org.bukkit.plugin.Plugin;
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class InventoryAPI<T extends CustomCache> implements Listener {
 
     private final Plugin plugin;
     private final WolfyUtilities wolfyUtilities;
-    private final HashMap<String, GuiHandler> guiHandlers = new HashMap<>();
+    private final HashMap<UUID, GuiHandler> guiHandlers = new HashMap<>();
     private final HashMap<String, GuiCluster> guiClusters = new HashMap<>();
 
     private final Class<T> customCacheClass;
@@ -118,7 +119,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
         if (!hasGuiHandler(player)) {
             createGuiHandler(player);
         }
-        return guiHandlers.get(player.getUniqueId().toString());
+        return guiHandlers.get(player.getUniqueId());
     }
 
     private void createGuiHandler(Player player) {
@@ -127,23 +128,23 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
     }
 
     private void setPlayerGuiStudio(Player player, GuiHandler guiStudio) {
-        guiHandlers.put(player.getUniqueId().toString(), guiStudio);
+        guiHandlers.put(player.getUniqueId(), guiStudio);
     }
 
     private void removePlayerGuiHandler(Player player, GuiHandler guiStudio) {
-        guiHandlers.remove(player.getUniqueId().toString(), guiStudio);
+        guiHandlers.remove(player.getUniqueId(), guiStudio);
     }
 
     private void removePlayerGuiHandler(Player player) {
-        guiHandlers.remove(player.getUniqueId().toString());
+        guiHandlers.remove(player.getUniqueId());
     }
 
     public boolean hasGuiHandler(Player player) {
-        return guiHandlers.containsKey(player.getUniqueId().toString()) && guiHandlers.get(player.getUniqueId().toString()) != null;
+        return guiHandlers.containsKey(player.getUniqueId()) && guiHandlers.get(player.getUniqueId()) != null;
     }
 
     public boolean hasGuiHandlerAndInv(Player player) {
-        return guiHandlers.containsKey(player.getUniqueId().toString()) && guiHandlers.get(player.getUniqueId().toString()) != null && guiHandlers.get(player.getUniqueId().toString()).getCurrentInv() != null;
+        return guiHandlers.containsKey(player.getUniqueId()) && guiHandlers.get(player.getUniqueId()) != null && guiHandlers.get(player.getUniqueId()).getCurrentInv() != null;
     }
 
     public Plugin getPlugin() {

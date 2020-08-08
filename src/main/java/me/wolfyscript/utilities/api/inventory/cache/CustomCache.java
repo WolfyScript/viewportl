@@ -6,24 +6,26 @@ import java.util.TreeMap;
 
 public class CustomCache extends TreeMap<String, Object> {
 
-    public CustomCache(){
-        put("windowCache", new TreeMap<String, Object>());
+    private final TreeMap<String, Object> windows;
+
+    public CustomCache() {
+        windows = new TreeMap<>();
     }
 
-    public TreeMap<String, Object> getWindowCache(GuiWindow guiWindow){
-        if(!hasWindowCache(guiWindow)){
+    public TreeMap<String, Object> getWindowCache(GuiWindow guiWindow) {
+        if (!hasWindowCache(guiWindow)) {
             setWindowCache(guiWindow, new TreeMap<>());
             setButtons(guiWindow, new TreeMap<>());
         }
-        return (TreeMap<String, Object>) ((TreeMap<String, Object>) get("windowCache")).get(guiWindow.getID());
+        return (TreeMap<String, Object>) windows.get(guiWindow.getID());
     }
 
     public boolean hasWindowCache(GuiWindow guiWindow){
-        return ((TreeMap<String, Object>) get("windowCache")).containsKey(guiWindow.getID());
+        return windows.containsKey(guiWindow.getID());
     }
 
     private void setWindowCache(GuiWindow guiWindow, TreeMap<String, Object> cache){
-        ((TreeMap<String, Object>) get("windowCache")).put(guiWindow.getID(), cache);
+        windows.put(guiWindow.getID(), cache);
     }
 
     public TreeMap<Integer, String> getButtons(GuiWindow guiWindow){

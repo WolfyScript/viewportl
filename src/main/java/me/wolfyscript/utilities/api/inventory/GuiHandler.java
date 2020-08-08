@@ -19,18 +19,18 @@ import java.util.*;
 
 public class GuiHandler<T extends CustomCache> implements Listener {
 
-    private WolfyUtilities api;
-    private InventoryAPI invAPI;
+    private final WolfyUtilities api;
+    private final InventoryAPI invAPI;
     private Player player;
     private boolean changingInv = false;
     private ChatInputAction chatInputAction = null;
 
-    private HashMap<String, List<String>> clusterHistory = new HashMap<>();
+    private final HashMap<String, List<String>> clusterHistory = new HashMap<>();
     private String currentGuiCluster = "";
     private boolean isWindowOpen = false;
     private boolean helpEnabled = false;
 
-    private T customCache;
+    private final T customCache;
 
     public GuiHandler(Player player, WolfyUtilities api, T customCache) {
         this.api = api;
