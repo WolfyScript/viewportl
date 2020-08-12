@@ -18,6 +18,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
 
     private final Plugin plugin;
     private final WolfyUtilities wolfyUtilities;
-    private final HashMap<UUID, GuiHandler> guiHandlers = new HashMap<>();
+    private final HashMap<UUID, GuiHandler<?>> guiHandlers = new HashMap<>();
     private final HashMap<String, GuiCluster> guiClusters = new HashMap<>();
 
     private final Class<T> customCacheClass;
@@ -36,8 +37,8 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
         this.plugin = plugin;
         this.customCacheClass = customCacheClass;
         try {
-            customCacheClass.newInstance();
-        } catch (IllegalAccessException | InstantiationException e) {
+            customCacheClass.getDeclaredConstructor().newInstance();
+        } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -115,7 +116,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
     }
 
     @Nonnull
-    public GuiHandler getGuiHandler(Player player) {
+    public GuiHandler<?> getGuiHandler(Player player) {
         if (!hasGuiHandler(player)) {
             createGuiHandler(player);
         }
@@ -127,11 +128,11 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
         setPlayerGuiStudio(player, guiHandler);
     }
 
-    private void setPlayerGuiStudio(Player player, GuiHandler guiStudio) {
+    private void setPlayerGuiStudio(Player player, GuiHandler<?> guiStudio) {
         guiHandlers.put(player.getUniqueId(), guiStudio);
     }
 
-    private void removePlayerGuiHandler(Player player, GuiHandler guiStudio) {
+    private void removePlayerGuiHandler(Player player, GuiHandler<?> guiStudio) {
         guiHandlers.remove(player.getUniqueId(), guiStudio);
     }
 
@@ -157,6 +158,12 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
             removeGui(player);
         }
         guiHandlers.clear();
+        guiClusters.forEach((s, guiCluster) -> {
+            guiCluster.getButtons().clear();
+            guiCluster.getGuiWindows().forEach((s1, guiWindow) -> {
+                guiWindow.getButtons().clear();
+            });
+        });
     }
 
     public T craftCustomCache() {
@@ -188,7 +195,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
-                GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
+                GuiHandler<?> guiHandler = getGuiHandler((Player) event.getWhoClicked());
                 if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
                     if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {

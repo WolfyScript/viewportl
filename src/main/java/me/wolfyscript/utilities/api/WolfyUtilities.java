@@ -418,7 +418,7 @@ public class WolfyUtilities implements Listener {
         return languageAPI != null;
     }
 
-    public InventoryAPI getInventoryAPI() {
+    public InventoryAPI<?> getInventoryAPI() {
         return getInventoryAPI(inventoryAPI.craftCustomCache().getClass());
     }
 

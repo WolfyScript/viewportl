@@ -101,7 +101,7 @@ public class LanguageAPI {
     }
 
     public List<String> replaceColoredKeys(List<String> msg) {
-        return replaceKeys(msg).stream().map(s -> WolfyUtilities.translateColorCodes(s)).collect(Collectors.toList());
+        return replaceKeys(msg).stream().map(WolfyUtilities::translateColorCodes).collect(Collectors.toList());
     }
 
     public List<String> replaceKeys(List<String> msg) {
@@ -138,7 +138,7 @@ public class LanguageAPI {
     }
 
     public List<String> replaceKeys(String... msg) {
-        return Arrays.asList(msg).stream().map(s -> replaceKeys(s)).collect(Collectors.toList());
+        return Arrays.stream(msg).map(this::replaceKeys).collect(Collectors.toList());
     }
 
     /*

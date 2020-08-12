@@ -4,23 +4,17 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.button.Button;
-import me.wolfyscript.utilities.api.inventory.button.ButtonActionRender;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ActionButton extends Button {
 
-    private String id;
-    private ButtonType type;
-    private ButtonState state;
+    private final String id;
+    private final ButtonType type;
+    private final ButtonState state;
 
     public ActionButton(String id, ButtonType type, ButtonState state) {
         super(id, type);
@@ -42,14 +36,14 @@ public class ActionButton extends Button {
         state.init(windowKey, api);
     }
 
-    public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
+    public boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
         if (!type.equals(ButtonType.DUMMY) && state.getAction() != null) {
             return state.getAction().run(guiHandler, player, inventory, slot, event);
         }
         return true;
     }
 
-    public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) {
+    public void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) {
         applyItem(guiHandler, player, inventory, state, slot, help);
     }
 

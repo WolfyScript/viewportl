@@ -45,11 +45,19 @@ public class GuiCluster {
         guiWindows.put(guiWindow.getNamespace(), guiWindow);
     }
 
-    public GuiWindow getGuiWindow(String id){
+    public GuiWindow getGuiWindow(String id) {
         return guiWindows.get(id);
     }
 
-    void setId(String id){
+    void setId(String id) {
         this.id = id;
+    }
+
+    HashMap<String, Button> getButtons() {
+        return buttons;
+    }
+
+    HashMap<String, GuiWindow> getGuiWindows() {
+        return guiWindows;
     }
 }

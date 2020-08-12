@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.utils;
 
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -18,25 +19,25 @@ public class Reflection {
     /*
      * Cache of NMS classes that we've searched for
      */
-    private static Map<String, Class<?>> loadedNMSClasses = new HashMap<>();
+    private static final Map<String, Class<?>> loadedNMSClasses = new HashMap<>();
 
     /*
      * Cache of OBS classes that we've searched for
      */
-    private static Map<String, Class<?>> loadedOBCClasses = new HashMap<>();
+    private static final Map<String, Class<?>> loadedOBCClasses = new HashMap<>();
 
     /*
      * Cache of methods that we've found in particular classes
      */
-    private static Map<Class<?>, Map<String, Method>> loadedMethods = new HashMap<>();
-    private static Map<Class<?>, Map<String, Method>> loadedDeclaredMethods = new HashMap<>();
+    private static final Map<Class<?>, Map<String, Method>> loadedMethods = new HashMap<>();
+    private static final Map<Class<?>, Map<String, Method>> loadedDeclaredMethods = new HashMap<>();
 
     /*
      * Cache of fields that we've found in particular classes
      */
-    private static Map<Class<?>, Map<String, Field>> loadedFields = new HashMap<>();
-    private static Map<Class<?>, Map<String, Field>> loadedDeclaredFields = new HashMap<>();
-    private static Map<Class<?>, Map<Class, Field>> foundFields = new HashMap<>();
+    private static final Map<Class<?>, Map<String, Field>> loadedFields = new HashMap<>();
+    private static final Map<Class<?>, Map<String, Field>> loadedDeclaredFields = new HashMap<>();
+    private static final Map<Class<?>, Map<Class<?>, Field>> foundFields = new HashMap<>();
 
     public static String getVersion() {
         return Main.getInstance().getServer().getClass().getPackage().getName().substring(23);
@@ -122,7 +123,7 @@ public class Reflection {
      * @param params The parameters in the constructor
      * @return The constructor object
      */
-    public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) {
+    public static Constructor<?> getConstructor(@NotNull Class<?> clazz, Class<?>... params) {
         try {
             return clazz.getConstructor(params);
         } catch (NoSuchMethodException e) {
@@ -131,14 +132,26 @@ public class Reflection {
     }
 
     /**
-     * Get a method from a class that has the specific paramaters
+     * Get a method from a class that has the specific parameters
      *
      * @param clazz      The class we are searching
      * @param methodName The name of the method
      * @param params     Any parameters that the method has
-     * @return The method with appropriate paramaters
+     * @return The method with appropriate parameters
      */
-    public static Method getMethod(Class<?> clazz, String methodName, Class<?>... params) {
+    public static Method getMethod(@NotNull Class<?> clazz, String methodName, Class<?>... params) {
+        return getMethod(false, clazz, methodName, params);
+    }
+
+    /**
+     * Get a method from a class that has the specific parameters
+     *
+     * @param clazz      The class we are searching
+     * @param methodName The name of the method
+     * @param params     Any parameters that the method has
+     * @return The method with appropriate parameters
+     */
+    public static Method getMethod(boolean silent, @NotNull Class<?> clazz, String methodName, Class<?>... params) {
         if (!loadedMethods.containsKey(clazz)) {
             loadedMethods.put(clazz, new HashMap<String, Method>());
         }
@@ -152,7 +165,9 @@ public class Reflection {
             loadedMethods.put(clazz, methods);
             return method;
         } catch (Exception e) {
-            e.printStackTrace();
+            if (!silent) {
+                e.printStackTrace();
+            }
             methods.put(methodName, null);
             loadedMethods.put(clazz, methods);
             return null;
@@ -160,14 +175,27 @@ public class Reflection {
     }
 
     /**
-     * Get a declared method from a class that has the specific paramaters
+     * Get a declared method from a class that has the specific parameters
      *
      * @param clazz      The class we are searching
      * @param methodName The name of the method
      * @param params     Any parameters that the method has
-     * @return The method with appropriate paramaters
+     * @return The method with appropriate parameters
      */
-    public static Method getDeclaredMethod(Class<?> clazz, String methodName, Class<?>... params) {
+    public static Method getDeclaredMethod(@NotNull Class<?> clazz, String methodName, Class<?>... params) {
+        return getDeclaredMethod(false, clazz, methodName, params);
+    }
+
+    /**
+     * Get a declared method from a class that has the specific parameters
+     *
+     * @param silent     If set to true it won't print the stacktrace on failed attempt
+     * @param clazz      The class we are searching
+     * @param methodName The name of the method
+     * @param params     Any parameters that the method has
+     * @return The method with appropriate parameters
+     */
+    public static Method getDeclaredMethod(boolean silent, @NotNull Class<?> clazz, String methodName, Class<?>... params) {
         if (!loadedDeclaredMethods.containsKey(clazz)) {
             loadedDeclaredMethods.put(clazz, new HashMap<String, Method>());
         }
@@ -181,7 +209,9 @@ public class Reflection {
             loadedDeclaredMethods.put(clazz, methods);
             return method;
         } catch (Exception e) {
-            e.printStackTrace();
+            if (!silent) {
+                e.printStackTrace();
+            }
             methods.put(methodName, null);
             loadedDeclaredMethods.put(clazz, methods);
             return null;
@@ -195,7 +225,7 @@ public class Reflection {
      * @param fieldName The name of the field
      * @return The field object
      */
-    public static Field getField(Class<?> clazz, String fieldName) {
+    public static Field getField(@NotNull Class<?> clazz, String fieldName) {
         if (!loadedFields.containsKey(clazz)) {
             loadedFields.put(clazz, new HashMap<String, Field>());
         }
@@ -226,7 +256,7 @@ public class Reflection {
      * @param fieldName The name of the field
      * @return The field object
      */
-    public static Field getDeclaredField(Class<?> clazz, String fieldName) {
+    public static Field getDeclaredField(@NotNull Class<?> clazz, String fieldName) {
         if (!loadedDeclaredFields.containsKey(clazz)) {
             loadedDeclaredFields.put(clazz, new HashMap<String, Field>());
         }
@@ -252,15 +282,15 @@ public class Reflection {
     /**
      * Gets the first Field with the correct return type
      *
-     * @param clazz     The class
-     * @param type The return type
+     * @param clazz The class
+     * @param type  The return type
      * @return The field object
      */
-    public static Field findField(Class<?> clazz, Class type) {
+    public static Field findField(@NotNull Class<?> clazz, Class<?> type) {
         if (!foundFields.containsKey(clazz)) {
             foundFields.put(clazz, new HashMap<>());
         }
-        Map<Class, Field> fields = foundFields.get(clazz);
+        Map<Class<?>, Field> fields = foundFields.get(clazz);
         if (fields.containsKey(type)) {
             return fields.get(type);
         }

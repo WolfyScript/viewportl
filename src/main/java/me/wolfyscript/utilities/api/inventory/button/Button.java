@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public abstract class Button {
 
@@ -31,9 +32,9 @@ public abstract class Button {
 
     public abstract void init(String clusterID, WolfyUtilities api);
 
-    public abstract boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event);
+    public abstract boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event);
 
-    public abstract void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help);
+    public abstract void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help);
 
     public ButtonType getType() {
         return type;
@@ -43,14 +44,14 @@ public abstract class Button {
         return id;
     }
 
-    protected void applyItem(GuiHandler guiHandler, Player player, Inventory inventory, ButtonState state, int slot, boolean help){
+    protected void applyItem(GuiHandler<?> guiHandler, Player player, Inventory inventory, ButtonState state, int slot, boolean help) {
         ItemStack item = state.getIcon(help);
         HashMap<String, Object> values = new HashMap<>();
         values.put("%wolfyutilities.help%", guiHandler.getCurrentInv().getHelpInformation());
         values.put("%plugin.version%", guiHandler.getApi().getPlugin().getDescription().getVersion());
-        if(state.getAction() instanceof ButtonActionRender){
+        if (state.getAction() instanceof ButtonActionRender) {
             item = ((ButtonActionRender) state.getAction()).render(values, guiHandler, player, item, slot, help);
-        }else if(state.getRenderAction() != null){
+        } else if (state.getRenderAction() != null) {
             item = state.getRenderAction().render(values, guiHandler, player, item, slot, help);
         }
         inventory.setItem(slot, replaceKeysWithValue(item, values));
@@ -81,12 +82,10 @@ public abstract class Button {
                                 }
                             }
                         }
-                    }else if (entry.getValue() != null){
+                    }else if (entry.getValue() != null) {
                         name = name.replace(entry.getKey(), WolfyUtilities.translateColorCodes(String.valueOf(entry.getValue())));
-                        if (meta.hasLore()) {
-                            for (int i = 0; i < lore.size(); i++) {
-                                lore.set(i, lore.get(i).replace(entry.getKey(), WolfyUtilities.translateColorCodes(String.valueOf(entry.getValue()))));
-                            }
+                        if (lore != null && !lore.isEmpty()) {
+                            lore = lore.stream().map(s -> s.replace(entry.getKey(), WolfyUtilities.translateColorCodes(String.valueOf(entry.getValue())))).collect(Collectors.toList());
                         }
                     }
                 }

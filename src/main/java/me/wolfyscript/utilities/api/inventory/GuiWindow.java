@@ -18,23 +18,23 @@ public class GuiWindow implements Listener {
     private String clusterID;
     private final String namespace;
     public String itemKey;
-    private final InventoryAPI inventoryAPI;
-    private final HashMap<GuiHandler, Inventory> cachedInventories;
+    private final InventoryAPI<?> inventoryAPI;
+    private final HashMap<GuiHandler<?>, Inventory> cachedInventories;
     private final HashMap<String, Button> buttons = new HashMap<>();
 
     //Inventory
     private final InventoryType inventoryType;
     private final int size;
 
-    public GuiWindow(String namespace, InventoryAPI inventoryAPI, int size) {
+    public GuiWindow(String namespace, InventoryAPI<?> inventoryAPI, int size) {
         this(namespace, namespace, inventoryAPI, null, size);
     }
 
-    public GuiWindow(String namespace, InventoryAPI inventoryAPI, InventoryType inventoryType) {
+    public GuiWindow(String namespace, InventoryAPI<?> inventoryAPI, InventoryType inventoryType) {
         this(namespace, namespace, inventoryAPI, inventoryType, 0);
     }
 
-    public GuiWindow(String namespace, String itemKey, InventoryAPI inventoryAPI, InventoryType inventoryType, int size) {
+    public GuiWindow(String namespace, String itemKey, InventoryAPI<?> inventoryAPI, InventoryType inventoryType, int size) {
         this.namespace = namespace;
         this.inventoryAPI = inventoryAPI;
         this.itemKey = itemKey;
@@ -66,7 +66,7 @@ public class GuiWindow implements Listener {
         return true;
     }
 
-    public void update(GuiHandler guiHandler) {
+    public void update(GuiHandler<?> guiHandler) {
         Bukkit.getScheduler().runTaskLater(inventoryAPI.getPlugin(), () -> {
             if (!guiHandler.isChatEventActive()) {
                 GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
@@ -103,14 +103,18 @@ public class GuiWindow implements Listener {
         return buttons.get(id);
     }
 
+    HashMap<String, Button> getButtons() {
+        return buttons;
+    }
+
     /*
-    Returns true if the Button is registered!
-     */
+        Returns true if the Button is registered!
+         */
     public boolean hasButton(String id) {
         return buttons.containsKey(id);
     }
 
-    public void reloadInv(GuiHandler guiHandler) {
+    public void reloadInv(GuiHandler<?> guiHandler) {
         guiHandler.reloadInv(guiHandler.getCurrentGuiCluster(), guiHandler.getCurrentInv().getNamespace());
     }
 
@@ -118,7 +122,7 @@ public class GuiWindow implements Listener {
     Opens the chat, send the player the defined message and waits for the input of the player.
     When the player sends the message the inputAction method is executed
      */
-    public void openChat(GuiHandler guiHandler, String msg, ChatInputAction inputAction) {
+    public void openChat(GuiHandler<?> guiHandler, String msg, ChatInputAction inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
         guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), msg);
@@ -129,10 +133,10 @@ public class GuiWindow implements Listener {
     Then it waits for the player's input.
     When the player sends the message the inputAction method is executed
      */
-    public void openChat(String guiCluster, String msgKey, GuiHandler guiHandler, ChatInputAction inputAction) {
+    public void openChat(String guiCluster, String msgKey, GuiHandler<?> guiHandler, ChatInputAction inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), "$inventories."+guiCluster+".global_messages."+msgKey+"$");
+        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), "$inventories." + guiCluster + ".global_messages." + msgKey + "$");
     }
 
     /*
@@ -140,17 +144,17 @@ public class GuiWindow implements Listener {
     Then it waits for the player's input.
     When the player sends the message the inputAction method is executed
      */
-    public void openChat(String msgKey, GuiHandler guiHandler, ChatInputAction inputAction) {
+    public void openChat(String msgKey, GuiHandler<?> guiHandler, ChatInputAction inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), "$inventories."+getClusterID()+"."+getNamespace()+".messages."+msgKey+"$");
+        guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), "$inventories." + getClusterID() + "." + getNamespace() + ".messages." + msgKey + "$");
     }
 
     /*
     Opens the chat, send the player the defined action messages and waits for the input of the player.
     When the player sends the message the inputAction method is executed
      */
-    public void openActionChat(GuiHandler guiHandler, ClickData clickData, ChatInputAction inputAction) {
+    public void openActionChat(GuiHandler<?> guiHandler, ClickData clickData, ChatInputAction inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
         guiHandler.getApi().sendActionMessage(guiHandler.getPlayer(), clickData);
@@ -159,7 +163,7 @@ public class GuiWindow implements Listener {
     /*
     Sends a message without closing the inventory.
      */
-    public void sendMessage(GuiHandler guiHandler, String msgKey){
+    public void sendMessage(GuiHandler<?> guiHandler, String msgKey) {
         guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), getClusterID(), getNamespace(), msgKey);
     }
 
@@ -167,7 +171,7 @@ public class GuiWindow implements Listener {
         inventoryAPI.getWolfyUtilities().sendPlayerMessage(player, getClusterID(), getNamespace(), msgKey);
     }
 
-    public void sendMessage(GuiHandler guiHandler, String msgKey, String[]... replacements){
+    public void sendMessage(GuiHandler<?> guiHandler, String msgKey, String[]... replacements) {
         guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), getClusterID(), getNamespace(), msgKey, replacements);
     }
 
@@ -183,15 +187,15 @@ public class GuiWindow implements Listener {
         this.clusterID = clusterID;
     }
 
-    public Inventory getInventory(GuiHandler guiHandler) {
+    public Inventory getInventory(GuiHandler<?> guiHandler) {
         return cachedInventories.get(guiHandler);
     }
 
-    public boolean hasCachedInventory(GuiHandler guiHandler) {
+    public boolean hasCachedInventory(GuiHandler<?> guiHandler) {
         return cachedInventories.containsKey(guiHandler);
     }
 
-    public void setCachedInventorie(GuiHandler guiHandler, Inventory inventory) {
+    public void setCachedInventorie(GuiHandler<?> guiHandler, Inventory inventory) {
         cachedInventories.put(guiHandler, inventory);
     }
 

@@ -20,7 +20,7 @@ import java.util.*;
 public class GuiHandler<T extends CustomCache> implements Listener {
 
     private final WolfyUtilities api;
-    private final InventoryAPI invAPI;
+    private final InventoryAPI<?> invAPI;
     private Player player;
     private boolean changingInv = false;
     private ChatInputAction chatInputAction = null;
