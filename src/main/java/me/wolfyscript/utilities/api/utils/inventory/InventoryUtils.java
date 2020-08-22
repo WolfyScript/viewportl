@@ -6,18 +6,21 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 
 public class InventoryUtils {
 
-    public static boolean isEmpty(List<ItemStack> list) {
-        return !list.stream().anyMatch(item -> item != null && !item.getType().equals(Material.AIR));
+    public static boolean isEmpty(@Nullable List<ItemStack> list) {
+        if (list == null) return false;
+        return list.stream().noneMatch(item -> item != null && !item.getType().equals(Material.AIR));
     }
 
-    public static boolean isCustomItemsListEmpty(List<CustomItem> list) {
-        return !list.stream().anyMatch(item -> item != null && !item.getItemStack().getType().equals(Material.AIR));
+    public static boolean isCustomItemsListEmpty(@Nullable List<CustomItem> list) {
+        if (list == null) return false;
+        return list.stream().noneMatch(item -> item != null && !item.getItemStack().getType().equals(Material.AIR));
     }
 
     public static int getInventorySpace(Player p, ItemStack item) {
@@ -27,7 +30,7 @@ public class InventoryUtils {
     public static int getInventorySpace(Inventory inventory, ItemStack item) {
         int free = 0;
         for (ItemStack i : inventory.getStorageContents()) {
-            if (i == null || i.getType().equals(Material.AIR)) {
+            if (ItemUtils.isAirOrNull(i)) {
                 free += item.getMaxStackSize();
             } else if (i.isSimilar(item)) {
                 free += item.getMaxStackSize() - i.getAmount();

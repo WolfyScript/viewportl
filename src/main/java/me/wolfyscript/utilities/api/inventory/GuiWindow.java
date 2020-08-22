@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class GuiWindow implements Listener {
+public abstract class GuiWindow implements Listener {
 
     private String clusterID;
     private final String namespace;
@@ -58,19 +58,38 @@ public class GuiWindow implements Listener {
 
     //OVERRIDE METHODS
 
+    /**
+     * This method is called when the inventory is initiated.
+     * It's used to register Buttons and optionally other processing on start-up.
+     */
     public void onInit() {
-
     }
 
-    public boolean onClick(GuiClick guiClick) {
-        return true;
+    /**
+     * This method is called after the {@link GuiUpdateEvent} is called and executed by Bukkit, but it makes
+     * it easier to manage the GUI as it doesn't require a inventory verification.
+     *
+     * @param update
+     */
+    public void onUpdateSync(GuiUpdate update) {
     }
 
-    public void update(GuiHandler<?> guiHandler) {
+    /**
+     * This method is called after the Bukkit GuiUpdateEvent and {@link #onUpdateSync(GuiUpdate)} are done.
+     * It will be run by the scheduler Async, so be careful with using Bukkit methods!
+     * Bukkit methods are not Thread safe!
+     *
+     * @param update
+     */
+    public void onUpdateAsync(GuiUpdate update) {
+    }
+
+    protected void update(GuiHandler<?> guiHandler) {
         Bukkit.getScheduler().runTaskLater(inventoryAPI.getPlugin(), () -> {
             if (!guiHandler.isChatEventActive()) {
                 GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
                 Bukkit.getPluginManager().callEvent(event);
+                Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), () -> onUpdateAsync(event.getGuiUpdate()));
             }
         }, 1);
     }

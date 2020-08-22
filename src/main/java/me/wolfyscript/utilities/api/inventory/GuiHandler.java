@@ -179,8 +179,13 @@ public class GuiHandler<T extends CustomCache> implements Listener {
 
                     GuiUpdateEvent event = new GuiUpdateEvent(this, guiWindow);
                     Bukkit.getPluginManager().callEvent(event);
-                    api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).setCachedInventorie(this, event.getInventory());
+
                     player1.openInventory(event.getInventory());
+
+                    Bukkit.getScheduler().runTaskAsynchronously(api.getPlugin(), () -> {
+                        guiWindow.onUpdateAsync(event.getGuiUpdate());
+                        api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).setCachedInventorie(this, event.getInventory());
+                    });
                 }
             } else {
                 api.sendPlayerMessage(player1, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT));
