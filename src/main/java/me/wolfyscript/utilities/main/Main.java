@@ -29,7 +29,6 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,7 +37,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 public class Main extends JavaPlugin {
@@ -162,10 +160,6 @@ public class Main extends JavaPlugin {
             ItemCategory.init();
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-        }
-        getMainUtil().sendConsoleMessage("Registering Item Categories...");
-        for (Map.Entry<String, List<Material>> category : ItemCategory.getMaterials().entrySet()) {
-            getMainUtil().sendDebugMessage("  " + category.getKey() + ": " + category.getValue());
         }
 
         saveResource("particles/scripts/flame_spiral_down.js", true);

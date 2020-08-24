@@ -334,6 +334,7 @@ public class WolfyUtilities implements Listener {
         return wolfyUtilitiesList.get(plugin);
     }
 
+    //TODO: Move the logic to a CommandExecutor
     @EventHandler(priority = EventPriority.HIGHEST)
     public void actionCommands(PlayerCommandPreprocessEvent event) {
         if (event.getMessage().startsWith("/wua ")) {

@@ -7,7 +7,9 @@ import org.bukkit.Material;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * This class contaions enums for the creative menu categories.
@@ -26,7 +28,11 @@ public enum ItemCategory {
     MISC,
     SEARCH;
 
-    private static final HashMap<String, List<Material>> materials = new HashMap<>();
+    protected List<Material> materials;
+
+    ItemCategory() {
+        this.materials = new ArrayList<>();
+    }
 
     public static void init() throws NoSuchMethodException {
         Main.getMainUtil().sendConsoleMessage("Loading Item Categories...");
@@ -37,9 +43,20 @@ public enum ItemCategory {
         Method getItem = craftMagicNumbersClass.getMethod("getItem", Material.class);
         Field getCreativeModeTab = Reflection.findField(itemClass, creativeModeTabClass);
         getCreativeModeTab.setAccessible(true);
-        Method creativeModeToString = creativeModeTabClass.getMethod("c");
+        Method creativeModeToString = null;
+        for (Method method : creativeModeTabClass.getMethods()) {
+            if (method.getReturnType().equals(String.class)) {
+                creativeModeToString = method;
+                break;
+            }
+        }
 
-        if (getItem != null && creativeModeToString != null) {
+        if (creativeModeToString == null) {
+            Main.getInstance().getLogger().severe("Error loading Item categories! Can't find the specified Method to get ");
+            return;
+        }
+
+        if (getItem != null && creativeModeToString != null && creativeModeToString != null) {
             try {
                 for (Material material : Material.values()) {
                     Object itemObj = getItem.invoke(craftMagicNumbersClass, material);
@@ -47,10 +64,10 @@ public enum ItemCategory {
                         Object creativeModeTabObj = getCreativeModeTab.get(itemObj);
                         if (creativeModeTabObj != null) {
                             String name = (String) creativeModeToString.invoke(creativeModeTabObj);
-                            List<Material> category = materials.getOrDefault(name, new ArrayList<>());
-                            category.add(material);
-                            //Main.getMainUtil().sendConsoleMessage(" register " + material + " -> " + name);
-                            materials.put(name, category);
+                            ItemCategory category = ItemCategory.valueOf(name.toUpperCase(Locale.ROOT));
+                            if (category != null) {
+                                category.materials.add(material);
+                            }
                         }
                     }
                 }
@@ -60,36 +77,18 @@ public enum ItemCategory {
         }
     }
 
-    ItemCategory() {
-
+    public static boolean isValid(Material material, ItemCategory itemCategory) {
+        return itemCategory.isValid(material);
     }
 
-    public boolean isValid(Material material){
-        List<Material> category = materials.get(toString().toLowerCase(Locale.ROOT));
-        if(category == null){
-            Main.getMainUtil().sendConsoleWarning("Invalid category: "+toString().toLowerCase(Locale.ROOT));
-        }
-        return category.contains(material);
-    }
-
-    public static boolean isValid(Material material, ItemCategory itemCategory){
-        List<Material> category = materials.get(itemCategory.toString().toLowerCase(Locale.ROOT));
-        if(category != null){
-            return category.contains(material);
-        }
-        return false;
-    }
-
-    public static ItemCategory getCategory(Material material){
-        for(Map.Entry<String, List<Material>> entry : materials.entrySet()){
-            if(entry.getValue().contains(material)){
-                return valueOf(entry.getKey());
-            }
+    public static ItemCategory getCategory(Material material) {
+        for (ItemCategory category : values()) {
+            if (category.isValid(material)) return category;
         }
         return SEARCH;
     }
 
-    public static HashMap<String, List<Material>> getMaterials() {
-        return materials;
+    public boolean isValid(Material material) {
+        return materials.contains(material);
     }
 }
