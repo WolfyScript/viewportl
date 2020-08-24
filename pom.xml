@@ -6,7 +6,7 @@
 
     <groupId>com.wolfyscript</groupId>
     <artifactId>wolfyutilities</artifactId>
-    <version>1.6.1.0</version>
+    <version>1.6.1.1</version>
     <properties>
         <!-- Generic properties -->
         <java.version>1.8</java.version>
@@ -15,14 +15,16 @@
     </properties>
 
     <repositories>
-        <!--WolfyScript private repo-->
+        <!--
+        WolfyScript private repo
+        This repository requires you to have credentials to access private plugins like Oraxen and ItemsAdder.
+
+        You can use the public repo and then provide your local installed Oraxen and ItemsAdder jars.
+        Public repo: https://maven.wolfyscript.com/repository/public/
+        -->
         <repository>
             <id>wolfyscript-private</id>
             <url>https://maven.wolfyscript.com/repository/private/</url>
-        </repository>
-        <repository>
-            <id>wolfyscript-public</id>
-            <url>https://maven.wolfyscript.com/repository/public/</url>
         </repository>
     </repositories>
 
