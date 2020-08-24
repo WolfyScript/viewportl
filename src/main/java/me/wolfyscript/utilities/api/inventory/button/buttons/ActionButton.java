@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
+import java.io.IOException;
+
 public class ActionButton extends Button {
 
     private final String id;
@@ -36,14 +38,14 @@ public class ActionButton extends Button {
         state.init(windowKey, api);
     }
 
-    public boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
+    public boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
         if (!type.equals(ButtonType.DUMMY) && state.getAction() != null) {
             return state.getAction().run(guiHandler, player, inventory, slot, event);
         }
         return true;
     }
 
-    public void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) {
+    public void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException {
         applyItem(guiHandler, player, inventory, state, slot, help);
     }
 

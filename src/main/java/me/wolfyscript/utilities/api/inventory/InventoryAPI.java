@@ -18,6 +18,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -203,7 +204,11 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                         for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
                             Button button = guiWindow.getButton(buttonEntry.getValue());
                             if (button instanceof ItemInputButton) {
-                                event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), buttonEntry.getKey(), event));
+                                try {
+                                    event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), buttonEntry.getKey(), event));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                         return;
@@ -212,7 +217,11 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                         event.setCancelled(true);
                         Button button = guiHandler.getButton(guiWindow, event.getSlot());
                         if (button != null) {
-                            event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
+                            try {
+                                event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             guiHandler.getCurrentInv().update(guiHandler);
                         }
                     } else {
@@ -226,7 +235,11 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                             }
                             Button button = guiHandler.getButton(guiWindow, slot);
                             if (button != null) {
-                                event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), slot, event));
+                                try {
+                                    event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), slot, event));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                                 guiHandler.getCurrentInv().update(guiHandler);
                             } else {
                                 event.setCancelled(true);
@@ -264,7 +277,11 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                         buttons.put(button, slot);
                     }
                     for (Map.Entry<Button, Integer> button : buttons.entrySet()) {
-                        event.setCancelled(button.getKey().execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), button.getValue(), new InventoryClickEvent(event.getView(), event.getView().getSlotType(button.getValue()), button.getValue(), ClickType.RIGHT, InventoryAction.PLACE_SOME)));
+                        try {
+                            event.setCancelled(button.getKey().execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), button.getValue(), new InventoryClickEvent(event.getView(), event.getView().getSlotType(button.getValue()), button.getValue(), ClickType.RIGHT, InventoryAction.PLACE_SOME)));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                     guiHandler.getCurrentInv().update(guiHandler);
                 }

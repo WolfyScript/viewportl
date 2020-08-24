@@ -1,28 +1,24 @@
 package me.wolfyscript.utilities.api.inventory.button.buttons;
 
-import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.button.Button;
-import me.wolfyscript.utilities.api.inventory.button.ButtonActionRender;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
+import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ToggleButton extends Button {
 
-    private ButtonState[] states;
-    private boolean defaultState;
-    private HashMap<GuiHandler, Boolean> settings;
+    private final ButtonState[] states;
+    private final boolean defaultState;
+    private final HashMap<GuiHandler, Boolean> settings;
 
     /*
         This Button toggles between two states and executes the corresponding action!
@@ -58,7 +54,7 @@ public class ToggleButton extends Button {
     }
 
     @Override
-    public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
+    public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
         boolean result = states[settings.getOrDefault(guiHandler, defaultState) ? 0 : 1].getAction().run(guiHandler, player, inventory, slot, event);
         settings.put(guiHandler, !settings.getOrDefault(guiHandler, defaultState));
         return result;

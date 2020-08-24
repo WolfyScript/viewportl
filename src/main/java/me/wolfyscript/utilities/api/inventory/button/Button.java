@@ -9,6 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +33,9 @@ public abstract class Button {
 
     public abstract void init(String clusterID, WolfyUtilities api);
 
-    public abstract boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event);
+    public abstract boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException;
 
-    public abstract void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help);
+    public abstract void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException;
 
     public ButtonType getType() {
         return type;

@@ -10,6 +10,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 
 public class GuiUpdate {
 
@@ -75,7 +76,7 @@ public class GuiUpdate {
         Button button = guiWindow.getButton(id);
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, id);
-            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -90,7 +91,7 @@ public class GuiUpdate {
         }
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, id);
-            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -100,7 +101,7 @@ public class GuiUpdate {
     public void setButton(int slot, @Nonnull Button button) {
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, button.getId());
-            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -112,7 +113,16 @@ public class GuiUpdate {
         Button button = inventoryAPI.getButton(namespace, key);
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, namespace + ":" + key);
+            renderButton(button, guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+        }
+    }
+
+    private void renderButton(Button button, GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) {
+        try {
             button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+        } catch (IOException e) {
+            System.out.println("Error while rendering Button \"" + button.getId() + "\"!");
+            e.printStackTrace();
         }
     }
 

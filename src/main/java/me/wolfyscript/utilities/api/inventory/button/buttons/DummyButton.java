@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
+import java.io.IOException;
+
 public class DummyButton extends ActionButton {
 
     /*
@@ -28,7 +30,7 @@ public class DummyButton extends ActionButton {
     }
 
     @Override
-    public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) {
-        super.render(guiHandler,player, inventory, slot, help);
+    public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException {
+        super.render(guiHandler, player, inventory, slot, help);
     }
 }
