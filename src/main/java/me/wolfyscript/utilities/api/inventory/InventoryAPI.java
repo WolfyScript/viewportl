@@ -191,7 +191,6 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
         return getGuiCluster(clusterID).getButton(buttonID);
     }
 
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
@@ -199,8 +198,8 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                 GuiHandler<?> guiHandler = getGuiHandler((Player) event.getWhoClicked());
                 if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
+                    event.setCancelled(true);
                     if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
-                        event.setCancelled(true);
                         for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
                             Button button = guiWindow.getButton(buttonEntry.getValue());
                             if (button instanceof ItemInputButton) {
@@ -214,7 +213,6 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                         return;
                     }
                     if (event.getClickedInventory().equals(event.getView().getTopInventory())) {
-                        event.setCancelled(true);
                         Button button = guiHandler.getButton(guiWindow, event.getSlot());
                         if (button != null) {
                             try {
@@ -241,8 +239,6 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                                     e.printStackTrace();
                                 }
                                 guiHandler.getCurrentInv().update(guiHandler);
-                            } else {
-                                event.setCancelled(true);
                             }
                         }
                     }
