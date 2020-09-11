@@ -12,6 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -287,4 +289,5 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     public T getCustomCache() {
         return customCache;
     }
+
 }

@@ -4,11 +4,13 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.button.Button;
+import me.wolfyscript.utilities.api.inventory.button.ButtonAction;
 import me.wolfyscript.utilities.api.inventory.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.button.ButtonType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 
@@ -27,6 +29,10 @@ public class ActionButton extends Button {
 
     public ActionButton(String id, ButtonState state) {
         this(id, ButtonType.NORMAL, state);
+    }
+
+    public ActionButton(String id, ItemStack itemStack, ButtonAction action){
+        this(id, new ButtonState(id, itemStack, action));
     }
 
     public void init(GuiWindow guiWindow) {

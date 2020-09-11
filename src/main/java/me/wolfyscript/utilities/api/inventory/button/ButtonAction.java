@@ -9,5 +9,5 @@ import java.io.IOException;
 
 public interface ButtonAction {
 
-    boolean run(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException;
+    boolean run(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException;
 }
