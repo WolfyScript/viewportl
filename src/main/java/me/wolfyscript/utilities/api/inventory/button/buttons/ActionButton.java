@@ -3,10 +3,8 @@ package me.wolfyscript.utilities.api.inventory.button.buttons;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
-import me.wolfyscript.utilities.api.inventory.button.Button;
-import me.wolfyscript.utilities.api.inventory.button.ButtonAction;
-import me.wolfyscript.utilities.api.inventory.button.ButtonState;
-import me.wolfyscript.utilities.api.inventory.button.ButtonType;
+import me.wolfyscript.utilities.api.inventory.button.*;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -31,7 +29,19 @@ public class ActionButton extends Button {
         this(id, ButtonType.NORMAL, state);
     }
 
-    public ActionButton(String id, ItemStack itemStack, ButtonAction action){
+    public ActionButton(String id, ItemStack itemStack, ButtonAction action) {
+        this(id, new ButtonState(id, itemStack, action));
+    }
+
+    public ActionButton(String id, ItemStack itemStack, ButtonRender action) {
+        this(id, new ButtonState(id, itemStack, action));
+    }
+
+    public ActionButton(String id, Material itemStack, ButtonAction action) {
+        this(id, new ButtonState(id, itemStack, action));
+    }
+
+    public ActionButton(String id, Material itemStack, ButtonRender action) {
         this(id, new ButtonState(id, itemStack, action));
     }
 

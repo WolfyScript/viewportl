@@ -1,20 +1,13 @@
 package me.wolfyscript.utilities.api.inventory.button;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.utils.inventory.ItemUtils;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 public class ButtonState {
@@ -41,7 +34,7 @@ public class ButtonState {
     }
 
     public ButtonState(String key, ItemStack presetIcon, ButtonRender render) {
-        this(key, presetIcon, null);
+        this(key, presetIcon);
         this.buttonRender = render;
     }
 
@@ -85,7 +78,7 @@ public class ButtonState {
     }
 
     public ButtonState(String key, Material presetIcon) {
-        this(key, new ItemStack(presetIcon), null);
+        this(key, new ItemStack(presetIcon));
     }
 
     public ButtonState(String key, Material presetIcon, ButtonAction action) {
