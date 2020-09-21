@@ -6,7 +6,6 @@ import me.wolfyscript.utilities.api.utils.inventory.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -17,72 +16,60 @@ public class ButtonState {
     private final ItemStack presetIcon;
     private ItemStack[] icon;
     private ButtonAction action;
-    private ButtonRender buttonRender = null;
+    private ButtonRender buttonRender;
 
     private String displayName;
     private String[] helpLore;
     private String[] normalLore;
 
     public ButtonState(String key, ItemStack presetIcon) {
-        this.key = key;
-        this.presetIcon = presetIcon;
+        this(key, presetIcon, null, null);
     }
 
     public ButtonState(String key, ItemStack presetIcon, ButtonAction action) {
-        this(key, presetIcon);
-        this.action = action;
+        this(key, presetIcon, action, null);
     }
 
     public ButtonState(String key, ItemStack presetIcon, ButtonRender render) {
-        this(key, presetIcon);
-        this.buttonRender = render;
+        this(key, presetIcon, null, render);
     }
 
     public ButtonState(String key, ItemStack presetIcon, ButtonAction action, ButtonRender render) {
-        this(key, presetIcon, action);
+        this.key = key;
+        this.presetIcon = presetIcon;
+        this.action = action;
         this.buttonRender = render;
     }
 
-    @Deprecated
-    public ButtonState(String key, ItemStack presetIcon, ButtonActionRender action) {
-        this(key, presetIcon);
-        this.action = action;
+    public ButtonState(String key, ItemStack presetIcon, int customModelData) {
+        this(key, presetIcon, customModelData, null, null);
     }
 
     public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonAction action) {
-        this(key, presetIcon, action);
-        ItemMeta itemMeta = this.presetIcon.getItemMeta();
-        itemMeta.setCustomModelData(customModelData);
-        this.presetIcon.setItemMeta(itemMeta);
+        this(key, presetIcon, customModelData, action, null);
     }
 
     public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonRender render) {
-        this(key, presetIcon);
-        ItemMeta itemMeta = this.presetIcon.getItemMeta();
-        itemMeta.setCustomModelData(customModelData);
-        this.presetIcon.setItemMeta(itemMeta);
-        this.buttonRender = render;
+        this(key, presetIcon, customModelData, null, render);
     }
 
     public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonAction action, ButtonRender render) {
-        this(key, presetIcon, customModelData, action);
-        this.buttonRender = render;
-    }
-
-    @Deprecated
-    public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonActionRender action) {
-        this(key, presetIcon, action);
+        this(key, presetIcon, action, render);
         ItemMeta itemMeta = this.presetIcon.getItemMeta();
         itemMeta.setCustomModelData(customModelData);
         this.presetIcon.setItemMeta(itemMeta);
     }
 
+    /**
+     * Constructors with Key and, Materials instead of ItemStacks
+     */
+
     public ButtonState(String key, Material presetIcon) {
-        this(key, new ItemStack(presetIcon));
+        this(key, presetIcon, null, null);
     }
 
     public ButtonState(String key, Material presetIcon, ButtonAction action) {
-        this(key, new ItemStack(presetIcon), action);
+        this(key, presetIcon, action, null);
     }
 
     public ButtonState(String key, Material presetIcon, ButtonRender render) {
@@ -90,17 +77,15 @@ public class ButtonState {
     }
 
     public ButtonState(String key, Material presetIcon, ButtonAction action, ButtonRender render) {
-        this(key, presetIcon, action);
-        this.buttonRender = render;
+        this(key, new ItemStack(presetIcon), action, render);
     }
 
-    @Deprecated
-    public ButtonState(String key, Material presetIcon, ButtonActionRender action) {
-        this(key, new ItemStack(presetIcon), action);
+    public ButtonState(String key, Material presetIcon, int customModelData) {
+        this(key, presetIcon, customModelData, null, null);
     }
 
     public ButtonState(String key, Material presetIcon, int customModelData, ButtonAction action) {
-        this(key, new ItemStack(presetIcon), customModelData, action);
+        this(key, presetIcon, customModelData, action, null);
     }
 
     public ButtonState(String key, Material presetIcon, int customModelData, ButtonRender render) {
@@ -108,23 +93,48 @@ public class ButtonState {
     }
 
     public ButtonState(String key, Material presetIcon, int customModelData, ButtonAction action, ButtonRender render) {
-        this(key, presetIcon, customModelData, action);
-        this.buttonRender = render;
+        this(key, new ItemStack(presetIcon), customModelData, action, render);
     }
 
-    public ButtonState(String key, Material presetIcon, int customModelData, ButtonActionRender action) {
-        this(key, new ItemStack(presetIcon), customModelData, action);
+    /**
+     * Constructors with ClusterID, Key and ItemStacks
+     */
+
+    public ButtonState(String clusterID, String key, ItemStack presetIcon) {
+        this(clusterID, key, presetIcon, null, null);
+    }
+
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, ButtonRender render) {
+        this(clusterID, key, presetIcon, null, render);
     }
 
     public ButtonState(String clusterID, String key, ItemStack presetIcon, ButtonAction action) {
+        this(clusterID, key, presetIcon, action, null);
+    }
+
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, ButtonAction action, ButtonRender render) {
         this.action = action;
+        this.buttonRender = render;
         this.presetIcon = presetIcon;
         this.clusterID = clusterID;
         this.key = key;
     }
 
-    public ButtonState(String clusterID, String key, @NotNull ItemStack presetIcon, int customModelData, ButtonAction action) {
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData) {
+        this(clusterID, key, presetIcon, customModelData, null, null);
+    }
+
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonRender render) {
+        this(clusterID, key, presetIcon, customModelData, null, render);
+    }
+
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonAction action) {
+        this(clusterID, key, presetIcon, customModelData, action, null);
+    }
+
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonAction action, ButtonRender render) {
         this.action = action;
+        this.buttonRender = render;
         this.presetIcon = presetIcon;
         ItemMeta itemMeta = this.presetIcon.getItemMeta();
         itemMeta.setCustomModelData(customModelData);
@@ -133,12 +143,41 @@ public class ButtonState {
         this.key = key;
     }
 
+    /**
+     * Constructors with ClusterID, Key and Materials
+     */
+
+    public ButtonState(String clusterID, String key, Material presetIcon) {
+        this(clusterID, key, presetIcon, null, null);
+    }
+
+    public ButtonState(String clusterID, String key, Material presetIcon, ButtonRender render) {
+        this(clusterID, key, presetIcon, null, render);
+    }
+
     public ButtonState(String clusterID, String key, Material presetIcon, ButtonAction action) {
-        this(clusterID, key, new ItemStack(presetIcon), action);
+        this(clusterID, key, presetIcon, action, null);
+    }
+
+    public ButtonState(String clusterID, String key, Material presetIcon, ButtonAction action, ButtonRender render) {
+        this(clusterID, key, new ItemStack(presetIcon), action, render);
+    }
+
+    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData) {
+        this(clusterID, key, presetIcon, customModelData, null, null);
     }
 
     public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonAction action) {
-        this(clusterID, key, new ItemStack(presetIcon), customModelData, action);
+        this(clusterID, key, presetIcon, customModelData, action, null);
+    }
+
+    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonAction action, ButtonRender render) {
+        this(clusterID, key, new ItemStack(presetIcon), customModelData, action, render);
+    }
+
+    @Deprecated
+    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonActionRender action) {
+        this(clusterID, key, presetIcon, customModelData, action, null);
     }
 
     /*

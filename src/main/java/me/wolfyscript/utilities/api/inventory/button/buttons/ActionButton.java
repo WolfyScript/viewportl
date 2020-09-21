@@ -29,20 +29,36 @@ public class ActionButton extends Button {
         this(id, ButtonType.NORMAL, state);
     }
 
+    public ActionButton(String id, ItemStack itemStack) {
+        this(id, new ButtonState(id, itemStack));
+    }
+
     public ActionButton(String id, ItemStack itemStack, ButtonAction action) {
-        this(id, new ButtonState(id, itemStack, action));
+        this(id, itemStack, action, null);
     }
 
-    public ActionButton(String id, ItemStack itemStack, ButtonRender action) {
-        this(id, new ButtonState(id, itemStack, action));
+    public ActionButton(String id, ItemStack itemStack, ButtonRender render) {
+        this(id, itemStack, null, render);
     }
 
-    public ActionButton(String id, Material itemStack, ButtonAction action) {
-        this(id, new ButtonState(id, itemStack, action));
+    public ActionButton(String id, ItemStack itemStack, ButtonAction action, ButtonRender render) {
+        this(id, new ButtonState(id, itemStack, action, render));
     }
 
-    public ActionButton(String id, Material itemStack, ButtonRender action) {
-        this(id, new ButtonState(id, itemStack, action));
+    public ActionButton(String id, Material material) {
+        this(id, new ButtonState(id, material));
+    }
+
+    public ActionButton(String id, Material material, ButtonAction action) {
+        this(id, material, action, null);
+    }
+
+    public ActionButton(String id, Material material, ButtonRender render) {
+        this(id, material, null, render);
+    }
+
+    public ActionButton(String id, Material material, ButtonAction action, ButtonRender render) {
+        this(id, new ButtonState(id, material, action, render));
     }
 
     public void init(GuiWindow guiWindow) {

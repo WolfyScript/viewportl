@@ -1,9 +1,7 @@
 package me.wolfyscript.utilities.api.inventory.button.buttons;
 
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
-import me.wolfyscript.utilities.api.inventory.button.ButtonActionRender;
-import me.wolfyscript.utilities.api.inventory.button.ButtonState;
-import me.wolfyscript.utilities.api.inventory.button.ButtonType;
+import me.wolfyscript.utilities.api.inventory.button.*;
 import me.wolfyscript.utilities.main.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -28,6 +26,38 @@ public class ItemInputButton extends ActionButton {
     public ItemInputButton(String id, ButtonState state) {
         super(id, ButtonType.ITEM_SLOT, state);
         this.content = new HashMap<>();
+    }
+
+    public ItemInputButton(String id, ItemStack itemStack) {
+        this(id, new ButtonState(id, itemStack));
+    }
+
+    public ItemInputButton(String id, Material material) {
+        this(id, new ButtonState(id, material));
+    }
+
+    public ItemInputButton(String id, ItemStack itemStack, ButtonAction action) {
+        this(id, new ButtonState(id, itemStack, action));
+    }
+
+    public ItemInputButton(String id, ItemStack itemStack, ButtonRender render) {
+        this(id, new ButtonState(id, itemStack, render));
+    }
+
+    public ItemInputButton(String id, ItemStack itemStack, ButtonAction action, ButtonRender render) {
+        this(id, new ButtonState(id, itemStack, action, render));
+    }
+
+    public ItemInputButton(String id, Material material, ButtonAction action) {
+        this(id, new ButtonState(id, material, action));
+    }
+
+    public ItemInputButton(String id, Material material, ButtonRender render) {
+        this(id, new ButtonState(id, material, render));
+    }
+
+    public ItemInputButton(String id, Material material, ButtonAction action, ButtonRender render) {
+        this(id, new ButtonState(id, material, action, render));
     }
 
     @Override
