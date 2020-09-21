@@ -9,6 +9,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
+/**
+ * ButtonState represents the state an Button can be in.
+ * It contains the ItemStack and language keys required to render the correct Item.
+ * <p>
+ * The rendering can be manipulated using the render method that returns the ItemStack that will be rendered.
+ * <p>
+ * To execute code on a Button click you need to use the action method, which is called each time the button is clicked.
+ */
 public class ButtonState {
 
     private String clusterID;
@@ -218,8 +226,8 @@ public class ButtonState {
             List<String> normal = api.getLanguageAPI().replaceKey(path + ".lore");
             helpLore = !help.isEmpty() ? help.toArray(new String[0]) : new String[0];
             normalLore = !normal.isEmpty() ? normal.toArray(new String[0]) : new String[0];
+            this.icon = ItemUtils.createItem(presetIcon, displayName, helpLore, normalLore);
         }
-        this.icon = ItemUtils.createItem(presetIcon, displayName, helpLore, normalLore);
     }
 
     public ItemStack getIcon(boolean help) {
