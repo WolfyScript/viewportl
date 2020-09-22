@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.inventory.button.buttons;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
+import me.wolfyscript.utilities.api.inventory.GuiUpdate;
 import me.wolfyscript.utilities.api.inventory.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.button.*;
 import org.bukkit.Material;
@@ -12,13 +13,27 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 
+/**
+ * Button that executes the action method and renders the item as set in the render method of the ButtonState.
+ *
+ * action - these methods are executed when the button is clicked.
+ *
+ * render - these methods are executed when the button is rendered in one of
+ * the possible render methods: {@link GuiWindow#onUpdateAsync(GuiUpdate)}, {@link GuiWindow#onUpdateSync(GuiUpdate)}
+ * or via {@link me.wolfyscript.utilities.api.inventory.GuiUpdateEvent}
+ *
+ * You can set them directly using the constructor and the id of the button is passed into the ButtonState.
+ * If the ButtonState requires another key (e.g. when using global item names from lang file) you need to create an ButtonState instance and use
+ * {@link ActionButton#ActionButton(String, ButtonState)}
+ *
+ */
 public class ActionButton extends Button {
 
     private final String id;
     private final ButtonType type;
     private final ButtonState state;
 
-    public ActionButton(String id, ButtonType type, ButtonState state) {
+    protected ActionButton(String id, ButtonType type, ButtonState state) {
         super(id, type);
         this.id = id;
         this.type = type;
@@ -66,8 +81,8 @@ public class ActionButton extends Button {
     }
 
     @Override
-    public void init(String windowKey, WolfyUtilities api) {
-        state.init(windowKey, api);
+    public void init(String clusterID, WolfyUtilities api) {
+        state.init(clusterID, api);
     }
 
     public boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
