@@ -44,7 +44,7 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
         this.newCustomArmorPiece = newCustomArmorPiece;
 
         EquipmentSlot equipmentSlot = type.getEquipmentSlot();
-        if (!ItemUtils.isAirOrNull(newArmorPiece)) {
+        if (!ItemUtils.isAirOrNull(newArmorPiece) && !ItemUtils.isAirOrNull(newCustomArmorPiece)) {
             //Equiping new armor!
             if (ItemUtils.isEquipable(newArmorPiece.getType())) {
                 if (!ItemUtils.isEquipable(newArmorPiece.getType(), type) && !newCustomArmorPiece.isBlockVanillaEquip()) {
@@ -53,7 +53,7 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
             } else {
                 setCancelled(true);
             }
-            if (!ItemUtils.isAirOrNull(newCustomArmorPiece) && newCustomArmorPiece.hasEquipmentSlot(equipmentSlot)) {
+            if (newCustomArmorPiece.hasEquipmentSlot(equipmentSlot)) {
                 CustomItems.stopActiveParticleEffect(getPlayer(), equipmentSlot);
                 ParticleContent particleContent = newCustomArmorPiece.getParticleContent();
                 if (particleContent != null) {
@@ -67,7 +67,7 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
         } else {
             CustomItems.stopActiveParticleEffect(getPlayer(), equipmentSlot);
         }
-        if (oldArmorPiece != null && oldArmorPiece.hasItemMeta() && oldArmorPiece.getItemMeta().hasEnchant(Enchantment.BINDING_CURSE)) {
+        if (ItemUtils.isAirOrNull(oldArmorPiece) && oldArmorPiece.hasItemMeta() && oldArmorPiece.getItemMeta().hasEnchant(Enchantment.BINDING_CURSE)) {
             setCancelled(true);
         }
     }

@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class JsonConfiguration extends FileConfiguration {
 
     private final ObjectMapper mapper = JacksonUtil.getObjectMapper();
