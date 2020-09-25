@@ -12,9 +12,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import dev.lone.itemsadder.api.ItemsAdder;
 import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.items.MythicItem;
 import io.lumine.xikage.mythicmobs.util.jnbt.CompoundTag;
-import io.lumine.xikage.mythicmobs.util.jnbt.CompoundTagBuilder;
 import io.th0rgal.oraxen.items.OraxenItems;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.api_references.*;
@@ -400,28 +398,29 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * @return exact copy of this instance
      */
     @Override
-    public CustomItem clone() throws CloneNotSupportedException {
-        CustomItem customItem = (CustomItem) super.clone();
-
-        //CustomItem customItem = new CustomItem(getApiReference());
-
-        if (hasNamespacedKey()) {
-            customItem.setNamespacedKey(getNamespacedKey());
-            customItem.setBlockVanillaRecipes(isBlockVanillaRecipes());
-            customItem.setBlockVanillaEquip(isBlockVanillaEquip());
-            customItem.setAllowedBlocks(getAllowedBlocks());
-            customItem.setBurnTime(getBurnTime());
-            customItem.setConsumed(isConsumed());
-            customItem.setDurabilityCost(getDurabilityCost());
-            customItem.setMetaSettings(getMetaSettings());
-            customItem.setParticleContent(getParticleContent());
-            customItem.setPermission(getPermission());
-            customItem.setRarityPercentage(getRarityPercentage());
-            customItem.setReplacement(getReplacement());
+    public CustomItem clone() {
+        try {
+            CustomItem customItem = (CustomItem) super.clone();
+            if (hasNamespacedKey()) {
+                customItem.setNamespacedKey(getNamespacedKey());
+                customItem.setBlockVanillaRecipes(isBlockVanillaRecipes());
+                customItem.setBlockVanillaEquip(isBlockVanillaEquip());
+                customItem.setAllowedBlocks(getAllowedBlocks());
+                customItem.setBurnTime(getBurnTime());
+                customItem.setConsumed(isConsumed());
+                customItem.setDurabilityCost(getDurabilityCost());
+                customItem.setMetaSettings(getMetaSettings());
+                customItem.setParticleContent(getParticleContent());
+                customItem.setPermission(getPermission());
+                customItem.setRarityPercentage(getRarityPercentage());
+                customItem.setReplacement(getReplacement());
+            }
+            customItem.setAmount(getAmount());
+            return customItem;
+        } catch (CloneNotSupportedException ex) {
+            throw new Error(ex);
         }
-
-        customItem.setAmount(getAmount());
-        return customItem;
+        //CustomItem customItem = new CustomItem(getApiReference());
     }
 
     /**
