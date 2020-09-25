@@ -11,6 +11,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import dev.lone.itemsadder.api.ItemsAdder;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.items.MythicItem;
+import io.lumine.xikage.mythicmobs.util.jnbt.CompoundTag;
+import io.lumine.xikage.mythicmobs.util.jnbt.CompoundTagBuilder;
 import io.th0rgal.oraxen.items.OraxenItems;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.api_references.*;
@@ -54,10 +58,10 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
 
     /**
      * This namespacedKey can either be null or non-null.
-     *
+     * <p>
      * If it's non-null the item is saved and the variables of this Object will be persistent </p>
      * when converted to ItemStack via {@link #create()}.
-     *
+     * <p>
      * If it is null the item isn't saved and the variables of this Object will get lost when {@link #create()} is called!
      */
     private me.wolfyscript.utilities.api.utils.NamespacedKey namespacedKey;
@@ -72,6 +76,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     private boolean consumed;
     private final boolean canBePlaced;
     private boolean blockVanillaEquip;
+    private boolean blockVanillaRecipes;
     private final List<EquipmentSlot> equipmentSlots;
 
     /**
@@ -122,13 +127,14 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.particleContent = new ParticleContent();
         this.canBePlaced = true;
         this.blockVanillaEquip = false;
+        this.blockVanillaRecipes = false;
     }
 
     public void setNamespacedKey(me.wolfyscript.utilities.api.utils.NamespacedKey namespacedKey) {
         this.namespacedKey = namespacedKey;
     }
 
-    public boolean hasNamespacedKey(){
+    public boolean hasNamespacedKey() {
         return namespacedKey != null;
     }
 
@@ -154,7 +160,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 if (container.has(namespacedKey, PersistentDataType.STRING)) {
                     apiReference = new WolfyUtilitiesRef(me.wolfyscript.utilities.api.utils.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
                 }
-                if(apiReference == null){
+                if (apiReference == null) {
                     if (WolfyUtilities.hasPlugin("ItemsAdder")) {
                         if (ItemsAdder.isCustomItem(itemStack)) {
                             apiReference = new ItemsAdderRef(ItemsAdder.getCustomItemName(itemStack));
@@ -163,6 +169,12 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                         String itemId = OraxenItems.getIdByItem(itemStack);
                         if (itemId != null && !itemId.isEmpty()) {
                             apiReference = new OraxenRef(itemId);
+                        }
+                    } else if(WolfyUtilities.hasPlugin("MythicMobs")){
+                        CompoundTag compoundTag = MythicMobs.inst().getVolatileCodeHandler().getItemHandler().getNBTData(itemStack);
+                        String name = compoundTag.getString("MYTHIC_TYPE");
+                        if(MythicMobs.inst().getItemManager().getItem(name).isPresent()){
+                            apiReference = new MythicMobsRef(name);
                         }
                     }
                 }
@@ -181,17 +193,16 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * This method return the original CustomItem from the ItemStack.
      * This only works if the itemStack contains a NamespacedKey corresponding to a CustomItem
      * that is saved!
-     *
+     * <p>
      * If you need access to the original CustomItem variables use this method.
-     *
+     * <p>
      * If you want to detect what plugin this ItemStack is from and use it's corresponding Reference use {@link #getReferenceByItemStack(ItemStack)} instead!
-     *
      *
      * @param itemStack
      * @return CustomItem the ItemStack is linked, only if it is saved, else returns null
      */
     @org.jetbrains.annotations.Nullable
-    public static CustomItem getByItemStack(ItemStack itemStack){
+    public static CustomItem getByItemStack(ItemStack itemStack) {
         if (itemStack != null) {
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
@@ -271,12 +282,32 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         return hasEquipmentSlot() && getEquipmentSlots().contains(slot);
     }
 
+    /**
+     * Returns if this item is blocked to be equipped.
+     * If true the item cannot be equipped even if it is a chestplate or other equipment.
+     *
+     * @return true if the item is blocked from equipping, else false
+     */
     public boolean isBlockVanillaEquip() {
         return blockVanillaEquip;
     }
 
     public void setBlockVanillaEquip(boolean blockVanillaEquip) {
         this.blockVanillaEquip = blockVanillaEquip;
+    }
+
+    /**
+     * Returns if this item is blocked in vanilla recipes.
+     * This requires CustomCrafting to work.
+     *
+     * @return true if this item is blocked in vanilla recipes, else false
+     */
+    public boolean isBlockVanillaRecipes() {
+        return blockVanillaRecipes;
+    }
+
+    public void setBlockVanillaRecipes(boolean blockVanillaRecipes) {
+        this.blockVanillaRecipes = blockVanillaRecipes;
     }
 
     public void addEquipmentSlots(EquipmentSlot... slots) {
@@ -345,6 +376,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 consumed == that.consumed &&
                 canBePlaced == that.canBePlaced &&
                 blockVanillaEquip == that.blockVanillaEquip &&
+                blockVanillaRecipes == that.blockVanillaRecipes &&
                 Objects.equals(customDataMap, that.customDataMap) &&
                 Objects.equals(namespacedKey, that.namespacedKey) &&
                 Objects.equals(replacement, that.replacement) &&
@@ -368,15 +400,26 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * @return exact copy of this instance
      */
     @Override
-    public CustomItem clone() {
-        //TODO
-        if(hasNamespacedKey()){
+    public CustomItem clone() throws CloneNotSupportedException {
+        CustomItem customItem = (CustomItem) super.clone();
 
+        //CustomItem customItem = new CustomItem(getApiReference());
+
+        if (hasNamespacedKey()) {
+            customItem.setNamespacedKey(getNamespacedKey());
+            customItem.setBlockVanillaRecipes(isBlockVanillaRecipes());
+            customItem.setBlockVanillaEquip(isBlockVanillaEquip());
+            customItem.setAllowedBlocks(getAllowedBlocks());
+            customItem.setBurnTime(getBurnTime());
+            customItem.setConsumed(isConsumed());
+            customItem.setDurabilityCost(getDurabilityCost());
+            customItem.setMetaSettings(getMetaSettings());
+            customItem.setParticleContent(getParticleContent());
+            customItem.setPermission(getPermission());
+            customItem.setRarityPercentage(getRarityPercentage());
+            customItem.setReplacement(getReplacement());
         }
 
-
-        CustomItem customItem = new CustomItem(getApiReference());
-        //TODO: check if linked to file?!
         customItem.setAmount(getAmount());
         return customItem;
     }
@@ -476,7 +519,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                     }
                     location = inventory.getLocation();
                 }
-                if(location != null && location.getWorld() != null){
+                if (location != null && location.getWorld() != null) {
                     location.getWorld().dropItemNaturally(location.add(0.5, 1.0, 0.5), replacement);
                 }
             }
@@ -657,6 +700,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             gen.writeStartObject();
             gen.writeObjectField("api_reference", customItem.getApiReference());
             gen.writeBooleanField("consumed", customItem.isConsumed());
+            gen.writeBooleanField("blockVanillaEquip", customItem.isBlockVanillaEquip());
+            gen.writeBooleanField("blockVanillaRecipes", customItem.isBlockVanillaRecipes());
             gen.writeNumberField("rarity_percentage", customItem.getRarityPercentage());
             gen.writeStringField("permission", customItem.getPermission());
             gen.writeObjectField("meta", customItem.getMetaSettings());
@@ -708,14 +753,10 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             ObjectMapper mapper = JacksonUtil.getObjectMapper();
             JsonNode node = p.readValueAsTree();
             if (node.isObject()) {
-                APIReference apiReference;
-                if (node.has("api_reference")) {
-                    apiReference = mapper.convertValue(node.path("api_reference"), APIReference.class);
-                } else {
-                    apiReference = mapper.convertValue(node.path("item"), APIReference.class);
-                }
-                CustomItem customItem = new CustomItem(apiReference);
+                CustomItem customItem = new CustomItem(mapper.convertValue(node.path(node.has("api_reference") ? "api_reference" : "item"), APIReference.class));
                 customItem.setConsumed(node.path("consumed").asBoolean());
+                customItem.setBlockVanillaEquip(node.path("blockVanillaEquip").asBoolean());
+                customItem.setBlockVanillaRecipes(node.path("blockVanillaRecipes").asBoolean());
                 customItem.setRarityPercentage(node.path("rarity_percentage").asDouble(1.0));
                 customItem.setPermission(node.path("permission").asText());
                 customItem.setMetaSettings(mapper.convertValue(node.path("meta"), MetaSettings.class));

@@ -19,7 +19,6 @@ public class CustomItemSerialization implements JsonSerializer<CustomItem>, Json
             object.entrySet().stream().filter(entry -> !entry.getKey().equals("custom_amount")).findFirst().ifPresent(entry -> {
                 String key = entry.getKey();
                 JsonElement element = entry.getValue();
-
                 switch (key){
                     case "item":
                         customItem.set(new CustomItem((VanillaRef) deserializationContext.deserialize(element, VanillaRef.class)));

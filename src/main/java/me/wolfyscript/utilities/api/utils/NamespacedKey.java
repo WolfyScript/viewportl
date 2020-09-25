@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.utils;
 import com.google.common.base.Preconditions;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
@@ -46,7 +47,9 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         return this.key;
     }
 
-    public static NamespacedKey getByString(String namespaceKey){
+    @Nullable
+    public static NamespacedKey getByString(@Nullable String namespaceKey){
+        if(namespaceKey == null) return null;
         return new NamespacedKey(namespaceKey.split(":")[0].toLowerCase(Locale.ROOT), namespaceKey.split(":")[1].toLowerCase(Locale.ROOT));
     }
 

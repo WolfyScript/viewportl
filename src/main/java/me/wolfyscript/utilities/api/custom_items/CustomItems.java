@@ -84,7 +84,8 @@ public class CustomItems {
      * @return CustomItem of the NamespacedKey or null if it doesn't exist
      */
     @Nullable
-    public static CustomItem getCustomItem(NamespacedKey namespacedKey) {
+    public static CustomItem getCustomItem(@Nullable NamespacedKey namespacedKey) {
+        if(namespacedKey == null) return null;
         return customItems.get(namespacedKey);
     }
 
