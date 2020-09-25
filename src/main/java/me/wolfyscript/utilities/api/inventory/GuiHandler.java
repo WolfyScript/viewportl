@@ -10,10 +10,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -279,10 +278,20 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event){
+    public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if(player.getUniqueId().equals(this.player.getUniqueId())){
+        if (player.getUniqueId().equals(this.player.getUniqueId())) {
             this.player = player;
+        }
+    }
+
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        if (player.getUniqueId().equals(this.player.getUniqueId())) {
+            if (isChatEventActive()) {
+                cancelChatEvent();
+            }
         }
     }
 
