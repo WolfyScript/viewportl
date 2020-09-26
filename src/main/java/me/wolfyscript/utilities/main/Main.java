@@ -82,6 +82,8 @@ public class Main extends JavaPlugin {
         me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleContentSerialization.create(module);
         me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleEffectSerialization.create(module);
         me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleSerialization.create(module);
+        me.wolfyscript.utilities.api.utils.json.jackson.serialization.PotionEffectTypeSerialization.create(module);
+        me.wolfyscript.utilities.api.utils.json.jackson.serialization.PotionEffectSerialization.create(module);
 
         //Reference Deserializer
         APIReferenceSerialization.create(module);

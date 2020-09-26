@@ -196,6 +196,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                 if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
                     event.setCancelled(true);
+                    if (guiWindow == null) return;
                     if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
                         for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
                             Button button = guiWindow.getButton(buttonEntry.getValue());
@@ -217,7 +218,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            guiHandler.getCurrentInv().update(guiHandler);
+                            guiWindow.update(guiHandler);
                         }
                     } else {
                         event.setCancelled(false);
@@ -239,7 +240,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            guiHandler.getCurrentInv().update(guiHandler);
+                            guiWindow.update(guiHandler);
                         }
                     }
                 }
