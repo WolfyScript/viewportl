@@ -7,12 +7,11 @@ import org.bukkit.inventory.ItemStack;
 import java.io.IOException;
 import java.util.Objects;
 
-public abstract class APIReference<T extends APIReference> {
+public abstract class APIReference {
 
     protected int amount = 0;
 
     /**
-     *
      * @return the ItemStack of the API
      */
     public abstract ItemStack getLinkedItem();
@@ -44,7 +43,7 @@ public abstract class APIReference<T extends APIReference> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        APIReference<?> that = (APIReference<?>) o;
+        APIReference that = (APIReference) o;
         return amount == that.amount;
     }
 
