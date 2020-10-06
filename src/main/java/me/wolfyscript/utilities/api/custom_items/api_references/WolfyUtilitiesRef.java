@@ -45,7 +45,7 @@ public class WolfyUtilitiesRef extends APIReference {
     public ItemStack getIdItem() {
         ItemStack itemStack = CustomItems.getCustomItem(namespacedKey).create();
         if (itemStack.getType().equals(Material.AIR)) {
-            return new ItemStack(Material.AIR);
+            return itemStack;
         }
         ItemStack idItem = new ItemStack(itemStack);
         if (this.namespacedKey != null) {

@@ -372,7 +372,7 @@ public class WolfyUtilities implements Listener {
     private String dataBasePrefix;
     private ConfigAPI configAPI;
 
-    private InventoryAPI inventoryAPI;
+    private InventoryAPI<?> inventoryAPI;
 
     private LanguageAPI languageAPI;
 
@@ -399,7 +399,7 @@ public class WolfyUtilities implements Listener {
 
     public LanguageAPI getLanguageAPI() {
         if (!hasLanguageAPI()) {
-            languageAPI = new LanguageAPI(this.plugin);
+            languageAPI = new LanguageAPI(this);
         }
         return languageAPI;
     }
@@ -420,7 +420,7 @@ public class WolfyUtilities implements Listener {
     }
 
     public InventoryAPI<?> getInventoryAPI() {
-        return getInventoryAPI(inventoryAPI.craftCustomCache().getClass());
+        return getInventoryAPI(inventoryAPI.getNewCacheInstance().getClass());
     }
 
     public <T extends CustomCache> void setInventoryAPI(InventoryAPI<T> inventoryAPI) {
@@ -428,13 +428,14 @@ public class WolfyUtilities implements Listener {
     }
 
     public <T extends CustomCache> InventoryAPI<T> getInventoryAPI(Class<T> type) {
-        if (hasInventoryAPI() && type.isInstance(inventoryAPI.craftCustomCache())) {
+        if (hasInventoryAPI() && type.isInstance(inventoryAPI.getNewCacheInstance())) {
             return (InventoryAPI<T>) inventoryAPI;
         } else if (!hasInventoryAPI()) {
-            inventoryAPI = new InventoryAPI<>(plugin, this, type);
-            return inventoryAPI;
+            InventoryAPI<T> newInventoryAPI = new InventoryAPI<>(plugin, this, type);
+            inventoryAPI = newInventoryAPI;
+            return newInventoryAPI;
         }
-        throw new InvalidCacheTypeException("Cache type " + type.getName() + " expected, got " + inventoryAPI.craftCustomCache().getClass().getName() + "!");
+        throw new InvalidCacheTypeException("Cache type " + type.getName() + " expected, got " + inventoryAPI.getNewCacheInstance().getClass().getName() + "!");
     }
 
     public boolean hasInventoryAPI() {
@@ -604,7 +605,7 @@ public class WolfyUtilities implements Listener {
                 clickDataMap.put(id, playerAction);
                 component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/wua " + id.toString()));
             }
-            for (ChatEvent chatEvent : data.getChatEvents()) {
+            for (ChatEvent<?, ?> chatEvent : data.getChatEvents()) {
                 if (chatEvent instanceof HoverEvent) {
                     component.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(((HoverEvent) chatEvent).getAction(), ((HoverEvent) chatEvent).getValue()));
                 } else if (chatEvent instanceof me.wolfyscript.utilities.api.utils.chat.ClickEvent) {

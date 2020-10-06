@@ -95,7 +95,7 @@ public class Main extends JavaPlugin {
         module.addDeserializer(WolfyUtilitiesRef.class, new WolfyUtilitiesRef.Serialization());
         JacksonUtil.registerModule(module);
 
-        //Custom serializations
+        //GSON serializations
         GsonUtil.registerTypeHierarchyAdapter(CustomItem.class, new CustomItemSerialization());
         GsonUtil.registerTypeHierarchyAdapter(ItemStack.class, new ItemStackSerialization());
         GsonUtil.registerTypeHierarchyAdapter(ItemMeta.class, new ItemMetaSerialization());
