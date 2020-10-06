@@ -84,11 +84,12 @@ public abstract class GuiWindow implements Listener {
     public void onUpdateAsync(GuiUpdate update) {
     }
 
-    protected void update(GuiHandler<?> guiHandler) {
+    protected void update(GuiHandler guiHandler) {
         Bukkit.getScheduler().runTaskLater(inventoryAPI.getPlugin(), () -> {
             if (!guiHandler.isChatEventActive()) {
                 GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
                 Bukkit.getPluginManager().callEvent(event);
+                onUpdateSync(event.getGuiUpdate());
                 Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), () -> onUpdateAsync(event.getGuiUpdate()));
             }
         }, 1);

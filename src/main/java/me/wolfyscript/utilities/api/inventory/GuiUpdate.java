@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
+import me.wolfyscript.utilities.api.inventory.cache.CustomCache;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -14,16 +15,16 @@ import java.io.IOException;
 
 public class GuiUpdate {
 
-    private final GuiHandler guiHandler;
-    private final InventoryAPI inventoryAPI;
+    private final GuiHandler<?> guiHandler;
+    private final InventoryAPI<?> inventoryAPI;
     private final WolfyUtilities wolfyUtilities;
     private final Player player;
     private final Inventory inventory;
     private final GuiWindow guiWindow;
 
-    public GuiUpdate(GuiHandler guiHandler, GuiWindow guiWindow) {
+    public GuiUpdate(GuiHandler<?> guiHandler, GuiWindow guiWindow) {
         this.guiHandler = guiHandler;
-        this.inventoryAPI = guiHandler.getApi().getInventoryAPI();
+        this.inventoryAPI = guiHandler.getInvAPI();
         this.wolfyUtilities = guiHandler.getApi();
         this.player = guiHandler.getPlayer();
         this.guiWindow = guiWindow;
@@ -40,8 +41,12 @@ public class GuiUpdate {
         }
     }
 
-    public GuiHandler getGuiHandler() {
+    public GuiHandler<?> getGuiHandler() {
         return guiHandler;
+    }
+
+    public <C extends CustomCache> GuiHandler<C> getGuiHandler(Class<C> customCache) {
+        return wolfyUtilities.getInventoryAPI(customCache).getGuiHandler(player);
     }
 
     public Player getPlayer() {
@@ -52,12 +57,21 @@ public class GuiUpdate {
         return wolfyUtilities;
     }
 
-    public GuiWindow getGuiWindow() {
+    /**
+     * Should only be used for the GuiUpdateEvent, as the GuiWindow is already available in the sync and async methods!
+     *
+     * @return the GUiWindow this update is executed!
+     */
+    GuiWindow getGuiWindow() {
         return guiWindow;
     }
 
-    public InventoryAPI getInventoryAPI() {
+    public InventoryAPI<?> getInventoryAPI() {
         return inventoryAPI;
+    }
+
+    public <C extends CustomCache> InventoryAPI<C> getInventoryAPI(Class<C> customCache) {
+        return wolfyUtilities.getInventoryAPI(customCache);
     }
 
     public ItemStack getItem(int slot) {

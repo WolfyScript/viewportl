@@ -21,7 +21,7 @@ import java.util.*;
 public class GuiHandler<T extends CustomCache> implements Listener {
 
     private final WolfyUtilities api;
-    private final InventoryAPI<?> invAPI;
+    private final InventoryAPI<T> invAPI;
     private Player player;
     private boolean changingInv = false;
     private ChatInputAction chatInputAction = null;
@@ -33,9 +33,9 @@ public class GuiHandler<T extends CustomCache> implements Listener {
 
     private final T customCache;
 
-    public GuiHandler(Player player, WolfyUtilities api, T customCache) {
+    public GuiHandler(Player player, WolfyUtilities api, Class<T> customCacheClass, T customCache) {
         this.api = api;
-        this.invAPI = api.getInventoryAPI();
+        this.invAPI = api.getInventoryAPI(customCacheClass);
         this.player = player;
         this.customCache = customCache;
         Bukkit.getPluginManager().registerEvents(this, api.getPlugin());
@@ -47,6 +47,10 @@ public class GuiHandler<T extends CustomCache> implements Listener {
 
     public WolfyUtilities getApi() {
         return api;
+    }
+
+    public InventoryAPI<T> getInvAPI() {
+        return invAPI;
     }
 
     @Nullable
