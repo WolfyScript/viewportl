@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.api.language;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class LanguageAPI {
 
-    private final Plugin plugin;
+    private final WolfyUtilities api;
 
     private final ArrayList<Language> languages;
 
@@ -22,8 +21,8 @@ public class LanguageAPI {
 
     //private HashMap<String, Language> playerLanguage;
 
-    public LanguageAPI(Plugin plugin) {
-        this.plugin = plugin;
+    public LanguageAPI(WolfyUtilities api) {
+        this.api = api;
         this.languages = new ArrayList<>();
         this.activeLanguage = null;
         this.fallbackLanguage = null;
@@ -44,7 +43,7 @@ public class LanguageAPI {
         if(activeLanguage == null){
             setActiveLanguage(language);
         }
-        if(fallbackLanguage == null){
+        if (fallbackLanguage == null) {
             setFallbackLanguage(language);
         }
         if (!languages.contains(language)) {
@@ -52,6 +51,11 @@ public class LanguageAPI {
         }
     }
 
+    /**
+     * Sets the Language as the actively used Language.
+     *
+     * @param language
+     */
     public void setActiveLanguage(Language language) {
         activeLanguage = language;
     }
@@ -60,6 +64,14 @@ public class LanguageAPI {
         return activeLanguage;
     }
 
+    /**
+     * Sets the Fallback Language which is used if an key isn't found in the active Language.
+     * <p>
+     * For example if a Button isn't configured in the active Language it will look for it
+     * in the fallback language and use it if available.
+     *
+     * @param fallbackLanguage
+     */
     public void setFallbackLanguage(Language fallbackLanguage) {
         this.fallbackLanguage = fallbackLanguage;
     }
@@ -68,7 +80,8 @@ public class LanguageAPI {
         return fallbackLanguage;
     }
 
-    private JsonNode getNodeAt(String path){
+
+    private JsonNode getNodeAt(String path) {
         JsonNode node = getActiveLanguage().getNodeAt(path);
         if(node.isMissingNode()){
             node = getFallbackLanguage().getNodeAt(path);
@@ -156,6 +169,7 @@ public class LanguageAPI {
         return message;
     }
 
+    //TODO: Feature idea to let players choose their own language.
     /*
     public void setPlayerLanguage(Player player, Language language){
         playerLanguage.put(player.getUniqueId().toString(), language);
