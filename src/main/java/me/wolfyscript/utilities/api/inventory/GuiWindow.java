@@ -84,15 +84,16 @@ public abstract class GuiWindow implements Listener {
     public void onUpdateAsync(GuiUpdate update) {
     }
 
-    protected void update(GuiHandler guiHandler) {
-        Bukkit.getScheduler().runTaskLater(inventoryAPI.getPlugin(), () -> {
+    protected void update(GuiHandler<?> guiHandler) {
+        Bukkit.getScheduler().runTask(guiHandler.getApi().getPlugin(), () -> {
             if (!guiHandler.isChatEventActive()) {
                 GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
                 Bukkit.getPluginManager().callEvent(event);
-                onUpdateSync(event.getGuiUpdate());
+                GuiUpdate guiUpdate = event.getGuiUpdate();
+                onUpdateSync(guiUpdate);
                 Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), () -> onUpdateAsync(event.getGuiUpdate()));
             }
-        }, 1);
+        });
     }
 
     public String getNamespace() {
@@ -187,7 +188,7 @@ public abstract class GuiWindow implements Listener {
         guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), getClusterID(), getNamespace(), msgKey);
     }
 
-    public void sendMessage(Player player, String msgKey){
+    public void sendMessage(Player player, String msgKey) {
         inventoryAPI.getWolfyUtilities().sendPlayerMessage(player, getClusterID(), getNamespace(), msgKey);
     }
 
@@ -195,15 +196,15 @@ public abstract class GuiWindow implements Listener {
         guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), getClusterID(), getNamespace(), msgKey, replacements);
     }
 
-    public void sendMessage(Player player, String msgKey, String[]... replacements){
+    public void sendMessage(Player player, String msgKey, String[]... replacements) {
         inventoryAPI.getWolfyUtilities().sendPlayerMessage(player, getClusterID(), getNamespace(), msgKey, replacements);
     }
 
     protected String getInventoryName() {
-        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().replaceKeys("$inventories."+ clusterID + "." + namespace + ".gui_name$"));
+        return WolfyUtilities.translateColorCodes(inventoryAPI.getWolfyUtilities().getLanguageAPI().replaceKeys("$inventories." + clusterID + "." + namespace + ".gui_name$"));
     }
 
-    public void setClusterID(String clusterID){
+    public void setClusterID(String clusterID) {
         this.clusterID = clusterID;
     }
 
@@ -223,13 +224,13 @@ public abstract class GuiWindow implements Listener {
         return clusterID;
     }
 
-    public String getID(){
+    public String getID() {
         return clusterID + ":" + namespace;
     }
 
-    public List<String> getHelpInformation(){
+    public List<String> getHelpInformation() {
         List<String> values = new ArrayList<>();
-        for(String value : getAPI().getLanguageAPI().replaceKey("$inventories."+ clusterID + "." + namespace + ".gui_help$")){
+        for (String value : getAPI().getLanguageAPI().replaceKey("$inventories." + clusterID + "." + namespace + ".gui_help$")) {
             values.add(WolfyUtilities.translateColorCodes(value));
         }
         return values;

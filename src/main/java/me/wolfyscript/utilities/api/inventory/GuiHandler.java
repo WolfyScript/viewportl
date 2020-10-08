@@ -170,7 +170,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
             Player player1 = getPlayer();
             changingInv = true;
-            player1.closeInventory();
+            //player1.closeInventory();
             if (WolfyUtilities.hasPermission(player1, getApi().getPlugin().getDescription().getName().toLowerCase(Locale.ROOT) + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT))) {
                 List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
                 if (getCurrentInv(clusterID) == null || !getCurrentInv(clusterID).getNamespace().equals(guiWindowID)) {
@@ -184,13 +184,11 @@ public class GuiHandler<T extends CustomCache> implements Listener {
 
                     GuiUpdateEvent event = new GuiUpdateEvent(this, guiWindow);
                     Bukkit.getPluginManager().callEvent(event);
-
-                    player1.openInventory(event.getInventory());
-
-                    Bukkit.getScheduler().runTaskAsynchronously(api.getPlugin(), () -> {
-                        guiWindow.onUpdateAsync(event.getGuiUpdate());
-                        api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).setCachedInventorie(this, event.getInventory());
-                    });
+                    GuiUpdate guiUpdate = event.getGuiUpdate();
+                    guiWindow.onUpdateSync(guiUpdate);
+                    player1.openInventory(guiUpdate.getInventory());
+                    Bukkit.getScheduler().runTaskAsynchronously(api.getPlugin(), () -> guiWindow.onUpdateAsync(event.getGuiUpdate()));
+                    api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).setCachedInventorie(this, guiUpdate.getInventory());
                 }
             } else {
                 api.sendPlayerMessage(player1, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT));
