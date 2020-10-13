@@ -72,7 +72,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     private int burnTime;
     private int durabilityCost;
     private boolean consumed;
-    private final boolean canBePlaced;
+    private boolean blockPlacement;
     private boolean blockVanillaEquip;
     private boolean blockVanillaRecipes;
     private final List<EquipmentSlot> equipmentSlots;
@@ -123,7 +123,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         }
         this.equipmentSlots = new ArrayList<>();
         this.particleContent = new ParticleContent();
-        this.canBePlaced = true;
+        this.blockPlacement = false;
         this.blockVanillaEquip = false;
         this.blockVanillaRecipes = false;
     }
@@ -308,6 +308,21 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.blockVanillaRecipes = blockVanillaRecipes;
     }
 
+    /**
+     * BlockPlacement indicates if the item can be placed by a player or not.
+     * If true the placement is blocked and the item cannot be placed.
+     * If false the item can be placed.
+     *
+     * @return true if the placement is blocked, false otherwise
+     */
+    public boolean isBlockPlacement() {
+        return blockPlacement;
+    }
+
+    public void setBlockPlacement(boolean blockPlacement) {
+        this.blockPlacement = blockPlacement;
+    }
+
     public void addEquipmentSlots(EquipmentSlot... slots) {
         for (EquipmentSlot slot : slots) {
             if (!equipmentSlots.contains(slot)) {
@@ -372,7 +387,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 burnTime == that.burnTime &&
                 durabilityCost == that.durabilityCost &&
                 consumed == that.consumed &&
-                canBePlaced == that.canBePlaced &&
+                blockPlacement == that.blockPlacement &&
                 blockVanillaEquip == that.blockVanillaEquip &&
                 blockVanillaRecipes == that.blockVanillaRecipes &&
                 Objects.equals(customDataMap, that.customDataMap) &&
@@ -388,7 +403,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCustomDataMap(), getNamespacedKey(), getReplacement(), getAllowedBlocks(), getPermission(), getRarityPercentage(), getBurnTime(), getDurabilityCost(), isConsumed(), canBePlaced, isBlockVanillaEquip(), getEquipmentSlots(), getApiReference(), getParticleContent(), getMetaSettings());
+        return Objects.hash(getCustomDataMap(), getNamespacedKey(), getReplacement(), getAllowedBlocks(), getPermission(), getRarityPercentage(), getBurnTime(), getDurabilityCost(), isConsumed(), blockPlacement, isBlockVanillaEquip(), isBlockVanillaRecipes(), getEquipmentSlots(), getApiReference(), getParticleContent(), getMetaSettings());
     }
 
     /**
@@ -700,6 +715,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             gen.writeObjectField("api_reference", customItem.getApiReference());
             gen.writeBooleanField("consumed", customItem.isConsumed());
             gen.writeBooleanField("blockVanillaEquip", customItem.isBlockVanillaEquip());
+            gen.writeBooleanField("blockPlacement", customItem.isBlockPlacement());
             gen.writeBooleanField("blockVanillaRecipes", customItem.isBlockVanillaRecipes());
             gen.writeNumberField("rarity_percentage", customItem.getRarityPercentage());
             gen.writeStringField("permission", customItem.getPermission());
@@ -755,6 +771,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 CustomItem customItem = new CustomItem(mapper.convertValue(node.path(node.has("api_reference") ? "api_reference" : "item"), APIReference.class));
                 customItem.setConsumed(node.path("consumed").asBoolean());
                 customItem.setBlockVanillaEquip(node.path("blockVanillaEquip").asBoolean());
+                customItem.setBlockPlacement(node.path("blockPlacement").asBoolean());
                 customItem.setBlockVanillaRecipes(node.path("blockVanillaRecipes").asBoolean());
                 customItem.setRarityPercentage(node.path("rarity_percentage").asDouble(1.0));
                 customItem.setPermission(node.path("permission").asText());

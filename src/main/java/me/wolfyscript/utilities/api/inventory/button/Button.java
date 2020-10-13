@@ -58,32 +58,27 @@ public abstract class Button {
         inventory.setItem(slot, replaceKeysWithValue(item, values));
     }
 
-    protected ItemStack replaceKeysWithValue(ItemStack itemStack, HashMap<String, Object> values){
-        if(itemStack != null){
+    protected ItemStack replaceKeysWithValue(ItemStack itemStack, HashMap<String, Object> values) {
+        if (itemStack != null) {
             ItemMeta meta = itemStack.getItemMeta();
-            if(meta != null && meta.hasDisplayName()){
+            if (meta != null && meta.hasDisplayName()) {
                 String name = meta.getDisplayName();
                 List<String> lore = meta.getLore();
-                for(Map.Entry<String, Object> entry : values.entrySet()){
-                    if(entry.getValue() instanceof List){
+                for (Map.Entry<String, Object> entry : values.entrySet()) {
+                    if (entry.getValue() instanceof List) {
                         List<Object> list = (List<Object>) entry.getValue();
                         if (meta.hasLore()) {
                             for (int i = 0; i < lore.size(); i++) {
-                                if(lore.get(i).contains(entry.getKey())){
-                                    if(list.size() > 0){
-                                        lore.set(i, lore.get(i).replace(entry.getKey(), WolfyUtilities.translateColorCodes(String.valueOf(list.get(list.size()-1)))));
-                                    }else{
-                                        lore.set(i, "");
-                                    }
-                                    if(list.size() > 1){
-                                        for(int j = list.size()-2; j >= 0; j--){
-                                            lore.add(i, WolfyUtilities.translateColorCodes(String.valueOf(list.get(j))));
-                                        }
+                                if (!lore.get(i).contains(entry.getKey())) continue;
+                                lore.set(i, list.size() > 0 ? lore.get(i).replace(entry.getKey(), WolfyUtilities.translateColorCodes(String.valueOf(list.get(list.size() - 1)))) : "");
+                                if (list.size() > 1) {
+                                    for (int j = list.size() - 2; j >= 0; j--) {
+                                        lore.add(i, WolfyUtilities.translateColorCodes(String.valueOf(list.get(j))));
                                     }
                                 }
                             }
                         }
-                    }else if (entry.getValue() != null) {
+                    } else if (entry.getValue() != null) {
                         name = name.replace(entry.getKey(), WolfyUtilities.translateColorCodes(String.valueOf(entry.getValue())));
                         if (lore != null && !lore.isEmpty()) {
                             lore = lore.stream().map(s -> s.replace(entry.getKey(), WolfyUtilities.translateColorCodes(String.valueOf(entry.getValue())))).collect(Collectors.toList());

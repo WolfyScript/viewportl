@@ -49,7 +49,7 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
 
     @Nullable
     public static NamespacedKey getByString(@Nullable String namespaceKey){
-        if(namespaceKey == null) return null;
+        if (namespaceKey == null || namespaceKey.isEmpty()) return null;
         return new NamespacedKey(namespaceKey.split(":")[0].toLowerCase(Locale.ROOT), namespaceKey.split(":")[1].toLowerCase(Locale.ROOT));
     }
 
