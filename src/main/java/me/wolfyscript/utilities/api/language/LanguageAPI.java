@@ -129,15 +129,15 @@ public class LanguageAPI {
             if (keys.size() > 1) {
                 for (String key : keys) {
                     JsonNode node = getNodeAt(key.replace("$", ""));
-                    if(node.isTextual()){
+                    if (node.isTextual()) {
                         result.add(WolfyUtilities.translateColorCodes(s.replace(key, node.asText())));
-                    }else if(node.isArray()){
+                    } else if (node.isArray()) {
                         StringBuilder sB = new StringBuilder();
                         node.elements().forEachRemaining(n -> sB.append(' ').append(n.asText()));
                         result.add(WolfyUtilities.translateColorCodes(s.replace(key, sB.toString())));
                     }
                 }
-            } else {
+            } else if (!keys.isEmpty()) {
                 String key = keys.get(0);
                 JsonNode node = getNodeAt(key.replace("$", ""));
                 if (node.isTextual()) {
@@ -145,6 +145,8 @@ public class LanguageAPI {
                 } else if (node.isArray()) {
                     node.elements().forEachRemaining(n -> result.add(n.asText()));
                 }
+            } else {
+                result.add(WolfyUtilities.translateColorCodes(s));
             }
         });
         return result;

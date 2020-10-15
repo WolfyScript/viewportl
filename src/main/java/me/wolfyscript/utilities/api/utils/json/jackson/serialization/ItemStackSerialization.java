@@ -3,18 +3,13 @@ package me.wolfyscript.utilities.api.utils.json.jackson.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.utils.Reflection;
-import me.wolfyscript.utilities.api.utils.inventory.ItemUtils;
-import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.yaml.snakeyaml.Yaml;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -70,19 +65,19 @@ public class ItemStackSerialization {
 
         @Override
         public void serialize(ItemStack itemStack, JsonGenerator gen, SerializerProvider provider) throws IOException {
-            if(itemStack != null){
-                Yaml yaml = new Yaml();
-                YamlConfiguration config = new YamlConfiguration();
-                config.set("i", itemStack);
-                Map<String,Object> map = yaml.load(config.saveToString());
-                gen.writeObject(map.get("i"));
+            if(itemStack != null) {
+                Map<String, Object> itemMap = itemStack.serialize();
+                if (itemStack.hasItemMeta()) {
+                    itemMap.put("meta", itemStack.getItemMeta().serialize());
+                }
+                gen.writeObject(itemMap);
             }
         }
     }
 
     public static class Deserializer extends StdDeserializer<ItemStack> {
 
-        public Deserializer(){
+        public Deserializer() {
             this(ItemStack.class);
         }
 
@@ -90,33 +85,25 @@ public class ItemStackSerialization {
             super(t);
         }
 
+        public static ItemMeta deserializeItemMeta(Map<String, Object> map) {
+            ItemMeta meta = null;
+            try {
+                Class<?> clazz = Reflection.getOBC("inventory.CraftMetaItem$SerializableMeta");
+                Method deserialize = clazz.getMethod("deserialize", Map.class);
+                meta = (ItemMeta) deserialize.invoke(null, map);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return meta;
+        }
+
         @Override
         public ItemStack deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
-            JsonNode node = p.readValueAsTree();
-            if(node.isValueNode()){
-                //Old Serialization Methods. like Base64 or NMS serialization
-                String value = node.asText();
-                if (!value.startsWith("{")) {
-                    return ItemUtils.deserializeItemStackBase64(value);
-                }
-                return value.equals("empty") ? null : ItemUtils.convertJsontoItemStack(value);
-            }
-            if(node.isObject()){
-                YamlConfiguration config = new YamlConfiguration();
-                //Loads the Map from the JsonNode && Sets the Map to YamlConfig
-                config.set("i", JacksonUtil.getObjectMapper().convertValue(node, new TypeReference<Map<String, Object>>() {}));
-                try {
-                    /*
-                    Load new YamlConfig from just saved string.
-                    That will convert the Map to an ItemStack!
-                     */
-                    config.loadFromString(config.saveToString());
-                    return config.getItemStack("i");
-                } catch (InvalidConfigurationException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
+            Map<String, Object> map = p.readValueAs(new TypeReference<Map<String, Object>>() {
+            });
+            map.computeIfPresent("meta", (s, o) -> deserializeItemMeta((Map<String, Object>) o));
+            ItemStack itemStack = ItemStack.deserialize(map);//TODO: Find out the reason why the Material is changed after setItemMeta() in the ItemStack.deserialize() method!
+            return itemStack;
         }
     }
 }

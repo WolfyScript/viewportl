@@ -223,7 +223,6 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            guiWindow.update(guiHandler);
                         }
                     } else {
                         event.setCancelled(false);
@@ -245,9 +244,13 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            guiWindow.update(guiHandler);
                         }
                     }
+                    Bukkit.getScheduler().runTask(getPlugin(), () -> {
+                        if (guiHandler.getCurrentInv() != null) {
+                            guiHandler.getCurrentInv().update(guiHandler);
+                        }
+                    });
                 }
             }
         }
