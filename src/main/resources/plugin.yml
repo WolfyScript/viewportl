@@ -1,5 +1,5 @@
 name: WolfyUtilities
-api-version: 1.13
+api-version: 1.14
 version: ${project.version}
 author: WolfyScript
 
@@ -17,7 +17,7 @@ softdepend:
   - Oraxen
   - ItemsAdder
 
-main: me.wolfyscript.utilities.main.Main
+main: me.wolfyscript.utilities.main.WUPlugin
 
 commands:
   wolfyutils:
