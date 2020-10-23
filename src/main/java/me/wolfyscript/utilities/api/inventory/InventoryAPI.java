@@ -5,6 +5,7 @@ import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.cache.CustomCache;
 import me.wolfyscript.utilities.api.utils.inventory.InventoryUtils;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 public class InventoryAPI<T extends CustomCache> implements Listener {
 
+    private final WUPlugin wuPlugin;
     private final Plugin plugin;
     private final WolfyUtilities wolfyUtilities;
     private final HashMap<UUID, GuiHandler<T>> guiHandlers = new HashMap<>();
@@ -31,6 +33,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
     private final Class<T> customCacheClass;
 
     public InventoryAPI(Plugin plugin, WolfyUtilities wolfyUtilities, Class<T> customCacheClass) {
+        this.wuPlugin = WUPlugin.getInstance();
         this.wolfyUtilities = wolfyUtilities;
         this.plugin = plugin;
         this.customCacheClass = customCacheClass;
@@ -198,8 +201,15 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
                 GuiHandler<T> guiHandler = getGuiHandler((Player) event.getWhoClicked());
+
                 if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
+                    //Debug Messages
+                    /*
+                    System.out.println("Clicked in "+guiWindow);
+                    System.out.println("    Inv Action: "+event.getAction());
+                    System.out.println("    Click : "+event.getClick());
+                    //*/
                     event.setCancelled(true);
                     if (guiWindow == null) return;
                     if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
@@ -246,11 +256,9 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                             }
                         }
                     }
-                    Bukkit.getScheduler().runTask(getPlugin(), () -> {
-                        if (guiHandler.getCurrentInv() != null) {
-                            guiHandler.getCurrentInv().update(guiHandler);
-                        }
-                    });
+                    if (guiHandler.getCurrentInv() != null) {
+                        guiHandler.getCurrentInv().update(guiHandler, false);
+                    }
                 }
             }
         }
@@ -287,7 +295,9 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                         e.printStackTrace();
                     }
                 }
-                guiHandler.getCurrentInv().update(guiHandler);
+                if (guiHandler.getCurrentInv() != null) {
+                    guiHandler.getCurrentInv().update(guiHandler, false);
+                }
             }
         }
     }

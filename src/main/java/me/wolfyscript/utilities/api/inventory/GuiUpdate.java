@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class GuiUpdate {
 
@@ -20,6 +21,7 @@ public class GuiUpdate {
     private final WolfyUtilities wolfyUtilities;
     private final Player player;
     private final Inventory inventory;
+    private final Inventory queueInventory;
     private final GuiWindow guiWindow;
 
     public GuiUpdate(GuiHandler<?> guiHandler, GuiWindow guiWindow) {
@@ -28,6 +30,7 @@ public class GuiUpdate {
         this.wolfyUtilities = guiHandler.getApi();
         this.player = guiHandler.getPlayer();
         this.guiWindow = guiWindow;
+        this.queueInventory = Bukkit.createInventory(null, 54, "");
         if (!guiWindow.hasCachedInventory(guiHandler)) {
             String guiName = guiWindow.getInventoryName();
             guiName = guiName.replace("%plugin.version%", wolfyUtilities.getPlugin().getDescription().getVersion()).replace("%plugin.author%", wolfyUtilities.getPlugin().getDescription().getAuthors().toString()).replace("%plugin.name%", wolfyUtilities.getPlugin().getDescription().getName());
@@ -90,7 +93,7 @@ public class GuiUpdate {
         Button button = guiWindow.getButton(id);
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, id);
-            renderButton(button, guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, queueInventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -105,7 +108,7 @@ public class GuiUpdate {
         }
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, id);
-            renderButton(button, guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, queueInventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -115,7 +118,7 @@ public class GuiUpdate {
     public void setButton(int slot, @Nonnull Button button) {
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, button.getId());
-            renderButton(button, guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, queueInventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -127,7 +130,7 @@ public class GuiUpdate {
         Button button = inventoryAPI.getButton(namespace, key);
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, namespace + ":" + key);
-            renderButton(button, guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, queueInventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -150,6 +153,10 @@ public class GuiUpdate {
 
     public Inventory createInventory(InventoryHolder owner, InventoryType type) {
         return Bukkit.createInventory(owner, type, guiWindow.getInventoryName());
+    }
+
+    public void applyChanges() {
+        Bukkit.getScheduler().runTask(getInventoryAPI().getPlugin(), () -> inventory.setContents(Arrays.copyOfRange(queueInventory.getContents(), 0, inventory.getSize())));
     }
 
 }

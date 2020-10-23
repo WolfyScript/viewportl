@@ -23,13 +23,12 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     private final WolfyUtilities api;
     private final InventoryAPI<T> invAPI;
     private Player player;
-    private boolean changingInv = false;
-    private ChatInputAction chatInputAction = null;
-
     private final HashMap<String, List<String>> clusterHistory = new HashMap<>();
+    private ChatInputAction chatInputAction = null;
     private String currentGuiCluster = "";
     private boolean isWindowOpen = false;
     private boolean helpEnabled = false;
+    private boolean changingInv = false;
 
     private final T customCache;
 
@@ -43,6 +42,10 @@ public class GuiHandler<T extends CustomCache> implements Listener {
 
     public boolean isChangingInv() {
         return changingInv;
+    }
+
+    public void setChangingInv(boolean changingInv) {
+        this.changingInv = changingInv;
     }
 
     public WolfyUtilities getApi() {
@@ -170,7 +173,6 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
             Player player1 = getPlayer();
             changingInv = true;
-            //player1.closeInventory();
             if (WolfyUtilities.hasPermission(player1, getApi().getPlugin().getDescription().getName().toLowerCase(Locale.ROOT) + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT))) {
                 List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
                 if (getCurrentInv(clusterID) == null || !getCurrentInv(clusterID).getNamespace().equals(guiWindowID)) {
@@ -181,14 +183,8 @@ public class GuiHandler<T extends CustomCache> implements Listener {
                     currentGuiCluster = clusterID;
                     isWindowOpen = true;
                     GuiWindow guiWindow = api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID);
-
-                    GuiUpdateEvent event = new GuiUpdateEvent(this, guiWindow);
-                    Bukkit.getPluginManager().callEvent(event);
-                    GuiUpdate guiUpdate = event.getGuiUpdate();
-                    guiWindow.onUpdateSync(guiUpdate);
-                    player1.openInventory(guiUpdate.getInventory());
-                    Bukkit.getScheduler().runTaskAsynchronously(api.getPlugin(), () -> guiWindow.onUpdateAsync(event.getGuiUpdate()));
-                    api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).setCachedInventorie(this, guiUpdate.getInventory());
+                    guiWindow.update(this, true);
+                    return;
                 }
             } else {
                 api.sendPlayerMessage(player1, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT));

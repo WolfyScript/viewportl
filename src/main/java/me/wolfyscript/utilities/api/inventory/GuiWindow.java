@@ -85,13 +85,27 @@ public abstract class GuiWindow implements Listener {
     }
 
     protected void update(GuiHandler<?> guiHandler) {
+        update(guiHandler, false);
+    }
+
+    protected void update(GuiHandler<?> guiHandler, boolean openInventory) {
         Bukkit.getScheduler().runTask(guiHandler.getApi().getPlugin(), () -> {
             if (!guiHandler.isChatEventActive()) {
                 GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
                 Bukkit.getPluginManager().callEvent(event);
                 GuiUpdate guiUpdate = event.getGuiUpdate();
                 onUpdateSync(guiUpdate);
-                Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), () -> onUpdateAsync(event.getGuiUpdate()));
+                Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), () -> {
+                    onUpdateAsync(event.getGuiUpdate());
+                    event.getGuiUpdate().applyChanges();
+                    setCachedInventorie(guiHandler, guiUpdate.getInventory());
+                    if (openInventory) {
+                        Bukkit.getScheduler().runTask(getAPI().getPlugin(), () -> {
+                            guiHandler.getPlayer().openInventory(guiUpdate.getInventory());
+                            guiHandler.setChangingInv(false);
+                        });
+                    }
+                });
             }
         });
     }
