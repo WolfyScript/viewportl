@@ -122,13 +122,18 @@ public class ChatInputButton extends DummyButton {
     @Override
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
         guiHandler.setChatInputAction(action);
+        /*
+        WUPlugin wuPlugin = WUPlugin.getInstance();
+        InputButtonMessage message = new InputButtonMessage(getId(), "Test Message!");
+        wuPlugin.getPacketHandler().sendTo(player, message);
+         */
         if (!msg.isEmpty()) {
             guiHandler.getApi().sendPlayerMessage(guiHandler.getPlayer(), msg);
         } else if (clickData != null) {
             guiHandler.getApi().sendActionMessage(guiHandler.getPlayer(), clickData);
         } else {
             if (guiHandler.getCurrentInv() != null) {
-                guiHandler.getApi().sendPlayerMessage(player, "$inventories."+guiHandler.getCurrentGuiCluster()+"."+guiHandler.getCurrentInv().getNamespace()+".items."+getId()+".message$");
+                guiHandler.getApi().sendPlayerMessage(player, "$inventories." + guiHandler.getCurrentGuiCluster() + "." + guiHandler.getCurrentInv().getNamespace() + ".items." + getId() + ".message$");
             }
         }
         guiHandler.close();
