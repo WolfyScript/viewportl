@@ -7,7 +7,7 @@ import me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleSer
 import me.wolfyscript.utilities.libraries.org.mozilla.javascript.Context;
 import me.wolfyscript.utilities.libraries.org.mozilla.javascript.Function;
 import me.wolfyscript.utilities.libraries.org.mozilla.javascript.Scriptable;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -340,7 +340,7 @@ public class Particle {
                         context.evaluateReader(scope, bufferedReader, "<cmd>", 1, null);
                         Context.exit();
                     } catch (IOException e) {
-                        Main.getMainUtil().sendDebugMessage(e.getMessage());
+                        WUPlugin.getWolfyUtilities().sendDebugMessage(e.getMessage());
                     }
                 } else {
                     context.evaluateString(scope, script, "<cmd>", 1, null);
@@ -396,7 +396,7 @@ public class Particle {
     }
 
     private void spawn(Location location, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, @Nullable Object data) {
-        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+        Bukkit.getScheduler().runTask(WUPlugin.getInstance(), () -> {
             if (location.getWorld() != null) {
                 if (data == null || getDataClass() == null || !getDataClass().isInstance(data)) {
                     location.getWorld().spawnParticle(getParticle(), location.add(x, y, z), count, offsetX, offsetY, offsetZ, extra);

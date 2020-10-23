@@ -9,6 +9,7 @@ import me.wolfyscript.utilities.api.custom_items.ParticleContent;
 import me.wolfyscript.utilities.api.custom_items.api_references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
+import me.wolfyscript.utilities.api.network.MessageChannelHandler;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.inventory.ItemCategory;
 import me.wolfyscript.utilities.api.utils.json.gson.GsonUtil;
@@ -25,6 +26,8 @@ import me.wolfyscript.utilities.main.listeners.BlockListener;
 import me.wolfyscript.utilities.main.listeners.EquipListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
+import me.wolfyscript.utilities.main.messages.InputButtonMessage;
+import me.wolfyscript.utilities.main.messages.WolfyUtilitiesVerifyMessage;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -39,37 +42,47 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 import java.util.Map;
 
-public class Main extends JavaPlugin {
+public class WUPlugin extends JavaPlugin {
 
-    private static Main instance;
+    private static WUPlugin instance;
 
     private static int mcUpdateVersionNumber;
     private static String mcUpdateVersion;
 
-    private static WolfyUtilities mainUtil;
+    private static WolfyUtilities wolfyUtilities;
     private static MainConfiguration mainConfig;
 
     private static Particles particlesConfig;
     private static ParticleEffects particleEffectsConfig;
 
+    private MessageChannelHandler messageChannelHandler;
+
     public static void loadParticleEffects() throws IOException {
-        getMainUtil().sendConsoleMessage("Loading Particles...");
+        wolfyUtilities.sendConsoleMessage("Loading Particles...");
         particlesConfig = new Particles(instance);
         particlesConfig.load();
         for (Map.Entry<NamespacedKey, Particle> particleEntry : Particles.getParticles().entrySet()) {
-            getMainUtil().sendDebugMessage("  - " + particleEntry.getKey() + " -> " + particleEntry.getValue());
+            wolfyUtilities.sendDebugMessage("  - " + particleEntry.getKey() + " -> " + particleEntry.getValue());
         }
         particleEffectsConfig = new ParticleEffects(instance);
         particleEffectsConfig.load();
         for (Map.Entry<NamespacedKey, ParticleEffect> effectEntry : ParticleEffects.getEffects().entrySet()) {
-            getMainUtil().sendDebugMessage("  - " + effectEntry.getKey() + " -> " + effectEntry.getValue().getParticles());
+            wolfyUtilities.sendDebugMessage("  - " + effectEntry.getKey() + " -> " + effectEntry.getValue().getParticles());
         }
         CustomItems.initiateMissingBlockEffects();
     }
 
+    public static WUPlugin getInstance() {
+        return instance;
+    }
+
+    public static WolfyUtilities getWolfyUtilities() {
+        return wolfyUtilities;
+    }
+
     public void onLoad() {
         instance = this;
-        String pkgname = Main.getInstance().getServer().getClass().getPackage().getName();
+        String pkgname = WUPlugin.getInstance().getServer().getClass().getPackage().getName();
         mcUpdateVersion = pkgname.substring(pkgname.lastIndexOf('.') + 1).replace("_", "").replace("R0", "").replace("R1", "").replace("R2", "").replace("R3", "").replace("R4", "").replace("R5", "").replaceAll("[a-z]", "");
         mcUpdateVersionNumber = Integer.parseInt(mcUpdateVersion);
 
@@ -109,32 +122,13 @@ public class Main extends JavaPlugin {
         //Register custom item data
     }
 
-    public void onDisable() {
-        mainUtil.getConfigAPI().saveConfigs();
-        WolfyUtilities.getCustomItems().save();
-        try {
-            particlesConfig.save(false);
-            particleEffectsConfig.save(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Main getInstance() {
-        return instance;
-    }
-
-    public static WolfyUtilities getMainUtil() {
-        return mainUtil;
-    }
-
     public void onEnable() {
-        mainUtil = WolfyUtilities.getOrCreateAPI(instance);
-        mainUtil.setCONSOLE_PREFIX("[WU] ");
-        mainUtil.setCHAT_PREFIX("§8[§3WU§8] §7");
+        wolfyUtilities = WolfyUtilities.getOrCreateAPI(instance);
+        wolfyUtilities.setCONSOLE_PREFIX("[WU] ");
+        wolfyUtilities.setCHAT_PREFIX("§8[§3WU§8] §7");
 
-        ConfigAPI configAPI = mainUtil.getConfigAPI();
-        LanguageAPI languageAPI = mainUtil.getLanguageAPI();
+        ConfigAPI configAPI = wolfyUtilities.getConfigAPI();
+        LanguageAPI languageAPI = wolfyUtilities.getLanguageAPI();
 
         mainConfig = new MainConfiguration(configAPI);
         configAPI.registerConfig(mainConfig);
@@ -173,7 +167,34 @@ public class Main extends JavaPlugin {
             e.printStackTrace();
         }
 
+        messageChannelHandler = new MessageChannelHandler(this, new NamespacedKey("wolfyutilities", "main"));
+        messageChannelHandler.registerMessage(1, WolfyUtilitiesVerifyMessage.class, (message, output) -> {
+            output.writeBoolean(message.hasWolfyUtilities());
+            output.writeUTF(message.getVersion());
+        }, in -> new WolfyUtilitiesVerifyMessage(false, ""), (message, player) -> {
+            if (player.hasPermission("wolfyutilities.network.verify_plugin")) {
+                messageChannelHandler.sendTo(player, new WolfyUtilitiesVerifyMessage(true, getDescription().getVersion()));
+            }
+        });
+
+        messageChannelHandler.registerMessage(2, InputButtonMessage.class, (inputButtonMessage, output) -> {
+            output.writeUTF(inputButtonMessage.getButtonID());
+            output.writeUTF(inputButtonMessage.getMessage());
+        }, null, (inputButtonMessage, player) -> {
+        });
+
         //System.out.println("TestItem: "+ ItemUtils.serializeItemStack(new ItemBuilder(Material.DIAMOND_SWORD).addItemFlags(ItemFlag.HIDE_UNBREAKABLE).setDisplayName("LUL").addLoreLine("Test Item").create()));
+    }
+
+    public void onDisable() {
+        wolfyUtilities.getConfigAPI().saveConfigs();
+        WolfyUtilities.getCustomItems().save();
+        try {
+            particlesConfig.save(false);
+            particleEffectsConfig.save(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -181,14 +202,14 @@ public class Main extends JavaPlugin {
         if (label.equalsIgnoreCase("wolfyutils")) {
             if (sender instanceof Player) {
                 Player p = (Player) sender;
-                mainUtil.sendPlayerMessage(p, "~*~*~*~*&8[&3&lWolfyUtilities&8]&7~*~*~*~*~");
-                mainUtil.sendPlayerMessage(p, "");
-                mainUtil.sendPlayerMessage(p, "      &n     by &b&n&lWolfyScript&7&n      ");
-                mainUtil.sendPlayerMessage(p, "        ------------------");
-                mainUtil.sendPlayerMessage(p, "");
-                mainUtil.sendPlayerMessage(p, "             &nVersion:&r&b " + getDescription().getVersion());
-                mainUtil.sendPlayerMessage(p, "");
-                mainUtil.sendPlayerMessage(p, "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~");
+                wolfyUtilities.sendPlayerMessage(p, "~*~*~*~*&8[&3&lWolfyUtilities&8]&7~*~*~*~*~");
+                wolfyUtilities.sendPlayerMessage(p, "");
+                wolfyUtilities.sendPlayerMessage(p, "      &n     by &b&n&lWolfyScript&7&n      ");
+                wolfyUtilities.sendPlayerMessage(p, "        ------------------");
+                wolfyUtilities.sendPlayerMessage(p, "");
+                wolfyUtilities.sendPlayerMessage(p, "             &nVersion:&r&b " + getDescription().getVersion());
+                wolfyUtilities.sendPlayerMessage(p, "");
+                wolfyUtilities.sendPlayerMessage(p, "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~");
                 return true;
             }
         }
@@ -203,7 +224,7 @@ public class Main extends JavaPlugin {
         return mcUpdateVersionNumber;
     }
 
-    public static String getMcUpdateVersion() {
+    public String getMcUpdateVersion() {
         return mcUpdateVersion;
     }
 
@@ -213,5 +234,9 @@ public class Main extends JavaPlugin {
 
     public static Particles getParticles() {
         return particlesConfig;
+    }
+
+    public MessageChannelHandler getPacketHandler() {
+        return messageChannelHandler;
     }
 }

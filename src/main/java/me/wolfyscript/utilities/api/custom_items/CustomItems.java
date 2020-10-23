@@ -5,7 +5,7 @@ import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.Pair;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -239,7 +239,7 @@ public class CustomItems {
 
     public void save() {
         try {
-            FileOutputStream fos = new FileOutputStream(new File(Main.getInstance().getDataFolder() + File.separator + "stored_block_items.dat"));
+            FileOutputStream fos = new FileOutputStream(new File(WUPlugin.getInstance().getDataFolder() + File.separator + "stored_block_items.dat"));
             BukkitObjectOutputStream oos = new BukkitObjectOutputStream(fos);
             HashMap<String, String> saveMap = new HashMap<>();
             for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
@@ -258,7 +258,7 @@ public class CustomItems {
     }
 
     public void load() {
-        File file = new File(Main.getInstance().getDataFolder() + File.separator + "stored_block_items.dat");
+        File file = new File(WUPlugin.getInstance().getDataFolder() + File.separator + "stored_block_items.dat");
         if (file.exists()) {
             FileInputStream fis;
             try {

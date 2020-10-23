@@ -26,38 +26,7 @@ public class ItemStackSerialization implements JsonSerializer<ItemStack>, JsonDe
         }else if(jsonElement instanceof JsonObject){
             YamlConfiguration config = new YamlConfiguration();
             config.createSection("i", GsonUtil.getGson().fromJson(jsonElement, Map.class));
-
-            System.out.println("Loaded: "+config.saveToString());
-            System.out.println("Item: "+config.getItemStack("i"));
             return config.getItemStack("i");
-            /*
-            //New Custom ItemStack Serilization
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            int version = jsonObject.get("v").getAsInt();
-            Material material = Material.matchMaterial(jsonObject.get("type").getAsString());
-            int amount = 1;
-            if(jsonObject.has("amount")){
-                amount = jsonObject.get("amount").getAsInt();
-            }
-            ItemStack result = new ItemStack(material);
-            result.setAmount(amount);
-            if(jsonObject.has("meta")){
-                ItemMeta meta = jsonDeserializationContext.deserialize(jsonObject.get("meta"), ItemMeta.class);
-                if(meta != null){
-                    meta.setVersion(version);
-                    if (meta.hasDisplayName()) {
-                        String displayName = meta.getDisplayName();
-                        meta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
-                    }
-                    if (meta.hasLore()) {
-                        meta.setLore(meta.getLore().stream().map(s -> WolfyUtilities.translateColorCodes(s)).collect(Collectors.toList()));
-                    }
-                    result.setItemMeta(meta);
-                }
-            }
-
-            return result;
-            */
         }
         return null;
     }

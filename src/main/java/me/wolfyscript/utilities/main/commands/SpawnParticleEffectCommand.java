@@ -5,7 +5,7 @@ import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.chat.ClickData;
 import me.wolfyscript.utilities.api.utils.chat.ClickEvent;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -45,12 +45,12 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                                     Location location = new Location(player.getWorld(), x, y, z);
                                     UUID uuid = ParticleEffects.spawnEffectOnLocation(nameSpacedKey, location);
                                     if (uuid == null) {
-                                        Main.getMainUtil().sendPlayerMessage(player, "&cFailed to spawn effect &4" + nameSpacedKey + "");
+                                        WUPlugin.getWolfyUtilities().sendPlayerMessage(player, "&cFailed to spawn effect &4" + nameSpacedKey + "");
                                         return true;
                                     }
-                                    Main.getMainUtil().sendActionMessage(player, new ClickData("&eSpawened effect &6" + nameSpacedKey + "&e on &6" + x + " " + y + " " + z + " &ewith uuid ", null), new ClickData("&6" + uuid, null, new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, uuid.toString())));
+                                    WUPlugin.getWolfyUtilities().sendActionMessage(player, new ClickData("&eSpawened effect &6" + nameSpacedKey + "&e on &6" + x + " " + y + " " + z + " &ewith uuid ", null), new ClickData("&6" + uuid, null, new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, uuid.toString())));
                                 } catch (NumberFormatException ex) {
-                                    Main.getMainUtil().sendPlayerMessage(player, "&cInvalid position! Please make sure you only use numbers for x/y/z!");
+                                    WUPlugin.getWolfyUtilities().sendPlayerMessage(player, "&cInvalid position! Please make sure you only use numbers for x/y/z!");
                                     return true;
                                 }
                             } else {
@@ -58,10 +58,10 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                                 if (block != null) {
                                     UUID uuid = ParticleEffects.spawnEffectOnBlock(nameSpacedKey, block);
                                     if (uuid == null) {
-                                        Main.getMainUtil().sendPlayerMessage(player, "&cFailed to spawn effect &4" + nameSpacedKey + "");
+                                        WUPlugin.getWolfyUtilities().sendPlayerMessage(player, "&cFailed to spawn effect &4" + nameSpacedKey + "");
                                         return true;
                                     }
-                                    Main.getMainUtil().sendActionMessage(player, new ClickData("&eSpawened effect &6" + nameSpacedKey + "&e on block &ewith uuid ", null), new ClickData("&6" + uuid, null, new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, uuid.toString())));
+                                    WUPlugin.getWolfyUtilities().sendActionMessage(player, new ClickData("&eSpawened effect &6" + nameSpacedKey + "&e on block &ewith uuid ", null), new ClickData("&6" + uuid, null, new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, uuid.toString())));
                                 }
                             }
                         }
@@ -72,9 +72,9 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                             try {
                                 UUID uuid = UUID.fromString(args[1]);
                                 ParticleEffects.stopEffect(uuid);
-                                Main.getMainUtil().sendPlayerMessage(player, "&eStopped effect with uuid &6" + args[1] + " &eif it was active!");
+                                WUPlugin.getWolfyUtilities().sendPlayerMessage(player, "&eStopped effect with uuid &6" + args[1] + " &eif it was active!");
                             } catch (IllegalArgumentException ex) {
-                                Main.getMainUtil().sendPlayerMessage(player, "&cInvalid UUID &4" + args[1]);
+                                WUPlugin.getWolfyUtilities().sendPlayerMessage(player, "&cInvalid UUID &4" + args[1]);
                             }
                         }
                     }

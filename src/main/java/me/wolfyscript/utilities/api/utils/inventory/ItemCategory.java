@@ -1,7 +1,7 @@
 package me.wolfyscript.utilities.api.utils.inventory;
 
 import me.wolfyscript.utilities.api.utils.Reflection;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Material;
 
 import java.lang.reflect.Field;
@@ -35,7 +35,7 @@ public enum ItemCategory {
     }
 
     public static void init() throws NoSuchMethodException {
-        Main.getMainUtil().sendConsoleMessage("Loading Item Categories...");
+        WUPlugin.getWolfyUtilities().sendConsoleMessage("Loading Item Categories...");
         Class<?> craftMagicNumbersClass = Reflection.getOBC("util.CraftMagicNumbers");
         Class<?> creativeModeTabClass = Reflection.getNMS("CreativeModeTab");
         Class<?> itemClass = Reflection.getNMS("Item");
@@ -52,7 +52,7 @@ public enum ItemCategory {
         }
 
         if (creativeModeToString == null) {
-            Main.getInstance().getLogger().severe("Error loading Item categories! Can't find the specified Method to get ");
+            WUPlugin.getInstance().getLogger().severe("Error loading Item categories! Can't find the specified Method to get ");
             return;
         }
 

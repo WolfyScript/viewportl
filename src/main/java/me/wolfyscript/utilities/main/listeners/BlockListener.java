@@ -6,7 +6,7 @@ import me.wolfyscript.utilities.api.custom_items.CustomItemPlaceEvent;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.inventory.ItemUtils;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -256,8 +256,8 @@ public class BlockListener implements Listener {
         if (!ItemUtils.isAirOrNull(itemStack)) {
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                if (itemMeta.getPersistentDataContainer().has(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING)) {
-                    return itemMeta.getPersistentDataContainer().get(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING);
+                if (itemMeta.getPersistentDataContainer().has(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "custom_item"), PersistentDataType.STRING)) {
+                    return itemMeta.getPersistentDataContainer().get(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "custom_item"), PersistentDataType.STRING);
                 }
             }
         }

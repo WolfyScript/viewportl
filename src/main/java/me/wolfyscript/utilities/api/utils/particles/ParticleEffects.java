@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -114,9 +114,9 @@ public class ParticleEffects {
             while (currentEffects.containsKey(id)) {
                 id = UUID.randomUUID();
             }
-            BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
+            BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(WUPlugin.getInstance(), () -> {
                 AtomicBoolean allow = new AtomicBoolean(true);
-                Bukkit.getScheduler().runTask(Main.getInstance(), () -> allow.set(block.getWorld().getNearbyEntities(block.getLocation(), 25, 25, 25, entity -> entity instanceof Player).isEmpty()));
+                Bukkit.getScheduler().runTask(WUPlugin.getInstance(), () -> allow.set(block.getWorld().getNearbyEntities(block.getLocation(), 25, 25, 25, entity -> entity instanceof Player).isEmpty()));
                 if (allow.get()) {
                     particleEffect.prepare();
                     AtomicInteger i = new AtomicInteger();
@@ -130,7 +130,7 @@ public class ParticleEffects {
                                 cancel();
                             }
                         }
-                    }.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
+                    }.runTaskTimerAsynchronously(WUPlugin.getInstance(), 1, 1);
                 }
             }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1);
 
@@ -148,9 +148,9 @@ public class ParticleEffects {
             while (currentEffects.containsKey(id)) {
                 id = UUID.randomUUID();
             }
-            BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
+            BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(WUPlugin.getInstance(), () -> {
                 AtomicBoolean allow = new AtomicBoolean(true);
-                Bukkit.getScheduler().runTask(Main.getInstance(), () -> allow.set(location.getWorld().getNearbyEntities(location, 25, 25, 25, entity -> entity instanceof Player).isEmpty()));
+                Bukkit.getScheduler().runTask(WUPlugin.getInstance(), () -> allow.set(location.getWorld().getNearbyEntities(location, 25, 25, 25, entity -> entity instanceof Player).isEmpty()));
                 if (allow.get()) {
                     particleEffect.prepare();
                     AtomicInteger i = new AtomicInteger();
@@ -164,7 +164,7 @@ public class ParticleEffects {
                                 cancel();
                             }
                         }
-                    }.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
+                    }.runTaskTimerAsynchronously(WUPlugin.getInstance(), 1, 1);
                 }
             }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1);
             currentEffects.put(id, cooldownTask);
@@ -181,7 +181,7 @@ public class ParticleEffects {
                 id = UUID.randomUUID();
             }
             UUID playerID = player.getUniqueId();
-            BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
+            BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(WUPlugin.getInstance(), () -> {
                 particleEffect.prepare();
                 Player currentPlayer = Bukkit.getPlayer(playerID);
                 AtomicInteger i = new AtomicInteger();
@@ -197,7 +197,7 @@ public class ParticleEffects {
                                 cancel();
                             }
                         }
-                    }.runTaskTimerAsynchronously(Main.getInstance(), 1, 1);
+                    }.runTaskTimerAsynchronously(WUPlugin.getInstance(), 1, 1);
                 }
             }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1);
 

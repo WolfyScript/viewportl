@@ -4,7 +4,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.custom_items.equipment.ArmorType;
 import me.wolfyscript.utilities.api.utils.Reflection;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -55,10 +55,10 @@ public class ItemUtils {
             nmsItemStackObj = asNMSCopyMethod.invoke(null, itemStack);
             itemAsJsonObject = saveNmsItemStackMethod.invoke(nmsItemStackObj, nmsNbtTagCompoundObj);
         } catch (Throwable t) {
-            Main.getMainUtil().sendConsoleMessage("failed to serialize itemstack to nms item");
-            Main.getMainUtil().sendConsoleMessage(t.toString());
+            WUPlugin.getWolfyUtilities().sendConsoleMessage("failed to serialize itemstack to nms item");
+            WUPlugin.getWolfyUtilities().sendConsoleMessage(t.toString());
             for (StackTraceElement element : t.getStackTrace()) {
-                Main.getMainUtil().sendConsoleMessage(element.toString());
+                WUPlugin.getWolfyUtilities().sendConsoleMessage(element.toString());
             }
             return null;
         }

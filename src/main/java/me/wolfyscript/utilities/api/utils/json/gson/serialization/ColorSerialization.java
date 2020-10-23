@@ -1,7 +1,7 @@
 package me.wolfyscript.utilities.api.utils.json.gson.serialization;
 
 import com.google.gson.*;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Color;
 
 import java.lang.reflect.Type;
@@ -16,7 +16,7 @@ public class ColorSerialization implements JsonSerializer<Color>, JsonDeserializ
             int blue = ((JsonObject) jsonElement).get("blue").getAsInt();
             return Color.fromBGR(blue, green, red);
         }
-        Main.getMainUtil().sendConsoleWarning("Error Deserializing Color! Invalid Color object!");
+        WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing Color! Invalid Color object!");
         return null;
     }
 

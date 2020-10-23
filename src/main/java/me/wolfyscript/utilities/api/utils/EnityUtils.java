@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.utils;
 
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,10 +24,10 @@ public class EnityUtils {
         try {
             entityAsJsonObject = saveToNBTMethod.invoke(entity);
         } catch (Throwable t) {
-            Main.getMainUtil().sendConsoleMessage("failed to serialize Entity to nms json!");
-            Main.getMainUtil().sendConsoleMessage(t.toString());
+            WUPlugin.getWolfyUtilities().sendConsoleMessage("failed to serialize Entity to nms json!");
+            WUPlugin.getWolfyUtilities().sendConsoleMessage(t.toString());
             for (StackTraceElement element : t.getStackTrace()) {
-                Main.getMainUtil().sendConsoleMessage(element.toString());
+                WUPlugin.getWolfyUtilities().sendConsoleMessage(element.toString());
             }
             return null;
         }

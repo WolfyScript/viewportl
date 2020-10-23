@@ -14,7 +14,7 @@ import me.wolfyscript.utilities.api.utils.chat.PlayerAction;
 import me.wolfyscript.utilities.api.utils.exceptions.InvalidCacheTypeException;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
 import me.wolfyscript.utilities.api.utils.particles.Particles;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.StringUtils;
@@ -105,11 +105,11 @@ public class WolfyUtilities implements Listener {
     }
 
     public static boolean hasSpecificUpdate(String versionString) {
-        return Main.getMcUpdateVersionNumber() >= Integer.parseInt(versionString.replace("_", "").replace(".", "").replace("-", ""));
+        return WUPlugin.getMcUpdateVersionNumber() >= Integer.parseInt(versionString.replace("_", "").replace(".", "").replace("-", ""));
     }
 
     public static boolean hasSpecificUpdate(int versionNumber) {
-        return Main.getMcUpdateVersionNumber() >= versionNumber;
+        return WUPlugin.getMcUpdateVersionNumber() >= versionNumber;
     }
 
     public static boolean hasSpigot() {
@@ -390,7 +390,7 @@ public class WolfyUtilities implements Listener {
     }
 
     public static String getVersion() {
-        return Main.getInstance().getDescription().getVersion();
+        return WUPlugin.getInstance().getDescription().getVersion();
     }
 
     public static int getVersionNumber() {
@@ -488,13 +488,13 @@ public class WolfyUtilities implements Listener {
     public void sendConsoleMessage(String message) {
         message = CONSOLE_PREFIX + getLanguageAPI().replaceKeys(message);
         message = ChatColor.translateAlternateColorCodes('&', message);
-        Main.getInstance().getServer().getConsoleSender().sendMessage(message);
+        WUPlugin.getInstance().getServer().getConsoleSender().sendMessage(message);
     }
 
     public void sendConsoleWarning(String message) {
         message = CONSOLE_PREFIX + "[WARN] " + getLanguageAPI().replaceKeys(message);
         message = ChatColor.translateAlternateColorCodes('&', message);
-        Main.getInstance().getServer().getConsoleSender().sendMessage(message);
+        WUPlugin.getInstance().getServer().getConsoleSender().sendMessage(message);
     }
 
     public void sendConsoleMessage(String message, String... replacements) {
@@ -525,9 +525,7 @@ public class WolfyUtilities implements Listener {
 
     public void sendPlayerMessage(Player player, String message) {
         if (player != null) {
-            message = CHAT_PREFIX + getLanguageAPI().replaceKeys(message);
-            message = WolfyUtilities.translateColorCodes(message);
-            player.sendMessage(message);
+            player.sendMessage(WolfyUtilities.translateColorCodes(CHAT_PREFIX + getLanguageAPI().replaceKeys(message)));
         }
     }
 
@@ -632,11 +630,11 @@ public class WolfyUtilities implements Listener {
                     }
                 }
                 for (String result : messages) {
-                    Main.getInstance().getServer().getConsoleSender().sendMessage(prefix + result);
+                    WUPlugin.getInstance().getServer().getConsoleSender().sendMessage(prefix + result);
                 }
             } else {
                 message = prefix + message;
-                Main.getInstance().getServer().getConsoleSender().sendMessage(message);
+                WUPlugin.getInstance().getServer().getConsoleSender().sendMessage(message);
             }
         }
     }

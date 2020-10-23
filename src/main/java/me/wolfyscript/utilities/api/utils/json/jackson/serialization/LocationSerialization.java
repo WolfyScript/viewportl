@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -48,13 +48,13 @@ public class LocationSerialization {
                         float pitch = jsonNode.get(4).floatValue();
                         return new Location(world, x, y, z, yaw, pitch);
                     }
-                    Main.getMainUtil().sendConsoleWarning("Error Deserializing Location! Invalid Position: expected array size 5 got "+jsonNode.size());
+                    WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing Location! Invalid Position: expected array size 5 got " + jsonNode.size());
                     return null;
                 }
-                Main.getMainUtil().sendConsoleWarning("Error Deserializing Location! Missing World with uid "+uuid.toString());
+                WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing Location! Missing World with uid " + uuid.toString());
                 return null;
             }
-            Main.getMainUtil().sendConsoleWarning("Error Deserializing Location! Invalid Location object!");
+            WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing Location! Invalid Location object!");
             return null;
         }
 

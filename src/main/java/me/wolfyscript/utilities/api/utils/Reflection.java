@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.utils;
 
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +40,7 @@ public class Reflection {
     private static final Map<Class<?>, Map<Class<?>, Field>> foundFields = new HashMap<>();
 
     public static String getVersion() {
-        return Main.getInstance().getServer().getClass().getPackage().getName().substring(23);
+        return WUPlugin.getInstance().getServer().getClass().getPackage().getName().substring(23);
     }
 
     /**

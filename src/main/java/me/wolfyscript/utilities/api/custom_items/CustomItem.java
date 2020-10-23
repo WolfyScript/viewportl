@@ -21,7 +21,7 @@ import me.wolfyscript.utilities.api.utils.inventory.InventoryUtils;
 import me.wolfyscript.utilities.api.utils.inventory.item_builder.AbstractItemBuilder;
 import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -154,7 +154,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             if (itemMeta != null) {
                 PersistentDataContainer container = itemMeta.getPersistentDataContainer();
                 APIReference apiReference = null;
-                NamespacedKey namespacedKey = new NamespacedKey(Main.getInstance(), "custom_item");
+                NamespacedKey namespacedKey = new NamespacedKey(WUPlugin.getInstance(), "custom_item");
                 if (container.has(namespacedKey, PersistentDataType.STRING)) {
                     apiReference = new WolfyUtilitiesRef(me.wolfyscript.utilities.api.utils.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
                 }
@@ -205,7 +205,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
                 PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-                NamespacedKey namespacedKey = new NamespacedKey(Main.getInstance(), "custom_item");
+                NamespacedKey namespacedKey = new NamespacedKey(WUPlugin.getInstance(), "custom_item");
                 if (container.has(namespacedKey, PersistentDataType.STRING)) {
                     return CustomItems.getCustomItem(me.wolfyscript.utilities.api.utils.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
                 }
@@ -469,7 +469,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         ItemStack itemStack = apiReference.getLinkedItem().clone();
         if (this.hasNamespacedKey()) {
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey(Main.getInstance(), "custom_item"), PersistentDataType.STRING, namespacedKey.toString());
+            itemMeta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "custom_item"), PersistentDataType.STRING, namespacedKey.toString());
             itemStack.setItemMeta(itemMeta);
         }
         if (amount > 0) {

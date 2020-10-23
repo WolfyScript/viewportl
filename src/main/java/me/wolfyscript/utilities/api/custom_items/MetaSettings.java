@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.custom_items.meta.*;
 import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -51,8 +51,8 @@ public class MetaSettings {
             try {
                 obj = (JSONObject) parser.parse(jsonString);
             } catch (ParseException e) {
-                Main.getMainUtil().sendConsoleWarning("Error getting JSONObject from String:");
-                Main.getMainUtil().sendConsoleWarning("" + jsonString);
+                WUPlugin.getWolfyUtilities().sendConsoleWarning("Error getting JSONObject from String:");
+                WUPlugin.getWolfyUtilities().sendConsoleWarning("" + jsonString);
             }
         }
         if (obj != null) {
