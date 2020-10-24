@@ -18,7 +18,10 @@ import me.wolfyscript.utilities.main.WUPlugin;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -245,15 +248,6 @@ public class WolfyUtilities implements Listener {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public static Sound getSound(String sound) {
-        return Sound.valueOf(sound);
-    }
-
-    @Deprecated
-    public static Sound getSound(String legacy, String notLegacy) {
-        return Sound.valueOf(notLegacy);
     }
 
     /**

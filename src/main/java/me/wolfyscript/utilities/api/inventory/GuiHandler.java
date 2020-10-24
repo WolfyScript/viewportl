@@ -11,18 +11,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class GuiHandler<T extends CustomCache> implements Listener {
 
     private final WolfyUtilities api;
     private final InventoryAPI<T> invAPI;
-    private Player player;
+    private final UUID uuid;
     private final HashMap<String, List<String>> clusterHistory = new HashMap<>();
     private ChatInputAction chatInputAction = null;
     private String currentGuiCluster = "";
@@ -35,7 +34,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     public GuiHandler(Player player, WolfyUtilities api, Class<T> customCacheClass, T customCache) {
         this.api = api;
         this.invAPI = api.getInventoryAPI(customCacheClass);
-        this.player = player;
+        this.uuid = player.getUniqueId();
         this.customCache = customCache;
         Bukkit.getPluginManager().registerEvents(this, api.getPlugin());
     }
@@ -58,7 +57,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
 
     @Nullable
     public Player getPlayer() {
-        return player.getPlayer();
+        return Bukkit.getPlayer(uuid);
     }
 
     public boolean hasPlayer() {
@@ -80,7 +79,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         return isWindowOpen;
     }
 
-    public boolean verifyInventory(Inventory inventory){
+    public boolean verifyInventory(Inventory inventory) {
         return isWindowOpen() && getCurrentInv() != null && getCurrentInv().getInventory(this).equals(inventory);
     }
 
@@ -106,7 +105,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     }
 
     @Nullable
-    public GuiWindow getCurrentInv(){
+    public GuiWindow getCurrentInv() {
         return getCurrentInv(getCurrentGuiCluster());
     }
 
@@ -124,16 +123,16 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     @Nullable
     public GuiWindow getPreviousInv(String clusterID, int stepsBack) {
         if (clusterHistory.get(clusterID) != null && clusterHistory.get(clusterID).size() > stepsBack) {
-            return invAPI.getGuiWindow(clusterID, clusterHistory.get(clusterID).get(clusterHistory.get(clusterID).size() - (stepsBack+1)));
+            return invAPI.getGuiWindow(clusterID, clusterHistory.get(clusterID).get(clusterHistory.get(clusterID).size() - (stepsBack + 1)));
         }
         return null;
     }
 
-    public GuiWindow getPreviousInv(){
+    public GuiWindow getPreviousInv() {
         return getPreviousInv(getCurrentGuiCluster());
     }
 
-    public GuiWindow getPreviousInv(int stepsBack){
+    public GuiWindow getPreviousInv(int stepsBack) {
         return getPreviousInv(getCurrentGuiCluster(), stepsBack);
     }
 
@@ -152,8 +151,8 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     public void openPreviousInv(String clusterID, int stepsBack) {
         String previousInv = getPreviousInv(stepsBack).getNamespace();
         List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
-        for(int i = 0; i < stepsBack; i++){
-            history.remove(history.size()-1);
+        for (int i = 0; i < stepsBack; i++) {
+            history.remove(history.size() - 1);
         }
         clusterHistory.put(clusterID, history);
         changeToInv(clusterID, previousInv);
@@ -169,10 +168,9 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     /*
     Opens the specific GuiWindow in the specific GuiCluster.
      */
-    public void changeToInv(@Nonnull String clusterID, @Nonnull String guiWindowID) {
+    public void changeToInv(@NotNull String clusterID, @NotNull String guiWindowID) {
         Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
             Player player1 = getPlayer();
-            changingInv = true;
             if (WolfyUtilities.hasPermission(player1, getApi().getPlugin().getDescription().getName().toLowerCase(Locale.ROOT) + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT))) {
                 List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
                 if (getCurrentInv(clusterID) == null || !getCurrentInv(clusterID).getNamespace().equals(guiWindowID)) {
@@ -182,14 +180,11 @@ public class GuiHandler<T extends CustomCache> implements Listener {
                 if (api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID) != null) {
                     currentGuiCluster = clusterID;
                     isWindowOpen = true;
-                    GuiWindow guiWindow = api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID);
-                    guiWindow.update(this, true);
-                    return;
+                    api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).update(this, true);
                 }
-            } else {
-                api.sendPlayerMessage(player1, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT));
+                return;
             }
-            changingInv = false;
+            api.sendPlayerMessage(player1, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT));
         });
     }
 
@@ -226,7 +221,8 @@ public class GuiHandler<T extends CustomCache> implements Listener {
 
     public void close() {
         this.isWindowOpen = false;
-        this.player.closeInventory();
+        Player player = getPlayer();
+        if (player != null) player.closeInventory();
     }
 
     public void setHelpEnabled(boolean helpEnabled) {
@@ -253,17 +249,14 @@ public class GuiHandler<T extends CustomCache> implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
-        Player eventPlayer = (Player) event.getPlayer();
-        if (player.equals(eventPlayer)) {
+        if (event.getPlayer().getUniqueId().equals(uuid)) {
             if (!clusterHistory.isEmpty() && isWindowOpen()) {
                 if (!changingInv) {
-                    String cluster = getCurrentGuiCluster();
-                    GuiWindow guiWindow = getCurrentInv();
-                    GuiCloseEvent closeEvent = new GuiCloseEvent(cluster, guiWindow, this, event.getView());
+                    GuiCloseEvent closeEvent = new GuiCloseEvent(getCurrentGuiCluster(), getCurrentInv(), this, event.getView());
                     Bukkit.getPluginManager().callEvent(closeEvent);
-                    if(closeEvent.isCancelled()){
+                    if (closeEvent.isCancelled()) {
                         Bukkit.getScheduler().runTask(getApi().getPlugin(), (Runnable) this::openCluster);
-                    }else{
+                    } else {
                         this.isWindowOpen = false;
                     }
                 }
@@ -276,17 +269,9 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        if (player.getUniqueId().equals(this.player.getUniqueId())) {
-            this.player = player;
-        }
-    }
-
-    @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        if (player.getUniqueId().equals(this.player.getUniqueId())) {
+        if (player.getUniqueId().equals(uuid)) {
             if (isChatEventActive()) {
                 cancelChatEvent();
             }

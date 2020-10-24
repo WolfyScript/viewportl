@@ -168,10 +168,10 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                         if (itemId != null && !itemId.isEmpty()) {
                             apiReference = new OraxenRef(itemId);
                         }
-                    } else if(WolfyUtilities.hasPlugin("MythicMobs")){
+                    } else if (WolfyUtilities.hasPlugin("MythicMobs")) {
                         CompoundTag compoundTag = MythicMobs.inst().getVolatileCodeHandler().getItemHandler().getNBTData(itemStack);
                         String name = compoundTag.getString("MYTHIC_TYPE");
-                        if(MythicMobs.inst().getItemManager().getItem(name).isPresent()){
+                        if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
                             apiReference = new MythicMobsRef(name);
                         }
                     }
@@ -212,7 +212,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             }
         }
         return null;
-
     }
 
     public boolean hasReplacement() {
@@ -360,20 +359,13 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      */
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta) {
         ItemStack currentItem = create();
-        if (otherItem == null) {
-            return false;
-        } else if (otherItem == currentItem) {
-            return true;
-        } else if (otherItem.getType().equals(currentItem.getType()) && otherItem.getAmount() >= currentItem.getAmount()) {
-            if (exactMeta || currentItem.hasItemMeta()) {
-                ItemBuilder customItem = new ItemBuilder(currentItem);
-                ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
-                if (!getMetaSettings().checkMeta(customItemOther, customItem)) {
-                    return false;
-                }
-                return Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
-            }
-            return true;
+        if (otherItem == null) return false;
+        if (otherItem == currentItem) return true;
+        if (otherItem.getType().equals(currentItem.getType()) && otherItem.getAmount() >= currentItem.getAmount()) {
+            if (!exactMeta && !currentItem.hasItemMeta()) return true;
+            ItemBuilder customItem = new ItemBuilder(currentItem);
+            ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
+            return getMetaSettings().checkMeta(customItemOther, customItem) && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
         }
         return false;
     }

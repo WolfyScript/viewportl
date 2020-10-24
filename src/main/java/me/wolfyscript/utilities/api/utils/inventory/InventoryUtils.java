@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.api.utils.inventory;
 
 import com.google.common.collect.Streams;
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -15,12 +14,12 @@ public class InventoryUtils {
 
     public static boolean isEmpty(@Nullable List<ItemStack> list) {
         if (list == null) return false;
-        return list.stream().noneMatch(item -> item != null && !item.getType().equals(Material.AIR));
+        return list.stream().allMatch(ItemUtils::isAirOrNull);
     }
 
     public static boolean isCustomItemsListEmpty(@Nullable List<CustomItem> list) {
         if (list == null) return false;
-        return list.stream().noneMatch(item -> item != null && !item.getItemStack().getType().equals(Material.AIR));
+        return list.stream().allMatch(ItemUtils::isAirOrNull);
     }
 
     public static int getInventorySpace(Player p, ItemStack item) {

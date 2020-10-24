@@ -101,6 +101,7 @@ public abstract class GuiWindow implements Listener {
                     setCachedInventorie(guiHandler, guiUpdate.getInventory());
                     if (openInventory) {
                         Bukkit.getScheduler().runTask(getAPI().getPlugin(), () -> {
+                            guiHandler.setChangingInv(true);
                             guiHandler.getPlayer().openInventory(guiUpdate.getInventory());
                             guiHandler.setChangingInv(false);
                         });

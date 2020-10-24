@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.utils.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
+import me.wolfyscript.utilities.api.custom_items.api_references.ItemsAdderRef;
 import me.wolfyscript.utilities.api.custom_items.equipment.ArmorType;
 import me.wolfyscript.utilities.api.utils.Reflection;
 import me.wolfyscript.utilities.main.WUPlugin;
@@ -227,7 +228,9 @@ public class ItemUtils {
     }
 
     public static boolean isAirOrNull(CustomItem item) {
-        return item == null || item.getApiReference() == null || isAirOrNull(item.getItemStack());
+        if (item == null || item.getApiReference() == null) return true;
+        if (item.getApiReference() instanceof ItemsAdderRef) return false;
+        return isAirOrNull(item.getItemStack());
     }
 
     public static boolean isTool(Material material) {
