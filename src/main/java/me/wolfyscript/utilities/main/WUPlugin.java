@@ -16,6 +16,7 @@ import me.wolfyscript.utilities.api.utils.json.gson.GsonUtil;
 import me.wolfyscript.utilities.api.utils.json.gson.serialization.*;
 import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.api.utils.json.jackson.serialization.APIReferenceSerialization;
+import me.wolfyscript.utilities.api.utils.json.jackson.serialization.VectorSerialization;
 import me.wolfyscript.utilities.api.utils.particles.Particle;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
@@ -97,6 +98,7 @@ public class WUPlugin extends JavaPlugin {
         me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleSerialization.create(module);
         me.wolfyscript.utilities.api.utils.json.jackson.serialization.PotionEffectTypeSerialization.create(module);
         me.wolfyscript.utilities.api.utils.json.jackson.serialization.PotionEffectSerialization.create(module);
+        VectorSerialization.create(module);
 
         //Reference Deserializer
         APIReferenceSerialization.create(module);

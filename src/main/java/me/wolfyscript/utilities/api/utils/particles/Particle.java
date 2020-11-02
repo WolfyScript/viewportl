@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -39,18 +40,25 @@ public class Particle {
     }
 
     private Material icon;
-
     private Class<?> dataClass;
     private Object data;
-    private Double relativeX, relativeY, relativeZ, offsetX, offsetY, offsetZ;
+    private Vector relative, offset;
     private Integer count;
     private Double extra;
     private List<String> scripts;
     private String name;
     private List<String> description;
 
-    public Particle(Particle superParticle) {
-        setSuperParticle(superParticle);
+    public Particle(Particle particle) {
+        this.dataClass = particle.dataClass;
+        this.data = particle.data;
+        this.relative = particle.getRelative();
+        this.offset = particle.getOffset();
+        this.count = particle.getCount();
+        this.extra = particle.getExtra();
+        this.scripts = particle.getScripts();
+        this.name = particle.getName();
+        this.description = particle.getDescription();
     }
 
     public Particle() {
@@ -77,49 +85,45 @@ public class Particle {
     }
 
     public Particle(org.bukkit.Particle particle, int count, double extra, Object data) {
-        this(particle, 0, 0, 0, count, extra, data);
+        this(particle, new Vector(0,0,0), count, extra, data);
     }
 
-    public Particle(org.bukkit.Particle particle, double relativeX, double relativeY, double relativeZ, int count) {
-        this(particle, relativeX, relativeY, relativeZ, count, 1.0, null);
+    public Particle(org.bukkit.Particle particle, Vector relative, int count) {
+        this(particle, relative, count, 1.0, null);
     }
 
-    public Particle(org.bukkit.Particle particle, double relativeX, double relativeY, double relativeZ, int count, double extra) {
-        this(particle, relativeX, relativeY, relativeZ, count, 1.0, extra);
+    public Particle(org.bukkit.Particle particle, Vector relative, int count, double extra) {
+        this(particle, relative, count, 1.0, extra);
     }
 
-    public Particle(org.bukkit.Particle particle, double relativeX, double relativeY, double relativeZ, int count, Object data) {
-        this(particle, relativeX, relativeY, relativeZ, count, 1.0, data);
+    public Particle(org.bukkit.Particle particle, Vector relative, int count, Object data) {
+        this(particle, relative, count, 1.0, data);
     }
 
-    public Particle(org.bukkit.Particle particle, double relativeX, double relativeY, double relativeZ, int count, double extra, Object data) {
-        this(particle, relativeX, relativeY, relativeZ, count, 0, 0, 0, extra, data);
+    public Particle(org.bukkit.Particle particle, Vector relative, int count, double extra, Object data) {
+        this(particle, relative, count, new Vector(0,0,0), extra, data);
     }
 
-    public Particle(org.bukkit.Particle particle, double relativeX, double relativeY, double relativeZ, int count, double offsetX, double offsetY, double offsetZ) {
-        this(particle, relativeX, relativeY, relativeZ, count, offsetX, offsetY, offsetZ, 1.0, null);
+    public Particle(org.bukkit.Particle particle, Vector relative, int count, Vector offset) {
+        this(particle, relative, count, offset, 1.0, null);
     }
 
-    public Particle(org.bukkit.Particle particle, double relativeX, double relativeY, double relativeZ, int count, double offsetX, double offsetY, double offsetZ, double extra) {
-        this(particle, relativeX, relativeY, relativeZ, count, offsetX, offsetY, offsetZ, extra, null);
+    public Particle(org.bukkit.Particle particle, Vector relative, int count, Vector offset, double extra) {
+        this(particle, relative, count, offset, extra, null);
     }
 
-    public Particle(org.bukkit.Particle particle, double relativeX, double relativeY, double relativeZ, int count, double offsetX, double offsetY, double offsetZ, Object data) {
-        this(particle, relativeX, relativeY, relativeZ, count, offsetX, offsetY, offsetZ, 1.0, data);
+    public Particle(org.bukkit.Particle particle, Vector relative, int count, Vector offset, Object data) {
+        this(particle, relative, count, offset, 1.0, data);
     }
 
-    public Particle(org.bukkit.Particle particle, double relativeX, double relativeY, double relativeZ, int count, double offsetX, double offsetY, double offsetZ, double extra, Object data) {
+    public Particle(org.bukkit.Particle particle, Vector relative, int count, Vector offset, double extra, Object data) {
         this.particle = particle;
         this.dataClass = particle.getDataType();
         this.scripts = new ArrayList<>();
         this.data = data;
         this.icon = Material.FIREWORK_STAR;
-        this.relativeX = relativeX;
-        this.relativeY = relativeY;
-        this.relativeZ = relativeZ;
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        this.offsetZ = offsetZ;
+        this.relative = new Vector();
+        this.offset = new Vector();
         this.count = count;
         this.extra = extra;
     }
@@ -145,7 +149,7 @@ public class Particle {
     }
 
     public org.bukkit.Particle getParticle() {
-        return hasParticle() || !hasSuperParticle() ? particle : getSuperParticle().getParticle();
+        return particle;
     }
 
     public void setParticle(org.bukkit.Particle particle) {
@@ -154,7 +158,7 @@ public class Particle {
     }
 
     public Object getData() {
-        return hasData() || !hasSuperParticle() ? data : getSuperParticle().getData();
+        return data;
     }
 
     public void setData(Object data) {
@@ -162,7 +166,7 @@ public class Particle {
     }
 
     public Material getIcon() {
-        return hasIcon() || !hasSuperParticle() ? this.icon : getSuperParticle().getIcon();
+        return this.icon;
     }
 
     public void setIcon(Material icon) {
@@ -170,91 +174,67 @@ public class Particle {
     }
 
     public String getName() {
-        return hasName() || !hasSuperParticle() ? this.name : getSuperParticle().getName();
+        return this.name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public List<String> getDescription() {
-        return hasDescription() || !hasSuperParticle() ? this.description : getSuperParticle().getDescription();
-    }
-
-    public void setDescription(List<String> description) {
-        this.description = description;
-    }
-
     public Class<?> getDataClass() {
-        return hasDataClass() || !hasSuperParticle() ? this.dataClass : getSuperParticle().getDataClass();
+        return dataClass;
     }
 
-    public Double getRelativeX() {
-        return hasRelativeX() || !hasSuperParticle() ? this.relativeX : getSuperParticle().getRelativeX();
+    public void setDataClass(Class<?> dataClass) {
+        this.dataClass = dataClass;
     }
 
-    public void setRelativeX(double relativeX) {
-        this.relativeX = relativeX;
+    public Vector getRelative() {
+        return relative;
     }
 
-    public Double getRelativeY() {
-        return hasRelativeY() || !hasSuperParticle() ? this.relativeY : getSuperParticle().getRelativeY();
+    public void setRelative(Vector relative) {
+        this.relative = relative;
     }
 
-    public void setRelativeY(double relativeY) {
-        this.relativeY = relativeY;
+    public Vector getOffset() {
+        return offset;
     }
 
-    public Double getRelativeZ() {
-        return hasRelativeZ() || !hasSuperParticle() ? this.relativeZ : getSuperParticle().getRelativeZ();
-    }
-
-    public void setRelativeZ(double relativeZ) {
-        this.relativeZ = relativeZ;
-    }
-
-    public Double getOffsetX() {
-        return hasOffsetX() || !hasSuperParticle() ? this.offsetX : getSuperParticle().getOffsetX();
-    }
-
-    public void setOffsetX(double offsetX) {
-        this.offsetX = offsetX;
-    }
-
-    public Double getOffsetY() {
-        return hasOffsetY() || !hasSuperParticle() ? this.offsetY : getSuperParticle().getOffsetY();
-    }
-
-    public void setOffsetY(double offsetY) {
-        this.offsetY = offsetY;
-    }
-
-    public Double getOffsetZ() {
-        return hasOffsetZ() || !hasSuperParticle() ? this.offsetZ : getSuperParticle().getOffsetZ();
-    }
-
-    public void setOffsetZ(double offsetZ) {
-        this.offsetZ = offsetZ;
+    public void setOffset(Vector offset) {
+        this.offset = offset;
     }
 
     public Integer getCount() {
-        return hasCount() || !hasSuperParticle() ? this.count : getSuperParticle().getCount();
+        return count;
     }
 
-    public void setCount(int count) {
+    public void setCount(Integer count) {
         this.count = count;
     }
 
     public Double getExtra() {
-        return hasExtra() || !hasSuperParticle() ? this.extra : getSuperParticle().getExtra();
+        return extra;
     }
 
-    public void setExtra(double extra) {
+    public void setExtra(Double extra) {
         this.extra = extra;
     }
 
     public List<String> getScripts() {
-        return hasScripts() || !hasSuperParticle() ? this.scripts : getSuperParticle().getScripts();
+        return new ArrayList<>(scripts);
+    }
+
+    public void setScripts(List<String> scripts) {
+        this.scripts = scripts;
+    }
+
+    public List<String> getDescription() {
+        return description;
+    }
+
+    public void setDescription(List<String> description) {
+        this.description = description;
     }
 
     public boolean hasIcon() {
@@ -267,30 +247,6 @@ public class Particle {
 
     public boolean hasDescription() {
         return this.description != null;
-    }
-
-    public boolean hasRelativeX() {
-        return this.relativeX != null;
-    }
-
-    public boolean hasRelativeY() {
-        return this.relativeY != null;
-    }
-
-    public boolean hasRelativeZ() {
-        return this.relativeZ != null;
-    }
-
-    public boolean hasOffsetX() {
-        return this.offsetX != null;
-    }
-
-    public boolean hasOffsetY() {
-        return this.offsetY != null;
-    }
-
-    public boolean hasOffsetZ() {
-        return this.offsetZ != null;
     }
 
     public boolean hasCount() {
@@ -332,7 +288,7 @@ public class Particle {
     void prepare(String referencePath) {
         Context context = Context.enter();
         if (getScripts() != null) {
-            for (String script : getScripts()) {
+            scripts.forEach(script -> {
                 if (script.startsWith("file=")) {
                     try {
                         FileInputStream inputStream = new FileInputStream(referencePath + File.separator + script.substring("file=".length()));
@@ -346,13 +302,13 @@ public class Particle {
                     context.evaluateString(scope, script, "<cmd>", 1, null);
                     Context.exit();
                 }
-            }
+            });
         }
     }
 
     public void spawnOnLocation(Location location, int tick) {
         Data particleData = new Data(this);
-        if (getScripts() != null && !getScripts().isEmpty()) {
+        if (scripts != null && !scripts.isEmpty()) {
             Object function = scope.get("onLocation", scope);
             if (function instanceof Function) {
                 Function f = (Function) function;
@@ -366,7 +322,7 @@ public class Particle {
     public void spawnOnBlock(Block block, int tick) {
         Location location = block.getLocation();
         Data particleData = new Data(this);
-        if (getScripts() != null && !getScripts().isEmpty()) {
+        if (scripts != null && !scripts.isEmpty()) {
             Object function = scope.get("onBlock", scope);
             if (function instanceof Function) {
                 Function f = (Function) function;
@@ -380,7 +336,7 @@ public class Particle {
     public void spawnOnPlayer(Player player, EquipmentSlot slot, int tick) {
         Location location = player.getLocation();
         Data particleData = new Data(this);
-        if (getScripts() != null && !getScripts().isEmpty()) {
+        if (scripts != null && !scripts.isEmpty()) {
             Object function = scope.get("onPlayer", scope);
             if (function instanceof Function) {
                 Function f = (Function) function;
@@ -392,16 +348,16 @@ public class Particle {
     }
 
     private void spawn(Location location, Data particleData) {
-        spawn(location, particleData.relativeX, particleData.relativeY, particleData.relativeZ, particleData.count, particleData.offsetX, particleData.offsetY, particleData.offsetZ, particleData.extra, particleData.data);
+        spawn(location, particleData.relative, particleData.count, particleData.offset, particleData.extra, particleData.data);
     }
 
-    private void spawn(Location location, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, @Nullable Object data) {
+    private void spawn(Location location, Vector relative, int count, Vector offset, double extra, @Nullable Object data) {
         Bukkit.getScheduler().runTask(WUPlugin.getInstance(), () -> {
             if (location.getWorld() != null) {
-                if (data == null || getDataClass() == null || !getDataClass().isInstance(data)) {
-                    location.getWorld().spawnParticle(getParticle(), location.add(x, y, z), count, offsetX, offsetY, offsetZ, extra);
+                if (getDataClass() == null || !getDataClass().isInstance(data)) {
+                    location.getWorld().spawnParticle(getParticle(), location.add(relative), count, offset.getX(), offset.getY(), offset.getZ(), extra);
                 } else {
-                    location.getWorld().spawnParticle(getParticle(), location.add(x, y, z), count, offsetX, offsetY, offsetZ, extra, data);
+                    location.getWorld().spawnParticle(getParticle(), location.add(relative), count, offset.getX(), offset.getY(), offset.getZ(), extra, data);
                 }
             }
         });
@@ -411,19 +367,15 @@ public class Particle {
 
         private final Class<?> dataClass;
         private Object data;
-        private double relativeX, relativeY, relativeZ, offsetX, offsetY, offsetZ;
+        private Vector relative, offset;
         private int count;
         private double extra;
 
         public Data(Particle particle) {
             this.dataClass = particle.getDataClass();
+            this.relative = particle.getRelative();
+            this.offset = particle.getOffset();
             this.data = particle.getData();
-            this.relativeX = particle.getRelativeX() == null ? 0 : particle.getRelativeX();
-            this.relativeY = particle.getRelativeY() == null ? 0 : particle.getRelativeY();
-            this.relativeZ = particle.getRelativeZ() == null ? 0 : particle.getRelativeZ();
-            this.offsetX = particle.getOffsetX() == null ? 0 : particle.getOffsetX();
-            this.offsetY = particle.getOffsetY() == null ? 0 : particle.getOffsetY();
-            this.offsetZ = particle.getOffsetZ() == null ? 0 : particle.getOffsetZ();
             this.count = particle.getCount() == null ? 1 : particle.getCount();
             this.extra = particle.getExtra() == null ? 1 : particle.getExtra();
         }
@@ -438,52 +390,12 @@ public class Particle {
             }
         }
 
-        public double getRelativeX() {
-            return relativeX;
+        public Vector getOffset() {
+            return offset;
         }
 
-        public void setRelativeX(double relativeX) {
-            this.relativeX = relativeX;
-        }
-
-        public double getRelativeY() {
-            return relativeY;
-        }
-
-        public void setRelativeY(double relativeY) {
-            this.relativeY = relativeY;
-        }
-
-        public double getRelativeZ() {
-            return relativeZ;
-        }
-
-        public void setRelativeZ(double relativeZ) {
-            this.relativeZ = relativeZ;
-        }
-
-        public double getOffsetX() {
-            return offsetX;
-        }
-
-        public void setOffsetX(double offsetX) {
-            this.offsetX = offsetX;
-        }
-
-        public double getOffsetY() {
-            return offsetY;
-        }
-
-        public void setOffsetY(double offsetY) {
-            this.offsetY = offsetY;
-        }
-
-        public double getOffsetZ() {
-            return offsetZ;
-        }
-
-        public void setOffsetZ(double offsetZ) {
-            this.offsetZ = offsetZ;
+        public Vector getRelative() {
+            return relative;
         }
 
         public int getCount() {
