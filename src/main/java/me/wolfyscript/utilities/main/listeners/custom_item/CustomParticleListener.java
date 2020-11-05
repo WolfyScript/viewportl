@@ -3,13 +3,14 @@ package me.wolfyscript.utilities.main.listeners.custom_item;
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.custom_items.ParticleContent;
-import me.wolfyscript.utilities.api.custom_items.api_references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
@@ -28,7 +29,7 @@ public class CustomParticleListener implements Listener {
         if (CustomItems.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
             CustomItems.stopActiveParticleEffect(player, EquipmentSlot.HAND);
         }
-        if (item != null && item.getApiReference() instanceof WolfyUtilitiesRef) {
+        if (item != null) {
             ParticleContent particleContent = item.getParticleContent();
             if (particleContent != null) {
                 NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.HAND);
@@ -49,7 +50,7 @@ public class CustomParticleListener implements Listener {
             CustomItems.stopActiveParticleEffect(player, EquipmentSlot.OFF_HAND);
         }
         CustomItem mainHand = CustomItem.getByItemStack(event.getMainHandItem());
-        if (mainHand != null && mainHand.getApiReference() instanceof WolfyUtilitiesRef) {
+        if (mainHand != null) {
             ParticleContent particleContent = mainHand.getParticleContent();
             if (particleContent != null) {
                 NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.HAND);
@@ -60,7 +61,7 @@ public class CustomParticleListener implements Listener {
         }
 
         CustomItem offHand = CustomItem.getByItemStack(event.getOffHandItem());
-        if (offHand != null && offHand.getApiReference() instanceof WolfyUtilitiesRef) {
+        if (offHand != null) {
             ParticleContent particleContent = offHand.getParticleContent();
             if (particleContent != null) {
                 NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.OFF_HAND);
@@ -72,7 +73,25 @@ public class CustomParticleListener implements Listener {
     }
 
     @EventHandler
-    public void onDrop(PlayerDropItemEvent event){
+    public void onDrop(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        ItemStack droppedItem = event.getItemDrop().getItemStack();
+        ItemStack currentItem = player.getInventory().getItemInMainHand();
+
+        if (currentItem.getType().equals(Material.AIR) || currentItem.getAmount() <= 0) {
+            if (CustomItems.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
+                CustomItems.stopActiveParticleEffect(player, EquipmentSlot.HAND);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPickup(EntityPickupItemEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = ((Player) event.getEntity()).getPlayer();
+
+
+        }
 
     }
 
