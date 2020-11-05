@@ -1,0 +1,57 @@
+{
+  "test_effect": {
+    "name": "Firework Spark Effect",
+    "description": [
+      "Sparkly effects!"
+    ],
+    "count": 1,
+    "cooldown": 0,
+    "duration": 1,
+    "particles": [
+      {
+        "particle": "wolfyutilities:test_particle",
+        "extra": 0.25
+      }
+    ]
+  },
+  "portal": {
+    "name": "Portal",
+    "icon": "OBSIDIAN",
+    "description": [
+      "Portal"
+    ],
+    "count": 4,
+    "cooldown": 1,
+    "duration": 2,
+    "particles": [
+      {
+        "particle": "minecraft:portal",
+        "count": 2,
+        "offset": [
+          0,
+          0.5,
+          0
+        ],
+        "relative": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "flame": {
+    "name": "Flame",
+    "icon": "BLAZE_POWDER",
+    "description": [
+      "Flame effect"
+    ],
+    "cooldown": 1,
+    "duration": 20,
+    "particles": [
+      {
+        "particle": "wolfyutilities:flame"
+      }
+    ]
+  }
+}
