@@ -204,13 +204,13 @@ public class CustomItems {
         for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
             if (!hasStoredBlockEffect(entry.getKey())) {
                 CustomItem customItem = getCustomItem(entry.getValue().getKey());
-                if (customItem != null && customItem.getApiReference() instanceof WolfyUtilitiesRef) {
+                if (customItem != null) {
                     if (customItem.getParticleContent() != null && customItem.getParticleContent().containsKey(ParticleEffect.Action.BLOCK)) {
                         ParticleContent particleContent = customItem.getParticleContent();
                         NamespacedKey effectID = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
                         if (effectID != null) {
                             UUID uuid = ParticleEffects.spawnEffectOnBlock(effectID, entry.getKey().getBlock());
-                            storedBlocks.put(entry.getKey(), new Pair<>(((WolfyUtilitiesRef) customItem.getApiReference()).getNamespacedKey(), uuid));
+                            storedBlocks.put(entry.getKey(), new Pair<>(customItem.getNamespacedKey(), uuid));
                         }
                     }
                 }
