@@ -82,7 +82,7 @@ public class GuiUpdate {
     }
 
     public void setItem(int slot, ItemStack itemStack) {
-        getInventory().setItem(slot, itemStack);
+        queueInventory.setItem(slot, itemStack);
     }
 
     /*
