@@ -3,22 +3,15 @@ package me.wolfyscript.utilities.main;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
-import me.wolfyscript.utilities.api.custom_items.ParticleContent;
 import me.wolfyscript.utilities.api.custom_items.api_references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.network.MessageChannelHandler;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.inventory.ItemCategory;
-import me.wolfyscript.utilities.api.utils.json.gson.GsonUtil;
-import me.wolfyscript.utilities.api.utils.json.gson.serialization.*;
 import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
-import me.wolfyscript.utilities.api.utils.json.jackson.serialization.APIReferenceSerialization;
-import me.wolfyscript.utilities.api.utils.json.jackson.serialization.VectorSerialization;
-import me.wolfyscript.utilities.api.utils.particles.Particle;
-import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
+import me.wolfyscript.utilities.api.utils.json.jackson.serialization.*;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
 import me.wolfyscript.utilities.api.utils.particles.Particles;
 import me.wolfyscript.utilities.main.commands.InputCommand;
@@ -31,17 +24,12 @@ import me.wolfyscript.utilities.main.messages.InputButtonMessage;
 import me.wolfyscript.utilities.main.messages.WolfyUtilitiesVerifyMessage;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.util.Map;
 
 public class WUPlugin extends JavaPlugin {
 
@@ -61,20 +49,25 @@ public class WUPlugin extends JavaPlugin {
     public static void loadParticleEffects() throws IOException {
         wolfyUtilities.sendConsoleMessage("Loading Particles...");
         particlesConfig = new Particles(instance);
-        particlesConfig.load();
-        for (Map.Entry<NamespacedKey, Particle> particleEntry : Particles.getParticles().entrySet()) {
-            wolfyUtilities.sendDebugMessage("  - " + particleEntry.getKey() + " -> " + particleEntry.getValue());
-        }
+        particlesConfig.load(false);
         particleEffectsConfig = new ParticleEffects(instance);
-        particleEffectsConfig.load();
-        for (Map.Entry<NamespacedKey, ParticleEffect> effectEntry : ParticleEffects.getEffects().entrySet()) {
-            wolfyUtilities.sendDebugMessage("  - " + effectEntry.getKey() + " -> " + effectEntry.getValue().getParticles());
-        }
+        particleEffectsConfig.load(false);
         CustomItems.initiateMissingBlockEffects();
     }
 
     public static WUPlugin getInstance() {
         return instance;
+    }
+
+    public void onDisable() {
+        wolfyUtilities.getConfigAPI().saveConfigs();
+        WolfyUtilities.getCustomItems().save();
+        try {
+            particlesConfig.save(false);
+            particleEffectsConfig.save(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static WolfyUtilities getWolfyUtilities() {
@@ -89,15 +82,15 @@ public class WUPlugin extends JavaPlugin {
 
         //Jackson Serializer
         SimpleModule module = new SimpleModule();
-        me.wolfyscript.utilities.api.utils.json.jackson.serialization.ItemStackSerialization.create(module);
-        me.wolfyscript.utilities.api.utils.json.jackson.serialization.ColorSerialization.create(module);
-        me.wolfyscript.utilities.api.utils.json.jackson.serialization.DustOptionsSerialization.create(module);
-        me.wolfyscript.utilities.api.utils.json.jackson.serialization.LocationSerialization.create(module);
-        me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleContentSerialization.create(module);
-        me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleEffectSerialization.create(module);
-        me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleSerialization.create(module);
-        me.wolfyscript.utilities.api.utils.json.jackson.serialization.PotionEffectTypeSerialization.create(module);
-        me.wolfyscript.utilities.api.utils.json.jackson.serialization.PotionEffectSerialization.create(module);
+        ItemStackSerialization.create(module);
+        ColorSerialization.create(module);
+        DustOptionsSerialization.create(module);
+        LocationSerialization.create(module);
+        ParticleContentSerialization.create(module);
+        ParticleEffectSerialization.create(module);
+        ParticleSerialization.create(module);
+        PotionEffectTypeSerialization.create(module);
+        PotionEffectSerialization.create(module);
         VectorSerialization.create(module);
 
         //Reference Deserializer
@@ -110,17 +103,6 @@ public class WUPlugin extends JavaPlugin {
         module.addDeserializer(WolfyUtilitiesRef.class, new WolfyUtilitiesRef.Serialization());
         JacksonUtil.registerModule(module);
 
-        //GSON serializations
-        GsonUtil.registerTypeHierarchyAdapter(CustomItem.class, new CustomItemSerialization());
-        GsonUtil.registerTypeHierarchyAdapter(ItemStack.class, new ItemStackSerialization());
-        GsonUtil.registerTypeHierarchyAdapter(ItemMeta.class, new ItemMetaSerialization());
-        GsonUtil.registerTypeHierarchyAdapter(Location.class, new LocationSerialization());
-        GsonUtil.registerTypeHierarchyAdapter(Color.class, new ColorSerialization());
-        GsonUtil.registerTypeHierarchyAdapter(org.bukkit.Particle.DustOptions.class, new DustOptionsSerialization());
-        GsonUtil.registerTypeHierarchyAdapter(Particle.class, new ParticleSerialization());
-        GsonUtil.registerTypeHierarchyAdapter(ParticleEffect.class, new ParticleEffectSerialization());
-        GsonUtil.registerTypeHierarchyAdapter(ParticleContent.class, new ParticleContentSerialization());
-
         //Register custom item data
     }
 
@@ -132,8 +114,10 @@ public class WUPlugin extends JavaPlugin {
         ConfigAPI configAPI = wolfyUtilities.getConfigAPI();
         LanguageAPI languageAPI = wolfyUtilities.getLanguageAPI();
 
+        /*
         mainConfig = new MainConfiguration(configAPI);
         configAPI.registerConfig(mainConfig);
+         */
 
         saveResource("lang/en_US.json", true);
         try {
@@ -161,6 +145,8 @@ public class WUPlugin extends JavaPlugin {
         }
 
         saveResource("particles/scripts/flame_spiral_down.js", true);
+        saveResource("particles/particles.json", true);
+        saveResource("particles/particle_effects.json", true);
         saveResource("particles/README.txt", true);
 
         try {
@@ -186,17 +172,6 @@ public class WUPlugin extends JavaPlugin {
         });
 
         //System.out.println("TestItem: "+ ItemUtils.serializeItemStack(new ItemBuilder(Material.DIAMOND_SWORD).addItemFlags(ItemFlag.HIDE_UNBREAKABLE).setDisplayName("LUL").addLoreLine("Test Item").create()));
-    }
-
-    public void onDisable() {
-        wolfyUtilities.getConfigAPI().saveConfigs();
-        WolfyUtilities.getCustomItems().save();
-        try {
-            particlesConfig.save(false);
-            particleEffectsConfig.save(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.main.WUPlugin;
-import org.bukkit.Color;
 import org.bukkit.util.Vector;
 
 import java.io.IOException;
@@ -32,11 +32,11 @@ public class VectorSerialization {
 
         @Override
         public void serialize(Vector value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-            gen.writeStartObject();
-            gen.writeNumberField("x", value.getX());
-            gen.writeNumberField("y", value.getY());
-            gen.writeNumberField("z", value.getZ());
-            gen.writeEndObject();
+            gen.writeStartArray();
+            gen.writeNumber(value.getX());
+            gen.writeNumber(value.getY());
+            gen.writeNumber(value.getZ());
+            gen.writeEndArray();
         }
     }
 
@@ -53,8 +53,9 @@ public class VectorSerialization {
         @Override
         public Vector deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonNode node = p.readValueAsTree();
-            if (node.isObject()) {
-                return new Vector(node.get("x").asDouble(0), node.get("y").asDouble(0), node.get("z").asDouble(0));
+            if (node.isArray()) {
+                ArrayNode arrayNode = (ArrayNode) node;
+                return new Vector(arrayNode.get(0).asDouble(0), arrayNode.get(1).asDouble(0), arrayNode.get(2).asDouble(0));
             }
             WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing Vector! Invalid Vector object!");
             return null;
