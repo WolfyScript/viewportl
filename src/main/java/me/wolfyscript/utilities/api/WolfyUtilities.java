@@ -115,6 +115,10 @@ public class WolfyUtilities implements Listener {
         return WUPlugin.getMcUpdateVersionNumber() >= versionNumber;
     }
 
+    public static boolean hasJavaXScripting() {
+        return hasClass("javax.script.ScriptEngine");
+    }
+
     public static boolean hasSpigot() {
         return hasClass("org.spigotmc.Metrics");
     }

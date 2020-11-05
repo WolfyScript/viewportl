@@ -104,10 +104,13 @@ public class Particles {
         if(file.exists()){
             JsonNode node = JacksonUtil.getObjectMapper().readTree(file);
             node.fields().forEachRemaining(entry -> {
+                NamespacedKey namespacedKey = new NamespacedKey(namespace, entry.getKey());
                 Particle particle = JacksonUtil.getObjectMapper().convertValue(entry.getValue(), Particle.class);
-                if(particle != null){
-                    NamespacedKey namespacedKey = new NamespacedKey(namespace, entry.getKey());
+                if(particle != null) {
                     particle.setNamespacedKey(namespacedKey);
+                    if (namespacedKey.equals(particle.getSuperParticle())) {
+                        particle.setSuperParticle(null);
+                    }
                     addParticle(namespacedKey, particle);
                 }
             });

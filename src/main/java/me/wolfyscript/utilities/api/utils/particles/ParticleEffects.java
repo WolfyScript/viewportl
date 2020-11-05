@@ -20,8 +20,8 @@ import org.bukkit.scheduler.BukkitTask;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 /*
 Contains the ParticleEffects
@@ -37,15 +37,15 @@ public class ParticleEffects {
     private final String path;
     private final Plugin plugin;
 
-    public ParticleEffects(Plugin plugin){
+    public ParticleEffects(Plugin plugin) {
         this(plugin, plugin.getName().toLowerCase(Locale.ROOT).replace(" ", "_"));
     }
 
-    public ParticleEffects(Plugin plugin, String namespace){
+    public ParticleEffects(Plugin plugin, String namespace) {
         this(plugin, namespace, "");
     }
 
-    public ParticleEffects(Plugin plugin, String namespace, String path){
+    public ParticleEffects(Plugin plugin, String namespace, String path) {
         this.plugin = plugin;
         this.namespace = namespace;
         this.path = plugin.getDataFolder().getPath() + path;
@@ -83,12 +83,8 @@ public class ParticleEffects {
         }
     }
 
-    public void save(String path) throws IOException {
-        File file = new File(path + File.separator + namespace + File.separator + "particles", "particle_effects.json");
-        file.getParentFile().getParentFile().mkdirs();
-        if(file.exists() || file.createNewFile()){
-            JacksonUtil.getObjectMapper().writeValue(file, this);
-        }
+    public static UUID spawnEffectOnBlock(NamespacedKey nameSpacedKey, Block block) {
+        return spawnEffect(nameSpacedKey, (particleEffect, i) -> particleEffect.spawnOnBlock(block, i));
     }
 
     /**
@@ -107,104 +103,51 @@ public class ParticleEffects {
         }
     }
 
-    public static UUID spawnEffectOnBlock(NamespacedKey nameSpacedKey, Block block) {
-        ParticleEffect particleEffect = getEffect(nameSpacedKey);
-        if (particleEffect != null) {
-            UUID id = UUID.randomUUID();
-            while (currentEffects.containsKey(id)) {
-                id = UUID.randomUUID();
-            }
-            BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(WUPlugin.getInstance(), () -> {
-                AtomicBoolean allow = new AtomicBoolean(true);
-                Bukkit.getScheduler().runTask(WUPlugin.getInstance(), () -> allow.set(block.getWorld().getNearbyEntities(block.getLocation(), 25, 25, 25, entity -> entity instanceof Player).isEmpty()));
-                if (allow.get()) {
-                    particleEffect.prepare();
-                    AtomicInteger i = new AtomicInteger();
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            particleEffect.spawnOnBlock(block, i.get());
-                            if (i.get() < particleEffect.getDuration()) {
-                                i.getAndIncrement();
-                            } else {
-                                cancel();
-                            }
-                        }
-                    }.runTaskTimerAsynchronously(WUPlugin.getInstance(), 1, 1);
-                }
-            }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1);
-
-            currentEffects.put(id, cooldownTask);
-            return id;
-        }
-        return null;
-    }
-
     public static UUID spawnEffectOnLocation(NamespacedKey nameSpacedKey, Location location) {
-        ParticleEffect particleEffect = getEffect(nameSpacedKey);
-        if (particleEffect != null) {
-            UUID id = UUID.randomUUID();
-            System.out.println();
-            while (currentEffects.containsKey(id)) {
-                id = UUID.randomUUID();
-            }
-            BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(WUPlugin.getInstance(), () -> {
-                AtomicBoolean allow = new AtomicBoolean(true);
-                Bukkit.getScheduler().runTask(WUPlugin.getInstance(), () -> allow.set(location.getWorld().getNearbyEntities(location, 25, 25, 25, entity -> entity instanceof Player).isEmpty()));
-                if (allow.get()) {
-                    particleEffect.prepare();
-                    AtomicInteger i = new AtomicInteger();
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            particleEffect.spawnOnLocation(location, i.get());
-                            if (i.get() < particleEffect.getDuration()) {
-                                i.getAndIncrement();
-                            } else {
-                                cancel();
-                            }
-                        }
-                    }.runTaskTimerAsynchronously(WUPlugin.getInstance(), 1, 1);
-                }
-            }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1);
-            currentEffects.put(id, cooldownTask);
-            return id;
-        }
-        return null;
+        return spawnEffect(nameSpacedKey, (particleEffect, i) -> particleEffect.spawnOnLocation(location, i));
     }
 
     public static UUID spawnEffectOnPlayer(NamespacedKey nameSpacedKey, EquipmentSlot slot, Player player) {
-        ParticleEffect particleEffect = getEffect(nameSpacedKey);
+        return spawnEffect(nameSpacedKey, (particleEffect, i) -> {
+            if (player != null && player.isValid()) {
+                particleEffect.spawnOnPlayer(player, slot, i);
+            }
+        });
+    }
+
+    private static UUID spawnEffect(NamespacedKey namespacedKey, BiConsumer<ParticleEffect, Integer> consumer) {
+        ParticleEffect particleEffect = getEffect(namespacedKey);
         if (particleEffect != null) {
             UUID id = UUID.randomUUID();
             while (currentEffects.containsKey(id)) {
                 id = UUID.randomUUID();
             }
-            UUID playerID = player.getUniqueId();
-            BukkitTask cooldownTask = Bukkit.getScheduler().runTaskTimerAsynchronously(WUPlugin.getInstance(), () -> {
+            currentEffects.put(id, Bukkit.getScheduler().runTaskTimerAsynchronously(WUPlugin.getInstance(), () -> {
                 particleEffect.prepare();
-                Player currentPlayer = Bukkit.getPlayer(playerID);
                 AtomicInteger i = new AtomicInteger();
-                if (currentPlayer != null && currentPlayer.isOnline() && currentPlayer.isValid()) {
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            particleEffect.spawnOnPlayer(currentPlayer, slot, i.get());
-
-                            if (i.get() < particleEffect.getDuration()) {
-                                i.getAndIncrement();
-                            } else {
-                                cancel();
-                            }
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        consumer.accept(particleEffect, i.get());
+                        if (i.get() < particleEffect.getDuration()) {
+                            i.getAndIncrement();
+                        } else {
+                            cancel();
                         }
-                    }.runTaskTimerAsynchronously(WUPlugin.getInstance(), 1, 1);
-                }
-            }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1);
-
-            currentEffects.put(id, cooldownTask);
+                    }
+                }.runTaskTimerAsynchronously(WUPlugin.getInstance(), 1, 1);
+            }, particleEffect.getCooldown(), particleEffect.getCooldown() + particleEffect.getDuration() + 1));
             return id;
         }
         return null;
+    }
+
+    public void save(String path) throws IOException {
+        File file = new File(path + File.separator + namespace + File.separator + "particles", "particle_effects.json");
+        file.getParentFile().getParentFile().mkdirs();
+        if (file.exists() || file.createNewFile()) {
+            JacksonUtil.getObjectMapper().writeValue(file, this);
+        }
     }
 
     public void save() throws IOException {
@@ -212,14 +155,13 @@ public class ParticleEffects {
     }
 
     /**
-     *
      * @param addNamespace If true the namespace is appended to the path
      * @throws IOException
      */
     public void save(boolean addNamespace) throws IOException {
         File file = new File(path + (addNamespace ? File.separator + namespace : "") + File.separator + "particles", "particle_effects.json");
         file.getParentFile().getParentFile().mkdirs();
-        if(file.exists() || file.createNewFile()){
+        if (file.exists() || file.createNewFile()) {
             JacksonUtil.getObjectMapper().writeValue(file, this);
         }
     }
@@ -229,17 +171,16 @@ public class ParticleEffects {
     }
 
     /**
-     *
      * @param addNamespace If true the namespace is appended to the path
      * @throws IOException
      */
     public void load(boolean addNamespace) throws IOException {
         File file = new File(path + (addNamespace ? File.separator + namespace : "") + File.separator + "particles", "particle_effects.json");
-        if(file.exists()){
+        if (file.exists()) {
             JsonNode node = JacksonUtil.getObjectMapper().readTree(file);
             node.fields().forEachRemaining(entry -> {
                 ParticleEffect particle = JacksonUtil.getObjectMapper().convertValue(entry.getValue(), ParticleEffect.class);
-                if(particle != null){
+                if (particle != null) {
                     particle.setReferencePath(file.getParent());
                     addEffect(new NamespacedKey(namespace, entry.getKey()), particle);
                 }
@@ -249,7 +190,7 @@ public class ParticleEffects {
 
     public static class Serializer extends StdSerializer<ParticleEffects> {
 
-        public Serializer(){
+        public Serializer() {
             super(ParticleEffects.class);
         }
 
@@ -261,7 +202,7 @@ public class ParticleEffects {
         public void serialize(ParticleEffects value, JsonGenerator gen, SerializerProvider provider) throws IOException {
             gen.writeStartObject();
             for (Map.Entry<NamespacedKey, ParticleEffect> entry : particleEffects.entrySet()) {
-                if(entry.getKey().getNamespace().equals(value.namespace)){
+                if (entry.getKey().getNamespace().equals(value.namespace)) {
                     gen.writeObjectField(entry.getKey().getKey(), entry.getValue());
                 }
             }

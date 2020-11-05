@@ -2,11 +2,10 @@ package me.wolfyscript.utilities.api.utils.particles;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleSerialization;
-import me.wolfyscript.utilities.libraries.org.mozilla.javascript.Context;
-import me.wolfyscript.utilities.libraries.org.mozilla.javascript.Function;
-import me.wolfyscript.utilities.libraries.org.mozilla.javascript.Scriptable;
+import me.wolfyscript.utilities.api.utils.scripting.ScriptUtil;
 import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,7 +16,11 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
-import java.io.*;
+import javax.script.Invocable;
+import javax.script.ScriptException;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,16 +32,11 @@ Contains the location, offset, ParticleEffects, etc.
 public class Particle {
 
     private NamespacedKey namespacedKey;
-    private Particle superParticle;
+    private NamespacedKey superParticle;
     private org.bukkit.Particle particle;
 
-    private static final Scriptable scope;
-
-    static {
-        scope = Context.enter().initSafeStandardObjects();
-        Context.exit();
-    }
-
+    private String name;
+    private List<String> description;
     private Material icon;
     private Class<?> dataClass;
     private Object data;
@@ -46,10 +44,14 @@ public class Particle {
     private Integer count;
     private Double extra;
     private List<String> scripts;
-    private String name;
-    private List<String> description;
 
     public Particle(Particle particle) {
+        this.particle = particle.getParticle();
+        this.superParticle = getSuperParticle();
+        this.name = particle.getName();
+        this.description = particle.getDescription();
+        this.icon = particle.getIcon();
+
         this.dataClass = particle.dataClass;
         this.data = particle.data;
         this.relative = particle.getRelative();
@@ -57,8 +59,6 @@ public class Particle {
         this.count = particle.getCount();
         this.extra = particle.getExtra();
         this.scripts = particle.getScripts();
-        this.name = particle.getName();
-        this.description = particle.getDescription();
     }
 
     public Particle() {
@@ -85,7 +85,7 @@ public class Particle {
     }
 
     public Particle(org.bukkit.Particle particle, int count, double extra, Object data) {
-        this(particle, new Vector(0,0,0), count, extra, data);
+        this(particle, new Vector(0, 0, 0), count, extra, data);
     }
 
     public Particle(org.bukkit.Particle particle, Vector relative, int count) {
@@ -101,7 +101,7 @@ public class Particle {
     }
 
     public Particle(org.bukkit.Particle particle, Vector relative, int count, double extra, Object data) {
-        this(particle, relative, count, new Vector(0,0,0), extra, data);
+        this(particle, relative, count, new Vector(0, 0, 0), extra, data);
     }
 
     public Particle(org.bukkit.Particle particle, Vector relative, int count, Vector offset) {
@@ -122,8 +122,8 @@ public class Particle {
         this.scripts = new ArrayList<>();
         this.data = data;
         this.icon = Material.FIREWORK_STAR;
-        this.relative = new Vector();
-        this.offset = new Vector();
+        this.relative = relative;
+        this.offset = offset;
         this.count = count;
         this.extra = extra;
     }
@@ -136,12 +136,12 @@ public class Particle {
         this.namespacedKey = namespacedKey;
     }
 
-    public void setSuperParticle(Particle superParticle) {
-        this.superParticle = superParticle;
+    public NamespacedKey getSuperParticle() {
+        return superParticle;
     }
 
-    public Particle getSuperParticle() {
-        return superParticle;
+    public void setSuperParticle(NamespacedKey superParticle) {
+        this.superParticle = superParticle;
     }
 
     public boolean hasSuperParticle() {
@@ -222,7 +222,7 @@ public class Particle {
     }
 
     public List<String> getScripts() {
-        return new ArrayList<>(scripts);
+        return scripts != null ? new ArrayList<>(scripts) : null;
     }
 
     public void setScripts(List<String> scripts) {
@@ -237,42 +237,6 @@ public class Particle {
         this.description = description;
     }
 
-    public boolean hasIcon() {
-        return this.icon != null;
-    }
-
-    public boolean hasName() {
-        return this.name != null;
-    }
-
-    public boolean hasDescription() {
-        return this.description != null;
-    }
-
-    public boolean hasCount() {
-        return this.count != null;
-    }
-
-    public boolean hasExtra() {
-        return this.extra != null;
-    }
-
-    public boolean hasParticle() {
-        return this.particle != null;
-    }
-
-    public boolean hasData() {
-        return this.data != null;
-    }
-
-    public boolean hasDataClass() {
-        return this.dataClass != null;
-    }
-
-    public boolean hasScripts() {
-        return this.scripts != null;
-    }
-
     public void addScript(String script) {
         if (scripts == null) {
             scripts = new ArrayList<>();
@@ -282,25 +246,34 @@ public class Particle {
 
     @Override
     public String toString() {
-        return "Particle[" + namespacedKey + ", extends:{" + getSuperParticle() + "}, particle: " + getParticle() + ", scripts:" + getScripts() + "]";
+        return "Particle{" +
+                "namespacedKey=" + namespacedKey +
+                ", superParticle=" + superParticle +
+                ", particle=" + particle +
+                ", icon=" + icon +
+                ", dataClass=" + dataClass +
+                ", data=" + data +
+                ", relative=" + relative +
+                ", offset=" + offset +
+                ", count=" + count +
+                ", extra=" + extra +
+                ", scripts=" + scripts +
+                ", name='" + name + '\'' +
+                ", description=" + description +
+                '}';
     }
 
     void prepare(String referencePath) {
-        Context context = Context.enter();
-        if (getScripts() != null) {
+        if (WolfyUtilities.hasJavaXScripting() && getScripts() != null) {
             scripts.forEach(script -> {
-                if (script.startsWith("file=")) {
-                    try {
-                        FileInputStream inputStream = new FileInputStream(referencePath + File.separator + script.substring("file=".length()));
-                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                        context.evaluateReader(scope, bufferedReader, "<cmd>", 1, null);
-                        Context.exit();
-                    } catch (IOException e) {
-                        WUPlugin.getWolfyUtilities().sendDebugMessage(e.getMessage());
+                try {
+                    if (script.startsWith("file=")) {
+                        ScriptUtil.getEngine().eval(new FileReader(referencePath + File.separator + script.substring("file=".length())));
+                    } else {
+                        ScriptUtil.getEngine().eval(script);
                     }
-                } else {
-                    context.evaluateString(scope, script, "<cmd>", 1, null);
-                    Context.exit();
+                } catch (IOException | ScriptException e) {
+                    WUPlugin.getWolfyUtilities().sendDebugMessage(e.getMessage());
                 }
             });
         }
@@ -308,12 +281,12 @@ public class Particle {
 
     public void spawnOnLocation(Location location, int tick) {
         Data particleData = new Data(this);
-        if (scripts != null && !scripts.isEmpty()) {
-            Object function = scope.get("onLocation", scope);
-            if (function instanceof Function) {
-                Function f = (Function) function;
-                f.call(Context.enter(), scope, scope, new Object[]{location, particleData, tick});
-                Context.exit();
+        if (WolfyUtilities.hasJavaXScripting() && scripts != null && !scripts.isEmpty()) {
+            Invocable invocable = (Invocable) ScriptUtil.getEngine();
+            try {
+                invocable.invokeFunction("onLocation", location, particleData, tick);
+            } catch (ScriptException | NoSuchMethodException e) {
+                e.printStackTrace();
             }
         }
         spawn(location, particleData);
@@ -322,12 +295,12 @@ public class Particle {
     public void spawnOnBlock(Block block, int tick) {
         Location location = block.getLocation();
         Data particleData = new Data(this);
-        if (scripts != null && !scripts.isEmpty()) {
-            Object function = scope.get("onBlock", scope);
-            if (function instanceof Function) {
-                Function f = (Function) function;
-                f.call(Context.enter(), scope, scope, new Object[]{block, location, particleData, tick});
-                Context.exit();
+        if (WolfyUtilities.hasJavaXScripting() && scripts != null && !scripts.isEmpty()) {
+            Invocable invocable = (Invocable) ScriptUtil.getEngine();
+            try {
+                invocable.invokeFunction("onBlock", block, location, particleData, tick);
+            } catch (ScriptException | NoSuchMethodException e) {
+                e.printStackTrace();
             }
         }
         spawn(location, particleData);
@@ -336,12 +309,12 @@ public class Particle {
     public void spawnOnPlayer(Player player, EquipmentSlot slot, int tick) {
         Location location = player.getLocation();
         Data particleData = new Data(this);
-        if (scripts != null && !scripts.isEmpty()) {
-            Object function = scope.get("onPlayer", scope);
-            if (function instanceof Function) {
-                Function f = (Function) function;
-                f.call(Context.enter(), scope, scope, new Object[]{player, slot, location, particleData, tick});
-                Context.exit();
+        if (WolfyUtilities.hasJavaXScripting() && scripts != null && !scripts.isEmpty()) {
+            Invocable invocable = (Invocable) ScriptUtil.getEngine();
+            try {
+                invocable.invokeFunction("onPlayer", player, slot, location, particleData, tick);
+            } catch (ScriptException | NoSuchMethodException e) {
+                e.printStackTrace();
             }
         }
         spawn(location, particleData);
@@ -373,8 +346,8 @@ public class Particle {
 
         public Data(Particle particle) {
             this.dataClass = particle.getDataClass();
-            this.relative = particle.getRelative();
-            this.offset = particle.getOffset();
+            this.relative = new Vector(particle.getRelative().getX(), particle.getRelative().getY(), particle.getRelative().getZ());
+            this.offset = new Vector(particle.getOffset().getX(), particle.getOffset().getY(), particle.getOffset().getZ());
             this.data = particle.getData();
             this.count = particle.getCount() == null ? 1 : particle.getCount();
             this.extra = particle.getExtra() == null ? 1 : particle.getExtra();
@@ -394,8 +367,16 @@ public class Particle {
             return offset;
         }
 
+        public void setOffset(Vector offset) {
+            this.offset = offset;
+        }
+
         public Vector getRelative() {
             return relative;
+        }
+
+        public void setRelative(Vector relative) {
+            this.relative = relative;
         }
 
         public int getCount() {

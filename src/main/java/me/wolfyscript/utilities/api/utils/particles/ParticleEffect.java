@@ -115,12 +115,26 @@ public class ParticleEffect {
     }
 
     public void spawnOnPlayer(Player player, EquipmentSlot slot, int tick) {
-        for(Particle particle : particles){
+        for (Particle particle : particles) {
             particle.spawnOnPlayer(player, slot, tick);
         }
     }
 
-    public enum Action{
+    @Override
+    public String toString() {
+        return "ParticleEffect{" +
+                "particles=" + particles +
+                ", icon=" + icon +
+                ", name='" + name + '\'' +
+                ", description=" + description +
+                ", referencePath='" + referencePath + '\'' +
+                ", count=" + count +
+                ", duration=" + duration +
+                ", cooldown=" + cooldown +
+                '}';
+    }
+
+    public enum Action {
         LOCATION,
         BLOCK,
         CHEST,
