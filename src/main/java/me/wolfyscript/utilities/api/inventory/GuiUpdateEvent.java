@@ -1,9 +1,7 @@
 package me.wolfyscript.utilities.api.inventory;
 
-import javax.annotation.Nonnull;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.button.Button;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -11,67 +9,48 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+
+import javax.annotation.Nonnull;
 
 public class GuiUpdateEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
-    private GuiHandler guiHandler;
-    private InventoryAPI inventoryAPI;
-    private WolfyUtilities wolfyUtilities;
-    private Player player;
-    private Inventory inventory;
-    private GuiWindow guiWindow;
+    private final GuiUpdate guiUpdate;
 
     public GuiUpdateEvent(GuiHandler guiHandler, GuiWindow guiWindow) {
-        this.guiHandler = guiHandler;
-        this.inventoryAPI = guiHandler.getApi().getInventoryAPI();
-        this.wolfyUtilities = guiHandler.getApi();
-        this.player = guiHandler.getPlayer();
-        this.guiWindow = guiWindow;
-        if (!guiWindow.hasCachedInventory(guiHandler)) {
-            String guiName = guiWindow.getInventoryName();
-            guiName = guiName.replace("%plugin.version%",wolfyUtilities.getPlugin().getDescription().getVersion()).replace("%plugin.author%",wolfyUtilities.getPlugin().getDescription().getAuthors().toString()).replace("%plugin.name%",wolfyUtilities.getPlugin().getDescription().getName());
-            if (guiWindow.getInventoryType() == null) {
-                this.inventory = Bukkit.createInventory(null, guiWindow.getSize(), guiName);
-            } else {
-                this.inventory = Bukkit.createInventory(null, guiWindow.getInventoryType(), guiName);
-            }
-        } else {
-            this.inventory = guiWindow.getInventory(guiHandler);
-        }
+        this.guiUpdate = new GuiUpdate(guiHandler, guiWindow);
     }
 
     public boolean verify(GuiWindow guiWindow) {
-        return guiWindow.equals(this.guiWindow);
+        return guiWindow.equals(getGuiWindow());
     }
 
     public GuiHandler getGuiHandler() {
-        return guiHandler;
+        return guiUpdate.getGuiHandler();
     }
 
     public Player getPlayer() {
-        return player;
+        return guiUpdate.getPlayer();
     }
 
     public WolfyUtilities getWolfyUtilities() {
-        return wolfyUtilities;
+        return guiUpdate.getWolfyUtilities();
     }
 
     public GuiWindow getGuiWindow() {
-        return guiWindow;
+        return guiUpdate.getGuiWindow();
     }
 
     public InventoryAPI getInventoryAPI() {
-        return inventoryAPI;
+        return guiUpdate.getInventoryAPI();
     }
 
     public ItemStack getItem(int slot) {
-        return getInventory().getItem(slot);
+        return guiUpdate.getItem(slot);
     }
 
     public void setItem(int slot, ItemStack itemStack) {
-        getInventory().setItem(slot, itemStack);
+        guiUpdate.setItem(slot, itemStack);
     }
 
     /*
@@ -79,11 +58,7 @@ public class GuiUpdateEvent extends Event {
     Locally means it is registered inside of the GuiWindow!
      */
     public void setButton(int slot, String id) {
-        Button button = guiWindow.getButton(id);
-        if (button != null) {
-            guiHandler.setButton(guiWindow, slot, id);
-            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
-        }
+        guiUpdate.setButton(slot, id);
     }
 
     /*
@@ -91,24 +66,14 @@ public class GuiUpdateEvent extends Event {
     it will try to get the button globally registered for this GuiCluster.
      */
     public void setLocalOrGlobalButton(int slot, String id){
-        Button button = guiWindow.getButton(id);
-        if(button == null){
-            button = inventoryAPI.getButton(guiWindow.getClusterID(), id);
-        }
-        if (button != null) {
-            guiHandler.setButton(guiWindow, slot, id);
-            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
-        }
+        guiUpdate.setLocalOrGlobalButton(slot, id);
     }
 
     /*
     Sets a Button object to the specific slot.
      */
     public void setButton(int slot, @Nonnull Button button) {
-        if (button != null) {
-            guiHandler.setButton(guiWindow, slot, button.getId());
-            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
-        }
+        guiUpdate.setButton(slot, button);
     }
 
     /*
@@ -116,23 +81,23 @@ public class GuiUpdateEvent extends Event {
     Globally means it is registered via the InventoryAPI and registered in the GuiCluster.
      */
     public void setButton(int slot, String namespace, String key) {
-        Button button = inventoryAPI.getButton(namespace, key);
-        if (button != null) {
-            guiHandler.setButton(guiWindow, slot, namespace + ":" + key);
-            button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
-        }
+        guiUpdate.setButton(slot, namespace, key);
     }
 
     public Inventory getInventory() {
-        return inventory;
+        return guiUpdate.getInventory();
     }
 
     public Inventory createInventory(InventoryHolder owner, int size) {
-        return Bukkit.createInventory(owner, size, guiWindow.getInventoryName());
+        return guiUpdate.createInventory(owner, size);
     }
 
     public Inventory createInventory(InventoryHolder owner, InventoryType type) {
-        return Bukkit.createInventory(owner, type, guiWindow.getInventoryName());
+        return guiUpdate.createInventory(owner, type);
+    }
+
+    public GuiUpdate getGuiUpdate() {
+        return guiUpdate;
     }
 
     @Override

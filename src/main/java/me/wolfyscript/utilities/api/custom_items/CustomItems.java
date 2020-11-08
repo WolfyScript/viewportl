@@ -5,7 +5,7 @@ import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.Pair;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffect;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -84,7 +84,8 @@ public class CustomItems {
      * @return CustomItem of the NamespacedKey or null if it doesn't exist
      */
     @Nullable
-    public static CustomItem getCustomItem(NamespacedKey namespacedKey) {
+    public static CustomItem getCustomItem(@Nullable NamespacedKey namespacedKey) {
+        if(namespacedKey == null) return null;
         return customItems.get(namespacedKey);
     }
 
@@ -203,13 +204,13 @@ public class CustomItems {
         for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
             if (!hasStoredBlockEffect(entry.getKey())) {
                 CustomItem customItem = getCustomItem(entry.getValue().getKey());
-                if (customItem != null && customItem.getApiReference() instanceof WolfyUtilitiesRef) {
+                if (customItem != null) {
                     if (customItem.getParticleContent() != null && customItem.getParticleContent().containsKey(ParticleEffect.Action.BLOCK)) {
                         ParticleContent particleContent = customItem.getParticleContent();
                         NamespacedKey effectID = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
                         if (effectID != null) {
                             UUID uuid = ParticleEffects.spawnEffectOnBlock(effectID, entry.getKey().getBlock());
-                            storedBlocks.put(entry.getKey(), new Pair<>(((WolfyUtilitiesRef) customItem.getApiReference()).getNamespacedKey(), uuid));
+                            storedBlocks.put(entry.getKey(), new Pair<>(customItem.getNamespacedKey(), uuid));
                         }
                     }
                 }
@@ -238,7 +239,7 @@ public class CustomItems {
 
     public void save() {
         try {
-            FileOutputStream fos = new FileOutputStream(new File(Main.getInstance().getDataFolder() + File.separator + "stored_block_items.dat"));
+            FileOutputStream fos = new FileOutputStream(new File(WUPlugin.getInstance().getDataFolder() + File.separator + "stored_block_items.dat"));
             BukkitObjectOutputStream oos = new BukkitObjectOutputStream(fos);
             HashMap<String, String> saveMap = new HashMap<>();
             for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
@@ -257,7 +258,7 @@ public class CustomItems {
     }
 
     public void load() {
-        File file = new File(Main.getInstance().getDataFolder() + File.separator + "stored_block_items.dat");
+        File file = new File(WUPlugin.getInstance().getDataFolder() + File.separator + "stored_block_items.dat");
         if (file.exists()) {
             FileInputStream fis;
             try {

@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.custom_items.api_references;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
@@ -31,8 +32,11 @@ public class VanillaRef extends APIReference {
 
     @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
+
         gen.writeFieldName("item");
-        provider.findValueSerializer(ItemStack.class).serialize(itemStack, gen, provider);
+        ObjectMapper objectMapper = JacksonUtil.getObjectMapper().copy();//.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.EVERYTHING);
+        objectMapper.writeValue(gen, itemStack);
+
     }
 
     @Override
@@ -62,7 +66,8 @@ public class VanillaRef extends APIReference {
         @Override
         public VanillaRef deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonNode node = p.readValueAsTree();
-            return new VanillaRef(JacksonUtil.getObjectMapper().convertValue(node, ItemStack.class));
+            ObjectMapper objectMapper = JacksonUtil.getObjectMapper();//.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT);
+            return new VanillaRef(objectMapper.convertValue(node, ItemStack.class));
         }
     }
 }

@@ -1,7 +1,7 @@
 package me.wolfyscript.utilities.api.utils.json.gson.serialization;
 
 import com.google.gson.*;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 
@@ -16,7 +16,7 @@ public class DustOptionsSerialization implements JsonSerializer<Particle.DustOpt
             Color color = jsonDeserializationContext.deserialize(((JsonObject) jsonElement).get("color"), Color.class);
             return new Particle.DustOptions(color, size);
         } else {
-            Main.getMainUtil().sendConsoleWarning("Error Deserializing DustOptions! Invalid DustOptions object!");
+            WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing DustOptions! Invalid DustOptions object!");
         }
         return null;
     }

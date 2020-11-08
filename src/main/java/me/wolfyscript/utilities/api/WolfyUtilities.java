@@ -14,11 +14,14 @@ import me.wolfyscript.utilities.api.utils.chat.PlayerAction;
 import me.wolfyscript.utilities.api.utils.exceptions.InvalidCacheTypeException;
 import me.wolfyscript.utilities.api.utils.particles.ParticleEffects;
 import me.wolfyscript.utilities.api.utils.particles.Particles;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -105,11 +108,15 @@ public class WolfyUtilities implements Listener {
     }
 
     public static boolean hasSpecificUpdate(String versionString) {
-        return Main.getMcUpdateVersionNumber() >= Integer.parseInt(versionString.replace("_", "").replace(".", "").replace("-", ""));
+        return WUPlugin.getMcUpdateVersionNumber() >= Integer.parseInt(versionString.replace("_", "").replace(".", "").replace("-", ""));
     }
 
     public static boolean hasSpecificUpdate(int versionNumber) {
-        return Main.getMcUpdateVersionNumber() >= versionNumber;
+        return WUPlugin.getMcUpdateVersionNumber() >= versionNumber;
+    }
+
+    public static boolean hasJavaXScripting() {
+        return hasClass("javax.script.ScriptEngine");
     }
 
     public static boolean hasSpigot() {
@@ -161,20 +168,13 @@ public class WolfyUtilities implements Listener {
     }
 
     public static boolean hasPermission(CommandSender sender, String permCode) {
-        List<String> permissions = Arrays.asList(permCode.split("\\."));
+        if (sender.hasPermission("*")) return true;
         StringBuilder permission = new StringBuilder();
-        if (sender.hasPermission("*")) {
-            return true;
-        }
-        for (String perm : permissions) {
-            permission.append(perm);
-            if (permissions.indexOf(perm) < permissions.size() - 1) {
-                permission.append(".*");
-            }
-            if (sender.hasPermission(permission.toString())) {
+        for (String s : permCode.split("\\.")) {
+            permission.append(s);
+            if (sender.hasPermission(permission.toString()) || sender.hasPermission(permission.toString() + ".*")) {
                 return true;
             }
-            permission.replace(permission.length() - 2, permission.length(), "");
             permission.append(".");
         }
         return false;
@@ -245,15 +245,6 @@ public class WolfyUtilities implements Listener {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public static Sound getSound(String sound) {
-        return Sound.valueOf(sound);
-    }
-
-    @Deprecated
-    public static Sound getSound(String legacy, String notLegacy) {
-        return Sound.valueOf(notLegacy);
     }
 
     /**
@@ -334,6 +325,7 @@ public class WolfyUtilities implements Listener {
         return wolfyUtilitiesList.get(plugin);
     }
 
+    //TODO: Move the logic to a CommandExecutor
     @EventHandler(priority = EventPriority.HIGHEST)
     public void actionCommands(PlayerCommandPreprocessEvent event) {
         if (event.getMessage().startsWith("/wua ")) {
@@ -371,7 +363,7 @@ public class WolfyUtilities implements Listener {
     private String dataBasePrefix;
     private ConfigAPI configAPI;
 
-    private InventoryAPI inventoryAPI;
+    private InventoryAPI<?> inventoryAPI;
 
     private LanguageAPI languageAPI;
 
@@ -389,7 +381,7 @@ public class WolfyUtilities implements Listener {
     }
 
     public static String getVersion() {
-        return Main.getInstance().getDescription().getVersion();
+        return WUPlugin.getInstance().getDescription().getVersion();
     }
 
     public static int getVersionNumber() {
@@ -398,7 +390,7 @@ public class WolfyUtilities implements Listener {
 
     public LanguageAPI getLanguageAPI() {
         if (!hasLanguageAPI()) {
-            languageAPI = new LanguageAPI(this.plugin);
+            languageAPI = new LanguageAPI(this);
         }
         return languageAPI;
     }
@@ -418,8 +410,8 @@ public class WolfyUtilities implements Listener {
         return languageAPI != null;
     }
 
-    public InventoryAPI getInventoryAPI() {
-        return getInventoryAPI(inventoryAPI.craftCustomCache().getClass());
+    public InventoryAPI<?> getInventoryAPI() {
+        return getInventoryAPI(inventoryAPI.getNewCacheInstance().getClass());
     }
 
     public <T extends CustomCache> void setInventoryAPI(InventoryAPI<T> inventoryAPI) {
@@ -427,13 +419,14 @@ public class WolfyUtilities implements Listener {
     }
 
     public <T extends CustomCache> InventoryAPI<T> getInventoryAPI(Class<T> type) {
-        if (hasInventoryAPI() && type.isInstance(inventoryAPI.craftCustomCache())) {
+        if (hasInventoryAPI() && type.isInstance(inventoryAPI.getNewCacheInstance())) {
             return (InventoryAPI<T>) inventoryAPI;
         } else if (!hasInventoryAPI()) {
-            inventoryAPI = new InventoryAPI<>(plugin, this, type);
-            return inventoryAPI;
+            InventoryAPI<T> newInventoryAPI = new InventoryAPI<>(plugin, this, type);
+            inventoryAPI = newInventoryAPI;
+            return newInventoryAPI;
         }
-        throw new InvalidCacheTypeException("Cache type " + type.getName() + " expected, got " + inventoryAPI.craftCustomCache().getClass().getName() + "!");
+        throw new InvalidCacheTypeException("Cache type " + type.getName() + " expected, got " + inventoryAPI.getNewCacheInstance().getClass().getName() + "!");
     }
 
     public boolean hasInventoryAPI() {
@@ -486,13 +479,13 @@ public class WolfyUtilities implements Listener {
     public void sendConsoleMessage(String message) {
         message = CONSOLE_PREFIX + getLanguageAPI().replaceKeys(message);
         message = ChatColor.translateAlternateColorCodes('&', message);
-        Main.getInstance().getServer().getConsoleSender().sendMessage(message);
+        WUPlugin.getInstance().getServer().getConsoleSender().sendMessage(message);
     }
 
     public void sendConsoleWarning(String message) {
         message = CONSOLE_PREFIX + "[WARN] " + getLanguageAPI().replaceKeys(message);
         message = ChatColor.translateAlternateColorCodes('&', message);
-        Main.getInstance().getServer().getConsoleSender().sendMessage(message);
+        WUPlugin.getInstance().getServer().getConsoleSender().sendMessage(message);
     }
 
     public void sendConsoleMessage(String message, String... replacements) {
@@ -523,9 +516,7 @@ public class WolfyUtilities implements Listener {
 
     public void sendPlayerMessage(Player player, String message) {
         if (player != null) {
-            message = CHAT_PREFIX + getLanguageAPI().replaceKeys(message);
-            message = WolfyUtilities.translateColorCodes(message);
-            player.sendMessage(message);
+            player.sendMessage(WolfyUtilities.translateColorCodes(CHAT_PREFIX + getLanguageAPI().replaceKeys(message)));
         }
     }
 
@@ -603,7 +594,7 @@ public class WolfyUtilities implements Listener {
                 clickDataMap.put(id, playerAction);
                 component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/wua " + id.toString()));
             }
-            for (ChatEvent chatEvent : data.getChatEvents()) {
+            for (ChatEvent<?, ?> chatEvent : data.getChatEvents()) {
                 if (chatEvent instanceof HoverEvent) {
                     component.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(((HoverEvent) chatEvent).getAction(), ((HoverEvent) chatEvent).getValue()));
                 } else if (chatEvent instanceof me.wolfyscript.utilities.api.utils.chat.ClickEvent) {
@@ -630,11 +621,11 @@ public class WolfyUtilities implements Listener {
                     }
                 }
                 for (String result : messages) {
-                    Main.getInstance().getServer().getConsoleSender().sendMessage(prefix + result);
+                    WUPlugin.getInstance().getServer().getConsoleSender().sendMessage(prefix + result);
                 }
             } else {
                 message = prefix + message;
-                Main.getInstance().getServer().getConsoleSender().sendMessage(message);
+                WUPlugin.getInstance().getServer().getConsoleSender().sendMessage(message);
             }
         }
     }

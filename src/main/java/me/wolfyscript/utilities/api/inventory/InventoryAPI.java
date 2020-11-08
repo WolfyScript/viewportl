@@ -5,39 +5,41 @@ import me.wolfyscript.utilities.api.inventory.button.Button;
 import me.wolfyscript.utilities.api.inventory.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.cache.CustomCache;
 import me.wolfyscript.utilities.api.utils.inventory.InventoryUtils;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class InventoryAPI<T extends CustomCache> implements Listener {
 
+    private final WUPlugin wuPlugin;
     private final Plugin plugin;
     private final WolfyUtilities wolfyUtilities;
-    private final HashMap<UUID, GuiHandler> guiHandlers = new HashMap<>();
+    private final HashMap<UUID, GuiHandler<T>> guiHandlers = new HashMap<>();
     private final HashMap<String, GuiCluster> guiClusters = new HashMap<>();
 
     private final Class<T> customCacheClass;
 
     public InventoryAPI(Plugin plugin, WolfyUtilities wolfyUtilities, Class<T> customCacheClass) {
+        this.wuPlugin = WUPlugin.getInstance();
         this.wolfyUtilities = wolfyUtilities;
         this.plugin = plugin;
         this.customCacheClass = customCacheClass;
         try {
-            customCacheClass.newInstance();
-        } catch (IllegalAccessException | InstantiationException e) {
+            customCacheClass.getDeclaredConstructor().newInstance();
+        } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -115,7 +117,7 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
     }
 
     @Nonnull
-    public GuiHandler getGuiHandler(Player player) {
+    public GuiHandler<T> getGuiHandler(Player player) {
         if (!hasGuiHandler(player)) {
             createGuiHandler(player);
         }
@@ -123,15 +125,15 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
     }
 
     private void createGuiHandler(Player player) {
-        GuiHandler<T> guiHandler = new GuiHandler<>(player, wolfyUtilities, craftCustomCache());
+        GuiHandler<T> guiHandler = new GuiHandler<>(player, wolfyUtilities, customCacheClass, craftCustomCache());
         setPlayerGuiStudio(player, guiHandler);
     }
 
-    private void setPlayerGuiStudio(Player player, GuiHandler guiStudio) {
+    private void setPlayerGuiStudio(Player player, GuiHandler<T> guiStudio) {
         guiHandlers.put(player.getUniqueId(), guiStudio);
     }
 
-    private void removePlayerGuiHandler(Player player, GuiHandler guiStudio) {
+    private void removePlayerGuiHandler(Player player, GuiHandler<?> guiStudio) {
         guiHandlers.remove(player.getUniqueId(), guiStudio);
     }
 
@@ -157,12 +159,23 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
             removeGui(player);
         }
         guiHandlers.clear();
+        guiClusters.forEach((s, guiCluster) -> {
+            guiCluster.getButtons().clear();
+            guiCluster.getGuiWindows().forEach((s1, guiWindow) -> {
+                guiWindow.getButtons().clear();
+            });
+        });
     }
 
+    @Deprecated
     public T craftCustomCache() {
+        return getNewCacheInstance();
+    }
+
+    public T getNewCacheInstance() {
         try {
-            return this.customCacheClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return this.customCacheClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;
@@ -183,32 +196,46 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
         return getGuiCluster(clusterID).getButton(buttonID);
     }
 
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInvClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null) {
             if (hasGuiHandler((Player) event.getWhoClicked())) {
-                GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
+                GuiHandler<T> guiHandler = getGuiHandler((Player) event.getWhoClicked());
+
                 if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
                     GuiWindow guiWindow = guiHandler.getCurrentInv();
+                    //Debug Messages
+                    /*
+                    System.out.println("Clicked in "+guiWindow);
+                    System.out.println("    Inv Action: "+event.getAction());
+                    System.out.println("    Click : "+event.getClick());
+                    //*/
+                    event.setCancelled(true);
+                    if (guiWindow == null) return;
                     if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
-                        event.setCancelled(true);
                         for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
                             Button button = guiWindow.getButton(buttonEntry.getValue());
                             if (button instanceof ItemInputButton) {
-                                event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), buttonEntry.getKey(), event));
+                                try {
+                                    event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), buttonEntry.getKey(), event));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                         return;
                     }
-                    if (event.getClickedInventory().equals(event.getView().getTopInventory())) {
-                        event.setCancelled(true);
+                    if (!event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
                         Button button = guiHandler.getButton(guiWindow, event.getSlot());
                         if (button != null) {
-                            event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
-                            guiHandler.getCurrentInv().update(guiHandler);
+                            try {
+                                event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), event.getSlot(), event));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     } else {
+                        event.setCancelled(false);
                         if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                             int slot = -1;
                             if (event.getCurrentItem() != null) {
@@ -218,13 +245,19 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
                                 slot = event.getView().getTopInventory().firstEmpty();
                             }
                             Button button = guiHandler.getButton(guiWindow, slot);
-                            if (button != null) {
-                                event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), slot, event));
-                                guiHandler.getCurrentInv().update(guiHandler);
-                            } else {
+                            if (button == null) {
                                 event.setCancelled(true);
+                                return;
+                            }
+                            try {
+                                event.setCancelled(button.execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), slot, event));
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
+                    }
+                    if (guiHandler.getCurrentInv() != null) {
+                        guiHandler.getCurrentInv().update(guiHandler, false);
                     }
                 }
             }
@@ -233,33 +266,37 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onItemDrag(InventoryDragEvent event) {
-        if (event.getInventory() != null) {
-            if (hasGuiHandler((Player) event.getWhoClicked())) {
-                GuiHandler guiHandler = getGuiHandler((Player) event.getWhoClicked());
-                if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
-                    if (event.getRawSlots().stream().anyMatch(rawSlot -> !guiHandler.verifyInventory(event.getView().getInventory(rawSlot)))) {
+        if (hasGuiHandler((Player) event.getWhoClicked())) {
+            GuiHandler<?> guiHandler = getGuiHandler((Player) event.getWhoClicked());
+            if (guiHandler.verifyInventory(event.getView().getTopInventory())) {
+                if (event.getRawSlots().stream().anyMatch(rawSlot -> !guiHandler.verifyInventory(event.getView().getInventory(rawSlot)))) {
+                    event.setCancelled(true);
+                    return;
+                }
+                GuiWindow guiWindow = guiHandler.getCurrentInv();
+                GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
+                Bukkit.getPluginManager().callEvent(guiItemDragEvent);
+                if (guiItemDragEvent.isCancelled()) {
+                    event.setCancelled(true);
+                }
+                HashMap<Button, Integer> buttons = new HashMap<>();
+                for (int slot : event.getInventorySlots()) {
+                    Button button = guiHandler.getButton(guiWindow, slot);
+                    if (button == null) {
                         event.setCancelled(true);
                         return;
                     }
-                    GuiWindow guiWindow = guiHandler.getCurrentInv();
-                    GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
-                    Bukkit.getPluginManager().callEvent(guiItemDragEvent);
-                    if (guiItemDragEvent.isCancelled()) {
-                        event.setCancelled(true);
-                    }
-                    HashMap<Button, Integer> buttons = new HashMap<>();
-                    for (int slot : event.getInventorySlots()) {
-                        Button button = guiHandler.getButton(guiWindow, slot);
-                        if (button == null) {
-                            event.setCancelled(true);
-                            return;
-                        }
-                        buttons.put(button, slot);
-                    }
-                    for (Map.Entry<Button, Integer> button : buttons.entrySet()) {
+                    buttons.put(button, slot);
+                }
+                for (Map.Entry<Button, Integer> button : buttons.entrySet()) {
+                    try {
                         event.setCancelled(button.getKey().execute(guiHandler, (Player) event.getWhoClicked(), guiWindow.getInventory(guiHandler), button.getValue(), new InventoryClickEvent(event.getView(), event.getView().getSlotType(button.getValue()), button.getValue(), ClickType.RIGHT, InventoryAction.PLACE_SOME)));
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    guiHandler.getCurrentInv().update(guiHandler);
+                }
+                if (guiHandler.getCurrentInv() != null) {
+                    guiHandler.getCurrentInv().update(guiHandler, false);
                 }
             }
         }
@@ -271,15 +308,13 @@ public class InventoryAPI<T extends CustomCache> implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPreChat(AsyncPlayerChatEvent event) {
-        if (event.getMessage() != null) {
-            if (hasGuiHandler(event.getPlayer())) {
-                GuiHandler guiHandler = getGuiHandler(event.getPlayer());
-                if (guiHandler.isChatEventActive()) {
-                    final String message = event.getMessage();
-                    //Wraps normal written message into command to be executed
-                    Bukkit.getScheduler().runTask(getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wui " + getPlugin().getName() + " " + event.getPlayer().getUniqueId().toString() + " " + message));
-                    event.setCancelled(true);
-                }
+        if (hasGuiHandler(event.getPlayer())) {
+            GuiHandler<?> guiHandler = getGuiHandler(event.getPlayer());
+            if (guiHandler.isChatEventActive()) {
+                final String message = event.getMessage();
+                //Wraps normal written message into command to be executed
+                Bukkit.getScheduler().runTask(getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wui " + getPlugin().getName() + " " + event.getPlayer().getUniqueId().toString() + " " + message));
+                event.setCancelled(true);
             }
         }
     }

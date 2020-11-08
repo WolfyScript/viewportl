@@ -6,7 +6,7 @@
 
     <groupId>com.wolfyscript</groupId>
     <artifactId>wolfyutilities</artifactId>
-    <version>1.6.0.4</version>
+    <version>1.6.2.15</version>
     <properties>
         <!-- Generic properties -->
         <java.version>1.8</java.version>
@@ -15,42 +15,13 @@
     </properties>
 
     <repositories>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-        <repository>
-            <id>brokko-repo</id>
-            <url>https://www.iani.de/nexus/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>mojang</id>
-            <url>https://libraries.minecraft.net/</url>
-        </repository>
-        <repository>
-            <id>sk89q-repo</id>
-            <url>https://maven.enginehub.org/repo/</url>
-        </repository>
-        <!-- WorldEdit -->
-        <repository>
-            <id>enginehub</id>
-            <url>https://maven.enginehub.org/repo/</url>
-        </repository>
-        <!-- PlotSquared -->
-        <repository>
-            <id>IntellectualSites</id>
-            <url>https://mvn.intellectualsites.com/content/groups/public/</url>
-        </repository>
-        <!-- Jenkins4J -->
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-        <!--WolfyScript private repo-->
+        <!--
+        WolfyScript private repo
+        This repository requires you to have credentials to access private plugins like Oraxen and ItemsAdder.
+
+        You can use the public repo and then provide your local installed Oraxen and ItemsAdder jars.
+        Public repo: https://maven.wolfyscript.com/repository/public/
+        -->
         <repository>
             <id>wolfyscript-private</id>
             <url>https://maven.wolfyscript.com/repository/private/</url>
@@ -68,38 +39,39 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>1.7</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.1-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
             <version>1.5.21</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>5.0.0.Alpha2</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>19.0.0</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>de.iani.cubeside</groupId>
             <artifactId>LWC</artifactId>
             <version>5.0.16-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
@@ -111,72 +83,75 @@
             <artifactId>worldguard-bukkit</artifactId>
             <version>7.0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <!-- PlotSquared API -->
-        <dependency>
-            <groupId>com.plotsquared</groupId>
-            <artifactId>PlotSquared-Core</artifactId>
-            <version>5.13.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- PlotSquared Bukkit API -->
-        <dependency>
-            <groupId>com.plotsquared</groupId>
-            <artifactId>PlotSquared-Bukkit</artifactId>
-            <version>5.13.0</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>PlotSquared-Core</artifactId>
                     <groupId>*</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>be.maximvdw</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>me.clip</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.destroystoko.paper</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.ess3</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.alpenblock</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sk89q.worldedit</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- PlotSquared Bukkit API-->
+        <dependency>
+            <groupId>com.plotsquared</groupId>
+            <artifactId>PlotSquared-Core</artifactId>
+            <version>5.13.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.plotsquared</groupId>
+            <artifactId>PlotSquared-Bukkit</artifactId>
+            <version>5.13.3</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Some plugins that wu implements -->
         <dependency>
             <groupId>com.gmail.nossr50.mcMMO</groupId>
             <artifactId>mcMMO</artifactId>
             <version>2.1.139-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.lumine.xikage</groupId>
+            <artifactId>mythicmobs</artifactId>
+            <version>4.10.1</version>
+        </dependency>
+
         <!--Dependencies from private repo! They require credentials to access!-->
         <dependency>
             <groupId>io.th0rgal</groupId>
             <artifactId>oraxen</artifactId>
             <version>1.40.0</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>dev.lone</groupId>
             <artifactId>itemsadder</artifactId>
-            <version>2.0.41</version>
+            <version>2.1.5</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <filtering>true
+                </filtering> <!-- this replaces, filters, all placeholders in the resources folder (such as ${project.version} in plugin.yml) -->
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -223,22 +198,6 @@
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>${project.basedir}/src/main/java</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>${project.basedir}/src/main/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-                <filtering>true
-                </filtering> <!-- this replaces, filters, all placeholders in the resources folder (such as ${project.version} in plugin.yml) -->
-            </resource>
-        </resources>
     </build>
     <distributionManagement>
         <repository>

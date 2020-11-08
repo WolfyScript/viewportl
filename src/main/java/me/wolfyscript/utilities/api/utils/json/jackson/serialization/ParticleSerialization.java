@@ -13,6 +13,7 @@ import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.api.utils.particles.Particle;
 import me.wolfyscript.utilities.api.utils.particles.Particles;
 import org.bukkit.Material;
+import org.bukkit.util.Vector;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,9 +22,13 @@ import java.util.Locale;
 
 public class ParticleSerialization {
 
-    public static void create(SimpleModule module){
+    public static void create(SimpleModule module) {
         module.addSerializer(Particle.class, new Serializer());
         module.addDeserializer(Particle.class, new Deserializer());
+    }
+
+    private static boolean checkValue(Object particleValue, Object supParticleValue) {
+        return particleValue != null && !particleValue.equals(supParticleValue);
     }
 
     public static class Serializer extends StdSerializer<Particle> {
@@ -38,65 +43,58 @@ public class ParticleSerialization {
 
         @Override
         public void serialize(Particle particle, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            Particle supParticle = Particles.getParticle(particle.getSuperParticle());
+            boolean hasSup = supParticle != null;
             gen.writeStartObject();
-            gen.writeStringField("particle", particle.hasSuperParticle() ? particle.getSuperParticle().getNamespacedKey().toString() : "minecraft:" + particle.getParticle().name().toLowerCase(Locale.ROOT));
-            if (particle.hasIcon()) {
-                gen.writeStringField("icon", particle.getIcon().getKey().toString());
+            if (supParticle != null) {
+                gen.writeStringField("particle", particle.getSuperParticle().toString());
+            } else {
+                gen.writeStringField("particle", "minecraft:" + particle.getParticle().toString().toLowerCase(Locale.ROOT));
             }
-            if (particle.hasName()) {
+
+            if (checkValue(particle.getIcon(), hasSup ? supParticle.getIcon() : null)) {
+                gen.writeStringField("icon", particle.getIcon().toString());
+            }
+            if (checkValue(particle.getName(), hasSup ? supParticle.getName() : null)) {
                 gen.writeStringField("name", particle.getName());
             }
-            if (particle.hasDescription()) {
+            if (checkValue(particle.getDescription(), hasSup ? supParticle.getDescription() : null)) {
                 gen.writeArrayFieldStart("description");
-                if (particle.getDescription() != null) {
-                    for (String line : particle.getDescription()) {
+                List<String> description = particle.getDescription();
+                if (description != null) {
+                    for (String line : description) {
                         gen.writeString(line);
                     }
                 }
                 gen.writeEndArray();
             }
-            if (particle.hasCount()) {
+            if (checkValue(particle.getCount(), hasSup ? supParticle.getCount() : null)) {
                 gen.writeNumberField("count", particle.getCount());
             }
-            if (particle.hasExtra()) {
+            if (checkValue(particle.getExtra(), hasSup ? supParticle.getExtra() : null)) {
                 gen.writeNumberField("extra", particle.getExtra());
             }
-            if (particle.hasData()) {
+            if (checkValue(particle.getData(), hasSup ? supParticle.getData() : null)) {
                 gen.writeObjectField("data", particle.getData());
-                //particleObject.add("data", jsonSerializationContext.serialize(particle.getData(), particle.getDataClass()));
             }
-            if (particle.hasRelativeX() || particle.hasRelativeY() || particle.hasRelativeZ()) {
-                gen.writeObjectFieldStart("relative");
-                if (particle.hasRelativeX()) {
-                    gen.writeNumberField("x", particle.getRelativeX());
-                }
-                if (particle.hasRelativeY()) {
-                    gen.writeNumberField("y", particle.getRelativeY());
-                }
-                if (particle.hasRelativeZ()) {
-                    gen.writeNumberField("z", particle.getRelativeZ());
-                }
-                gen.writeEndObject();
+            if (checkValue(particle.getRelative(), hasSup ? supParticle.getRelative() : null)) {
+                gen.writeObjectField("relative", particle.getRelative());
             }
-            if (particle.hasOffsetX() || particle.hasOffsetY() || particle.hasOffsetZ()) {
-                gen.writeObjectFieldStart("offset");
-                if (particle.hasOffsetX()) {
-                    gen.writeNumberField("x", particle.getOffsetX());
-                }
-                if (particle.hasOffsetY()) {
-                    gen.writeNumberField("y", particle.getOffsetY());
-                }
-                if (particle.hasOffsetZ()) {
-                    gen.writeNumberField("z", particle.getOffsetZ());
-                }
+            if (checkValue(particle.getOffset(), hasSup ? supParticle.getOffset() : null)) {
+                gen.writeObjectField("offset", particle.getOffset());
             }
-            if (particle.hasScripts()) {
+            if (checkValue(particle.getScripts(), hasSup ? supParticle.getScripts() : null)) {
                 gen.writeArrayFieldStart("scripts");
-                for (String s : particle.getScripts()) {
-                    gen.writeString(s);
+                List<String> scripts = particle.getScripts();
+                if (scripts != null) {
+                    for (String line : scripts) {
+                        gen.writeString(line);
+                    }
                 }
                 gen.writeEndArray();
             }
+            //particleObject.add("data", jsonSerializationContext.serialize(particle.getData(), particle.getDataClass()));
+            gen.writeEndObject();
         }
     }
 
@@ -117,12 +115,7 @@ public class ParticleSerialization {
                 final Particle resultParticle;
                 if (node.has("particle")) {
                     String particle = node.get("particle").asText();
-                    NamespacedKey namespacedKey;
-                    if (particle.contains(":") && particle.split(":").length > 1) {
-                        namespacedKey = new NamespacedKey(particle.split(":")[0].toLowerCase(Locale.ROOT).replace(" ", "_"), particle.split(":")[1].toLowerCase(Locale.ROOT).replace(" ", "_"));
-                    } else {
-                        namespacedKey = new NamespacedKey("wolfyutilities", particle);
-                    }
+                    NamespacedKey namespacedKey = particle.contains(":") ? NamespacedKey.getByString(particle) : new NamespacedKey("wolfyutilities", particle);
                     if (namespacedKey.getNamespace().equalsIgnoreCase("minecraft")) {
                         resultParticle = new Particle();
                         org.bukkit.Particle particleType = org.bukkit.Particle.valueOf(namespacedKey.getKey().toUpperCase(Locale.ROOT));
@@ -130,8 +123,8 @@ public class ParticleSerialization {
                     } else {
                         Particle particle1 = Particles.getParticles().get(namespacedKey);
                         resultParticle = new Particle(particle1);
+                        resultParticle.setSuperParticle(namespacedKey);
                     }
-                    resultParticle.setNamespacedKey(namespacedKey);
                 } else {
                     resultParticle = new Particle();
                 }
@@ -160,16 +153,10 @@ public class ParticleSerialization {
                     }
                 }
                 if (node.has("relative")) {
-                    JsonNode relative = node.get("relative");
-                    resultParticle.setRelativeX(relative.get("x").asDouble());
-                    resultParticle.setRelativeY(relative.get("y").asDouble());
-                    resultParticle.setRelativeZ(relative.get("z").asDouble());
+                    resultParticle.setRelative(JacksonUtil.getObjectMapper().convertValue(node.get("relative"), Vector.class));
                 }
                 if (node.has("offset")) {
-                    JsonNode relative = node.get("offset");
-                    resultParticle.setOffsetX(relative.get("x").asDouble());
-                    resultParticle.setOffsetY(relative.get("y").asDouble());
-                    resultParticle.setOffsetZ(relative.get("z").asDouble());
+                    resultParticle.setOffset(JacksonUtil.getObjectMapper().convertValue(node.get("offset"), Vector.class));
                 }
                 if (node.has("scripts")) {
                     node.get("scripts").elements().forEachRemaining(script -> resultParticle.addScript(script.asText()));

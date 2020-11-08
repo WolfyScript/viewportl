@@ -1,7 +1,7 @@
 package me.wolfyscript.utilities.api.utils.json.gson.serialization;
 
 import com.google.gson.*;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -26,13 +26,13 @@ public class LocationSerialization implements JsonSerializer<Location>, JsonDese
                     float pitch = jsonArray.get(4).getAsFloat();
                     return new Location(world, x, y, z, yaw, pitch);
                 }else{
-                    Main.getMainUtil().sendConsoleWarning("Error Deserializing Location! Invalid Position: expected array size 5 got "+jsonArray.size());
+                    WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing Location! Invalid Position: expected array size 5 got " + jsonArray.size());
                 }
             }else{
-                Main.getMainUtil().sendConsoleWarning("Error Deserializing Location! Missing World with uid "+uuid.toString());
+                WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing Location! Missing World with uid " + uuid.toString());
             }
         }else{
-            Main.getMainUtil().sendConsoleWarning("Error Deserializing Location! Invalid Location object!");
+            WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing Location! Invalid Location object!");
         }
         return null;
     }

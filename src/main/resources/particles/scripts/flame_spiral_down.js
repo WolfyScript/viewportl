@@ -15,7 +15,7 @@ particleData - the current data of the particle
 tick - the current tick of the particle. The tick is being increased each in-game tick and can reach a maximum of the duration of the effect.
         e.g. Particle has a duration of 20 ticks. then the tick will count up to 20 starting at 0
 */
-function onLocation(location, particleData, tick){
+function onLocation(location, particleData, tick) {
 
 }
 
@@ -27,10 +27,14 @@ tick - the current tick of the particle. The tick is being increased each in-gam
         e.g. Particle has a duration of 20 ticks. then the tick will count up to 20 starting at 0
 */
 function onBlock(block, location, particleData, tick) {
-  tick = tick*0.2;
-  particleData.setRelativeY(0.5+tick*0.3);
-  particleData.setRelativeX(0.5+Math.sin(tick)*0.2);
-  particleData.setRelativeZ(0.5+Math.cos(tick)*0.2);
+    tick = tick * 0.2;
+    var vector = particleData.getRelative();
+    vector.setX(0.5 + Math.sin(tick * 2) * 0.3);
+    vector.setY(1.1);
+    vector.setZ(0.5 + Math.cos(tick * 2) * 0.3);
+    if (tick > 2) {
+        particleData.setExtra(0.02);
+    }
 }
 
 /*
@@ -41,11 +45,10 @@ particleData - the current data of the particle
 tick - the current tick of the particle. The tick is being increased each in-game tick and can reach a maximum of the duration of the effect.
         e.g. Particle has a duration of 20 ticks. then the tick will count up to 20 starting at 0
 */
-function onPlayer(player, slot, location, particleData, tick){
-  tick = tick*0.5;
-  if (slot.toString() == "HEAD") {
-    particleData.setRelativeX(Math.sin(tick)*0.7);
-    particleData.setRelativeY(2- tick*0.2);
-    particleData.setRelativeZ(Math.cos(tick)*0.7);
-  }
+function onPlayer(player, slot, location, particleData, tick) {
+    tick = tick * 0.5;
+    var vector = particleData.getRelative();
+    vector.setX(Math.sin(tick) * 0.7);
+    vector.setY(2 - tick * 0.2);
+    vector.setZ(Math.cos(tick) * 0.7);
 }

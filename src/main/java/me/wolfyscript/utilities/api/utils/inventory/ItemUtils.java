@@ -4,7 +4,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.custom_items.equipment.ArmorType;
 import me.wolfyscript.utilities.api.utils.Reflection;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -17,9 +17,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemUtils {
 
@@ -50,14 +51,14 @@ public class ItemUtils {
         Object itemAsJsonObject; // This is the net.minecraft.server.ItemStack after being put through saveNmsItem method
 
         try {
-            nmsNbtTagCompoundObj = nbtTagCompoundClazz.newInstance();
+            nmsNbtTagCompoundObj = nbtTagCompoundClazz.getDeclaredConstructor().newInstance();
             nmsItemStackObj = asNMSCopyMethod.invoke(null, itemStack);
             itemAsJsonObject = saveNmsItemStackMethod.invoke(nmsItemStackObj, nmsNbtTagCompoundObj);
-        } catch (Throwable t) {
-            Main.getMainUtil().sendConsoleMessage("failed to serialize itemstack to nms item");
-            Main.getMainUtil().sendConsoleMessage(t.toString());
-            for (StackTraceElement element : t.getStackTrace()) {
-                Main.getMainUtil().sendConsoleMessage(element.toString());
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            WUPlugin.getWolfyUtilities().sendConsoleMessage("failed to serialize itemstack to nms item");
+            WUPlugin.getWolfyUtilities().sendConsoleMessage(e.toString());
+            for (StackTraceElement element : e.getStackTrace()) {
+                WUPlugin.getWolfyUtilities().sendConsoleMessage(element.toString());
             }
             return null;
         }
@@ -195,44 +196,6 @@ public class ItemUtils {
     }
 
     //SOME ITEMMETA UTILS
-
-    public static void removeItemSettings(ItemStack itemStack){
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        removeItemSettings(itemMeta);
-        itemStack.setItemMeta(itemMeta);
-    }
-
-    public static void removeItemSettings(ItemMeta itemMeta){
-        if (itemMeta != null && itemMeta.hasLore()) {
-            List<String> lore = itemMeta.getLore();
-            Iterator<String> iterator = lore.iterator();
-            while (iterator.hasNext()){
-                String cleared = WolfyUtilities.unhideString(iterator.next());
-                if (cleared.startsWith("itemSettings")) {
-                    iterator.remove();
-                }
-            }
-            itemMeta.setLore(lore);
-        }
-    }
-
-    public static void removeDurabilityTag(ItemStack itemStack){
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        removeDurabilityTag(itemMeta);
-        itemStack.setItemMeta(itemMeta);
-    }
-
-    public static void removeDurabilityTag(ItemMeta itemMeta){
-        List<String> lore = itemMeta.getLore() != null ? itemMeta.getLore() : new ArrayList<>();
-        for (int i = 0; i < lore.size(); i++) {
-            String line = WolfyUtilities.unhideString(lore.get(i));
-            if (line.startsWith("durability_tag")) {
-                lore.remove(i);
-            }
-        }
-        itemMeta.setLore(lore);
-    }
-
     public static boolean isEquipable(Material material){
         if (material.name().endsWith("_CHESTPLATE") || material.name().endsWith("_LEGGINGS") || material.name().endsWith("_HELMET") || material.name().endsWith("_BOOTS") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL")) {
             return true;
@@ -283,13 +246,7 @@ public class ItemUtils {
                 itemMeta.setDisplayName(WolfyUtilities.translateColorCodes(displayName));
             }
             if (normalLore != null && normalLore.length > 0) {
-                for (String row : normalLore) {
-                    if (!row.isEmpty()) {
-                        lore.add(row.equalsIgnoreCase("<empty>") ? "" : WolfyUtilities.translateColorCodes(row));
-                    }
-                }
-            }
-            if (lore.size() > 0) {
+                lore = Arrays.stream(normalLore).map(row -> row.equalsIgnoreCase("<empty>") ? "" : WolfyUtilities.translateColorCodes(row)).collect(Collectors.toList());
                 itemMeta.setLore(lore);
             }
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -303,11 +260,7 @@ public class ItemUtils {
         ItemMeta helpMeta = helpItem.getItemMeta();
         if(helpMeta != null){
             if (helpLore != null && helpLore.length > 0) {
-                for (String row : helpLore) {
-                    if (!row.isEmpty()) {
-                        lore.add(row.equalsIgnoreCase("<empty>") ? "" : WolfyUtilities.translateColorCodes(row));
-                    }
-                }
+                lore.addAll(Arrays.stream(helpLore).map(row -> row.equalsIgnoreCase("<empty>") ? "" : WolfyUtilities.translateColorCodes(row)).collect(Collectors.toList()));
             }
             helpMeta.setLore(lore);
             helpItem.setItemMeta(helpMeta);

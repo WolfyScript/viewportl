@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.utils.EncryptionUtils;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -42,7 +42,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         return getItemStack().getItemMeta();
     }
 
-    public boolean hasItemMeta(){
+    public boolean hasItemMeta() {
         return getItemStack().hasItemMeta();
     }
 
@@ -89,7 +89,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         return setItemMeta(itemMeta);
     }
 
-    public T setType(Material type){
+    public T setType(Material type) {
         getItemStack().setType(type);
         return (T) this;
     }
@@ -121,7 +121,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         ItemMeta itemMeta = getItemMeta();
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            return dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER);
+            return dataContainer.has(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.value"), PersistentDataType.INTEGER);
         }
         return false;
     }
@@ -134,7 +134,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         ItemMeta itemMeta = getItemMeta();
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER, damage);
+            dataContainer.set(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER, damage);
             updateCustomDurabilityTag(itemMeta);
         }
         if (itemMeta instanceof Damageable) {
@@ -150,8 +150,8 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
     public int getCustomDamage(ItemMeta itemMeta) {
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            if (dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER)) {
-                return dataContainer.get(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER);
+            if (dataContainer.has(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER)) {
+                return dataContainer.get(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER);
             }
         }
         return 0;
@@ -161,9 +161,9 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         ItemMeta itemMeta = getItemMeta();
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"), PersistentDataType.INTEGER, durability);
-            if (!dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER)) {
-                dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER, 0);
+            dataContainer.set(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.value"), PersistentDataType.INTEGER, durability);
+            if (!dataContainer.has(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER)) {
+                dataContainer.set(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.damage"), PersistentDataType.INTEGER, 0);
             }
             updateCustomDurabilityTag();
         }
@@ -176,7 +176,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
 
     public int getCustomDurability(ItemMeta itemMeta) {
         if (itemMeta != null) {
-            NamespacedKey namespacedKey = new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value");
+            NamespacedKey namespacedKey = new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.value");
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
             if (dataContainer.has(namespacedKey, PersistentDataType.INTEGER)) {
                 return dataContainer.get(namespacedKey, PersistentDataType.INTEGER);
@@ -189,9 +189,9 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         ItemMeta itemMeta = getItemMeta();
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.remove(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.value"));
-            dataContainer.remove(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.damage"));
-            dataContainer.remove(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"));
+            dataContainer.remove(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.value"));
+            dataContainer.remove(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.damage"));
+            dataContainer.remove(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.tag"));
         }
         return setItemMeta(itemMeta);
     }
@@ -200,7 +200,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         ItemMeta itemMeta = getItemMeta();
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            dataContainer.set(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING, tag);
+            dataContainer.set(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.tag"), PersistentDataType.STRING, tag);
             updateCustomDurabilityTag();
         }
         return setItemMeta(itemMeta);
@@ -213,8 +213,8 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
     public String getCustomDurabilityTag(ItemMeta itemMeta) {
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            if (dataContainer.has(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING)) {
-                return dataContainer.get(new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.tag"), PersistentDataType.STRING);
+            if (dataContainer.has(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.tag"), PersistentDataType.STRING)) {
+                return dataContainer.get(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.tag"), PersistentDataType.STRING);
             }
         }
         return "";
@@ -230,7 +230,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         if (itemMeta != null) {
             String tag = WolfyUtilities.translateColorCodes(getCustomDurabilityTag().replace("%dur%", String.valueOf(getCustomDurability(itemMeta) - getCustomDamage(itemMeta))).replace("%max_dur%", String.valueOf(getCustomDurability(itemMeta))));
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            NamespacedKey namespacedKey = new org.bukkit.NamespacedKey(Main.getInstance(), "customDurability.index");
+            NamespacedKey namespacedKey = new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "customDurability.index");
             List<String> lore = itemMeta.getLore() != null ? itemMeta.getLore() : new ArrayList<>();
             if (dataContainer.has(namespacedKey, PersistentDataType.INTEGER)) {
                 int index = dataContainer.get(namespacedKey, PersistentDataType.INTEGER);
@@ -271,11 +271,11 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         return (T) this;
     }
 
-    public T setPlayerHeadURL(String value){
+    public T setPlayerHeadURL(String value) {
         if (value.startsWith("http://textures.minecraft.net/texture/")) {
             return setPlayerHeadValue(value);
         }
-        return setPlayerHeadValue("http://textures.minecraft.net/texture/"+value);
+        return setPlayerHeadValue("http://textures.minecraft.net/texture/" + value);
     }
 
     public T removePlayerHeadValue() {
@@ -309,12 +309,10 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
             } catch (NoSuchFieldException | SecurityException | IllegalAccessException ex) {
                 ex.printStackTrace();
             }
-            if (profile != null) {
-                if (!profile.getProperties().get("textures").isEmpty()) {
-                    for (Property property : profile.getProperties().get("textures")) {
-                        if (!property.getValue().isEmpty())
-                            return property.getValue();
-                    }
+            if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
+                for (Property property : profile.getProperties().get("textures")) {
+                    if (!property.getValue().isEmpty())
+                        return property.getValue();
                 }
             }
         }

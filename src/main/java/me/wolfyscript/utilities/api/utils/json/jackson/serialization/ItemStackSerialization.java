@@ -14,6 +14,7 @@ import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -70,19 +71,27 @@ public class ItemStackSerialization {
 
         @Override
         public void serialize(ItemStack itemStack, JsonGenerator gen, SerializerProvider provider) throws IOException {
-            if(itemStack != null){
+            if(itemStack != null) {
                 Yaml yaml = new Yaml();
                 YamlConfiguration config = new YamlConfiguration();
                 config.set("i", itemStack);
-                Map<String,Object> map = yaml.load(config.saveToString());
+                Map<String, Object> map = yaml.load(config.saveToString());
                 gen.writeObject(map.get("i"));
+                //This method seems to be broken... can't serialize the ItemStack directly to a Map!
+                /*
+                Map<String, Object> itemMap = itemStack.serialize();
+                if (itemStack.hasItemMeta()) {
+                    itemMap.put("meta", itemStack.getItemMeta().serialize());
+                }
+                gen.writeObject(itemMap);
+                 */
             }
         }
     }
 
     public static class Deserializer extends StdDeserializer<ItemStack> {
 
-        public Deserializer(){
+        public Deserializer() {
             this(ItemStack.class);
         }
 
@@ -90,10 +99,22 @@ public class ItemStackSerialization {
             super(t);
         }
 
+        public static ItemMeta deserializeItemMeta(Map<String, Object> map) {
+            ItemMeta meta = null;
+            try {
+                Class<?> clazz = Reflection.getOBC("inventory.CraftMetaItem$SerializableMeta");
+                Method deserialize = clazz.getMethod("deserialize", Map.class);
+                meta = (ItemMeta) deserialize.invoke(null, map);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return meta;
+        }
+
         @Override
         public ItemStack deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonNode node = p.readValueAsTree();
-            if(node.isValueNode()){
+            if (node.isValueNode()) {
                 //Old Serialization Methods. like Base64 or NMS serialization
                 String value = node.asText();
                 if (!value.startsWith("{")) {
@@ -101,21 +122,29 @@ public class ItemStackSerialization {
                 }
                 return value.equals("empty") ? null : ItemUtils.convertJsontoItemStack(value);
             }
-            if(node.isObject()){
-                YamlConfiguration config = new YamlConfiguration();
-                //Loads the Map from the JsonNode && Sets the Map to YamlConfig
-                config.set("i", JacksonUtil.getObjectMapper().convertValue(node, new TypeReference<Map<String, Object>>() {}));
-                try {
+            YamlConfiguration config = new YamlConfiguration();
+            //Loads the Map from the JsonNode && Sets the Map to YamlConfig
+            config.set("i", JacksonUtil.getObjectMapper().convertValue(node, new TypeReference<Map<String, Object>>() {
+            }));
+            try {
                     /*
                     Load new YamlConfig from just saved string.
                     That will convert the Map to an ItemStack!
                      */
-                    config.loadFromString(config.saveToString());
-                    return config.getItemStack("i");
-                } catch (InvalidConfigurationException e) {
-                    e.printStackTrace();
-                }
+                config.loadFromString(config.saveToString());
+                return config.getItemStack("i");
+            } catch (InvalidConfigurationException e) {
+                e.printStackTrace();
             }
+            //TODO: Find out the reason why the Material is changed after setItemMeta() in the ItemStack.deserialize() method!
+
+            //This method seems to be broken... can't deserialize the ItemStack directly from Map!
+            /*
+            Map<String, Object> map = JacksonUtil.getObjectMapper().convertValue(node, new TypeReference<Map<String, Object>>() {});
+            map.computeIfPresent("meta", (s, o) -> deserializeItemMeta((Map<String, Object>) o));
+            ItemStack itemStack = ItemStack.deserialize(map);
+
+             */
             return null;
         }
     }

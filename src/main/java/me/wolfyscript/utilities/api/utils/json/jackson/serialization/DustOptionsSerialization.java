@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 
@@ -59,7 +59,7 @@ public class DustOptionsSerialization {
                 Color color = ctxt.readValue(node.get("color").traverse(JacksonUtil.getObjectMapper()), Color.class);
                 return new Particle.DustOptions(color, size);
             }
-            Main.getMainUtil().sendConsoleWarning("Error Deserializing DustOptions! Invalid DustOptions object!");
+            WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing DustOptions! Invalid DustOptions object!");
             return null;
         }
     }

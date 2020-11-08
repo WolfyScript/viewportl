@@ -1,7 +1,7 @@
 package me.wolfyscript.utilities.api.config;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -36,8 +36,8 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         super(configAPI, path, name, defPath, defFileName, Type.YAML);
         if (override && configFile.exists()) {
             if (!configFile.delete()) {
-                Main.getMainUtil().sendConsoleMessage("Error while trying to override YamlConfiguration!");
-                Main.getMainUtil().sendConsoleMessage("File: " + configFile.getPath());
+                WUPlugin.getWolfyUtilities().sendConsoleMessage("Error while trying to override YamlConfiguration!");
+                WUPlugin.getWolfyUtilities().sendConsoleMessage("File: " + configFile.getPath());
             }
         }
         if (!configFile.exists()) {
@@ -46,8 +46,8 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
                 configFile.getParentFile().mkdirs();
                 configFile.createNewFile();
             } catch (IOException e) {
-                Main.getMainUtil().sendConsoleMessage("Error creating file: " + configFile.getPath());
-                Main.getMainUtil().sendConsoleMessage("     cause: " + e.getMessage());
+                WUPlugin.getWolfyUtilities().sendConsoleMessage("Error creating file: " + configFile.getPath());
+                WUPlugin.getWolfyUtilities().sendConsoleMessage("     cause: " + e.getMessage());
             }
         }
         config = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(configFile);

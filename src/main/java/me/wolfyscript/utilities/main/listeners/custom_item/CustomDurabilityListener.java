@@ -1,7 +1,7 @@
 package me.wolfyscript.utilities.main.listeners.custom_item;
 
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
@@ -39,7 +39,7 @@ public class CustomDurabilityListener implements Listener {
                 totalDmg = 0;
             }
             int finalTotalDmg = totalDmg;
-            Bukkit.getScheduler().runTask(Main.getInstance(), () -> customItem.setCustomDamage(finalTotalDmg));
+            Bukkit.getScheduler().runTask(WUPlugin.getInstance(), () -> customItem.setCustomDamage(finalTotalDmg));
         }
     }
 }

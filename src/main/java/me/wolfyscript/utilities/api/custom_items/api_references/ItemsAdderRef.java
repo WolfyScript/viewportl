@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import dev.lone.itemsadder.api.ItemsAdder;
+import me.wolfyscript.utilities.api.WolfyUtilities;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
@@ -22,7 +24,10 @@ public class ItemsAdderRef extends APIReference{
 
     @Override
     public ItemStack getLinkedItem() {
-        return ItemsAdder.getCustomItem(itemName);
+        if (WolfyUtilities.hasPlugin("ItemsAdder")) {
+            return ItemsAdder.getCustomItem(itemName);
+        }
+        return new ItemStack(Material.AIR);
     }
 
     @Override

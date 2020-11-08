@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import me.wolfyscript.utilities.main.Main;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Color;
 
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class ColorSerialization {
                 int blue = node.get("blue").asInt();
                 return Color.fromBGR(blue, green, red);
             }
-            Main.getMainUtil().sendConsoleWarning("Error Deserializing Color! Invalid Color object!");
+            WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing Color! Invalid Color object!");
             return null;
         }
     }
