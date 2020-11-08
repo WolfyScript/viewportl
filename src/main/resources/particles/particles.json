@@ -50,5 +50,31 @@
     "scripts": [
       "file=scripts/flame_spiral_down.js"
     ]
+  },
+  "green_redstone": {
+    "particle": "minecraft:redstone",
+    "icon": "minecraft:redstone",
+    "name": "&aGreen Redstone",
+    "description": [],
+    "count": 1,
+    "extra": 1,
+    "relative": [
+      0,
+      0,
+      0
+    ],
+    "offset": [
+      0,
+      0,
+      0
+    ],
+    "data": {
+      "size": 1.0,
+      "color": {
+        "red": 0,
+        "green": 255,
+        "blue": 0
+      }
+    }
   }
 }
