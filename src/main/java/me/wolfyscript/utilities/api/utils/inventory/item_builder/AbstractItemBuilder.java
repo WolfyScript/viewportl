@@ -42,7 +42,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         return getItemStack().getItemMeta();
     }
 
-    public boolean hasItemMeta(){
+    public boolean hasItemMeta() {
         return getItemStack().hasItemMeta();
     }
 
@@ -89,7 +89,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         return setItemMeta(itemMeta);
     }
 
-    public T setType(Material type){
+    public T setType(Material type) {
         getItemStack().setType(type);
         return (T) this;
     }
@@ -271,11 +271,11 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
         return (T) this;
     }
 
-    public T setPlayerHeadURL(String value){
+    public T setPlayerHeadURL(String value) {
         if (value.startsWith("http://textures.minecraft.net/texture/")) {
             return setPlayerHeadValue(value);
         }
-        return setPlayerHeadValue("http://textures.minecraft.net/texture/"+value);
+        return setPlayerHeadValue("http://textures.minecraft.net/texture/" + value);
     }
 
     public T removePlayerHeadValue() {
@@ -309,12 +309,10 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
             } catch (NoSuchFieldException | SecurityException | IllegalAccessException ex) {
                 ex.printStackTrace();
             }
-            if (profile != null) {
-                if (!profile.getProperties().get("textures").isEmpty()) {
-                    for (Property property : profile.getProperties().get("textures")) {
-                        if (!property.getValue().isEmpty())
-                            return property.getValue();
-                    }
+            if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
+                for (Property property : profile.getProperties().get("textures")) {
+                    if (!property.getValue().isEmpty())
+                        return property.getValue();
                 }
             }
         }

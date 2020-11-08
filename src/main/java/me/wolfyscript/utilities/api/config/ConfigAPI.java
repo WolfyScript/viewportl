@@ -1,7 +1,5 @@
 package me.wolfyscript.utilities.api.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.plugin.Plugin;
 
@@ -13,11 +11,11 @@ import java.util.HashMap;
 
 public class ConfigAPI {
 
-    private Plugin plugin;
-    private WolfyUtilities api;
+    private final Plugin plugin;
+    private final WolfyUtilities api;
     private boolean prettyPrinting = false;
 
-    private HashMap<String, Configuration> configs;
+    private final HashMap<String, Configuration> configs;
 
     private int autoSave = -1;
 
@@ -85,6 +83,7 @@ public class ConfigAPI {
             while ((r = ddlStream.read(buf)) != -1) {
                 fos.write(buf, 0, r);
             }
+            ddlStream.close();
         } catch (IOException e) {
             //EMPTY
         }

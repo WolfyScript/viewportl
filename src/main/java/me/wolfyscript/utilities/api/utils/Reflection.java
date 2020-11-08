@@ -59,8 +59,8 @@ public class Reflection {
 
         try {
             clazz = Class.forName(clazzName);
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
             loadedOBCClasses.put(obcClassName, null);
             return null;
         }
@@ -85,8 +85,8 @@ public class Reflection {
 
         try {
             clazz = Class.forName(clazzName);
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
             return loadedNMSClasses.put(nmsClassName, null);
         }
 

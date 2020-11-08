@@ -169,10 +169,12 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                             apiReference = new OraxenRef(itemId);
                         }
                     } else if (WolfyUtilities.hasPlugin("MythicMobs")) {
-                        CompoundTag compoundTag = MythicMobs.inst().getVolatileCodeHandler().getItemHandler().getNBTData(itemStack);
-                        String name = compoundTag.getString("MYTHIC_TYPE");
-                        if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
-                            apiReference = new MythicMobsRef(name);
+                        if (MythicMobs.inst().getVolatileCodeHandler().getItemHandler() != null) {
+                            CompoundTag compoundTag = MythicMobs.inst().getVolatileCodeHandler().getItemHandler().getNBTData(itemStack);
+                            String name = compoundTag.getString("MYTHIC_TYPE");
+                            if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
+                                apiReference = new MythicMobsRef(name);
+                            }
                         }
                     }
                 }
@@ -405,28 +407,24 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * @return exact copy of this instance
      */
     @Override
-    public CustomItem clone() {
-        try {
-            CustomItem customItem = (CustomItem) super.clone();
-            if (hasNamespacedKey()) {
-                customItem.setNamespacedKey(getNamespacedKey());
-                customItem.setBlockVanillaRecipes(isBlockVanillaRecipes());
-                customItem.setBlockVanillaEquip(isBlockVanillaEquip());
-                customItem.setAllowedBlocks(getAllowedBlocks());
-                customItem.setBurnTime(getBurnTime());
-                customItem.setConsumed(isConsumed());
-                customItem.setDurabilityCost(getDurabilityCost());
-                customItem.setMetaSettings(getMetaSettings());
-                customItem.setParticleContent(getParticleContent());
-                customItem.setPermission(getPermission());
-                customItem.setRarityPercentage(getRarityPercentage());
-                customItem.setReplacement(getReplacement());
-            }
-            customItem.setAmount(getAmount());
-            return customItem;
-        } catch (CloneNotSupportedException ex) {
-            throw new Error(ex);
+    public CustomItem clone() throws CloneNotSupportedException {
+        CustomItem customItem = (CustomItem) super.clone();
+        if (hasNamespacedKey()) {
+            customItem.setNamespacedKey(getNamespacedKey());
+            customItem.setBlockVanillaRecipes(isBlockVanillaRecipes());
+            customItem.setBlockVanillaEquip(isBlockVanillaEquip());
+            customItem.setAllowedBlocks(getAllowedBlocks());
+            customItem.setBurnTime(getBurnTime());
+            customItem.setConsumed(isConsumed());
+            customItem.setDurabilityCost(getDurabilityCost());
+            customItem.setMetaSettings(getMetaSettings());
+            customItem.setParticleContent(getParticleContent());
+            customItem.setPermission(getPermission());
+            customItem.setRarityPercentage(getRarityPercentage());
+            customItem.setReplacement(getReplacement());
         }
+        customItem.setAmount(getAmount());
+        return customItem;
         //CustomItem customItem = new CustomItem(getApiReference());
     }
 

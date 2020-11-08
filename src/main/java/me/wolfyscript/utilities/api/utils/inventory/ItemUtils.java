@@ -51,13 +51,13 @@ public class ItemUtils {
         Object itemAsJsonObject; // This is the net.minecraft.server.ItemStack after being put through saveNmsItem method
 
         try {
-            nmsNbtTagCompoundObj = nbtTagCompoundClazz.newInstance();
+            nmsNbtTagCompoundObj = nbtTagCompoundClazz.getDeclaredConstructor().newInstance();
             nmsItemStackObj = asNMSCopyMethod.invoke(null, itemStack);
             itemAsJsonObject = saveNmsItemStackMethod.invoke(nmsItemStackObj, nmsNbtTagCompoundObj);
-        } catch (Throwable t) {
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             WUPlugin.getWolfyUtilities().sendConsoleMessage("failed to serialize itemstack to nms item");
-            WUPlugin.getWolfyUtilities().sendConsoleMessage(t.toString());
-            for (StackTraceElement element : t.getStackTrace()) {
+            WUPlugin.getWolfyUtilities().sendConsoleMessage(e.toString());
+            for (StackTraceElement element : e.getStackTrace()) {
                 WUPlugin.getWolfyUtilities().sendConsoleMessage(element.toString());
             }
             return null;

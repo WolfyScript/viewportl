@@ -46,14 +46,12 @@ public class BlockListener implements Listener {
                 event.setCancelled(event1.isCancelled());
                 event.setDropItems(event1.isDropItems());
                 storedItem = event1.getCustomItem();
-                if (!event1.isCancelled()) {
-                    if (!ItemUtils.isAirOrNull(storedItem)) {
-                        ItemStack result = dropItems(block, storedItem);
-                        if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
-                            block.getWorld().dropItemNaturally(block.getLocation(), result);
-                        }
-                        removeMultiBlockItems(block);
+                if (!event1.isCancelled() && !ItemUtils.isAirOrNull(storedItem)) {
+                    ItemStack result = dropItems(block, storedItem);
+                    if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
+                        block.getWorld().dropItemNaturally(block.getLocation(), result);
                     }
+                    removeMultiBlockItems(block);
                 }
             }
         }
@@ -195,13 +193,11 @@ public class BlockListener implements Listener {
 
     @EventHandler
     public void onBlockFade(BlockFadeEvent event) {
-        if (!event.isCancelled()) {
-            if (event.getNewState().getType().equals(Material.AIR)) {
-                Block block = event.getBlock();
-                CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
-                if (storedItem != null) {
-                    CustomItems.removeStoredBlockItem(block.getLocation());
-                }
+        if (!event.isCancelled() && event.getNewState().getType().equals(Material.AIR)) {
+            Block block = event.getBlock();
+            CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+            if (storedItem != null) {
+                CustomItems.removeStoredBlockItem(block.getLocation());
             }
         }
     }
@@ -255,10 +251,8 @@ public class BlockListener implements Listener {
     private String getCustomItemID(ItemStack itemStack) {
         if (!ItemUtils.isAirOrNull(itemStack)) {
             ItemMeta itemMeta = itemStack.getItemMeta();
-            if (itemMeta != null) {
-                if (itemMeta.getPersistentDataContainer().has(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "custom_item"), PersistentDataType.STRING)) {
-                    return itemMeta.getPersistentDataContainer().get(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "custom_item"), PersistentDataType.STRING);
-                }
+            if (itemMeta != null && itemMeta.getPersistentDataContainer().has(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "custom_item"), PersistentDataType.STRING)) {
+                return itemMeta.getPersistentDataContainer().get(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "custom_item"), PersistentDataType.STRING);
             }
         }
         return "";

@@ -39,10 +39,6 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         Bukkit.getPluginManager().registerEvents(this, api.getPlugin());
     }
 
-    public boolean isChangingInv() {
-        return changingInv;
-    }
-
     public void setChangingInv(boolean changingInv) {
         this.changingInv = changingInv;
     }
@@ -171,7 +167,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     public void changeToInv(@NotNull String clusterID, @NotNull String guiWindowID) {
         Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
             Player player1 = getPlayer();
-            if (WolfyUtilities.hasPermission(player1, getApi().getPlugin().getDescription().getName().toLowerCase(Locale.ROOT) + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT))) {
+            if (WolfyUtilities.hasPermission(player1, (api.getPlugin().getName() + ".inv." + clusterID + "." + guiWindowID).toLowerCase(Locale.ROOT))) {
                 List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
                 if (getCurrentInv(clusterID) == null || !getCurrentInv(clusterID).getNamespace().equals(guiWindowID)) {
                     history.add(guiWindowID);
@@ -184,7 +180,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
                 }
                 return;
             }
-            api.sendPlayerMessage(player1, "§4You don't have the permission §c" + getApi().getPlugin().getDescription().getName().toLowerCase() + ".inv." + clusterID.toLowerCase(Locale.ROOT) + "." + guiWindowID.toLowerCase(Locale.ROOT));
+            api.sendPlayerMessage(player1, "§4You don't have the permission §c" + (api.getPlugin().getName() + ".inv." + clusterID + "." + guiWindowID).toLowerCase(Locale.ROOT));
         });
     }
 
@@ -250,15 +246,13 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
         if (event.getPlayer().getUniqueId().equals(uuid)) {
-            if (!clusterHistory.isEmpty() && isWindowOpen()) {
-                if (!changingInv) {
-                    GuiCloseEvent closeEvent = new GuiCloseEvent(getCurrentGuiCluster(), getCurrentInv(), this, event.getView());
-                    Bukkit.getPluginManager().callEvent(closeEvent);
-                    if (closeEvent.isCancelled()) {
-                        Bukkit.getScheduler().runTask(getApi().getPlugin(), (Runnable) this::openCluster);
-                    } else {
-                        this.isWindowOpen = false;
-                    }
+            if (!clusterHistory.isEmpty() && isWindowOpen() && !changingInv) {
+                GuiCloseEvent closeEvent = new GuiCloseEvent(getCurrentGuiCluster(), getCurrentInv(), this, event.getView());
+                Bukkit.getPluginManager().callEvent(closeEvent);
+                if (closeEvent.isCancelled()) {
+                    Bukkit.getScheduler().runTask(getApi().getPlugin(), (Runnable) this::openCluster);
+                } else {
+                    this.isWindowOpen = false;
                 }
             }
         }

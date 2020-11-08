@@ -4,6 +4,7 @@ import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -23,10 +24,10 @@ public class EnityUtils {
         Object entityAsJsonObject;
         try {
             entityAsJsonObject = saveToNBTMethod.invoke(entity);
-        } catch (Throwable t) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             WUPlugin.getWolfyUtilities().sendConsoleMessage("failed to serialize Entity to nms json!");
-            WUPlugin.getWolfyUtilities().sendConsoleMessage(t.toString());
-            for (StackTraceElement element : t.getStackTrace()) {
+            WUPlugin.getWolfyUtilities().sendConsoleMessage(e.toString());
+            for (StackTraceElement element : e.getStackTrace()) {
                 WUPlugin.getWolfyUtilities().sendConsoleMessage(element.toString());
             }
             return null;
