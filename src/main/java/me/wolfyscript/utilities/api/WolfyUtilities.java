@@ -168,20 +168,13 @@ public class WolfyUtilities implements Listener {
     }
 
     public static boolean hasPermission(CommandSender sender, String permCode) {
-        List<String> permissions = Arrays.asList(permCode.split("\\."));
+        if (sender.hasPermission("*")) return true;
         StringBuilder permission = new StringBuilder();
-        if (sender.hasPermission("*")) {
-            return true;
-        }
-        for (String perm : permissions) {
-            permission.append(perm);
-            if (permissions.indexOf(perm) < permissions.size() - 1) {
-                permission.append(".*");
-            }
-            if (sender.hasPermission(permission.toString())) {
+        for (String s : permCode.split("\\.")) {
+            permission.append(s);
+            if (sender.hasPermission(permission.toString()) || sender.hasPermission(permission.toString() + ".*")) {
                 return true;
             }
-            permission.replace(permission.length() - 2, permission.length(), "");
             permission.append(".");
         }
         return false;
