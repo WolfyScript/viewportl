@@ -14,21 +14,26 @@ public class PSUtils {
     //PlotSquared API Utils
     private static final PlotAPI plotAPI = new PlotAPI();
 
-    @Deprecated
+    public static Plot getPlot(org.bukkit.Location location) {
+        return BukkitUtil.getLocation(location).getPlot();
+    }
+
     public static boolean hasPerm(Player player, org.bukkit.Location location) {
         Location location1 = BukkitUtil.getLocation(location);
-        Plot plot = location1.getPlot();
-        if (!isPlotWorld(player.getWorld()))
+        if (!isPlotWorld(player.getWorld())) {
             return true;
+        }
+        Plot plot = location1.getPlot();
         return hasPlotPerm(player.getUniqueId(), plot);
     }
 
     public static boolean isPlotWorld(World world) {
-        return plotAPI.getPlotSquared().hasPlot(world.getUID());
+        return plotAPI.getPlotSquared().hasPlotArea(world.getName());
     }
 
     public static boolean hasPlotPerm(UUID uuid, Plot plot) {
-        return plot != null && (plot.getTrusted().contains(uuid) || plot.isOwner(uuid) || plot.getMembers().contains(uuid) || plot.isAdded(uuid));
+        return plot != null && plot.isAdded(uuid);
     }
+
 
 }
