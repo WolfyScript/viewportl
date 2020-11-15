@@ -18,6 +18,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.custom_items.api_references.*;
 import me.wolfyscript.utilities.api.custom_items.custom_data.CustomData;
 import me.wolfyscript.utilities.api.utils.inventory.InventoryUtils;
+import me.wolfyscript.utilities.api.utils.inventory.ItemUtils;
 import me.wolfyscript.utilities.api.utils.inventory.item_builder.AbstractItemBuilder;
 import me.wolfyscript.utilities.api.utils.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
@@ -64,7 +65,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      */
     private me.wolfyscript.utilities.api.utils.NamespacedKey namespacedKey;
 
-
     private APIReference replacement;
     private List<Material> allowedBlocks;
     private String permission;
@@ -76,6 +76,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     private boolean blockVanillaEquip;
     private boolean blockVanillaRecipes;
     private final List<EquipmentSlot> equipmentSlots;
+
+    private boolean advanced;
 
     /**
      * Upcoming change to CustomItem will include an APIReference to link it
@@ -126,6 +128,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.blockPlacement = false;
         this.blockVanillaEquip = false;
         this.blockVanillaRecipes = false;
+        this.advanced = true;
     }
 
     public void setNamespacedKey(me.wolfyscript.utilities.api.utils.NamespacedKey namespacedKey) {
@@ -364,10 +367,27 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         if (otherItem == null) return false;
         if (otherItem == currentItem) return true;
         if (otherItem.getType().equals(currentItem.getType()) && otherItem.getAmount() >= currentItem.getAmount()) {
+            if (!isAdvanced() && hasNamespacedKey()) {
+                CustomItem otherCustomItem = CustomItem.getByItemStack(otherItem);
+                if (ItemUtils.isAirOrNull(otherCustomItem) || !otherCustomItem.hasNamespacedKey()) return false;
+                return getNamespacedKey().equals(otherCustomItem.getNamespacedKey());
+            }
             if (!exactMeta && !currentItem.hasItemMeta()) return true;
             ItemBuilder customItem = new ItemBuilder(currentItem);
             ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
-            return getMetaSettings().checkMeta(customItemOther, customItem) && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
+            boolean meta = getMetaSettings().checkMeta(customItemOther, customItem);
+                /*
+                ItemMeta itemMeta = customItem.getItemMeta();
+                ItemMeta itemMetaOther = customItemOther.getItemMeta();
+                itemMeta.setVersion(2580);
+                itemMetaOther.setVersion(2580);
+
+                This can be used to bypass different versions of saved and current input item.
+                However I am not sure what could happen by forcing the version to change.
+                Best way to handle this issue is to re-save all the items and the load them again. That will update them including the version number.
+                CustomCrafting handles it with "/recipes save" where all items are re-saved!
+                */
+            return meta && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
         }
         return false;
     }
@@ -384,6 +404,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 blockPlacement == that.blockPlacement &&
                 blockVanillaEquip == that.blockVanillaEquip &&
                 blockVanillaRecipes == that.blockVanillaRecipes &&
+                advanced == that.advanced &&
                 Objects.equals(customDataMap, that.customDataMap) &&
                 Objects.equals(namespacedKey, that.namespacedKey) &&
                 Objects.equals(replacement, that.replacement) &&
@@ -397,7 +418,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCustomDataMap(), getNamespacedKey(), getReplacement(), getAllowedBlocks(), getPermission(), getRarityPercentage(), getBurnTime(), getDurabilityCost(), isConsumed(), blockPlacement, isBlockVanillaEquip(), isBlockVanillaRecipes(), getEquipmentSlots(), getApiReference(), getParticleContent(), getMetaSettings());
+        return Objects.hash(getCustomDataMap(), getNamespacedKey(), getReplacement(), getAllowedBlocks(), getPermission(), getRarityPercentage(), getBurnTime(), getDurabilityCost(), isConsumed(), blockPlacement, isAdvanced(), isBlockVanillaEquip(), isBlockVanillaRecipes(), getEquipmentSlots(), getApiReference(), getParticleContent(), getMetaSettings());
     }
 
     /**
@@ -407,8 +428,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * @return exact copy of this instance
      */
     @Override
-    public CustomItem clone() throws CloneNotSupportedException {
-        CustomItem customItem = (CustomItem) super.clone();
+    public CustomItem clone() {
+        CustomItem customItem = new CustomItem(getApiReference());
         if (hasNamespacedKey()) {
             customItem.setNamespacedKey(getNamespacedKey());
             customItem.setBlockVanillaRecipes(isBlockVanillaRecipes());
@@ -422,6 +443,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             customItem.setPermission(getPermission());
             customItem.setRarityPercentage(getRarityPercentage());
             customItem.setReplacement(getReplacement());
+            customItem.setAdvanced(isAdvanced());
         }
         customItem.setAmount(getAmount());
         return customItem;
@@ -672,6 +694,14 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.particleContent = particleContent;
     }
 
+    public boolean isAdvanced() {
+        return advanced;
+    }
+
+    public void setAdvanced(boolean advanced) {
+        this.advanced = advanced;
+    }
+
     /**
      * Gets the amount of the linked ItemStack or if the custom amount
      * is bigger than 0 gets the custom amount.
@@ -703,6 +733,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         public void serialize(CustomItem customItem, JsonGenerator gen, SerializerProvider provider) throws IOException {
             gen.writeStartObject();
             gen.writeObjectField("api_reference", customItem.getApiReference());
+            gen.writeObjectField("advanced", customItem.isAdvanced());
             gen.writeBooleanField("consumed", customItem.isConsumed());
             gen.writeBooleanField("blockVanillaEquip", customItem.isBlockVanillaEquip());
             gen.writeBooleanField("blockPlacement", customItem.isBlockPlacement());
@@ -759,6 +790,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             JsonNode node = p.readValueAsTree();
             if (node.isObject()) {
                 CustomItem customItem = new CustomItem(mapper.convertValue(node.path(node.has("api_reference") ? "api_reference" : "item"), APIReference.class));
+                customItem.setAdvanced(node.path("advanced").asBoolean(true));
                 customItem.setConsumed(node.path("consumed").asBoolean());
                 customItem.setBlockVanillaEquip(node.path("blockVanillaEquip").asBoolean());
                 customItem.setBlockPlacement(node.path("blockPlacement").asBoolean());
