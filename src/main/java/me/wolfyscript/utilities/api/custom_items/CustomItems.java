@@ -20,10 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CustomItems {
 
@@ -41,37 +39,25 @@ public class CustomItems {
         return customItems;
     }
 
-    @Deprecated
-    public static CustomItem getCustomItem(String id) {
-        return getCustomItem(id, true);
-    }
-
-    @Deprecated
-    public static CustomItem getCustomItem(String id, boolean replace) {
-        return getCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
-    }
-
-    @Deprecated
-    public static CustomItem getCustomItem(String key, String name) {
-        return getCustomItem(key + ":" + name);
-    }
-
-    @Deprecated
-    public static CustomItem getCustomItem(String key, String name, boolean replace) {
-        return getCustomItem(key + ":" + name, replace);
-    }
-
-    @Deprecated
-    public static void removeCustomItem(String id) {
-        removeCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
+    public static List<String> getNamespaces() {
+        return customItems.keySet().stream().map(NamespacedKey::getNamespace).distinct().collect(Collectors.toList());
     }
 
     /**
+     * Get all the items of the specific namespace.
      *
+     * @param namespace the namespace you want to get the items from
+     * @return A list of all the items of the specific namespace
+     */
+    public static List<CustomItem> getCustomItems(String namespace) {
+        return customItems.entrySet().stream().filter(entry -> entry.getKey().getNamespace().equals(namespace)).map(Map.Entry::getValue).collect(Collectors.toList());
+    }
+
+    /**
      * @param namespacedKey NamespacedKey of the item
      * @return true if there is an CustomItem for the NamespacedKey
      */
-    public static boolean hasCustomItem(NamespacedKey namespacedKey){
+    public static boolean hasCustomItem(NamespacedKey namespacedKey) {
         return customItems.containsKey(namespacedKey);
     }
 
@@ -85,8 +71,7 @@ public class CustomItems {
      */
     @Nullable
     public static CustomItem getCustomItem(@Nullable NamespacedKey namespacedKey) {
-        if(namespacedKey == null) return null;
-        return customItems.get(namespacedKey);
+        return namespacedKey == null ? null : customItems.get(namespacedKey);
     }
 
     public static void removeCustomItem(NamespacedKey namespacedKey) {
@@ -111,9 +96,7 @@ public class CustomItems {
     }
 
     public static HashMap<EquipmentSlot, UUID> getActiveItemEffects(Player player) {
-        if (!hasActiveItemEffects(player)) {
-            playerItemParticles.put(player.getUniqueId(), new HashMap<>());
-        }
+        playerItemParticles.putIfAbsent(player.getUniqueId(), new HashMap<>());
         return playerItemParticles.get(player.getUniqueId());
     }
 
@@ -143,26 +126,12 @@ public class CustomItems {
 
     //StoredBlocks Methods
     public static boolean isBlockStored(Location location) {
-        if (storedBlocks.containsKey(location)) {
-            return storedBlocks.containsKey(location);
-        } else {
-            for (Location location1 : storedBlocks.keySet()) {
-                if (location1.equals(location)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return storedBlocks.containsKey(location) || storedBlocks.keySet().stream().anyMatch(location1 -> location1.equals(location));
     }
 
     @Nullable
     public static CustomItem getStoredBlockItem(Location location) {
-        for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
-            if (entry.getKey().equals(location)) {
-                return getCustomItem(entry.getValue().getKey());
-            }
-        }
-        return null;
+        return storedBlocks.entrySet().stream().filter(entry -> entry.getKey().equals(location)).map(entry -> getCustomItem(entry.getValue().getKey())).findFirst().orElse(null);
     }
 
     public static void setStoredBlockItem(Location location, CustomItem customItem) {
@@ -174,7 +143,7 @@ public class CustomItems {
                 NamespacedKey particle = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
                 uuid = ParticleEffects.spawnEffectOnBlock(particle, location.getBlock());
             }
-            storedBlocks.put(location, new Pair<>( customItem.getApiReference() instanceof WolfyUtilitiesRef ? ((WolfyUtilitiesRef) customItem.getApiReference()).getNamespacedKey() : customItem.getNamespacedKey(), uuid));
+            storedBlocks.put(location, new Pair<>(customItem.getNamespacedKey(), uuid));
         }
     }
 
@@ -185,12 +154,7 @@ public class CustomItems {
 
     @Nullable
     public static UUID getStoredBlockEffect(Location location) {
-        for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
-            if (entry.getKey().equals(location)) {
-                return entry.getValue().getValue();
-            }
-        }
-        return null;
+        return storedBlocks.entrySet().stream().filter(entry -> entry.getKey().equals(location) && entry.getValue() != null && entry.getValue().getValue() != null).map(entry -> entry.getValue().getValue()).findFirst().orElse(null);
     }
 
     public static boolean hasStoredBlockEffect(Location location) {
@@ -201,21 +165,19 @@ public class CustomItems {
     }
 
     public static void initiateMissingBlockEffects() {
-        for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
-            if (!hasStoredBlockEffect(entry.getKey())) {
-                CustomItem customItem = getCustomItem(entry.getValue().getKey());
-                if (customItem != null) {
-                    if (customItem.getParticleContent() != null && customItem.getParticleContent().containsKey(ParticleEffect.Action.BLOCK)) {
-                        ParticleContent particleContent = customItem.getParticleContent();
-                        NamespacedKey effectID = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
-                        if (effectID != null) {
-                            UUID uuid = ParticleEffects.spawnEffectOnBlock(effectID, entry.getKey().getBlock());
-                            storedBlocks.put(entry.getKey(), new Pair<>(customItem.getNamespacedKey(), uuid));
-                        }
+        storedBlocks.entrySet().stream().filter(entry -> !hasStoredBlockEffect(entry.getKey())).forEach(entry -> {
+            CustomItem customItem = getCustomItem(entry.getValue().getKey());
+            if (customItem != null) {
+                if (customItem.getParticleContent() != null && customItem.getParticleContent().containsKey(ParticleEffect.Action.BLOCK)) {
+                    ParticleContent particleContent = customItem.getParticleContent();
+                    NamespacedKey effectID = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
+                    if (effectID != null) {
+                        UUID uuid = ParticleEffects.spawnEffectOnBlock(effectID, entry.getKey().getBlock());
+                        storedBlocks.put(entry.getKey(), new Pair<>(customItem.getNamespacedKey(), uuid));
                     }
                 }
             }
-        }
+        });
     }
 
     private static String locationToString(Location location) {
@@ -228,29 +190,45 @@ public class CustomItems {
         try{
             UUID uuid = UUID.fromString(args[0]);
             World world = Bukkit.getWorld(uuid);
-            if(world != null){
+            if (world != null) {
                 return new Location(world, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
             }
-        }catch (IllegalArgumentException e){
-            Bukkit.getLogger().warning("Couldn't find world "+args[0]);
+        } catch (IllegalArgumentException e) {
+            Bukkit.getLogger().warning("Couldn't find world " + args[0]);
         }
         return null;
+    }
+
+    @Deprecated
+    public static CustomItem getCustomItem(String id) {
+        return getCustomItem(id, true);
+    }
+
+    @Deprecated
+    public static CustomItem getCustomItem(String id, boolean replace) {
+        return getCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
+    }
+
+    @Deprecated
+    public static CustomItem getCustomItem(String key, String name) {
+        return getCustomItem(key + ":" + name);
+    }
+
+    @Deprecated
+    public static CustomItem getCustomItem(String key, String name, boolean replace) {
+        return getCustomItem(key + ":" + name, replace);
+    }
+
+    @Deprecated
+    public static void removeCustomItem(String id) {
+        removeCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
     }
 
     public void save() {
         try {
             FileOutputStream fos = new FileOutputStream(new File(WUPlugin.getInstance().getDataFolder() + File.separator + "stored_block_items.dat"));
             BukkitObjectOutputStream oos = new BukkitObjectOutputStream(fos);
-            HashMap<String, String> saveMap = new HashMap<>();
-            for (Map.Entry<Location, Pair<NamespacedKey, UUID>> entry : storedBlocks.entrySet()) {
-                if (entry.getKey() != null) {
-                    String loc = locationToString(entry.getKey());
-                    if(loc != null){
-                        saveMap.put(loc, entry.getValue().getKey().toString());
-                    }
-                }
-            }
-            oos.writeObject(saveMap);
+            oos.writeObject(storedBlocks.entrySet().stream().filter(e -> e.getKey() != null).map(e -> new Pair<>(locationToString(e.getKey()), e.getValue().getKey().toString())).filter(e -> e.getKey() != null).collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
             oos.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -267,13 +245,12 @@ public class CustomItems {
                 try {
                     Object object = ois.readObject();
                     HashMap<String, String> loadMap = (HashMap<String, String>) object;
-                    for (Map.Entry<String, String> entry : loadMap.entrySet()) {
-                        String[] key = entry.getValue().split(":");
-                        Location location = stringToLocation(entry.getKey());
-                        if(location != null){
-                            storedBlocks.put(location, new Pair<>(new NamespacedKey(key[0], key[1]), null));
+                    loadMap.forEach((key, value) -> {
+                        Location location = stringToLocation(key);
+                        if (location != null) {
+                            storedBlocks.put(location, new Pair<>(NamespacedKey.getByString(value), null));
                         }
-                    }
+                    });
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
