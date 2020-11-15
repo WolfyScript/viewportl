@@ -31,13 +31,11 @@ public class WolfyUtilitiesRef extends APIReference {
 
     @Override
     public ItemStack getLinkedItem() {
-        if(CustomItems.getCustomItems().containsKey(namespacedKey)){
-            CustomItem customItem = CustomItems.getCustomItem(namespacedKey);
-            if(customItem != null){
-                return customItem.create();
-            }
+        CustomItem customItem = CustomItems.getCustomItem(namespacedKey);
+        if (customItem != null) {
+            return customItem.create();
         }
-        System.out.println("Couldn't find CustomItem for "+namespacedKey.toString());
+        System.out.println("Couldn't find CustomItem for " + namespacedKey.toString());
         return null;
     }
 
@@ -87,7 +85,7 @@ public class WolfyUtilitiesRef extends APIReference {
             super(t);
         }
 
-        public Serialization(){
+        public Serialization() {
             super(WolfyUtilitiesRef.class);
         }
 

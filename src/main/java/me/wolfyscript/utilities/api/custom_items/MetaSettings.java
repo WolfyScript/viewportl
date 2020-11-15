@@ -17,6 +17,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @JsonSerialize(using = MetaSettings.Serializer.class)
 @JsonDeserialize(using = MetaSettings.Deserializer.class)
@@ -82,12 +83,7 @@ public class MetaSettings {
     }
 
     public boolean checkMeta(ItemBuilder itemOther, ItemBuilder item) {
-        for (Meta meta : metas.values()) {
-            if (!meta.check(itemOther, item)) {
-                return false;
-            }
-        }
-        return true;
+        return metas.values().stream().allMatch(meta -> meta.check(itemOther, item));
     }
 
     @Override
@@ -106,18 +102,13 @@ public class MetaSettings {
     @Deprecated
     @Override
     public String toString() {
-        HashMap<String, String> map = new HashMap<>();
-        for (String id : metas.keySet()) {
-            map.put(id, metas.get(id).toString());
-        }
+        Map<String, String> map = metas.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().toString()));
         JSONObject obj = new JSONObject(map);
         return obj.toString();
     }
 
     public enum Option {
         EXACT, IGNORE, HIGHER, HIGHER_EXACT, LOWER, LOWER_EXACT, HIGHER_LOWER
-
-
     }
 
     public static class Serializer extends StdSerializer<MetaSettings>{
