@@ -22,25 +22,40 @@ public abstract class GuiWindow implements Listener {
     private final HashMap<GuiHandler<?>, Inventory> cachedInventories;
     private final HashMap<String, Button> buttons = new HashMap<>();
 
+    private boolean forceSyncUpdate;
+
     //Inventory
     private final InventoryType inventoryType;
     private final int size;
 
     public GuiWindow(String namespace, InventoryAPI<?> inventoryAPI, int size) {
-        this(namespace, namespace, inventoryAPI, null, size);
+        this(namespace, inventoryAPI, size, false);
+    }
+
+    public GuiWindow(String namespace, InventoryAPI<?> inventoryAPI, int size, boolean forceSyncUpdate) {
+        this(namespace, namespace, inventoryAPI, null, size, forceSyncUpdate);
     }
 
     public GuiWindow(String namespace, InventoryAPI<?> inventoryAPI, InventoryType inventoryType) {
-        this(namespace, namespace, inventoryAPI, inventoryType, 0);
+        this(namespace, inventoryAPI, inventoryType, false);
+    }
+
+    public GuiWindow(String namespace, InventoryAPI<?> inventoryAPI, InventoryType inventoryType, boolean forceSyncUpdate) {
+        this(namespace, namespace, inventoryAPI, inventoryType, 0, forceSyncUpdate);
     }
 
     public GuiWindow(String namespace, String itemKey, InventoryAPI<?> inventoryAPI, InventoryType inventoryType, int size) {
+        this(namespace, itemKey, inventoryAPI, inventoryType, size, false);
+    }
+
+    public GuiWindow(String namespace, String itemKey, InventoryAPI<?> inventoryAPI, InventoryType inventoryType, int size, boolean forceSyncUpdate) {
         this.namespace = namespace;
         this.inventoryAPI = inventoryAPI;
         this.itemKey = itemKey;
         this.cachedInventories = new HashMap<>();
         this.inventoryType = inventoryType;
         this.size = size;
+        this.forceSyncUpdate = forceSyncUpdate;
         Bukkit.getPluginManager().registerEvents(this, inventoryAPI.getPlugin());
     }
 
@@ -78,6 +93,8 @@ public abstract class GuiWindow implements Listener {
      * This method is called after the Bukkit GuiUpdateEvent and {@link #onUpdateSync(GuiUpdate)} are done.
      * It will be run by the scheduler Async, so be careful with using Bukkit methods!
      * Bukkit methods are not Thread safe!
+     * <p>
+     * If {@link #isForceSyncUpdate()} is enabled then this method is forced to be updated sync too just like {@link #onUpdateSync(GuiUpdate)}!
      *
      * @param update
      */
@@ -95,20 +112,26 @@ public abstract class GuiWindow implements Listener {
                 Bukkit.getPluginManager().callEvent(event);
                 GuiUpdate guiUpdate = event.getGuiUpdate();
                 onUpdateSync(guiUpdate);
-                Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), () -> {
-                    onUpdateAsync(event.getGuiUpdate());
-                    event.getGuiUpdate().applyChanges();
-                    setCachedInventorie(guiHandler, guiUpdate.getInventory());
-                    if (openInventory) {
-                        Bukkit.getScheduler().runTask(getAPI().getPlugin(), () -> {
-                            guiHandler.setChangingInv(true);
-                            guiHandler.getPlayer().openInventory(guiUpdate.getInventory());
-                            guiHandler.setChangingInv(false);
-                        });
-                    }
-                });
+                if (forceSyncUpdate) {
+                    openInventory(guiHandler, event, guiUpdate, openInventory);
+                } else {
+                    Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), () -> openInventory(guiHandler, event, guiUpdate, openInventory));
+                }
             }
         });
+    }
+
+    private void openInventory(GuiHandler<?> guiHandler, GuiUpdateEvent event, GuiUpdate guiUpdate, boolean openInventory) {
+        onUpdateAsync(event.getGuiUpdate());
+        event.getGuiUpdate().applyChanges();
+        setCachedInventorie(guiHandler, guiUpdate.getInventory());
+        if (openInventory) {
+            Bukkit.getScheduler().runTask(getAPI().getPlugin(), () -> {
+                guiHandler.setChangingInv(true);
+                guiHandler.getPlayer().openInventory(guiUpdate.getInventory());
+                guiHandler.setChangingInv(false);
+            });
+        }
     }
 
     public String getNamespace() {
@@ -249,5 +272,25 @@ public abstract class GuiWindow implements Listener {
             values.add(WolfyUtilities.translateColorCodes(value));
         }
         return values;
+    }
+
+    /**
+     * ForceSyncUpdate will make sure that no async code is executed on the GUI update
+     * and will also open the Inventory one tick after the initial update request, instead of being opened after the async update.
+     * <br/>
+     * It should be enabled when using {@link me.wolfyscript.utilities.api.inventory.button.buttons.ItemInputButton}
+     * to make sure that no item could be duplicated, because of tick lag!
+     *
+     * @return
+     */
+    public boolean isForceSyncUpdate() {
+        return forceSyncUpdate;
+    }
+
+    /**
+     * @param forceSyncUpdate
+     */
+    public void setForceSyncUpdate(boolean forceSyncUpdate) {
+        this.forceSyncUpdate = forceSyncUpdate;
     }
 }

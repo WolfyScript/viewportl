@@ -93,7 +93,7 @@ public class GuiUpdate {
         Button button = guiWindow.getButton(id);
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, id);
-            renderButton(button, guiHandler, player, queueInventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, inventory, queueInventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -108,7 +108,7 @@ public class GuiUpdate {
         }
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, id);
-            renderButton(button, guiHandler, player, queueInventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, inventory, queueInventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -118,7 +118,7 @@ public class GuiUpdate {
     public void setButton(int slot, @Nonnull Button button) {
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, button.getId());
-            renderButton(button, guiHandler, player, queueInventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, inventory, queueInventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
@@ -130,12 +130,13 @@ public class GuiUpdate {
         Button button = inventoryAPI.getButton(namespace, key);
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, namespace + ":" + key);
-            renderButton(button, guiHandler, player, queueInventory, slot, guiHandler.isHelpEnabled());
+            renderButton(button, guiHandler, player, inventory, queueInventory, slot, guiHandler.isHelpEnabled());
         }
     }
 
-    private void renderButton(Button button, GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) {
+    private void renderButton(Button button, GuiHandler<?> guiHandler, Player player, Inventory oldInventory, Inventory inventory, int slot, boolean help) {
         try {
+            button.prepareRender(guiHandler, player, oldInventory, oldInventory.getItem(slot), slot, help);
             button.render(guiHandler, player, inventory, slot, guiHandler.isHelpEnabled());
         } catch (IOException e) {
             System.out.println("Error while rendering Button \"" + button.getId() + "\"!");
@@ -156,7 +157,9 @@ public class GuiUpdate {
     }
 
     public void applyChanges() {
-        Bukkit.getScheduler().runTask(getInventoryAPI().getPlugin(), () -> inventory.setContents(Arrays.copyOfRange(queueInventory.getContents(), 0, inventory.getSize())));
+        if (!queueInventory.isEmpty()) {
+            Bukkit.getScheduler().runTask(getInventoryAPI().getPlugin(), () -> inventory.setContents(Arrays.copyOfRange(queueInventory.getContents(), 0, inventory.getSize())));
+        }
     }
 
 }
