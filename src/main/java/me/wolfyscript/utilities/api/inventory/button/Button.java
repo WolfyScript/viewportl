@@ -35,6 +35,9 @@ public abstract class Button {
 
     public abstract boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException;
 
+    public void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
+    }
+
     public abstract void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException;
 
     public ButtonType getType() {

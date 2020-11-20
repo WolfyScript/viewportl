@@ -92,6 +92,13 @@ public class ActionButton extends Button {
         return true;
     }
 
+    @Override
+    public void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
+        if (state.getPrepareRender() != null) {
+            state.getPrepareRender().prepare(guiHandler, player, inventory, itemStack, slot, help);
+        }
+    }
+
     public void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException {
         applyItem(guiHandler, player, inventory, state, slot, help);
     }
