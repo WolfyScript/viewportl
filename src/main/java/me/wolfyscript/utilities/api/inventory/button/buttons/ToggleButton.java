@@ -63,7 +63,10 @@ public class ToggleButton extends Button {
 
     @Override
     public void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
-        states[settings.getOrDefault(guiHandler, defaultState) ? 0 : 1].getPrepareRender().prepare(guiHandler, player, inventory, itemStack, slot, help);
+        ButtonState state = states[settings.getOrDefault(guiHandler, defaultState) ? 0 : 1];
+        if (state.getPrepareRender() != null) {
+            state.getPrepareRender().prepare(guiHandler, player, inventory, itemStack, slot, help);
+        }
     }
 
     @Override

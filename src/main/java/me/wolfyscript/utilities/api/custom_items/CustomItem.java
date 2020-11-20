@@ -598,7 +598,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 input.setItemMeta(replace.getItemMeta());
                 input.setData(replace.getData());
                 input.setAmount(replace.getAmount());
-                return;
             } else if (this.getDurabilityCost() != 0) {
                 CustomItem customInput = new CustomItem(input);
                 if (customInput.hasCustomDurability()) {

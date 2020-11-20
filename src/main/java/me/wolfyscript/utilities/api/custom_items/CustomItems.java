@@ -206,7 +206,7 @@ public class CustomItems {
 
     @Deprecated
     public static CustomItem getCustomItem(String id, boolean replace) {
-        return getCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
+        return getCustomItem(NamespacedKey.getByString(id));
     }
 
     @Deprecated
