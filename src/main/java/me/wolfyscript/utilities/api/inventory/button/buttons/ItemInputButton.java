@@ -2,8 +2,6 @@ package me.wolfyscript.utilities.api.inventory.button.buttons;
 
 import me.wolfyscript.utilities.api.inventory.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.button.*;
-import me.wolfyscript.utilities.main.WUPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -62,11 +60,16 @@ public class ItemInputButton extends ActionButton {
 
     @Override
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
-        Bukkit.getScheduler().runTaskLater(WUPlugin.getInstance(), () -> content.put(guiHandler, inventory.getItem(slot) != null ? inventory.getItem(slot).clone() : new ItemStack(Material.AIR)), 1);
         if (!getType().equals(ButtonType.DUMMY) && getState().getAction() != null) {
             return getState().getAction().run(guiHandler, player, inventory, slot, event);
         }
         return false;
+    }
+
+    @Override
+    public void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
+        content.put(guiHandler, itemStack != null ? itemStack.clone() : new ItemStack(Material.AIR));
+        super.prepareRender(guiHandler, player, inventory, itemStack, slot, help);
     }
 
     @Override

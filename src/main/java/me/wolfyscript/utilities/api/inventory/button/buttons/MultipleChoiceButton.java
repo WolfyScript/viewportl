@@ -9,6 +9,7 @@ import me.wolfyscript.utilities.api.inventory.button.ButtonType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -60,6 +61,14 @@ public class MultipleChoiceButton extends Button {
             return btnState.getAction().run(guiHandler, player, inventory, slot, event);
         }
         return true;
+    }
+
+    @Override
+    public void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
+        int setting = settings.getOrDefault(guiHandler, 0);
+        if (states != null && states.size() > setting) {
+            states.get(setting).getPrepareRender().prepare(guiHandler, player, inventory, itemStack, slot, help);
+        }
     }
 
     @Override

@@ -25,6 +25,7 @@ public class ButtonState {
     private ItemStack[] icon;
     private ButtonAction action;
     private ButtonRender buttonRender;
+    private ButtonPrepareRender prepareRender;
 
     private String displayName;
     private String[] helpLore;
@@ -43,9 +44,14 @@ public class ButtonState {
     }
 
     public ButtonState(String key, ItemStack presetIcon, ButtonAction action, ButtonRender render) {
+        this(key, presetIcon, action, null, render);
+    }
+
+    public ButtonState(String key, ItemStack presetIcon, ButtonAction action, ButtonPrepareRender prepareRender, ButtonRender render) {
         this.key = key;
         this.presetIcon = presetIcon;
         this.action = action;
+        this.prepareRender = prepareRender;
         this.buttonRender = render;
     }
 
@@ -62,7 +68,11 @@ public class ButtonState {
     }
 
     public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonAction action, ButtonRender render) {
-        this(key, presetIcon, action, render);
+        this(key, presetIcon, customModelData, action, null, render);
+    }
+
+    public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonAction action, ButtonPrepareRender prepareRender, ButtonRender render) {
+        this(key, presetIcon, action, prepareRender, render);
         ItemMeta itemMeta = this.presetIcon.getItemMeta();
         itemMeta.setCustomModelData(customModelData);
         this.presetIcon.setItemMeta(itemMeta);
@@ -71,7 +81,6 @@ public class ButtonState {
     /**
      * Constructors with Key and, Materials instead of ItemStacks
      */
-
     public ButtonState(String key, Material presetIcon) {
         this(key, presetIcon, null, null);
     }
@@ -88,6 +97,10 @@ public class ButtonState {
         this(key, new ItemStack(presetIcon), action, render);
     }
 
+    public ButtonState(String key, Material presetIcon, ButtonAction action, ButtonPrepareRender prepareRender, ButtonRender render) {
+        this(key, new ItemStack(presetIcon), action, prepareRender, render);
+    }
+
     public ButtonState(String key, Material presetIcon, int customModelData) {
         this(key, presetIcon, customModelData, null, null);
     }
@@ -102,6 +115,10 @@ public class ButtonState {
 
     public ButtonState(String key, Material presetIcon, int customModelData, ButtonAction action, ButtonRender render) {
         this(key, new ItemStack(presetIcon), customModelData, action, render);
+    }
+
+    public ButtonState(String key, Material presetIcon, int customModelData, ButtonAction action, ButtonPrepareRender prepareRender, ButtonRender render) {
+        this(key, new ItemStack(presetIcon), customModelData, action, prepareRender, render);
     }
 
     /**
@@ -121,7 +138,12 @@ public class ButtonState {
     }
 
     public ButtonState(String clusterID, String key, ItemStack presetIcon, ButtonAction action, ButtonRender render) {
+        this(clusterID, key, presetIcon, action, null, render);
+    }
+
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, ButtonAction action, ButtonPrepareRender prepareRender, ButtonRender render) {
         this.action = action;
+        this.prepareRender = prepareRender;
         this.buttonRender = render;
         this.presetIcon = presetIcon;
         this.clusterID = clusterID;
@@ -141,7 +163,12 @@ public class ButtonState {
     }
 
     public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonAction action, ButtonRender render) {
+        this(clusterID, key, presetIcon, customModelData, action, null, render);
+    }
+
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonAction action, ButtonPrepareRender prepareRender, ButtonRender render) {
         this.action = action;
+        this.prepareRender = prepareRender;
         this.buttonRender = render;
         this.presetIcon = presetIcon;
         ItemMeta itemMeta = this.presetIcon.getItemMeta();
@@ -171,8 +198,16 @@ public class ButtonState {
         this(clusterID, key, new ItemStack(presetIcon), action, render);
     }
 
+    public ButtonState(String clusterID, String key, Material presetIcon, ButtonAction action, ButtonPrepareRender prepareRender, ButtonRender render) {
+        this(clusterID, key, new ItemStack(presetIcon), action, prepareRender, render);
+    }
+
     public ButtonState(String clusterID, String key, Material presetIcon, int customModelData) {
         this(clusterID, key, presetIcon, customModelData, null, null);
+    }
+
+    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonRender render) {
+        this(clusterID, key, presetIcon, customModelData, null, render);
     }
 
     public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonAction action) {
@@ -182,6 +217,11 @@ public class ButtonState {
     public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonAction action, ButtonRender render) {
         this(clusterID, key, new ItemStack(presetIcon), customModelData, action, render);
     }
+
+    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonAction action, ButtonPrepareRender prepareRender, ButtonRender render) {
+        this(clusterID, key, new ItemStack(presetIcon), customModelData, action, prepareRender, render);
+    }
+
 
     @Deprecated
     public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonActionRender action) {
@@ -257,5 +297,13 @@ public class ButtonState {
 
     public ButtonRender getRenderAction() {
         return buttonRender;
+    }
+
+    public ButtonPrepareRender getPrepareRender() {
+        return prepareRender;
+    }
+
+    public void setPrepareRender(ButtonPrepareRender prepareRender) {
+        this.prepareRender = prepareRender;
     }
 }

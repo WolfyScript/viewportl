@@ -11,8 +11,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.IOException;
-
 public class DummyButton extends ActionButton {
 
     /*
@@ -63,10 +61,5 @@ public class DummyButton extends ActionButton {
     public boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
         //NOTHING
         return true;
-    }
-
-    @Override
-    public void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException {
-        super.render(guiHandler, player, inventory, slot, help);
     }
 }
