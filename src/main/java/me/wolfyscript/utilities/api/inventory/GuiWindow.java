@@ -122,7 +122,7 @@ public abstract class GuiWindow implements Listener {
     }
 
     private void openInventory(GuiHandler<?> guiHandler, GuiUpdateEvent event, GuiUpdate guiUpdate, boolean openInventory) {
-        onUpdateAsync(event.getGuiUpdate());
+        onUpdateAsync(guiUpdate);
         event.getGuiUpdate().applyChanges();
         setCachedInventorie(guiHandler, guiUpdate.getInventory());
         if (openInventory) {
