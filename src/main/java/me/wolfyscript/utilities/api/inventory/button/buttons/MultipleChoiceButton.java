@@ -67,7 +67,9 @@ public class MultipleChoiceButton extends Button {
     public void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
         int setting = settings.getOrDefault(guiHandler, 0);
         if (states != null && states.size() > setting) {
-            states.get(setting).getPrepareRender().prepare(guiHandler, player, inventory, itemStack, slot, help);
+            if (states.get(setting).getPrepareRender() != null) {
+                states.get(setting).getPrepareRender().prepare(guiHandler, player, inventory, itemStack, slot, help);
+            }
         }
     }
 
