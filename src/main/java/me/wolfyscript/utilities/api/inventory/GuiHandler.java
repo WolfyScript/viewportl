@@ -118,8 +118,9 @@ public class GuiHandler<T extends CustomCache> implements Listener {
      */
     @Nullable
     public GuiWindow getPreviousInv(String clusterID, int stepsBack) {
-        if (clusterHistory.get(clusterID) != null && clusterHistory.get(clusterID).size() > stepsBack) {
-            return invAPI.getGuiWindow(clusterID, clusterHistory.get(clusterID).get(clusterHistory.get(clusterID).size() - (stepsBack + 1)));
+        List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
+        if (history.size() > stepsBack) {
+            return invAPI.getGuiWindow(clusterID, history.get(history.size() - (stepsBack + 1)));
         }
         return null;
     }
@@ -145,18 +146,27 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     }
 
     public void openPreviousInv(String clusterID, int stepsBack) {
-        String previousInv = getPreviousInv(stepsBack).getNamespace();
         List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
         for (int i = 0; i < stepsBack; i++) {
-            history.remove(history.size() - 1);
+            if (!history.isEmpty()) {
+                history.remove(history.size() - 1);
+            }
         }
         clusterHistory.put(clusterID, history);
-        changeToInv(clusterID, previousInv);
+        if (history.isEmpty()) {
+            openCluster(clusterID);
+        } else {
+            changeToInv(clusterID, history.get(history.size() - 1));
+        }
+    }
+
+    public HashMap<String, List<String>> getClusterHistory() {
+        return clusterHistory;
     }
 
     /*
-    Opens the specific GuiWindow in the current GuiCluster.
-     */
+        Opens the specific GuiWindow in the current GuiCluster.
+         */
     public void changeToInv(String guiWindowID) {
         changeToInv(getCurrentGuiCluster(), guiWindowID);
     }
@@ -264,10 +274,12 @@ public class GuiHandler<T extends CustomCache> implements Listener {
 
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
-        Player player = event.getPlayer();
-        if (player.getUniqueId().equals(uuid)) {
-            if (isChatEventActive()) {
-                cancelChatEvent();
+        if (!event.getMessage().startsWith("/wua")) {
+            Player player = event.getPlayer();
+            if (player.getUniqueId().equals(uuid)) {
+                if (isChatEventActive()) {
+                    cancelChatEvent();
+                }
             }
         }
     }
