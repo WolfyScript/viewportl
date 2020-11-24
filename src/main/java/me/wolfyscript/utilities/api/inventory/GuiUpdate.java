@@ -157,7 +157,7 @@ public class GuiUpdate {
     }
 
     public void applyChanges() {
-        if (!queueInventory.isEmpty()) {
+        if (queueInventory.getContents().length > 0) {
             Bukkit.getScheduler().runTask(getInventoryAPI().getPlugin(), () -> inventory.setContents(Arrays.copyOfRange(queueInventory.getContents(), 0, inventory.getSize())));
         }
     }

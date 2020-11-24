@@ -222,7 +222,6 @@ public class ButtonState {
         this(clusterID, key, new ItemStack(presetIcon), customModelData, action, prepareRender, render);
     }
 
-
     @Deprecated
     public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonActionRender action) {
         this(clusterID, key, presetIcon, customModelData, action, null);
