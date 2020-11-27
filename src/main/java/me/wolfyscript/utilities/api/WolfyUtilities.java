@@ -203,7 +203,10 @@ public class WolfyUtilities implements Listener {
      * Hello World -> §H§e§l§l§o§ §W§o§r§l§d
      * <p>
      * Because of this the String will be invisible in Minecraft!
+     *
+     * @deprecated No longer reliably working in 1.16!
      */
+    @Deprecated
     public static String hideString(String hide) {
         char[] data = new char[hide.length() * 2];
         for (int i = 0; i < data.length; i += 2) {
@@ -213,23 +216,18 @@ public class WolfyUtilities implements Listener {
         return new String(data);
     }
 
+    /**
+     * @deprecated No longer reliably working in 1.16!
+     */
+    @Deprecated
     public static String unhideString(String unhide) {
         return unhide.replace("§", "");
     }
 
+
+    @Deprecated
     public static String translateColorCodes(String textToTranslate) {
-        char[] b = textToTranslate.toCharArray();
-        for (int i = 0; i < b.length - 1; i++) {
-            if (b[i] == '&') {
-                if (b[i + 1] == '&') {
-                    b[i + 1] = '=';
-                } else {
-                    b[i] = 167;
-                    b[i + 1] = Character.toLowerCase(b[i + 1]);
-                }
-            }
-        }
-        return new String(b).replace("&=", "&");
+        return me.wolfyscript.utilities.api.utils.chat.ChatColor.convert(textToTranslate);
     }
 
     public static Enchantment getEnchantment(String enchantNmn) {
