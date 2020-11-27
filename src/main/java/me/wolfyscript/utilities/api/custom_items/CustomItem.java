@@ -48,6 +48,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * If the config contains CustomData that is not available in this HashMap, then it won't be loaded!
      */
     private static final HashMap<String, CustomData> availableCustomData = new HashMap<>();
+
     /**
      * Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
      * All registered CustomData is added to this item and cannot be removed!

@@ -3,12 +3,13 @@ package me.wolfyscript.utilities.api.config;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.plugin.Plugin;
 
+@Deprecated
 public abstract class Configuration {
 
     public WolfyUtilities api;
     public ConfigAPI configAPI;
     public Plugin plugin;
-    private Type type;
+    private final Type type;
     private String name;
 
     public Configuration(ConfigAPI configAPI, String name, Type type) {

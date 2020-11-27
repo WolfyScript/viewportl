@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+@Deprecated
 public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileConfiguration {
 
     private final org.bukkit.configuration.file.YamlConfiguration config;

@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.config;
 
 import java.io.File;
 
+@Deprecated
 public abstract class FileConfiguration extends MemoryConfiguration {
 
     protected File configFile;

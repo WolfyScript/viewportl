@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.config.templates;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.JsonConfiguration;
 
+@Deprecated
 public class LangConfiguration extends JsonConfiguration {
 
     public LangConfiguration(ConfigAPI configAPI, String name) {

@@ -3,8 +3,8 @@ package me.wolfyscript.utilities.api.config;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
+@Deprecated
 public abstract class MemoryConfiguration extends Configuration implements ConfigurationSection {
 
     public HashMap<String, Object> map;
