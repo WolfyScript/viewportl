@@ -32,7 +32,7 @@ public class ItemStackSerialization {
     }
 
     public static void create(SimpleModule module){
-        JacksonUtil.addSerializer(module, ItemStack.class, (itemStack, gen, serializerProvider) -> {
+        JacksonUtil.addSerializerAndDeserializer(module, ItemStack.class, (itemStack, gen, serializerProvider) -> {
             if (itemStack != null) {
                 Yaml yaml = new Yaml();
                 YamlConfiguration config = new YamlConfiguration();
@@ -48,24 +48,7 @@ public class ItemStackSerialization {
                 gen.writeObject(itemMap);
                  */
             }
-        });
-        /*
-            -----------------------------------------------------------------------------------------
-            JsonObject result = new JsonObject();
-            result.addProperty("v", Bukkit.getUnsafe().getDataVersion());
-            result.addProperty("type", itemStack.getType().name());
-            if (itemStack.getAmount() != 1) {
-                result.addProperty("amount", itemStack.getAmount());
-            }
-            ItemMeta meta = itemStack.getItemMeta();
-            if (!Bukkit.getItemFactory().equals(meta, null)) {
-                result.add("meta", jsonSerializationContext.serialize(meta, ItemMeta.class));
-            }
-            return result;
-            -----------------------------------------------------------------------------------------
-            return new JsonPrimitive(ItemUtils.serializeItemStackBase64(itemStack));
-        */
-        JacksonUtil.addDeserializer(module, ItemStack.class, (p, deserializationContext) -> {
+        }, (p, deserializationContext) -> {
             JsonNode node = p.readValueAsTree();
             if (node.isValueNode()) {
                 //Old Serialization Methods. like Base64 or NMS serialization
@@ -100,5 +83,21 @@ public class ItemStackSerialization {
              */
             return null;
         });
+        /*
+            -----------------------------------------------------------------------------------------
+            JsonObject result = new JsonObject();
+            result.addProperty("v", Bukkit.getUnsafe().getDataVersion());
+            result.addProperty("type", itemStack.getType().name());
+            if (itemStack.getAmount() != 1) {
+                result.addProperty("amount", itemStack.getAmount());
+            }
+            ItemMeta meta = itemStack.getItemMeta();
+            if (!Bukkit.getItemFactory().equals(meta, null)) {
+                result.add("meta", jsonSerializationContext.serialize(meta, ItemMeta.class));
+            }
+            return result;
+            -----------------------------------------------------------------------------------------
+            return new JsonPrimitive(ItemUtils.serializeItemStackBase64(itemStack));
+        */
     }
 }

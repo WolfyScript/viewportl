@@ -1,12 +1,7 @@
 package me.wolfyscript.utilities.api.utils.json.jackson.serialization;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
@@ -15,7 +10,6 @@ import me.wolfyscript.utilities.api.utils.particles.Particles;
 import org.bukkit.Material;
 import org.bukkit.util.Vector;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -23,26 +17,7 @@ import java.util.Locale;
 public class ParticleSerialization {
 
     public static void create(SimpleModule module) {
-        module.addSerializer(Particle.class, new Serializer());
-        module.addDeserializer(Particle.class, new Deserializer());
-    }
-
-    private static boolean checkValue(Object particleValue, Object supParticleValue) {
-        return particleValue != null && !particleValue.equals(supParticleValue);
-    }
-
-    public static class Serializer extends StdSerializer<Particle> {
-
-        public Serializer() {
-            this(Particle.class);
-        }
-
-        protected Serializer(Class<Particle> t) {
-            super(t);
-        }
-
-        @Override
-        public void serialize(Particle particle, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        JacksonUtil.addSerializerAndDeserializer(module, Particle.class, (particle, gen, serializerProvider) -> {
             Particle supParticle = Particles.getParticle(particle.getSuperParticle());
             boolean hasSup = supParticle != null;
             gen.writeStartObject();
@@ -95,21 +70,7 @@ public class ParticleSerialization {
             }
             //particleObject.add("data", jsonSerializationContext.serialize(particle.getData(), particle.getDataClass()));
             gen.writeEndObject();
-        }
-    }
-
-    public static class Deserializer extends StdDeserializer<Particle> {
-
-        public Deserializer() {
-            this(Particle.class);
-        }
-
-        protected Deserializer(Class<Particle> t) {
-            super(t);
-        }
-
-        @Override
-        public Particle deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
+        }, (p, deserializationContext) -> {
             JsonNode node = p.readValueAsTree();
             if (node.isObject()) {
                 final Particle resultParticle;
@@ -164,6 +125,10 @@ public class ParticleSerialization {
                 return resultParticle;
             }
             return null;
-        }
+        });
+    }
+
+    private static boolean checkValue(Object particleValue, Object supParticleValue) {
+        return particleValue != null && !particleValue.equals(supParticleValue);
     }
 }

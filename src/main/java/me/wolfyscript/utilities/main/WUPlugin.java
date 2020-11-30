@@ -141,7 +141,6 @@ public class WUPlugin extends JavaPlugin {
         saveResource("lang/en_US.json", true);
         languageAPI.setActiveLanguage(new Language(this, "en_US"));
 
-
         WolfyUtilities.getCustomItems().load();
         Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);

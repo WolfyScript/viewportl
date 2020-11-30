@@ -1,46 +1,37 @@
 package me.wolfyscript.utilities.api.utils.json.jackson.serialization;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import me.wolfyscript.utilities.api.utils.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import java.io.IOException;
 import java.util.UUID;
 
 public class LocationSerialization {
 
-    public static void create(SimpleModule module){
-        module.addSerializer(Location.class, new Serializer());
-        module.addDeserializer(Location.class, new Deserializer());
-    }
-
-    public static class Deserializer extends StdDeserializer<Location> {
-
-        public Deserializer(){
-            this(Location.class);
-        }
-
-        protected Deserializer(Class<Location> t) {
-            super(t);
-        }
-
-        @Override
-        public Location deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
+    public static void create(SimpleModule module) {
+        JacksonUtil.addSerializerAndDeserializer(module, Location.class, (location, gen, serializerProvider) -> {
+            gen.writeStartObject();
+            gen.writeStringField("world", location.getWorld().getUID().toString());
+            gen.writeArrayFieldStart("pos");
+            gen.writeNumber(location.getX());
+            gen.writeNumber(location.getY());
+            gen.writeNumber(location.getZ());
+            gen.writeNumber(location.getYaw());
+            gen.writeNumber(location.getPitch());
+            gen.writeEndArray();
+            gen.writeEndObject();
+        }, (p, d) -> {
             JsonNode node = p.readValueAsTree();
-            if(node.isObject()){
+            if (node.isObject()) {
                 UUID uuid = UUID.fromString(node.get("world").asText());
                 World world = Bukkit.getWorld(uuid);
-                if(world != null){
+                if (world != null) {
                     JsonNode jsonNode = node.get("pos");
-                    if(jsonNode.size() == 5){
+                    if (jsonNode.size() == 5) {
                         double x = jsonNode.get(0).asDouble();
                         double y = jsonNode.get(1).asDouble();
                         double z = jsonNode.get(2).asDouble();
@@ -56,32 +47,6 @@ public class LocationSerialization {
             }
             WUPlugin.getWolfyUtilities().sendConsoleWarning("Error Deserializing Location! Invalid Location object!");
             return null;
-        }
-
-    }
-
-    public static class Serializer extends StdSerializer<Location> {
-
-        public Serializer(){
-            this(Location.class);
-        }
-
-        protected Serializer(Class<Location> t) {
-            super(t);
-        }
-
-        @Override
-        public void serialize(Location location, JsonGenerator gen, SerializerProvider provider) throws IOException {
-            gen.writeStartObject();
-            gen.writeStringField("world", location.getWorld().getUID().toString());
-            gen.writeArrayFieldStart("pos");
-            gen.writeNumber(location.getX());
-            gen.writeNumber(location.getY());
-            gen.writeNumber(location.getZ());
-            gen.writeNumber(location.getYaw());
-            gen.writeNumber(location.getPitch());
-            gen.writeEndArray();
-            gen.writeEndObject();
-        }
+        });
     }
 }

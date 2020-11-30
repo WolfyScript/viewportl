@@ -1,10 +1,7 @@
 package me.wolfyscript.utilities.api.utils.particles;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
-import me.wolfyscript.utilities.api.utils.json.jackson.serialization.ParticleSerialization;
 import me.wolfyscript.utilities.api.utils.scripting.ScriptUtil;
 import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
@@ -27,8 +24,6 @@ import java.util.List;
 /*
 Contains the location, offset, ParticleEffects, etc.
  */
-@JsonSerialize(using = ParticleSerialization.Serializer.class)
-@JsonDeserialize(using = ParticleSerialization.Deserializer.class)
 public class Particle {
 
     private NamespacedKey namespacedKey;

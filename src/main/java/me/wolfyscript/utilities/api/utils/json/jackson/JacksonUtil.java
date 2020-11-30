@@ -48,4 +48,9 @@ public class JacksonUtil {
         });
     }
 
+    public static <T> void addSerializerAndDeserializer(SimpleModule module, Class<T> t, @NotNull Serialize<T> serialize, @NotNull Deserialize<T> deserialize) {
+        addSerializer(module, t, serialize);
+        addDeserializer(module, t, deserialize);
+    }
+
 }
