@@ -4,6 +4,7 @@ import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.JsonConfiguration;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
 
+@Deprecated
 public class CustomConfig extends JsonConfiguration {
 
     private String namespace;

@@ -6,14 +6,16 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class Language extends JsonConfig {
+public class Language extends JsonConfig<JsonNode> {
 
+    private final HashMap<String, JsonNode> cachedNodes = new HashMap<>();
     private final String lang;
 
     public Language(Plugin plugin, String lang) {
-        super(new File(plugin.getDataFolder(), "lang/" + lang + ".json"));
+        super(new File(plugin.getDataFolder(), "lang/" + lang + ".json"), JsonNode.class);
         this.lang = lang;
     }
 
@@ -34,5 +36,18 @@ public class Language extends JsonConfig {
             node.elements().forEachRemaining(n -> list.add(n.asText()));
         }
         return list;
+    }
+
+    public JsonNode getNodeAt(String path) {
+        if (cachedNodes.containsKey(path)) {
+            return cachedNodes.get(path);
+        }
+        String[] keys = path.split("\\.");
+        JsonNode currentNode = root;
+        for (String key : keys) {
+            currentNode = currentNode.path(key);
+        }
+        cachedNodes.put(path, currentNode);
+        return currentNode;
     }
 }
