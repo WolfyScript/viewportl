@@ -1,10 +1,7 @@
 package me.wolfyscript.utilities.api.custom_items.api_references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.th0rgal.oraxen.items.OraxenItems;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -54,22 +51,5 @@ public class OraxenRef extends APIReference{
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), itemID);
-    }
-
-    public static class Serialization extends StdDeserializer<OraxenRef> {
-
-        public Serialization(){
-            super(OraxenRef.class);
-        }
-
-        protected Serialization(Class<OraxenRef> t) {
-            super(t);
-        }
-
-        @Override
-        public OraxenRef deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
-            JsonNode node = p.readValueAsTree();
-            return new OraxenRef(node.asText());
-        }
     }
 }

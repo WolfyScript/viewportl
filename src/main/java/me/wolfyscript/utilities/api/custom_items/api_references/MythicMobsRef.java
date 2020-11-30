@@ -1,10 +1,7 @@
 package me.wolfyscript.utilities.api.custom_items.api_references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import org.bukkit.inventory.ItemStack;
 
@@ -41,22 +38,5 @@ public class MythicMobsRef extends APIReference{
     @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStringField("mythicmobs", itemName);
-    }
-
-    public static class Serialization extends StdDeserializer<MythicMobsRef> {
-
-        public Serialization(){
-            super(MythicMobsRef.class);
-        }
-
-        protected Serialization(Class<MythicMobsRef> t) {
-            super(t);
-        }
-
-        @Override
-        public MythicMobsRef deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
-            JsonNode node = p.readValueAsTree();
-            return new MythicMobsRef(node.asText());
-        }
     }
 }

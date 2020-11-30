@@ -1,5 +1,7 @@
 package me.wolfyscript.utilities.main;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
@@ -27,6 +29,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -95,12 +98,28 @@ public class WUPlugin extends JavaPlugin {
 
         //Reference Deserializer
         APIReferenceSerialization.create(module);
-        module.addDeserializer(ItemsAdderRef.class, new ItemsAdderRef.Serialization());
-        module.addDeserializer(MMOItemsRef.class, new MMOItemsRef.Serialization());
-        module.addDeserializer(MythicMobsRef.class, new MythicMobsRef.Serialization());
-        module.addDeserializer(OraxenRef.class, new OraxenRef.Serialization());
-        module.addDeserializer(VanillaRef.class, new VanillaRef.Serialization());
-        module.addDeserializer(WolfyUtilitiesRef.class, new WolfyUtilitiesRef.Serialization());
+        JacksonUtil.addDeserializer(module, ItemsAdderRef.class, (p, d) -> {
+            JsonNode node = p.readValueAsTree();
+            return new ItemsAdderRef(node.asText());
+        });
+        JacksonUtil.addDeserializer(module, MMOItemsRef.class, (p, d) -> null);
+        JacksonUtil.addDeserializer(module, MythicMobsRef.class, (p, d) -> {
+            JsonNode node = p.readValueAsTree();
+            return new MythicMobsRef(node.asText());
+        });
+        JacksonUtil.addDeserializer(module, OraxenRef.class, (p, d) -> {
+            JsonNode node = p.readValueAsTree();
+            return new OraxenRef(node.asText());
+        });
+        JacksonUtil.addDeserializer(module, VanillaRef.class, (p, d) -> {
+            JsonNode node = p.readValueAsTree();
+            ObjectMapper objectMapper = JacksonUtil.getObjectMapper();
+            return new VanillaRef(objectMapper.convertValue(node, ItemStack.class));
+        });
+        JacksonUtil.addDeserializer(module, WolfyUtilitiesRef.class, (p, d) -> {
+            JsonNode node = p.readValueAsTree();
+            return new WolfyUtilitiesRef(NamespacedKey.getByString(node.asText()));
+        });
         JacksonUtil.registerModule(module);
 
         //Register custom item data

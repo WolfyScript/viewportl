@@ -1,10 +1,7 @@
 package me.wolfyscript.utilities.api.custom_items.api_references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import me.wolfyscript.utilities.api.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.utils.NamespacedKey;
@@ -78,24 +75,4 @@ public class WolfyUtilitiesRef extends APIReference {
     public int hashCode() {
         return Objects.hash(super.hashCode(), namespacedKey);
     }
-
-    public static class Serialization extends StdDeserializer<WolfyUtilitiesRef> {
-
-        protected Serialization(Class<WolfyUtilitiesRef> t) {
-            super(t);
-        }
-
-        public Serialization() {
-            super(WolfyUtilitiesRef.class);
-        }
-
-        @Override
-        public WolfyUtilitiesRef deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
-            JsonNode node = p.readValueAsTree();
-            return new WolfyUtilitiesRef(NamespacedKey.getByString(node.asText()));
-        }
-
-    }
-
-
 }
