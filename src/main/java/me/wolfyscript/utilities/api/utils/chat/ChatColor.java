@@ -8,9 +8,7 @@ import java.util.regex.Pattern;
 public class ChatColor {
 
     public static final String HEX_PATTERN = "&#\\([A-Fa-f0-9]{6}\\)";
-    public static final String HEX_PATTERN_LOOKBEHIND = "(?<=&#\\([A-Fa-f0-9]{6}\\))";
     public static final Pattern HEX_PATTERN_COMPILED = Pattern.compile(HEX_PATTERN);
-    public static final Pattern HEX_PATTERN_LOOKBEHIND_COMPILED = Pattern.compile(HEX_PATTERN_LOOKBEHIND);
 
     public static String convert(String msg) {
         char[] b = parseHexColorsString(msg).toCharArray();
@@ -29,20 +27,13 @@ public class ChatColor {
 
     public static String parseHexColorsString(String string) {
         if (WolfyUtilities.hasNetherUpdate()) {
-            String[] strings = HEX_PATTERN_LOOKBEHIND_COMPILED.split(string);
-            StringBuilder sb = new StringBuilder();
-            for (String selected : strings) {
-                Matcher matcher = HEX_PATTERN_COMPILED.matcher(selected);
-                if (matcher.find()) {
-                    String snippet = matcher.group(0)
-                            .replaceAll("[(]", "")
-                            .replaceAll("[)]", "")
-                            .replaceAll("&", "");
-                    selected = selected.replaceAll(HEX_PATTERN, net.md_5.bungee.api.ChatColor.of(snippet) + "");
+            Matcher matcher = HEX_PATTERN_COMPILED.matcher(string);
+            while (matcher.find()) {
+                String group = matcher.group(0);
+                if (string.contains(group)) {
+                    string = string.replace(group, net.md_5.bungee.api.ChatColor.of(group.replace("(", "").replace(")", "").replace("&", "")).toString());
                 }
-                sb.append(selected);
             }
-            return sb.toString();
         }
         return string;
     }
