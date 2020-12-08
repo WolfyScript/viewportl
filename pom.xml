@@ -3,6 +3,11 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <groupId>com.wolfyscript.wolfyutilities</groupId>
+    <artifactId>wolfyutilities-parent</artifactId>
+    <version>1.6.3.0</version>
+
+    <packaging>pom</packaging>
 
     <properties>
         <!-- Generic properties -->
@@ -15,19 +20,14 @@
         <spigot.artifactId>spigot-api</spigot.artifactId>
     </properties>
 
-    <groupId>com.wolfyscript</groupId>
-    <artifactId>wolfyutilities</artifactId>
-    <version>1.6.3.0</version>
-
-    <packaging>pom</packaging>
     <modules>
-        <module>API</module>
-        <module>plugin</module>
+        <module>core</module>
         <module>nmsutil-v1_16_R1</module>
         <module>nmsutil-v1_16_R2</module>
         <module>nmsutil-v1_16_R3</module>
         <module>nmsutil-v1_14_R1</module>
         <module>nmsutil-v1_15_R1</module>
+        <module>wolfyutilities</module>
     </modules>
 
     <repositories>
@@ -67,45 +67,30 @@
             <scope>provided</scope>
         </dependency>
         <!-- - - - - -->
-
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.11.0</version>
-            <scope>compile</scope>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>19.0.0</version>
+            <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>1.7</version>
-        </dependency>
-
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
             <version>1.5.21</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>5.0.0.Alpha2</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>19.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-
         <dependency>
             <groupId>de.iani.cubeside</groupId>
             <artifactId>LWC</artifactId>
             <version>5.0.16-SNAPSHOT</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
@@ -124,21 +109,19 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <!-- PlotSquared Bukkit API-->
         <dependency>
             <groupId>com.plotsquared</groupId>
             <artifactId>PlotSquared-Core</artifactId>
             <version>5.13.3</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.plotsquared</groupId>
             <artifactId>PlotSquared-Bukkit</artifactId>
             <version>5.13.3</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
-
         <!-- Some plugins that wu implements -->
         <dependency>
             <groupId>com.gmail.nossr50.mcMMO</groupId>
@@ -150,8 +133,8 @@
             <groupId>io.lumine.xikage</groupId>
             <artifactId>mythicmobs</artifactId>
             <version>4.10.1</version>
+            <scope>provided</scope>
         </dependency>
-
         <!--Dependencies from private repo! They require credentials to access!-->
         <dependency>
             <groupId>io.th0rgal</groupId>
@@ -168,13 +151,21 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -183,28 +174,8 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <artifactSet>
-                        <includes>
-                            <include>*:*</include>
-                        </includes>
-                    </artifactSet>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <proc>none</proc>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
             </plugin>
         </plugins>
-
-
-
     </build>
     <distributionManagement>
         <repository>

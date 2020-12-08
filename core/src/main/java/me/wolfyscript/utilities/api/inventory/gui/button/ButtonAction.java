@@ -1,0 +1,13 @@
+package me.wolfyscript.utilities.api.inventory.gui.button;
+
+import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+
+import java.io.IOException;
+
+public interface ButtonAction {
+
+    boolean run(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException;
+}
