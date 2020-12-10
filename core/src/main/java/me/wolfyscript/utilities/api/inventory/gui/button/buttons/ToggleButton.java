@@ -55,6 +55,11 @@ public class ToggleButton extends Button {
     }
 
     @Override
+    public void postExecute(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryClickEvent event) throws IOException {
+
+    }
+
+    @Override
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
         boolean result = states[settings.getOrDefault(guiHandler, defaultState) ? 0 : 1].getAction().run(guiHandler, player, inventory, slot, event);
         settings.put(guiHandler, !settings.getOrDefault(guiHandler, defaultState));

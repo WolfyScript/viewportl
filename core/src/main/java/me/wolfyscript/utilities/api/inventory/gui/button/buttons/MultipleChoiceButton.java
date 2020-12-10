@@ -48,6 +48,11 @@ public class MultipleChoiceButton extends Button {
     }
 
     @Override
+    public void postExecute(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryClickEvent event) throws IOException {
+
+    }
+
+    @Override
     public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
         int setting = settings.getOrDefault(guiHandler, 0);
         if (states != null && setting < states.size()) {
