@@ -13,7 +13,7 @@ public class GuiClick {
 
     private final boolean cancelled = false;
 
-    private final GuiHandler guiHandler;
+    private final GuiHandler<?> guiHandler;
     private final Player player;
     private final WolfyUtilities wolfyUtilities;
     private final GuiWindow guiWindow;
@@ -28,7 +28,7 @@ public class GuiClick {
     private final int hotbarButton;
     private final InventoryType.SlotType slotType;
 
-    public GuiClick(GuiHandler guiHandler, GuiWindow guiWindow, InventoryClickEvent event) {
+    public GuiClick(GuiHandler<?> guiHandler, GuiWindow guiWindow, InventoryClickEvent event) {
         this.guiHandler = guiHandler;
         this.player = guiHandler.getPlayer();
         this.wolfyUtilities = guiHandler.getApi();
@@ -97,7 +97,7 @@ public class GuiClick {
         return player;
     }
 
-    public GuiHandler getGuiHandler() {
+    public GuiHandler<?> getGuiHandler() {
         return guiHandler;
     }
 }

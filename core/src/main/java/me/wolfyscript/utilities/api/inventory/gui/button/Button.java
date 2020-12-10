@@ -36,8 +36,9 @@ public abstract class Button {
 
     public abstract boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException;
 
-    public void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
-    }
+    public abstract void postExecute(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryClickEvent event) throws IOException;
+
+    public abstract void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help);
 
     public abstract void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException;
 
@@ -50,13 +51,11 @@ public abstract class Button {
     }
 
     protected void applyItem(GuiHandler<?> guiHandler, Player player, Inventory inventory, ButtonState state, int slot, boolean help) {
-        ItemStack item = state.getIcon(help);
+        ItemStack item = state.getIcon();
         HashMap<String, Object> values = new HashMap<>();
         values.put("%wolfyutilities.help%", guiHandler.getCurrentInv().getHelpInformation());
         values.put("%plugin.version%", guiHandler.getApi().getPlugin().getDescription().getVersion());
-        if (state.getAction() instanceof ButtonActionRender) {
-            item = ((ButtonActionRender) state.getAction()).render(values, guiHandler, player, item, slot, help);
-        } else if (state.getRenderAction() != null) {
+        if (state.getRenderAction() != null) {
             item = state.getRenderAction().render(values, guiHandler, player, item, slot, help);
         }
         inventory.setItem(slot, replaceKeysWithValue(item, values));

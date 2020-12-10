@@ -16,9 +16,9 @@ public class GuiCloseEvent extends InventoryCloseEvent implements Cancellable {
 
     private final String guiCluster;
     private final GuiWindow guiWindow;
-    private final GuiHandler guiHandler;
+    private final GuiHandler<?> guiHandler;
 
-    public GuiCloseEvent(String guiCluster, GuiWindow guiWindow, GuiHandler guiHandler, InventoryView transaction) {
+    public GuiCloseEvent(String guiCluster, GuiWindow guiWindow, GuiHandler<?> guiHandler, InventoryView transaction) {
         super(transaction);
         this.cancelled = false;
         this.guiCluster = guiCluster;
@@ -38,7 +38,7 @@ public class GuiCloseEvent extends InventoryCloseEvent implements Cancellable {
         return guiWindow;
     }
 
-    public GuiHandler getGuiHandler() {
+    public GuiHandler<?> getGuiHandler() {
         return guiHandler;
     }
 

@@ -1,7 +1,10 @@
 package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
-import me.wolfyscript.utilities.api.inventory.gui.button.*;
+import me.wolfyscript.utilities.api.inventory.gui.button.ButtonAction;
+import me.wolfyscript.utilities.api.inventory.gui.button.ButtonRender;
+import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
+import me.wolfyscript.utilities.api.inventory.gui.button.ButtonType;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -76,9 +79,7 @@ public class ItemInputButton extends ActionButton {
     public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException {
         ItemStack item = content.getOrDefault(guiHandler, new ItemStack(Material.AIR));
         HashMap<String, Object> values = new HashMap<>();
-        if (getState().getAction() instanceof ButtonActionRender) {
-            item = ((ButtonActionRender) getState().getAction()).render(values, guiHandler, player, item, slot, help);
-        } else if (getState().getRenderAction() != null) {
+        if (getState().getRenderAction() != null) {
             item = getState().getRenderAction().render(values, guiHandler, player, item, slot, help);
         }
         inventory.setItem(slot, replaceKeysWithValue(item, values));

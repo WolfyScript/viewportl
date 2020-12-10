@@ -91,20 +91,16 @@ public class LanguageAPI {
     }
 
     public String replaceKeys(String msg) {
-        List<String> keys = new ArrayList<>();
-        Pattern pattern = Pattern.compile("[$]([a-zA-Z0-9._]*?)[$]");
-        Matcher matcher = pattern.matcher(msg);
+        Matcher matcher = Pattern.compile("[$]([a-zA-Z0-9._]*?)[$]").matcher(msg);
         while (matcher.find()) {
-            keys.add(matcher.group(0));
-        }
-        for (String key : keys) {
+            String key = matcher.group(0);
             JsonNode node = getNodeAt(key.replace("$", ""));
             if(node.isTextual()){
-                return msg.replace(key, node.asText());
+                msg = msg.replace(key, node.asText());
             }else if(node.isArray()){
                 StringBuilder sB = new StringBuilder();
                 node.elements().forEachRemaining(n -> sB.append(' ').append(n.asText()));
-                return msg.replace(key, sB.toString());
+                msg = msg.replace(key, sB.toString());
             }
         }
         return msg;

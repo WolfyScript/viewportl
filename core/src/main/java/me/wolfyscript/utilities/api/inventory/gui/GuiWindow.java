@@ -4,10 +4,12 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.ClickData;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
+import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 
@@ -83,8 +85,7 @@ public abstract class GuiWindow implements Listener {
     }
 
     /**
-     * This method is called after the {@link GuiUpdateEvent} is called and executed by Bukkit, but it makes
-     * it easier to manage the GUI as it doesn't require a inventory verification.
+     * This method is called each time the gui is updated.
      *
      * @param update
      */
@@ -103,29 +104,30 @@ public abstract class GuiWindow implements Listener {
     public void onUpdateAsync(GuiUpdate update) {
     }
 
-    protected void update(GuiHandler<?> guiHandler) {
-        update(guiHandler, false);
+    protected void update(GuiHandler<?> guiHandler, List<Pair<Integer, Button>> postExecuteBtns, InventoryClickEvent event) {
+        update(guiHandler, postExecuteBtns, event, false);
     }
 
-    protected void update(GuiHandler<?> guiHandler, boolean openInventory) {
+    protected void update(GuiHandler<?> guiHandler, List<Pair<Integer, Button>> postExecuteBtns, InventoryClickEvent event, boolean openInventory) {
         Bukkit.getScheduler().runTask(guiHandler.getApi().getPlugin(), () -> {
+            GuiUpdate guiUpdate = new GuiUpdate(guiHandler, this);
+            guiUpdate.postExecuteButtons(postExecuteBtns, event);
+
             if (!guiHandler.isChatEventActive()) {
-                GuiUpdateEvent event = new GuiUpdateEvent(guiHandler, this);
-                Bukkit.getPluginManager().callEvent(event);
-                GuiUpdate guiUpdate = event.getGuiUpdate();
                 onUpdateSync(guiUpdate);
+                Runnable runnable = () -> openInventory(guiHandler, guiUpdate, openInventory);
                 if (forceSyncUpdate) {
-                    openInventory(guiHandler, event, guiUpdate, openInventory);
+                    runnable.run();
                 } else {
-                    Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), () -> openInventory(guiHandler, event, guiUpdate, openInventory));
+                    Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), runnable);
                 }
             }
         });
     }
 
-    private void openInventory(GuiHandler<?> guiHandler, GuiUpdateEvent event, GuiUpdate guiUpdate, boolean openInventory) {
+    private void openInventory(GuiHandler<?> guiHandler, GuiUpdate guiUpdate, boolean openInventory) {
         onUpdateAsync(guiUpdate);
-        event.getGuiUpdate().applyChanges();
+        guiUpdate.applyChanges();
         setCachedInventorie(guiHandler, guiUpdate.getInventory());
         if (openInventory) {
             Bukkit.getScheduler().runTask(getAPI().getPlugin(), () -> {
@@ -232,11 +234,11 @@ public abstract class GuiWindow implements Listener {
         inventoryAPI.getWolfyUtilities().getChat().sendPlayerMessage(player, getClusterID(), getNamespace(), msgKey);
     }
 
-    public void sendMessage(GuiHandler<?> guiHandler, String msgKey, String[]... replacements) {
+    public void sendMessage(GuiHandler<?> guiHandler, String msgKey, Pair<String, String>... replacements) {
         guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getClusterID(), getNamespace(), msgKey, replacements);
     }
 
-    public void sendMessage(Player player, String msgKey, String[]... replacements) {
+    public void sendMessage(Player player, String msgKey, Pair<String, String>... replacements) {
         inventoryAPI.getWolfyUtilities().getChat().sendPlayerMessage(player, getClusterID(), getNamespace(), msgKey, replacements);
     }
 

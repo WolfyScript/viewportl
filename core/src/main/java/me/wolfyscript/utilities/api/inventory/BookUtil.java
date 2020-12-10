@@ -19,20 +19,20 @@ public class BookUtil {
         this.chat = wolfyUtilities.getChat();
     }
 
-    public void openBook(Player player, String author, String title, boolean editable, ClickData[]... clickDatas) {
+    public void openBook(Player player, String author, String title, boolean editable, ClickData[]... clickData) {
         ItemStack itemStack = new ItemStack(editable ? Material.BOOK : Material.WRITTEN_BOOK);
         BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
         bookMeta.setAuthor(author);
         bookMeta.setTitle(title);
-        for (ClickData[] clickData : clickDatas) {
-            TextComponent[] textComponents = chat.getActionMessage("", player, clickData);
+        for (ClickData[] d : clickData) {
+            TextComponent[] textComponents = chat.getActionMessage("", player, d);
             bookMeta.spigot().addPage(textComponents);
         }
         itemStack.setItemMeta(bookMeta);
         player.openBook(itemStack);
     }
 
-    public void openBook(Player player, boolean editable, ClickData[]... clickDatas) {
-        openBook(player, "WolfyUtilities", "Blank", editable, clickDatas);
+    public void openBook(Player player, boolean editable, ClickData[]... clickData) {
+        openBook(player, "WolfyUtilities", "Blank", editable, clickData);
     }
 }

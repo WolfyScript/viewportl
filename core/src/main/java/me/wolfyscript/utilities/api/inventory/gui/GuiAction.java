@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 public class GuiAction {
 
     private final String action;
-    private final GuiHandler guiHandler;
+    private final GuiHandler<?> guiHandler;
     private final Player player;
     private final WolfyUtilities wolfyUtilities;
     private final GuiWindow guiWindow;
@@ -26,7 +26,7 @@ public class GuiAction {
     private final int hotbarButton;
     private final InventoryType.SlotType slotType;
 
-    public GuiAction(String action, GuiHandler guiHandler, GuiWindow guiWindow, InventoryClickEvent event) {
+    public GuiAction(String action, GuiHandler<?> guiHandler, GuiWindow guiWindow, InventoryClickEvent event) {
         this.action = action;
         this.guiHandler = guiHandler;
         this.player = guiHandler.getPlayer();
@@ -95,7 +95,7 @@ public class GuiAction {
         return action;
     }
 
-    public GuiHandler getGuiHandler() {
+    public GuiHandler<?> getGuiHandler() {
         return guiHandler;
     }
 }

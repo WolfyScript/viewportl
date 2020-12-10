@@ -3,8 +3,10 @@ package me.wolfyscript.utilities.api.inventory.gui;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -13,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 public class GuiUpdate {
 
@@ -160,6 +163,16 @@ public class GuiUpdate {
         if (queueInventory.getContents().length > 0) {
             Bukkit.getScheduler().runTask(getInventoryAPI().getPlugin(), () -> inventory.setContents(Arrays.copyOfRange(queueInventory.getContents(), 0, inventory.getSize())));
         }
+    }
+
+    void postExecuteButtons(List<Pair<Integer, Button>> postExecuteBtns, InventoryClickEvent event) {
+        postExecuteBtns.forEach(pair -> {
+            try {
+                pair.getValue().postExecute(guiHandler, player, inventory, inventory.getItem(pair.getKey()), pair.getKey(), event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 }

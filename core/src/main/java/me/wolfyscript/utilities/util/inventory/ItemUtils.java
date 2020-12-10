@@ -4,15 +4,14 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.equipment.ArmorType;
 import me.wolfyscript.utilities.util.chat.ChatColor;
+import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ItemUtils {
 
@@ -64,36 +63,25 @@ public class ItemUtils {
     /*
     Prepare and configure the ItemStack for the GUI!
      */
-    public static ItemStack[] createItem(ItemStack itemStack, String displayName, String[] helpLore, String... normalLore) {
-        ItemStack[] itemStacks = new ItemStack[2];
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        List<String> lore = new ArrayList<>();
+    public static ItemStack createItem(ItemStack itemStack, String displayName, String... lore) {
+        ItemBuilder itemBuilder = new ItemBuilder(itemStack);
+        ItemMeta itemMeta = itemBuilder.getItemMeta();
         if (itemMeta != null) {
             if (displayName != null && !displayName.isEmpty()) {
-                itemMeta.setDisplayName(ChatColor.convert(displayName));
+                itemBuilder.setDisplayName(ChatColor.convert(displayName));
             }
-            if (normalLore != null && normalLore.length > 0) {
-                lore = Arrays.stream(normalLore).map(row -> row.equalsIgnoreCase("<empty>") ? "" : ChatColor.convert(row)).collect(Collectors.toList());
-                itemMeta.setLore(lore);
+            if (lore != null && lore.length > 0) {
+                for (String s : lore) {
+                    if (s.equalsIgnoreCase("<empty>")) {
+                        itemBuilder.addLoreLine("");
+                    } else {
+                        itemBuilder.addLoreLine(ChatColor.convert(s));
+                    }
+                }
             }
-            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-            itemMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-            itemStack.setItemMeta(itemMeta);
+            itemBuilder.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_POTION_EFFECTS);
         }
-        itemStacks[0] = itemStack;
-        ItemStack helpItem = new ItemStack(itemStack);
-        ItemMeta helpMeta = helpItem.getItemMeta();
-        if (helpMeta != null) {
-            if (helpLore != null && helpLore.length > 0) {
-                lore.addAll(Arrays.stream(helpLore).map(row -> row.equalsIgnoreCase("<empty>") ? "" : ChatColor.convert(row)).collect(Collectors.toList()));
-            }
-            helpMeta.setLore(lore);
-            helpItem.setItemMeta(helpMeta);
-        }
-        itemStacks[1] = helpItem;
-        return itemStacks;
+        return itemBuilder.create();
     }
 
     public ItemStack translateItemStack(ItemStack itemStack) {

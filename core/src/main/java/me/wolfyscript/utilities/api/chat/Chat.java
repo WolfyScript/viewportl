@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.chat;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
+import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -23,7 +24,7 @@ import java.util.regex.Pattern;
 public class Chat {
 
     private String CONSOLE_PREFIX;
-    private String CHAT_PREFIX;
+    private String IN_GAME_PREFIX;
 
     private final HashMap<UUID, PlayerAction> clickDataMap = new HashMap<>();
 
@@ -31,23 +32,25 @@ public class Chat {
     private final LanguageAPI languageAPI;
     private final Plugin plugin;
 
-    public Chat(WolfyUtilities wolfyUtilities){
+    public Chat(WolfyUtilities wolfyUtilities) {
         this.wolfyUtilities = wolfyUtilities;
         this.languageAPI = wolfyUtilities.getLanguageAPI();
         this.plugin = wolfyUtilities.getPlugin();
+        this.CONSOLE_PREFIX = "[" + plugin.getName() + "]";
+        this.IN_GAME_PREFIX = this.CONSOLE_PREFIX;
         Bukkit.getPluginManager().registerEvents(new ChatListener(), plugin);
     }
 
-    public void setCHAT_PREFIX(String CHAT_PREFIX) {
-        this.CHAT_PREFIX = CHAT_PREFIX;
+    public String getIN_GAME_PREFIX() {
+        return IN_GAME_PREFIX;
     }
 
     public void setCONSOLE_PREFIX(String CONSOLE_PREFIX) {
         this.CONSOLE_PREFIX = CONSOLE_PREFIX;
     }
 
-    public String getCHAT_PREFIX() {
-        return CHAT_PREFIX;
+    public void setIN_GAME_PREFIX(String IN_GAME_PREFIX) {
+        this.IN_GAME_PREFIX = IN_GAME_PREFIX;
     }
 
     public String getCONSOLE_PREFIX() {
@@ -82,7 +85,7 @@ public class Chat {
 
     public void sendConsoleMessage(String message, String[]... replacements) {
         if (replacements != null) {
-            message = CHAT_PREFIX + languageAPI.replaceColoredKeys(message);
+            message = IN_GAME_PREFIX + languageAPI.replaceColoredKeys(message);
             for (String[] replace : replacements) {
                 if (replace.length > 1) {
                     message = message.replaceAll(replace[0], replace[1]);
@@ -94,7 +97,7 @@ public class Chat {
 
     public void sendPlayerMessage(Player player, String message) {
         if (player != null) {
-            player.sendMessage(ChatColor.convert(CHAT_PREFIX + languageAPI.replaceKeys(message)));
+            player.sendMessage(ChatColor.convert(IN_GAME_PREFIX + languageAPI.replaceKeys(message)));
         }
     }
 
@@ -109,34 +112,30 @@ public class Chat {
         sendPlayerMessage(player, "$inventories." + guiCluster + "." + guiWindow + ".messages." + msgKey + "$");
     }
 
-    public void sendPlayerMessage(Player player, String guiCluster, String msgKey, String[]... replacements) {
-        String message = "$inventories." + guiCluster + ".global_messages." + msgKey + "$";
-        sendPlayerMessage(player, message, replacements);
+    @SafeVarargs
+    public final void sendPlayerMessage(Player player, String guiCluster, String msgKey, Pair<String, String>... replacements) {
+        sendPlayerMessage(player, "$inventories." + guiCluster + ".global_messages." + msgKey + "$", replacements);
     }
 
-    public void sendPlayerMessage(Player player, String guiCluster, String guiWindow, String msgKey, String[]... replacements) {
-        String message = "$inventories." + guiCluster + "." + guiWindow + ".messages." + msgKey + "$";
-        sendPlayerMessage(player, message, replacements);
+    @SafeVarargs
+    public final void sendPlayerMessage(Player player, String guiCluster, String guiWindow, String msgKey, Pair<String, String>... replacements) {
+        sendPlayerMessage(player, "$inventories." + guiCluster + "." + guiWindow + ".messages." + msgKey + "$", replacements);
     }
 
-    public void sendPlayerMessage(Player player, String message, String[]... replacements) {
+    @SafeVarargs
+    public final void sendPlayerMessage(Player player, String message, Pair<String, String>... replacements) {
+        if (player == null) return;
         if (replacements != null) {
-            if (player != null) {
-                message = CHAT_PREFIX + languageAPI.replaceColoredKeys(message);
-                for (String[] replace : replacements) {
-                    if (replace.length > 1) {
-                        message = message.replaceAll(replace[0], replace[1]);
-                    }
-                }
-            } else {
-                return;
+            message = IN_GAME_PREFIX + languageAPI.replaceColoredKeys(message);
+            for (Pair<String, String> pair : replacements) {
+                message = message.replaceAll(pair.getKey(), pair.getValue());
             }
         }
         player.sendMessage(ChatColor.convert(message));
     }
 
     public void sendActionMessage(Player player, ClickData... clickData) {
-        TextComponent[] textComponents = getActionMessage(CHAT_PREFIX, player, clickData);
+        TextComponent[] textComponents = getActionMessage(IN_GAME_PREFIX, player, clickData);
         player.spigot().sendMessage(textComponents);
     }
 
@@ -169,20 +168,12 @@ public class Chat {
 
     public void sendDebugMessage(String message) {
         if (wolfyUtilities.hasDebuggingMode()) {
-            String prefix = org.bukkit.ChatColor.translateAlternateColorCodes('&', "[&4CC&r] ");
+            String prefix = org.bukkit.ChatColor.translateAlternateColorCodes('&', this.IN_GAME_PREFIX);
             message = org.bukkit.ChatColor.translateAlternateColorCodes('&', message);
-            List<String> messages = new ArrayList<>();
             if (message.length() > 70) {
                 int count = message.length() / 70;
                 for (int text = 0; text <= count; text++) {
-                    if (text < count) {
-                        messages.add(message.substring(text * 70, 70 + 70 * text));
-                    } else {
-                        messages.add(message.substring(text * 70));
-                    }
-                }
-                for (String result : messages) {
-                    Bukkit.getServer().getConsoleSender().sendMessage(prefix + result);
+                    Bukkit.getServer().getConsoleSender().sendMessage(prefix + (text < count ? message.substring(text * 70, 70 + 70 * text) : message.substring(text * 70)));
                 }
             } else {
                 message = prefix + message;
@@ -191,7 +182,7 @@ public class Chat {
         }
     }
 
-    private class ChatListener implements Listener{
+    private class ChatListener implements Listener {
 
         //TODO: Move the logic to a CommandExecutor
         @EventHandler(priority = EventPriority.HIGHEST)

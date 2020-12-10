@@ -1,6 +1,8 @@
-package me.wolfyscript.utilities.api.inventory.gui;
+package me.wolfyscript.utilities.api.inventory.gui.events;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
+import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -20,7 +22,7 @@ public class GuiItemDragEvent extends Event implements Cancellable {
 
     private boolean cancelled = false;
 
-    private final GuiHandler guiHandler;
+    private final GuiHandler<?> guiHandler;
     private final Player player;
     private final WolfyUtilities wolfyUtilities;
     private final GuiWindow guiWindow;
@@ -31,8 +33,7 @@ public class GuiItemDragEvent extends Event implements Cancellable {
     private ItemStack newCursor;
     private final InventoryView view;
 
-
-    public GuiItemDragEvent(GuiHandler guiHandler, InventoryDragEvent event) {
+    public GuiItemDragEvent(GuiHandler<?> guiHandler, InventoryDragEvent event) {
         this.guiHandler = guiHandler;
         this.player = guiHandler.getPlayer();
         this.wolfyUtilities = guiHandler.getApi();
@@ -64,7 +65,7 @@ public class GuiItemDragEvent extends Event implements Cancellable {
         return player;
     }
 
-    public GuiHandler getGuiHandler() {
+    public GuiHandler<?> getGuiHandler() {
         return guiHandler;
     }
 

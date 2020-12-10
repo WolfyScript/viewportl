@@ -125,7 +125,7 @@ public class WUPlugin extends JavaPlugin {
         wolfyUtilities = WolfyUtilities.get(instance);
         this.chat = wolfyUtilities.getChat();
         chat.setCONSOLE_PREFIX("[WU] ");
-        chat.setCHAT_PREFIX("§8[§3WU§8] §7");
+        chat.setIN_GAME_PREFIX("§8[§3WU§8] §7");
 
         ConfigAPI configAPI = wolfyUtilities.getConfigAPI();
         LanguageAPI languageAPI = wolfyUtilities.getLanguageAPI();

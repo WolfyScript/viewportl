@@ -8,17 +8,17 @@ public class ClickData {
 
     private final String message;
     private final ClickAction clickAction;
-    private final List<ChatEvent> clickEvents;
+    private final List<ChatEvent<?, ?>> clickEvents;
     private final boolean discard;
 
-    public ClickData(String message, @Nullable ClickAction clickAction, boolean discard, ChatEvent... clickEvents) {
+    public ClickData(String message, @Nullable ClickAction clickAction, boolean discard, ChatEvent<?, ?>... clickEvents) {
         this.clickAction = clickAction;
         this.message = message;
         this.clickEvents = Arrays.asList(clickEvents);
         this.discard = discard;
     }
 
-    public ClickData(String message, @Nullable ClickAction clickAction, ChatEvent... clickEvents) {
+    public ClickData(String message, @Nullable ClickAction clickAction, ChatEvent<?, ?>... clickEvents) {
         this(message, clickAction, false, clickEvents);
     }
 
@@ -34,7 +34,7 @@ public class ClickData {
         return message;
     }
 
-    public List<ChatEvent> getChatEvents() {
+    public List<ChatEvent<?, ?>> getChatEvents() {
         return clickEvents;
     }
 

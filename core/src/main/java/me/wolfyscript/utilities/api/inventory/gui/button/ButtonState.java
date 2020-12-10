@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.inventory.gui.button;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -19,10 +20,11 @@ import java.util.List;
  */
 public class ButtonState {
 
+    private NamespacedKey namespacedKey;
     private String clusterID;
     private String key;
     private final ItemStack presetIcon;
-    private ItemStack[] icon;
+    private ItemStack icon;
     private ButtonAction action;
     private ButtonRender buttonRender;
     private ButtonPrepareRender prepareRender;
@@ -222,22 +224,17 @@ public class ButtonState {
         this(clusterID, key, new ItemStack(presetIcon), customModelData, action, prepareRender, render);
     }
 
-    @Deprecated
-    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonActionRender action) {
-        this(clusterID, key, presetIcon, customModelData, action, null);
-    }
-
     /*
     Not linked to language file
      */
-    public ButtonState(ItemStack presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action) {
+    public ButtonState(ItemStack presetIcon, String displayName, String[] normalLore, ButtonAction action) {
         this.action = action;
         this.presetIcon = presetIcon;
-        this.icon = ItemUtils.createItem(presetIcon, displayName, helpLore, normalLore);
+        this.icon = ItemUtils.createItem(presetIcon, displayName, normalLore);
     }
 
-    public ButtonState(Material presetIcon, String displayName, String[] helpLore, String[] normalLore, ButtonAction action) {
-        this(new ItemStack(presetIcon), displayName, helpLore, normalLore, action);
+    public ButtonState(Material presetIcon, String displayName, String[] normalLore, ButtonAction action) {
+        this(new ItemStack(presetIcon), displayName, normalLore, action);
     }
 
     //------------------------------------------------
@@ -253,7 +250,7 @@ public class ButtonState {
             List<String> normal = window.getAPI().getLanguageAPI().replaceKey(path + ".lore");
             helpLore = !help.isEmpty() ? help.toArray(new String[0]) : new String[0];
             normalLore = !normal.isEmpty() ? normal.toArray(new String[0]) : new String[0];
-            this.icon = ItemUtils.createItem(presetIcon, displayName, helpLore, normalLore);
+            this.icon = ItemUtils.createItem(presetIcon, displayName, normalLore);
         }
     }
 
@@ -265,15 +262,12 @@ public class ButtonState {
             List<String> normal = api.getLanguageAPI().replaceKey(path + ".lore");
             helpLore = !help.isEmpty() ? help.toArray(new String[0]) : new String[0];
             normalLore = !normal.isEmpty() ? normal.toArray(new String[0]) : new String[0];
-            this.icon = ItemUtils.createItem(presetIcon, displayName, helpLore, normalLore);
+            this.icon = ItemUtils.createItem(presetIcon, displayName, normalLore);
         }
     }
 
-    public ItemStack getIcon(boolean help) {
-        if (help) {
-            return icon[1].clone();
-        }
-        return icon[0].clone();
+    public ItemStack getIcon() {
+        return icon.clone();
     }
 
     public ButtonAction getAction() {

@@ -186,7 +186,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
                 if (api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID) != null) {
                     currentGuiCluster = clusterID;
                     isWindowOpen = true;
-                    api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).update(this, true);
+                    api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).update(this, null, null, true);
                 }
                 return;
             }
