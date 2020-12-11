@@ -6,6 +6,7 @@ import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -36,7 +37,7 @@ public abstract class Button {
 
     public abstract boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException;
 
-    public abstract void postExecute(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryClickEvent event) throws IOException;
+    public abstract void postExecute(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException;
 
     public abstract void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help);
 

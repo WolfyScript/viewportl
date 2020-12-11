@@ -4,14 +4,16 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.ClickData;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.events.GuiCloseEvent;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,36 +95,56 @@ public abstract class GuiWindow implements Listener {
     }
 
     /**
-     * This method is called after the Bukkit GuiUpdateEvent and {@link #onUpdateSync(GuiUpdate)} are done.
+     * This method is called after the {@link #onUpdateSync(GuiUpdate)} is done.
      * It will be run by the scheduler Async, so be careful with using Bukkit methods!
      * Bukkit methods are not Thread safe!
      * <p>
-     * If {@link #isForceSyncUpdate()} is enabled then this method is forced to be updated sync too just like {@link #onUpdateSync(GuiUpdate)}!
+     * If {@link #isForceSyncUpdate()} is enabled then this method is forced to be updated sync too and will act just like {@link #onUpdateSync(GuiUpdate)}!
      *
      * @param update
      */
     public void onUpdateAsync(GuiUpdate update) {
     }
 
-    protected void update(GuiHandler<?> guiHandler, List<Pair<Integer, Button>> postExecuteBtns, InventoryClickEvent event) {
+    /**
+     * This method allows you to execute code when this window is closed.
+     * It does not require verification like the GuiCloseEvent.
+     * <p>
+     * This method can be overridden and you can either call this super method or not.
+     * If you decide not to, then the GuiCloseEvent won't be called.
+     *
+     * @param guiHandler  the gui handler that caused this close event.
+     * @param transaction the inventory view of the player.
+     * @return true if the gui close should be cancelled.
+     */
+    public boolean onClose(GuiHandler<?> guiHandler, InventoryView transaction) {
+        GuiCloseEvent closeEvent = new GuiCloseEvent(clusterID, this, guiHandler, transaction);
+        Bukkit.getPluginManager().callEvent(closeEvent);
+        return closeEvent.isCancelled();
+    }
+
+    void update(GuiHandler<?> guiHandler, HashMap<Integer, Button> postExecuteBtns, InventoryInteractEvent event) {
         update(guiHandler, postExecuteBtns, event, false);
     }
 
-    protected void update(GuiHandler<?> guiHandler, List<Pair<Integer, Button>> postExecuteBtns, InventoryClickEvent event, boolean openInventory) {
+    void update(GuiHandler<?> guiHandler, HashMap<Integer, Button> postExecuteBtns, InventoryInteractEvent event, boolean openInventory) {
         Bukkit.getScheduler().runTask(guiHandler.getApi().getPlugin(), () -> {
             GuiUpdate guiUpdate = new GuiUpdate(guiHandler, this);
             guiUpdate.postExecuteButtons(postExecuteBtns, event);
-
-            if (!guiHandler.isChatEventActive()) {
-                onUpdateSync(guiUpdate);
-                Runnable runnable = () -> openInventory(guiHandler, guiUpdate, openInventory);
-                if (forceSyncUpdate) {
-                    runnable.run();
-                } else {
-                    Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), runnable);
-                }
-            }
+            callUpdate(guiHandler, guiUpdate, openInventory);
         });
+    }
+
+    private void callUpdate(GuiHandler<?> guiHandler, GuiUpdate guiUpdate, boolean openInventory) {
+        if (!guiHandler.isChatEventActive()) {
+            onUpdateSync(guiUpdate);
+            Runnable runnable = () -> openInventory(guiHandler, guiUpdate, openInventory);
+            if (forceSyncUpdate) {
+                runnable.run();
+            } else {
+                Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), runnable);
+            }
+        }
     }
 
     private void openInventory(GuiHandler<?> guiHandler, GuiUpdate guiUpdate, boolean openInventory) {

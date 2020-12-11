@@ -3,7 +3,6 @@ package me.wolfyscript.utilities.api.inventory.gui;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
-import me.wolfyscript.utilities.api.inventory.gui.events.GuiCloseEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -257,9 +256,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     public void onClose(InventoryCloseEvent event) {
         if (event.getPlayer().getUniqueId().equals(uuid)) {
             if (!clusterHistory.isEmpty() && isWindowOpen() && !changingInv) {
-                GuiCloseEvent closeEvent = new GuiCloseEvent(getCurrentGuiCluster(), getCurrentInv(), this, event.getView());
-                Bukkit.getPluginManager().callEvent(closeEvent);
-                if (closeEvent.isCancelled()) {
+                if (getCurrentInv().onClose(this, event.getView())) {
                     Bukkit.getScheduler().runTask(getApi().getPlugin(), (Runnable) this::openCluster);
                 } else {
                     this.isWindowOpen = false;

@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class ItemInputButton extends ActionButton {
 
-    private final HashMap<GuiHandler, ItemStack> content;
+    private final HashMap<GuiHandler<?>, ItemStack> content;
 
     /*
     This Button acts as a container for Items.
@@ -62,7 +62,7 @@ public class ItemInputButton extends ActionButton {
     }
 
     @Override
-    public boolean execute(GuiHandler guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
+    public boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
         if (!getType().equals(ButtonType.DUMMY) && getState().getAction() != null) {
             return getState().getAction().run(guiHandler, player, inventory, slot, event);
         }
@@ -76,7 +76,7 @@ public class ItemInputButton extends ActionButton {
     }
 
     @Override
-    public void render(GuiHandler guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException {
+    public void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException {
         ItemStack item = content.getOrDefault(guiHandler, new ItemStack(Material.AIR));
         HashMap<String, Object> values = new HashMap<>();
         if (getState().getRenderAction() != null) {

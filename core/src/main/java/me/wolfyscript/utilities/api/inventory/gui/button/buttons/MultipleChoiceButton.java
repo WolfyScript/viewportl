@@ -8,6 +8,7 @@ import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -48,7 +49,7 @@ public class MultipleChoiceButton extends Button {
     }
 
     @Override
-    public void postExecute(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryClickEvent event) throws IOException {
+    public void postExecute(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
 
     }
 
