@@ -1,7 +1,9 @@
 package me.wolfyscript.utilities.api.chat;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -101,25 +103,33 @@ public class Chat {
         }
     }
 
+    public void sendPlayerMessage(Player player, String... messages) {
+        if (player != null) {
+            for (String message : messages) {
+                player.sendMessage(ChatColor.convert(IN_GAME_PREFIX + languageAPI.replaceKeys(message)));
+            }
+        }
+    }
+
     /*
     Sends a global message from an GuiCluster to the player!
      */
-    public void sendPlayerMessage(Player player, String guiCluster, String msgKey) {
-        sendPlayerMessage(player, "$inventories." + guiCluster + ".global_messages." + msgKey + "$");
+    public void sendPlayerMessage(Player player, GuiCluster<?> guiCluster, String msgKey) {
+        sendPlayerMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
     }
 
-    public void sendPlayerMessage(Player player, String guiCluster, String guiWindow, String msgKey) {
-        sendPlayerMessage(player, "$inventories." + guiCluster + "." + guiWindow + ".messages." + msgKey + "$");
-    }
-
-    @SafeVarargs
-    public final void sendPlayerMessage(Player player, String guiCluster, String msgKey, Pair<String, String>... replacements) {
-        sendPlayerMessage(player, "$inventories." + guiCluster + ".global_messages." + msgKey + "$", replacements);
+    public void sendPlayerMessage(Player player, NamespacedKey namespacedKey, String msgKey) {
+        sendPlayerMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$");
     }
 
     @SafeVarargs
-    public final void sendPlayerMessage(Player player, String guiCluster, String guiWindow, String msgKey, Pair<String, String>... replacements) {
-        sendPlayerMessage(player, "$inventories." + guiCluster + "." + guiWindow + ".messages." + msgKey + "$", replacements);
+    public final void sendPlayerMessage(Player player, GuiCluster<?> guiCluster, String msgKey, Pair<String, String>... replacements) {
+        sendPlayerMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$", replacements);
+    }
+
+    @SafeVarargs
+    public final void sendPlayerMessage(Player player, NamespacedKey namespacedKey, String msgKey, Pair<String, String>... replacements) {
+        sendPlayerMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$", replacements);
     }
 
     @SafeVarargs

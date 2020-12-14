@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
+import me.wolfyscript.utilities.api.inventory.BookUtil;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
@@ -186,6 +187,7 @@ public class WolfyUtilities implements Listener {
     private final Chat chat;
     private final ItemUtils itemUtils;
     private final Permissions permissions;
+    private final BookUtil bookUtil;
 
     public WolfyUtilities(Plugin plugin) {
         this.plugin = plugin;
@@ -201,6 +203,7 @@ public class WolfyUtilities implements Listener {
         this.permissions = new Permissions(this);
         this.itemUtils = new ItemUtils(this);
         this.nmsUtil = NMSUtil.create(this);
+        this.bookUtil = new BookUtil(this);
     }
 
     public static Plugin getWUPlugin() {
@@ -241,6 +244,10 @@ public class WolfyUtilities implements Listener {
 
     public NMSUtil getNmsUtil() {
         return nmsUtil;
+    }
+
+    public BookUtil getBookUtil() {
+        return bookUtil;
     }
 
     public boolean isConfigEnabled() {

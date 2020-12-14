@@ -2,50 +2,61 @@ package me.wolfyscript.utilities.api.inventory.gui;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
+import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.util.NamespacedKey;
 
 import java.util.HashMap;
 
-public class GuiCluster {
+public abstract class GuiCluster<C extends CustomCache> {
 
+    protected final WolfyUtilities wolfyUtilities;
+    protected final InventoryAPI<C> inventoryAPI;
     private String id;
-    private final HashMap<String, Button> buttons;
-    private final HashMap<String, GuiWindow> guiWindows;
+    private final HashMap<String, Button<C>> buttons;
+    private final HashMap<String, GuiWindow<C>> guiWindows;
 
-    private String mainmenu;
+    private NamespacedKey entry;
 
-    public GuiCluster(){
+    public GuiCluster(InventoryAPI<C> inventoryAPI, String id) {
+        this.inventoryAPI = inventoryAPI;
+        this.wolfyUtilities = inventoryAPI.getWolfyUtilities();
+        this.id = id;
         this.buttons = new HashMap<>();
         this.guiWindows = new HashMap<>();
-        this.mainmenu = "";
+        this.entry = null;
     }
 
-    public void setMainmenu(String guiWindowID){
-        mainmenu = guiWindowID;
+    /**
+     * This method is called when the cluster is initialized.
+     */
+    public abstract void onInit();
+
+    public NamespacedKey getEntry() {
+        return entry;
     }
 
-    public String getMainMenu(){
-        return mainmenu;
+    public void setEntry(NamespacedKey entry) {
+        this.entry = entry;
     }
 
-    public void registerButton(Button button, WolfyUtilities api){
-        button.init(id, api);
+    public void registerButton(Button<C> button) {
+        button.init(id, wolfyUtilities);
         buttons.putIfAbsent(button.getId(), button);
     }
 
-    public Button getButton(String id){
+    public Button<C> getButton(String id) {
         return buttons.get(id);
     }
 
-    public void registerGuiWindow(GuiWindow guiWindow){
-        if(this.mainmenu.isEmpty()){
-            this.mainmenu = guiWindow.getNamespace();
+    public void registerGuiWindow(GuiWindow<C> guiWindow) {
+        if (this.entry == null) {
+            this.entry = guiWindow.getNamespacedKey();
         }
-        guiWindow.setClusterID(id);
         guiWindow.onInit();
-        guiWindows.put(guiWindow.getNamespace(), guiWindow);
+        guiWindows.put(guiWindow.getNamespacedKey().getKey(), guiWindow);
     }
 
-    public GuiWindow getGuiWindow(String id) {
+    public GuiWindow<C> getGuiWindow(String id) {
         return guiWindows.get(id);
     }
 
@@ -53,11 +64,15 @@ public class GuiCluster {
         this.id = id;
     }
 
-    HashMap<String, Button> getButtons() {
+    public String getId() {
+        return id;
+    }
+
+    HashMap<String, Button<C>> getButtons() {
         return buttons;
     }
 
-    HashMap<String, GuiWindow> getGuiWindows() {
+    HashMap<String, GuiWindow<C>> getGuiWindows() {
         return guiWindows;
     }
 }

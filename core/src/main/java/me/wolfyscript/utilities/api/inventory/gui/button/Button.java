@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.inventory.gui.button;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
+import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class Button {
+public abstract class Button<C extends CustomCache> {
 
     private final String id;
     private final ButtonType type;
@@ -31,17 +32,17 @@ public abstract class Button {
         this(id, ButtonType.NORMAL);
     }
 
-    public abstract void init(GuiWindow guiWindow);
+    public abstract void init(GuiWindow<C> guiWindow);
 
     public abstract void init(String clusterID, WolfyUtilities api);
 
-    public abstract boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException;
+    public abstract boolean execute(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException;
 
-    public abstract void postExecute(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException;
+    public abstract void postExecute(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException;
 
-    public abstract void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help);
+    public abstract void prepareRender(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help);
 
-    public abstract void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException;
+    public abstract void render(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException;
 
     public ButtonType getType() {
         return type;
@@ -51,7 +52,7 @@ public abstract class Button {
         return id;
     }
 
-    protected void applyItem(GuiHandler<?> guiHandler, Player player, Inventory inventory, ButtonState state, int slot, boolean help) {
+    protected void applyItem(GuiHandler<C> guiHandler, Player player, Inventory inventory, ButtonState<C> state, int slot, boolean help) {
         ItemStack item = state.getIcon();
         HashMap<String, Object> values = new HashMap<>();
         values.put("%wolfyutilities.help%", guiHandler.getCurrentInv().getHelpInformation());

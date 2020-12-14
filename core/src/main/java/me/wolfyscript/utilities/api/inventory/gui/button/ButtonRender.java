@@ -1,12 +1,13 @@
 package me.wolfyscript.utilities.api.inventory.gui.button;
 
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
+import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 
-public interface ButtonRender {
+public interface ButtonRender<C extends CustomCache> {
 
     /**
      * Run when the button is rendered into the GUI.
@@ -21,5 +22,5 @@ public interface ButtonRender {
      * @param helpEnabled Returns true if help is enabled.
      * @return The itemStack that should be set into the GUI.
      */
-    ItemStack render(HashMap<String, Object> values, GuiHandler<?> guiHandler, Player player, ItemStack icon, int slot, boolean helpEnabled);
+    ItemStack render(HashMap<String, Object> values, GuiHandler<C> guiHandler, Player player, ItemStack icon, int slot, boolean helpEnabled);
 }

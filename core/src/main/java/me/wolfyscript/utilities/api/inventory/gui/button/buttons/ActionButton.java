@@ -5,6 +5,7 @@ import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiUpdate;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.button.*;
+import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -27,56 +28,56 @@ import java.io.IOException;
  * {@link ActionButton#ActionButton(String, ButtonState)}
  *
  */
-public class ActionButton extends Button {
+public class ActionButton<C extends CustomCache> extends Button<C> {
 
     private final String id;
     private final ButtonType type;
-    private final ButtonState state;
+    private final ButtonState<C> state;
 
-    protected ActionButton(String id, ButtonType type, ButtonState state) {
+    protected ActionButton(String id, ButtonType type, ButtonState<C> state) {
         super(id, type);
         this.id = id;
         this.type = type;
         this.state = state;
     }
 
-    public ActionButton(String id, ButtonState state) {
+    public ActionButton(String id, ButtonState<C> state) {
         this(id, ButtonType.NORMAL, state);
     }
 
     public ActionButton(String id, ItemStack itemStack) {
-        this(id, new ButtonState(id, itemStack));
+        this(id, new ButtonState<>(id, itemStack));
     }
 
-    public ActionButton(String id, ItemStack itemStack, ButtonAction action) {
+    public ActionButton(String id, ItemStack itemStack, ButtonAction<C> action) {
         this(id, itemStack, action, null);
     }
 
-    public ActionButton(String id, ItemStack itemStack, ButtonRender render) {
+    public ActionButton(String id, ItemStack itemStack, ButtonRender<C> render) {
         this(id, itemStack, null, render);
     }
 
-    public ActionButton(String id, ItemStack itemStack, ButtonAction action, ButtonRender render) {
-        this(id, new ButtonState(id, itemStack, action, render));
+    public ActionButton(String id, ItemStack itemStack, ButtonAction<C> action, ButtonRender<C> render) {
+        this(id, new ButtonState<>(id, itemStack, action, render));
     }
 
     public ActionButton(String id, Material material) {
-        this(id, new ButtonState(id, material));
+        this(id, new ButtonState<>(id, material));
     }
 
-    public ActionButton(String id, Material material, ButtonAction action) {
+    public ActionButton(String id, Material material, ButtonAction<C> action) {
         this(id, material, action, null);
     }
 
-    public ActionButton(String id, Material material, ButtonRender render) {
+    public ActionButton(String id, Material material, ButtonRender<C> render) {
         this(id, material, null, render);
     }
 
-    public ActionButton(String id, Material material, ButtonAction action, ButtonRender render) {
-        this(id, new ButtonState(id, material, action, render));
+    public ActionButton(String id, Material material, ButtonAction<C> action, ButtonRender<C> render) {
+        this(id, new ButtonState<>(id, material, action, render));
     }
 
-    public void init(GuiWindow guiWindow) {
+    public void init(GuiWindow<C> guiWindow) {
         state.init(guiWindow);
     }
 
@@ -85,7 +86,7 @@ public class ActionButton extends Button {
         state.init(clusterID, api);
     }
 
-    public boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
+    public boolean execute(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
         if (!type.equals(ButtonType.DUMMY) && state.getAction() != null) {
             return state.getAction().run(guiHandler, player, inventory, slot, event);
         }
@@ -93,18 +94,19 @@ public class ActionButton extends Button {
     }
 
     @Override
-    public void postExecute(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
+    public void postExecute(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
 
     }
 
     @Override
-    public void prepareRender(GuiHandler<?> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
+    public void prepareRender(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
         if (state.getPrepareRender() != null) {
             state.getPrepareRender().prepare(guiHandler, player, inventory, itemStack, slot, help);
         }
     }
 
-    public void render(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException {
+    @Override
+    public void render(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException {
         applyItem(guiHandler, player, inventory, state, slot, help);
     }
 
@@ -112,7 +114,7 @@ public class ActionButton extends Button {
         return type;
     }
 
-    public ButtonState getState() {
+    public ButtonState<C> getState() {
         return state;
     }
 

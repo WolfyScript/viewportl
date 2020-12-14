@@ -16,17 +16,17 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class GuiUpdate {
+public class GuiUpdate<C extends CustomCache> {
 
-    private final GuiHandler<?> guiHandler;
-    private final InventoryAPI<?> inventoryAPI;
+    private final GuiHandler<C> guiHandler;
+    private final InventoryAPI<C> inventoryAPI;
     private final WolfyUtilities wolfyUtilities;
     private final Player player;
     private final Inventory inventory;
     private final Inventory queueInventory;
-    private final GuiWindow guiWindow;
+    private final GuiWindow<C> guiWindow;
 
-    public GuiUpdate(GuiHandler<?> guiHandler, GuiWindow guiWindow) {
+    public GuiUpdate(GuiHandler<C> guiHandler, GuiWindow<C> guiWindow) {
         this.guiHandler = guiHandler;
         this.inventoryAPI = guiHandler.getInvAPI();
         this.wolfyUtilities = guiHandler.getApi();
@@ -46,12 +46,8 @@ public class GuiUpdate {
         }
     }
 
-    public GuiHandler<?> getGuiHandler() {
+    public GuiHandler<C> getGuiHandler() {
         return guiHandler;
-    }
-
-    public <C extends CustomCache> GuiHandler<C> getGuiHandler(Class<C> customCache) {
-        return wolfyUtilities.getInventoryAPI(customCache).getGuiHandler(player);
     }
 
     public Player getPlayer() {
@@ -67,16 +63,12 @@ public class GuiUpdate {
      *
      * @return the GUiWindow this update is executed!
      */
-    GuiWindow getGuiWindow() {
+    GuiWindow<C> getGuiWindow() {
         return guiWindow;
     }
 
-    public InventoryAPI<?> getInventoryAPI() {
+    public InventoryAPI<C> getInventoryAPI() {
         return inventoryAPI;
-    }
-
-    public <C extends CustomCache> InventoryAPI<C> getInventoryAPI(Class<C> customCache) {
-        return wolfyUtilities.getInventoryAPI(customCache);
     }
 
     public ItemStack getItem(int slot) {
@@ -92,7 +84,7 @@ public class GuiUpdate {
     Locally means it is registered inside of the GuiWindow!
      */
     public void setButton(int slot, String id) {
-        Button button = guiWindow.getButton(id);
+        Button<C> button = guiWindow.getButton(id);
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, id);
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
@@ -104,9 +96,9 @@ public class GuiUpdate {
     it will try to get the button globally registered for this GuiCluster.
      */
     public void setLocalOrGlobalButton(int slot, String id) {
-        Button button = guiWindow.getButton(id);
+        Button<C> button = guiWindow.getButton(id);
         if (button == null) {
-            button = inventoryAPI.getButton(guiWindow.getClusterID(), id);
+            button = inventoryAPI.getButton(guiWindow.getNamespacedKey().getNamespace(), id);
         }
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, id);
@@ -129,14 +121,14 @@ public class GuiUpdate {
     Globally means it is registered via the InventoryAPI and registered in the GuiCluster.
      */
     public void setButton(int slot, String namespace, String key) {
-        Button button = inventoryAPI.getButton(namespace, key);
+        Button<C> button = inventoryAPI.getButton(namespace, key);
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, namespace + ":" + key);
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
         }
     }
 
-    private void renderButton(Button button, GuiHandler<?> guiHandler, Player player, int slot, boolean help) {
+    private void renderButton(Button<C> button, GuiHandler<C> guiHandler, Player player, int slot, boolean help) {
         try {
             button.prepareRender(guiHandler, player, this.inventory, this.inventory.getItem(slot), slot, help);
             button.render(guiHandler, player, this.queueInventory, slot, guiHandler.isHelpEnabled());
@@ -164,7 +156,7 @@ public class GuiUpdate {
         }
     }
 
-    void postExecuteButtons(HashMap<Integer, Button> postExecuteBtns, InventoryInteractEvent event) {
+    void postExecuteButtons(HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event) {
         if (postExecuteBtns != null) {
             postExecuteBtns.forEach((slot, btn) -> {
                 try {

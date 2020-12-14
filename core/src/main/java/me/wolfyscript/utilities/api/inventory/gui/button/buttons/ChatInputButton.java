@@ -7,6 +7,7 @@ import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonAction;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonRender;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
+import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -15,113 +16,112 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  *
- *
  */
-public class ChatInputButton extends DummyButton {
+public class ChatInputButton<C extends CustomCache> extends DummyButton<C> {
 
-    private final ChatInputAction action;
+    private final ChatInputAction<C> action;
     private String msg = "";
     private ClickData clickData = null;
 
-    public ChatInputButton(String id, ButtonState buttonState, String msg, ChatInputAction action) {
+    public ChatInputButton(String id, ButtonState<C> buttonState, String msg, ChatInputAction<C> action) {
         super(id, buttonState);
         this.action = action;
         this.msg = msg;
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, String msg, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack), msg, action);
+    public ChatInputButton(String id, ItemStack itemStack, String msg, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack), msg, action);
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ButtonAction btnAction, String msg, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack, btnAction), msg, action);
+    public ChatInputButton(String id, ItemStack itemStack, ButtonAction<C> btnAction, String msg, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack, btnAction), msg, action);
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ButtonRender render, String msg, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack, render), msg, action);
+    public ChatInputButton(String id, ItemStack itemStack, ButtonRender<C> render, String msg, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack, render), msg, action);
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ButtonAction btnAction, ButtonRender render, String msg, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack, btnAction, render), msg, action);
+    public ChatInputButton(String id, ItemStack itemStack, ButtonAction<C> btnAction, ButtonRender<C> render, String msg, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack, btnAction, render), msg, action);
     }
 
-    public ChatInputButton(String id, ButtonState buttonState, ChatInputAction action) {
+    public ChatInputButton(String id, ButtonState<C> buttonState, ChatInputAction<C> action) {
         super(id, buttonState);
         this.action = action;
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack), action);
+    public ChatInputButton(String id, ItemStack itemStack, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack), action);
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ButtonAction btnAction, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack, btnAction), action);
+    public ChatInputButton(String id, ItemStack itemStack, ButtonAction<C> btnAction, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack, btnAction), action);
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ButtonRender render, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack, render), action);
+    public ChatInputButton(String id, ItemStack itemStack, ButtonRender<C> render, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack, render), action);
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ButtonAction btnAction, ButtonRender render, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack, btnAction, render), action);
+    public ChatInputButton(String id, ItemStack itemStack, ButtonAction<C> btnAction, ButtonRender<C> render, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack, btnAction, render), action);
     }
 
-    public ChatInputButton(String id, Material material, ChatInputAction action) {
-        this(id, new ButtonState(id, material), action);
+    public ChatInputButton(String id, Material material, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, material), action);
     }
 
-    public ChatInputButton(String id, Material material, ButtonAction btnAction, ChatInputAction action) {
-        this(id, new ButtonState(id, material, btnAction), action);
+    public ChatInputButton(String id, Material material, ButtonAction<C> btnAction, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, material, btnAction), action);
     }
 
-    public ChatInputButton(String id, Material material, ButtonRender render, ChatInputAction action) {
-        this(id, new ButtonState(id, material, render), action);
+    public ChatInputButton(String id, Material material, ButtonRender<C> render, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, material, render), action);
     }
 
-    public ChatInputButton(String id, Material material, ButtonAction btnAction, ButtonRender render, ChatInputAction action) {
-        this(id, new ButtonState(id, material, btnAction, render), action);
+    public ChatInputButton(String id, Material material, ButtonAction<C> btnAction, ButtonRender<C> render, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, material, btnAction, render), action);
     }
 
-    public ChatInputButton(String id, ButtonState buttonState, ClickData clickData, ChatInputAction action) {
+    public ChatInputButton(String id, ButtonState<C> buttonState, ClickData clickData, ChatInputAction<C> action) {
         super(id, buttonState);
         this.action = action;
         this.clickData = clickData;
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ClickData clickData, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack), clickData, action);
+    public ChatInputButton(String id, ItemStack itemStack, ClickData clickData, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack), clickData, action);
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ButtonRender render, ClickData clickData, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack, render), clickData, action);
+    public ChatInputButton(String id, ItemStack itemStack, ButtonRender<C> render, ClickData clickData, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack, render), clickData, action);
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ButtonAction btnAction, ClickData clickData, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack, btnAction), clickData, action);
+    public ChatInputButton(String id, ItemStack itemStack, ButtonAction<C> btnAction, ClickData clickData, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack, btnAction), clickData, action);
     }
 
-    public ChatInputButton(String id, ItemStack itemStack, ButtonAction btnAction, ButtonRender render, ClickData clickData, ChatInputAction action) {
-        this(id, new ButtonState(id, itemStack, btnAction, render), clickData, action);
+    public ChatInputButton(String id, ItemStack itemStack, ButtonAction<C> btnAction, ButtonRender<C> render, ClickData clickData, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, itemStack, btnAction, render), clickData, action);
     }
 
-    public ChatInputButton(String id, Material material, ClickData clickData, ChatInputAction action) {
-        this(id, new ButtonState(id, material), clickData, action);
+    public ChatInputButton(String id, Material material, ClickData clickData, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, material), clickData, action);
     }
 
-    public ChatInputButton(String id, Material material, ButtonRender render, ClickData clickData, ChatInputAction action) {
-        this(id, new ButtonState(id, material, render), clickData, action);
+    public ChatInputButton(String id, Material material, ButtonRender<C> render, ClickData clickData, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, material, render), clickData, action);
     }
 
-    public ChatInputButton(String id, Material material, ButtonAction btnAction, ClickData clickData, ChatInputAction action) {
-        this(id, new ButtonState(id, material, btnAction), clickData, action);
+    public ChatInputButton(String id, Material material, ButtonAction<C> btnAction, ClickData clickData, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, material, btnAction), clickData, action);
     }
 
-    public ChatInputButton(String id, Material material, ButtonAction btnAction, ButtonRender render, ClickData clickData, ChatInputAction action) {
-        this(id, new ButtonState(id, material, btnAction, render), clickData, action);
+    public ChatInputButton(String id, Material material, ButtonAction<C> btnAction, ButtonRender<C> render, ClickData clickData, ChatInputAction<C> action) {
+        this(id, new ButtonState<>(id, material, btnAction, render), clickData, action);
     }
 
     @Override
-    public boolean execute(GuiHandler<?> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
+    public boolean execute(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
         guiHandler.setChatInputAction(action);
         Chat chat = guiHandler.getApi().getChat();
         /*
@@ -135,7 +135,7 @@ public class ChatInputButton extends DummyButton {
             guiHandler.getApi().getChat().sendActionMessage(guiHandler.getPlayer(), clickData);
         } else {
             if (guiHandler.getCurrentInv() != null) {
-                chat.sendPlayerMessage(player, "$inventories." + guiHandler.getCurrentGuiCluster() + "." + guiHandler.getCurrentInv().getNamespace() + ".items." + getId() + ".message$");
+                chat.sendPlayerMessage(player, "$inventories." + guiHandler.getCurrentGuiCluster() + "." + guiHandler.getCurrentInv().getNamespacedKey().getNamespace() + ".items." + getId() + ".message$");
             }
         }
         guiHandler.close();

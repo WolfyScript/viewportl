@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.inventory.gui;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,15 +12,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class GuiHandler<T extends CustomCache> implements Listener {
+public class GuiHandler<C extends CustomCache> implements Listener {
 
     private final WolfyUtilities api;
-    private final InventoryAPI<T> invAPI;
+    private final InventoryAPI<C> invAPI;
     private final UUID uuid;
     private final HashMap<String, List<String>> clusterHistory = new HashMap<>();
     private ChatInputAction chatInputAction = null;
@@ -28,11 +28,11 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     private boolean helpEnabled = false;
     private boolean changingInv = false;
 
-    private final T customCache;
+    private final C customCache;
 
-    public GuiHandler(Player player, WolfyUtilities api, Class<T> customCacheClass, T customCache) {
+    public GuiHandler(Player player, WolfyUtilities api, InventoryAPI<C> invAPI, C customCache) {
         this.api = api;
-        this.invAPI = api.getInventoryAPI(customCacheClass);
+        this.invAPI = invAPI;
         this.uuid = player.getUniqueId();
         this.customCache = customCache;
         Bukkit.getPluginManager().registerEvents(this, api.getPlugin());
@@ -46,7 +46,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         return api;
     }
 
-    public InventoryAPI<T> getInvAPI() {
+    public InventoryAPI<C> getInvAPI() {
         return invAPI;
     }
 
@@ -81,26 +81,26 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     /*
     Reloads the GuiWindow of the GuiCluster.
      */
-    public void reloadInv(String clusterID, String guiWindowID) {
-        List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
+    public void reloadInv(NamespacedKey namespacedKey) {
+        List<String> history = clusterHistory.getOrDefault(namespacedKey.getNamespace(), new ArrayList<>());
         history.remove(history.get(history.size() - 1));
-        clusterHistory.put(clusterID, history);
-        changeToInv(clusterID, guiWindowID);
+        clusterHistory.put(namespacedKey.getNamespace(), history);
+        changeToInv(namespacedKey);
     }
 
     /*
     Gets the current GuiWindow. If the Gui isn't opened then the latest GuiWindow is returned.
      */
     @Nullable
-    public GuiWindow getCurrentInv(String clusterID) {
+    public GuiWindow<C> getCurrentInv(String clusterID) {
         if (clusterHistory.get(clusterID) != null && clusterHistory.get(clusterID).size() > 0) {
-            return invAPI.getGuiWindow(clusterID, clusterHistory.get(clusterID).get(clusterHistory.get(clusterID).size() - 1));
+            return invAPI.getGuiWindow(new NamespacedKey(clusterID, clusterHistory.get(clusterID).get(clusterHistory.get(clusterID).size() - 1)));
         }
         return null;
     }
 
     @Nullable
-    public GuiWindow getCurrentInv() {
+    public GuiWindow<C> getCurrentInv() {
         return getCurrentInv(getCurrentGuiCluster());
     }
 
@@ -108,7 +108,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     Gets the previous GuiWindow that was open. If there is non null is returned!
      */
     @Nullable
-    public GuiWindow getPreviousInv(String clusterID) {
+    public GuiWindow<C> getPreviousInv(String clusterID) {
         return getPreviousInv(clusterID, 2);
     }
 
@@ -116,19 +116,19 @@ public class GuiHandler<T extends CustomCache> implements Listener {
     Gets the previous GuiWindow that was open. If there is non null is returned!
      */
     @Nullable
-    public GuiWindow getPreviousInv(String clusterID, int stepsBack) {
+    public GuiWindow<C> getPreviousInv(String clusterID, int stepsBack) {
         List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
         if (history.size() > stepsBack) {
-            return invAPI.getGuiWindow(clusterID, history.get(history.size() - (stepsBack + 1)));
+            return invAPI.getGuiWindow(new NamespacedKey(clusterID, history.get(history.size() - (stepsBack + 1))));
         }
         return null;
     }
 
-    public GuiWindow getPreviousInv() {
+    public GuiWindow<C> getPreviousInv() {
         return getPreviousInv(getCurrentGuiCluster());
     }
 
-    public GuiWindow getPreviousInv(int stepsBack) {
+    public GuiWindow<C> getPreviousInv(int stepsBack) {
         return getPreviousInv(getCurrentGuiCluster(), stepsBack);
     }
 
@@ -155,7 +155,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         if (history.isEmpty()) {
             openCluster(clusterID);
         } else {
-            changeToInv(clusterID, history.get(history.size() - 1));
+            changeToInv(new NamespacedKey(clusterID, history.get(history.size() - 1)));
         }
     }
 
@@ -167,29 +167,29 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         Opens the specific GuiWindow in the current GuiCluster.
          */
     public void changeToInv(String guiWindowID) {
-        changeToInv(getCurrentGuiCluster(), guiWindowID);
+        changeToInv(new NamespacedKey(getCurrentGuiCluster(), guiWindowID));
     }
 
     /*
     Opens the specific GuiWindow in the specific GuiCluster.
      */
-    public void changeToInv(@NotNull String clusterID, @NotNull String guiWindowID) {
+    public void changeToInv(NamespacedKey namespacedKey) {
         Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
             Player player1 = getPlayer();
-            if (api.getPermissions().hasPermission(player1, (api.getPlugin().getName() + ".inv." + clusterID + "." + guiWindowID).toLowerCase(Locale.ROOT))) {
-                List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
-                if (getCurrentInv(clusterID) == null || !getCurrentInv(clusterID).getNamespace().equals(guiWindowID)) {
-                    history.add(guiWindowID);
+            if (api.getPermissions().hasPermission(player1, (api.getPlugin().getName() + ".inv." + namespacedKey.getNamespace() + "." + namespacedKey.getKey()))) {
+                List<String> history = clusterHistory.getOrDefault(namespacedKey.getNamespace(), new ArrayList<>());
+                if (getCurrentInv(namespacedKey.getNamespace()) == null || !getCurrentInv(namespacedKey.getNamespace()).getNamespacedKey().equals(namespacedKey)) {
+                    history.add(namespacedKey.getKey());
                 }
-                clusterHistory.put(clusterID, history);
-                if (api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID) != null) {
-                    currentGuiCluster = clusterID;
+                clusterHistory.put(namespacedKey.getNamespace(), history);
+                if (invAPI.getGuiWindow(namespacedKey) != null) {
+                    currentGuiCluster = namespacedKey.getNamespace();
                     isWindowOpen = true;
-                    api.getInventoryAPI().getGuiWindow(clusterID, guiWindowID).update(this, null, null, true);
+                    invAPI.getGuiWindow(namespacedKey).update(this, null, null, true);
                 }
                 return;
             }
-            api.getChat().sendPlayerMessage(player1, "§4You don't have the permission §c" + (api.getPlugin().getName() + ".inv." + clusterID + "." + guiWindowID).toLowerCase(Locale.ROOT));
+            api.getChat().sendPlayerMessage(player1, "§4You don't have the permission §c" + (api.getPlugin().getName() + ".inv." + namespacedKey.getNamespace() + "." + namespacedKey.getKey()));
         });
     }
 
@@ -200,16 +200,15 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         openCluster(getCurrentGuiCluster());
     }
 
-    /*
-    Opens the GuiCluster with the latest GuiWindow that was open.
+    /**
+     * Opens the GuiCluster with the latest GuiWindow that was open.
      */
-
     public void openCluster(String clusterID) {
-        String guiWindowID = invAPI.getGuiCluster(clusterID).getMainMenu();
+        NamespacedKey guiWindowID = invAPI.getGuiCluster(clusterID).getEntry();
         if (getCurrentInv(clusterID) != null) {
-            guiWindowID = getCurrentInv(clusterID).getNamespace();
+            guiWindowID = getCurrentInv(clusterID).getNamespacedKey();
         }
-        changeToInv(clusterID, guiWindowID);
+        changeToInv(guiWindowID);
     }
 
     public boolean isChatEventActive() {
@@ -238,16 +237,16 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         return helpEnabled;
     }
 
-    public void setButton(GuiWindow guiWindow, int slot, String id) {
+    public void setButton(GuiWindow<C> guiWindow, int slot, String id) {
         TreeMap<Integer, String> buttons = customCache.getButtons(guiWindow);
         buttons.put(slot, id);
         customCache.setButtons(guiWindow, buttons);
     }
 
-    public Button getButton(GuiWindow guiWindow, int slot) {
+    public Button<C> getButton(GuiWindow<C> guiWindow, int slot) {
         String id = customCache.getButtons(guiWindow).get(slot);
         if (id != null && !id.isEmpty() && id.contains(":")) {
-            return api.getInventoryAPI().getButton(id.split(":")[0], id.split(":")[1]);
+            return invAPI.getButton(id.split(":")[0], id.split(":")[1]);
         }
         return guiWindow.getButton(id);
     }
@@ -281,7 +280,7 @@ public class GuiHandler<T extends CustomCache> implements Listener {
         }
     }
 
-    public T getCustomCache() {
+    public C getCustomCache() {
         return customCache;
     }
 

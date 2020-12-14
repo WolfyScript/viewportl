@@ -4,7 +4,9 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.ClickData;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.inventory.gui.events.GuiCloseEvent;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import org.bukkit.Bukkit;
@@ -19,14 +21,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public abstract class GuiWindow implements Listener {
+public abstract class GuiWindow<C extends CustomCache> implements Listener {
 
-    private String clusterID;
-    private final String namespace;
+    protected final WolfyUtilities wolfyUtilities;
+    private final InventoryAPI<C> inventoryAPI;
+    private final GuiCluster<C> cluster;
+    private final HashMap<GuiHandler<C>, Inventory> cachedInventories;
     public String itemKey;
-    private final InventoryAPI<?> inventoryAPI;
-    private final HashMap<GuiHandler<?>, Inventory> cachedInventories;
-    private final HashMap<String, Button> buttons = new HashMap<>();
+    private final HashMap<String, Button<C>> buttons = new HashMap<>();
+    private NamespacedKey namespacedKey;
 
     private boolean forceSyncUpdate;
 
@@ -34,29 +37,31 @@ public abstract class GuiWindow implements Listener {
     private final InventoryType inventoryType;
     private final int size;
 
-    public GuiWindow(String namespace, InventoryAPI<?> inventoryAPI, int size) {
-        this(namespace, inventoryAPI, size, false);
+    public GuiWindow(GuiCluster<C> cluster, String key, int size) {
+        this(cluster, key, size, false);
     }
 
-    public GuiWindow(String namespace, InventoryAPI<?> inventoryAPI, int size, boolean forceSyncUpdate) {
-        this(namespace, namespace, inventoryAPI, null, size, forceSyncUpdate);
+    public GuiWindow(GuiCluster<C> cluster, String key, int size, boolean forceSyncUpdate) {
+        this(cluster, key, key, null, size, forceSyncUpdate);
     }
 
-    public GuiWindow(String namespace, InventoryAPI<?> inventoryAPI, InventoryType inventoryType) {
-        this(namespace, inventoryAPI, inventoryType, false);
+    public GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType) {
+        this(cluster, key, inventoryType, false);
     }
 
-    public GuiWindow(String namespace, InventoryAPI<?> inventoryAPI, InventoryType inventoryType, boolean forceSyncUpdate) {
-        this(namespace, namespace, inventoryAPI, inventoryType, 0, forceSyncUpdate);
+    public GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType, boolean forceSyncUpdate) {
+        this(cluster, key, key, inventoryType, 0, forceSyncUpdate);
     }
 
-    public GuiWindow(String namespace, String itemKey, InventoryAPI<?> inventoryAPI, InventoryType inventoryType, int size) {
-        this(namespace, itemKey, inventoryAPI, inventoryType, size, false);
+    public GuiWindow(GuiCluster<C> cluster, String key, String itemKey, InventoryType inventoryType, int size) {
+        this(cluster, key, itemKey, inventoryType, size, false);
     }
 
-    public GuiWindow(String namespace, String itemKey, InventoryAPI<?> inventoryAPI, InventoryType inventoryType, int size, boolean forceSyncUpdate) {
-        this.namespace = namespace;
-        this.inventoryAPI = inventoryAPI;
+    public GuiWindow(GuiCluster<C> cluster, String key, String itemKey, InventoryType inventoryType, int size, boolean forceSyncUpdate) {
+        this.cluster = cluster;
+        this.inventoryAPI = cluster.inventoryAPI;
+        this.wolfyUtilities = inventoryAPI.getWolfyUtilities();
+        this.namespacedKey = new NamespacedKey(cluster.getId(), key);
         this.itemKey = itemKey;
         this.cachedInventories = new HashMap<>();
         this.inventoryType = inventoryType;
@@ -91,7 +96,7 @@ public abstract class GuiWindow implements Listener {
      *
      * @param update
      */
-    public void onUpdateSync(GuiUpdate update) {
+    public void onUpdateSync(GuiUpdate<C> update) {
     }
 
     /**
@@ -103,7 +108,7 @@ public abstract class GuiWindow implements Listener {
      *
      * @param update
      */
-    public void onUpdateAsync(GuiUpdate update) {
+    public void onUpdateAsync(GuiUpdate<C> update) {
     }
 
     /**
@@ -117,25 +122,25 @@ public abstract class GuiWindow implements Listener {
      * @param transaction the inventory view of the player.
      * @return true if the gui close should be cancelled.
      */
-    public boolean onClose(GuiHandler<?> guiHandler, InventoryView transaction) {
-        GuiCloseEvent closeEvent = new GuiCloseEvent(clusterID, this, guiHandler, transaction);
+    public boolean onClose(GuiHandler<C> guiHandler, InventoryView transaction) {
+        GuiCloseEvent closeEvent = new GuiCloseEvent(namespacedKey.getNamespace(), this, guiHandler, transaction);
         Bukkit.getPluginManager().callEvent(closeEvent);
         return closeEvent.isCancelled();
     }
 
-    void update(GuiHandler<?> guiHandler, HashMap<Integer, Button> postExecuteBtns, InventoryInteractEvent event) {
+    void update(GuiHandler<C> guiHandler, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event) {
         update(guiHandler, postExecuteBtns, event, false);
     }
 
-    void update(GuiHandler<?> guiHandler, HashMap<Integer, Button> postExecuteBtns, InventoryInteractEvent event, boolean openInventory) {
+    void update(GuiHandler<C> guiHandler, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event, boolean openInventory) {
         Bukkit.getScheduler().runTask(guiHandler.getApi().getPlugin(), () -> {
-            GuiUpdate guiUpdate = new GuiUpdate(guiHandler, this);
+            GuiUpdate<C> guiUpdate = new GuiUpdate<>(guiHandler, this);
             guiUpdate.postExecuteButtons(postExecuteBtns, event);
             callUpdate(guiHandler, guiUpdate, openInventory);
         });
     }
 
-    private void callUpdate(GuiHandler<?> guiHandler, GuiUpdate guiUpdate, boolean openInventory) {
+    private void callUpdate(GuiHandler<C> guiHandler, GuiUpdate<C> guiUpdate, boolean openInventory) {
         if (!guiHandler.isChatEventActive()) {
             onUpdateSync(guiUpdate);
             Runnable runnable = () -> openInventory(guiHandler, guiUpdate, openInventory);
@@ -147,7 +152,7 @@ public abstract class GuiWindow implements Listener {
         }
     }
 
-    private void openInventory(GuiHandler<?> guiHandler, GuiUpdate guiUpdate, boolean openInventory) {
+    private void openInventory(GuiHandler<C> guiHandler, GuiUpdate<C> guiUpdate, boolean openInventory) {
         onUpdateAsync(guiUpdate);
         guiUpdate.applyChanges();
         setCachedInventorie(guiHandler, guiUpdate.getInventory());
@@ -160,23 +165,23 @@ public abstract class GuiWindow implements Listener {
         }
     }
 
-    public String getNamespace() {
-        return namespace;
+    public NamespacedKey getNamespacedKey() {
+        return namespacedKey;
     }
 
-    public String getItemKey() {
-        return itemKey;
+    void setNamespacedKey(NamespacedKey namespacedKey) {
+        this.namespacedKey = namespacedKey;
     }
 
-    public void setItemKey(String newItemKey) {
-        itemKey = newItemKey;
+    public GuiCluster<C> getCluster() {
+        return cluster;
     }
 
     /*
-        Register an Button!
-        The id of the Button must be unique, else it will override the Button with the same id.
-     */
-    public void registerButton(Button button) {
+                Register an Button!
+                The id of the Button must be unique, else it will override the Button with the same id.
+             */
+    public void registerButton(Button<C> button) {
         button.init(this);
         buttons.put(button.getId(), button);
     }
@@ -184,11 +189,11 @@ public abstract class GuiWindow implements Listener {
     /*
     Gets the Button by it's id.
      */
-    public Button getButton(String id) {
+    public Button<C> getButton(String id) {
         return buttons.get(id);
     }
 
-    HashMap<String, Button> getButtons() {
+    HashMap<String, Button<C>> getButtons() {
         return buttons;
     }
 
@@ -199,15 +204,15 @@ public abstract class GuiWindow implements Listener {
         return buttons.containsKey(id);
     }
 
-    public void reloadInv(GuiHandler<?> guiHandler) {
-        guiHandler.reloadInv(guiHandler.getCurrentGuiCluster(), guiHandler.getCurrentInv().getNamespace());
+    public void reloadInv(GuiHandler<C> guiHandler) {
+        guiHandler.reloadInv(guiHandler.getCurrentInv().getNamespacedKey());
     }
 
     /*
     Opens the chat, send the player the defined message and waits for the input of the player.
     When the player sends the message the inputAction method is executed
      */
-    public void openChat(GuiHandler<?> guiHandler, String msg, ChatInputAction inputAction) {
+    public void openChat(GuiHandler<C> guiHandler, String msg, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
         guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), msg);
@@ -218,7 +223,7 @@ public abstract class GuiWindow implements Listener {
     Then it waits for the player's input.
     When the player sends the message the inputAction method is executed
      */
-    public void openChat(String guiCluster, String msgKey, GuiHandler<?> guiHandler, ChatInputAction inputAction) {
+    public void openChat(String guiCluster, String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
         guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), "$inventories." + guiCluster + ".global_messages." + msgKey + "$");
@@ -229,17 +234,17 @@ public abstract class GuiWindow implements Listener {
     Then it waits for the player's input.
     When the player sends the message the inputAction method is executed
      */
-    public void openChat(String msgKey, GuiHandler<?> guiHandler, ChatInputAction inputAction) {
+    public void openChat(String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), "$inventories." + getClusterID() + "." + getNamespace() + ".messages." + msgKey + "$");
+        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
     }
 
     /*
     Opens the chat, send the player the defined action messages and waits for the input of the player.
     When the player sends the message the inputAction method is executed
      */
-    public void openActionChat(GuiHandler<?> guiHandler, ClickData clickData, ChatInputAction inputAction) {
+    public void openActionChat(GuiHandler<C> guiHandler, ClickData clickData, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
         guiHandler.getApi().getChat().sendActionMessage(guiHandler.getPlayer(), clickData);
@@ -248,53 +253,41 @@ public abstract class GuiWindow implements Listener {
     /*
     Sends a message without closing the inventory.
      */
-    public void sendMessage(GuiHandler<?> guiHandler, String msgKey) {
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getClusterID(), getNamespace(), msgKey);
+    public void sendMessage(GuiHandler<C> guiHandler, String msgKey) {
+        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
     }
 
     public void sendMessage(Player player, String msgKey) {
-        inventoryAPI.getWolfyUtilities().getChat().sendPlayerMessage(player, getClusterID(), getNamespace(), msgKey);
+        inventoryAPI.getWolfyUtilities().getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey);
     }
 
-    public void sendMessage(GuiHandler<?> guiHandler, String msgKey, Pair<String, String>... replacements) {
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getClusterID(), getNamespace(), msgKey, replacements);
+    public void sendMessage(GuiHandler<C> guiHandler, String msgKey, Pair<String, String>... replacements) {
+        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey, replacements);
     }
 
     public void sendMessage(Player player, String msgKey, Pair<String, String>... replacements) {
-        inventoryAPI.getWolfyUtilities().getChat().sendPlayerMessage(player, getClusterID(), getNamespace(), msgKey, replacements);
+        inventoryAPI.getWolfyUtilities().getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey, replacements);
     }
 
     protected String getInventoryName() {
-        return ChatColor.convert(inventoryAPI.getWolfyUtilities().getLanguageAPI().replaceKeys("$inventories." + clusterID + "." + namespace + ".gui_name$"));
+        return ChatColor.convert(inventoryAPI.getWolfyUtilities().getLanguageAPI().replaceKeys("$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".gui_name$"));
     }
 
-    public void setClusterID(String clusterID) {
-        this.clusterID = clusterID;
-    }
-
-    public Inventory getInventory(GuiHandler<?> guiHandler) {
+    public Inventory getInventory(GuiHandler<C> guiHandler) {
         return cachedInventories.get(guiHandler);
     }
 
-    public boolean hasCachedInventory(GuiHandler<?> guiHandler) {
+    public boolean hasCachedInventory(GuiHandler<C> guiHandler) {
         return cachedInventories.containsKey(guiHandler);
     }
 
-    public void setCachedInventorie(GuiHandler<?> guiHandler, Inventory inventory) {
+    public void setCachedInventorie(GuiHandler<C> guiHandler, Inventory inventory) {
         cachedInventories.put(guiHandler, inventory);
-    }
-
-    public String getClusterID() {
-        return clusterID;
-    }
-
-    public String getID() {
-        return clusterID + ":" + namespace;
     }
 
     public List<String> getHelpInformation() {
         List<String> values = new ArrayList<>();
-        for (String value : getAPI().getLanguageAPI().replaceKey("$inventories." + clusterID + "." + namespace + ".gui_help$")) {
+        for (String value : getAPI().getLanguageAPI().replaceKey("$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".gui_help$")) {
             values.add(ChatColor.convert(value));
         }
         return values;
