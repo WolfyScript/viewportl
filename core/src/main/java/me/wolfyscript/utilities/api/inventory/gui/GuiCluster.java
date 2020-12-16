@@ -35,11 +35,11 @@ public abstract class GuiCluster<C extends CustomCache> {
         return entry;
     }
 
-    public void setEntry(NamespacedKey entry) {
+    protected void setEntry(NamespacedKey entry) {
         this.entry = entry;
     }
 
-    public void registerButton(Button<C> button) {
+    protected void registerButton(Button<C> button) {
         button.init(id, wolfyUtilities);
         buttons.putIfAbsent(button.getId(), button);
     }
@@ -48,7 +48,7 @@ public abstract class GuiCluster<C extends CustomCache> {
         return buttons.get(id);
     }
 
-    public void registerGuiWindow(GuiWindow<C> guiWindow) {
+    protected void registerGuiWindow(GuiWindow<C> guiWindow) {
         if (this.entry == null) {
             this.entry = guiWindow.getNamespacedKey();
         }

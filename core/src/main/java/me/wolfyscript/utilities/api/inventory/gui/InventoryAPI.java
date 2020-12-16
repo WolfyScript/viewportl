@@ -46,6 +46,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
     }
 
     public void registerCluster(GuiCluster<C> guiCluster) {
+        guiCluster.onInit();
         guiClusters.putIfAbsent(guiCluster.getId(), guiCluster);
     }
 
