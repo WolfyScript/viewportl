@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -22,7 +23,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     private final InventoryAPI<C> invAPI;
     private final UUID uuid;
     private final HashMap<String, List<String>> clusterHistory = new HashMap<>();
-    private ChatInputAction chatInputAction = null;
+    private ChatInputAction<C> chatInputAction = null;
     private String currentGuiCluster = "";
     private boolean isWindowOpen = false;
     private boolean helpEnabled = false;
@@ -173,7 +174,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     /*
     Opens the specific GuiWindow in the specific GuiCluster.
      */
-    public void changeToInv(NamespacedKey namespacedKey) {
+    public void changeToInv(@NotNull NamespacedKey namespacedKey) {
         Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
             Player player1 = getPlayer();
             if (api.getPermissions().hasPermission(player1, (api.getPlugin().getName() + ".inv." + namespacedKey.getNamespace() + "." + namespacedKey.getKey()))) {
@@ -215,12 +216,19 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         return getChatInputAction() != null;
     }
 
-    public ChatInputAction getChatInputAction() {
+    public ChatInputAction<C> getChatInputAction() {
         return chatInputAction;
     }
 
-    public void setChatInputAction(ChatInputAction chatInputAction) {
+    public void setChatInputAction(ChatInputAction<C> chatInputAction) {
         this.chatInputAction = chatInputAction;
+    }
+
+    public boolean onChat(Player player, String msg, String[] args) {
+        if (isChatEventActive()) {
+            return chatInputAction.onChat(this, player, msg, args);
+        }
+        return true;
     }
 
     public void close() {

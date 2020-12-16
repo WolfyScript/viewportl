@@ -239,10 +239,6 @@ public class ButtonState<C extends CustomCache> {
 
     //------------------------------------------------
 
-    public static ItemStack createItem() {
-        return null;
-    }
-
     public void init(String clusterID, WolfyUtilities api) {
         if (key != null && !key.isEmpty()) {
             String path = "inventories." + clusterID + ".global_items." + key;
@@ -257,7 +253,7 @@ public class ButtonState<C extends CustomCache> {
         return icon.clone();
     }
 
-    public void init(GuiWindow<?> window) {
+    public void init(GuiWindow<C> window) {
         if (key != null && !key.isEmpty()) {
             String path = "inventories." + window.getNamespacedKey().getNamespace() + "." + window.getNamespacedKey() + ".items." + key;
             if (clusterID != null && !clusterID.isEmpty()) {

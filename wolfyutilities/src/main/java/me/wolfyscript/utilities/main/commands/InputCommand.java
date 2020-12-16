@@ -25,7 +25,7 @@ public class InputCommand implements TabExecutor {
             if (plugin != null) {
                 WolfyUtilities wolfyUtilities = WolfyUtilities.get(plugin);
                 if (wolfyUtilities != null && wolfyUtilities.hasInventoryAPI()) {
-                    InventoryAPI invAPI = wolfyUtilities.getInventoryAPI();
+                    InventoryAPI<?> invAPI = wolfyUtilities.getInventoryAPI();
                     Player player = Bukkit.getPlayer(UUID.fromString(args[1]));
                     if (player != null) {
                         GuiHandler<?> guiHandler = invAPI.getGuiHandler(player);
@@ -39,7 +39,7 @@ public class InputCommand implements TabExecutor {
                                 }
                                 message = messageBuilder.toString().trim();
                             }
-                            if (guiHandler.getChatInputAction() != null && !guiHandler.getChatInputAction().onChat(guiHandler, player, message, message.split(" "))) {
+                            if (!guiHandler.onChat(player, message, message.split(" "))) {
                                 guiHandler.setChatInputAction(null);
                                 guiHandler.openCluster();
                             }
