@@ -1,7 +1,6 @@
 package me.wolfyscript.utilities.api;
 
 import me.wolfyscript.utilities.api.chat.Chat;
-import me.wolfyscript.utilities.api.config.Config;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.inventory.BookUtil;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItems;
@@ -9,13 +8,10 @@ import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
-import me.wolfyscript.utilities.api.particles.ParticleEffects;
 import me.wolfyscript.utilities.util.Reflection;
 import me.wolfyscript.utilities.util.exceptions.InvalidCacheTypeException;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -36,7 +32,6 @@ public class WolfyUtilities implements Listener {
     }
 
     private final NMSUtil nmsUtil;
-    private HashMap<me.wolfyscript.utilities.util.NamespacedKey, ParticleEffects> particleEffects;
 
     private static void register(WolfyUtilities wolfyUtilities) {
         if (!has(wolfyUtilities.getPlugin())) {
@@ -145,28 +140,8 @@ public class WolfyUtilities implements Listener {
             Constructor<?> particleConstructor = Reflection.getNMS("PacketPlayOutWorldParticles").getConstructor(
                     Reflection.getNMS("EnumParticle"), boolean.class, float.class, float.class, float.class, float.class, float.class, float.class, float.class, int.class, int[].class);
             Object packet = particleConstructor.newInstance(enumParticles, biggerRadius, x, y, z, xOffset, yOffset, zOffset, particledata, count, data);
-            sendPacket(player, packet);
         } catch (Exception exception) {
             exception.printStackTrace();
-        }
-    }
-
-    public static void sendPacket(Player player, Object packet) {
-        try {
-            Object handle = player.getClass().getMethod("getHandle").invoke(player);
-            Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-            playerConnection.getClass().getMethod("sendPacket", Reflection.getNMS("Packet")).invoke(playerConnection, packet);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Enchantment getEnchantment(String enchantNmn) {
-        try {
-            return Enchantment.getByKey(NamespacedKey.minecraft(enchantNmn.toLowerCase()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
     }
 
@@ -290,8 +265,8 @@ public class WolfyUtilities implements Listener {
     }
 
     public boolean hasDebuggingMode() {
-        if (getConfigAPI().getConfig("main_config") instanceof Config) {
-            return ((Config) getConfigAPI().getConfig("main_config")).getBoolean("debug");
+        if (getConfigAPI().getConfig("config") != null) {
+            return getConfigAPI().getConfig("config").getBoolean("debug");
         }
         return false;
     }

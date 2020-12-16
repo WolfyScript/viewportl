@@ -13,7 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
@@ -34,20 +33,20 @@ public class ParticleEffects {
 
     private final String namespace;
     private final String path;
-    private final Plugin plugin;
+    private final WolfyUtilities wolfyUtilities;
 
-    public ParticleEffects(Plugin plugin) {
-        this(plugin, plugin.getName().toLowerCase(Locale.ROOT).replace(" ", "_"));
+    public ParticleEffects(WolfyUtilities wolfyUtilities) {
+        this(wolfyUtilities, wolfyUtilities.getPlugin().getName().toLowerCase(Locale.ROOT).replace(" ", "_"));
     }
 
-    public ParticleEffects(Plugin plugin, String namespace) {
-        this(plugin, namespace, "");
+    public ParticleEffects(WolfyUtilities wolfyUtilities, String namespace) {
+        this(wolfyUtilities, namespace, "");
     }
 
-    public ParticleEffects(Plugin plugin, String namespace, String path) {
-        this.plugin = plugin;
+    public ParticleEffects(WolfyUtilities wolfyUtilities, String namespace, String path) {
+        this.wolfyUtilities = wolfyUtilities;
         this.namespace = namespace;
-        this.path = plugin.getDataFolder().getPath() + path;
+        this.path = wolfyUtilities.getPlugin().getDataFolder().getPath() + path;
     }
 
     /*

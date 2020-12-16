@@ -320,7 +320,7 @@ public class Particle {
     }
 
     private void spawn(Location location, Vector relative, int count, Vector offset, double extra, @Nullable Object data) {
-        Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> {
+        Bukkit.getScheduler().runTask(WolfyUtilities.getWUPlugin(), () -> {
             if (location.getWorld() != null) {
                 if (getDataClass() == null || !getDataClass().isInstance(data)) {
                     location.getWorld().spawnParticle(getParticle(), location.add(relative), count, offset.getX(), offset.getY(), offset.getZ(), extra);

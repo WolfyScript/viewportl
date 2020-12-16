@@ -45,7 +45,6 @@ public class WUPlugin extends JavaPlugin {
     private WolfyUtilities wolfyUtilities;
     private Chat chat;
 
-    private MainConfiguration mainConfig;
     private Particles particlesConfig;
 
     private ParticleEffects particleEffectsConfig;
@@ -56,7 +55,7 @@ public class WUPlugin extends JavaPlugin {
         chat.sendConsoleMessage("Loading Particles...");
         particlesConfig = new Particles(wolfyUtilities);
         particlesConfig.load(false);
-        particleEffectsConfig = new ParticleEffects(instance);
+        particleEffectsConfig = new ParticleEffects(wolfyUtilities);
         particleEffectsConfig.load(false);
         CustomItems.initiateMissingBlockEffects();
     }
@@ -122,7 +121,7 @@ public class WUPlugin extends JavaPlugin {
     }
 
     public void onEnable() {
-        wolfyUtilities = WolfyUtilities.get(instance);
+        wolfyUtilities = WolfyUtilities.get(this);
         this.chat = wolfyUtilities.getChat();
         chat.setCONSOLE_PREFIX("[WU] ");
         chat.setIN_GAME_PREFIX("§8[§3WU§8] §7");
@@ -203,10 +202,6 @@ public class WUPlugin extends JavaPlugin {
             }
         }
         return true;
-    }
-
-    public MainConfiguration getMainConfig() {
-        return mainConfig;
     }
 
     public ParticleEffects getParticleEffects() {
