@@ -1,28 +1,37 @@
 package me.wolfyscript.utilities.api.config;
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-@Deprecated
-public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileConfiguration {
+/**
+ * This class is based on the bukkit yaml configuration.
+ * It is subject to change in future updates, so make sure to frequently check for changes if you use it.
+ */
+public class YamlConfiguration extends org.bukkit.configuration.file.YamlConfiguration {
 
-    private final org.bukkit.configuration.file.YamlConfiguration config;
+    private final String name;
+    public WolfyUtilities api;
+    public ConfigAPI configAPI;
+
     private int intervalsToPass = 0;
     private int passedIntervals;
     private boolean firstInit = false;
+    public Plugin plugin;
+    protected File configFile;
+    protected String defPath;
+    protected String defFileName;
+    protected boolean saveAfterValueSet = false;
 
     /*
         plugin - your plugin
@@ -33,7 +42,15 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         override - if true, the config will be overridden with the default values (onFirstInit() will run on every override!)
      */
     public YamlConfiguration(ConfigAPI configAPI, String path, String name, String defPath, String defFileName, boolean override) {
-        super(configAPI, path, name, defPath, defFileName, Type.YAML);
+        this.api = configAPI.getApi();
+        this.configAPI = configAPI;
+        this.plugin = configAPI.getPlugin();
+        this.name = name;
+        this.defPath = defPath;
+        this.defFileName = defFileName;
+        if (!path.isEmpty() && !name.isEmpty()) {
+            this.configFile = new File(path, name + ".yml");
+        }
         if (override && configFile.exists()) {
             if (!configFile.delete()) {
                 Bukkit.getLogger().warning("Error while trying to override YamlConfiguration!");
@@ -42,6 +59,7 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         }
         if (!configFile.exists()) {
             firstInit = true;
+
             try {
                 configFile.getParentFile().mkdirs();
                 configFile.createNewFile();
@@ -50,13 +68,18 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
                 Bukkit.getLogger().warning("     cause: " + e.getMessage());
             }
         }
-        config = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(configFile);
-        if (firstInit) {
-            loadDefaults();
-            onFirstInit();
-            firstInit = false;
+        try {
+            load(configFile);
+            if (firstInit) {
+                loadDefaults();
+                onFirstInit();
+                firstInit = false;
+            }
+            init();
+        } catch (IOException | InvalidConfigurationException ex) {
+            Bukkit.getLogger().warning("Error loading config: " + configFile.getPath());
+            Bukkit.getLogger().warning("     cause: " + ex.getMessage());
         }
-        init();
     }
 
     /*
@@ -124,10 +147,6 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
     public void init() {
     }
 
-    public boolean isFirstInit() {
-        return firstInit;
-    }
-
     /*
         Auto-save intervals this YamlConfiguration has to pass to be saved.
     */
@@ -139,7 +158,8 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
         loads the defaults out of the path you set on init!
      */
     public void loadDefaults() {
-        config.options().copyDefaults(true);
+        save();
+        options().copyDefaults(false);
         Reader stream;
         try {
             String fileName = defFileName.isEmpty() ? getName() : defFileName;
@@ -147,8 +167,8 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
             if (inputStream != null) {
                 stream = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                 org.bukkit.configuration.file.YamlConfiguration defConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(stream);
-                config.options().header(defConfig.options().header());
-                config.setDefaults(defConfig);
+                options().header(defConfig.options().header());
+                setDefaults(defConfig);
                 stream.close();
             }
         } catch (IOException e) {
@@ -179,7 +199,7 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
 
     public void save() {
         try {
-            config.save(configFile);
+            save(configFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -187,171 +207,20 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
 
     public void load() {
         try {
-            config.load(configFile);
+            load(configFile);
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void set(String path, Object object) {
-        config.set(path, object);
-        if (saveAfterValueSet) {
-            reload();
-        }
-    }
-
-    @Override
-    public Object get(String path) {
-        return config.get(path);
-    }
-
-    @Override
-    public Object get(String path, Object def) {
-        return config.get(path, def);
-    }
-
-    public FileConfiguration getConfig() {
-        return config;
-    }
-
-    @Override
-    public Type getType() {
-        return Type.YAML;
-    }
-
-    public Set<String> getKeys() {
-        return getKeys(false);
-    }
-
-    @Override
-    public Set<String> getKeys(boolean deep) {
-        return config.getKeys(deep);
-    }
-
-    @Override
-    public Map<String, Object> getMap() {
-        return config.getValues(false);
-    }
-
-    @Override
-    public boolean hasPathSeparator() {
-        return config.options().pathSeparator() != 0;
-    }
-
-    @Override
-    public void setPathSeparator(char pathSeparator) {
-        config.options().pathSeparator(pathSeparator);
-    }
-
-    @Override
-    public char getPathSeparator() {
-        return config.options().pathSeparator();
-    }
-
-    public Object getObject(String path) {
-        return config.get(path);
-    }
-
-    public String getString(String path) {
-        return config.getString(path);
-    }
-
-    @Override
-    public String getString(String path, String def) {
-        return config.getString(path, def);
-    }
-
-    public int getInt(String path) {
-        return config.getInt(path);
-    }
-
-    @Override
-    public int getInt(String path, int def) {
-        return config.getInt(path, def);
-    }
-
-    public boolean getBoolean(String path) {
-        return config.getBoolean(path);
-    }
-
-    public long getLong(String path) {
-        return config.getLong(path);
-    }
-
-    @Override
-    public long getLong(String path, long def) {
-        return config.getLong(path, def);
-    }
-
-    public double getDouble(String path) {
-        return config.getDouble(path);
-    }
-
-    @Override
-    public double getDouble(String path, double def) {
-        return config.getDouble(path, def);
-    }
-
-    @Override
-    public List<?> getList(String path) {
-        return config.getList(path);
-    }
-
-    @Nonnull
-    public List<String> getStringList(String path) {
-        return config.getStringList(path);
-    }
-
-    @Deprecated
-    @Override
-    public void saveItem(String path, String name, ItemStack itemStack) {
-        setItem(path, name, itemStack);
-    }
-
-    @Deprecated
-    @Override
-    public void saveItem(String path, ItemStack item) {
-        setItem(path, item);
-    }
-
-    @Override
-    public void setItem(String path, ItemStack itemStack) {
-        if (itemStack.hasItemMeta()) {
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            if (itemMeta.hasDisplayName()) {
-                itemMeta.setDisplayName(itemMeta.getDisplayName().replace('§', '&'));
-            }
-            if (itemMeta.hasLore()) {
-                List<String> newLore = new ArrayList<>();
-                for (String row : itemMeta.getLore()) {
-                    newLore.add(row.replace('§', '&'));
-                }
-                itemMeta.setLore(newLore);
-            }
-            itemStack.setItemMeta(itemMeta);
-        }
-        set(path, itemStack.serialize());
-    }
-
-    @Override
-    public void setItem(String path, String name, ItemStack itemStack) {
-        setItem(path + "." + name, itemStack);
-    }
-
-    @Override
     public ItemStack getItem(String path) {
         return getItem(path, true);
     }
 
     @Nullable
-    @Override
     public ItemStack getItem(String path, boolean replaceKeys) {
-        if (config.isSet(path)) {
-            Map<String, Object> data = getValues(path);
-            data.put("v", Bukkit.getUnsafe().getDataVersion());
-
-            ItemStack itemStack = ItemStack.deserialize(data);
+        if (isSet(path)) {
+            ItemStack itemStack = getItemStack(path);
             if (itemStack.hasItemMeta()) {
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 if (itemMeta.hasDisplayName()) {
@@ -385,17 +254,5 @@ public class YamlConfiguration extends me.wolfyscript.utilities.api.config.FileC
             return itemStack;
         }
         return null;
-    }
-
-    @Override
-    public Map<String, Object> getValues(String path) {
-        if (config.getConfigurationSection(path) != null) {
-            return config.getConfigurationSection(path).getValues(false);
-        }
-        return new HashMap<>();
-    }
-
-    public org.bukkit.configuration.file.YamlConfiguration getBukkitConfig(){
-        return config;
     }
 }

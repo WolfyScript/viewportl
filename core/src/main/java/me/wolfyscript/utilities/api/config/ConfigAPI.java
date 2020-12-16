@@ -15,7 +15,7 @@ public class ConfigAPI {
     private final WolfyUtilities api;
     private boolean prettyPrinting = false;
 
-    private final HashMap<String, Configuration> configs;
+    private final HashMap<String, YamlConfiguration> configs;
 
     private int autoSave = -1;
 
@@ -47,32 +47,7 @@ public class ConfigAPI {
         }
     }
 
-    private void runAutoSave(int intervalInMin) {
-        autoSave = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            for (Configuration configuration : configs.values()) {
-                if (configuration instanceof YamlConfiguration) {
-                    ((YamlConfiguration) configuration).reloadAuto();
-                }
-            }
-        }, 1200, intervalInMin * 60 * 20);
-    }
-
-    public void registerConfig(Configuration configuration) {
-        configs.put(configuration.getName(), configuration);
-    }
-
-    public Configuration getConfig(String name) {
-        return configs.get(name);
-    }
-
-    public YamlConfiguration getmainConfig() {
-        if (getConfig("main_config") instanceof YamlConfiguration) {
-            return (YamlConfiguration) getConfig("main_config");
-        }
-        return null;
-    }
-
-    public static void exportFile(Class reference, String resourcePath, String savePath) {
+    public static void exportFile(Class<?> reference, String resourcePath, String savePath) {
         InputStream ddlStream = reference.getClassLoader().getResourceAsStream(resourcePath);
         File target = new File(savePath);
         try {
@@ -89,23 +64,48 @@ public class ConfigAPI {
         }
     }
 
+    private void runAutoSave(int intervalInMin) {
+        autoSave = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            for (YamlConfiguration configuration : configs.values()) {
+                if (configuration != null) {
+                    configuration.reloadAuto();
+                }
+            }
+        }, 1200, intervalInMin * 60 * 20);
+    }
+
+    public void registerConfig(YamlConfiguration configuration) {
+        configs.put(configuration.getName(), configuration);
+    }
+
+    public YamlConfiguration getConfig(String name) {
+        return configs.get(name);
+    }
+
+    public YamlConfiguration getCoreConfig() {
+        if (getConfig("config") != null) {
+            return getConfig("config");
+        }
+        return null;
+    }
+
     /*
     This must be called onDisable().
     So that all configs are saved!
     It can be called from everywhere, but it's not useful.
      */
     public void saveConfigs() {
-        for (Configuration configuration : configs.values()) {
-            if (configuration instanceof FileConfiguration) {
-                ((FileConfiguration) configuration).save();
+        for (YamlConfiguration configuration : configs.values()) {
+            if (configuration != null) {
+                configuration.save();
             }
         }
     }
 
     public void loadConfigs() {
-        for (Configuration configuration : configs.values()) {
-            if (configuration instanceof FileConfiguration) {
-                ((FileConfiguration) configuration).load();
+        for (YamlConfiguration configuration : configs.values()) {
+            if (configuration != null) {
+                configuration.load();
             }
         }
     }

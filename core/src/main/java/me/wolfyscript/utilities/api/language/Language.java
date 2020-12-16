@@ -24,12 +24,12 @@ public class Language extends JsonConfig<JsonNode> {
     }
 
     public String getVersion() {
-        return root.path("version").asText();
+        return value.path("version").asText();
     }
 
     public List<String> getAuthors() {
         List<String> list = new ArrayList<>();
-        JsonNode node = root.path("author");
+        JsonNode node = value.path("author");
         if (node.isTextual()) {
             list.add(node.asText());
         } else {
@@ -43,7 +43,7 @@ public class Language extends JsonConfig<JsonNode> {
             return cachedNodes.get(path);
         }
         String[] keys = path.split("\\.");
-        JsonNode currentNode = root;
+        JsonNode currentNode = value;
         for (String key : keys) {
             currentNode = currentNode.path(key);
         }
