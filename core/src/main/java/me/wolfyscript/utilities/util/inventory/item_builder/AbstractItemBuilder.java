@@ -24,10 +24,10 @@ import java.util.UUID;
 
 public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
 
-    private static final NamespacedKey CUSTOM_DURABILITY_VALUE = new org.bukkit.NamespacedKey("wolfyutilities", "customDurability.value");
-    private static final NamespacedKey CUSTOM_DURABILITY_DAMAGE = new org.bukkit.NamespacedKey("wolfyutilities", "customDurability.damage");
-    private static final NamespacedKey CUSTOM_DURABILITY_INDEX = new org.bukkit.NamespacedKey("wolfyutilities", "customDurability.index");
-    private static final NamespacedKey CUSTOM_DURABILITY_TAG = new org.bukkit.NamespacedKey("wolfyutilities", "customDurability.tag");
+    private static final NamespacedKey CUSTOM_DURABILITY_VALUE = new org.bukkit.NamespacedKey("wolfyutilities", "custom_durability.value");
+    private static final NamespacedKey CUSTOM_DURABILITY_DAMAGE = new org.bukkit.NamespacedKey("wolfyutilities", "custom_durability.damage");
+    private static final NamespacedKey CUSTOM_DURABILITY_INDEX = new org.bukkit.NamespacedKey("wolfyutilities", "custom_durability.index");
+    private static final NamespacedKey CUSTOM_DURABILITY_TAG = new org.bukkit.NamespacedKey("wolfyutilities", "custom_durability.tag");
 
     abstract protected ItemStack getItemStack();
 
