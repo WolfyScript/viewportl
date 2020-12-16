@@ -16,7 +16,7 @@ public class NMSEntry extends NMSUtil {
      *
      * @param wolfyUtilities
      */
-    protected NMSEntry(WolfyUtilities wolfyUtilities) {
+    public NMSEntry(WolfyUtilities wolfyUtilities) {
         super(wolfyUtilities);
         this.blockUtil = new BlockUtilImpl(this);
         this.itemUtil = new ItemUtilImpl(this);
