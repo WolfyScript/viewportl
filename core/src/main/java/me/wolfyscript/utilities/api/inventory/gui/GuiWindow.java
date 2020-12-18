@@ -158,9 +158,9 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         setCachedInventorie(guiHandler, guiUpdate.getInventory());
         if (openInventory) {
             Bukkit.getScheduler().runTask(getAPI().getPlugin(), () -> {
-                guiHandler.setChangingInv(true);
+                guiHandler.setSwitchWindow(true);
                 guiHandler.getPlayer().openInventory(guiUpdate.getInventory());
-                guiHandler.setChangingInv(false);
+                guiHandler.setSwitchWindow(false);
             });
         }
     }
@@ -205,7 +205,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     public void reloadInv(GuiHandler<C> guiHandler) {
-        guiHandler.reloadInv(guiHandler.getCurrentInv().getNamespacedKey());
+        guiHandler.reloadWindow(guiHandler.getWindow().getNamespacedKey());
     }
 
     /*

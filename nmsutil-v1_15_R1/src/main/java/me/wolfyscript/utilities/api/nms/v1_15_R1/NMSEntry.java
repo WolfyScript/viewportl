@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.nms.v1_15_R1;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.nms.BlockUtil;
+import me.wolfyscript.utilities.api.nms.InventoryUtil;
 import me.wolfyscript.utilities.api.nms.ItemUtil;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
 import org.bukkit.plugin.Plugin;
@@ -32,5 +33,8 @@ public class NMSEntry extends NMSUtil {
         return itemUtil;
     }
 
-
+    @Override
+    public InventoryUtil getInventoryUtil() {
+        return null;
+    }
 }

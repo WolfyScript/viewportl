@@ -134,8 +134,8 @@ public class ChatInputButton<C extends CustomCache> extends DummyButton<C> {
         } else if (clickData != null) {
             guiHandler.getApi().getChat().sendActionMessage(guiHandler.getPlayer(), clickData);
         } else {
-            if (guiHandler.getCurrentInv() != null) {
-                chat.sendPlayerMessage(player, "$inventories." + guiHandler.getCurrentGuiCluster() + "." + guiHandler.getCurrentInv().getNamespacedKey().getNamespace() + ".items." + getId() + ".message$");
+            if (guiHandler.getWindow() != null) {
+                chat.sendPlayerMessage(player, "$inventories." + guiHandler.getCluster() + "." + guiHandler.getWindow().getNamespacedKey().getNamespace() + ".items." + getId() + ".message$");
             }
         }
         guiHandler.close();

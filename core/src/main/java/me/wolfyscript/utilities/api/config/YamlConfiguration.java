@@ -159,7 +159,7 @@ public class YamlConfiguration extends org.bukkit.configuration.file.YamlConfigu
      */
     public void loadDefaults() {
         save();
-        options().copyDefaults(false);
+        options().copyDefaults(true);
         Reader stream;
         try {
             String fileName = defFileName.isEmpty() ? getName() : defFileName;

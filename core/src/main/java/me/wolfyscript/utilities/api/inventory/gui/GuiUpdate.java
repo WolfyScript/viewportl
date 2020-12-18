@@ -37,9 +37,9 @@ public class GuiUpdate<C extends CustomCache> {
             String guiName = guiWindow.getInventoryName();
             guiName = guiName.replace("%plugin.version%", wolfyUtilities.getPlugin().getDescription().getVersion()).replace("%plugin.author%", wolfyUtilities.getPlugin().getDescription().getAuthors().toString()).replace("%plugin.name%", wolfyUtilities.getPlugin().getDescription().getName());
             if (guiWindow.getInventoryType() == null) {
-                this.inventory = Bukkit.createInventory(null, guiWindow.getSize(), guiName);
+                this.inventory = wolfyUtilities.getNmsUtil().getInventoryUtil().createGUIInventory(guiHandler, guiWindow, guiWindow.getSize(), guiName);
             } else {
-                this.inventory = Bukkit.createInventory(null, guiWindow.getInventoryType(), guiName);
+                this.inventory = wolfyUtilities.getNmsUtil().getInventoryUtil().createGUIInventory(guiHandler, guiWindow, guiWindow.getInventoryType(), guiName);
             }
         } else {
             this.inventory = guiWindow.getInventory(guiHandler);
@@ -109,7 +109,7 @@ public class GuiUpdate<C extends CustomCache> {
     /*
     Sets a Button object to the specific slot.
      */
-    public void setButton(int slot, @Nonnull Button button) {
+    public void setButton(int slot, @Nonnull Button<C> button) {
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, button.getId());
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
