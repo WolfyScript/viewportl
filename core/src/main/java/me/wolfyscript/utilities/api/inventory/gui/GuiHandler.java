@@ -11,14 +11,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class GuiHandler<C extends CustomCache> implements Listener, InventoryHolder {
+public class GuiHandler<C extends CustomCache> implements Listener {
 
     private final WolfyUtilities api;
     private final InventoryAPI<C> invAPI;
@@ -222,7 +220,7 @@ public class GuiHandler<C extends CustomCache> implements Listener, InventoryHol
                 clusterHistory.put(cluster, history);
                 this.cluster = cluster;
                 isWindowOpen = true;
-                window.update(this, null, null, true);
+                window.create(this);
                 return;
             }
             api.getChat().sendPlayerMessage(player1, "§4You don't have the permission §c" + (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")));
@@ -330,11 +328,5 @@ public class GuiHandler<C extends CustomCache> implements Listener, InventoryHol
 
     public C getCustomCache() {
         return customCache;
-    }
-
-    @NotNull
-    @Override
-    public Inventory getInventory() {
-        return null;
     }
 }

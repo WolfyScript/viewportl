@@ -6,6 +6,7 @@ import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.inventory.gui.events.GuiCloseEvent;
+import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
@@ -14,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     protected final WolfyUtilities wolfyUtilities;
     private final InventoryAPI<C> inventoryAPI;
     private final GuiCluster<C> cluster;
-    private final HashMap<GuiHandler<C>, Inventory> cachedInventories;
     public String itemKey;
     private final HashMap<String, Button<C>> buttons = new HashMap<>();
     private NamespacedKey namespacedKey;
@@ -63,7 +62,6 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         this.wolfyUtilities = inventoryAPI.getWolfyUtilities();
         this.namespacedKey = new NamespacedKey(cluster.getId(), key);
         this.itemKey = itemKey;
-        this.cachedInventories = new HashMap<>();
         this.inventoryType = inventoryType;
         this.size = size;
         this.forceSyncUpdate = forceSyncUpdate;
@@ -128,13 +126,17 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         return closeEvent.isCancelled();
     }
 
-    void update(GuiHandler<C> guiHandler, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event) {
-        update(guiHandler, postExecuteBtns, event, false);
+    void create(GuiHandler<C> guiHandler) {
+        update(null, guiHandler, null, null, true);
     }
 
-    void update(GuiHandler<C> guiHandler, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event, boolean openInventory) {
+    void update(GUIInventory<C> inventory, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event) {
+        update(inventory, inventory.getGuiHandler(), postExecuteBtns, event, false);
+    }
+
+    private void update(GUIInventory<C> inventory, GuiHandler<C> guiHandler, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event, boolean openInventory) {
         Bukkit.getScheduler().runTask(guiHandler.getApi().getPlugin(), () -> {
-            GuiUpdate<C> guiUpdate = new GuiUpdate<>(guiHandler, this);
+            GuiUpdate<C> guiUpdate = new GuiUpdate<>(inventory, guiHandler, this);
             guiUpdate.postExecuteButtons(postExecuteBtns, event);
             callUpdate(guiHandler, guiUpdate, openInventory);
         });
@@ -155,7 +157,6 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     private void openInventory(GuiHandler<C> guiHandler, GuiUpdate<C> guiUpdate, boolean openInventory) {
         onUpdateAsync(guiUpdate);
         guiUpdate.applyChanges();
-        setCachedInventorie(guiHandler, guiUpdate.getInventory());
         if (openInventory) {
             Bukkit.getScheduler().runTask(getAPI().getPlugin(), () -> {
                 guiHandler.setSwitchWindow(true);
@@ -271,18 +272,6 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
 
     protected String getInventoryName() {
         return ChatColor.convert(inventoryAPI.getWolfyUtilities().getLanguageAPI().replaceKeys("$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".gui_name$"));
-    }
-
-    public Inventory getInventory(GuiHandler<C> guiHandler) {
-        return cachedInventories.get(guiHandler);
-    }
-
-    public boolean hasCachedInventory(GuiHandler<C> guiHandler) {
-        return cachedInventories.containsKey(guiHandler);
-    }
-
-    public void setCachedInventorie(GuiHandler<C> guiHandler, Inventory inventory) {
-        cachedInventories.put(guiHandler, inventory);
     }
 
     public List<String> getHelpInformation() {

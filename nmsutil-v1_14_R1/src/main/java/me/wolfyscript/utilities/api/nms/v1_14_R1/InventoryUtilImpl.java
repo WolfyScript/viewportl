@@ -17,21 +17,21 @@ public class InventoryUtilImpl extends InventoryUtil {
 
     @Override
     public <C extends CustomCache> GUIInventory<C> createGUIInventory(GuiHandler<C> guiHandler, GuiWindow<C> window, InventoryType type) {
-        return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, guiHandler, type);
+        return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, null, type);
     }
 
     @Override
     public <C extends CustomCache> GUIInventory<C> createGUIInventory(GuiHandler<C> guiHandler, GuiWindow<C> window, InventoryType type, String title) {
-        return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, guiHandler, type, title);
+        return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, null, type, title);
     }
 
     @Override
     public <C extends CustomCache> GUIInventory<C> createGUIInventory(GuiHandler<C> guiHandler, GuiWindow<C> window, int size) {
-        return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, guiHandler, size);
+        return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, null, size);
     }
 
     @Override
     public <C extends CustomCache> GUIInventory<C> createGUIInventory(GuiHandler<C> guiHandler, GuiWindow<C> window, int size, String title) {
-        return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, guiHandler, size, title);
+        return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, null, size, title);
     }
 }
