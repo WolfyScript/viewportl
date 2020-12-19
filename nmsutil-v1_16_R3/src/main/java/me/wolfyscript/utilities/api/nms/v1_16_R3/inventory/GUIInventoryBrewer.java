@@ -5,14 +5,14 @@ import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import net.minecraft.server.v1_16_R3.IInventory;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventory;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventoryBrewer;
 
-public class GUIInventoryImpl<C extends CustomCache> extends CraftInventory implements GUIInventory<C> {
+public class GUIInventoryBrewer<C extends CustomCache> extends CraftInventoryBrewer implements GUIInventory<C> {
 
     private final GuiWindow<C> window;
     private final GuiHandler<C> guiHandler;
 
-    public GUIInventoryImpl(GuiHandler<C> guiHandler, GuiWindow<C> window, IInventory inventory) {
+    public GUIInventoryBrewer(GuiHandler<C> guiHandler, GuiWindow<C> window, IInventory inventory) {
         super(inventory);
         this.guiHandler = guiHandler;
         this.window = window;

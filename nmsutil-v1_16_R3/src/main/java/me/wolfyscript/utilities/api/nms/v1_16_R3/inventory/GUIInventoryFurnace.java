@@ -4,15 +4,15 @@ import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
-import net.minecraft.server.v1_16_R3.IInventory;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventory;
+import net.minecraft.server.v1_16_R3.TileEntityFurnace;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventoryFurnace;
 
-public class GUIInventoryImpl<C extends CustomCache> extends CraftInventory implements GUIInventory<C> {
+public class GUIInventoryFurnace<C extends CustomCache> extends CraftInventoryFurnace implements GUIInventory<C> {
 
     private final GuiWindow<C> window;
     private final GuiHandler<C> guiHandler;
 
-    public GUIInventoryImpl(GuiHandler<C> guiHandler, GuiWindow<C> window, IInventory inventory) {
+    public GUIInventoryFurnace(GuiHandler<C> guiHandler, GuiWindow<C> window, TileEntityFurnace inventory) {
         super(inventory);
         this.guiHandler = guiHandler;
         this.window = window;

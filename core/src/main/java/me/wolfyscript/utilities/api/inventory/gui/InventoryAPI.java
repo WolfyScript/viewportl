@@ -213,20 +213,13 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         if (hasGuiHandler((Player) event.getWhoClicked())) {
             Inventory inventory = event.getInventory();
             if (inventory instanceof GUIInventory && ((GUIInventory<?>) inventory).getGuiHandler().getInvAPI().equals(this)) {
-                GUIInventory<C> guiInventory = (GUIInventory<C>) inventory;
-                GuiHandler<C> guiHandler = guiInventory.getGuiHandler();
-
+                GuiHandler<C> guiHandler = ((GUIInventory<C>) inventory).getGuiHandler();
                 if (event.getRawSlots().parallelStream().anyMatch(rawSlot -> !Objects.equals(event.getView().getInventory(rawSlot), event.getView().getTopInventory()))) {
                     event.setCancelled(true);
                     return;
                 }
                 GuiWindow<C> guiWindow = guiHandler.getWindow();
                 if (guiWindow != null) {
-                    /*
-                System.out.println("Clicked in "+guiWindow);
-                System.out.println("    Slots: "+event.getInventorySlots());
-                System.out.println("    Type: "+event.getType());
-                //*/
                     GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
                     Bukkit.getPluginManager().callEvent(guiItemDragEvent);
                     if (guiItemDragEvent.isCancelled()) {

@@ -76,14 +76,6 @@ public class GuiHandler<C extends CustomCache> implements Listener, InventoryHol
         return isWindowOpen;
     }
 
-    public boolean verifyInventory(Inventory inventory) {
-        if (isWindowOpen() && getWindow() != null) {
-            Inventory windowInv = getWindow().getInventory(this);
-            return windowInv == inventory;
-        }
-        return false;
-    }
-
     /*
     Reloads the GuiWindow of the GuiCluster.
      */

@@ -19,24 +19,24 @@ public class GUIInventoryCreator {
 
     private GUIInventoryCreator() {
         this.converterMap.put(InventoryType.CHEST, this.DEFAULT_CONVERTER);
-        //this.converterMap.put(InventoryType.DISPENSER, new CraftTileInventoryConverter.Dispenser());
-        //this.converterMap.put(InventoryType.DROPPER, new CraftTileInventoryConverter.Dropper());
-        //this.converterMap.put(InventoryType.FURNACE, new CraftTileInventoryConverter.Furnace());
+        this.converterMap.put(InventoryType.DISPENSER, new GUITileInventoryConverter.Dispenser());
+        this.converterMap.put(InventoryType.DROPPER, new GUITileInventoryConverter.Dropper());
+        this.converterMap.put(InventoryType.FURNACE, new GUITileInventoryConverter.Furnace());
         this.converterMap.put(InventoryType.WORKBENCH, this.DEFAULT_CONVERTER);
         this.converterMap.put(InventoryType.ENCHANTING, this.DEFAULT_CONVERTER);
-        //this.converterMap.put(InventoryType.BREWING, new CraftTileInventoryConverter.BrewingStand());
+        this.converterMap.put(InventoryType.BREWING, new GUITileInventoryConverter.BrewingStand());
         this.converterMap.put(InventoryType.PLAYER, this.DEFAULT_CONVERTER);
         this.converterMap.put(InventoryType.MERCHANT, this.DEFAULT_CONVERTER);
         this.converterMap.put(InventoryType.ENDER_CHEST, this.DEFAULT_CONVERTER);
         this.converterMap.put(InventoryType.ANVIL, this.DEFAULT_CONVERTER);
         this.converterMap.put(InventoryType.SMITHING, this.DEFAULT_CONVERTER);
         this.converterMap.put(InventoryType.BEACON, this.DEFAULT_CONVERTER);
-        //this.converterMap.put(InventoryType.HOPPER, new CraftTileInventoryConverter.Hopper());
+        this.converterMap.put(InventoryType.HOPPER, new GUITileInventoryConverter.Hopper());
         this.converterMap.put(InventoryType.SHULKER_BOX, this.DEFAULT_CONVERTER);
         this.converterMap.put(InventoryType.BARREL, this.DEFAULT_CONVERTER);
-        //this.converterMap.put(InventoryType.BLAST_FURNACE, new CraftTileInventoryConverter.BlastFurnace());
-        //this.converterMap.put(InventoryType.LECTERN, new CraftTileInventoryConverter.Lectern());
-        //this.converterMap.put(InventoryType.SMOKER, new CraftTileInventoryConverter.Smoker());
+        this.converterMap.put(InventoryType.BLAST_FURNACE, new GUITileInventoryConverter.BlastFurnace());
+        this.converterMap.put(InventoryType.LECTERN, new GUITileInventoryConverter.Lectern());
+        this.converterMap.put(InventoryType.SMOKER, new GUITileInventoryConverter.Smoker());
         this.converterMap.put(InventoryType.LOOM, this.DEFAULT_CONVERTER);
         this.converterMap.put(InventoryType.CARTOGRAPHY, this.DEFAULT_CONVERTER);
         this.converterMap.put(InventoryType.GRINDSTONE, this.DEFAULT_CONVERTER);
@@ -49,7 +49,6 @@ public class GUIInventoryCreator {
     }
 
     public <C extends CustomCache> GUIInventory<C> createInventory(GuiHandler<C> guiHandler, GuiWindow<C> window, InventoryHolder holder, InventoryType type, String title) {
-        //Missing type converter might be added soon!
         Validate.isTrue(this.converterMap.containsKey(type), "Cannot create GUI inventory of type ", type);
         return this.converterMap.get(type).createInventory(guiHandler, window, holder, type, title);
     }
