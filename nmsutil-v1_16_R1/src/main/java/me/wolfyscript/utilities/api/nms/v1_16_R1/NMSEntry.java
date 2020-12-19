@@ -11,6 +11,7 @@ public class NMSEntry extends NMSUtil {
 
     private final BlockUtil blockUtil;
     private final ItemUtil itemUtil;
+    private final InventoryUtil inventoryUtil;
 
     /**
      * The class that implements this NMSUtil needs to have a constructor with just the {@link Plugin} parameter.
@@ -21,6 +22,7 @@ public class NMSEntry extends NMSUtil {
         super(wolfyUtilities);
         this.blockUtil = new BlockUtilImpl(this);
         this.itemUtil = new ItemUtilImpl(this);
+        this.inventoryUtil = new InventoryUtilImpl(this);
     }
 
     @Override
@@ -35,6 +37,6 @@ public class NMSEntry extends NMSUtil {
 
     @Override
     public InventoryUtil getInventoryUtil() {
-        return null;
+        return inventoryUtil;
     }
 }
