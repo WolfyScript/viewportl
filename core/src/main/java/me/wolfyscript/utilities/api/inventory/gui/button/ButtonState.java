@@ -3,7 +3,6 @@ package me.wolfyscript.utilities.api.inventory.gui.button;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
-import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -21,7 +20,6 @@ import java.util.List;
  */
 public class ButtonState<C extends CustomCache> {
 
-    private NamespacedKey namespacedKey;
     private String clusterID;
     private String key;
     private final ItemStack presetIcon;
@@ -255,7 +253,7 @@ public class ButtonState<C extends CustomCache> {
 
     public void init(GuiWindow<C> window) {
         if (key != null && !key.isEmpty()) {
-            String path = "inventories." + window.getNamespacedKey().getNamespace() + "." + window.getNamespacedKey() + ".items." + key;
+            String path = "inventories." + window.getCluster().getId() + "." + window.getNamespacedKey().getKey() + ".items." + key;
             if (clusterID != null && !clusterID.isEmpty()) {
                 path = "inventories." + clusterID + ".global_items." + key;
             }

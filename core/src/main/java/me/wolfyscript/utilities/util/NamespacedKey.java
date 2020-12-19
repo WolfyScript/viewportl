@@ -68,7 +68,14 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     }
 
     public String toString() {
-        return this.namespace + ":" + this.key;
+        return toString(":");
+    }
+
+    public String toString(String split) {
+        if (split == null || split.isEmpty()) {
+            split = ":";
+        }
+        return this.namespace + split + this.key;
     }
 
     @Override

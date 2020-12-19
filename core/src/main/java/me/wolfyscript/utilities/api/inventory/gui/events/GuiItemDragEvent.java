@@ -37,7 +37,7 @@ public class GuiItemDragEvent extends Event implements Cancellable {
         this.guiHandler = guiHandler;
         this.player = guiHandler.getPlayer();
         this.wolfyUtilities = guiHandler.getApi();
-        this.guiWindow = guiHandler.getCurrentInv();
+        this.guiWindow = guiHandler.getWindow();
         type = event.getType();
         addedItems = event.getNewItems();
         containerSlots = event.getInventorySlots();

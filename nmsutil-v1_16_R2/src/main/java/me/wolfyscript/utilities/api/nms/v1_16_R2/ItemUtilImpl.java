@@ -16,7 +16,6 @@ import java.util.Base64;
 
 public class ItemUtilImpl extends ItemUtil {
 
-
     protected ItemUtilImpl(NMSUtil nmsUtil) {
         super(nmsUtil);
     }

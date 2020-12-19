@@ -3,12 +3,11 @@ package me.wolfyscript.utilities.api.inventory.gui;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryInteractEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -26,23 +25,23 @@ public class GuiUpdate<C extends CustomCache> {
     private final Inventory queueInventory;
     private final GuiWindow<C> guiWindow;
 
-    public GuiUpdate(GuiHandler<C> guiHandler, GuiWindow<C> guiWindow) {
+    public GuiUpdate(GUIInventory<C> inventory, GuiHandler<C> guiHandler, GuiWindow<C> guiWindow) {
         this.guiHandler = guiHandler;
         this.inventoryAPI = guiHandler.getInvAPI();
         this.wolfyUtilities = guiHandler.getApi();
         this.player = guiHandler.getPlayer();
         this.guiWindow = guiWindow;
         this.queueInventory = Bukkit.createInventory(null, 54, "");
-        if (!guiWindow.hasCachedInventory(guiHandler)) {
+        if (inventory != null) {
+            this.inventory = inventory;
+        } else {
             String guiName = guiWindow.getInventoryName();
             guiName = guiName.replace("%plugin.version%", wolfyUtilities.getPlugin().getDescription().getVersion()).replace("%plugin.author%", wolfyUtilities.getPlugin().getDescription().getAuthors().toString()).replace("%plugin.name%", wolfyUtilities.getPlugin().getDescription().getName());
             if (guiWindow.getInventoryType() == null) {
-                this.inventory = Bukkit.createInventory(null, guiWindow.getSize(), guiName);
+                this.inventory = wolfyUtilities.getNmsUtil().getInventoryUtil().createGUIInventory(guiHandler, guiWindow, guiWindow.getSize(), guiName);
             } else {
-                this.inventory = Bukkit.createInventory(null, guiWindow.getInventoryType(), guiName);
+                this.inventory = wolfyUtilities.getNmsUtil().getInventoryUtil().createGUIInventory(guiHandler, guiWindow, guiWindow.getInventoryType(), guiName);
             }
-        } else {
-            this.inventory = guiWindow.getInventory(guiHandler);
         }
     }
 
@@ -109,7 +108,7 @@ public class GuiUpdate<C extends CustomCache> {
     /*
     Sets a Button object to the specific slot.
      */
-    public void setButton(int slot, @Nonnull Button button) {
+    public void setButton(int slot, @Nonnull Button<C> button) {
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, button.getId());
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
@@ -140,14 +139,6 @@ public class GuiUpdate<C extends CustomCache> {
 
     public Inventory getInventory() {
         return inventory;
-    }
-
-    public Inventory createInventory(InventoryHolder owner, int size) {
-        return Bukkit.createInventory(owner, size, guiWindow.getInventoryName());
-    }
-
-    public Inventory createInventory(InventoryHolder owner, InventoryType type) {
-        return Bukkit.createInventory(owner, type, guiWindow.getInventoryName());
     }
 
     public void applyChanges() {

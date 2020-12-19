@@ -55,7 +55,7 @@ public abstract class Button<C extends CustomCache> {
     protected void applyItem(GuiHandler<C> guiHandler, Player player, Inventory inventory, ButtonState<C> state, int slot, boolean help) {
         ItemStack item = state.getIcon();
         HashMap<String, Object> values = new HashMap<>();
-        values.put("%wolfyutilities.help%", guiHandler.getCurrentInv().getHelpInformation());
+        values.put("%wolfyutilities.help%", guiHandler.getWindow().getHelpInformation());
         values.put("%plugin.version%", guiHandler.getApi().getPlugin().getDescription().getVersion());
         if (state.getRenderAction() != null) {
             item = state.getRenderAction().render(values, guiHandler, player, item, slot, help);

@@ -31,20 +31,6 @@ public abstract class NMSUtil {
      */
     public static NMSUtil create(WolfyUtilities wolfyUtilities) {
         String version = Reflection.getVersion();
-        /*
-        try {
-            String className = NMSUtil.class.getPackage().getName() + '.' + version + ".VersionedNMS";
-            Class<?> versioningType = Class.forName(className);
-            if (VersionedNMS.class.isAssignableFrom(versioningType)) {
-                return ((VersionedNMS) versioningType.getDeclaredConstructor().newInstance()).createNMSUtils(plugin);
-            }
-        } catch (ClassNotFoundException ex) {
-            // fallthrough, does not exist
-        } catch (ReflectiveOperationException ex) {
-            ex.printStackTrace();
-        }
-
-         */
 
         try {
             String className = NMSUtil.class.getPackage().getName() + '.' + version + ".NMSEntry";
@@ -66,6 +52,8 @@ public abstract class NMSUtil {
     public abstract BlockUtil getBlockUtil();
 
     public abstract ItemUtil getItemUtil();
+
+    public abstract InventoryUtil getInventoryUtil();
 
 
 }

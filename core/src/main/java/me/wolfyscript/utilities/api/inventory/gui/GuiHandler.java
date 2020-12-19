@@ -11,7 +11,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,12 +21,12 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     private final WolfyUtilities api;
     private final InventoryAPI<C> invAPI;
     private final UUID uuid;
-    private final HashMap<String, List<String>> clusterHistory = new HashMap<>();
+    private final HashMap<GuiCluster<C>, List<GuiWindow<C>>> clusterHistory = new HashMap<>();
     private ChatInputAction<C> chatInputAction = null;
-    private String currentGuiCluster = "";
+    private GuiCluster<C> cluster = null;
     private boolean isWindowOpen = false;
     private boolean helpEnabled = false;
-    private boolean changingInv = false;
+    private boolean switchWindow = false;
 
     private final C customCache;
 
@@ -39,8 +38,8 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         Bukkit.getPluginManager().registerEvents(this, api.getPlugin());
     }
 
-    public void setChangingInv(boolean changingInv) {
-        this.changingInv = changingInv;
+    void setSwitchWindow(boolean switchWindow) {
+        this.switchWindow = switchWindow;
     }
 
     public WolfyUtilities getApi() {
@@ -60,12 +59,12 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         return getPlayer() != null;
     }
 
-    public String getCurrentGuiCluster() {
-        return currentGuiCluster;
+    public GuiCluster<C> getCluster() {
+        return cluster;
     }
 
-    public void setCurrentGuiCluster(String currentGuiCluster) {
-        this.currentGuiCluster = currentGuiCluster;
+    public void setCluster(GuiCluster<C> currentGuiCluster) {
+        this.cluster = currentGuiCluster;
     }
 
     /*
@@ -75,122 +74,156 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         return isWindowOpen;
     }
 
-    public boolean verifyInventory(Inventory inventory) {
-        return isWindowOpen() && getCurrentInv() != null && getCurrentInv().getInventory(this).equals(inventory);
-    }
-
     /*
     Reloads the GuiWindow of the GuiCluster.
      */
-    public void reloadInv(NamespacedKey namespacedKey) {
-        List<String> history = clusterHistory.getOrDefault(namespacedKey.getNamespace(), new ArrayList<>());
+    public void reloadWindow(NamespacedKey namespacedKey) {
+        GuiCluster<C> cluster = invAPI.getGuiCluster(namespacedKey.getNamespace());
+        List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
         history.remove(history.get(history.size() - 1));
-        clusterHistory.put(namespacedKey.getNamespace(), history);
-        changeToInv(namespacedKey);
+        clusterHistory.put(cluster, history);
+        openWindow(namespacedKey);
+    }
+
+    public GuiWindow<C> getWindow(String clusterID) {
+        return getWindow(invAPI.getGuiCluster(clusterID));
     }
 
     /*
     Gets the current GuiWindow. If the Gui isn't opened then the latest GuiWindow is returned.
      */
     @Nullable
-    public GuiWindow<C> getCurrentInv(String clusterID) {
-        if (clusterHistory.get(clusterID) != null && clusterHistory.get(clusterID).size() > 0) {
-            return invAPI.getGuiWindow(new NamespacedKey(clusterID, clusterHistory.get(clusterID).get(clusterHistory.get(clusterID).size() - 1)));
+    public GuiWindow<C> getWindow(GuiCluster<C> cluster) {
+        if (clusterHistory.get(cluster) != null && clusterHistory.get(cluster).size() > 0) {
+            return invAPI.getGuiWindow(clusterHistory.get(cluster).get(clusterHistory.get(cluster).size() - 1).getNamespacedKey());
         }
         return null;
     }
 
     @Nullable
-    public GuiWindow<C> getCurrentInv() {
-        return getCurrentInv(getCurrentGuiCluster());
+    public GuiWindow<C> getWindow() {
+        return getWindow(getCluster());
     }
 
     /*
     Gets the previous GuiWindow that was open. If there is non null is returned!
      */
     @Nullable
-    public GuiWindow<C> getPreviousInv(String clusterID) {
-        return getPreviousInv(clusterID, 2);
+    public GuiWindow<C> getPreviousWindow(String clusterID) {
+        return getPreviousWindow(invAPI.getGuiCluster(clusterID));
     }
 
     /*
     Gets the previous GuiWindow that was open. If there is non null is returned!
      */
     @Nullable
-    public GuiWindow<C> getPreviousInv(String clusterID, int stepsBack) {
-        List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
+    public GuiWindow<C> getPreviousWindow(GuiCluster<C> cluster) {
+        return getPreviousWindow(cluster, 2);
+    }
+
+    /*
+    Gets the previous GuiWindow that was open. If there is non null is returned!
+     */
+    @Nullable
+    public GuiWindow<C> getPreviousWindow(String clusterID, int stepsBack) {
+        return getPreviousWindow(invAPI.getGuiCluster(clusterID), stepsBack);
+    }
+
+    public GuiWindow<C> getPreviousWindow(GuiCluster<C> cluster, int stepsBack) {
+        List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
         if (history.size() > stepsBack) {
-            return invAPI.getGuiWindow(new NamespacedKey(clusterID, history.get(history.size() - (stepsBack + 1))));
+            return invAPI.getGuiWindow(history.get(history.size() - (stepsBack + 1)).getNamespacedKey());
         }
         return null;
     }
 
-    public GuiWindow<C> getPreviousInv() {
-        return getPreviousInv(getCurrentGuiCluster());
+    public GuiWindow<C> getPreviousWindow() {
+        return getPreviousWindow(getCluster());
     }
 
-    public GuiWindow<C> getPreviousInv(int stepsBack) {
-        return getPreviousInv(getCurrentGuiCluster(), stepsBack);
+    public GuiWindow<C> getPreviousWindow(int stepsBack) {
+        return getPreviousWindow(getCluster(), stepsBack);
     }
 
-    public void openPreviousInv() {
-        openPreviousInv(getCurrentGuiCluster());
+    public void openPreviousWindow() {
+        openPreviousWindow(getCluster());
     }
 
-    public void openPreviousInv(String clusterID) {
-        openPreviousInv(clusterID, 1);
+    public void openPreviousWindow(String clusterID) {
+        openPreviousWindow(invAPI.getGuiCluster(clusterID));
     }
 
-    public void openPreviousInv(int stepsBack) {
-        openPreviousInv(getCurrentGuiCluster(), stepsBack);
+    public void openPreviousWindow(GuiCluster<C> cluster) {
+        openPreviousWindow(cluster, 1);
     }
 
-    public void openPreviousInv(String clusterID, int stepsBack) {
-        List<String> history = clusterHistory.getOrDefault(clusterID, new ArrayList<>());
+    public void openPreviousWindow(int stepsBack) {
+        openPreviousWindow(getCluster(), stepsBack);
+    }
+
+    public void openPreviousWindow(String clusterID, int stepsBack) {
+        openPreviousWindow(invAPI.getGuiCluster(clusterID));
+    }
+
+    public void openPreviousWindow(GuiCluster<C> cluster, int stepsBack) {
+        List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
         for (int i = 0; i < stepsBack; i++) {
             if (!history.isEmpty()) {
                 history.remove(history.size() - 1);
             }
         }
-        clusterHistory.put(clusterID, history);
+        clusterHistory.put(cluster, history);
         if (history.isEmpty()) {
-            openCluster(clusterID);
+            openCluster(cluster);
         } else {
-            changeToInv(new NamespacedKey(clusterID, history.get(history.size() - 1)));
+            openWindow(history.get(history.size() - 1).getNamespacedKey());
         }
     }
 
-    public HashMap<String, List<String>> getClusterHistory() {
+    public HashMap<GuiCluster<C>, List<GuiWindow<C>>> getClusterHistory() {
         return clusterHistory;
     }
 
     /*
         Opens the specific GuiWindow in the current GuiCluster.
          */
-    public void changeToInv(String guiWindowID) {
-        changeToInv(new NamespacedKey(getCurrentGuiCluster(), guiWindowID));
+    public void openWindow(String guiWindowID) {
+        openWindow(new NamespacedKey(getCluster().getId(), guiWindowID));
+    }
+
+
+    public void openWindow(@NotNull NamespacedKey namespacedKey) {
+        openWindow(invAPI.getGuiWindow(namespacedKey));
     }
 
     /*
     Opens the specific GuiWindow in the specific GuiCluster.
      */
-    public void changeToInv(@NotNull NamespacedKey namespacedKey) {
+    public void openWindow(GuiWindow<C> window) {
+        if (getPlayer() == null) {
+            isWindowOpen = false;
+            return;
+        }
+        if (window == null) {
+            getPlayer().closeInventory();
+            isWindowOpen = false;
+            return;
+        }
+        final GuiCluster<C> cluster = window.getCluster();
         Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
             Player player1 = getPlayer();
-            if (api.getPermissions().hasPermission(player1, (api.getPlugin().getName() + ".inv." + namespacedKey.getNamespace() + "." + namespacedKey.getKey()))) {
-                List<String> history = clusterHistory.getOrDefault(namespacedKey.getNamespace(), new ArrayList<>());
-                if (getCurrentInv(namespacedKey.getNamespace()) == null || !getCurrentInv(namespacedKey.getNamespace()).getNamespacedKey().equals(namespacedKey)) {
-                    history.add(namespacedKey.getKey());
+            if (api.getPermissions().hasPermission(player1, (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")))) {
+                List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
+                if (getWindow(cluster) == null || !Objects.equals(getWindow(cluster), window)) {
+                    history.add(window);
                 }
-                clusterHistory.put(namespacedKey.getNamespace(), history);
-                if (invAPI.getGuiWindow(namespacedKey) != null) {
-                    currentGuiCluster = namespacedKey.getNamespace();
-                    isWindowOpen = true;
-                    invAPI.getGuiWindow(namespacedKey).update(this, null, null, true);
-                }
+                clusterHistory.put(cluster, history);
+                this.cluster = cluster;
+                isWindowOpen = true;
+                window.create(this);
                 return;
             }
-            api.getChat().sendPlayerMessage(player1, "§4You don't have the permission §c" + (api.getPlugin().getName() + ".inv." + namespacedKey.getNamespace() + "." + namespacedKey.getKey()));
+            api.getChat().sendPlayerMessage(player1, "§4You don't have the permission §c" + (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")));
         });
     }
 
@@ -198,18 +231,25 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     Opens the current GuiCluster with the latest GuiWindow that was open.
      */
     public void openCluster() {
-        openCluster(getCurrentGuiCluster());
+        openCluster(getCluster());
     }
 
     /**
      * Opens the GuiCluster with the latest GuiWindow that was open.
      */
     public void openCluster(String clusterID) {
-        NamespacedKey guiWindowID = invAPI.getGuiCluster(clusterID).getEntry();
-        if (getCurrentInv(clusterID) != null) {
-            guiWindowID = getCurrentInv(clusterID).getNamespacedKey();
+        openCluster(invAPI.getGuiCluster(clusterID));
+    }
+
+    /**
+     * Opens the GuiCluster with the latest GuiWindow that was open.
+     */
+    public void openCluster(GuiCluster<C> cluster) {
+        NamespacedKey guiWindowID = cluster.getEntry();
+        if (getWindow(cluster) != null) {
+            guiWindowID = getWindow(cluster).getNamespacedKey();
         }
-        changeToInv(guiWindowID);
+        openWindow(guiWindowID);
     }
 
     public boolean isChatEventActive() {
@@ -246,9 +286,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     }
 
     public void setButton(GuiWindow<C> guiWindow, int slot, String id) {
-        TreeMap<Integer, String> buttons = customCache.getButtons(guiWindow);
-        buttons.put(slot, id);
-        customCache.setButtons(guiWindow, buttons);
+        customCache.setButton(guiWindow, slot, id);
     }
 
     public Button<C> getButton(GuiWindow<C> guiWindow, int slot) {
@@ -262,8 +300,8 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
         if (event.getPlayer().getUniqueId().equals(uuid)) {
-            if (!clusterHistory.isEmpty() && isWindowOpen() && !changingInv) {
-                if (getCurrentInv().onClose(this, event.getView())) {
+            if (!clusterHistory.isEmpty() && isWindowOpen() && !switchWindow) {
+                if (getWindow().onClose(this, event.getView())) {
                     Bukkit.getScheduler().runTask(getApi().getPlugin(), (Runnable) this::openCluster);
                 } else {
                     this.isWindowOpen = false;
@@ -291,5 +329,4 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     public C getCustomCache() {
         return customCache;
     }
-
 }
