@@ -21,7 +21,7 @@ public class GuiUpdate<C extends CustomCache> {
     private final InventoryAPI<C> inventoryAPI;
     private final WolfyUtilities wolfyUtilities;
     private final Player player;
-    private final Inventory inventory;
+    private final GUIInventory<C> inventory;
     private final Inventory queueInventory;
     private final GuiWindow<C> guiWindow;
 
@@ -70,18 +70,18 @@ public class GuiUpdate<C extends CustomCache> {
         return inventoryAPI;
     }
 
-    public ItemStack getItem(int slot) {
-        return getInventory().getItem(slot);
+    public GUIInventory<C> getInventory() {
+        return inventory;
     }
 
     public void setItem(int slot, ItemStack itemStack) {
         queueInventory.setItem(slot, itemStack);
     }
-
     /*
     Set an locally registered Button.
     Locally means it is registered inside of the GuiWindow!
      */
+
     public void setButton(int slot, String id) {
         Button<C> button = guiWindow.getButton(id);
         if (button != null) {
@@ -89,11 +89,11 @@ public class GuiUpdate<C extends CustomCache> {
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
         }
     }
-
     /*
     Tries to add an Locally registered Button. If it doesn't exist then
     it will try to get the button globally registered for this GuiCluster.
      */
+
     public void setLocalOrGlobalButton(int slot, String id) {
         Button<C> button = guiWindow.getButton(id);
         if (button == null) {
@@ -104,21 +104,21 @@ public class GuiUpdate<C extends CustomCache> {
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
         }
     }
-
     /*
     Sets a Button object to the specific slot.
      */
+
     public void setButton(int slot, @Nonnull Button<C> button) {
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, button.getId());
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
         }
     }
-
     /*
     Set an globally registered Button.
     Globally means it is registered via the InventoryAPI and registered in the GuiCluster.
      */
+
     public void setButton(int slot, String namespace, String key) {
         Button<C> button = inventoryAPI.getButton(namespace, key);
         if (button != null) {
@@ -129,19 +129,16 @@ public class GuiUpdate<C extends CustomCache> {
 
     private void renderButton(Button<C> button, GuiHandler<C> guiHandler, Player player, int slot, boolean help) {
         try {
-            button.prepareRender(guiHandler, player, this.inventory, this.inventory.getItem(slot), slot, help);
-            button.render(guiHandler, player, this.queueInventory, slot, guiHandler.isHelpEnabled());
+            ItemStack itemStack = this.inventory.getItem(slot);
+            button.preRender(guiHandler, player, this.inventory, itemStack, slot, help);
+            button.render(guiHandler, player, this.inventory, this.queueInventory, itemStack, slot, guiHandler.isHelpEnabled());
         } catch (IOException e) {
             System.out.println("Error while rendering Button \"" + button.getId() + "\"!");
             e.printStackTrace();
         }
     }
 
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    public void applyChanges() {
+    void applyChanges() {
         if (queueInventory.getContents().length > 0) {
             Bukkit.getScheduler().runTask(getInventoryAPI().getPlugin(), () -> inventory.setContents(Arrays.copyOfRange(queueInventory.getContents(), 0, inventory.getSize())));
         }

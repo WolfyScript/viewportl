@@ -7,9 +7,9 @@ import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonType;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.Pair;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -58,27 +58,30 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
     }
 
     @Override
-    public void postExecute(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
-
+    public void postExecute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
+        ButtonState<C> state = settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue();
+        if (state.getPostAction() != null) {
+            state.getPostAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, event);
+        }
     }
 
     @Override
-    public boolean execute(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
-        boolean result = (settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue()).getAction().run(guiHandler, player, inventory, slot, event);
+    public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
+        boolean result = (settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue()).getAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot, event);
         settings.put(guiHandler, !settings.getOrDefault(guiHandler, defaultState));
         return result;
     }
 
     @Override
-    public void prepareRender(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
+    public void preRender(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, boolean help) {
         ButtonState<C> state = settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue();
         if (state.getPrepareRender() != null) {
-            state.getPrepareRender().prepare(guiHandler, player, inventory, itemStack, slot, help);
+            state.getPrepareRender().prepare(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, help);
         }
     }
 
     @Override
-    public void render(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, boolean help) {
-        applyItem(guiHandler, player, inventory, settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue(), slot, help);
+    public void render(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
+        applyItem(guiHandler, player, guiInventory, inventory, settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue(), slot, help);
     }
 }

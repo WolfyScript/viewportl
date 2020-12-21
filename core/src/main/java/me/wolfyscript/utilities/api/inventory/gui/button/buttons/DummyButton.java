@@ -27,11 +27,11 @@ public class DummyButton<C extends CustomCache> extends ActionButton<C> {
     }
 
     public DummyButton(String id, ItemStack itemStack) {
-        this(id, new ButtonState(id, itemStack));
+        this(id, new ButtonState<>(id, itemStack));
     }
 
     public DummyButton(String id, Material material) {
-        this(id, new ButtonState(id, material));
+        this(id, new ButtonState<>(id, material));
     }
 
     public DummyButton(String id, ItemStack itemStack, ButtonAction<C> action) {
@@ -43,7 +43,7 @@ public class DummyButton<C extends CustomCache> extends ActionButton<C> {
     }
 
     public DummyButton(String id, ItemStack itemStack, ButtonAction<C> action, ButtonRender<C> render) {
-        this(id, new ButtonState(id, itemStack, action, render));
+        this(id, new ButtonState<>(id, itemStack, action, render));
     }
 
     public DummyButton(String id, Material material, ButtonAction<C> action) {

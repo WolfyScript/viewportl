@@ -131,7 +131,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     void update(GUIInventory<C> inventory, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event) {
-        update(inventory, inventory.getGuiHandler(), postExecuteBtns, event, false);
+        update(inventory, inventory.getGuiHandler(), postExecuteBtns, event, false); //TODO: Check if new method works
     }
 
     private void update(GUIInventory<C> inventory, GuiHandler<C> guiHandler, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event, boolean openInventory) {

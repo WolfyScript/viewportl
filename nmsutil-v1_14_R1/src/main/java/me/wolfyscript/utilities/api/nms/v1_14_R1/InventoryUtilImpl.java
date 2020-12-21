@@ -7,6 +7,10 @@ import me.wolfyscript.utilities.api.nms.InventoryUtil;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.api.nms.v1_14_R1.inventory.util.GUIInventoryCreator;
+import net.minecraft.server.v1_14_R1.EntityPlayer;
+import net.minecraft.server.v1_14_R1.PacketPlayOutCloseWindow;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 
 public class InventoryUtilImpl extends InventoryUtil {
@@ -33,5 +37,13 @@ public class InventoryUtilImpl extends InventoryUtil {
     @Override
     public <C extends CustomCache> GUIInventory<C> createGUIInventory(GuiHandler<C> guiHandler, GuiWindow<C> window, int size, String title) {
         return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, null, size, title);
+    }
+
+    public void silentlyCloseInventory(Player player) {
+        CraftPlayer craftPlayer = (CraftPlayer) player;
+        EntityPlayer entityPlayer = craftPlayer.getHandle();
+        if (entityPlayer.playerConnection != null) {
+            entityPlayer.playerConnection.sendPacket(new PacketPlayOutCloseWindow(entityPlayer.activeContainer.windowId));
+        }
     }
 }

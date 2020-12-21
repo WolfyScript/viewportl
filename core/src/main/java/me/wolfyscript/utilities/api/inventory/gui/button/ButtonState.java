@@ -6,7 +6,7 @@ import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -20,13 +20,15 @@ import java.util.List;
  */
 public class ButtonState<C extends CustomCache> {
 
+    private WolfyUtilities wolfyUtilities;
     private String clusterID;
     private String key;
     private final ItemStack presetIcon;
     private ItemStack icon;
     private ButtonAction<C> action;
     private ButtonRender<C> buttonRender;
-    private ButtonPrepareRender<C> prepareRender;
+    private ButtonPreRender<C> prepareRender;
+    private ButtonPostAction<C> postAction;
 
     private String displayName;
     private String[] normalLore;
@@ -35,47 +37,29 @@ public class ButtonState<C extends CustomCache> {
         this(key, presetIcon, null, null);
     }
 
-    public ButtonState(String key, ItemStack presetIcon, ButtonAction<C> action) {
+    public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
         this(key, presetIcon, action, null);
     }
 
-    public ButtonState(String key, ItemStack presetIcon, ButtonRender<C> render) {
+    public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, null, render);
     }
 
-    public ButtonState(String key, ItemStack presetIcon, ButtonAction<C> action, ButtonRender<C> render) {
+    public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, action, null, render);
     }
 
-    public ButtonState(String key, ItemStack presetIcon, ButtonAction<C> action, ButtonPrepareRender<C> prepareRender, ButtonRender<C> render) {
+    public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
+        this(key, presetIcon, action, null, prepareRender, render);
+    }
+
+    public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this.key = key;
         this.presetIcon = presetIcon;
         this.action = action;
+        this.postAction = postAction;
         this.prepareRender = prepareRender;
         this.buttonRender = render;
-    }
-
-    public ButtonState(String key, ItemStack presetIcon, int customModelData) {
-        this(key, presetIcon, customModelData, null, null);
-    }
-
-    public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonAction<C> action) {
-        this(key, presetIcon, customModelData, action, null);
-    }
-
-    public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonRender<C> render) {
-        this(key, presetIcon, customModelData, null, render);
-    }
-
-    public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonAction<C> action, ButtonRender<C> render) {
-        this(key, presetIcon, customModelData, action, null, render);
-    }
-
-    public ButtonState(String key, ItemStack presetIcon, int customModelData, ButtonAction<C> action, ButtonPrepareRender<C> prepareRender, ButtonRender<C> render) {
-        this(key, presetIcon, action, prepareRender, render);
-        ItemMeta itemMeta = this.presetIcon.getItemMeta();
-        itemMeta.setCustomModelData(customModelData);
-        this.presetIcon.setItemMeta(itemMeta);
     }
 
     /**
@@ -85,40 +69,24 @@ public class ButtonState<C extends CustomCache> {
         this(key, presetIcon, null, null);
     }
 
-    public ButtonState(String key, Material presetIcon, ButtonAction<C> action) {
+    public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action) {
         this(key, presetIcon, action, null);
     }
 
-    public ButtonState(String key, Material presetIcon, ButtonRender<C> render) {
+    public ButtonState(String key, Material presetIcon, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, null, render);
     }
 
-    public ButtonState(String key, Material presetIcon, ButtonAction<C> action, ButtonRender<C> render) {
-        this(key, new ItemStack(presetIcon), action, render);
+    public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
+        this(key, presetIcon, action, null, render);
     }
 
-    public ButtonState(String key, Material presetIcon, ButtonAction<C> action, ButtonPrepareRender<C> prepareRender, ButtonRender<C> render) {
-        this(key, new ItemStack(presetIcon), action, prepareRender, render);
+    public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
+        this(key, presetIcon, action, null, prepareRender, render);
     }
 
-    public ButtonState(String key, Material presetIcon, int customModelData) {
-        this(key, presetIcon, customModelData, null, null);
-    }
-
-    public ButtonState(String key, Material presetIcon, int customModelData, ButtonAction<C> action) {
-        this(key, presetIcon, customModelData, action, null);
-    }
-
-    public ButtonState(String key, Material presetIcon, int customModelData, ButtonRender<C> render) {
-        this(key, presetIcon, customModelData, null, render);
-    }
-
-    public ButtonState(String key, Material presetIcon, int customModelData, ButtonAction<C> action, ButtonRender<C> render) {
-        this(key, new ItemStack(presetIcon), customModelData, action, render);
-    }
-
-    public ButtonState(String key, Material presetIcon, int customModelData, ButtonAction<C> action, ButtonPrepareRender<C> prepareRender, ButtonRender<C> render) {
-        this(key, new ItemStack(presetIcon), customModelData, action, prepareRender, render);
+    public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
+        this(key, new ItemStack(presetIcon), action, postAction, prepareRender, render);
     }
 
     /**
@@ -129,51 +97,28 @@ public class ButtonState<C extends CustomCache> {
         this(clusterID, key, presetIcon, null, null);
     }
 
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, ButtonRender<C> render) {
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
         this(clusterID, key, presetIcon, null, render);
     }
 
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, ButtonAction<C> action) {
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
         this(clusterID, key, presetIcon, action, null);
     }
 
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, ButtonAction<C> action, ButtonRender<C> render) {
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(clusterID, key, presetIcon, action, null, render);
     }
 
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, ButtonAction<C> action, ButtonPrepareRender<C> prepareRender, ButtonRender<C> render) {
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
+        this(clusterID, key, presetIcon, action, null, prepareRender, render);
+    }
+
+    public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this.action = action;
+        this.postAction = postAction;
         this.prepareRender = prepareRender;
         this.buttonRender = render;
         this.presetIcon = presetIcon;
-        this.clusterID = clusterID;
-        this.key = key;
-    }
-
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData) {
-        this(clusterID, key, presetIcon, customModelData, null, null);
-    }
-
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonRender<C> render) {
-        this(clusterID, key, presetIcon, customModelData, null, render);
-    }
-
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonAction<C> action) {
-        this(clusterID, key, presetIcon, customModelData, action, null);
-    }
-
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonAction<C> action, ButtonRender<C> render) {
-        this(clusterID, key, presetIcon, customModelData, action, null, render);
-    }
-
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, int customModelData, ButtonAction<C> action, ButtonPrepareRender<C> prepareRender, ButtonRender<C> render) {
-        this.action = action;
-        this.prepareRender = prepareRender;
-        this.buttonRender = render;
-        this.presetIcon = presetIcon;
-        ItemMeta itemMeta = this.presetIcon.getItemMeta();
-        itemMeta.setCustomModelData(customModelData);
-        this.presetIcon.setItemMeta(itemMeta);
         this.clusterID = clusterID;
         this.key = key;
     }
@@ -186,40 +131,24 @@ public class ButtonState<C extends CustomCache> {
         this(clusterID, key, presetIcon, null, null);
     }
 
-    public ButtonState(String clusterID, String key, Material presetIcon, ButtonRender<C> render) {
+    public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonRender<C> render) {
         this(clusterID, key, presetIcon, null, render);
     }
 
-    public ButtonState(String clusterID, String key, Material presetIcon, ButtonAction<C> action) {
+    public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action) {
         this(clusterID, key, presetIcon, action, null);
     }
 
-    public ButtonState(String clusterID, String key, Material presetIcon, ButtonAction<C> action, ButtonRender<C> render) {
-        this(clusterID, key, new ItemStack(presetIcon), action, render);
+    public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
+        this(clusterID, key, presetIcon, action, null, render);
     }
 
-    public ButtonState(String clusterID, String key, Material presetIcon, ButtonAction<C> action, ButtonPrepareRender<C> prepareRender, ButtonRender<C> render) {
-        this(clusterID, key, new ItemStack(presetIcon), action, prepareRender, render);
+    public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
+        this(clusterID, key, presetIcon, action, null, prepareRender, render);
     }
 
-    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData) {
-        this(clusterID, key, presetIcon, customModelData, null, null);
-    }
-
-    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonRender<C> render) {
-        this(clusterID, key, presetIcon, customModelData, null, render);
-    }
-
-    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonAction<C> action) {
-        this(clusterID, key, presetIcon, customModelData, action, null);
-    }
-
-    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonAction<C> action, ButtonRender<C> render) {
-        this(clusterID, key, new ItemStack(presetIcon), customModelData, action, render);
-    }
-
-    public ButtonState(String clusterID, String key, Material presetIcon, int customModelData, ButtonAction<C> action, ButtonPrepareRender<C> prepareRender, ButtonRender<C> render) {
-        this(clusterID, key, new ItemStack(presetIcon), customModelData, action, prepareRender, render);
+    public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
+        this(clusterID, key, new ItemStack(presetIcon), action, postAction, prepareRender, render);
     }
 
     /*
@@ -238,13 +167,8 @@ public class ButtonState<C extends CustomCache> {
     //------------------------------------------------
 
     public void init(String clusterID, WolfyUtilities api) {
-        if (key != null && !key.isEmpty()) {
-            String path = "inventories." + clusterID + ".global_items." + key;
-            displayName = api.getLanguageAPI().replaceKeys("$" + path + ".name" + "$");
-            List<String> normal = api.getLanguageAPI().replaceKey(path + ".lore");
-            normalLore = !normal.isEmpty() ? normal.toArray(new String[0]) : new String[0];
-            this.icon = ItemUtils.createItem(presetIcon, displayName, normalLore);
-        }
+        this.wolfyUtilities = api;
+        createIcon(clusterID, "");
     }
 
     public ItemStack getIcon() {
@@ -252,13 +176,17 @@ public class ButtonState<C extends CustomCache> {
     }
 
     public void init(GuiWindow<C> window) {
+        this.wolfyUtilities = window.getAPI();
+        createIcon(this.clusterID, "inventories." + window.getCluster().getId() + "." + window.getNamespacedKey().getKey() + ".items." + key);
+    }
+
+    private void createIcon(String clusterID, String path) {
         if (key != null && !key.isEmpty()) {
-            String path = "inventories." + window.getCluster().getId() + "." + window.getNamespacedKey().getKey() + ".items." + key;
             if (clusterID != null && !clusterID.isEmpty()) {
                 path = "inventories." + clusterID + ".global_items." + key;
             }
-            displayName = window.getAPI().getLanguageAPI().replaceKeys("$" + path + ".name" + "$");
-            List<String> normal = window.getAPI().getLanguageAPI().replaceKey(path + ".lore");
+            displayName = wolfyUtilities.getLanguageAPI().replaceKeys("$" + path + ".name" + "$");
+            List<String> normal = wolfyUtilities.getLanguageAPI().replaceKey(path + ".lore");
             normalLore = !normal.isEmpty() ? normal.toArray(new String[0]) : new String[0];
             this.icon = ItemUtils.createItem(presetIcon, displayName, normalLore);
         }
@@ -282,11 +210,21 @@ public class ButtonState<C extends CustomCache> {
         return this;
     }
 
-    public ButtonPrepareRender<C> getPrepareRender() {
+    public ButtonPreRender<C> getPrepareRender() {
         return prepareRender;
     }
 
-    public void setPrepareRender(ButtonPrepareRender<C> prepareRender) {
+    public ButtonState<C> setPrepareRender(ButtonPreRender<C> prepareRender) {
         this.prepareRender = prepareRender;
+        return this;
+    }
+
+    public ButtonPostAction<C> getPostAction() {
+        return postAction;
+    }
+
+    public ButtonState<C> setPostAction(ButtonPostAction<C> postAction) {
+        this.postAction = postAction;
+        return this;
     }
 }
