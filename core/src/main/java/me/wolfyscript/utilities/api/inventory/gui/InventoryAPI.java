@@ -171,10 +171,12 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             HashMap<Integer, Button<C>> buttons = new HashMap<>();
             if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
                 for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
-                    Button<C> button = guiWindow.getButton(buttonEntry.getValue());
-                    if (button instanceof ItemInputButton) {
-                        buttons.put(buttonEntry.getKey(), button);
-                        event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, buttonEntry.getKey(), event));
+                    if (event.getSlot() != buttonEntry.getKey()) {
+                        Button<C> button = guiWindow.getButton(buttonEntry.getValue());
+                        if (button instanceof ItemInputButton) {
+                            buttons.put(buttonEntry.getKey(), button);
+                            event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, buttonEntry.getKey(), event));
+                        }
                     }
                 }
             }
@@ -199,7 +201,9 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
                     event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, slot, event));
                 }
             }
-            Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
+            if (guiHandler.getWindow() != null) {
+                Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
+            }
         }
     }
 

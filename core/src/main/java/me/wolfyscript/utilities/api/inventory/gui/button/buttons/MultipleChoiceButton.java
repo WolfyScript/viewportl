@@ -29,6 +29,7 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
     Each click the index increases by 1.
     After the index reached the size of the States it is reset to 0!
      */
+    @SafeVarargs
     public MultipleChoiceButton(String id, @Nonnull ButtonState<C>... states) {
         super(id, ButtonType.CHOICES);
         this.states = Arrays.asList(states);
