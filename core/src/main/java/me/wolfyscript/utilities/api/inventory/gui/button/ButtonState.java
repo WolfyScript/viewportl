@@ -176,7 +176,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     public void init(GuiWindow<C> window) {
-        this.wolfyUtilities = window.getAPI();
+        this.wolfyUtilities = window.wolfyUtilities;
         createIcon(this.clusterID, "inventories." + window.getCluster().getId() + "." + window.getNamespacedKey().getKey() + ".items." + key);
     }
 

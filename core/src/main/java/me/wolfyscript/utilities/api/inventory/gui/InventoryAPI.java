@@ -130,7 +130,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         guiHandlers.clear();
         guiClusters.forEach((s, guiCluster) -> {
             guiCluster.getButtons().clear();
-            guiCluster.getGuiWindows().values().forEach(guiWindow -> guiWindow.getButtons().clear());
+            guiCluster.getGuiWindows().values().forEach(guiWindow -> guiWindow.buttons.clear());
         });
     }
 

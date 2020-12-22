@@ -48,6 +48,14 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      */
     private static final HashMap<String, CustomData> availableCustomData = new HashMap<>();
 
+    public static HashMap<String, CustomData> getAvailableCustomData() {
+        return availableCustomData;
+    }
+
+    public static void registerCustomData(CustomData customData) {
+        availableCustomData.put(customData.getId(), customData);
+    }
+
     /**
      * Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
      * All registered CustomData is added to this item and cannot be removed!
@@ -520,14 +528,31 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     }
 
     /**
-     * Consumes the totalAmount of the input!
-     * This method directly changes the input ItemStack values!
-     * TODO: description!
+     * Consumes the totalAmount of the input ItemStack!
+     * <p>
+     * The totalAmount is multiplied with the value from {@link #getAmount()} and then this amount is removed from the input.
+     * <br/>
+     * This method will directly edit the input ItemStack and won't return a result value.
+     * </p>
+     * <p>
+     * If this item is an un-stackable item then this method will use the {@link #consumeUnstackableItem(ItemStack)} method.
+     * </p>
+     * <p>
+     * Else if the item is stackable, then there are couple of settings for the replacement.
+     * <br/>
+     * If the custom item has a replacement:
+     *     <ul>
+     *         <li><b>If location is null and inventory is not null,</b> then it will try to add the item to the inventory. When inventory is full it will try to get the location from the inventory and if valid drops the items at that location instead.</li>
+     *         <li><b>If location is not null,</b> then it will drop the items at that location.</li>
+     *         <li><b>If location and inventory are null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
+     *     </ul>
+     * </p>
+     * <br/>
      *
-     * @param input
-     * @param totalAmount
-     * @param inventory
-     * @param location
+     * @param input       The input ItemStack, that is also going to be edited.
+     * @param totalAmount The amount of this custom item should be removed from the input.
+     * @param inventory   The optional inventory to add the replacements to. (Only for stackable items)
+     * @param location    The location where the replacements should be dropped. (Only for stackable items)
      */
     public void consumeItem(ItemStack input, int totalAmount, Inventory inventory, Location location) {
         if (this.create().getMaxStackSize() > 1) {
@@ -539,6 +564,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 ItemStack replacement = new CustomItem(this.getReplacement()).create();
                 replacement.setAmount(replacement.getAmount() * totalAmount);
                 if (location == null) {
+                    if(inventory == null) return;
                     if (InventoryUtils.hasInventorySpace(inventory, replacement)) {
                         inventory.addItem(replacement);
                         return;
@@ -563,6 +589,13 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         return input;
     }
 
+    /**
+     * This method consumes the input as it is a un-stackable item.
+     * Default items will be replaced e.g. buckets, potions, stew/soup.
+     * If it has a replacement then the input will be replaced with the replacement.
+     *
+     * @param input The input ItemStack, that is going to be edited.
+     */
     public void consumeUnstackableItem(ItemStack input) {
         if (this.hasNamespacedKey()) {
             if (this.isConsumed()) {
@@ -649,10 +682,20 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         return !permission.isEmpty();
     }
 
+    /**
+     * Gets the permission string of this CustomItem.
+     *
+     * @return The permission string of this item
+     */
     public String getPermission() {
         return permission;
     }
 
+    /**
+     * Sets the permission String.
+     *
+     * @param permission The new permission string
+     */
     public void setPermission(String permission) {
         this.permission = permission;
     }
@@ -677,14 +720,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.customDataMap.put(id, customData);
     }
 
-    public static HashMap<String, CustomData> getAvailableCustomData() {
-        return availableCustomData;
-    }
-
-    public static void registerCustomData(CustomData customData) {
-        availableCustomData.put(customData.getId(), customData);
-    }
-
     public ParticleContent getParticleContent() {
         return particleContent;
     }
@@ -693,10 +728,27 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.particleContent = particleContent;
     }
 
+    /**
+     * This value is used for simple check in recipes.
+     * Default is true.
+     * If this value is false CustomCrafting will ignore every single meta and NBT data and will only compare the NamespacedKeys.
+     *
+     * @return If this CustomItem is in advanced mode.
+     * @deprecated This feature is still under development and might change.
+     */
+    @Deprecated
     public boolean isAdvanced() {
         return advanced;
     }
 
+    /**
+     * Set the advanced value. Default is true.
+     * If this value is false CustomCrafting will ignore every single meta and NBT data and will only compare the NamespacedKeys.
+     *
+     * @param advanced The new advanced value.
+     * @deprecated This feature is still under development and might change.
+     */
+    @Deprecated
     public void setAdvanced(boolean advanced) {
         this.advanced = advanced;
     }
@@ -711,14 +763,16 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         return getApiReference().getAmount();
     }
 
+    /**
+     * Sets the amount of the linked item.
+     *
+     * @param amount The new amount of the item.
+     */
     public void setAmount(int amount) {
         getApiReference().setAmount(amount);
     }
 
-    /**
-     *
-     */
-    public static class Serializer extends StdSerializer<CustomItem> {
+    static class Serializer extends StdSerializer<CustomItem> {
 
         public Serializer() {
             this(CustomItem.class);
@@ -773,7 +827,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         }
     }
 
-    public static class Deserializer extends StdDeserializer<CustomItem> {
+    static class Deserializer extends StdDeserializer<CustomItem> {
 
         public Deserializer() {
             this(CustomItem.class);

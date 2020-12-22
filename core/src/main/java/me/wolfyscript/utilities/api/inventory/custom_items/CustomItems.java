@@ -14,6 +14,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -64,9 +65,9 @@ public class CustomItems {
     /**
      * Used to get the CustomItem from WolfyUtilities by NamespacedKey.
      * Can return null when the CustomItem doesn't exist!
-     * <p>Use {@link #hasCustomItem(NamespacedKey)} to make the CustomItem exists!
+     * <p>Use {@link #hasCustomItem(NamespacedKey)} to make sure the CustomItem exists!
      *
-     * @param namespacedKey
+     * @param namespacedKey The NamespacedKey of the item
      * @return CustomItem of the NamespacedKey or null if it doesn't exist
      */
     @Nullable
@@ -74,20 +75,34 @@ public class CustomItems {
         return namespacedKey == null ? null : customItems.get(namespacedKey);
     }
 
+    /**
+     * Removes the CustomItem from the registry.
+     * However, this won't delete the config if one exists!
+     * If a config exists the item will be reloaded on the next restart.
+     *
+     * @param namespacedKey The NamespacedKey of the CustomItem
+     */
     public static void removeCustomItem(NamespacedKey namespacedKey) {
         customItems.remove(namespacedKey);
     }
 
     /**
-     * Add or Update an CustomItem.
-     * If the CustomItem has a WolfyUtilitiesRef and it's NamespacedKey is the same as the parsed in NamespacedKey, the CustomItem will neither be added or updated!
+     * Add a CustomItem to the registry or update a existing one and sets the NamespacedKey in the CustomItem object.
+     * <br/>
+     * If the registry already contains a value for the NamespacedKey then the value will be updated with the new one.
+     * <br/>
+     * <b>
+     * If the CustomItem is linked with a {@link WolfyUtilitiesRef}, which NamespacedKey is the same as the passed in NamespacedKey, the CustomItem will neither be added or updated!
+     * <br/>
+     * This is to prevent a infinite loop where a reference tries to call itself when it tries to get the values from it's parent item.
+     * <b/>
      *
-     * @param namespacedKey the NamspacedKey the CustomItem will be saved under.
-     * @param item the CustomItem to add or update.
-     * @return true if the CustomItem was added or updated.
+     * @param namespacedKey The NamespacedKey the CustomItem will be saved under.
+     * @param item          The CustomItem to add or update.
+     * @return If the CustomItem was added or updated. True if it was successful.
      */
     public static boolean addCustomItem(NamespacedKey namespacedKey, CustomItem item) {
-        if(item == null || (item.getApiReference() instanceof WolfyUtilitiesRef && ((WolfyUtilitiesRef) item.getApiReference()).getNamespacedKey().equals(namespacedKey))){
+        if (item == null || (item.getApiReference() instanceof WolfyUtilitiesRef && ((WolfyUtilitiesRef) item.getApiReference()).getNamespacedKey().equals(namespacedKey))) {
             return false;
         }
         item.setNamespacedKey(namespacedKey);
@@ -95,6 +110,12 @@ public class CustomItems {
         return true;
     }
 
+    /**
+     * Gets the particle effects that are currently active on the player.
+     *
+     * @param player The player object
+     * @return The active particle effects on the player
+     */
     public static HashMap<EquipmentSlot, UUID> getActiveItemEffects(Player player) {
         playerItemParticles.putIfAbsent(player.getUniqueId(), new HashMap<>());
         return playerItemParticles.get(player.getUniqueId());
@@ -147,13 +168,24 @@ public class CustomItems {
         }
     }
 
+    /**
+     * Removes the stored block at this location and stops every active particle effect.
+     *
+     * @param location The target location of the block
+     */
     public static void removeStoredBlockItem(Location location) {
         ParticleEffects.stopEffect(getStoredBlockEffect(location));
         storedBlocks.remove(location);
     }
 
+    /**
+     * The current active particle effect on this Location.
+     *
+     * @param location The location to be checked.
+     * @return The uuid of the currently active particle effect.
+     */
     @Nullable
-    public static UUID getStoredBlockEffect(Location location) {
+    public static UUID getStoredBlockEffect(@NotNull Location location) {
         return storedBlocks.entrySet().stream().filter(entry -> entry.getKey().equals(location) && entry.getValue() != null && entry.getValue().getValue() != null).map(entry -> entry.getValue().getValue()).findFirst().orElse(null);
     }
 
@@ -199,34 +231,9 @@ public class CustomItems {
         return null;
     }
 
-    @Deprecated
-    public static CustomItem getCustomItem(String id) {
-        return getCustomItem(id, true);
-    }
-
-    @Deprecated
-    public static CustomItem getCustomItem(String id, boolean replace) {
-        return getCustomItem(NamespacedKey.getByString(id));
-    }
-
-    @Deprecated
-    public static CustomItem getCustomItem(String key, String name) {
-        return getCustomItem(key + ":" + name);
-    }
-
-    @Deprecated
-    public static CustomItem getCustomItem(String key, String name, boolean replace) {
-        return getCustomItem(key + ":" + name, replace);
-    }
-
-    @Deprecated
-    public static void removeCustomItem(String id) {
-        removeCustomItem(new NamespacedKey(id.split(":")[0], id.split(":")[1]));
-    }
-
     public void save() {
         try {
-            FileOutputStream fos = new FileOutputStream(new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "stored_block_items.dat"));
+            FileOutputStream fos = new FileOutputStream(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "stored_block_items.dat");
             BukkitObjectOutputStream oos = new BukkitObjectOutputStream(fos);
             oos.writeObject(storedBlocks.entrySet().stream().filter(e -> e.getKey() != null).map(e -> new Pair<>(locationToString(e.getKey()), e.getValue().getKey().toString())).filter(e -> e.getKey() != null).collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
             oos.close();

@@ -66,9 +66,7 @@ public class Chat {
     }
 
     public void sendConsoleWarning(String message) {
-        message = CONSOLE_PREFIX + "[WARN] " + languageAPI.replaceKeys(message);
-        message = org.bukkit.ChatColor.translateAlternateColorCodes('&', message);
-        Bukkit.getServer().getConsoleSender().sendMessage(message);
+        sendConsoleMessage("[WARN] " + message);
     }
 
     public void sendConsoleMessage(String message, String... replacements) {
