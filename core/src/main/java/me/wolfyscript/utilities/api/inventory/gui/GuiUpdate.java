@@ -4,6 +4,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryInteractEvent;
@@ -15,6 +16,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * @param <C> The type of the {@link CustomCache}.
+ */
 public class GuiUpdate<C extends CustomCache> {
 
     private final GuiHandler<C> guiHandler;
@@ -25,7 +29,7 @@ public class GuiUpdate<C extends CustomCache> {
     private final Inventory queueInventory;
     private final GuiWindow<C> guiWindow;
 
-    public GuiUpdate(GUIInventory<C> inventory, GuiHandler<C> guiHandler, GuiWindow<C> guiWindow) {
+    GuiUpdate(GUIInventory<C> inventory, GuiHandler<C> guiHandler, GuiWindow<C> guiWindow) {
         this.guiHandler = guiHandler;
         this.inventoryAPI = guiHandler.getInvAPI();
         this.wolfyUtilities = guiHandler.getApi();
@@ -45,43 +49,43 @@ public class GuiUpdate<C extends CustomCache> {
         }
     }
 
-    public GuiHandler<C> getGuiHandler() {
+    /**
+     * @return The {@link GuiHandler} that caused this update.
+     */
+    public final GuiHandler<C> getGuiHandler() {
         return guiHandler;
     }
 
-    public Player getPlayer() {
+    /**
+     * @return The player that caused this update.
+     */
+    public final Player getPlayer() {
         return player;
     }
 
-    public WolfyUtilities getWolfyUtilities() {
-        return wolfyUtilities;
-    }
-
     /**
-     * Should only be used for the GuiUpdateEvent, as the GuiWindow is already available in the sync and async methods!
-     *
-     * @return the GUiWindow this update is executed!
+     * @return The {@link GUIInventory} this update was called from.
      */
-    GuiWindow<C> getGuiWindow() {
-        return guiWindow;
-    }
-
-    public InventoryAPI<C> getInventoryAPI() {
-        return inventoryAPI;
-    }
-
-    public GUIInventory<C> getInventory() {
+    public final GUIInventory<C> getInventory() {
         return inventory;
     }
 
+    /**
+     * Directly set an ItemStack to a slot.
+     *
+     * @param slot      The slot the item should set in.
+     * @param itemStack The ItemStack to set.
+     */
     public void setItem(int slot, ItemStack itemStack) {
         queueInventory.setItem(slot, itemStack);
     }
-    /*
-    Set an locally registered Button.
-    Locally means it is registered inside of the GuiWindow!
-     */
 
+    /**
+     * Set an locally registered Button from the current {@link GuiWindow}.
+     *
+     * @param slot The slot the Button should be rendered in.
+     * @param id   The id of the Button.
+     */
     public void setButton(int slot, String id) {
         Button<C> button = guiWindow.getButton(id);
         if (button != null) {
@@ -89,40 +93,48 @@ public class GuiUpdate<C extends CustomCache> {
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
         }
     }
-    /*
-    Tries to add an Locally registered Button. If it doesn't exist then
-    it will try to get the button globally registered for this GuiCluster.
-     */
 
+    /**
+     * Tries to add an Locally registered Button. If it doesn't exist then
+     * it will try to get the button globally registered for this GuiCluster.
+     *
+     * @param slot The slot the button should be rendered in.
+     * @param id   The id of the button.
+     */
     public void setLocalOrGlobalButton(int slot, String id) {
         Button<C> button = guiWindow.getButton(id);
         if (button == null) {
-            button = inventoryAPI.getButton(guiWindow.getNamespacedKey().getNamespace(), id);
+            button = inventoryAPI.getButton(new NamespacedKey(guiWindow.getNamespacedKey().getNamespace(), id));
         }
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, id);
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
         }
     }
-    /*
-    Sets a Button object to the specific slot.
-     */
 
+    /**
+     * Directly render a Button into a specific slot.
+     *
+     * @param slot   The slot the button should be rendered in.
+     * @param button The {@link Button} that should be rendered.
+     */
     public void setButton(int slot, @Nonnull Button<C> button) {
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, button.getId());
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
         }
     }
-    /*
-    Set an globally registered Button.
-    Globally means it is registered via the InventoryAPI and registered in the GuiCluster.
-     */
 
-    public void setButton(int slot, String namespace, String key) {
-        Button<C> button = inventoryAPI.getButton(namespace, key);
+    /**
+     * Set a globally Button registered in the {@link GuiCluster}.
+     *
+     * @param slot          The slot the Button should be rendered in.
+     * @param namespacedKey The NamespacedKey of the button. The namespace is the cluster key and the key is the button id.
+     */
+    public void setButton(int slot, NamespacedKey namespacedKey) {
+        Button<C> button = inventoryAPI.getButton(namespacedKey);
         if (button != null) {
-            guiHandler.setButton(guiWindow, slot, namespace + ":" + key);
+            guiHandler.setButton(guiWindow, slot, namespacedKey.toString());
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
         }
     }
@@ -138,13 +150,13 @@ public class GuiUpdate<C extends CustomCache> {
         }
     }
 
-    void applyChanges() {
+    final void applyChanges() {
         if (queueInventory.getContents().length > 0) {
-            Bukkit.getScheduler().runTask(getInventoryAPI().getPlugin(), () -> inventory.setContents(Arrays.copyOfRange(queueInventory.getContents(), 0, inventory.getSize())));
+            Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> inventory.setContents(Arrays.copyOfRange(queueInventory.getContents(), 0, inventory.getSize())));
         }
     }
 
-    void postExecuteButtons(HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event) {
+    final void postExecuteButtons(HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event) {
         if (postExecuteBtns != null) {
             postExecuteBtns.forEach((slot, btn) -> {
                 try {

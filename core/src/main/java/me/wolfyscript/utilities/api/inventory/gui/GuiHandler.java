@@ -227,8 +227,8 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         });
     }
 
-    /*
-    Opens the current GuiCluster with the latest GuiWindow that was open.
+    /**
+     * Opens the current GuiCluster with the latest GuiWindow that was open.
      */
     public void openCluster() {
         openCluster(getCluster());
@@ -236,6 +236,8 @@ public class GuiHandler<C extends CustomCache> implements Listener {
 
     /**
      * Opens the GuiCluster with the latest GuiWindow that was open.
+     *
+     * @param clusterID The cluster key of the cluster to open.
      */
     public void openCluster(String clusterID) {
         openCluster(invAPI.getGuiCluster(clusterID));
@@ -243,6 +245,8 @@ public class GuiHandler<C extends CustomCache> implements Listener {
 
     /**
      * Opens the GuiCluster with the latest GuiWindow that was open.
+     *
+     * @param cluster The {@link GuiCluster} to open.
      */
     public void openCluster(GuiCluster<C> cluster) {
         NamespacedKey guiWindowID = cluster.getEntry();
@@ -252,47 +256,85 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         openWindow(guiWindowID);
     }
 
+    /**
+     * @return If there is currently active {@link ChatInputAction}, that will be called on chat input.
+     */
     public boolean isChatEventActive() {
         return getChatInputAction() != null;
     }
 
+    /**
+     * @return The active {@link ChatInputAction} or null if not active.
+     */
+    @Nullable
     public ChatInputAction<C> getChatInputAction() {
         return chatInputAction;
     }
 
+    /**
+     * Set the {@link ChatInputAction} to be called on next chat input.
+     *
+     * @param chatInputAction The new {@link ChatInputAction}
+     */
     public void setChatInputAction(ChatInputAction<C> chatInputAction) {
         this.chatInputAction = chatInputAction;
     }
 
-    public boolean onChat(Player player, String msg, String[] args) {
-        if (isChatEventActive()) {
-            return chatInputAction.onChat(this, player, msg, args);
-        }
-        return true;
+    /**
+     * Cancels the current active ChatInputAction.
+     * After this is called no chat input will execute any actions anymore.
+     */
+    public void cancelChatInputAction() {
+        setChatInputAction(null);
     }
 
+    /**
+     * Closes the current open window.
+     */
     public void close() {
         this.isWindowOpen = false;
         Player player = getPlayer();
         if (player != null) player.closeInventory();
     }
 
-    public void setHelpEnabled(boolean helpEnabled) {
-        this.helpEnabled = helpEnabled;
-    }
-
+    /**
+     * @return If help is enabled for this GuiHandler.
+     */
     public boolean isHelpEnabled() {
         return helpEnabled;
     }
 
-    public void setButton(GuiWindow<C> guiWindow, int slot, String id) {
+    /**
+     * Set if the help is enabled.
+     *
+     * @param helpEnabled The new help value.
+     */
+    public void setHelpEnabled(boolean helpEnabled) {
+        this.helpEnabled = helpEnabled;
+    }
+
+    /**
+     * @return The instance of the {@link CustomCache}
+     */
+    public C getCustomCache() {
+        return customCache;
+    }
+
+    public final boolean onChat(Player player, String msg, String[] args) {
+        if (isChatEventActive()) {
+            return chatInputAction.onChat(this, player, msg, args);
+        }
+        return true;
+    }
+
+    final void setButton(GuiWindow<C> guiWindow, int slot, String id) {
         customCache.setButton(guiWindow, slot, id);
     }
 
-    public Button<C> getButton(GuiWindow<C> guiWindow, int slot) {
+    final Button<C> getButton(GuiWindow<C> guiWindow, int slot) {
         String id = customCache.getButtons(guiWindow).get(slot);
-        if (id != null && !id.isEmpty() && id.contains(":")) {
-            return invAPI.getButton(id.split(":")[0], id.split(":")[1]);
+        if (id != null && id.contains(":")) {
+            return invAPI.getButton(NamespacedKey.getByString(id));
         }
         return guiWindow.getButton(id);
     }
@@ -310,23 +352,15 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         }
     }
 
-    public void cancelChatEvent() {
-        setChatInputAction(null);
-    }
-
     @EventHandler
-    public void onCommand(PlayerCommandPreprocessEvent event) {
+    private void onCommand(PlayerCommandPreprocessEvent event) {
         if (!event.getMessage().startsWith("/wua")) {
             Player player = event.getPlayer();
             if (player.getUniqueId().equals(uuid)) {
                 if (isChatEventActive()) {
-                    cancelChatEvent();
+                    cancelChatInputAction();
                 }
             }
         }
-    }
-
-    public C getCustomCache() {
-        return customCache;
     }
 }

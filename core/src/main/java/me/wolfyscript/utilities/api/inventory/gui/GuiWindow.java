@@ -33,9 +33,6 @@ import java.util.List;
  * This way you can make the GUI contain the specific data.
  * See {@link GuiUpdate} for more information on how to render buttons etc.
  * </p>
- * <p>
- *
- * </p>
  *
  * @param <C> The type of the {@link CustomCache}.
  */
@@ -52,27 +49,45 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     private final InventoryType inventoryType;
     private final int size;
 
+    /**
+     * @param cluster The parent {@link GuiCluster} of this window.
+     * @param key     The key for this window. This must be comply with the {@link NamespacedKey} key pattern!
+     * @param size    The size of the window. Must be a multiple of 9 and less or equal to 54.
+     */
     public GuiWindow(GuiCluster<C> cluster, String key, int size) {
         this(cluster, key, size, false);
     }
 
+    /**
+     * @param cluster         The parent {@link GuiCluster} of this window.
+     * @param key             The key for this window. This must be comply with the {@link NamespacedKey} key pattern!
+     * @param size            The size of the window. Must be a multiple of 9 and less or equal to 54.
+     * @param forceSyncUpdate If the window should only allow sync code and no async code.
+     */
     public GuiWindow(GuiCluster<C> cluster, String key, int size, boolean forceSyncUpdate) {
         this(cluster, key, null, size, forceSyncUpdate);
     }
 
+    /**
+     * @param cluster       The parent {@link GuiCluster} of this window.
+     * @param key           The key for this window. This must be comply with the {@link NamespacedKey} key pattern!
+     * @param inventoryType The type of the window.
+     */
     public GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType) {
         this(cluster, key, inventoryType, false);
     }
 
+    /**
+     * @param cluster         The parent {@link GuiCluster} of this window.
+     * @param key             The key for this window. This must be comply with the {@link NamespacedKey} key pattern!
+     * @param inventoryType   The type of the window.
+     * @param forceSyncUpdate If the window should only allow sync code and no async code.
+     */
     public GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType, boolean forceSyncUpdate) {
         this(cluster, key, inventoryType, 0, forceSyncUpdate);
     }
 
-    public GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType, int size) {
-        this(cluster, key, inventoryType, size, false);
-    }
-
-    public GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType, int size, boolean forceSyncUpdate) {
+    private GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType, int size, boolean forceSyncUpdate) {
         this.cluster = cluster;
         this.wolfyUtilities = cluster.wolfyUtilities;
         this.namespacedKey = new NamespacedKey(cluster.getId(), key);
@@ -82,6 +97,9 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         Bukkit.getPluginManager().registerEvents(this, wolfyUtilities.getPlugin());
     }
 
+    /**
+     * @return The {@link InventoryType} of this window. Representing the type of the inventory.
+     */
     public InventoryType getInventoryType() {
         return inventoryType;
     }
@@ -97,16 +115,14 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * This method is called when the inventory is initiated.
      * It's used to register Buttons and optionally other processing on start-up.
      */
-    public void onInit() {
-    }
+    public abstract void onInit();
 
     /**
      * This method is called each time the gui is updated.
      *
-     * @param update The {@link GuiUpdate} instance, that contains all the data of the
+     * @param update The {@link GuiUpdate} instance, that contains all the data of the action that caused this update.
      */
-    public void onUpdateSync(GuiUpdate<C> update) {
-    }
+    public abstract void onUpdateSync(GuiUpdate<C> update);
 
     /**
      * This method is called after the {@link #onUpdateSync(GuiUpdate)} is done.
@@ -115,17 +131,17 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * <p>
      * If {@link #isForceSyncUpdate()} is enabled then this method is forced to be updated sync too and will act just like {@link #onUpdateSync(GuiUpdate)}!
      *
-     * @param update
+     * @param update The {@link GuiUpdate} instance, that contains all the data of the action that caused this update.
      */
-    public void onUpdateAsync(GuiUpdate<C> update) {
-    }
+    public abstract void onUpdateAsync(GuiUpdate<C> update);
 
     /**
      * This method allows you to execute code when this window is closed.
      * It does not require verification like the GuiCloseEvent.
      * <p>
-     * This method can be overridden and you can either call this super method or not.
-     * If you decide not to, then the GuiCloseEvent won't be called.
+     *     This method can be overridden and you can either call this super method or not.
+     *     If you decide not to, then the GuiCloseEvent won't be called.
+     * </p>
      *
      * @param guiHandler  the gui handler that caused this close event.
      * @param transaction the inventory view of the player.
@@ -186,14 +202,14 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      *
      * @return The NamespacedKey of this Window, consisting of the cluster key and this window key.
      */
-    public NamespacedKey getNamespacedKey() {
+    public final NamespacedKey getNamespacedKey() {
         return namespacedKey;
     }
 
     /**
      * @return The parent {@link GuiCluster} of this window.
      */
-    public GuiCluster<C> getCluster() {
+    public final GuiCluster<C> getCluster() {
         return cluster;
     }
 
@@ -203,7 +219,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      *
      * @param button The button to register.
      */
-    public void registerButton(Button<C> button) {
+    public final void registerButton(Button<C> button) {
         button.init(this);
         buttons.put(button.getId(), button);
     }
@@ -213,7 +229,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @return The button if it exists, else null.
      */
     @Nullable
-    public Button<C> getButton(String id) {
+    public final Button<C> getButton(String id) {
         return buttons.get(id);
     }
 
@@ -221,7 +237,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param id The id of the button.
      * @return If the the button exists. True if it exists, else false.
      */
-    public boolean hasButton(String id) {
+    public final boolean hasButton(String id) {
         return buttons.containsKey(id);
     }
 
@@ -290,15 +306,15 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param guiHandler The {@link GuiHandler} this message should be sent to.
      * @param msgKey     The key of the message.
      */
-    public void sendMessage(GuiHandler<C> guiHandler, String msgKey) {
-        wolfyUtilities.getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
+    public final void sendMessage(GuiHandler<C> guiHandler, String msgKey) {
+        sendMessage(guiHandler.getPlayer(), msgKey);
     }
 
     /**
      * @param player The Player this message should be send to.
      * @param msgKey The key of the message.
      */
-    public void sendMessage(Player player, String msgKey) {
+    public final void sendMessage(Player player, String msgKey) {
         wolfyUtilities.getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey);
     }
 

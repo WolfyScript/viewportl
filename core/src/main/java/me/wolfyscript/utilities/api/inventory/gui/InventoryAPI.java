@@ -20,6 +20,7 @@ import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -50,11 +51,24 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
+    /**
+     * Register a {@link GuiCluster}
+     * If there is already a GuiCluster with the same key, then it will be replaced with the new value.
+     *
+     * @param guiCluster The {@link GuiCluster} to register.
+     */
     public void registerCluster(GuiCluster<C> guiCluster) {
         guiCluster.onInit();
         guiClusters.putIfAbsent(guiCluster.getId(), guiCluster);
     }
 
+    /**
+     * Get the {@link GuiCluster} by the key.
+     *
+     * @param clusterID The key of the {@link GuiCluster}.
+     * @return The {@link GuiCluster} associated with the key. Null if none is found.
+     */
+    @Nullable
     public GuiCluster<C> getGuiCluster(String clusterID) {
         return guiClusters.get(clusterID);
     }
@@ -154,8 +168,9 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
     Get an globally registered Button.
     This returns an Button out of the specific namespace.
      */
-    public Button<C> getButton(String clusterID, String buttonID) {
-        return getGuiCluster(clusterID).getButton(buttonID);
+    public Button<C> getButton(NamespacedKey namespacedKey) {
+        if (namespacedKey == null) return null;
+        return getGuiCluster(namespacedKey.getNamespace()).getButton(namespacedKey.getKey());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
