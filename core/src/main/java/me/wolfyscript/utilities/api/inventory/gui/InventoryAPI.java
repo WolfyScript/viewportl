@@ -99,6 +99,12 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         }
     }
 
+    /**
+     * Get or create the {@link GuiHandler} for this player.
+     *
+     * @param player The player for the GuiHandler
+     * @return The GuiHandler for this player.
+     */
     @Nonnull
     public GuiHandler<C> getGuiHandler(Player player) {
         if (!hasGuiHandler(player)) {
@@ -108,7 +114,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
     }
 
     private void createGuiHandler(Player player) {
-        GuiHandler<C> guiHandler = new GuiHandler<>(player, wolfyUtilities, this, getNewCacheInstance());
+        GuiHandler<C> guiHandler = new GuiHandler<>(player, wolfyUtilities, this, getCacheInstance());
         setPlayerGuiHandler(player, guiHandler);
     }
 
@@ -148,20 +154,22 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         });
     }
 
-    public C getNewCacheInstance() {
+    /**
+     * Will create a new instance of the cache.
+     * <br/>
+     * It's going to use the defined class from the constructor to create the cache.
+     * <br/>
+     * <b>The cache requires a default constructor with no params!</b>, else if the constructor doesn't exist or other errors occur it will return null.
+     *
+     * @return A new instance of the cache, or null if there was an error (e.g. The cache class doesn't contain a default constructor).
+     */
+    public C getCacheInstance() {
         try {
             return this.customCacheClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /*
-    Registers an Button globally which then can be accessed in every GUI.
-     */
-    public void registerButton(String clusterID, Button<C> button) {
-        getGuiCluster(clusterID).registerButton(button);
     }
 
     /*

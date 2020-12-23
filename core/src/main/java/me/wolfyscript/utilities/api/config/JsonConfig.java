@@ -23,9 +23,9 @@ import java.util.function.Supplier;
 public class JsonConfig<T> {
 
     protected File file;
+    protected T value;
     private final Function<File, T> rootFunction;
     private final Supplier<T> rootSupplier;
-    protected T value;
 
     /**
      * This allows you to configure your own function to load the Object from the file.
@@ -51,7 +51,6 @@ public class JsonConfig<T> {
      * This allows you to configure your own supplier. Other than {@link #JsonConfig(File, Function)} the supplier is also called when the file is null.
      * If you want to set the file on save or just want it to use for memory only, then you can use this constructor.
      *
-     *
      * @param file         The file to load the config from. Can be null!
      * @param rootSupplier The supplier that supplies the config with the value.
      */
@@ -66,8 +65,8 @@ public class JsonConfig<T> {
     /**
      * Loads the specified type from the file, but only if the config exists!
      *
-     * @param file  The file of the config.
-     * @param type  The type of the object that should be loaded.
+     * @param file The file of the config.
+     * @param type The type of the object that should be loaded.
      */
     public JsonConfig(@NotNull File file, Class<T> type) {
         this(file, file1 -> {
@@ -81,11 +80,11 @@ public class JsonConfig<T> {
     }
 
     /**
+     * Loads a Object of the specified type from a String value.
+     * But it also sets a file, that will be used when saving it later.
      *
-     *
-     * @param file
-     * @param initialValue
-     * @throws IOException
+     * @param file         The target file.
+     * @param initialValue The initial String to load the value from.
      */
     public JsonConfig(@Nullable File file, Class<T> type, @NotNull String initialValue) {
         this(file, () -> {
@@ -99,11 +98,10 @@ public class JsonConfig<T> {
     }
 
     /**
-     * Loads a Object of a specific type from a String value.
+     * Loads a Object of the specified type from a String value.
      * Make sure that the value can be serialized (See Jackson for more documentation).
      *
-     * @param initialValue
-     * @throws IOException
+     * @param initialValue The initial String to load the value from.
      */
     public JsonConfig(Class<T> type, @NotNull String initialValue) {
         this(null, type, initialValue);
@@ -114,47 +112,93 @@ public class JsonConfig<T> {
      * The file is null, but it can be saved to a File later using {@link #save(File)} or similar methods.
      *
      * @param value The value that should be stored.
-     * @throws IOException
      */
     public JsonConfig(@NotNull T value) {
         this(null, () -> value);
     }
 
+    /**
+     * @param file         The file it should be saved in.
+     * @param objectWriter The Jackson {@link ObjectWriter}
+     * @throws IOException If the file doesn't exists and couldn't be created.
+     */
     public void save(File file, ObjectWriter objectWriter) throws IOException {
-        if (file != null) {
-            if (file.exists() || file.createNewFile()) {
-                objectWriter.writeValue(file, this.value);
-            } else {
-                throw new IOException("Couldn't create config file on save!");
-            }
+        if (file != null && (file.exists() || file.createNewFile())) {
+            objectWriter.writeValue(file, this.value);
+        } else {
+            throw new IOException("Couldn't create config file on save!");
         }
     }
 
+    /**
+     * Saves the value to the current file, but a custom {@link ObjectWriter} can be used to write it to the file.
+     *
+     * @param objectWriter A custom Jackson {@link ObjectWriter}
+     * @throws IOException If this config has no file, or the file didn't exist and couldn't be created.
+     */
     public void save(ObjectWriter objectWriter) throws IOException {
         save(this.file, objectWriter);
     }
 
-    public void save(File file, boolean prettyPrint) throws IOException {
-        save(file, JacksonUtil.getObjectWriter(prettyPrint));
-    }
-
-    public void save(boolean prettyPrint) throws IOException {
-        save(JacksonUtil.getObjectWriter(prettyPrint));
-    }
-
+    /**
+     * Saves the value to a file without pretty printing.
+     *
+     * @param file The file to save to.
+     * @throws IOException If this config has no file, or the file didn't exist and couldn't be created.
+     */
     public void save(File file) throws IOException {
         save(file, false);
     }
 
+    /**
+     * Saves the value to a file and pretty printing can be specified.
+     *
+     * @param file        The file to save to.
+     * @param prettyPrint If the config should be pretty printed.
+     * @throws IOException If this config has no file, or the file didn't exist and couldn't be created.
+     */
+    public void save(File file, boolean prettyPrint) throws IOException {
+        save(file, JacksonUtil.getObjectWriter(prettyPrint));
+    }
+
+    /**
+     * Saves the value to the current file without pretty printing.
+     *
+     * @throws IOException If this config has no file, or the file didn't exist and couldn't be created.
+     */
     public void save() throws IOException {
         save(false);
     }
 
+    /**
+     * Saves the value to the current file. You can specify if it should be pretty printed.
+     *
+     * @param prettyPrint If the config should be pretty printed.
+     * @throws IOException If this config has no file, or the file didn't exist and couldn't be created.
+     */
+    public void save(boolean prettyPrint) throws IOException {
+        save(JacksonUtil.getObjectWriter(prettyPrint));
+    }
+
+    /**
+     * Saves the value and loads it directly afterwards.
+     *
+     * @throws IOException If this config has no file, or the file didn't exist and couldn't be created.
+     * @see #save()
+     * @see #load()
+     */
     public void reload() throws IOException {
         save();
         load();
     }
 
+    /**
+     * Loads the value from the current file.
+     * It uses the defined {@link #rootFunction} and {@link #rootSupplier} to get the value from the file.
+     *
+     * @return True if loading was successful.
+     * @throws IOException If this config has no file, or the file didn't exist and couldn't be created.
+     */
     public boolean load() throws IOException {
         if (!load(this.rootFunction)) {
             return load(this.rootSupplier);
@@ -162,6 +206,12 @@ public class JsonConfig<T> {
         return true;
     }
 
+    /**
+     * Loads the value from the {@link Supplier}.
+     *
+     * @param rootSupplier The {@link Supplier} that supplies the value.
+     * @return true if loading was successful.
+     */
     public boolean load(Supplier<T> rootSupplier) {
         if (rootSupplier != null) {
             this.value = rootSupplier.get();
@@ -170,6 +220,13 @@ public class JsonConfig<T> {
         return false;
     }
 
+    /**
+     * Loads the value from the current file using the {@link Function} that allows custom processing of the file data, etc.
+     *
+     * @param rootFunction The {@link Function} that supplies the value and processes the file.
+     * @return True if loading was successful.
+     * @throws IOException If this config has no file, or the file didn't exist and couldn't be created.
+     */
     public boolean load(Function<File, T> rootFunction) throws IOException {
         if (rootFunction != null) {
             Objects.requireNonNull(this.file, "Can't load config! File cannot be null!");

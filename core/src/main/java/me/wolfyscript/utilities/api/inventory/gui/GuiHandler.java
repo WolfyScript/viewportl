@@ -162,7 +162,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     }
 
     public void openPreviousWindow(String clusterID, int stepsBack) {
-        openPreviousWindow(invAPI.getGuiCluster(clusterID));
+        openPreviousWindow(invAPI.getGuiCluster(clusterID), stepsBack);
     }
 
     public void openPreviousWindow(GuiCluster<C> cluster, int stepsBack) {
@@ -196,8 +196,10 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         openWindow(invAPI.getGuiWindow(namespacedKey));
     }
 
-    /*
-    Opens the specific GuiWindow in the specific GuiCluster.
+    /**
+     * Opens the {@link GuiWindow} for this GuiHandler.
+     *
+     * @param window The {@link GuiWindow} to open.
      */
     public void openWindow(GuiWindow<C> window) {
         if (getPlayer() == null) {
