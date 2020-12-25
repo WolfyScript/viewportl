@@ -139,6 +139,17 @@ public class GuiUpdate<C extends CustomCache> {
         }
     }
 
+    /**
+     * Used for easier access of buttons, but can be quite inefficient if you have the same buttons multiple times.
+     *
+     * @param slot       The slot the Button should be rendered in.
+     * @param clusterKey The cluster key.
+     * @param buttonId   The button id.
+     */
+    public void setButton(int slot, String clusterKey, String buttonId) {
+        setButton(slot, new NamespacedKey(clusterKey, buttonId));
+    }
+
     private void renderButton(Button<C> button, GuiHandler<C> guiHandler, Player player, int slot, boolean help) {
         try {
             ItemStack itemStack = this.inventory.getItem(slot);

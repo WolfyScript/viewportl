@@ -8,6 +8,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
@@ -114,7 +115,9 @@ public abstract class CustomData {
          */
         public T createData() {
             try {
-                return customDataClass.getDeclaredConstructor(NamespacedKey.class).newInstance(namespacedKey);
+                Constructor<T> constructor = customDataClass.getDeclaredConstructor(NamespacedKey.class);
+                constructor.setAccessible(true);
+                return constructor.newInstance(namespacedKey);
             } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
                 e.printStackTrace();
             }
