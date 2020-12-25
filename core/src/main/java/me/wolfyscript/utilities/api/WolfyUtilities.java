@@ -14,14 +14,13 @@ import me.wolfyscript.utilities.util.exceptions.InvalidCacheTypeException;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class WolfyUtilities implements Listener {
+public class WolfyUtilities {
 
     private static final HashMap<Plugin, WolfyUtilities> wolfyUtilitiesList = new HashMap<>();
     private static final HashMap<String, Boolean> classes = new HashMap<>();

@@ -142,7 +142,6 @@ public class WUPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new EquipListener(), this);
-        Bukkit.getPluginManager().registerEvents(new WolfyUtilities(this), this);
         Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand(wolfyUtilities));
         Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand());
         Bukkit.getServer().getPluginCommand("wui").setTabCompleter(new InputCommand());

@@ -43,25 +43,43 @@ import java.util.*;
 public class CustomItem extends AbstractItemBuilder<CustomItem> implements Cloneable {
 
     /**
-     * This HashMap contains all the available CustomData objects, which then can be saved and loaded.
+     * This HashMap contains all the available CustomData providers, which then can be saved and loaded.
      * If the config contains CustomData that is not available in this HashMap, then it won't be loaded!
      */
-    private static final HashMap<String, CustomData> availableCustomData = new HashMap<>();
-
-    public static HashMap<String, CustomData> getAvailableCustomData() {
-        return availableCustomData;
-    }
-
-    public static void registerCustomData(CustomData customData) {
-        availableCustomData.put(customData.getId(), customData);
-    }
-
+    private static final HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData.Provider<?>> availableCustomData = new HashMap<>();
     /**
      * Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
      * All registered CustomData is added to this item and cannot be removed!
      * Only the single CustomData objects can be edit in it's values.
      */
-    private final HashMap<String, CustomData> customDataMap = new HashMap<>();
+    private final HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData> customDataMap = new HashMap<>();
+
+    public CustomItem(APIReference apiReference) {
+        this.apiReference = apiReference;
+
+        this.namespacedKey = null;
+        this.burnTime = 0;
+        this.allowedBlocks = new ArrayList<>();
+        this.replacement = null;
+        this.durabilityCost = 0;
+        this.consumed = true;
+        this.metaSettings = new MetaSettings();
+        this.permission = "";
+        this.rarityPercentage = 1.0d;
+        for (CustomData.Provider<?> customData : CustomItem.getAvailableCustomData().values()) {
+            addCustomData(customData.getNamespacedKey(), customData.createData());
+        }
+        this.equipmentSlots = new ArrayList<>();
+        this.particleContent = new ParticleContent();
+        this.blockPlacement = false;
+        this.blockVanillaEquip = false;
+        this.blockVanillaRecipes = false;
+        this.advanced = true;
+    }
+
+    public static HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData.Provider<?>> getAvailableCustomData() {
+        return availableCustomData;
+    }
 
     /**
      * This namespacedKey can either be null or non-null.
@@ -116,27 +134,20 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this(new ItemStack(material));
     }
 
-    public CustomItem(APIReference apiReference) {
-        this.apiReference = apiReference;
-
-        this.namespacedKey = null;
-        this.burnTime = 0;
-        this.allowedBlocks = new ArrayList<>();
-        this.replacement = null;
-        this.durabilityCost = 0;
-        this.consumed = true;
-        this.metaSettings = new MetaSettings();
-        this.permission = "";
-        this.rarityPercentage = 1.0d;
-        for (CustomData customData : CustomItem.getAvailableCustomData().values()) {
-            this.customDataMap.put(customData.getId(), customData.getDefaultCopy());
-        }
-        this.equipmentSlots = new ArrayList<>();
-        this.particleContent = new ParticleContent();
-        this.blockPlacement = false;
-        this.blockVanillaEquip = false;
-        this.blockVanillaRecipes = false;
-        this.advanced = true;
+    /**
+     * Register a new {@link CustomData.Provider} object that can be used in any Custom Item from the point of registration.
+     * <br/>
+     * You can register any CustomData you might want to add to your CustomItems and then save and load it from config too.
+     * <br/>
+     * It allows you to save and load custom data into a CustomItem and makes things a lot easier if you have some items that perform specific actions with the data etc.
+     * <br/>
+     * For example CustomCrafting registers it's own CustomData, that isn't in this base API, for it's Elite Workbenches that open up custom GUIs dependent on their CustomData.
+     * And also the Recipe Book uses a CustomData object to store some data.
+     *
+     * @param customData The CustomData object to register.
+     */
+    public static void registerCustomData(CustomData.Provider<?> customData) {
+        availableCustomData.put(customData.getNamespacedKey(), customData);
     }
 
     /**
@@ -564,7 +575,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 ItemStack replacement = new CustomItem(this.getReplacement()).create();
                 replacement.setAmount(replacement.getAmount() * totalAmount);
                 if (location == null) {
-                    if(inventory == null) return;
+                    if (inventory == null) return;
                     if (InventoryUtils.hasInventorySpace(inventory, replacement)) {
                         inventory.addItem(replacement);
                         return;
@@ -708,16 +719,16 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.rarityPercentage = rarityPercentage;
     }
 
-    public CustomData getCustomData(String id) {
-        return customDataMap.get(id);
+    public CustomData getCustomData(me.wolfyscript.utilities.util.NamespacedKey namespacedKey) {
+        return customDataMap.get(namespacedKey);
     }
 
-    public HashMap<String, CustomData> getCustomDataMap() {
+    public HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData> getCustomDataMap() {
         return customDataMap;
     }
 
-    public void addCustomData(String id, CustomData customData) {
-        this.customDataMap.put(id, customData);
+    public void addCustomData(me.wolfyscript.utilities.util.NamespacedKey namespacedKey, CustomData customData) {
+        this.customDataMap.put(namespacedKey, customData);
     }
 
     public ParticleContent getParticleContent() {
@@ -807,8 +818,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             gen.writeObjectFieldStart("custom_data");
             {
                 for (CustomData value : customItem.getCustomDataMap().values()) {
-                    gen.writeObjectFieldStart(value.getId());
-                    value.writeToJson(gen);
+                    gen.writeObjectFieldStart(value.getNamespacedKey().toString());
+                    value.writeToJson(customItem, gen, provider);
                     gen.writeEndObject();
                 }
             }
@@ -861,13 +872,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 JsonNode customDataNode = node.path("custom_data");
                 {
                     customDataNode.fields().forEachRemaining(entry -> {
-                        if (CustomItem.getAvailableCustomData().containsKey(entry.getKey())) {
-                            try {
-                                CustomData customData = CustomItem.getAvailableCustomData().get(entry.getKey()).readFromJson(entry.getValue());
-                                customItem.getCustomDataMap().put(entry.getKey(), customData);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                        me.wolfyscript.utilities.util.NamespacedKey namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.getByString(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ availableCustomData.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
+                        if (namespacedKey != null && availableCustomData.containsKey(namespacedKey)) {
+                            availableCustomData.get(namespacedKey).addData(customItem, entry.getValue(), ctxt);
                         }
                     });
                 }
