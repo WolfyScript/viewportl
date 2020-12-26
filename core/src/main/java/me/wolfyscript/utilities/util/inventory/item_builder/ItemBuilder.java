@@ -8,10 +8,12 @@ public class ItemBuilder extends AbstractItemBuilder<ItemBuilder> {
     private final ItemStack itemStack;
 
     public ItemBuilder(ItemStack itemStack){
+        super(ItemBuilder.class);
         this.itemStack = itemStack;
     }
 
     public ItemBuilder(Material material){
+        super(ItemBuilder.class);
         this.itemStack = new ItemStack(material);
     }
 

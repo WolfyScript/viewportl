@@ -55,6 +55,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     private final HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData> customDataMap = new HashMap<>();
 
     public CustomItem(APIReference apiReference) {
+        super(CustomItem.class);
         this.apiReference = apiReference;
 
         this.namespacedKey = null;
