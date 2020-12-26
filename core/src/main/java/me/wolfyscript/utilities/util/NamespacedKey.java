@@ -48,9 +48,13 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     }
 
     @Nullable
-    public static NamespacedKey getByString(@Nullable String namespaceKey){
+    public static NamespacedKey getByString(@Nullable String namespaceKey) {
         if (namespaceKey == null || namespaceKey.isEmpty()) return null;
         return new NamespacedKey(namespaceKey.split(":")[0].toLowerCase(Locale.ROOT), namespaceKey.split(":")[1].toLowerCase(Locale.ROOT));
+    }
+
+    public static NamespacedKey getByBukkit(org.bukkit.NamespacedKey namespacedKey) {
+        return new NamespacedKey(namespacedKey.getNamespace(), namespacedKey.getKey());
     }
 
     @Override
@@ -76,6 +80,10 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
             split = ":";
         }
         return this.namespace + split + this.key;
+    }
+
+    public org.bukkit.NamespacedKey toBukkit() {
+        return new org.bukkit.NamespacedKey(this.namespace, this.getKey());
     }
 
     @Override
