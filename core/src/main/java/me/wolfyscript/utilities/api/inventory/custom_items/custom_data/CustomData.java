@@ -18,7 +18,7 @@ public abstract class CustomData {
 
     /**
      * This is the main constructor of this class and must not be changed in it's parameters!
-     * If you do change it you also need to override the {@link Provider#createData()} method as it uses the NamespacedKey constructor!
+     * If you do change it you also need to override the {@link Provider#createData()} method as it uses the NamespacedKey constructor by default!
      *
      * @param namespacedKey The {@link NamespacedKey} of this CustomData. Parsed to this class from the {@link Provider}.
      */
@@ -39,12 +39,16 @@ public abstract class CustomData {
     /**
      * Called whenever this data is loaded from the config of the {@link CustomItem}.
      *
-     * @param node    The {@link JsonNode} that is loaded from the config.
-     * @param context The {@link DeserializationContext} from the deserialization.
+     * @param customItem The {@link CustomItem} that this data is currently loaded for and will be added to.
+     * @param node       The {@link JsonNode} that is loaded from the config.
+     * @param context    The {@link DeserializationContext} from the deserialization.
      * @throws IOException If there occurs an error while loading.
      */
-    protected abstract void readFromJson(JsonNode node, DeserializationContext context) throws IOException;
+    protected abstract void readFromJson(CustomItem customItem, JsonNode node, DeserializationContext context) throws IOException;
 
+    /**
+     * @return The namespacedKey, that is passed to this CustomData by it's {@link Provider}
+     */
     public final NamespacedKey getNamespacedKey() {
         return namespacedKey;
     }
@@ -85,7 +89,7 @@ public abstract class CustomData {
         }
 
         /**
-         * @return The {@link NamespacedKey} of this Provider and it's linked CustomData.
+         * @return The {@link NamespacedKey} of this Provider. This method and the {@link CustomData#getNamespacedKey()} should always return the same value!
          */
         public NamespacedKey getNamespacedKey() {
             return namespacedKey;
@@ -101,7 +105,7 @@ public abstract class CustomData {
         public void addData(CustomItem customItem, JsonNode node, DeserializationContext context) {
             try {
                 T instance = createData();
-                instance.readFromJson(node, context);
+                instance.readFromJson(customItem, node, context);
                 customItem.addCustomData(instance.getNamespacedKey(), instance);
             } catch (IOException e) {
                 e.printStackTrace();

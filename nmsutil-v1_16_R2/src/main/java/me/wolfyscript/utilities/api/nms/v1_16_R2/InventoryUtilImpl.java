@@ -7,11 +7,12 @@ import me.wolfyscript.utilities.api.nms.InventoryUtil;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.api.nms.v1_16_R2.inventory.util.GUIInventoryCreator;
-import net.minecraft.server.v1_16_R2.EntityPlayer;
-import net.minecraft.server.v1_16_R2.PacketPlayOutCloseWindow;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
-import org.bukkit.entity.Player;
+import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_16_R2.util.CraftMagicNumbers;
 import org.bukkit.event.inventory.InventoryType;
+
+import java.util.Locale;
 
 public class InventoryUtilImpl extends InventoryUtil {
 
@@ -39,11 +40,17 @@ public class InventoryUtilImpl extends InventoryUtil {
         return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, null, size, title);
     }
 
-    public void silentlyCloseInventory(Player player) {
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        EntityPlayer entityPlayer = craftPlayer.getHandle();
-        if (entityPlayer.playerConnection != null) {
-            entityPlayer.playerConnection.sendPacket(new PacketPlayOutCloseWindow(entityPlayer.activeContainer.windowId));
+    @Override
+    public void initItemCategories() {
+        for (Material material : Material.values()) {
+            if (material.isLegacy()) continue;
+            net.minecraft.server.v1_16_R2.CreativeModeTab creativeModeTab = CraftMagicNumbers.getItem(material).q();
+            if (creativeModeTab != null) {
+                CreativeModeTab category = CreativeModeTab.valueOf(creativeModeTab.b().toUpperCase(Locale.ROOT));
+                category.registerMaterial(material);
+            }
         }
     }
+
+
 }

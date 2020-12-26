@@ -15,6 +15,8 @@ import java.util.List;
 
 public class ItemUtils {
 
+    public final static ItemStack AIR = new ItemStack(Material.AIR);
+
     private final WolfyUtilities wolfyUtilities;
 
     public ItemUtils(WolfyUtilities wolfyUtilities) {
@@ -67,16 +69,10 @@ public class ItemUtils {
         ItemBuilder itemBuilder = new ItemBuilder(itemStack);
         ItemMeta itemMeta = itemBuilder.getItemMeta();
         if (itemMeta != null) {
-            if (displayName != null && !displayName.isEmpty()) {
-                itemBuilder.setDisplayName(ChatColor.convert(displayName));
-            }
-            if (lore != null && lore.length > 0) {
+            itemBuilder.setDisplayName(ChatColor.convert(displayName));
+            if (lore != null) {
                 for (String s : lore) {
-                    if (s.equalsIgnoreCase("<empty>")) {
-                        itemBuilder.addLoreLine("");
-                    } else {
-                        itemBuilder.addLoreLine(ChatColor.convert(s));
-                    }
+                    itemBuilder.addLoreLine(ChatColor.convert(s));
                 }
             }
             itemBuilder.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_POTION_EFFECTS);

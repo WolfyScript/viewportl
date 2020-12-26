@@ -8,12 +8,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
+import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.*;
@@ -43,31 +41,11 @@ public class MetaSettings {
         addMeta(new CustomItemTagMeta());
     }
 
-    @Deprecated
-    public MetaSettings(String jsonString) {
-        this();
-        JSONParser parser = new JSONParser();
-        JSONObject obj = null;
-        if (!jsonString.isEmpty()) {
-            try {
-                obj = (JSONObject) parser.parse(jsonString);
-            } catch (ParseException e) {
-                WolfyUtilities.get(WolfyUtilities.getWUPlugin()).getChat().sendConsoleWarning("Error getting JSONObject from String:");
-                WolfyUtilities.get(WolfyUtilities.getWUPlugin()).getChat().sendConsoleWarning("" + jsonString);
-            }
-        }
-        if (obj != null) {
-            Set<String> keys = obj.keySet();
-            for (String key : keys) {
-                String value = (String) obj.get(key);
-                getMetaByID(key).parseFromJSON(value);
-            }
-        }
-    }
-
     public MetaSettings(JsonNode node) {
         this();
-        node.fields().forEachRemaining(entry -> getMetaByID(entry.getKey()).readFromJson(entry.getValue()));
+        if (node != null) {
+            node.fields().forEachRemaining(entry -> getMetaByID(entry.getKey()).readFromJson(entry.getValue()));
+        }
     }
 
     private void addMeta(Meta meta) {
@@ -143,7 +121,7 @@ public class MetaSettings {
             JsonNode node = p.readValueAsTree();
             if (node.isTextual()) {
                 //Old String style meta
-                return new MetaSettings(node.asText());
+                node = JacksonUtil.getObjectMapper().readTree(node.asText());
             }
             //New Json style meta
             return new MetaSettings(node);

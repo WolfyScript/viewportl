@@ -32,6 +32,7 @@ public class ItemUtilImpl extends ItemUtil {
         try {
             NBTTagCompound nbtTagCompound = MojangsonParser.parse(json);
             ItemStack itemStack = ItemStack.a(nbtTagCompound);
+            //TODO: Automatically convert item to new version using itemStack.convert(int version);
             return CraftItemStack.asBukkitCopy(itemStack);
         } catch (CommandSyntaxException e) {
             e.printStackTrace();

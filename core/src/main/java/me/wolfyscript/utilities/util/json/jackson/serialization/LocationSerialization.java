@@ -12,7 +12,8 @@ import java.util.UUID;
 
 public class LocationSerialization {
 
-    public static void create(SimpleModule module, WolfyUtilities api) {
+    public static void create(SimpleModule module) {
+
         JacksonUtil.addSerializerAndDeserializer(module, Location.class, (location, gen, serializerProvider) -> {
             gen.writeStartObject();
             gen.writeStringField("world", location.getWorld().getUID().toString());
@@ -26,6 +27,7 @@ public class LocationSerialization {
             gen.writeEndObject();
         }, (p, d) -> {
             JsonNode node = p.readValueAsTree();
+            WolfyUtilities api = WolfyUtilities.getWUCore();
             if (node.isObject()) {
                 UUID uuid = UUID.fromString(node.get("world").asText());
                 World world = Bukkit.getWorld(uuid);

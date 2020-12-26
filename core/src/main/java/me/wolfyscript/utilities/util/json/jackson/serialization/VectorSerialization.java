@@ -9,7 +9,7 @@ import org.bukkit.util.Vector;
 
 public class VectorSerialization {
 
-    public static void create(SimpleModule module, WolfyUtilities api){
+    public static void create(SimpleModule module) {
         JacksonUtil.addSerializerAndDeserializer(module, Vector.class, (value, gen, serializerProvider) -> {
             gen.writeStartArray();
             gen.writeNumber(value.getX());
@@ -17,6 +17,7 @@ public class VectorSerialization {
             gen.writeNumber(value.getZ());
             gen.writeEndArray();
         }, (p, deserializationContext) -> {
+            WolfyUtilities api = WolfyUtilities.getWUCore();
             JsonNode node = p.readValueAsTree();
             if (node.isArray()) {
                 ArrayNode arrayNode = (ArrayNode) node;

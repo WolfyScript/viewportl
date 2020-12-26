@@ -7,13 +7,12 @@ import me.wolfyscript.utilities.api.nms.InventoryUtil;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.api.nms.v1_16_R3.inventory.util.GUIInventoryCreator;
-import net.minecraft.server.v1_16_R3.Container;
-import net.minecraft.server.v1_16_R3.EntityPlayer;
-import net.minecraft.server.v1_16_R3.PacketPlayOutOpenWindow;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage;
-import org.bukkit.entity.Player;
+import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers;
 import org.bukkit.event.inventory.InventoryType;
+
+import java.util.Locale;
 
 public class InventoryUtilImpl extends InventoryUtil {
 
@@ -41,12 +40,15 @@ public class InventoryUtilImpl extends InventoryUtil {
         return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, null, size, title);
     }
 
-    public void silentlyCloseInventory(Player player) {
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        EntityPlayer entityPlayer = craftPlayer.getHandle();
-        if (entityPlayer.playerConnection != null) {
-            Container container = entityPlayer.activeContainer;
-            entityPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(container.windowId, container.getType(), CraftChatMessage.fromString("Test")[0]));
+    @Override
+    public final void initItemCategories() {
+        for (Material material : Material.values()) {
+            if (material.isLegacy()) continue;
+            net.minecraft.server.v1_16_R3.CreativeModeTab creativeModeTab = CraftMagicNumbers.getItem(material).q();
+            if (creativeModeTab != null) {
+                CreativeModeTab category = CreativeModeTab.valueOf(creativeModeTab.b().toUpperCase(Locale.ROOT));
+                category.registerMaterial(material);
+            }
         }
     }
 }

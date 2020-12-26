@@ -23,11 +23,29 @@ public abstract class APIReference {
      */
     public abstract ItemStack getIdItem();
 
+    /**
+     * The amount of the reference.
+     * <p>
+     * If the amount of this {@link APIReference}:
+     *     <ul>
+     *         <li>is equal or less than 0, then this method will return the amount of the {@link ItemStack#getAmount()} from {@link #getLinkedItem()}.</li>
+     *         <li>is greater than 0, then this method will return the amount</li>
+     *     </ul>
+     * </p>
+     *
+     * @return The correct amount of this reference or linked item.
+     */
     public int getAmount() {
         return amount > 0 ? amount : getLinkedItem().getAmount();
     }
 
-    public void setAmount(int amount){
+    /**
+     * Sets the amount of this APIReference.
+     * Note: That a value of 0 or less indicates that the amount of this APIReference is equal to the linked ItemStack.
+     *
+     * @param amount The amount of this APIReference.
+     */
+    public void setAmount(int amount) {
         this.amount = amount;
     }
 

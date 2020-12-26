@@ -23,14 +23,14 @@ public abstract class ItemUtil {
      * Or to save it in the vanilla style Json String.
      *
      * @param itemStack the item to convert
-     * @return the Json string representation of the item
+     * @return the Json string representation of the item in NMS style.
      */
     public abstract String getItemStackJson(org.bukkit.inventory.ItemStack itemStack);
 
     /**
      * Converts the NMS Json Sting to an {@link org.bukkit.inventory.ItemStack}.
      *
-     * @param json the json to convert
+     * @param json the NMS json to convert
      * @return the ItemStack representation of the Json String
      */
     public abstract org.bukkit.inventory.ItemStack getJsonItemStack(String json);

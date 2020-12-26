@@ -3,7 +3,7 @@ package me.wolfyscript.utilities.api.inventory.custom_items.api_references;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import io.th0rgal.oraxen.items.OraxenItems;
-import org.bukkit.Material;
+import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class OraxenRef extends APIReference{
         if(OraxenItems.isAnItem(itemID)){
             return OraxenItems.getItemById(itemID).build();
         }
-        return new ItemStack(Material.AIR);
+        return ItemUtils.AIR;
     }
 
     @Override
