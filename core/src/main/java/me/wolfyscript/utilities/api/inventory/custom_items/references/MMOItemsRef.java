@@ -1,7 +1,8 @@
-package me.wolfyscript.utilities.api.inventory.custom_items.api_references;
+package me.wolfyscript.utilities.api.inventory.custom_items.references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
@@ -17,12 +18,12 @@ public class MMOItemsRef extends APIReference{
     @Override
     public ItemStack getLinkedItem() {
         //TODO
-        return null;
+        return ItemUtils.AIR;
     }
 
     @Override
     public ItemStack getIdItem() {
-        return null;
+        return ItemUtils.AIR;
     }
 
     @Override

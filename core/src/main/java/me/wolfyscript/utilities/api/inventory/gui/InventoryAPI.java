@@ -13,10 +13,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -47,11 +51,24 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
+    /**
+     * Register a {@link GuiCluster}
+     * If there is already a GuiCluster with the same key, then it will be replaced with the new value.
+     *
+     * @param guiCluster The {@link GuiCluster} to register.
+     */
     public void registerCluster(GuiCluster<C> guiCluster) {
         guiCluster.onInit();
         guiClusters.putIfAbsent(guiCluster.getId(), guiCluster);
     }
 
+    /**
+     * Get the {@link GuiCluster} by the key.
+     *
+     * @param clusterID The key of the {@link GuiCluster}.
+     * @return The {@link GuiCluster} associated with the key. Null if none is found.
+     */
+    @Nullable
     public GuiCluster<C> getGuiCluster(String clusterID) {
         return guiClusters.get(clusterID);
     }
@@ -82,6 +99,12 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         }
     }
 
+    /**
+     * Get or create the {@link GuiHandler} for this player.
+     *
+     * @param player The player for the GuiHandler
+     * @return The GuiHandler for this player.
+     */
     @Nonnull
     public GuiHandler<C> getGuiHandler(Player player) {
         if (!hasGuiHandler(player)) {
@@ -91,7 +114,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
     }
 
     private void createGuiHandler(Player player) {
-        GuiHandler<C> guiHandler = new GuiHandler<>(player, wolfyUtilities, this, getNewCacheInstance());
+        GuiHandler<C> guiHandler = new GuiHandler<>(player, wolfyUtilities, this, getCacheInstance());
         setPlayerGuiHandler(player, guiHandler);
     }
 
@@ -127,11 +150,20 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         guiHandlers.clear();
         guiClusters.forEach((s, guiCluster) -> {
             guiCluster.getButtons().clear();
-            guiCluster.getGuiWindows().values().forEach(guiWindow -> guiWindow.getButtons().clear());
+            guiCluster.getGuiWindows().values().forEach(guiWindow -> guiWindow.buttons.clear());
         });
     }
 
-    public C getNewCacheInstance() {
+    /**
+     * Will create a new instance of the cache.
+     * <br/>
+     * It's going to use the defined class from the constructor to create the cache.
+     * <br/>
+     * <b>The cache requires a default constructor with no params!</b>, else if the constructor doesn't exist or other errors occur it will return null.
+     *
+     * @return A new instance of the cache, or null if there was an error (e.g. The cache class doesn't contain a default constructor).
+     */
+    public C getCacheInstance() {
         try {
             return this.customCacheClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -141,33 +173,28 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
     }
 
     /*
-    Registers an Button globally which then can be accessed in every GUI.
-     */
-    public void registerButton(String clusterID, Button<C> button) {
-        getGuiCluster(clusterID).registerButton(button);
-    }
-
-    /*
     Get an globally registered Button.
     This returns an Button out of the specific namespace.
      */
-    public Button<C> getButton(String clusterID, String buttonID) {
-        return getGuiCluster(clusterID).getButton(buttonID);
+    public Button<C> getButton(NamespacedKey namespacedKey) {
+        if (namespacedKey == null) return null;
+        return getGuiCluster(namespacedKey.getNamespace()).getButton(namespacedKey.getKey());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInvClick(InventoryClickEvent event) {
-        Inventory inventory = event.getClickedInventory();
+        Inventory inventory = event.getInventory();
         if (inventory instanceof GUIInventory && ((GUIInventory<?>) inventory).getGuiHandler().getInvAPI().equals(this)) {
             GUIInventory<C> guiInventory = (GUIInventory<C>) inventory;
             GuiHandler<C> guiHandler = guiInventory.getGuiHandler();
             GuiWindow<C> guiWindow = guiInventory.getWindow();
             event.setCancelled(true);
             if (guiWindow == null) return;
+
             HashMap<Integer, Button<C>> buttons = new HashMap<>();
             if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
                 for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
-                    if (buttonEntry.getKey() != event.getSlot()) {
+                    if (event.getSlot() != buttonEntry.getKey()) {
                         Button<C> button = guiWindow.getButton(buttonEntry.getValue());
                         if (button instanceof ItemInputButton) {
                             buttons.put(buttonEntry.getKey(), button);
@@ -175,9 +202,8 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
                         }
                     }
                 }
-                return;
             }
-            if (!inventory.getType().equals(InventoryType.PLAYER)) {
+            if (inventory.equals(event.getClickedInventory())) {
                 Button<C> button = guiHandler.getButton(guiWindow, event.getSlot());
                 if (button != null) {
                     buttons.put(event.getSlot(), button);
@@ -198,7 +224,9 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
                     event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, slot, event));
                 }
             }
-            Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
+            if (guiHandler.getWindow() != null) {
+                Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
+            }
         }
     }
 
@@ -208,7 +236,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         if (inventory instanceof GUIInventory && ((GUIInventory<?>) inventory).getGuiHandler().getInvAPI().equals(this)) {
             GUIInventory<C> guiInventory = (GUIInventory<C>) inventory;
             GuiHandler<C> guiHandler = guiInventory.getGuiHandler();
-            if (event.getRawSlots().parallelStream().anyMatch(rawSlot -> !Objects.equals(event.getView().getInventory(rawSlot), event.getView().getTopInventory()))) {
+            if (event.getRawSlots().parallelStream().anyMatch(rawSlot -> !Objects.equals(event.getView().getInventory(rawSlot), inventory))) {
                 event.setCancelled(true);
                 return;
             }
@@ -229,7 +257,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
                     buttons.put(slot, button);
                 }
                 for (Map.Entry<Integer, Button<C>> button : buttons.entrySet()) {
-                    event.setCancelled(executeButton(button.getValue(), guiHandler, (Player) event.getWhoClicked(), guiInventory, button.getKey(), new InventoryClickEvent(event.getView(), event.getView().getSlotType(button.getKey()), button.getKey(), ClickType.RIGHT, InventoryAction.PLACE_SOME)));
+                    event.setCancelled(executeButton(button.getValue(), guiHandler, (Player) event.getWhoClicked(), guiInventory, button.getKey(), event));
                 }
                 if (guiHandler.getWindow() != null) {
                     Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
@@ -238,7 +266,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         }
     }
 
-    private boolean executeButton(Button<C> button, GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
+    private boolean executeButton(Button<C> button, GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) {
         try {
             return button.execute(guiHandler, player, inventory, slot, event);
         } catch (IOException e) {
@@ -254,7 +282,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPreChat(AsyncPlayerChatEvent event) {
         if (hasGuiHandler(event.getPlayer())) {
-            GuiHandler<?> guiHandler = getGuiHandler(event.getPlayer());
+            GuiHandler<C> guiHandler = getGuiHandler(event.getPlayer());
             if (guiHandler.isChatEventActive()) {
                 final String message = event.getMessage();
                 //Wraps normal written message into command to be executed

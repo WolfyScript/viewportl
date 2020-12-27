@@ -1,11 +1,11 @@
 package me.wolfyscript.utilities.main.listeners.custom_item;
 
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.inventory.custom_items.ParticleContent;
 import me.wolfyscript.utilities.api.particles.ParticleEffect;
 import me.wolfyscript.utilities.api.particles.ParticleEffects;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,15 +26,15 @@ public class CustomParticleListener implements Listener {
         PlayerInventory playerInventory = player.getInventory();
         ItemStack newItem = playerInventory.getItem(event.getNewSlot());
         CustomItem item = CustomItem.getByItemStack(newItem);
-        if (CustomItems.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
-            CustomItems.stopActiveParticleEffect(player, EquipmentSlot.HAND);
+        if (PlayerUtils.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
+            PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.HAND);
         }
         if (item != null) {
             ParticleContent particleContent = item.getParticleContent();
             if (particleContent != null) {
                 NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.HAND);
                 if (particleID != null) {
-                    CustomItems.setActiveParticleEffect(player, EquipmentSlot.HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
+                    PlayerUtils.setActiveParticleEffect(player, EquipmentSlot.HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
                 }
             }
         }
@@ -43,11 +43,11 @@ public class CustomParticleListener implements Listener {
     @EventHandler
     public void onSwitch(PlayerSwapHandItemsEvent event) {
         Player player = event.getPlayer();
-        if (CustomItems.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
-            CustomItems.stopActiveParticleEffect(player, EquipmentSlot.HAND);
+        if (PlayerUtils.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
+            PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.HAND);
         }
-        if (CustomItems.hasActiveItemEffects(player, EquipmentSlot.OFF_HAND)) {
-            CustomItems.stopActiveParticleEffect(player, EquipmentSlot.OFF_HAND);
+        if (PlayerUtils.hasActiveItemEffects(player, EquipmentSlot.OFF_HAND)) {
+            PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.OFF_HAND);
         }
         CustomItem mainHand = CustomItem.getByItemStack(event.getMainHandItem());
         if (mainHand != null) {
@@ -55,7 +55,7 @@ public class CustomParticleListener implements Listener {
             if (particleContent != null) {
                 NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.HAND);
                 if (particleID != null) {
-                    CustomItems.setActiveParticleEffect(player, EquipmentSlot.HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
+                    PlayerUtils.setActiveParticleEffect(player, EquipmentSlot.HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
                 }
             }
         }
@@ -66,7 +66,7 @@ public class CustomParticleListener implements Listener {
             if (particleContent != null) {
                 NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.OFF_HAND);
                 if (particleID != null) {
-                    CustomItems.setActiveParticleEffect(player, EquipmentSlot.OFF_HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.OFF_HAND, player));
+                    PlayerUtils.setActiveParticleEffect(player, EquipmentSlot.OFF_HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.OFF_HAND, player));
                 }
             }
         }
@@ -79,8 +79,8 @@ public class CustomParticleListener implements Listener {
         ItemStack currentItem = player.getInventory().getItemInMainHand();
 
         if (currentItem.getType().equals(Material.AIR) || currentItem.getAmount() <= 0) {
-            if (CustomItems.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
-                CustomItems.stopActiveParticleEffect(player, EquipmentSlot.HAND);
+            if (PlayerUtils.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
+                PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.HAND);
             }
         }
     }

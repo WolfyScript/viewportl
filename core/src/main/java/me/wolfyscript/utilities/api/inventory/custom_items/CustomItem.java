@@ -15,8 +15,9 @@ import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.util.jnbt.CompoundTag;
 import io.th0rgal.oraxen.items.OraxenItems;
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.inventory.custom_items.api_references.*;
-import me.wolfyscript.utilities.api.inventory.custom_items.custom_data.CustomData;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
+import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.inventory.item_builder.AbstractItemBuilder;
@@ -43,17 +44,44 @@ import java.util.*;
 public class CustomItem extends AbstractItemBuilder<CustomItem> implements Cloneable {
 
     /**
-     * This HashMap contains all the available CustomData objects, which then can be saved and loaded.
+     * This HashMap contains all the available CustomData providers, which then can be saved and loaded.
      * If the config contains CustomData that is not available in this HashMap, then it won't be loaded!
      */
-    private static final HashMap<String, CustomData> availableCustomData = new HashMap<>();
-
+    private static final HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData.Provider<?>> availableCustomData = new HashMap<>();
     /**
      * Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
      * All registered CustomData is added to this item and cannot be removed!
      * Only the single CustomData objects can be edit in it's values.
      */
-    private final HashMap<String, CustomData> customDataMap = new HashMap<>();
+    private final HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData> customDataMap = new HashMap<>();
+
+    public CustomItem(APIReference apiReference) {
+        super(CustomItem.class);
+        this.apiReference = apiReference;
+
+        this.namespacedKey = null;
+        this.burnTime = 0;
+        this.allowedBlocks = new ArrayList<>();
+        this.replacement = null;
+        this.durabilityCost = 0;
+        this.consumed = true;
+        this.metaSettings = new MetaSettings();
+        this.permission = "";
+        this.rarityPercentage = 1.0d;
+        for (CustomData.Provider<?> customData : CustomItem.getAvailableCustomData().values()) {
+            addCustomData(customData.getNamespacedKey(), customData.createData());
+        }
+        this.equipmentSlots = new ArrayList<>();
+        this.particleContent = new ParticleContent();
+        this.blockPlacement = false;
+        this.blockVanillaEquip = false;
+        this.blockVanillaRecipes = false;
+        this.advanced = true;
+    }
+
+    public static HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData.Provider<?>> getAvailableCustomData() {
+        return availableCustomData;
+    }
 
     /**
      * This namespacedKey can either be null or non-null.
@@ -108,27 +136,20 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this(new ItemStack(material));
     }
 
-    public CustomItem(APIReference apiReference) {
-        this.apiReference = apiReference;
-
-        this.namespacedKey = null;
-        this.burnTime = 0;
-        this.allowedBlocks = new ArrayList<>();
-        this.replacement = null;
-        this.durabilityCost = 0;
-        this.consumed = true;
-        this.metaSettings = new MetaSettings();
-        this.permission = "";
-        this.rarityPercentage = 1.0d;
-        for (CustomData customData : CustomItem.getAvailableCustomData().values()) {
-            this.customDataMap.put(customData.getId(), customData.getDefaultCopy());
-        }
-        this.equipmentSlots = new ArrayList<>();
-        this.particleContent = new ParticleContent();
-        this.blockPlacement = false;
-        this.blockVanillaEquip = false;
-        this.blockVanillaRecipes = false;
-        this.advanced = true;
+    /**
+     * Register a new {@link CustomData.Provider} object that can be used in any Custom Item from the point of registration.
+     * <br/>
+     * You can register any CustomData you might want to add to your CustomItems and then save and load it from config too.
+     * <br/>
+     * It allows you to save and load custom data into a CustomItem and makes things a lot easier if you have some items that perform specific actions with the data etc.
+     * <br/>
+     * For example CustomCrafting registers it's own CustomData, that isn't in this base API, for it's Elite Workbenches that open up custom GUIs dependent on their CustomData.
+     * And also the Recipe Book uses a CustomData object to store some data.
+     *
+     * @param customData The CustomData object to register.
+     */
+    public static void registerCustomData(CustomData.Provider<?> customData) {
+        availableCustomData.put(customData.getNamespacedKey(), customData);
     }
 
     /**
@@ -200,7 +221,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 PersistentDataContainer container = itemMeta.getPersistentDataContainer();
                 NamespacedKey namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
                 if (container.has(namespacedKey, PersistentDataType.STRING)) {
-                    return CustomItems.getCustomItem(me.wolfyscript.utilities.util.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
+                    return Registry.CUSTOM_ITEMS.get(me.wolfyscript.utilities.util.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
                 }
             }
         }
@@ -520,14 +541,31 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     }
 
     /**
-     * Consumes the totalAmount of the input!
-     * This method directly changes the input ItemStack values!
-     * TODO: description!
+     * Consumes the totalAmount of the input ItemStack!
+     * <p>
+     * The totalAmount is multiplied with the value from {@link #getAmount()} and then this amount is removed from the input.
+     * <br/>
+     * This method will directly edit the input ItemStack and won't return a result value.
+     * </p>
+     * <p>
+     * If this item is an un-stackable item then this method will use the {@link #consumeUnstackableItem(ItemStack)} method.
+     * </p>
+     * <p>
+     * Else if the item is stackable, then there are couple of settings for the replacement.
+     * <br/>
+     * If the custom item has a replacement:
+     *     <ul>
+     *         <li><b>If location is null and inventory is not null,</b> then it will try to add the item to the inventory. When inventory is full it will try to get the location from the inventory and if valid drops the items at that location instead.</li>
+     *         <li><b>If location is not null,</b> then it will drop the items at that location.</li>
+     *         <li><b>If location and inventory are null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
+     *     </ul>
+     * </p>
+     * <br/>
      *
-     * @param input
-     * @param totalAmount
-     * @param inventory
-     * @param location
+     * @param input       The input ItemStack, that is also going to be edited.
+     * @param totalAmount The amount of this custom item should be removed from the input.
+     * @param inventory   The optional inventory to add the replacements to. (Only for stackable items)
+     * @param location    The location where the replacements should be dropped. (Only for stackable items)
      */
     public void consumeItem(ItemStack input, int totalAmount, Inventory inventory, Location location) {
         if (this.create().getMaxStackSize() > 1) {
@@ -539,6 +577,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 ItemStack replacement = new CustomItem(this.getReplacement()).create();
                 replacement.setAmount(replacement.getAmount() * totalAmount);
                 if (location == null) {
+                    if (inventory == null) return;
                     if (InventoryUtils.hasInventorySpace(inventory, replacement)) {
                         inventory.addItem(replacement);
                         return;
@@ -563,33 +602,21 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         return input;
     }
 
+    /**
+     * This method consumes the input as it is a un-stackable item.
+     * Default items will be replaced e.g. buckets, potions, stew/soup.
+     * If it has a replacement then the input will be replaced with the replacement.
+     *
+     * @param input The input ItemStack, that is going to be edited.
+     */
     public void consumeUnstackableItem(ItemStack input) {
         if (this.hasNamespacedKey()) {
             if (this.isConsumed()) {
                 input.setAmount(0);
             } else {
-                switch (input.getType()) {
-                    case LAVA_BUCKET:
-                    case MILK_BUCKET:
-                    case WATER_BUCKET:
-                    case COD_BUCKET:
-                    case SALMON_BUCKET:
-                    case PUFFERFISH_BUCKET:
-                    case TROPICAL_FISH_BUCKET:
-                        input.setType(Material.BUCKET);
-                        break;
-                    case POTION:
-                        input.setType(Material.GLASS_BOTTLE);
-                        break;
-                    case BEETROOT_SOUP:
-                    case MUSHROOM_STEW:
-                    case RABBIT_STEW:
-                        input.setType(Material.BOWL);
-                }
-                if (WolfyUtilities.hasBuzzyBeesUpdate()) {
-                    if (input.getType().equals(Material.HONEY_BOTTLE)) {
-                        input.setType(Material.GLASS_BOTTLE);
-                    }
+                Material replaceType = getCraftReplaceMaterial(input);
+                if (replaceType != null) {
+                    input.setType(replaceType);
                 }
             }
             if (this.hasReplacement()) {
@@ -616,43 +643,60 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 input.setItemMeta(itemMeta);
             }
         } else {
-            switch (input.getType()) {
-                case LAVA_BUCKET:
-                case MILK_BUCKET:
-                case WATER_BUCKET:
-                case COD_BUCKET:
-                case SALMON_BUCKET:
-                case PUFFERFISH_BUCKET:
-                case TROPICAL_FISH_BUCKET:
-                    input.setType(Material.BUCKET);
-                    return;
-                case POTION:
-                    input.setType(Material.GLASS_BOTTLE);
-                    return;
-                case BEETROOT_SOUP:
-                case MUSHROOM_STEW:
-                case RABBIT_STEW:
-                    input.setType(Material.BOWL);
-                    return;
-            }
-            if (WolfyUtilities.hasBuzzyBeesUpdate()) {
-                if (input.getType().equals(Material.HONEY_BOTTLE)) {
-                    input.setType(Material.GLASS_BOTTLE);
-                    return;
-                }
+            Material replaceType = getCraftReplaceMaterial(input);
+            if (replaceType != null) {
+                input.setType(replaceType);
             }
             input.setAmount(0);
         }
+    }
+
+    private Material getCraftReplaceMaterial(ItemStack input) {
+        if (WolfyUtilities.hasVillagePillageUpdate()) {
+            if (input.getType().isItem()) {
+                Material replaceType = input.getType().getCraftingRemainingItem();
+                if (replaceType != null) return replaceType;
+            }
+        } else switch (input.getType()) {
+            case LAVA_BUCKET:
+            case MILK_BUCKET:
+            case WATER_BUCKET:
+                return Material.BUCKET;
+        }
+        switch (input.getType()) {
+            case COD_BUCKET:
+            case SALMON_BUCKET:
+            case PUFFERFISH_BUCKET:
+            case TROPICAL_FISH_BUCKET:
+                return Material.BUCKET;
+            case POTION:
+                return Material.GLASS_BOTTLE;
+            case BEETROOT_SOUP:
+            case MUSHROOM_STEW:
+            case RABBIT_STEW:
+                return Material.BOWL;
+        }
+        return null;
     }
 
     public boolean hasPermission() {
         return !permission.isEmpty();
     }
 
+    /**
+     * Gets the permission string of this CustomItem.
+     *
+     * @return The permission string of this item
+     */
     public String getPermission() {
         return permission;
     }
 
+    /**
+     * Sets the permission String.
+     *
+     * @param permission The new permission string
+     */
     public void setPermission(String permission) {
         this.permission = permission;
     }
@@ -665,24 +709,16 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.rarityPercentage = rarityPercentage;
     }
 
-    public CustomData getCustomData(String id) {
-        return customDataMap.get(id);
+    public CustomData getCustomData(me.wolfyscript.utilities.util.NamespacedKey namespacedKey) {
+        return customDataMap.get(namespacedKey);
     }
 
-    public HashMap<String, CustomData> getCustomDataMap() {
+    public HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData> getCustomDataMap() {
         return customDataMap;
     }
 
-    public void addCustomData(String id, CustomData customData) {
-        this.customDataMap.put(id, customData);
-    }
-
-    public static HashMap<String, CustomData> getAvailableCustomData() {
-        return availableCustomData;
-    }
-
-    public static void registerCustomData(CustomData customData) {
-        availableCustomData.put(customData.getId(), customData);
+    public void addCustomData(me.wolfyscript.utilities.util.NamespacedKey namespacedKey, CustomData customData) {
+        this.customDataMap.put(namespacedKey, customData);
     }
 
     public ParticleContent getParticleContent() {
@@ -693,10 +729,27 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.particleContent = particleContent;
     }
 
+    /**
+     * This value is used for simple check in recipes.
+     * Default is true.
+     * If this value is false CustomCrafting will ignore every single meta and NBT data and will only compare the NamespacedKeys.
+     *
+     * @return If this CustomItem is in advanced mode.
+     * @deprecated This feature is still under development and might change.
+     */
+    @Deprecated
     public boolean isAdvanced() {
         return advanced;
     }
 
+    /**
+     * Set the advanced value. Default is true.
+     * If this value is false CustomCrafting will ignore every single meta and NBT data and will only compare the NamespacedKeys.
+     *
+     * @param advanced The new advanced value.
+     * @deprecated This feature is still under development and might change.
+     */
+    @Deprecated
     public void setAdvanced(boolean advanced) {
         this.advanced = advanced;
     }
@@ -711,14 +764,16 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         return getApiReference().getAmount();
     }
 
+    /**
+     * Sets the amount of the linked item.
+     *
+     * @param amount The new amount of the item.
+     */
     public void setAmount(int amount) {
         getApiReference().setAmount(amount);
     }
 
-    /**
-     *
-     */
-    public static class Serializer extends StdSerializer<CustomItem> {
+    static class Serializer extends StdSerializer<CustomItem> {
 
         public Serializer() {
             this(CustomItem.class);
@@ -753,8 +808,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             gen.writeObjectFieldStart("custom_data");
             {
                 for (CustomData value : customItem.getCustomDataMap().values()) {
-                    gen.writeObjectFieldStart(value.getId());
-                    value.writeToJson(gen);
+                    gen.writeObjectFieldStart(value.getNamespacedKey().toString());
+                    value.writeToJson(customItem, gen, provider);
                     gen.writeEndObject();
                 }
             }
@@ -773,7 +828,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         }
     }
 
-    public static class Deserializer extends StdDeserializer<CustomItem> {
+    static class Deserializer extends StdDeserializer<CustomItem> {
 
         public Deserializer() {
             this(CustomItem.class);
@@ -807,13 +862,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 JsonNode customDataNode = node.path("custom_data");
                 {
                     customDataNode.fields().forEachRemaining(entry -> {
-                        if (CustomItem.getAvailableCustomData().containsKey(entry.getKey())) {
-                            try {
-                                CustomData customData = CustomItem.getAvailableCustomData().get(entry.getKey()).readFromJson(entry.getValue());
-                                customItem.getCustomDataMap().put(entry.getKey(), customData);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                        me.wolfyscript.utilities.util.NamespacedKey namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.getByString(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ availableCustomData.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
+                        if (namespacedKey != null && availableCustomData.containsKey(namespacedKey)) {
+                            availableCustomData.get(namespacedKey).addData(customItem, entry.getValue(), ctxt);
                         }
                     });
                 }

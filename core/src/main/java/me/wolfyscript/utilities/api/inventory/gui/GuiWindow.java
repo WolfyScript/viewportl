@@ -16,86 +16,113 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * The GuiWindow represents an Inventory GUI in-game.
+ * <p>
+ * The {@link #onInit()} method is used for initialization of the buttons and other data required for the GUI.
+ * </p>
+ * <p>
+ * The methods {@link #onUpdateSync(GuiUpdate)} and {@link #onUpdateAsync(GuiUpdate)} are used to render the window for specific players.
+ * {@link GuiUpdate} contains all the required data, like which player it is, the cache of that player and more.
+ * This way you can make the GUI contain the specific data.
+ * See {@link GuiUpdate} for more information on how to render buttons etc.
+ * </p>
+ *
+ * @param <C> The type of the {@link CustomCache}.
+ */
 public abstract class GuiWindow<C extends CustomCache> implements Listener {
 
-    protected final WolfyUtilities wolfyUtilities;
-    private final InventoryAPI<C> inventoryAPI;
-    private final GuiCluster<C> cluster;
-    public String itemKey;
-    private final HashMap<String, Button<C>> buttons = new HashMap<>();
-    private NamespacedKey namespacedKey;
+    public final WolfyUtilities wolfyUtilities;
 
+    final HashMap<String, Button<C>> buttons = new HashMap<>();
+    private final GuiCluster<C> cluster;
+    private final NamespacedKey namespacedKey;
     private boolean forceSyncUpdate;
 
     //Inventory
     private final InventoryType inventoryType;
     private final int size;
 
+    /**
+     * @param cluster The parent {@link GuiCluster} of this window.
+     * @param key     The key for this window. This must be comply with the {@link NamespacedKey} key pattern!
+     * @param size    The size of the window. Must be a multiple of 9 and less or equal to 54.
+     */
     public GuiWindow(GuiCluster<C> cluster, String key, int size) {
         this(cluster, key, size, false);
     }
 
+    /**
+     * @param cluster         The parent {@link GuiCluster} of this window.
+     * @param key             The key for this window. This must be comply with the {@link NamespacedKey} key pattern!
+     * @param size            The size of the window. Must be a multiple of 9 and less or equal to 54.
+     * @param forceSyncUpdate If the window should only allow sync code and no async code.
+     */
     public GuiWindow(GuiCluster<C> cluster, String key, int size, boolean forceSyncUpdate) {
-        this(cluster, key, key, null, size, forceSyncUpdate);
+        this(cluster, key, null, size, forceSyncUpdate);
     }
 
+    /**
+     * @param cluster       The parent {@link GuiCluster} of this window.
+     * @param key           The key for this window. This must be comply with the {@link NamespacedKey} key pattern!
+     * @param inventoryType The type of the window.
+     */
     public GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType) {
         this(cluster, key, inventoryType, false);
     }
 
+    /**
+     * @param cluster         The parent {@link GuiCluster} of this window.
+     * @param key             The key for this window. This must be comply with the {@link NamespacedKey} key pattern!
+     * @param inventoryType   The type of the window.
+     * @param forceSyncUpdate If the window should only allow sync code and no async code.
+     */
     public GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType, boolean forceSyncUpdate) {
-        this(cluster, key, key, inventoryType, 0, forceSyncUpdate);
+        this(cluster, key, inventoryType, 0, forceSyncUpdate);
     }
 
-    public GuiWindow(GuiCluster<C> cluster, String key, String itemKey, InventoryType inventoryType, int size) {
-        this(cluster, key, itemKey, inventoryType, size, false);
-    }
-
-    public GuiWindow(GuiCluster<C> cluster, String key, String itemKey, InventoryType inventoryType, int size, boolean forceSyncUpdate) {
+    private GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType, int size, boolean forceSyncUpdate) {
         this.cluster = cluster;
-        this.inventoryAPI = cluster.inventoryAPI;
-        this.wolfyUtilities = inventoryAPI.getWolfyUtilities();
+        this.wolfyUtilities = cluster.wolfyUtilities;
         this.namespacedKey = new NamespacedKey(cluster.getId(), key);
-        this.itemKey = itemKey;
         this.inventoryType = inventoryType;
         this.size = size;
         this.forceSyncUpdate = forceSyncUpdate;
-        Bukkit.getPluginManager().registerEvents(this, inventoryAPI.getPlugin());
+        Bukkit.getPluginManager().registerEvents(this, wolfyUtilities.getPlugin());
     }
 
+    /**
+     * @return The {@link InventoryType} of this window. Representing the type of the inventory.
+     */
     public InventoryType getInventoryType() {
         return inventoryType;
     }
 
-    public WolfyUtilities getAPI() {
-        return inventoryAPI.getWolfyUtilities();
-    }
-
+    /**
+     * @return The size of this window, representing the size of the inventory.
+     */
     public int getSize() {
         return size;
     }
-
-    //OVERRIDE METHODS
 
     /**
      * This method is called when the inventory is initiated.
      * It's used to register Buttons and optionally other processing on start-up.
      */
-    public void onInit() {
-    }
+    public abstract void onInit();
 
     /**
      * This method is called each time the gui is updated.
      *
-     * @param update
+     * @param update The {@link GuiUpdate} instance, that contains all the data of the action that caused this update.
      */
-    public void onUpdateSync(GuiUpdate<C> update) {
-    }
+    public abstract void onUpdateSync(GuiUpdate<C> update);
 
     /**
      * This method is called after the {@link #onUpdateSync(GuiUpdate)} is done.
@@ -104,17 +131,17 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * <p>
      * If {@link #isForceSyncUpdate()} is enabled then this method is forced to be updated sync too and will act just like {@link #onUpdateSync(GuiUpdate)}!
      *
-     * @param update
+     * @param update The {@link GuiUpdate} instance, that contains all the data of the action that caused this update.
      */
-    public void onUpdateAsync(GuiUpdate<C> update) {
-    }
+    public abstract void onUpdateAsync(GuiUpdate<C> update);
 
     /**
      * This method allows you to execute code when this window is closed.
      * It does not require verification like the GuiCloseEvent.
      * <p>
-     * This method can be overridden and you can either call this super method or not.
-     * If you decide not to, then the GuiCloseEvent won't be called.
+     *     This method can be overridden and you can either call this super method or not.
+     *     If you decide not to, then the GuiCloseEvent won't be called.
+     * </p>
      *
      * @param guiHandler  the gui handler that caused this close event.
      * @param transaction the inventory view of the player.
@@ -131,7 +158,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     void update(GUIInventory<C> inventory, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event) {
-        update(inventory, inventory.getGuiHandler(), postExecuteBtns, event, false);
+        update(inventory, inventory.getGuiHandler(), postExecuteBtns, event, false); //TODO: Check if new method works
     }
 
     private void update(GUIInventory<C> inventory, GuiHandler<C> guiHandler, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event, boolean openInventory) {
@@ -149,7 +176,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
             if (forceSyncUpdate) {
                 runnable.run();
             } else {
-                Bukkit.getScheduler().runTaskAsynchronously(inventoryAPI.getPlugin(), runnable);
+                Bukkit.getScheduler().runTaskAsynchronously(wolfyUtilities.getPlugin(), runnable);
             }
         }
     }
@@ -158,7 +185,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         onUpdateAsync(guiUpdate);
         guiUpdate.applyChanges();
         if (openInventory) {
-            Bukkit.getScheduler().runTask(getAPI().getPlugin(), () -> {
+            Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> {
                 guiHandler.setSwitchWindow(true);
                 guiHandler.getPlayer().openInventory(guiUpdate.getInventory());
                 guiHandler.setSwitchWindow(false);
@@ -166,52 +193,61 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         }
     }
 
-    public NamespacedKey getNamespacedKey() {
+    /**
+     * The NamespacedKey consists of the namespace and key representing this window.
+     * <br/>
+     * namespace: cluster key
+     * <br/>
+     * key: window key.
+     *
+     * @return The NamespacedKey of this Window, consisting of the cluster key and this window key.
+     */
+    public final NamespacedKey getNamespacedKey() {
         return namespacedKey;
     }
 
-    void setNamespacedKey(NamespacedKey namespacedKey) {
-        this.namespacedKey = namespacedKey;
-    }
-
-    public GuiCluster<C> getCluster() {
+    /**
+     * @return The parent {@link GuiCluster} of this window.
+     */
+    public final GuiCluster<C> getCluster() {
         return cluster;
     }
 
-    /*
-                Register an Button!
-                The id of the Button must be unique, else it will override the Button with the same id.
-             */
-    public void registerButton(Button<C> button) {
+    /**
+     * Register an Button to this window.
+     * If the id is already in use it will replace the existing button with the new one.
+     *
+     * @param button The button to register.
+     */
+    public final void registerButton(Button<C> button) {
         button.init(this);
         buttons.put(button.getId(), button);
     }
 
-    /*
-    Gets the Button by it's id.
+    /**
+     * @param id The id of the button.
+     * @return The button if it exists, else null.
      */
-    public Button<C> getButton(String id) {
+    @Nullable
+    public final Button<C> getButton(String id) {
         return buttons.get(id);
     }
 
-    HashMap<String, Button<C>> getButtons() {
-        return buttons;
-    }
-
-    /*
-        Returns true if the Button is registered!
-         */
-    public boolean hasButton(String id) {
+    /**
+     * @param id The id of the button.
+     * @return If the the button exists. True if it exists, else false.
+     */
+    public final boolean hasButton(String id) {
         return buttons.containsKey(id);
     }
 
-    public void reloadInv(GuiHandler<C> guiHandler) {
-        guiHandler.reloadWindow(guiHandler.getWindow().getNamespacedKey());
-    }
-
-    /*
-    Opens the chat, send the player the defined message and waits for the input of the player.
-    When the player sends the message the inputAction method is executed
+    /**
+     * Opens the chat, send the player the defined message and waits for the input of the player.
+     * When the player sends a message the inputAction method is executed.
+     *
+     * @param guiHandler  The {@link GuiHandler} it should be opened for.
+     * @param msg         The message that should be sent to the player.
+     * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
      */
     public void openChat(GuiHandler<C> guiHandler, String msg, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
@@ -219,21 +255,30 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), msg);
     }
 
-    /*
-    Opens the chat, send the player the defined message, which is set inside of the language under "inventories.<guiCluster>.global_items.<msgKey>"
-    Then it waits for the player's input.
-    When the player sends the message the inputAction method is executed
+    /**
+     * Opens the chat, send the player the defined message, which is set inside of the language under "inventories.<guiCluster>.global_items.<msgKey>"
+     * Then it waits for the player's input.
+     * When the player sends the message the inputAction method is executed.
+     *
+     * @param guiCluster  The {@link GuiCluster} of the message.
+     * @param msgKey      The key of the message.
+     * @param guiHandler  The {@link GuiHandler} it should be opened for.
+     * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
      */
-    public void openChat(String guiCluster, String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
+    public void openChat(GuiCluster<C> guiCluster, String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), "$inventories." + guiCluster + ".global_messages." + msgKey + "$");
+        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
     }
 
-    /*
-    Opens the chat, send the player the defined message, which is set inside of the language under "inventories.<guiCluster>.<guiWindow>.<msgKey>"
-    Then it waits for the player's input.
-    When the player sends the message the inputAction method is executed
+    /**
+     * Opens the chat, send the player the defined message, which is set inside of the language under "inventories.<guiCluster>.<guiWindow>.<msgKey>"
+     * Then it waits for the player's input.
+     * When the player sends the message the inputAction method is executed
+     *
+     * @param msgKey      The key of the message.
+     * @param guiHandler  the {@link GuiHandler} it should be opened for.
+     * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
      */
     public void openChat(String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
@@ -241,9 +286,13 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
     }
 
-    /*
-    Opens the chat, send the player the defined action messages and waits for the input of the player.
-    When the player sends the message the inputAction method is executed
+    /**
+     * Opens the chat, send the player the defined action messages and waits for the input of the player.
+     * When the player sends the message the inputAction method is executed
+     *
+     * @param guiHandler  The {@link GuiHandler} it should be opened for.
+     * @param clickData   The {@link ClickData} to be send to the player.
+     * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
      */
     public void openActionChat(GuiHandler<C> guiHandler, ClickData clickData, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
@@ -251,32 +300,57 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         guiHandler.getApi().getChat().sendActionMessage(guiHandler.getPlayer(), clickData);
     }
 
-    /*
-    Sends a message without closing the inventory.
+    /**
+     * Send message to the player without closing the window.
+     *
+     * @param guiHandler The {@link GuiHandler} this message should be sent to.
+     * @param msgKey     The key of the message.
      */
-    public void sendMessage(GuiHandler<C> guiHandler, String msgKey) {
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
+    public final void sendMessage(GuiHandler<C> guiHandler, String msgKey) {
+        sendMessage(guiHandler.getPlayer(), msgKey);
     }
 
-    public void sendMessage(Player player, String msgKey) {
-        inventoryAPI.getWolfyUtilities().getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey);
+    /**
+     * @param player The Player this message should be send to.
+     * @param msgKey The key of the message.
+     */
+    public final void sendMessage(Player player, String msgKey) {
+        wolfyUtilities.getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey);
     }
 
-    public void sendMessage(GuiHandler<C> guiHandler, String msgKey, Pair<String, String>... replacements) {
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey, replacements);
+    /**
+     * @param guiHandler   The {@link GuiHandler} that this message should be send to.
+     * @param msgKey       The key of the message.
+     * @param replacements The replacement strings to replace specific strings with values.
+     */
+    @SafeVarargs
+    public final void sendMessage(GuiHandler<C> guiHandler, String msgKey, Pair<String, String>... replacements) {
+        wolfyUtilities.getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey, replacements);
     }
 
-    public void sendMessage(Player player, String msgKey, Pair<String, String>... replacements) {
-        inventoryAPI.getWolfyUtilities().getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey, replacements);
+    /**
+     * @param player       The Player this message should be send to.
+     * @param msgKey       The key of the message.
+     * @param replacements The replacement strings to replace specific strings with values.
+     */
+    @SafeVarargs
+    public final void sendMessage(Player player, String msgKey, Pair<String, String>... replacements) {
+        wolfyUtilities.getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey, replacements);
     }
 
+    /**
+     * @return The inventory name of this Window.
+     */
     protected String getInventoryName() {
-        return ChatColor.convert(inventoryAPI.getWolfyUtilities().getLanguageAPI().replaceKeys("$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".gui_name$"));
+        return ChatColor.convert(wolfyUtilities.getLanguageAPI().replaceKeys("$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".gui_name$"));
     }
 
+    /**
+     * @return The help information of this window.
+     */
     public List<String> getHelpInformation() {
         List<String> values = new ArrayList<>();
-        for (String value : getAPI().getLanguageAPI().replaceKey("$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".gui_help$")) {
+        for (String value : wolfyUtilities.getLanguageAPI().replaceKey("$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".gui_help$")) {
             values.add(ChatColor.convert(value));
         }
         return values;
@@ -289,14 +363,20 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * It should be enabled when using {@link ItemInputButton}
      * to make sure that no item could be duplicated, because of tick lag!
      *
-     * @return
+     * @return If the forced sync feature is enabled.
      */
     public boolean isForceSyncUpdate() {
         return forceSyncUpdate;
     }
 
     /**
-     * @param forceSyncUpdate
+     * ForceSyncUpdate will make sure that no async code is executed on the GUI update
+     * and will also open the Inventory one tick after the initial update request, instead of being opened after the async update.
+     * <br/>
+     * It should be enabled when using {@link ItemInputButton}
+     * to make sure that no item could be duplicated, because of tick lag!
+     *
+     * @param forceSyncUpdate New forced sync value.
      */
     public void setForceSyncUpdate(boolean forceSyncUpdate) {
         this.forceSyncUpdate = forceSyncUpdate;

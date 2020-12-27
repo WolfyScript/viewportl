@@ -98,7 +98,6 @@ public class PlayerHeadUtils {
         return null;
     }
 
-
     /**
      * Both items Material must be equal to PLAYER_HEAD!
      * <p>

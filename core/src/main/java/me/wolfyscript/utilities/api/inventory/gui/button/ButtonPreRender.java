@@ -3,11 +3,11 @@ package me.wolfyscript.utilities.api.inventory.gui.button;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public interface ButtonPrepareRender<C extends CustomCache> {
+public interface ButtonPreRender<C extends CustomCache> {
 
     /**
      * This method is run before the render method and provides the previous inventory, which includes all the items of last render.
@@ -18,6 +18,7 @@ public interface ButtonPrepareRender<C extends CustomCache> {
      * <br/>
      * .
      *
+     * @param cache       The current cache of the GuiHandler
      * @param guiHandler  The current GuiHandler.
      * @param player      The current Player.
      * @param inventory   The original/previous inventory. No changes to this inventory will be applied on render!
@@ -25,5 +26,5 @@ public interface ButtonPrepareRender<C extends CustomCache> {
      * @param slot        The slot in which the button is rendered.
      * @param helpEnabled Returns true if help is enabled.
      */
-    void prepare(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean helpEnabled);
+    void prepare(C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, boolean helpEnabled);
 }

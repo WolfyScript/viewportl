@@ -1,7 +1,6 @@
-package me.wolfyscript.utilities.api.inventory.custom_items.api_references;
+package me.wolfyscript.utilities.api.inventory.custom_items.references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import org.bukkit.inventory.ItemStack;
@@ -29,11 +28,8 @@ public class VanillaRef extends APIReference {
 
     @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
-
         gen.writeFieldName("item");
-        ObjectMapper objectMapper = JacksonUtil.getObjectMapper().copy();//.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.EVERYTHING);
-        objectMapper.writeValue(gen, itemStack);
-
+        JacksonUtil.getObjectMapper().writeValue(gen, itemStack);
     }
 
     @Override

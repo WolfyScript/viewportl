@@ -1,5 +1,6 @@
-package me.wolfyscript.utilities.api.inventory.custom_items;
+package me.wolfyscript.utilities.util.events;
 
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;

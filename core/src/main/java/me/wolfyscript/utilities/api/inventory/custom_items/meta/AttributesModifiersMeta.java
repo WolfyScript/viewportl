@@ -2,8 +2,6 @@ package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 
 import com.google.common.collect.Multimap;
-import me.wolfyscript.utilities.api.inventory.custom_items.Meta;
-import me.wolfyscript.utilities.api.inventory.custom_items.MetaSettings;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;

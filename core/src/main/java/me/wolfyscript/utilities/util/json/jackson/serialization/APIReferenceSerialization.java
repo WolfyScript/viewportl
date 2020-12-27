@@ -2,7 +2,7 @@ package me.wolfyscript.utilities.util.json.jackson.serialization;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import me.wolfyscript.utilities.api.inventory.custom_items.api_references.*;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

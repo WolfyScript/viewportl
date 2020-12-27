@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.util.chat;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,7 +11,8 @@ public class ChatColor {
     public static final String HEX_PATTERN = "&#\\([A-Fa-f0-9]{6}\\)";
     public static final Pattern HEX_PATTERN_COMPILED = Pattern.compile(HEX_PATTERN);
 
-    public static String convert(String msg) {
+    public static String convert(@Nullable String msg) {
+        if (msg == null) return null;
         char[] b = parseHexColorsString(msg).toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
             if (b[i] == '&') {
@@ -25,7 +27,8 @@ public class ChatColor {
         return new String(b).replace("&=", "&");
     }
 
-    public static String parseHexColorsString(String string) {
+    public static String parseHexColorsString(@Nullable String string) {
+        if (string == null) return null;
         if (WolfyUtilities.hasNetherUpdate()) {
             Matcher matcher = HEX_PATTERN_COMPILED.matcher(string);
             while (matcher.find()) {

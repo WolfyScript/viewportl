@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.nms;
 
-import me.wolfyscript.utilities.api.nms.block.INMSBrewingStand;
+import me.wolfyscript.utilities.api.nms.block.NMSBrewingStand;
 import org.bukkit.block.BrewingStand;
 
 public abstract class BlockUtil {
@@ -21,6 +21,6 @@ public abstract class BlockUtil {
      * @param brewingStand The Bukkit BrewingStand Block
      * @return The NMSBrewingStand API
      */
-    public abstract INMSBrewingStand getNmsBrewingStand(BrewingStand brewingStand);
+    public abstract NMSBrewingStand getNmsBrewingStand(BrewingStand brewingStand);
 
 }

@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.nms.block;
 
-public interface INMSBrewingStand {
+public interface NMSBrewingStand {
 
     /**
      * @return The actual FuelLevel from the TileEntity

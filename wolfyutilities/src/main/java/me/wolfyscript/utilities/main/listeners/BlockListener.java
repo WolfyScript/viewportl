@@ -1,12 +1,13 @@
 package me.wolfyscript.utilities.main.listeners;
 
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItemBreakEvent;
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItemPlaceEvent;
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItems;
 import me.wolfyscript.utilities.main.WUPlugin;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.Registry;
+import me.wolfyscript.utilities.util.events.CustomItemBreakEvent;
+import me.wolfyscript.utilities.util.events.CustomItemPlaceEvent;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
+import me.wolfyscript.utilities.util.world.WorldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -38,7 +39,7 @@ public class BlockListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         if (!event.isCancelled()) {
             Block block = event.getBlock();
-            CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
             if (!ItemUtils.isAirOrNull(storedItem)) {
                 event.setDropItems(false);
                 CustomItemBreakEvent event1 = new CustomItemBreakEvent(storedItem, event);
@@ -72,7 +73,7 @@ public class BlockListener implements Listener {
             Iterator<Block> blockList = blocks.iterator();
             while (blockList.hasNext()) {
                 Block block = blockList.next();
-                CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+                CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
                 if (!ItemUtils.isAirOrNull(storedItem)) {
                     blockList.remove();
                     block.setType(Material.AIR);
@@ -85,7 +86,7 @@ public class BlockListener implements Listener {
 
     private ItemStack dropItems(Block block, CustomItem storedItem) {
         ItemStack result = storedItem.create();
-        CustomItems.removeStoredBlockItem(block.getLocation());
+        WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
         if (block.getState() instanceof Container) {
             Container container = (Container) block.getState();
             BlockStateMeta blockStateMeta = (BlockStateMeta) result.getItemMeta();
@@ -105,10 +106,10 @@ public class BlockListener implements Listener {
 
     private void removeMultiBlockItems(Block block) {
         if (block.getBlockData() instanceof Bisected) {
-            CustomItems.removeStoredBlockItem(((Bisected) block.getBlockData()).getHalf().equals(Bisected.Half.BOTTOM) ? block.getLocation().add(0, 1, 0) : block.getLocation().subtract(0, 1, 0));
+            WorldUtils.getWorldCustomItemStore().remove(((Bisected) block.getBlockData()).getHalf().equals(Bisected.Half.BOTTOM) ? block.getLocation().add(0, 1, 0) : block.getLocation().subtract(0, 1, 0));
         } else if (block.getBlockData() instanceof Bed) {
             Bed bed = (Bed) block.getBlockData();
-            CustomItems.removeStoredBlockItem(block.getLocation().add(bed.getFacing().getDirection()));
+            WorldUtils.getWorldCustomItemStore().remove(block.getLocation().add(bed.getFacing().getDirection()));
         }
     }
 
@@ -120,10 +121,10 @@ public class BlockListener implements Listener {
     public void onBlockFromTo(BlockFromToEvent event) {
         if (!event.isCancelled()) {
             Block block = event.getBlock();
-            CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
             if (!ItemUtils.isAirOrNull(storedItem)) {
-                CustomItems.removeStoredBlockItem(block.getLocation());
-                CustomItems.setStoredBlockItem(event.getToBlock().getLocation(), storedItem);
+                WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
+                WorldUtils.getWorldCustomItemStore().store(event.getToBlock().getLocation(), storedItem);
             }
         }
     }
@@ -150,13 +151,13 @@ public class BlockListener implements Listener {
     private void updatePistonBlocks(List<Block> blocks, BlockFace direction) {
         HashMap<Location, CustomItem> newLocations = new HashMap<>();
         blocks.forEach(block -> {
-            CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
             if (storedItem != null) {
-                CustomItems.removeStoredBlockItem(block.getLocation());
+                WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
                 newLocations.put(block.getRelative(direction).getLocation(), storedItem);
             }
         });
-        newLocations.forEach(CustomItems::setStoredBlockItem);
+        newLocations.forEach((location, customItem) -> WorldUtils.getWorldCustomItemStore().store(location, customItem));
     }
 
     /*
@@ -170,9 +171,9 @@ public class BlockListener implements Listener {
     public void onBlockBurn(BlockBurnEvent event) {
         if (!event.isCancelled()) {
             Block block = event.getBlock();
-            CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
             if (storedItem != null) {
-                CustomItems.removeStoredBlockItem(block.getLocation());
+                WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
             }
         }
     }
@@ -184,9 +185,9 @@ public class BlockListener implements Listener {
     public void onLeavesDecay(LeavesDecayEvent event) {
         if (!event.isCancelled()) {
             Block block = event.getBlock();
-            CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
             if (storedItem != null) {
-                CustomItems.removeStoredBlockItem(block.getLocation());
+                WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
             }
         }
     }
@@ -195,9 +196,9 @@ public class BlockListener implements Listener {
     public void onBlockFade(BlockFadeEvent event) {
         if (!event.isCancelled() && event.getNewState().getType().equals(Material.AIR)) {
             Block block = event.getBlock();
-            CustomItem storedItem = CustomItems.getStoredBlockItem(block.getLocation());
+            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
             if (storedItem != null) {
-                CustomItems.removeStoredBlockItem(block.getLocation());
+                WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
             }
         }
     }
@@ -213,7 +214,7 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (!event.isCancelled() && event.canBuild()) {
-            CustomItem customItem = CustomItems.getCustomItem(NamespacedKey.getByString(getCustomItemID(event.getItemInHand())));
+            CustomItem customItem = Registry.CUSTOM_ITEMS.get(NamespacedKey.getByString(getCustomItemID(event.getItemInHand())));
             if (!ItemUtils.isAirOrNull(customItem) && customItem.getItemStack().getType().isBlock()) {
                 if (customItem.isBlockPlacement()) {
                     event.setCancelled(true);
@@ -224,7 +225,7 @@ public class BlockListener implements Listener {
 
                 if (!event1.isCancelled()) {
                     if (customItem != null) {
-                        CustomItems.setStoredBlockItem(event.getBlockPlaced().getLocation(), customItem);
+                        WorldUtils.getWorldCustomItemStore().store(event.getBlockPlaced().getLocation(), customItem);
                     }
                 } else {
                     event.setCancelled(true);
@@ -237,13 +238,13 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlaceMulti(BlockMultiPlaceEvent event) {
         if (!event.isCancelled()) {
-            CustomItem customItem = CustomItems.getCustomItem(NamespacedKey.getByString(getCustomItemID(event.getItemInHand())));
+            CustomItem customItem = Registry.CUSTOM_ITEMS.get(NamespacedKey.getByString(getCustomItemID(event.getItemInHand())));
             if (!ItemUtils.isAirOrNull(customItem)) {
                 if (customItem.isBlockPlacement()) {
                     event.setCancelled(true);
                     return;
                 }
-                event.getReplacedBlockStates().forEach(state -> CustomItems.setStoredBlockItem(state.getLocation(), customItem));
+                event.getReplacedBlockStates().forEach(state -> WorldUtils.getWorldCustomItemStore().store(state.getLocation(), customItem));
             }
         }
     }

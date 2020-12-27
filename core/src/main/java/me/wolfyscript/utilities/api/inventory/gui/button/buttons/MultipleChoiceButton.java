@@ -7,8 +7,8 @@ import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonType;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -29,6 +29,7 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
     Each click the index increases by 1.
     After the index reached the size of the States it is reset to 0!
      */
+    @SafeVarargs
     public MultipleChoiceButton(String id, @Nonnull ButtonState<C>... states) {
         super(id, ButtonType.CHOICES);
         this.states = Arrays.asList(states);
@@ -50,12 +51,7 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
     }
 
     @Override
-    public void postExecute(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
-
-    }
-
-    @Override
-    public boolean execute(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
+    public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
         int setting = settings.getOrDefault(guiHandler, 0);
         if (states != null && setting < states.size()) {
             ButtonState<C> btnState = states.get(setting);
@@ -65,26 +61,37 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
             } else {
                 settings.put(guiHandler, setting);
             }
-            return btnState.getAction().run(guiHandler, player, inventory, slot, event);
+            return btnState.getAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot, event);
         }
         return true;
     }
 
     @Override
-    public void prepareRender(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
+    public void postExecute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
         int setting = settings.getOrDefault(guiHandler, 0);
-        if (states != null && states.size() > setting) {
-            if (states.get(setting).getPrepareRender() != null) {
-                states.get(setting).getPrepareRender().prepare(guiHandler, player, inventory, itemStack, slot, help);
+        if (states != null && setting < states.size()) {
+            ButtonState<C> btnState = states.get(setting);
+            if (btnState.getPostAction() != null) {
+                btnState.getPostAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, event);
             }
         }
     }
 
     @Override
-    public void render(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, boolean help) {
+    public void preRender(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, boolean help) {
         int setting = settings.getOrDefault(guiHandler, 0);
         if (states != null && states.size() > setting) {
-            applyItem(guiHandler, player, inventory, states.get(setting), slot, help);
+            if (states.get(setting).getPrepareRender() != null) {
+                states.get(setting).getPrepareRender().prepare(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, help);
+            }
+        }
+    }
+
+    @Override
+    public void render(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
+        int setting = settings.getOrDefault(guiHandler, 0);
+        if (states != null && states.size() > setting) {
+            applyItem(guiHandler, player, guiInventory, inventory, states.get(setting), slot, help);
         }
     }
 

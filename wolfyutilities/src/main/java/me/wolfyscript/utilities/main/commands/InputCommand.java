@@ -45,7 +45,7 @@ public class InputCommand implements TabExecutor {
                             }
                         }
                         if (guiHandler.isChatEventActive()) {
-                            guiHandler.cancelChatEvent();
+                            guiHandler.cancelChatInputAction();
                         }
                     }
                 }

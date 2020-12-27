@@ -22,24 +22,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
+public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
 
-    private static final NamespacedKey CUSTOM_DURABILITY_VALUE = new org.bukkit.NamespacedKey("wolfyutilities", "custom_durability.value");
-    private static final NamespacedKey CUSTOM_DURABILITY_DAMAGE = new org.bukkit.NamespacedKey("wolfyutilities", "custom_durability.damage");
-    private static final NamespacedKey CUSTOM_DURABILITY_INDEX = new org.bukkit.NamespacedKey("wolfyutilities", "custom_durability.index");
-    private static final NamespacedKey CUSTOM_DURABILITY_TAG = new org.bukkit.NamespacedKey("wolfyutilities", "custom_durability.tag");
+    private static final NamespacedKey CUSTOM_DURABILITY_VALUE = new NamespacedKey("wolfyutilities", "custom_durability.value");
+    private static final NamespacedKey CUSTOM_DURABILITY_DAMAGE = new NamespacedKey("wolfyutilities", "custom_durability.damage");
+    private static final NamespacedKey CUSTOM_DURABILITY_INDEX = new NamespacedKey("wolfyutilities", "custom_durability.index");
+    private static final NamespacedKey CUSTOM_DURABILITY_TAG = new NamespacedKey("wolfyutilities", "custom_durability.tag");
+
+    private final Class<T> typeClass;
+
+    protected AbstractItemBuilder(Class<T> typeClass) {
+        this.typeClass = typeClass;
+    }
 
     abstract protected ItemStack getItemStack();
 
     abstract public ItemStack create();
 
+    private T get() {
+        return typeClass.cast(this);
+    }
+
     /**
-     * @param itemMeta
-     * @return
+     * @param itemMeta The ItemMeta to add to the ItemStack.
+     * @return This {@link AbstractItemBuilder} instance. Used for chaining of methods.
      */
     public T setItemMeta(ItemMeta itemMeta) {
         getItemStack().setItemMeta(itemMeta);
-        return (T) this;
+        return get();
     }
 
     public ItemMeta getItemMeta() {
@@ -52,27 +62,27 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
 
     public T addEnchantment(@Nonnull Enchantment ench, int level) {
         getItemStack().addEnchantment(ench, level);
-        return (T) this;
+        return get();
     }
 
     public T removeEnchantment(@Nonnull Enchantment ench) {
         getItemStack().removeEnchantment(ench);
-        return (T) this;
+        return get();
     }
 
     public T addUnsafeEnchantment(@Nonnull Enchantment ench, int level) {
         getItemStack().addUnsafeEnchantment(ench, level);
-        return (T) this;
+        return get();
     }
 
     public T addEnchantments(@Nonnull Map<Enchantment, Integer> enchantments) {
         getItemStack().addEnchantments(enchantments);
-        return (T) this;
+        return get();
     }
 
     public T addUnsafeEnchantments(@Nonnull Map<Enchantment, Integer> enchantments) {
         getItemStack().addUnsafeEnchantments(enchantments);
-        return (T) this;
+        return get();
     }
 
     public T addItemFlags(ItemFlag... itemFlags) {
@@ -95,7 +105,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
 
     public T setType(Material type) {
         getItemStack().setType(type);
-        return (T) this;
+        return get();
     }
 
     public T setLore(List<String> lore) {
@@ -270,7 +280,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
             }
             return setItemMeta(skullMeta);
         }
-        return (T) this;
+        return get();
     }
 
     public T setPlayerHeadURL(String value) {
@@ -296,7 +306,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder> {
             }
             return setItemMeta(skullMeta);
         }
-        return (T) this;
+        return get();
     }
 
     public String getPlayerHeadValue() {

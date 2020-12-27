@@ -9,7 +9,7 @@ import org.bukkit.Particle;
 
 public class DustOptionsSerialization {
 
-    public static void create(SimpleModule module, WolfyUtilities api){
+    public static void create(SimpleModule module) {
         JacksonUtil.addSerializerAndDeserializer(module, Particle.DustOptions.class, (dustOptions, gen, s) -> {
             gen.writeStartObject();
             gen.writeNumberField("size", dustOptions.getSize());
@@ -23,7 +23,7 @@ public class DustOptionsSerialization {
                 Color color = ctxt.readValue(node.get("color").traverse(JacksonUtil.getObjectMapper()), Color.class);
                 return new Particle.DustOptions(color, size);
             }
-            api.getChat().sendConsoleWarning("Error Deserializing DustOptions! Invalid DustOptions object!");
+            WolfyUtilities.getWUCore().getChat().sendConsoleWarning("Error Deserializing DustOptions! Invalid DustOptions object!");
             return null;
         });
     }

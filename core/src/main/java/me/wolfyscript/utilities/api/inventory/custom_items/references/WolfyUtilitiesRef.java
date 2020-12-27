@@ -1,10 +1,10 @@
-package me.wolfyscript.utilities.api.inventory.custom_items.api_references;
+package me.wolfyscript.utilities.api.inventory.custom_items.references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItems;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.Registry;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,7 +28,7 @@ public class WolfyUtilitiesRef extends APIReference {
 
     @Override
     public ItemStack getLinkedItem() {
-        CustomItem customItem = CustomItems.getCustomItem(namespacedKey);
+        CustomItem customItem = Registry.CUSTOM_ITEMS.get(namespacedKey);
         if (customItem != null) {
             return customItem.create();
         }
@@ -38,7 +38,7 @@ public class WolfyUtilitiesRef extends APIReference {
 
     @Override
     public ItemStack getIdItem() {
-        ItemStack itemStack = CustomItems.getCustomItem(namespacedKey).create();
+        ItemStack itemStack = Registry.CUSTOM_ITEMS.get(namespacedKey).create();
         if (itemStack.getType().equals(Material.AIR)) {
             return itemStack;
         }

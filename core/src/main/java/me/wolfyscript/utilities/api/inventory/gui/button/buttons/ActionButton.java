@@ -6,12 +6,13 @@ import me.wolfyscript.utilities.api.inventory.gui.GuiUpdate;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.button.*;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -49,32 +50,40 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
         this(id, new ButtonState<>(id, itemStack));
     }
 
-    public ActionButton(String id, ItemStack itemStack, ButtonAction<C> action) {
+    public ActionButton(String id, ItemStack itemStack, @Nullable ButtonAction<C> action) {
         this(id, itemStack, action, null);
     }
 
-    public ActionButton(String id, ItemStack itemStack, ButtonRender<C> render) {
+    public ActionButton(String id, ItemStack itemStack, @Nullable ButtonRender<C> render) {
         this(id, itemStack, null, render);
     }
 
-    public ActionButton(String id, ItemStack itemStack, ButtonAction<C> action, ButtonRender<C> render) {
+    public ActionButton(String id, ItemStack itemStack, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(id, new ButtonState<>(id, itemStack, action, render));
+    }
+
+    public ActionButton(String id, ItemStack itemStack, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonRender<C> render, @Nullable ButtonPreRender<C> preRender) {
+        this(id, new ButtonState<>(id, itemStack, action, postAction, preRender, render));
     }
 
     public ActionButton(String id, Material material) {
         this(id, new ButtonState<>(id, material));
     }
 
-    public ActionButton(String id, Material material, ButtonAction<C> action) {
+    public ActionButton(String id, Material material, @Nullable ButtonAction<C> action) {
         this(id, material, action, null);
     }
 
-    public ActionButton(String id, Material material, ButtonRender<C> render) {
+    public ActionButton(String id, Material material, @Nullable ButtonRender<C> render) {
         this(id, material, null, render);
     }
 
-    public ActionButton(String id, Material material, ButtonAction<C> action, ButtonRender<C> render) {
+    public ActionButton(String id, Material material, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(id, new ButtonState<>(id, material, action, render));
+    }
+
+    public ActionButton(String id, Material material, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonRender<C> render, @Nullable ButtonPreRender<C> preRender) {
+        this(id, new ButtonState<>(id, material, action, postAction, preRender, render));
     }
 
     public void init(GuiWindow<C> guiWindow) {
@@ -86,28 +95,30 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
         state.init(clusterID, api);
     }
 
-    public boolean execute(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) throws IOException {
+    public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
         if (!type.equals(ButtonType.DUMMY) && state.getAction() != null) {
-            return state.getAction().run(guiHandler, player, inventory, slot, event);
+            return state.getAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot, event);
         }
         return true;
     }
 
     @Override
-    public void postExecute(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
-
-    }
-
-    @Override
-    public void prepareRender(GuiHandler<C> guiHandler, Player player, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
-        if (state.getPrepareRender() != null) {
-            state.getPrepareRender().prepare(guiHandler, player, inventory, itemStack, slot, help);
+    public void postExecute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
+        if (state.getPostAction() != null) {
+            state.getPostAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, event);
         }
     }
 
     @Override
-    public void render(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, boolean help) throws IOException {
-        applyItem(guiHandler, player, inventory, state, slot, help);
+    public void preRender(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, boolean help) {
+        if (state.getPrepareRender() != null) {
+            state.getPrepareRender().prepare(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, help);
+        }
+    }
+
+    @Override
+    public void render(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ItemStack itemStack, int slot, boolean help) throws IOException {
+        applyItem(guiHandler, player, guiInventory, inventory, state, slot, help);
     }
 
     public ButtonType getType() {
