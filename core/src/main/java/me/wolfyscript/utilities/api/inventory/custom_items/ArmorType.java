@@ -1,6 +1,5 @@
-package me.wolfyscript.utilities.api.inventory.custom_items.equipment;
+package me.wolfyscript.utilities.api.inventory.custom_items;
 
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;

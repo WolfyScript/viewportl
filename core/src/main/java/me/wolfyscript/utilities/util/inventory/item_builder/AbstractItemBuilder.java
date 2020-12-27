@@ -44,8 +44,8 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     }
 
     /**
-     * @param itemMeta
-     * @return
+     * @param itemMeta The ItemMeta to add to the ItemStack.
+     * @return This {@link AbstractItemBuilder} instance. Used for chaining of methods.
      */
     public T setItemMeta(ItemMeta itemMeta) {
         getItemStack().setItemMeta(itemMeta);

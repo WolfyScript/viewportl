@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,9 @@ import java.util.regex.Pattern;
 
 public class NamespacedKey implements Comparable<NamespacedKey> {
 
+    @JsonIgnore
     private static final Pattern VALID_NAMESPACE = Pattern.compile("[a-z0-9._-]+");
+    @JsonIgnore
     private static final Pattern VALID_KEY = Pattern.compile("[a-z0-9/._-]+");
     private final String namespace;
     private final String key;

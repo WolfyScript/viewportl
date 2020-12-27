@@ -1,26 +1,27 @@
-package me.wolfyscript.utilities.api.inventory.custom_items.api_references;
+package me.wolfyscript.utilities.api.inventory.custom_items.references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import io.th0rgal.oraxen.items.OraxenItems;
+import dev.lone.itemsadder.api.ItemsAdder;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.util.Objects;
 
-public class OraxenRef extends APIReference{
+public class ItemsAdderRef extends APIReference{
 
-    private final String itemID;
+    private final String itemName;
 
-    public OraxenRef(String itemID){
-        this.itemID = itemID;
+    public ItemsAdderRef(String itemName){
+        this.itemName = itemName;
     }
 
     @Override
     public ItemStack getLinkedItem() {
-        if(OraxenItems.isAnItem(itemID)){
-            return OraxenItems.getItemById(itemID).build();
+        if (WolfyUtilities.hasPlugin("ItemsAdder")) {
+            return ItemsAdder.getCustomItem(itemName);
         }
         return ItemUtils.AIR;
     }
@@ -32,24 +33,24 @@ public class OraxenRef extends APIReference{
 
     @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
-        gen.writeStringField("oraxen", itemID);
+        gen.writeStringField("itemsadder", itemName);
     }
 
-    public String getItemID() {
-        return itemID;
+    public String getItemName() {
+        return itemName;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof OraxenRef)) return false;
+        if (!(o instanceof ItemsAdderRef)) return false;
         if (!super.equals(o)) return false;
-        OraxenRef oraxenRef = (OraxenRef) o;
-        return Objects.equals(itemID, oraxenRef.itemID);
+        ItemsAdderRef that = (ItemsAdderRef) o;
+        return Objects.equals(itemName, that.itemName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), itemID);
+        return Objects.hash(super.hashCode(), itemName);
     }
 }

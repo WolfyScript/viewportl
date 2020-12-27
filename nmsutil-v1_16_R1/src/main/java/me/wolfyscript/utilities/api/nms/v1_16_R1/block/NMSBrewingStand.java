@@ -1,10 +1,9 @@
 package me.wolfyscript.utilities.api.nms.v1_16_R1.block;
 
-import me.wolfyscript.utilities.api.nms.block.INMSBrewingStand;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.craftbukkit.v1_16_R1.block.CraftBrewingStand;
 
-public class NMSBrewingStand extends CraftBrewingStand implements INMSBrewingStand {
+public class NMSBrewingStand extends CraftBrewingStand implements me.wolfyscript.utilities.api.nms.block.NMSBrewingStand {
 
     public NMSBrewingStand(BrewingStand brewingStand) {
         super(brewingStand.getBlock());

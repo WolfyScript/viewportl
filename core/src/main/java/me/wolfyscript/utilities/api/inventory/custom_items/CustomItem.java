@@ -15,8 +15,9 @@ import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.util.jnbt.CompoundTag;
 import io.th0rgal.oraxen.items.OraxenItems;
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.inventory.custom_items.api_references.*;
-import me.wolfyscript.utilities.api.inventory.custom_items.custom_data.CustomData;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
+import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.inventory.item_builder.AbstractItemBuilder;
@@ -220,7 +221,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 PersistentDataContainer container = itemMeta.getPersistentDataContainer();
                 NamespacedKey namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
                 if (container.has(namespacedKey, PersistentDataType.STRING)) {
-                    return CustomItems.getCustomItem(me.wolfyscript.utilities.util.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
+                    return Registry.CUSTOM_ITEMS.get(me.wolfyscript.utilities.util.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
                 }
             }
         }
@@ -613,28 +614,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             if (this.isConsumed()) {
                 input.setAmount(0);
             } else {
-                switch (input.getType()) {
-                    case LAVA_BUCKET:
-                    case MILK_BUCKET:
-                    case WATER_BUCKET:
-                    case COD_BUCKET:
-                    case SALMON_BUCKET:
-                    case PUFFERFISH_BUCKET:
-                    case TROPICAL_FISH_BUCKET:
-                        input.setType(Material.BUCKET);
-                        break;
-                    case POTION:
-                        input.setType(Material.GLASS_BOTTLE);
-                        break;
-                    case BEETROOT_SOUP:
-                    case MUSHROOM_STEW:
-                    case RABBIT_STEW:
-                        input.setType(Material.BOWL);
-                }
-                if (WolfyUtilities.hasBuzzyBeesUpdate()) {
-                    if (input.getType().equals(Material.HONEY_BOTTLE)) {
-                        input.setType(Material.GLASS_BOTTLE);
-                    }
+                Material replaceType = getCraftReplaceMaterial(input);
+                if (replaceType != null) {
+                    input.setType(replaceType);
                 }
             }
             if (this.hasReplacement()) {
@@ -661,33 +643,40 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 input.setItemMeta(itemMeta);
             }
         } else {
-            switch (input.getType()) {
-                case LAVA_BUCKET:
-                case MILK_BUCKET:
-                case WATER_BUCKET:
-                case COD_BUCKET:
-                case SALMON_BUCKET:
-                case PUFFERFISH_BUCKET:
-                case TROPICAL_FISH_BUCKET:
-                    input.setType(Material.BUCKET);
-                    return;
-                case POTION:
-                    input.setType(Material.GLASS_BOTTLE);
-                    return;
-                case BEETROOT_SOUP:
-                case MUSHROOM_STEW:
-                case RABBIT_STEW:
-                    input.setType(Material.BOWL);
-                    return;
-            }
-            if (WolfyUtilities.hasBuzzyBeesUpdate()) {
-                if (input.getType().equals(Material.HONEY_BOTTLE)) {
-                    input.setType(Material.GLASS_BOTTLE);
-                    return;
-                }
+            Material replaceType = getCraftReplaceMaterial(input);
+            if (replaceType != null) {
+                input.setType(replaceType);
             }
             input.setAmount(0);
         }
+    }
+
+    private Material getCraftReplaceMaterial(ItemStack input) {
+        if (WolfyUtilities.hasVillagePillageUpdate()) {
+            if (input.getType().isItem()) {
+                Material replaceType = input.getType().getCraftingRemainingItem();
+                if (replaceType != null) return replaceType;
+            }
+        } else switch (input.getType()) {
+            case LAVA_BUCKET:
+            case MILK_BUCKET:
+            case WATER_BUCKET:
+                return Material.BUCKET;
+        }
+        switch (input.getType()) {
+            case COD_BUCKET:
+            case SALMON_BUCKET:
+            case PUFFERFISH_BUCKET:
+            case TROPICAL_FISH_BUCKET:
+                return Material.BUCKET;
+            case POTION:
+                return Material.GLASS_BOTTLE;
+            case BEETROOT_SOUP:
+            case MUSHROOM_STEW:
+            case RABBIT_STEW:
+                return Material.BOWL;
+        }
+        return null;
     }
 
     public boolean hasPermission() {

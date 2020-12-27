@@ -1,7 +1,5 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
-import me.wolfyscript.utilities.api.inventory.custom_items.Meta;
-import me.wolfyscript.utilities.api.inventory.custom_items.MetaSettings;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 
 public class NameMeta extends Meta {

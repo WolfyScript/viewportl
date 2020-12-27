@@ -4,7 +4,6 @@ import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.YamlConfiguration;
 import me.wolfyscript.utilities.api.inventory.BookUtil;
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItems;
 import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
@@ -13,10 +12,8 @@ import me.wolfyscript.utilities.util.Reflection;
 import me.wolfyscript.utilities.util.exceptions.InvalidCacheTypeException;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -24,37 +21,6 @@ public class WolfyUtilities {
 
     private static final HashMap<Plugin, WolfyUtilities> wolfyUtilitiesList = new HashMap<>();
     private static final HashMap<String, Boolean> classes = new HashMap<>();
-
-    private static CustomItems customItems;
-
-    public static CustomItems getCustomItems() {
-        return customItems;
-    }
-
-    private static void register(WolfyUtilities wolfyUtilities) {
-        if (!has(wolfyUtilities.getPlugin())) {
-            wolfyUtilitiesList.put(wolfyUtilities.getPlugin(), wolfyUtilities);
-        }
-    }
-
-    private final NMSUtil nmsUtil;
-
-    private WolfyUtilities(Plugin plugin) {
-        this.plugin = plugin;
-        this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT) + "_";
-        register(this);
-
-        customItems = new CustomItems(plugin);
-
-        this.configAPI = new ConfigAPI(this);
-        this.languageAPI = new LanguageAPI(this);
-        this.inventoryAPI = new InventoryAPI<>(this.plugin, this, CustomCache.class);
-        this.chat = new Chat(this);
-        this.permissions = new Permissions(this);
-        this.itemUtils = new ItemUtils(this);
-        this.nmsUtil = NMSUtil.create(this);
-        this.bookUtil = new BookUtil(this);
-    }
 
     /**
      * @return if the minecraft version is 1.16 or higher
@@ -140,37 +106,32 @@ public class WolfyUtilities {
         return wolfyUtilitiesList.get(plugin);
     }
 
-    //Not tested yet!!
-
-    public static void sendParticles(Player player, String particle, boolean biggerRadius, float x, float y, float z, float xOffset, float yOffset, float zOffset, int count, float particledata, int... data) {
-        try {
-            Object enumParticles = Reflection.getNMS("EnumParticle").getField(particle).get(null);
-            Constructor<?> particleConstructor = Reflection.getNMS("PacketPlayOutWorldParticles").getConstructor(
-                    Reflection.getNMS("EnumParticle"), boolean.class, float.class, float.class, float.class, float.class, float.class, float.class, float.class, int.class, int[].class);
-            Object packet = particleConstructor.newInstance(enumParticles, biggerRadius, x, y, z, xOffset, yOffset, zOffset, particledata, count, data);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    /*
-        Non Static methods and constructor down below!
-     */
-
     private final Plugin plugin;
-
     private String dataBasePrefix;
-
     private final ConfigAPI configAPI;
-
     private InventoryAPI<?> inventoryAPI;
-
     private final LanguageAPI languageAPI;
-
     private final Chat chat;
     private final ItemUtils itemUtils;
     private final Permissions permissions;
     private final BookUtil bookUtil;
+    private final NMSUtil nmsUtil;
+
+    private WolfyUtilities(Plugin plugin) {
+        this.plugin = plugin;
+        if (!has(plugin)) {
+            wolfyUtilitiesList.put(plugin, this);
+        }
+        this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT) + "_";
+        this.configAPI = new ConfigAPI(this);
+        this.languageAPI = new LanguageAPI(this);
+        this.inventoryAPI = new InventoryAPI<>(this.plugin, this, CustomCache.class);
+        this.chat = new Chat(this);
+        this.permissions = new Permissions(this);
+        this.itemUtils = new ItemUtils(this);
+        this.nmsUtil = NMSUtil.create(this);
+        this.bookUtil = new BookUtil(this);
+    }
 
     /**
      * @param pluginName The name of the plugin to check for

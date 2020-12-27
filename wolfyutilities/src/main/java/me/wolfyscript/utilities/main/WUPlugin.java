@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItems;
-import me.wolfyscript.utilities.api.inventory.custom_items.api_references.*;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.network.MessageChannelHandler;
@@ -24,6 +23,7 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
+import me.wolfyscript.utilities.util.world.WorldUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -56,12 +56,12 @@ public class WUPlugin extends JavaPlugin {
         particlesConfig.load(false);
         particleEffectsConfig = new ParticleEffects(wolfyUtilities);
         particleEffectsConfig.load(false);
-        CustomItems.initiateMissingBlockEffects();
+        WorldUtils.getWorldCustomItemStore().initiateMissingBlockEffects();
     }
 
     public void onDisable() {
         wolfyUtilities.getConfigAPI().saveConfigs();
-        WolfyUtilities.getCustomItems().save();
+        WorldUtils.save();
         try {
             particlesConfig.save(false);
             particleEffectsConfig.save(false);
@@ -130,7 +130,8 @@ public class WUPlugin extends JavaPlugin {
         saveResource("lang/en_US.json", true);
         languageAPI.setActiveLanguage(new Language(this, "en_US"));
 
-        WolfyUtilities.getCustomItems().load();
+        WorldUtils.load();
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::load, 120000, 120000);
         Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);

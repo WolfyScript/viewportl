@@ -1,4 +1,4 @@
-package me.wolfyscript.utilities.api.inventory.custom_items;
+package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;

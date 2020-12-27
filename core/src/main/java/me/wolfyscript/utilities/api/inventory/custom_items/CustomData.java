@@ -1,10 +1,9 @@
-package me.wolfyscript.utilities.api.inventory.custom_items.custom_data;
+package me.wolfyscript.utilities.api.inventory.custom_items;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 
 import java.io.IOException;

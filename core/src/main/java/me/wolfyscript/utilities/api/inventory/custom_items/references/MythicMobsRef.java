@@ -1,4 +1,4 @@
-package me.wolfyscript.utilities.api.inventory.custom_items.api_references;
+package me.wolfyscript.utilities.api.inventory.custom_items.references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
