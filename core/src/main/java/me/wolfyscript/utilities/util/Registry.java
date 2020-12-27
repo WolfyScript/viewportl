@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public interface Registry<V> extends Iterable<V> {
 
-    Registry<CustomItem> CUSTOM_ITEMS = new CustomItemRegistry();
+    CustomItemRegistry CUSTOM_ITEMS = new CustomItemRegistry();
 
     @Nullable
     V get(@Nullable NamespacedKey key);

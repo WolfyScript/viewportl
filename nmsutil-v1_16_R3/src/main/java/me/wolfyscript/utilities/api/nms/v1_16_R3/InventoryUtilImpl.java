@@ -8,6 +8,7 @@ import me.wolfyscript.utilities.api.nms.NMSUtil;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.api.nms.v1_16_R3.inventory.util.GUIInventoryCreator;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
+import net.minecraft.server.v1_16_R3.Item;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers;
 import org.bukkit.event.inventory.InventoryType;
@@ -44,11 +45,15 @@ public class InventoryUtilImpl extends InventoryUtil {
     public final void initItemCategories() {
         for (Material material : Material.values()) {
             if (material.isLegacy()) continue;
-            net.minecraft.server.v1_16_R3.CreativeModeTab creativeModeTab = CraftMagicNumbers.getItem(material).q();
-            if (creativeModeTab != null) {
-                CreativeModeTab category = CreativeModeTab.valueOf(creativeModeTab.b().toUpperCase(Locale.ROOT));
-                category.registerMaterial(material);
+            Item item = CraftMagicNumbers.getItem(material);
+            if (item != null) {
+                net.minecraft.server.v1_16_R3.CreativeModeTab creativeModeTab = item.q();
+                if (creativeModeTab != null) {
+                    CreativeModeTab category = CreativeModeTab.valueOf(creativeModeTab.b().toUpperCase(Locale.ROOT));
+                    category.registerMaterial(material);
+                }
             }
+
         }
     }
 }

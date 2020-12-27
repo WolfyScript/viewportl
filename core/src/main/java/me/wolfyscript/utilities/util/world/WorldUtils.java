@@ -1,9 +1,7 @@
 package me.wolfyscript.utilities.util.world;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,8 +29,9 @@ public class WorldUtils {
      * Loads the store from the file.
      */
     public static void save() {
+        WolfyUtilities.getWUPlugin().getLogger().info("Save stored Custom Items");
         try {
-            FileOutputStream fos = new FileOutputStream(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.storage");
+            FileOutputStream fos = new FileOutputStream(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store");
             GZIPOutputStream gzip = new GZIPOutputStream(fos);
             JacksonUtil.getObjectWriter(false).writeValue(gzip, worldCustomItemStore);
             gzip.flush();
@@ -46,7 +45,8 @@ public class WorldUtils {
      * Save the stored Custom Item into a file.
      */
     public static void load() {
-        File file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.storage");
+        WolfyUtilities.getWUPlugin().getLogger().info("Loading stored Custom Items");
+        File file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store");
         if (file.exists()) {
             try {
                 FileInputStream fin = new FileInputStream(file);
@@ -67,7 +67,7 @@ public class WorldUtils {
     @Deprecated
     private static void loadOld() {
         File file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "stored_block_items.dat");
-        WorldCustomItemStore worldCustomItemStore = new WorldCustomItemStore();
+        worldCustomItemStore = new WorldCustomItemStore();
         if (file.exists()) {
             FileInputStream fis;
             try {
@@ -79,10 +79,7 @@ public class WorldUtils {
                     loadMap.forEach((key, value) -> {
                         Location location = stringToLocation(key);
                         if (location != null) {
-                            CustomItem customItem = Registry.CUSTOM_ITEMS.get(NamespacedKey.getByString(value));
-                            if (customItem != null) {
-                                worldCustomItemStore.setStore(location, new BlockCustomItemStore(customItem, null));
-                            }
+                            worldCustomItemStore.setStore(location, new BlockCustomItemStore(NamespacedKey.getByString(value), null));
                         }
                     });
                 } catch (ClassNotFoundException e) {

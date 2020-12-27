@@ -156,7 +156,7 @@ public class WorldCustomItemStore {
             node.elements().forEachRemaining(jsonNode -> {
                 Location location = JacksonUtil.getObjectMapper().convertValue(jsonNode.path("loc"), Location.class);
                 BlockCustomItemStore blockStore = JacksonUtil.getObjectMapper().convertValue(jsonNode.path("store"), BlockCustomItemStore.class);
-                if (!ItemUtils.isAirOrNull(blockStore.getCustomItem())) {
+                if (blockStore != null && !ItemUtils.isAirOrNull(blockStore.getCustomItem())) {
                     worldStore.setStore(location, blockStore);
                 }
             });
