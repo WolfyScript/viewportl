@@ -2,10 +2,9 @@ package me.wolfyscript.utilities.main.commands;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
-import me.wolfyscript.utilities.api.chat.ClickData;
-import me.wolfyscript.utilities.api.chat.ClickEvent;
-import me.wolfyscript.utilities.api.particles.ParticleEffects;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.Registry;
+import me.wolfyscript.utilities.util.particles.ParticleAnimationUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -51,12 +50,14 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                                     double y = Double.parseDouble(args[3]);
                                     double z = Double.parseDouble(args[4]);
                                     Location location = new Location(player.getWorld(), x, y, z);
-                                    UUID uuid = ParticleEffects.spawnEffectOnLocation(nameSpacedKey, location);
+                                    /*
+                                    UUID uuid = ParticleAnimations.spawnEffectOnLocation(nameSpacedKey, location);
                                     if (uuid == null) {
                                         chat.sendPlayerMessage(player, "&cFailed to spawn effect &4" + nameSpacedKey + "");
                                         return true;
                                     }
                                     chat.sendActionMessage(player, new ClickData("&eSpawened effect &6" + nameSpacedKey + "&e on &6" + x + " " + y + " " + z + " &ewith uuid ", null), new ClickData("&6" + uuid, null, new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, uuid.toString())));
+                                    */
                                 } catch (NumberFormatException ex) {
                                     chat.sendPlayerMessage(player, "&cInvalid position! Please make sure you only use numbers for x/y/z!");
                                     return true;
@@ -64,13 +65,14 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                             } else {
                                 Block block = player.getTargetBlockExact(10);
                                 if (block != null) {
-
-                                    UUID uuid = ParticleEffects.spawnEffectOnBlock(nameSpacedKey, block);
+                                    /*
+                                    UUID uuid = ParticleAnimations.spawnEffectOnBlock(nameSpacedKey, block);
                                     if (uuid == null) {
                                         chat.sendPlayerMessage(player, "&cFailed to spawn effect &4" + nameSpacedKey + "");
                                         return true;
                                     }
                                     chat.sendActionMessage(player, new ClickData("&eSpawened effect &6" + nameSpacedKey + "&e on block &ewith uuid ", null), new ClickData("&6" + uuid, null, new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, uuid.toString())));
+                                    */
                                 }
                             }
                         }
@@ -80,7 +82,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                         if (args.length >= 2) {
                             try {
                                 UUID uuid = UUID.fromString(args[1]);
-                                ParticleEffects.stopEffect(uuid);
+                                ParticleAnimationUtils.stopEffect(uuid);
                                 chat.sendPlayerMessage(player, "&eStopped effect with uuid &6" + args[1] + " &eif it was active!");
                             } catch (IllegalArgumentException ex) {
                                 chat.sendPlayerMessage(player, "&cInvalid UUID &4" + args[1]);
@@ -101,7 +103,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                 switch (args.length) {
                     case 2:
                         List<String> effects = new ArrayList<>();
-                        for (NamespacedKey namespacedKey : ParticleEffects.getEffects().keySet()) {
+                        for (NamespacedKey namespacedKey : Registry.PARTICLE_ANIMATIONS.keySet()) {
                             effects.add(namespacedKey.toString());
                         }
                         StringUtil.copyPartialMatches(args[1], effects, results);

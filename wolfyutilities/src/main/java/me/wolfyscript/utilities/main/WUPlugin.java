@@ -9,8 +9,6 @@ import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.network.MessageChannelHandler;
-import me.wolfyscript.utilities.api.particles.ParticleEffects;
-import me.wolfyscript.utilities.api.particles.Particles;
 import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
 import me.wolfyscript.utilities.main.listeners.BlockListener;
@@ -44,30 +42,16 @@ public class WUPlugin extends JavaPlugin {
     private WolfyUtilities wolfyUtilities;
     private Chat chat;
 
-    private Particles particlesConfig;
-
-    private ParticleEffects particleEffectsConfig;
-
     private MessageChannelHandler messageChannelHandler;
 
     public void loadParticleEffects() throws IOException {
         chat.sendConsoleMessage("Loading Particles...");
-        particlesConfig = new Particles(wolfyUtilities);
-        particlesConfig.load(false);
-        particleEffectsConfig = new ParticleEffects(wolfyUtilities);
-        particleEffectsConfig.load(false);
         WorldUtils.getWorldCustomItemStore().initiateMissingBlockEffects();
     }
 
     public void onDisable() {
         wolfyUtilities.getConfigAPI().saveConfigs();
         WorldUtils.save();
-        try {
-            particlesConfig.save(false);
-            particleEffectsConfig.save(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public WolfyUtilities getWolfyUtilities() {
@@ -84,8 +68,6 @@ public class WUPlugin extends JavaPlugin {
         DustOptionsSerialization.create(module);
         LocationSerialization.create(module);
         ParticleContentSerialization.create(module);
-        ParticleEffectSerialization.create(module);
-        ParticleSerialization.create(module);
         PotionEffectTypeSerialization.create(module);
         PotionEffectSerialization.create(module);
         VectorSerialization.create(module);
@@ -131,7 +113,7 @@ public class WUPlugin extends JavaPlugin {
         languageAPI.setActiveLanguage(new Language(this, "en_US"));
 
         WorldUtils.load();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::load, 120000, 120000);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::load, 300000, 300000);
         Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
@@ -142,11 +124,6 @@ public class WUPlugin extends JavaPlugin {
 
         Metrics metrics = new Metrics(this, 5114);
         CreativeModeTab.init();
-
-        saveResource("particles/scripts/flame_spiral_down.js", true);
-        saveResource("particles/particles.json", true);
-        saveResource("particles/particle_effects.json", true);
-        saveResource("particles/README.txt", true);
 
         try {
             loadParticleEffects();
@@ -190,14 +167,6 @@ public class WUPlugin extends JavaPlugin {
             }
         }
         return true;
-    }
-
-    public ParticleEffects getParticleEffects() {
-        return particleEffectsConfig;
-    }
-
-    public Particles getParticles() {
-        return particlesConfig;
     }
 
     public MessageChannelHandler getPacketHandler() {

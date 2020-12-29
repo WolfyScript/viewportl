@@ -3,6 +3,8 @@ package me.wolfyscript.utilities.util;
 import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
+import me.wolfyscript.utilities.util.particles.ParticleAnimation;
+import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,12 +14,34 @@ import java.util.stream.Collectors;
 
 public interface Registry<V> extends Iterable<V> {
 
+    //WolfyUtilities Registries
     CustomItemRegistry CUSTOM_ITEMS = new CustomItemRegistry();
+    ParticleRegistry PARTICLE_EFFECTS = new ParticleRegistry();
+    ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry();
 
+    /**
+     * Get the value of the registry by it's {@link NamespacedKey}
+     *
+     * @param key The {@link NamespacedKey} of the value.
+     * @return The value of the {@link NamespacedKey}.
+     */
     @Nullable
     V get(@Nullable NamespacedKey key);
 
+    /**
+     * Register a value with a {@link NamespacedKey} to this registry.
+     * You can't override values that are already registered under the same {@link NamespacedKey}!
+     *
+     * @param key   The {@link NamespacedKey} to register it to.
+     * @param value The value to register.
+     */
     void register(NamespacedKey key, V value);
+
+    Set<NamespacedKey> keySet();
+
+    Collection<V> values();
+
+    Set<Entry<NamespacedKey, V>> entrySet();
 
     /**
      * A simple registry, used for basic use cases.
@@ -39,8 +63,10 @@ public interface Registry<V> extends Iterable<V> {
 
         @Override
         public void register(NamespacedKey namespacedKey, V value) {
-            Preconditions.checkState(!this.map.containsKey(namespacedKey), "namespaced key '%s' already has an associated value!", namespacedKey);
-            map.put(namespacedKey, value);
+            if (value != null) {
+                Preconditions.checkState(!this.map.containsKey(namespacedKey), "namespaced key '%s' already has an associated value!", namespacedKey);
+                map.put(namespacedKey, value);
+            }
         }
 
         @NotNull
@@ -49,14 +75,17 @@ public interface Registry<V> extends Iterable<V> {
             return map.values().iterator();
         }
 
+        @Override
         public Set<NamespacedKey> keySet() {
             return Collections.unmodifiableSet(this.map.keySet());
         }
 
+        @Override
         public Collection<V> values() {
             return Collections.unmodifiableCollection(this.map.values());
         }
 
+        @Override
         public Set<Entry<NamespacedKey, V>> entrySet() {
             return Collections.unmodifiableSet(this.map.entrySet());
         }
@@ -110,7 +139,6 @@ public interface Registry<V> extends Iterable<V> {
          *
          * @param namespacedKey The NamespacedKey the CustomItem will be saved under.
          * @param item          The CustomItem to add or update.
-         * @return If the CustomItem was added or updated. True if it was successful.
          */
         @Override
         public void register(NamespacedKey namespacedKey, CustomItem item) {
@@ -118,9 +146,30 @@ public interface Registry<V> extends Iterable<V> {
                 return;
             }
             item.setNamespacedKey(namespacedKey);
-            super.register(namespacedKey, item);
+            this.map.put(namespacedKey, item);
         }
+    }
 
+    class ParticleRegistry extends SimpleRegistry<ParticleEffect> {
+
+        @Override
+        public void register(NamespacedKey namespacedKey, ParticleEffect value) {
+            if (value != null) {
+                value.setNamespacedKey(namespacedKey);
+                super.register(namespacedKey, value);
+            }
+        }
+    }
+
+    class ParticleAnimationRegistry extends SimpleRegistry<ParticleAnimation> {
+
+        @Override
+        public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
+            if (value != null) {
+                value.setNamespacedKey(namespacedKey);
+                super.register(namespacedKey, value);
+            }
+        }
     }
 
 }

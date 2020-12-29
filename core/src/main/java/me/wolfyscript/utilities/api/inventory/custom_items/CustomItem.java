@@ -726,7 +726,11 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     }
 
     public void setParticleContent(ParticleContent particleContent) {
-        this.particleContent = particleContent;
+        if (particleContent == null) {
+            this.particleContent = new ParticleContent();
+        } else {
+            this.particleContent = particleContent;
+        }
     }
 
     /**

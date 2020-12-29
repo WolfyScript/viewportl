@@ -2,9 +2,6 @@ package me.wolfyscript.utilities.main.listeners.custom_item;
 
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.ParticleContent;
-import me.wolfyscript.utilities.api.particles.ParticleEffect;
-import me.wolfyscript.utilities.api.particles.ParticleEffects;
-import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,10 +29,7 @@ public class CustomParticleListener implements Listener {
         if (item != null) {
             ParticleContent particleContent = item.getParticleContent();
             if (particleContent != null) {
-                NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.HAND);
-                if (particleID != null) {
-                    PlayerUtils.setActiveParticleEffect(player, EquipmentSlot.HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
-                }
+                particleContent.spawn(player, EquipmentSlot.HAND);
             }
         }
     }
@@ -53,21 +47,14 @@ public class CustomParticleListener implements Listener {
         if (mainHand != null) {
             ParticleContent particleContent = mainHand.getParticleContent();
             if (particleContent != null) {
-                NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.HAND);
-                if (particleID != null) {
-                    PlayerUtils.setActiveParticleEffect(player, EquipmentSlot.HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.HAND, player));
-                }
+                particleContent.spawn(player, EquipmentSlot.HAND);
             }
         }
-
         CustomItem offHand = CustomItem.getByItemStack(event.getOffHandItem());
         if (offHand != null) {
             ParticleContent particleContent = offHand.getParticleContent();
             if (particleContent != null) {
-                NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.OFF_HAND);
-                if (particleID != null) {
-                    PlayerUtils.setActiveParticleEffect(player, EquipmentSlot.OFF_HAND, ParticleEffects.spawnEffectOnPlayer(particleID, EquipmentSlot.OFF_HAND, player));
-                }
+                particleContent.spawn(player, EquipmentSlot.OFF_HAND);
             }
         }
     }
