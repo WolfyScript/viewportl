@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,13 +34,14 @@ public class ParticleAnimation {
     private int interval = 1;
 
     public ParticleAnimation() {
+
     }
 
-    public ParticleAnimation(Material icon, String name, List<String> description, List<ParticleEffect> particleEffects, int delay, int interval) {
-        this.particleEffects = particleEffects;
+    public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, ParticleEffect... particleEffects) {
         this.icon = icon;
+        this.particleEffects = Arrays.asList(particleEffects);
         this.name = name;
-        this.description = description;
+        this.description = description == null ? new ArrayList<>() : description;
         this.delay = delay;
         this.interval = interval;
     }

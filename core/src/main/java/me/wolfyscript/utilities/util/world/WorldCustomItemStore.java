@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
-import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
 import me.wolfyscript.utilities.util.particles.ParticleUtils;
@@ -142,7 +141,7 @@ public class WorldCustomItemStore {
             node.elements().forEachRemaining(jsonNode -> {
                 Location location = JacksonUtil.getObjectMapper().convertValue(jsonNode.path("loc"), Location.class);
                 BlockCustomItemStore blockStore = JacksonUtil.getObjectMapper().convertValue(jsonNode.path("store"), BlockCustomItemStore.class);
-                if (blockStore != null && !ItemUtils.isAirOrNull(blockStore.getCustomItem())) {
+                if (blockStore != null) {
                     worldStore.setStore(location, blockStore);
                 }
             });
