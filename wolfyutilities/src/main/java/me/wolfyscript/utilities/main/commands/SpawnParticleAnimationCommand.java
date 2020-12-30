@@ -4,7 +4,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
-import me.wolfyscript.utilities.util.particles.ParticleEffect;
+import me.wolfyscript.utilities.util.particles.ParticleUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -15,19 +15,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter {
+public class SpawnParticleAnimationCommand implements CommandExecutor, TabCompleter {
 
-    private final List<String> COMMANDS = Arrays.asList("spawn");
+    private final List<String> COMMANDS = Arrays.asList("spawn", "stop");
 
     private final WolfyUtilities wolfyUtilities;
     private final Chat chat;
 
-    public SpawnParticleEffectCommand(WolfyUtilities wolfyUtilities){
+    public SpawnParticleAnimationCommand(WolfyUtilities wolfyUtilities) {
         this.wolfyUtilities = wolfyUtilities;
         this.chat = wolfyUtilities.getChat();
     }
@@ -38,7 +35,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
             Player player = (Player) commandSender;
             if (args.length > 0) {
                 if (args[0].equalsIgnoreCase("spawn")) {
-                    if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_effect.spawn")) {
+                    if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_animation.spawn")) {
                         if (args.length >= 2) {
                             String effectName = args[1];
                             NamespacedKey nameSpacedKey;
@@ -53,10 +50,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                                     double y = Double.parseDouble(args[3]);
                                     double z = Double.parseDouble(args[4]);
                                     Location location = new Location(player.getWorld(), x, y, z);
-                                    ParticleEffect particleEffect = Registry.PARTICLE_EFFECTS.get(nameSpacedKey);
-                                    if (particleEffect != null) {
-                                        particleEffect.onLocation(location);
-                                    }
+                                    ParticleUtils.spawnAnimationOnLocation(nameSpacedKey, location);
                                 } catch (NumberFormatException ex) {
                                     chat.sendPlayerMessage(player, "&cInvalid position! Please make sure you only use numbers for x/y/z!");
                                     return true;
@@ -64,11 +58,20 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                             } else {
                                 Block block = player.getTargetBlockExact(10);
                                 if (block != null) {
-                                    ParticleEffect particleEffect = Registry.PARTICLE_EFFECTS.get(nameSpacedKey);
-                                    if (particleEffect != null) {
-                                        particleEffect.onBlock(block);
-                                    }
+                                    ParticleUtils.spawnAnimationOnBlock(nameSpacedKey, block);
                                 }
+                            }
+                        }
+                    }
+                } else if (args[0].equalsIgnoreCase("stop")) {
+                    if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_effect.spawn")) {
+                        if (args.length >= 2) {
+                            try {
+                                UUID uuid = UUID.fromString(args[1]);
+                                ParticleUtils.stopAnimation(uuid);
+                                chat.sendPlayerMessage(player, "&eStopped effect with uuid &6" + args[1] + " &eif it was active!");
+                            } catch (IllegalArgumentException ex) {
+                                chat.sendPlayerMessage(player, "&cInvalid UUID &4" + args[1]);
                             }
                         }
                     }
@@ -81,7 +84,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
     @Override
     public List<String> onTabComplete(@Nonnull CommandSender commandSender, @Nonnull Command command, @Nonnull String s, @Nonnull String[] args) {
         List<String> results = new ArrayList<>();
-        if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_effect.complete")) {
+        if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_animation.complete")) {
             if (commandSender instanceof Player) {
                 Player player = (Player) commandSender;
                 if (args.length > 1) {
@@ -89,7 +92,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                         switch (args.length) {
                             case 2:
                                 List<String> effects = new ArrayList<>();
-                                for (NamespacedKey namespacedKey : Registry.PARTICLE_EFFECTS.keySet()) {
+                                for (NamespacedKey namespacedKey : Registry.PARTICLE_ANIMATIONS.keySet()) {
                                     effects.add(namespacedKey.toString());
                                 }
                                 StringUtil.copyPartialMatches(args[1], effects, results);
@@ -106,6 +109,8 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                                 results.add("z");
                                 results.add(String.valueOf(player.getLocation().getZ()));
                         }
+                    } else if (args[0].equalsIgnoreCase("stop")) {
+                        ParticleUtils.getRunningAnimations().forEach(uuid -> results.add(uuid.toString()));
                     }
                 } else {
                     StringUtil.copyPartialMatches(args[0], COMMANDS, results);

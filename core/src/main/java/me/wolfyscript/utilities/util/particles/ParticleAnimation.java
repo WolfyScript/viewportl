@@ -19,25 +19,28 @@ import java.util.UUID;
 
 /**
  * This class is for combining multiple ParticleEffects and spawn them simultaneously.
+ * They are required to spawn continues ParticleEffects.
+ * If you want to just spawn a one time ParticleEffect use the methods of the {@link ParticleEffect} class instead.
  */
 public class ParticleAnimation {
 
-    private final int delay = 0;
     private NamespacedKey namespacedKey;
     private String name;
     private List<String> description;
     private Material icon = Material.FIREWORK_ROCKET;
     private List<ParticleEffect> particleEffects = new ArrayList<>();
+    private int delay = 0;
     private int interval = 1;
 
     public ParticleAnimation() {
     }
 
-    public ParticleAnimation(Material icon, String name, List<String> description, List<ParticleEffect> particleEffects, int interval) {
+    public ParticleAnimation(Material icon, String name, List<String> description, List<ParticleEffect> particleEffects, int delay, int interval) {
         this.particleEffects = particleEffects;
         this.icon = icon;
         this.name = name;
         this.description = description;
+        this.delay = delay;
         this.interval = interval;
     }
 
@@ -65,7 +68,7 @@ public class ParticleAnimation {
     }
 
     private UUID runTimer(Runnable runnable) {
-        return ParticleAnimationUtils.addTask(Bukkit.getScheduler().runTaskTimerAsynchronously(WolfyUtilities.getWUPlugin(), runnable, delay, interval));
+        return ParticleUtils.addTask(Bukkit.getScheduler().runTaskTimerAsynchronously(WolfyUtilities.getWUPlugin(), runnable, delay, interval));
     }
 
     public NamespacedKey getNamespacedKey() {

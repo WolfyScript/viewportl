@@ -1,8 +1,8 @@
 package me.wolfyscript.utilities.api.inventory.custom_items;
 
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.particles.ParticleAnimationUtils;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
+import me.wolfyscript.utilities.util.particles.ParticleUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -19,6 +19,6 @@ public class ParticleContent extends LinkedHashMap<ParticleLocation, NamespacedK
     }
 
     public void spawn(Player player, EquipmentSlot equipmentSlot) {
-        ParticleAnimationUtils.spawnOnPlayer(getParticleEffect(ParticleLocation.valueOf(equipmentSlot.name())), player, equipmentSlot);
+        ParticleUtils.spawnAnimationOnPlayer(getParticleEffect(ParticleLocation.valueOf(equipmentSlot.name())), player, equipmentSlot);
     }
 }

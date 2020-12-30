@@ -10,6 +10,7 @@ import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.network.MessageChannelHandler;
 import me.wolfyscript.utilities.main.commands.InputCommand;
+import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
 import me.wolfyscript.utilities.main.listeners.BlockListener;
 import me.wolfyscript.utilities.main.listeners.EquipListener;
@@ -17,6 +18,7 @@ import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListe
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
 import me.wolfyscript.utilities.main.messages.InputButtonMessage;
 import me.wolfyscript.utilities.main.messages.WolfyUtilitiesVerifyMessage;
+import me.wolfyscript.utilities.main.particles.ParticleEffects;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
@@ -119,6 +121,7 @@ public class WUPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new EquipListener(), this);
         Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand(wolfyUtilities));
+        Bukkit.getServer().getPluginCommand("particle_animation").setExecutor(new SpawnParticleAnimationCommand(wolfyUtilities));
         Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand());
         Bukkit.getServer().getPluginCommand("wui").setTabCompleter(new InputCommand());
 
@@ -147,6 +150,7 @@ public class WUPlugin extends JavaPlugin {
         }, null, (inputButtonMessage, player) -> {
         });
 
+        ParticleEffects.load();
         //System.out.println("TestItem: "+ ItemUtils.serializeItemStack(new ItemBuilder(Material.DIAMOND_SWORD).addItemFlags(ItemFlag.HIDE_UNBREAKABLE).setDisplayName("LUL").addLoreLine("Test Item").create()));
     }
 

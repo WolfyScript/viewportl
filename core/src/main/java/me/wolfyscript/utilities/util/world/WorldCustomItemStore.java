@@ -13,8 +13,8 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
-import me.wolfyscript.utilities.util.particles.ParticleAnimationUtils;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
+import me.wolfyscript.utilities.util.particles.ParticleUtils;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,10 +34,10 @@ public class WorldCustomItemStore {
     }
 
     public void store(Location location, CustomItem customItem) {
-        ParticleAnimationUtils.stopEffect(getStoredEffect(location));
+        ParticleUtils.stopAnimation(getStoredEffect(location));
         if (customItem.getApiReference() instanceof WolfyUtilitiesRef || customItem.hasNamespacedKey()) {
             store.put(location, new BlockCustomItemStore(customItem, null));
-            ParticleAnimationUtils.spawnOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), location.getBlock());
+            ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), location.getBlock());
         }
     }
 
@@ -47,7 +47,7 @@ public class WorldCustomItemStore {
      * @param location The target location of the block
      */
     public void remove(Location location) {
-        ParticleAnimationUtils.stopEffect(getStoredEffect(location));
+        ParticleUtils.stopAnimation(getStoredEffect(location));
         store.remove(location);
     }
 
@@ -95,7 +95,7 @@ public class WorldCustomItemStore {
             CustomItem customItem = entry.getValue().getCustomItem();
             if (customItem != null) {
                 store.put(entry.getKey(), new BlockCustomItemStore(customItem, null));
-                ParticleAnimationUtils.spawnOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), entry.getKey().getBlock());
+                ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), entry.getKey().getBlock());
             }
         });
     }

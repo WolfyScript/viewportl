@@ -19,13 +19,13 @@ public abstract class Animator {
         this.useEyeLocation = useEyeLocation;
     }
 
-    abstract void onPlayer(Data particleData, Player player, EquipmentSlot equipmentSlot);
+    protected abstract void onPlayer(Data particleData, Player player, EquipmentSlot equipmentSlot);
 
-    abstract void onEntity(Data particleData, Entity entity);
+    protected abstract void onEntity(Data particleData, Entity entity);
 
-    abstract void onLocation(Data particleData, Location location);
+    protected abstract void onLocation(Data particleData, Location location);
 
-    abstract void onBlock(Data particleData, Block block);
+    protected abstract void onBlock(Data particleData, Block block);
 
     protected void spawn(Location location, Data data) {
         if (location.getWorld() != null) {

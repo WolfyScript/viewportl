@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.util.entity;
 
-import me.wolfyscript.utilities.util.particles.ParticleAnimationUtils;
+import me.wolfyscript.utilities.util.particles.ParticleUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -42,7 +42,7 @@ public class PlayerUtils {
     }
 
     public static void stopActiveParticleEffect(Player player, EquipmentSlot equipmentSlot) {
-        ParticleAnimationUtils.stopEffect(getActiveItemEffects(player, equipmentSlot));
+        ParticleUtils.stopAnimation(getActiveItemEffects(player, equipmentSlot));
         getActiveItemEffects(player).remove(equipmentSlot);
     }
 

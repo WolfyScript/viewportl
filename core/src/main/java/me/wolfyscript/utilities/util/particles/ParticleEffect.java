@@ -13,6 +13,7 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import me.wolfyscript.utilities.util.particles.animators.BasicAnimator;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -67,59 +68,39 @@ public class ParticleEffect {
     public ParticleEffect() {
     }
 
-    public ParticleEffect(org.bukkit.Particle particle) {
-        this(particle, null);
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, Object data) {
-        this(particle, 1, 1.0, data);
-    }
-
     public ParticleEffect(org.bukkit.Particle particle, int count) {
-        this(particle, count, 1.0, null);
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, int count, Object data) {
-        this(particle, count, 1.0, data);
+        this(particle, count, 0);
     }
 
     public ParticleEffect(org.bukkit.Particle particle, int count, double speed) {
         this(particle, count, speed, null);
     }
 
+    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Animator animator) {
+        this(particle, count, speed, null, animator);
+    }
+
     public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data) {
-        this(particle, new Vector(0, 0, 0), count, speed, data);
+        this(particle, count, speed, data, new Vector());
     }
 
-    public ParticleEffect(org.bukkit.Particle particle, Vector relative, int count) {
-        this(particle, relative, count, 1.0, null);
+    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data, Animator animator) {
+        this(particle, count, speed, data, new Vector(), animator);
     }
 
-    public ParticleEffect(org.bukkit.Particle particle, Vector relative, int count, double speed) {
-        this(particle, relative, count, 1.0, speed);
+    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data, Vector relative) {
+        this(particle, count, speed, data, relative, new Vector());
     }
 
-    public ParticleEffect(org.bukkit.Particle particle, Vector relative, int count, Object data) {
-        this(particle, relative, count, 1.0, data);
+    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data, Vector relative, Animator animator) {
+        this(particle, count, speed, data, relative, new Vector(), animator);
     }
 
-    public ParticleEffect(org.bukkit.Particle particle, Vector relative, int count, double speed, Object data) {
-        this(particle, relative, count, new Vector(0, 0, 0), speed, data);
+    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data, Vector relative, Vector offset) {
+        this(particle, count, speed, data, relative, offset, new BasicAnimator(false));
     }
 
-    public ParticleEffect(org.bukkit.Particle particle, Vector relative, int count, Vector offset) {
-        this(particle, relative, count, offset, 1.0, null);
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, Vector relative, int count, Vector offset, double speed) {
-        this(particle, relative, count, offset, speed, null);
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, Vector relative, int count, Vector offset, Object data) {
-        this(particle, relative, count, offset, 1.0, data);
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, Vector relative, int count, Vector offset, double speed, Object data) {
+    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data, Vector relative, Vector offset, Animator animator) {
         this.particle = particle;
         this.dataClass = particle.getDataType();
         this.data = data;
@@ -128,6 +109,7 @@ public class ParticleEffect {
         this.offset = offset;
         this.count = count;
         this.speed = speed;
+        this.animator = animator;
     }
 
     public NamespacedKey getNamespacedKey() {

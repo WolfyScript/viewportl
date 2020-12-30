@@ -10,37 +10,38 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.UUID;
 
 /*
 Contains the ParticleEffects
  */
-public class ParticleAnimationUtils {
+public class ParticleUtils {
 
     private static final LinkedHashMap<UUID, BukkitTask> currentEffects = new LinkedHashMap<>();
 
-    public static void spawnOnBlock(NamespacedKey nameSpacedKey, Block block) {
+    public static void spawnAnimationOnBlock(NamespacedKey nameSpacedKey, Block block) {
         ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(nameSpacedKey);
         if (animation != null) {
             animation.spawnOnBlock(block);
         }
     }
 
-    public static void spawnOnLocation(NamespacedKey nameSpacedKey, Location location) {
+    public static void spawnAnimationOnLocation(NamespacedKey nameSpacedKey, Location location) {
         ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(nameSpacedKey);
         if (animation != null) {
             animation.spawnOnLocation(location);
         }
     }
 
-    public static void spawnOnEntity(NamespacedKey nameSpacedKey, Entity entity) {
+    public static void spawnAnimationOnEntity(NamespacedKey nameSpacedKey, Entity entity) {
         ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(nameSpacedKey);
         if (animation != null) {
             animation.spawnOnEntity(entity);
         }
     }
 
-    public static void spawnOnPlayer(NamespacedKey nameSpacedKey, Player player, EquipmentSlot equipmentSlot) {
+    public static void spawnAnimationOnPlayer(NamespacedKey nameSpacedKey, Player player, EquipmentSlot equipmentSlot) {
         ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(nameSpacedKey);
         if (animation != null) {
             animation.spawnOnPlayer(player, equipmentSlot);
@@ -53,7 +54,7 @@ public class ParticleAnimationUtils {
      *
      * @param uuid
      */
-    public static void stopEffect(UUID uuid) {
+    public static void stopAnimation(UUID uuid) {
         if (uuid != null) {
             BukkitTask task = currentEffects.get(uuid);
             if (task != null) {
@@ -76,5 +77,9 @@ public class ParticleAnimationUtils {
         }
         currentEffects.put(id, task);
         return id;
+    }
+
+    public static Set<UUID> getRunningAnimations() {
+        return currentEffects.keySet();
     }
 }

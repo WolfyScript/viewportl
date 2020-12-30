@@ -23,7 +23,9 @@ commands:
   wolfyutils:
     description: displays version of this plugin
   particle_effect:
-    description: spawn/stop particle effects
+    description: spawn particle effects
+  particle_animation:
+    description: spawn/stop particle animations
   wua:
     description: handles and executes ChatClickActions
   wui:
