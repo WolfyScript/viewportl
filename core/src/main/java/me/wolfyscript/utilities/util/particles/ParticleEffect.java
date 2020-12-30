@@ -223,19 +223,20 @@ public class ParticleEffect {
 
     @Override
     public String toString() {
-        return "Particle{" +
+        return "ParticleEffect{" +
                 "namespacedKey=" + namespacedKey +
                 ", superParticle=" + superParticle +
                 ", particle=" + particle +
+                ", name='" + name + '\'' +
+                ", description=" + description +
                 ", icon=" + icon +
                 ", dataClass=" + dataClass +
                 ", data=" + data +
                 ", relative=" + relative +
                 ", offset=" + offset +
                 ", count=" + count +
-                ", extra=" + speed +
-                ", name='" + name + '\'' +
-                ", description=" + description +
+                ", speed=" + speed +
+                ", animator=" + animator +
                 '}';
     }
 

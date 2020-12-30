@@ -1,7 +1,10 @@
 package me.wolfyscript.utilities.util.particles;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import me.wolfyscript.utilities.util.particles.animators.BasicAnimator;
+import me.wolfyscript.utilities.util.particles.animators.CircleAnimator;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -9,8 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.Vector;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, property = "type")
-@JsonSubTypes({@JsonSubTypes.Type(StepAnimator.class)})
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({@JsonSubTypes.Type(StepAnimator.class), @JsonSubTypes.Type(BasicAnimator.class), @JsonSubTypes.Type(CircleAnimator.class)})
 public abstract class Animator {
 
     protected boolean useEyeLocation;
@@ -35,6 +39,13 @@ public abstract class Animator {
                 location.getWorld().spawnParticle(data.particleEffect.getParticle(), location.add(data.relative), data.count, data.offset.getX(), data.offset.getY(), data.offset.getZ(), data.speed, data.data);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Animator{" +
+                "useEyeLocation=" + useEyeLocation +
+                '}';
     }
 
     public static class Data {

@@ -9,6 +9,10 @@ import org.bukkit.inventory.EquipmentSlot;
 
 public class BasicAnimator extends Animator {
 
+    public BasicAnimator() {
+        super(false);
+    }
+
     public BasicAnimator(boolean useEyeLocation) {
         super(useEyeLocation);
     }
@@ -32,4 +36,6 @@ public class BasicAnimator extends Animator {
     protected void onBlock(Data particleData, Block block) {
         spawn(block.getLocation(), particleData);
     }
+
+
 }

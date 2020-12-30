@@ -12,6 +12,11 @@ public class CircleAnimator extends Animator {
 
     private final int radius;
 
+    public CircleAnimator() {
+        super(false);
+        this.radius = 1;
+    }
+
     public CircleAnimator(boolean useEyeLocation, int radius) {
         super(useEyeLocation);
         this.radius = radius;
@@ -51,5 +56,12 @@ public class CircleAnimator extends Animator {
             Location l = new Location(w, x, y, z);
             spawn(l, data);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "CircleAnimator{" +
+                "radius=" + radius +
+                "} " + super.toString();
     }
 }

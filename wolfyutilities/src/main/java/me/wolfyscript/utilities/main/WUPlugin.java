@@ -20,9 +20,11 @@ import me.wolfyscript.utilities.main.messages.InputButtonMessage;
 import me.wolfyscript.utilities.main.messages.WolfyUtilitiesVerifyMessage;
 import me.wolfyscript.utilities.main.particles.ParticleEffects;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
+import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.world.WorldUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -32,6 +34,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.io.IOException;
 
 public class WUPlugin extends JavaPlugin {
@@ -151,6 +154,15 @@ public class WUPlugin extends JavaPlugin {
         });
 
         ParticleEffects.load();
+        try {
+            File file = new File(getDataFolder(), "test_animation.json");
+            JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_ANIMATIONS.get(new NamespacedKey("wolfyutilities", "flame_circle")));
+            ParticleAnimation animation = JacksonUtil.getObjectMapper().readValue(file, ParticleAnimation.class);
+            System.out.println("Loaded: " + animation);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         //System.out.println("TestItem: "+ ItemUtils.serializeItemStack(new ItemBuilder(Material.DIAMOND_SWORD).addItemFlags(ItemFlag.HIDE_UNBREAKABLE).setDisplayName("LUL").addLoreLine("Test Item").create()));
     }
 
