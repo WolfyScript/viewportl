@@ -10,9 +10,9 @@ public class RandomUtils {
     public static final Random random = new Random(System.currentTimeMillis());
 
     public static Vector getRandomVector() {
-        double x = random.nextDouble();
-        double y = random.nextDouble();
-        double z = random.nextDouble();
+        double x = random.nextDouble() * 2 - 1;
+        double y = random.nextDouble() * 2 - 1;
+        double z = random.nextDouble() * 2 - 1;
         return (new Vector(x, y, z)).normalize();
     }
 

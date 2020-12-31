@@ -2,9 +2,11 @@ package me.wolfyscript.utilities.util.particles;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import me.wolfyscript.utilities.util.particles.animators.BasicAnimator;
 import me.wolfyscript.utilities.util.particles.animators.CircleAnimator;
+import me.wolfyscript.utilities.util.particles.animators.SphereAnimator;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -14,7 +16,7 @@ import org.bukkit.util.Vector;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes({@JsonSubTypes.Type(StepAnimator.class), @JsonSubTypes.Type(BasicAnimator.class), @JsonSubTypes.Type(CircleAnimator.class)})
+@JsonSubTypes({@Type(StepAnimator.class), @Type(BasicAnimator.class), @Type(CircleAnimator.class), @Type(SphereAnimator.class)})
 public abstract class Animator {
 
     protected boolean useEyeLocation;
