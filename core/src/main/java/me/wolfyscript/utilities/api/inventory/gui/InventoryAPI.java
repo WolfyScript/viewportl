@@ -4,7 +4,6 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
-import me.wolfyscript.utilities.api.inventory.gui.events.GuiItemDragEvent;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
@@ -242,11 +241,6 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             }
             GuiWindow<C> guiWindow = guiHandler.getWindow();
             if (guiWindow != null) {
-                GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
-                Bukkit.getPluginManager().callEvent(guiItemDragEvent);
-                if (guiItemDragEvent.isCancelled()) {
-                    event.setCancelled(true);
-                }
                 HashMap<Integer, Button<C>> buttons = new HashMap<>();
                 for (int slot : event.getInventorySlots()) {
                     Button<C> button = guiHandler.getButton(guiWindow, slot);

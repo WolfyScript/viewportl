@@ -106,6 +106,10 @@ public class WolfyUtilities {
         return wolfyUtilitiesList.get(plugin);
     }
 
+    private WolfyUtilities(Plugin plugin) {
+        this(plugin, CustomCache.class);
+    }
+
     private final Plugin plugin;
     private String dataBasePrefix;
     private final ConfigAPI configAPI;
@@ -117,7 +121,7 @@ public class WolfyUtilities {
     private final BookUtil bookUtil;
     private final NMSUtil nmsUtil;
 
-    private WolfyUtilities(Plugin plugin) {
+    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
         this.plugin = plugin;
         if (!has(plugin)) {
             wolfyUtilitiesList.put(plugin, this);
@@ -125,12 +129,27 @@ public class WolfyUtilities {
         this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT) + "_";
         this.configAPI = new ConfigAPI(this);
         this.languageAPI = new LanguageAPI(this);
-        this.inventoryAPI = new InventoryAPI<>(this.plugin, this, CustomCache.class);
+        this.inventoryAPI = new InventoryAPI<>(this.plugin, this, customCacheClass);
         this.chat = new Chat(this);
         this.permissions = new Permissions(this);
         this.itemUtils = new ItemUtils(this);
         this.nmsUtil = NMSUtil.create(this);
         this.bookUtil = new BookUtil(this);
+    }
+
+    /**
+     * Gets or create the {@link WolfyUtilities} instance for the specified plugin.
+     * This method also creates the InventoryAPI with the specified custom class of the {@link CustomCache}.
+     *
+     * @param plugin           The plugin to get the instance from.
+     * @param customCacheClass The class of the custom cache you created. Must extend {@link CustomCache}
+     * @return The WolfyUtilities instance for the plugin.
+     */
+    public static WolfyUtilities get(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
+        if (!has(plugin)) {
+            new WolfyUtilities(plugin, customCacheClass);
+        }
+        return wolfyUtilitiesList.get(plugin);
     }
 
     /**

@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.inventory.gui;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -11,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -343,9 +345,11 @@ public class GuiHandler<C extends CustomCache> implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
-        if (event.getPlayer().getUniqueId().equals(uuid)) {
-            if (!clusterHistory.isEmpty() && isWindowOpen() && !switchWindow) {
-                if (getWindow().onClose(this, event.getView())) {
+        Inventory bukkitInventory = event.getInventory();
+        if (bukkitInventory instanceof GUIInventory && ((GUIInventory<?>) bukkitInventory).getGuiHandler().equals(this)) {
+            GUIInventory<C> guiInventory = (GUIInventory<C>) bukkitInventory;
+            if (!clusterHistory.isEmpty() && !switchWindow) {
+                if (guiInventory.getWindow().onClose(this, guiInventory, event.getView())) {
                     Bukkit.getScheduler().runTask(getApi().getPlugin(), (Runnable) this::openCluster);
                 } else {
                     this.isWindowOpen = false;
