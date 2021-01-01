@@ -14,6 +14,7 @@ import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
 import me.wolfyscript.utilities.main.listeners.BlockListener;
 import me.wolfyscript.utilities.main.listeners.EquipListener;
+import me.wolfyscript.utilities.main.listeners.PlayerListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
 import me.wolfyscript.utilities.main.messages.InputButtonMessage;
@@ -21,6 +22,7 @@ import me.wolfyscript.utilities.main.messages.WolfyUtilitiesVerifyMessage;
 import me.wolfyscript.utilities.main.particles.ParticleEffects;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
+import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
@@ -56,6 +58,7 @@ public class WUPlugin extends JavaPlugin {
 
     public void onDisable() {
         wolfyUtilities.getConfigAPI().saveConfigs();
+        PlayerUtils.saveStores();
         WorldUtils.save();
     }
 
@@ -118,11 +121,13 @@ public class WUPlugin extends JavaPlugin {
         languageAPI.setActiveLanguage(new Language(this, "en_US"));
 
         WorldUtils.load();
+        PlayerUtils.loadStores();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::load, 300000, 300000);
         Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new EquipListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
         Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand(wolfyUtilities));
         Bukkit.getServer().getPluginCommand("particle_animation").setExecutor(new SpawnParticleAnimationCommand(wolfyUtilities));
         Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand());

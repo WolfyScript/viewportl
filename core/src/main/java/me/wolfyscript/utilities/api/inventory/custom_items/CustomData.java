@@ -105,7 +105,7 @@ public abstract class CustomData {
             try {
                 T instance = createData();
                 instance.readFromJson(customItem, node, context);
-                customItem.addCustomData(instance.getNamespacedKey(), instance);
+                customItem.addCustomData(namespacedKey, instance);
             } catch (IOException e) {
                 e.printStackTrace();
             }

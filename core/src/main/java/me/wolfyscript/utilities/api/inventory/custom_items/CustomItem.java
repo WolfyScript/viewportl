@@ -811,9 +811,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             gen.writeEndObject();
             gen.writeObjectFieldStart("custom_data");
             {
-                for (CustomData value : customItem.getCustomDataMap().values()) {
-                    gen.writeObjectFieldStart(value.getNamespacedKey().toString());
-                    value.writeToJson(customItem, gen, provider);
+                for (Map.Entry<me.wolfyscript.utilities.util.NamespacedKey, CustomData> value : customItem.getCustomDataMap().entrySet()) {
+                    gen.writeObjectFieldStart(value.getKey().toString());
+                    value.getValue().writeToJson(customItem, gen, provider);
                     gen.writeEndObject();
                 }
             }
