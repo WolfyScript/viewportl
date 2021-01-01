@@ -1,16 +1,23 @@
 package me.wolfyscript.utilities.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+@JsonDeserialize(using = NamespacedKey.Deserializer.class, keyUsing = NamespacedKey.KeyDeserializer.class)
 public class NamespacedKey implements Comparable<NamespacedKey> {
 
     @JsonIgnore
@@ -74,6 +81,8 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         return Objects.hash(namespace, key);
     }
 
+    @JsonValue
+    @Override
     public String toString() {
         return toString(":");
     }
@@ -91,7 +100,23 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
 
     @Override
     public int compareTo(@NotNull NamespacedKey namespacedKey) {
-        int namepsaceDifference = getNamespace().compareTo(namespacedKey.getNamespace());
-        return namepsaceDifference == 0 ? getKey().compareTo(namespacedKey.getKey()) : namepsaceDifference;
+        int namespaceDifference = getNamespace().compareTo(namespacedKey.getNamespace());
+        return namespaceDifference == 0 ? getKey().compareTo(namespacedKey.getKey()) : namespaceDifference;
+    }
+
+    static class Deserializer extends JsonDeserializer<NamespacedKey> {
+
+        @Override
+        public NamespacedKey deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+            return NamespacedKey.getByString(jsonParser.readValueAs(String.class));
+        }
+    }
+
+    static class KeyDeserializer extends com.fasterxml.jackson.databind.KeyDeserializer {
+
+        @Override
+        public NamespacedKey deserializeKey(String s, DeserializationContext deserializationContext) throws IOException {
+            return NamespacedKey.getByString(s);
+        }
     }
 }
