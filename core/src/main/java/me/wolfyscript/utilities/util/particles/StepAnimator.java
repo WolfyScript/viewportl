@@ -86,7 +86,6 @@ public abstract class StepAnimator extends Animator {
         @Override
         public void run() {
             if (this.iteration > stepAnimator.duration) {
-                System.out.println("Cancel task!");
                 this.task.cancel();
             } else {
                 stepAnimator.runStep(++this.iteration, data, location, block, player, entity, equipmentSlot);

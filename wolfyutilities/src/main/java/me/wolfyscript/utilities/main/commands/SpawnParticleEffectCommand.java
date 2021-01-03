@@ -58,7 +58,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                                         particleEffect.onLocation(location);
                                     }
                                 } catch (NumberFormatException ex) {
-                                    chat.sendPlayerMessage(player, "&cInvalid position! Please make sure you only use numbers for x/y/z!");
+                                    chat.sendMessage(player, "&cInvalid position! Please make sure you only use numbers for x/y/z!");
                                     return true;
                                 }
                             } else {

@@ -95,13 +95,13 @@ public class Chat {
         Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.convert(message));
     }
 
-    public void sendPlayerMessage(Player player, String message) {
+    public void sendMessage(Player player, String message) {
         if (player != null) {
             player.sendMessage(ChatColor.convert(IN_GAME_PREFIX + languageAPI.replaceKeys(message)));
         }
     }
 
-    public void sendPlayerMessage(Player player, String... messages) {
+    public void sendMessages(Player player, String... messages) {
         if (player != null) {
             for (String message : messages) {
                 player.sendMessage(ChatColor.convert(IN_GAME_PREFIX + languageAPI.replaceKeys(message)));
@@ -109,29 +109,8 @@ public class Chat {
         }
     }
 
-    /*
-    Sends a global message from an GuiCluster to the player!
-     */
-    public void sendPlayerMessage(Player player, GuiCluster<?> guiCluster, String msgKey) {
-        sendPlayerMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
-    }
-
-    public void sendPlayerMessage(Player player, NamespacedKey namespacedKey, String msgKey) {
-        sendPlayerMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$");
-    }
-
     @SafeVarargs
-    public final void sendPlayerMessage(Player player, GuiCluster<?> guiCluster, String msgKey, Pair<String, String>... replacements) {
-        sendPlayerMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$", replacements);
-    }
-
-    @SafeVarargs
-    public final void sendPlayerMessage(Player player, NamespacedKey namespacedKey, String msgKey, Pair<String, String>... replacements) {
-        sendPlayerMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$", replacements);
-    }
-
-    @SafeVarargs
-    public final void sendPlayerMessage(Player player, String message, Pair<String, String>... replacements) {
+    public final void sendMessage(Player player, String message, Pair<String, String>... replacements) {
         if (player == null) return;
         if (replacements != null) {
             message = IN_GAME_PREFIX + languageAPI.replaceColoredKeys(message);
@@ -140,6 +119,31 @@ public class Chat {
             }
         }
         player.sendMessage(ChatColor.convert(message));
+    }
+
+    /*
+    Sends a global message from an GuiCluster to the player!
+     */
+    public void sendKey(Player player, String clusterID, String msgKey) {
+        sendMessage(player, "$inventories." + clusterID + ".global_messages." + msgKey + "$");
+    }
+
+    public void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey) {
+        sendMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
+    }
+
+    public void sendKey(Player player, NamespacedKey namespacedKey, String msgKey) {
+        sendMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$");
+    }
+
+    @SafeVarargs
+    public final void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey, Pair<String, String>... replacements) {
+        sendMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$", replacements);
+    }
+
+    @SafeVarargs
+    public final void sendKey(Player player, NamespacedKey namespacedKey, String msgKey, Pair<String, String>... replacements) {
+        sendMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$", replacements);
     }
 
     public void sendActionMessage(Player player, ClickData... clickData) {

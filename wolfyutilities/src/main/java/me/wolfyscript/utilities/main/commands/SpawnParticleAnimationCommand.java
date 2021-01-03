@@ -52,7 +52,7 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
                                     Location location = new Location(player.getWorld(), x, y, z);
                                     ParticleUtils.spawnAnimationOnLocation(nameSpacedKey, location);
                                 } catch (NumberFormatException ex) {
-                                    chat.sendPlayerMessage(player, "&cInvalid position! Please make sure you only use numbers for x/y/z!");
+                                    chat.sendMessage(player, "&cInvalid position! Please make sure you only use numbers for x/y/z!");
                                     return true;
                                 }
                             } else {
@@ -69,9 +69,9 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
                             try {
                                 UUID uuid = UUID.fromString(args[1]);
                                 ParticleUtils.stopAnimation(uuid);
-                                chat.sendPlayerMessage(player, "&eStopped effect with uuid &6" + args[1] + " &eif it was active!");
+                                chat.sendMessage(player, "&eStopped effect with uuid &6" + args[1] + " &eif it was active!");
                             } catch (IllegalArgumentException ex) {
-                                chat.sendPlayerMessage(player, "&cInvalid UUID &4" + args[1]);
+                                chat.sendMessage(player, "&cInvalid UUID &4" + args[1]);
                             }
                         }
                     }

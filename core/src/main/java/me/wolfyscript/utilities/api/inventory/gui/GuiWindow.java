@@ -245,7 +245,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public void openChat(GuiHandler<C> guiHandler, String msg, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), msg);
+        guiHandler.getApi().getChat().sendMessage(guiHandler.getPlayer(), msg);
     }
 
     /**
@@ -261,7 +261,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public void openChat(GuiCluster<C> guiCluster, String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
+        guiHandler.getApi().getChat().sendMessage(guiHandler.getPlayer(), "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
     }
 
     /**
@@ -276,7 +276,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public void openChat(String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
+        guiHandler.getApi().getChat().sendKey(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
     }
 
     /**
@@ -308,7 +308,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param msgKey The key of the message.
      */
     public final void sendMessage(Player player, String msgKey) {
-        wolfyUtilities.getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey);
+        wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey);
     }
 
     /**
@@ -318,7 +318,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      */
     @SafeVarargs
     public final void sendMessage(GuiHandler<C> guiHandler, String msgKey, Pair<String, String>... replacements) {
-        wolfyUtilities.getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey, replacements);
+        wolfyUtilities.getChat().sendKey(guiHandler.getPlayer(), getNamespacedKey(), msgKey, replacements);
     }
 
     /**
@@ -328,7 +328,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      */
     @SafeVarargs
     public final void sendMessage(Player player, String msgKey, Pair<String, String>... replacements) {
-        wolfyUtilities.getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey, replacements);
+        wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey, replacements);
     }
 
     /**

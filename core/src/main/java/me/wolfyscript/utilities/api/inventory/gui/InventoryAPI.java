@@ -223,7 +223,9 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
                     event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, slot, event));
                 }
             }
-            if (guiHandler.getWindow() != null) {
+            if (guiHandler.openedPreviousWindow) {
+                guiHandler.openedPreviousWindow = false;
+            } else if (guiHandler.getWindow() != null) {
                 Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
             }
         }

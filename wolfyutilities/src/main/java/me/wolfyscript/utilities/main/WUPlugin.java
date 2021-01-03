@@ -176,14 +176,14 @@ public class WUPlugin extends JavaPlugin {
         if (label.equalsIgnoreCase("wolfyutils")) {
             if (sender instanceof Player) {
                 Player p = (Player) sender;
-                chat.sendPlayerMessage(p, "~*~*~*~*&8[&3&lWolfyUtilities&8]&7~*~*~*~*~");
-                chat.sendPlayerMessage(p, "");
-                chat.sendPlayerMessage(p, "      &n     by &b&n&lWolfyScript&7&n      ");
-                chat.sendPlayerMessage(p, "        ------------------");
-                chat.sendPlayerMessage(p, "");
-                chat.sendPlayerMessage(p, "             &nVersion:&r&b " + getDescription().getVersion());
-                chat.sendPlayerMessage(p, "");
-                chat.sendPlayerMessage(p, "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~");
+                chat.sendMessage(p, "~*~*~*~*&8[&3&lWolfyUtilities&8]&7~*~*~*~*~");
+                chat.sendMessage(p, "");
+                chat.sendMessage(p, "      &n     by &b&n&lWolfyScript&7&n      ");
+                chat.sendMessage(p, "        ------------------");
+                chat.sendMessage(p, "");
+                chat.sendMessage(p, "             &nVersion:&r&b " + getDescription().getVersion());
+                chat.sendMessage(p, "");
+                chat.sendMessage(p, "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~");
                 return true;
             }
         }

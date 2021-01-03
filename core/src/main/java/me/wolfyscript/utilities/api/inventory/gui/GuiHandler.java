@@ -29,6 +29,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     private boolean isWindowOpen = false;
     private boolean helpEnabled = false;
     private boolean switchWindow = false;
+    boolean openedPreviousWindow = false;
 
     private final C customCache;
 
@@ -168,6 +169,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     }
 
     public void openPreviousWindow(GuiCluster<C> cluster, int stepsBack) {
+        openedPreviousWindow = true;
         List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
         for (int i = 0; i < stepsBack; i++) {
             if (!history.isEmpty()) {
@@ -214,7 +216,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
             return;
         }
         final GuiCluster<C> cluster = window.getCluster();
-        Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
+        //Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
             Player player1 = getPlayer();
             if (api.getPermissions().hasPermission(player1, (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")))) {
                 List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
@@ -227,8 +229,8 @@ public class GuiHandler<C extends CustomCache> implements Listener {
                 window.create(this);
                 return;
             }
-            api.getChat().sendPlayerMessage(player1, "§4You don't have the permission §c" + (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")));
-        });
+        api.getChat().sendMessage(player1, "§4You don't have the permission §c" + (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")));
+        //});
     }
 
     /**
@@ -296,7 +298,6 @@ public class GuiHandler<C extends CustomCache> implements Listener {
      * Closes the current open window.
      */
     public void close() {
-        this.isWindowOpen = false;
         Player player = getPlayer();
         if (player != null) player.closeInventory();
     }
@@ -350,7 +351,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
             GUIInventory<C> guiInventory = (GUIInventory<C>) bukkitInventory;
             if (!clusterHistory.isEmpty() && !switchWindow) {
                 if (guiInventory.getWindow().onClose(this, guiInventory, event.getView())) {
-                    Bukkit.getScheduler().runTask(getApi().getPlugin(), (Runnable) this::openCluster);
+                    this.openCluster();
                 } else {
                     this.isWindowOpen = false;
                 }
