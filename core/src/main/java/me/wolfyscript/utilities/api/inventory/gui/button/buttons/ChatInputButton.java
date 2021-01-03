@@ -8,16 +8,18 @@ import me.wolfyscript.utilities.api.inventory.gui.button.ButtonAction;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonRender;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.io.IOException;
 
 /**
  *
  */
-public class ChatInputButton<C extends CustomCache> extends DummyButton<C> {
+public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
 
     private final ChatInputAction<C> action;
     private String msg = "";
@@ -121,7 +123,7 @@ public class ChatInputButton<C extends CustomCache> extends DummyButton<C> {
     }
 
     @Override
-    public boolean execute(GuiHandler<C> guiHandler, Player player, Inventory inventory, int slot, InventoryClickEvent event) {
+    public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
         guiHandler.setChatInputAction(action);
         Chat chat = guiHandler.getApi().getChat();
         /*
@@ -130,12 +132,12 @@ public class ChatInputButton<C extends CustomCache> extends DummyButton<C> {
         wuPlugin.getPacketHandler().sendTo(player, message);
          */
         if (!msg.isEmpty()) {
-            chat.sendPlayerMessage(guiHandler.getPlayer(), msg);
+            chat.sendMessage(guiHandler.getPlayer(), msg);
         } else if (clickData != null) {
             guiHandler.getApi().getChat().sendActionMessage(guiHandler.getPlayer(), clickData);
         } else {
             if (guiHandler.getWindow() != null) {
-                chat.sendPlayerMessage(player, "$inventories." + guiHandler.getCluster() + "." + guiHandler.getWindow().getNamespacedKey().getNamespace() + ".items." + getId() + ".message$");
+                chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + "." + guiHandler.getWindow().getNamespacedKey().getKey() + ".items." + getId() + ".message$");
             }
         }
         guiHandler.close();
