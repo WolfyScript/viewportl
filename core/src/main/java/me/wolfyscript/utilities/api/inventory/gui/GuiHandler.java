@@ -216,21 +216,19 @@ public class GuiHandler<C extends CustomCache> implements Listener {
             return;
         }
         final GuiCluster<C> cluster = window.getCluster();
-        //Bukkit.getScheduler().runTask(getApi().getPlugin(), () -> {
-            Player player1 = getPlayer();
-            if (api.getPermissions().hasPermission(player1, (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")))) {
-                List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
-                if (getWindow(cluster) == null || !Objects.equals(getWindow(cluster), window)) {
-                    history.add(window);
-                }
-                clusterHistory.put(cluster, history);
-                this.cluster = cluster;
-                isWindowOpen = true;
-                window.create(this);
-                return;
+        Player player1 = getPlayer();
+        if (api.getPermissions().hasPermission(player1, (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")))) {
+            List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
+            if (getWindow(cluster) == null || !Objects.equals(getWindow(cluster), window)) {
+                history.add(window);
             }
+            clusterHistory.put(cluster, history);
+            this.cluster = cluster;
+            isWindowOpen = true;
+            window.create(this);
+            return;
+        }
         api.getChat().sendMessage(player1, "§4You don't have the permission §c" + (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")));
-        //});
     }
 
     /**
