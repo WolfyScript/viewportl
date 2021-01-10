@@ -24,7 +24,7 @@ public class SQLDataBase {
         this.username = username;
         this.password = password;
         this.maxPool = "250";
-        this.dataBaseURL = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useUnicode=true&characterEncoding=utf8";
+        this.dataBaseURL = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&useUnicode=true&characterEncoding=utf8";
     }
 
     /**
@@ -41,22 +41,12 @@ public class SQLDataBase {
     }
 
     /**
-     * Old method to open the connection on the main thread!
-     * use {@link #openConnection()} instead as it does the same thing!
-     */
-    @Deprecated
-    public void openConnectionOnMainThread() {
-        openConnection();
-    }
-
-    /**
-     * Opens the connection on the main thread
-     * This will cause some halt for the main thread, but is the safer method
-     * to make sure the connection is established before executing a query!
+     * Opens the connection on the main thread. If the connection is already established this will just return it.
+     * Attention! When using this on the main thread, it will cause it to hold till the connection is ready or times out!
      *
-     * @see #openConnectionAsync() openConnectionAsync()
+     * @return The established connection to the database
      */
-    public Connection openConnection() {
+    public Connection open() {
         if (connection == null) {
             try {
                 synchronized (this) {
@@ -70,17 +60,7 @@ public class SQLDataBase {
         return connection;
     }
 
-    /**
-     * Opens the connection to the database async on another thread!
-     * Might cause some issues when a query is executed afterwards and the connection isn't established at that point.
-     *
-     * @see #openConnection()
-     */
-    public void openConnectionAsync() {
-        new Thread(this::openConnection).start();
-    }
-
-    public void closeConnection() {
+    public void close() {
         if (connection != null) {
             try {
                 connection.close();
@@ -92,81 +72,27 @@ public class SQLDataBase {
     }
 
     public void executeUpdate(PreparedStatement preparedStatement) {
-        executeUpdate(preparedStatement, true);
-    }
-
-    public void executeUpdate(PreparedStatement preparedStatement, boolean async) {
-        Runnable runnable = () -> {
-            try {
-                openConnection();
-                preparedStatement.executeUpdate();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                api.getChat().sendConsoleWarning("Failed to execute SQL Query! " + e.getMessage());
-            } finally {
-                closeConnection();
-            }
-        };
-        if (async) {
-            new Thread(runnable).start();
-        } else {
-            runnable.run();
-        }
-    }
-
-    /**
-     * This method executes the update on the main thread!
-     * If the connection is lost it will also try to reconnect on the main thread causing it to halt!
-     * It's recommended to only call it async!
-     *
-     * @param query The SQL query as a String
-     **/
-    public void executeUpdate(String query) {
-        executeUpdate(query, false);
-    }
-
-    /**
-     * Executes a String udate query. It creates a PreparedStatement from the String and executes it.
-     * It's recommended to use PreparedStatements instead of String to prevent security risks!
-     *
-     * @param query The SQL query as a String
-     * @param async If the update should be executed on a different thread
-     **/
-    @Deprecated
-    public void executeUpdate(String query, boolean async) {
         try {
-            executeUpdate(connection.prepareStatement(query), async);
+            open(); //Makes sure that the connection is available. If not, it tries to connect.
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public PreparedStatement getPreparedStatement(String query) throws SQLException {
-        return connection.prepareStatement(query);
+    public void executeAsyncUpdate(PreparedStatement preparedStatement) {
+        new Thread(() -> executeUpdate(preparedStatement)).start();
     }
 
-    /**
-     * This method shouldn't be used on the main thread as it will block the thread till the data is received!
-     * Call this method async using Bukkit.getScheduler().runTaskAsynchronously() or by creating an extra Thread manually!
-     */
     public ResultSet executeQuery(PreparedStatement preparedStatement) {
         try {
-            openConnection();
+            open(); //Makes sure that the connection is available. If not, it tries to connect.
             return preparedStatement.executeQuery();
         } catch (SQLException e) {
-            api.getChat().sendConsoleWarning("Failed to execute SQL Query! " + e.getMessage());
+            e.printStackTrace();
             return null;
-        } finally {
-            closeConnection();
         }
-    }
-
-    public ResultSet getResultSet(PreparedStatement preparedStatement) throws SQLException {
-        return preparedStatement.executeQuery();
-    }
-
-    public ResultSet getResultSet(String query) throws SQLException {
-        return getResultSet(getPreparedStatement(query));
     }
 
     public WolfyUtilities getApi() {
