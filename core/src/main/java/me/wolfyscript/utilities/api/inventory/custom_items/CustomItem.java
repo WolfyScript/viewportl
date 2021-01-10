@@ -23,6 +23,8 @@ import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.inventory.item_builder.AbstractItemBuilder;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import me.wolfyscript.utilities.util.version.MinecraftVersions;
+import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -652,7 +654,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     }
 
     private Material getCraftReplaceMaterial(ItemStack input) {
-        if (WolfyUtilities.hasVillagePillageUpdate()) {
+        if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_14)) {
             if (input.getType().isItem()) {
                 Material replaceType = input.getType().getCraftingRemainingItem();
                 if (replaceType != null) return replaceType;

@@ -27,6 +27,7 @@ import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
+import me.wolfyscript.utilities.util.version.ServerVersion;
 import me.wolfyscript.utilities.util.world.WorldUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -110,6 +111,7 @@ public class WUPlugin extends JavaPlugin {
     }
 
     public void onEnable() {
+        getLogger().info("Minecraft version: " + ServerVersion.getVersion());
         wolfyUtilities = WolfyUtilities.get(this);
         this.chat = wolfyUtilities.getChat();
         chat.setCONSOLE_PREFIX("[WU] ");

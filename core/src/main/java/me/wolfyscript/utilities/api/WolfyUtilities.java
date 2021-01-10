@@ -8,7 +8,6 @@ import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
-import me.wolfyscript.utilities.util.Reflection;
 import me.wolfyscript.utilities.util.exceptions.InvalidCacheTypeException;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Bukkit;
@@ -21,37 +20,6 @@ public class WolfyUtilities {
 
     private static final HashMap<Plugin, WolfyUtilities> wolfyUtilitiesList = new HashMap<>();
     private static final HashMap<String, Boolean> classes = new HashMap<>();
-
-    /**
-     * @return if the minecraft version is 1.16 or higher
-     */
-    public static boolean hasNetherUpdate() {
-        return hasSpecificUpdate(116);
-    }
-
-    /**
-     * @return if the minecraft version is 1.15 or higher
-     */
-    public static boolean hasBuzzyBeesUpdate() {
-        return hasSpecificUpdate(115);
-    }
-
-    /**
-     * This can be used to make sure that this API is running on a supported Minecraft version, because pre-1.14 MC versions are no longer supported!
-     *
-     * @return if the minecraft version is 1.14 or higher
-     */
-    public static boolean hasVillagePillageUpdate() {
-        return hasSpecificUpdate(114);
-    }
-
-    public static boolean hasSpecificUpdate(String versionString) {
-        return Reflection.getVersionNumber() >= Integer.parseInt(versionString.replace("_", "").replace(".", "").replace("-", ""));
-    }
-
-    public static boolean hasSpecificUpdate(int versionNumber) {
-        return Reflection.getVersionNumber() >= versionNumber;
-    }
 
     public static boolean hasJavaXScripting() {
         return hasClass("javax.script.ScriptEngine");

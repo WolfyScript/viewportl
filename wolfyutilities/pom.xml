@@ -7,7 +7,7 @@
     <parent>
         <artifactId>wolfyutilities-parent</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <version>1.6.3.0</version>
+        <version>1.6.3.1</version>
     </parent>
     <dependencies>
         <dependency>
@@ -30,31 +30,31 @@
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
             <artifactId>nmsutil-v1_14_R1</artifactId>
-            <version>1.6.3.0</version>
+            <version>1.6.3.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
             <artifactId>nmsutil-v1_15_R1</artifactId>
-            <version>1.6.3.0</version>
+            <version>1.6.3.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
             <artifactId>nmsutil-v1_16_R1</artifactId>
-            <version>1.6.3.0</version>
+            <version>1.6.3.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
             <artifactId>nmsutil-v1_16_R2</artifactId>
-            <version>1.6.3.0</version>
+            <version>1.6.3.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
             <artifactId>nmsutil-v1_16_R3</artifactId>
-            <version>1.6.3.0</version>
+            <version>1.6.3.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
