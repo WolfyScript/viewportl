@@ -31,7 +31,7 @@ public enum CreativeModeTab {
     }
 
     public static void init() {
-        WolfyUtilities.getWUPlugin().getLogger().info("Loading Item Categories...");
+        WolfyUtilities.getWUPlugin().getLogger().info("Loading Creative Mode Tabs");
         WolfyUtilities.getWUCore().getNmsUtil().getInventoryUtil().initItemCategories();
         allowRegistry = false;
     }

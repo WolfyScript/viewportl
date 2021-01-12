@@ -2,8 +2,20 @@ package me.wolfyscript.utilities.util.version;
 
 public class ServerVersion {
 
+    private static WUVersion wolfyUtilitiesVersion;
+
     public static MinecraftVersion getVersion() {
         return MinecraftVersions.RUNTIME_VERSION;
+    }
+
+    public static WUVersion getWUVersion() {
+        return wolfyUtilitiesVersion;
+    }
+
+    public static void setWUVersion(String version) {
+        if (wolfyUtilitiesVersion == null) {
+            wolfyUtilitiesVersion = WUVersion.parse(version);
+        }
     }
 
     public static boolean isAfter(MinecraftVersion other) {

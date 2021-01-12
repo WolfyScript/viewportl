@@ -53,7 +53,7 @@ public class WUPlugin extends JavaPlugin {
     private MessageChannelHandler messageChannelHandler;
 
     public void loadParticleEffects() throws IOException {
-        chat.sendConsoleMessage("Loading Particles...");
+        getLogger().info("Loading Particles");
         WorldUtils.getWorldCustomItemStore().initiateMissingBlockEffects();
     }
 
@@ -69,6 +69,7 @@ public class WUPlugin extends JavaPlugin {
 
     public void onLoad() {
         instance = this;
+        ServerVersion.setWUVersion(getDescription().getVersion());
 
         //Jackson Serializer
         SimpleModule module = new SimpleModule();
@@ -111,7 +112,8 @@ public class WUPlugin extends JavaPlugin {
     }
 
     public void onEnable() {
-        getLogger().info("Minecraft version: " + ServerVersion.getVersion());
+        getLogger().info("Minecraft version: " + ServerVersion.getVersion().getVersion());
+        getLogger().info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
         wolfyUtilities = WolfyUtilities.get(this);
         this.chat = wolfyUtilities.getChat();
         chat.setCONSOLE_PREFIX("[WU] ");
@@ -165,7 +167,7 @@ public class WUPlugin extends JavaPlugin {
             File file = new File(getDataFolder(), "test_animation.json");
             JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_ANIMATIONS.get(new NamespacedKey("wolfyutilities", "flame_circle")));
             ParticleAnimation animation = JacksonUtil.getObjectMapper().readValue(file, ParticleAnimation.class);
-            System.out.println("Loaded: " + animation);
+            //System.out.println("Loaded: " + animation);
         } catch (IOException e) {
             e.printStackTrace();
         }

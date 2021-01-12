@@ -55,6 +55,7 @@ public class PlayerUtils {
     }
 
     public static void loadStores() {
+        WolfyUtilities.getWUPlugin().getLogger().info("Loading Player Data");
         if (!STORE_FOLDER.exists()) {
             STORE_FOLDER.mkdirs();
         }
@@ -62,7 +63,6 @@ public class PlayerUtils {
             UUID uuid = UUID.fromString(s.replace(".store", ""));
             indexedStores.put(uuid, PlayerStore.load(uuid));
         }
-        System.out.println("Loaded Stores: " + indexedStores);
     }
 
     public static void saveStores() {
