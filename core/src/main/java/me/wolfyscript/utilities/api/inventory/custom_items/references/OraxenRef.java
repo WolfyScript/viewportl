@@ -21,7 +21,7 @@ public class OraxenRef extends APIReference {
 
     @Override
     public ItemStack getLinkedItem() {
-        if (OraxenItems.isAnItem(itemID)) {
+        if (OraxenItems.exists(itemID)) {
             return OraxenItems.getItemById(itemID).build();
         }
         return ItemUtils.AIR;
