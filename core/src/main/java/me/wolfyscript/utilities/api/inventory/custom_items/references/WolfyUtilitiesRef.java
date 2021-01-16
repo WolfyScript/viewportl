@@ -1,13 +1,18 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,5 +79,31 @@ public class WolfyUtilitiesRef extends APIReference {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), namespacedKey);
+    }
+
+    public static class Parser extends APIReference.Parser<WolfyUtilitiesRef> {
+
+        private static final org.bukkit.NamespacedKey CUSTOM_ITEM_KEY = new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
+
+        public Parser() {
+            super("wolfyutilities", "item_key");
+        }
+
+        @Override
+        public @Nullable WolfyUtilitiesRef construct(ItemStack itemStack) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta != null) {
+                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+                if (container.has(CUSTOM_ITEM_KEY, PersistentDataType.STRING)) {
+                    return new WolfyUtilitiesRef(me.wolfyscript.utilities.util.NamespacedKey.getByString(container.get(CUSTOM_ITEM_KEY, PersistentDataType.STRING)));
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public @Nullable WolfyUtilitiesRef parse(JsonNode element) {
+            return new WolfyUtilitiesRef(NamespacedKey.getByString(element.asText()));
+        }
     }
 }

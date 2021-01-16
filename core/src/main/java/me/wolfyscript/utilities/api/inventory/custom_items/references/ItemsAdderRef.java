@@ -1,20 +1,22 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import dev.lone.itemsadder.api.ItemsAdder;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
 
-public class ItemsAdderRef extends APIReference{
+public class ItemsAdderRef extends APIReference {
 
     private final String itemName;
 
-    public ItemsAdderRef(String itemName){
+    public ItemsAdderRef(String itemName) {
         this.itemName = itemName;
     }
 
@@ -52,5 +54,25 @@ public class ItemsAdderRef extends APIReference{
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), itemName);
+    }
+
+    public static class Parser extends APIReference.PluginParser<ItemsAdderRef> {
+
+        public Parser() {
+            super("ItemsAdder", "itemsadder");
+        }
+
+        @Override
+        public @Nullable ItemsAdderRef construct(ItemStack itemStack) {
+            if (ItemsAdder.isCustomItem(itemStack)) {
+                return new ItemsAdderRef(ItemsAdder.getCustomItemName(itemStack));
+            }
+            return null;
+        }
+
+        @Override
+        public @Nullable ItemsAdderRef parse(JsonNode element) {
+            return new ItemsAdderRef(element.asText());
+        }
     }
 }

@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.util.inventory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.Material;
 
@@ -23,8 +24,20 @@ public enum CreativeModeTab {
     MISC,
     SEARCH;
 
-    private static boolean allowRegistry = true;
+    private static boolean register = true;
+    @JsonIgnore
     protected List<Material> materials;
+
+    public static boolean isValid(Material material, CreativeModeTab creativeModeTab) {
+        return creativeModeTab.isValid(material);
+    }
+
+    public static CreativeModeTab getCategory(Material material) {
+        for (CreativeModeTab tab : values()) {
+            if (tab.isValid(material)) return tab;
+        }
+        return SEARCH;
+    }
 
     CreativeModeTab() {
         this.materials = new ArrayList<>();
@@ -33,18 +46,7 @@ public enum CreativeModeTab {
     public static void init() {
         WolfyUtilities.getWUPlugin().getLogger().info("Loading Creative Mode Tabs");
         WolfyUtilities.getWUCore().getNmsUtil().getInventoryUtil().initItemCategories();
-        allowRegistry = false;
-    }
-
-    public static boolean isValid(Material material, CreativeModeTab creativeModeTab) {
-        return creativeModeTab.isValid(material);
-    }
-
-    public static CreativeModeTab getCategory(Material material) {
-        for (CreativeModeTab category : values()) {
-            if (category.isValid(material)) return category;
-        }
-        return SEARCH;
+        register = false;
     }
 
     public boolean isValid(Material material) {
@@ -52,7 +54,7 @@ public enum CreativeModeTab {
     }
 
     public void registerMaterial(Material material) {
-        if (allowRegistry && !materials.contains(material)) {
+        if (register && !materials.contains(material)) {
             materials.add(material);
         }
     }

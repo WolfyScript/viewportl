@@ -1,10 +1,9 @@
 package me.wolfyscript.utilities.main;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
@@ -34,7 +33,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -43,6 +41,7 @@ import java.io.IOException;
 public class WUPlugin extends JavaPlugin {
 
     private static WUPlugin instance;
+
     public static WUPlugin getInstance() {
         return instance;
     }
@@ -84,31 +83,10 @@ public class WUPlugin extends JavaPlugin {
 
         //Reference Deserializer
         APIReferenceSerialization.create(module);
-        JacksonUtil.addDeserializer(module, ItemsAdderRef.class, (p, d) -> {
-            JsonNode node = p.readValueAsTree();
-            return new ItemsAdderRef(node.asText());
-        });
-        JacksonUtil.addDeserializer(module, MMOItemsRef.class, (p, d) -> null);
-        JacksonUtil.addDeserializer(module, MythicMobsRef.class, (p, d) -> {
-            JsonNode node = p.readValueAsTree();
-            return new MythicMobsRef(node.asText());
-        });
-        JacksonUtil.addDeserializer(module, OraxenRef.class, (p, d) -> {
-            JsonNode node = p.readValueAsTree();
-            return new OraxenRef(node.asText());
-        });
-        JacksonUtil.addDeserializer(module, VanillaRef.class, (p, d) -> {
-            JsonNode node = p.readValueAsTree();
-            ObjectMapper objectMapper = JacksonUtil.getObjectMapper();
-            return new VanillaRef(objectMapper.convertValue(node, ItemStack.class));
-        });
-        JacksonUtil.addDeserializer(module, WolfyUtilitiesRef.class, (p, d) -> {
-            JsonNode node = p.readValueAsTree();
-            return new WolfyUtilitiesRef(NamespacedKey.getByString(node.asText()));
-        });
         JacksonUtil.registerModule(module);
 
         //Register custom item data
+
     }
 
     public void onEnable() {
@@ -118,6 +96,14 @@ public class WUPlugin extends JavaPlugin {
         this.chat = wolfyUtilities.getChat();
         chat.setCONSOLE_PREFIX("[WU] ");
         chat.setIN_GAME_PREFIX("§8[§3WU§8] §7");
+
+        // Register plugin CustomItem API ReferenceParser
+        getLogger().info("Register API references");
+        CustomItem.registerAPIReferenceParser(new VanillaRef.Parser());
+        CustomItem.registerAPIReferenceParser(new WolfyUtilitiesRef.Parser());
+        CustomItem.registerAPIReferenceParser(new OraxenRef.Parser());
+        CustomItem.registerAPIReferenceParser(new ItemsAdderRef.Parser());
+        CustomItem.registerAPIReferenceParser(new MythicMobsRef.Parser());
 
         LanguageAPI languageAPI = wolfyUtilities.getLanguageAPI();
 

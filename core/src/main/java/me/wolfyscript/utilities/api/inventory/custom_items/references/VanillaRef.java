@@ -1,9 +1,11 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -44,5 +46,22 @@ public class VanillaRef extends APIReference {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), itemStack);
+    }
+
+    public static class Parser extends APIReference.Parser<VanillaRef> {
+
+        public Parser() {
+            super("item");
+        }
+
+        @Override
+        public @Nullable VanillaRef construct(ItemStack itemStack) {
+            return new VanillaRef(itemStack);
+        }
+
+        @Override
+        public @Nullable VanillaRef parse(JsonNode element) {
+            return new VanillaRef(JacksonUtil.getObjectMapper().convertValue(element, ItemStack.class));
+        }
     }
 }

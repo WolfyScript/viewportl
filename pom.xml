@@ -139,14 +139,21 @@
         <dependency>
             <groupId>io.th0rgal</groupId>
             <artifactId>oraxen</artifactId>
-            <version>1.40.0</version>
+            <version>1.66.2</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>dev.lone</groupId>
             <artifactId>itemsadder</artifactId>
-            <version>2.1.5</version>
+            <version>2.1.26</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>net.Indyuce</groupId>
+            <artifactId>mmoitems</artifactId>
+            <version>6.5.1</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>

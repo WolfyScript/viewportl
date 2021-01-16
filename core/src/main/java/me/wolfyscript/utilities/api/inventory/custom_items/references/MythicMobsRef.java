@@ -1,18 +1,21 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.util.jnbt.CompoundTag;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
 
-public class MythicMobsRef extends APIReference{
+public class MythicMobsRef extends APIReference {
 
     private final String itemName;
 
-    public MythicMobsRef(String itemName){
+    public MythicMobsRef(String itemName) {
         this.itemName = itemName;
     }
 
@@ -38,5 +41,29 @@ public class MythicMobsRef extends APIReference{
     @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStringField("mythicmobs", itemName);
+    }
+
+    public static class Parser extends APIReference.PluginParser<MythicMobsRef> {
+
+        public Parser() {
+            super("MythicMobs", "mythicmobs");
+        }
+
+        @Override
+        public @Nullable MythicMobsRef construct(ItemStack itemStack) {
+            if (MythicMobs.inst().getVolatileCodeHandler().getItemHandler() != null) {
+                CompoundTag compoundTag = MythicMobs.inst().getVolatileCodeHandler().getItemHandler().getNBTData(itemStack);
+                String name = compoundTag.getString("MYTHIC_TYPE");
+                if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
+                    return new MythicMobsRef(name);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public @Nullable MythicMobsRef parse(JsonNode element) {
+            return new MythicMobsRef(element.asText());
+        }
     }
 }

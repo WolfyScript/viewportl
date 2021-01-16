@@ -10,13 +10,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import dev.lone.itemsadder.api.ItemsAdder;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.util.jnbt.CompoundTag;
-import io.th0rgal.oraxen.items.OraxenItems;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
-import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -36,8 +33,8 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 
@@ -46,16 +43,22 @@ import java.util.*;
 public class CustomItem extends AbstractItemBuilder<CustomItem> implements Cloneable {
 
     /**
+     *
+     */
+    private static final Map<String, APIReference.Parser<?>> API_REFERENCE_PARSER = new HashMap<>();
+
+    /**
      * This HashMap contains all the available CustomData providers, which then can be saved and loaded.
      * If the config contains CustomData that is not available in this HashMap, then it won't be loaded!
      */
-    private static final HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData.Provider<?>> availableCustomData = new HashMap<>();
+    private static final Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData.Provider<?>> CUSTOM_DATA = new HashMap<>();
+
     /**
      * Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
      * All registered CustomData is added to this item and cannot be removed!
      * Only the single CustomData objects can be edit in it's values.
      */
-    private final HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData> customDataMap = new HashMap<>();
+    private final Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData> customDataMap = new HashMap<>();
 
     public CustomItem(APIReference apiReference) {
         super(CustomItem.class);
@@ -70,7 +73,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.metaSettings = new MetaSettings();
         this.permission = "";
         this.rarityPercentage = 1.0d;
-        for (CustomData.Provider<?> customData : CustomItem.getAvailableCustomData().values()) {
+        for (CustomData.Provider<?> customData : CustomItem.getCustomData().values()) {
             addCustomData(customData.getNamespacedKey(), customData.createData());
         }
         this.equipmentSlots = new ArrayList<>();
@@ -81,8 +84,22 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.advanced = true;
     }
 
-    public static HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData.Provider<?>> getAvailableCustomData() {
-        return availableCustomData;
+    public static void registerAPIReferenceParser(APIReference.Parser<?> parser) {
+        if (!(parser instanceof APIReference.PluginParser) || !WolfyUtilities.hasPlugin(((APIReference.PluginParser<?>) parser).getPluginName())) {
+            API_REFERENCE_PARSER.put(parser.getId(), parser);
+            if (!parser.getAliases().isEmpty()) {
+                parser.getAliases().forEach(s -> API_REFERENCE_PARSER.putIfAbsent(s, parser));
+            }
+        }
+    }
+
+    @Nullable
+    public static APIReference.Parser<?> getApiReferenceParser(String id) {
+        return API_REFERENCE_PARSER.get(id);
+    }
+
+    public static Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData.Provider<?>> getCustomData() {
+        return CUSTOM_DATA;
     }
 
     /**
@@ -151,7 +168,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * @param customData The CustomData object to register.
      */
     public static void registerCustomData(CustomData.Provider<?> customData) {
-        availableCustomData.put(customData.getNamespacedKey(), customData);
+        CUSTOM_DATA.put(customData.getNamespacedKey(), customData);
     }
 
     /**
@@ -164,39 +181,17 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      */
     public static CustomItem getReferenceByItemStack(ItemStack itemStack) {
         if (itemStack != null) {
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            if (itemMeta != null) {
-                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-                APIReference apiReference = null;
-                NamespacedKey namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
-                if (container.has(namespacedKey, PersistentDataType.STRING)) {
-                    apiReference = new WolfyUtilitiesRef(me.wolfyscript.utilities.util.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
+            APIReference apiReference = null;
+            for (APIReference.Parser<?> parser : API_REFERENCE_PARSER.values()) {
+                APIReference reference = parser.construct(itemStack);
+                if (reference != null) {
+                    apiReference = reference;
+                    break;
                 }
-                if (apiReference == null) {
-                    if (WolfyUtilities.hasPlugin("ItemsAdder")) {
-                        if (ItemsAdder.isCustomItem(itemStack)) {
-                            apiReference = new ItemsAdderRef(ItemsAdder.getCustomItemName(itemStack));
-                        }
-                    } else if (WolfyUtilities.hasPlugin("Oraxen")) {
-                        String itemId = OraxenItems.getIdByItem(itemStack);
-                        if (itemId != null && !itemId.isEmpty()) {
-                            apiReference = new OraxenRef(itemId);
-                        }
-                    } else if (WolfyUtilities.hasPlugin("MythicMobs")) {
-                        if (MythicMobs.inst().getVolatileCodeHandler().getItemHandler() != null) {
-                            CompoundTag compoundTag = MythicMobs.inst().getVolatileCodeHandler().getItemHandler().getNBTData(itemStack);
-                            String name = compoundTag.getString("MYTHIC_TYPE");
-                            if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
-                                apiReference = new MythicMobsRef(name);
-                            }
-                        }
-                    }
-                }
-                if (apiReference != null) {
-                    apiReference.setAmount(itemStack.getAmount());
-                    return new CustomItem(apiReference);
-                }
-                return new CustomItem(itemStack);
+            }
+            if (apiReference != null) {
+                apiReference.setAmount(itemStack.getAmount());
+                return new CustomItem(apiReference);
             }
             return new CustomItem(itemStack);
         }
@@ -715,7 +710,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         return customDataMap.get(namespacedKey);
     }
 
-    public HashMap<me.wolfyscript.utilities.util.NamespacedKey, CustomData> getCustomDataMap() {
+    public Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData> getCustomDataMap() {
         return customDataMap;
     }
 
@@ -868,9 +863,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 JsonNode customDataNode = node.path("custom_data");
                 {
                     customDataNode.fields().forEachRemaining(entry -> {
-                        me.wolfyscript.utilities.util.NamespacedKey namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.getByString(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ availableCustomData.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
-                        if (namespacedKey != null && availableCustomData.containsKey(namespacedKey)) {
-                            availableCustomData.get(namespacedKey).addData(customItem, entry.getValue(), ctxt);
+                        me.wolfyscript.utilities.util.NamespacedKey namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.getByString(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ CUSTOM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
+                        if (namespacedKey != null && CUSTOM_DATA.containsKey(namespacedKey)) {
+                            CUSTOM_DATA.get(namespacedKey).addData(customItem, entry.getValue(), ctxt);
                         }
                     });
                 }

@@ -117,7 +117,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldguard:worldguard-legacy:7.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q:commandbook:2.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: io.lumine.xikage:mythicmobs:4.10.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.th0rgal:oraxen:1.40.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: dev.lone:itemsadder:2.1.5" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.th0rgal:oraxen:1.66.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: dev.lone:itemsadder:2.1.26" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.Indyuce:mmoitems:6.5.1" level="project" />
   </component>
 </module>
