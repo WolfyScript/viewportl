@@ -12,6 +12,7 @@ softdepend:
   - PlotSquared
   - WorldGuard
   - MythicMobs
+  - MMOItems
   - BungeeChat
   - mcMMO
   - Oraxen
