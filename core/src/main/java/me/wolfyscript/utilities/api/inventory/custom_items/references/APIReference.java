@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -75,17 +76,27 @@ public abstract class APIReference {
         return Objects.hash(amount);
     }
 
-    public abstract static class Parser<T extends APIReference> {
+    public abstract static class Parser<T extends APIReference> implements Comparable<Parser<?>> {
 
+        private final int priority;
         private final String id;
         private final List<String> aliases;
 
         public Parser(String id) {
-            this(id, new String[0]);
+            this(id, 0);
+        }
+
+        public Parser(String id, int priority) {
+            this(id, priority, new String[0]);
         }
 
         public Parser(String id, String... aliases) {
+            this(id, 0, aliases);
+        }
+
+        public Parser(String id, int priority, String... aliases) {
             this.id = id;
+            this.priority = priority;
             this.aliases = Collections.unmodifiableList(Arrays.asList(aliases));
         }
 
@@ -102,6 +113,12 @@ public abstract class APIReference {
 
         @Nullable
         public abstract T parse(JsonNode element);
+
+        @Override
+        public int compareTo(@NotNull APIReference.Parser<?> that) {
+            return Integer.compare(this.priority, that.priority);
+        }
+
     }
 
     public abstract static class PluginParser<T extends APIReference> extends Parser<T> {

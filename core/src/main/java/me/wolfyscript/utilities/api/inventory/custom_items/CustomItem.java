@@ -14,6 +14,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -48,41 +49,11 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     private static final Map<String, APIReference.Parser<?>> API_REFERENCE_PARSER = new HashMap<>();
 
     /**
-     * This HashMap contains all the available CustomData providers, which then can be saved and loaded.
-     * If the config contains CustomData that is not available in this HashMap, then it won't be loaded!
-     */
-    private static final Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData.Provider<?>> CUSTOM_DATA = new HashMap<>();
-
-    /**
      * Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
      * All registered CustomData is added to this item and cannot be removed!
      * Only the single CustomData objects can be edit in it's values.
      */
     private final Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData> customDataMap = new HashMap<>();
-
-    public CustomItem(APIReference apiReference) {
-        super(CustomItem.class);
-        this.apiReference = apiReference;
-
-        this.namespacedKey = null;
-        this.burnTime = 0;
-        this.allowedBlocks = new ArrayList<>();
-        this.replacement = null;
-        this.durabilityCost = 0;
-        this.consumed = true;
-        this.metaSettings = new MetaSettings();
-        this.permission = "";
-        this.rarityPercentage = 1.0d;
-        for (CustomData.Provider<?> customData : CustomItem.getCustomData().values()) {
-            addCustomData(customData.getNamespacedKey(), customData.createData());
-        }
-        this.equipmentSlots = new ArrayList<>();
-        this.particleContent = new ParticleContent();
-        this.blockPlacement = false;
-        this.blockVanillaEquip = false;
-        this.blockVanillaRecipes = false;
-        this.advanced = true;
-    }
 
     public static void registerAPIReferenceParser(APIReference.Parser<?> parser) {
         if (!(parser instanceof APIReference.PluginParser) || !WolfyUtilities.hasPlugin(((APIReference.PluginParser<?>) parser).getPluginName())) {
@@ -98,10 +69,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         return API_REFERENCE_PARSER.get(id);
     }
 
-    public static Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData.Provider<?>> getCustomData() {
-        return CUSTOM_DATA;
-    }
-
     /**
      * This namespacedKey can either be null or non-null.
      * <p>
@@ -112,18 +79,19 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      */
     private me.wolfyscript.utilities.util.NamespacedKey namespacedKey;
 
+    private final Material craftRemain;
+    private boolean consumed;
     private APIReference replacement;
+    private int durabilityCost;
     private List<Material> allowedBlocks;
+
     private String permission;
     private double rarityPercentage;
     private int burnTime;
-    private int durabilityCost;
-    private boolean consumed;
     private boolean blockPlacement;
     private boolean blockVanillaEquip;
     private boolean blockVanillaRecipes;
     private final List<EquipmentSlot> equipmentSlots;
-
     private boolean advanced;
 
     /**
@@ -133,9 +101,35 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * @see APIReference
      */
     private final APIReference apiReference;
-
     private ParticleContent particleContent;
     private MetaSettings metaSettings;
+
+
+    public CustomItem(APIReference apiReference) {
+        super(CustomItem.class);
+        this.apiReference = apiReference;
+
+        this.namespacedKey = null;
+        this.burnTime = 0;
+        this.allowedBlocks = new ArrayList<>();
+        this.metaSettings = new MetaSettings();
+        this.permission = "";
+        this.rarityPercentage = 1.0d;
+        for (CustomData.Provider<?> customData : Registry.CUSTOM_ITEM_DATA.values()) {
+            addCustomData(customData.getNamespacedKey(), customData.createData());
+        }
+        this.equipmentSlots = new ArrayList<>();
+        this.particleContent = new ParticleContent();
+        this.blockPlacement = false;
+        this.blockVanillaEquip = false;
+        this.blockVanillaRecipes = false;
+        this.advanced = true;
+
+        this.consumed = true;
+        this.replacement = null;
+        this.durabilityCost = 0;
+        this.craftRemain = getCraftRemain();
+    }
 
     /**
      * Creates a CustomItem with a Vanilla Reference to the itemstack
@@ -156,19 +150,46 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     }
 
     /**
-     * Register a new {@link CustomData.Provider} object that can be used in any Custom Item from the point of registration.
-     * <br/>
-     * You can register any CustomData you might want to add to your CustomItems and then save and load it from config too.
-     * <br/>
-     * It allows you to save and load custom data into a CustomItem and makes things a lot easier if you have some items that perform specific actions with the data etc.
-     * <br/>
-     * For example CustomCrafting registers it's own CustomData, that isn't in this base API, for it's Elite Workbenches that open up custom GUIs dependent on their CustomData.
-     * And also the Recipe Book uses a CustomData object to store some data.
+     * <p>
+     * This will create a <b>new</b> {@link CustomItem} instance with the specified APIReference.
+     * </p>
+     * <p>
+     * This means:
+     * If the reference points to an actual CustomItem, the returned CustomItem will override it's custom values and can then be registered.
+     * They are then dependent on the linked CustomItem.
+     * If the reference points to any other API such as Oraxen, MMOItems, etc. it is linked to these APIs and can be registered.
+     * They are then dependent on the linked API.
+     * </p>
      *
-     * @param customData The CustomData object to register.
+     * @param reference The reference to link the item to.
+     * @return A new CustomItem instance with the specified APIReference.
      */
-    public static void registerCustomData(CustomData.Provider<?> customData) {
-        CUSTOM_DATA.put(customData.getNamespacedKey(), customData);
+    public static CustomItem with(APIReference reference) {
+        if (reference == null) return null;
+        return new CustomItem(reference);
+    }
+
+    /**
+     * <p>
+     * This method tries to get the actual {@link CustomItem} of the {@link APIReference}!
+     * </p>
+     * <p>
+     * If the reference points to an actual registered CustomItem ({@link WolfyUtilitiesRef}) then that item is returned.<br/>
+     * If the reference points to any other API such as Oraxen, MMOItems, etc. it redirects uses the {@link #with(APIReference)} method.<br/>
+     * </p>
+     * <p>
+     * <b>
+     * !Warning: If you want to create a CustomItem that is linked to another CustomItem and overrides it use {@link #with(APIReference)} instead!
+     * </b>
+     * </p>
+     *
+     * @param reference The reference that points to an API Item.
+     * @return The actual CustomItem of the APIReference.
+     */
+    @Nullable
+    public static CustomItem of(APIReference reference) {
+        if (reference == null) return null;
+        return reference instanceof WolfyUtilitiesRef ? Registry.CUSTOM_ITEMS.get(((WolfyUtilitiesRef) reference).getNamespacedKey()) : with(reference);
     }
 
     /**
@@ -181,14 +202,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      */
     public static CustomItem getReferenceByItemStack(ItemStack itemStack) {
         if (itemStack != null) {
-            APIReference apiReference = null;
-            for (APIReference.Parser<?> parser : API_REFERENCE_PARSER.values()) {
-                APIReference reference = parser.construct(itemStack);
-                if (reference != null) {
-                    apiReference = reference;
-                    break;
-                }
-            }
+            APIReference apiReference = API_REFERENCE_PARSER.values().stream().sorted(APIReference.Parser::compareTo).map(parser -> parser.construct(itemStack)).filter(Objects::nonNull).findFirst().orElse(null);
             if (apiReference != null) {
                 apiReference.setAmount(itemStack.getAmount());
                 return new CustomItem(apiReference);
@@ -441,7 +455,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
 
     /**
      * If linked to config it will create a new instance with the values from the config,
-     * else copys this instance of the ItemStack.
+     * else copies this instance of the ItemStack.
      *
      * @return exact copy of this instance
      */
@@ -450,22 +464,21 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         CustomItem customItem = new CustomItem(getApiReference());
         if (hasNamespacedKey()) {
             customItem.setNamespacedKey(getNamespacedKey());
-            customItem.setBlockVanillaRecipes(isBlockVanillaRecipes());
-            customItem.setBlockVanillaEquip(isBlockVanillaEquip());
-            customItem.setAllowedBlocks(getAllowedBlocks());
-            customItem.setBurnTime(getBurnTime());
-            customItem.setConsumed(isConsumed());
-            customItem.setDurabilityCost(getDurabilityCost());
-            customItem.setMetaSettings(getMetaSettings());
-            customItem.setParticleContent(getParticleContent());
-            customItem.setPermission(getPermission());
-            customItem.setRarityPercentage(getRarityPercentage());
-            customItem.setReplacement(getReplacement());
-            customItem.setAdvanced(isAdvanced());
         }
+        customItem.setBlockVanillaRecipes(isBlockVanillaRecipes());
+        customItem.setBlockVanillaEquip(isBlockVanillaEquip());
+        customItem.setAllowedBlocks(getAllowedBlocks());
+        customItem.setBurnTime(getBurnTime());
+        customItem.setConsumed(isConsumed());
+        customItem.setDurabilityCost(getDurabilityCost());
+        customItem.setMetaSettings(getMetaSettings());
+        customItem.setParticleContent(getParticleContent());
+        customItem.setPermission(getPermission());
+        customItem.setRarityPercentage(getRarityPercentage());
+        customItem.setReplacement(getReplacement());
+        customItem.setAdvanced(isAdvanced());
         customItem.setAmount(getAmount());
         return customItem;
-        //CustomItem customItem = new CustomItem(getApiReference());
     }
 
     /**
@@ -607,60 +620,52 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * @param input The input ItemStack, that is going to be edited.
      */
     public void consumeUnstackableItem(ItemStack input) {
-        if (this.hasNamespacedKey()) {
-            if (this.isConsumed()) {
-                input.setAmount(0);
+        if (this.isConsumed()) {
+            if (craftRemain != null) {
+                input.setType(craftRemain);
             } else {
-                Material replaceType = getCraftReplaceMaterial(input);
-                if (replaceType != null) {
-                    input.setType(replaceType);
+                input.setAmount(0);
+            }
+        }
+        if (this.hasReplacement()) {
+            ItemStack replace = new CustomItem(this.getReplacement()).create();
+            input.setType(replace.getType());
+            input.setItemMeta(replace.getItemMeta());
+            input.setData(replace.getData());
+            input.setAmount(replace.getAmount());
+        } else if (this.getDurabilityCost() != 0) {
+            ItemBuilder itemBuilder = new ItemBuilder(input);
+            if (itemBuilder.hasCustomDurability()) {
+                itemBuilder.setCustomDamage(itemBuilder.getCustomDamage() + this.getDurabilityCost());
+                return;
+            }
+            ItemMeta itemMeta = input.getItemMeta();
+            if (itemMeta instanceof Damageable) {
+                int damage = ((Damageable) itemMeta).getDamage() + this.getDurabilityCost();
+                if (damage > create().getType().getMaxDurability()) {
+                    input.setAmount(0);
+                } else {
+                    ((Damageable) itemMeta).setDamage(damage);
                 }
             }
-            if (this.hasReplacement()) {
-                ItemStack replace = new CustomItem(this.getReplacement()).create();
-                input.setType(replace.getType());
-                input.setItemMeta(replace.getItemMeta());
-                input.setData(replace.getData());
-                input.setAmount(replace.getAmount());
-            } else if (this.getDurabilityCost() != 0) {
-                CustomItem customInput = new CustomItem(input);
-                if (customInput.hasCustomDurability()) {
-                    customInput.setCustomDamage(customInput.getCustomDamage() + this.getDurabilityCost());
-                    return;
-                }
-                ItemMeta itemMeta = input.getItemMeta();
-                if (itemMeta instanceof Damageable) {
-                    int damage = ((Damageable) itemMeta).getDamage() + this.getDurabilityCost();
-                    if (damage > create().getType().getMaxDurability()) {
-                        input.setAmount(0);
-                    } else {
-                        ((Damageable) itemMeta).setDamage(damage);
-                    }
-                }
-                input.setItemMeta(itemMeta);
-            }
-        } else {
-            Material replaceType = getCraftReplaceMaterial(input);
-            if (replaceType != null) {
-                input.setType(replaceType);
-            }
-            input.setAmount(0);
+            input.setItemMeta(itemMeta);
         }
     }
 
-    private Material getCraftReplaceMaterial(ItemStack input) {
+    private Material getCraftRemain() {
+        ItemStack item = getItemStack();
         if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_14)) {
-            if (input.getType().isItem()) {
-                Material replaceType = input.getType().getCraftingRemainingItem();
+            if (item.getType().isItem()) {
+                Material replaceType = item.getType().getCraftingRemainingItem();
                 if (replaceType != null) return replaceType;
             }
-        } else switch (input.getType()) {
+        } else switch (item.getType()) {
             case LAVA_BUCKET:
             case MILK_BUCKET:
             case WATER_BUCKET:
                 return Material.BUCKET;
         }
-        switch (input.getType()) {
+        switch (item.getType()) {
             case COD_BUCKET:
             case SALMON_BUCKET:
             case PUFFERFISH_BUCKET:
@@ -846,7 +851,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             if (node.isObject()) {
                 CustomItem customItem = new CustomItem(mapper.convertValue(node.path(node.has("api_reference") ? "api_reference" : "item"), APIReference.class));
                 customItem.setAdvanced(node.path("advanced").asBoolean(true));
-                customItem.setConsumed(node.path("consumed").asBoolean());
+                customItem.setConsumed(node.path("consumed").asBoolean(true));
                 customItem.setBlockVanillaEquip(node.path("blockVanillaEquip").asBoolean());
                 customItem.setBlockPlacement(node.path("blockPlacement").asBoolean());
                 customItem.setBlockVanillaRecipes(node.path("blockVanillaRecipes").asBoolean());
@@ -863,9 +868,12 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 JsonNode customDataNode = node.path("custom_data");
                 {
                     customDataNode.fields().forEachRemaining(entry -> {
-                        me.wolfyscript.utilities.util.NamespacedKey namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.getByString(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ CUSTOM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
-                        if (namespacedKey != null && CUSTOM_DATA.containsKey(namespacedKey)) {
-                            CUSTOM_DATA.get(namespacedKey).addData(customItem, entry.getValue(), ctxt);
+                        me.wolfyscript.utilities.util.NamespacedKey namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.getByString(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ Registry.CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
+                        if (namespacedKey != null) {
+                            CustomData.Provider<?> provider = Registry.CUSTOM_ITEM_DATA.get(namespacedKey);
+                            if (provider != null) {
+                                provider.addData(customItem, entry.getValue(), ctxt);
+                            }
                         }
                     });
                 }
