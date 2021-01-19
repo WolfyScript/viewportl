@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.util;
 
 import com.google.common.base.Preconditions;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomData;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
@@ -16,6 +17,7 @@ public interface Registry<V> extends Iterable<V> {
 
     //WolfyUtilities Registries
     CustomItemRegistry CUSTOM_ITEMS = new CustomItemRegistry();
+    CustomDataRegistry CUSTOM_ITEM_DATA = new CustomDataRegistry();
     ParticleRegistry PARTICLE_EFFECTS = new ParticleRegistry();
     ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry();
 
@@ -170,6 +172,26 @@ public interface Registry<V> extends Iterable<V> {
                 super.register(namespacedKey, value);
             }
         }
+    }
+
+    class CustomDataRegistry extends SimpleRegistry<CustomData.Provider<?>> {
+
+        /**
+         * Register a new {@link CustomData.Provider} object that can be used in any Custom Item from the point of registration.
+         * <br/>
+         * You can register any CustomData you might want to add to your CustomItems and then save and load it from config too.
+         * <br/>
+         * It allows you to save and load custom data into a CustomItem and makes things a lot easier if you have some items that perform specific actions with the data etc.
+         * <br/>
+         * For example CustomCrafting registers it's own CustomData, that isn't in this base API, for it's Elite Workbenches that open up custom GUIs dependent on their CustomData.
+         * And also the Recipe Book uses a CustomData object to store some data.
+         *
+         * @param value
+         */
+        public void register(CustomData.Provider<?> value) {
+            super.register(value.getNamespacedKey(), value);
+        }
+
     }
 
 }

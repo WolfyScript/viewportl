@@ -51,7 +51,7 @@ public class VanillaRef extends APIReference {
     public static class Parser extends APIReference.Parser<VanillaRef> {
 
         public Parser() {
-            super("item");
+            super("item", 1000);
         }
 
         @Override
