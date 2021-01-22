@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.util.particles;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.world.BlockCustomItemStore;
@@ -26,7 +27,7 @@ import java.util.UUID;
  * If you want to just spawn a one time ParticleEffect use the methods of the {@link ParticleEffect} class instead.
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class ParticleAnimation {
+public class ParticleAnimation implements Keyed {
 
     private final String name;
     private final List<String> description;
@@ -109,6 +110,7 @@ public class ParticleAnimation {
         return ParticleUtils.addTask(Bukkit.getScheduler().runTaskTimerAsynchronously(WolfyUtilities.getWUPlugin(), runnable, delay, interval));
     }
 
+    @Override
     public NamespacedKey getNamespacedKey() {
         return namespacedKey;
     }

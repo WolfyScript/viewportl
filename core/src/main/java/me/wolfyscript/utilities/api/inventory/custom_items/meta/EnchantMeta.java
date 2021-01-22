@@ -6,7 +6,6 @@ import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 public class EnchantMeta extends Meta {
 
     public EnchantMeta() {
-        super("enchant");
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
     }

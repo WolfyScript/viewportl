@@ -10,7 +10,6 @@ import org.bukkit.persistence.PersistentDataType;
 public class CustomItemTagMeta extends Meta {
 
     public CustomItemTagMeta() {
-        super("customitem_tag");
         setOption(MetaSettings.Option.IGNORE);
         setAvailableOptions(MetaSettings.Option.IGNORE, MetaSettings.Option.EXACT);
     }

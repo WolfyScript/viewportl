@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
@@ -86,6 +87,23 @@ public class WUPlugin extends JavaPlugin {
         JacksonUtil.registerModule(module);
 
         //Register custom item data
+
+        //Register meta settings providers
+        Registry.MetaRegistry providers = Registry.META_PROVIDER;
+        providers.register(NamespacedKey.wolfyutilties("attributes_modifiers"), AttributesModifiersMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("custom_damage"), CustomDamageMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("custom_durability"), CustomDurabilityMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("customitem_tag"), CustomItemTagMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("custom_model_data"), CustomModelDataMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("damage"), DamageMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("enchant"), EnchantMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("flags"), FlagsMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("lore"), LoreMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("name"), NameMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("player_head"), PlayerHeadMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("potion"), PotionMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("repair_cost"), RepairCostMeta.class);
+        providers.register(NamespacedKey.wolfyutilties("unbreakable"), UnbreakableMeta.class);
 
     }
 

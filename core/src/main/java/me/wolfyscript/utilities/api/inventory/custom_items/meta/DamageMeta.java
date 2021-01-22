@@ -8,7 +8,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class DamageMeta extends Meta {
 
     public DamageMeta() {
-        super("damage");
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
     }

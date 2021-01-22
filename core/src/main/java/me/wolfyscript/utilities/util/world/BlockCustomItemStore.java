@@ -83,7 +83,7 @@ public class BlockCustomItemStore {
         public BlockCustomItemStore deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonNode node = p.readValueAsTree();
             if (node.has("key")) {
-                NamespacedKey customItemKey = NamespacedKey.getByString(node.path("key").asText());
+                NamespacedKey customItemKey = NamespacedKey.of(node.path("key").asText());
                 if (customItemKey != null) {
                     return new BlockCustomItemStore(customItemKey, null);
                 }

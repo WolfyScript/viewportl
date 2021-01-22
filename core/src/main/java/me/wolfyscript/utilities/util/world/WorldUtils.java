@@ -79,7 +79,7 @@ public class WorldUtils {
                     loadMap.forEach((key, value) -> {
                         Location location = stringToLocation(key);
                         if (location != null) {
-                            worldCustomItemStore.setStore(location, new BlockCustomItemStore(NamespacedKey.getByString(value), null));
+                            worldCustomItemStore.setStore(location, new BlockCustomItemStore(NamespacedKey.of(value), null));
                         }
                     });
                 } catch (ClassNotFoundException e) {

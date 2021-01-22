@@ -15,6 +15,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
+import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -41,7 +42,7 @@ import java.util.*;
 
 @JsonSerialize(using = CustomItem.Serializer.class)
 @JsonDeserialize(using = CustomItem.Deserializer.class)
-public class CustomItem extends AbstractItemBuilder<CustomItem> implements Cloneable {
+public class CustomItem extends AbstractItemBuilder<CustomItem> implements Cloneable, Keyed {
 
     /**
      *
@@ -232,7 +233,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 PersistentDataContainer container = itemMeta.getPersistentDataContainer();
                 NamespacedKey namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
                 if (container.has(namespacedKey, PersistentDataType.STRING)) {
-                    return Registry.CUSTOM_ITEMS.get(me.wolfyscript.utilities.util.NamespacedKey.getByString(container.get(namespacedKey, PersistentDataType.STRING)));
+                    return Registry.CUSTOM_ITEMS.get(me.wolfyscript.utilities.util.NamespacedKey.of(container.get(namespacedKey, PersistentDataType.STRING)));
                 }
             }
         }
@@ -243,6 +244,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         return namespacedKey != null;
     }
 
+    @Override
     public me.wolfyscript.utilities.util.NamespacedKey getNamespacedKey() {
         return namespacedKey;
     }
@@ -407,7 +409,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             if (!exactMeta && !currentItem.hasItemMeta()) return true;
             ItemBuilder customItem = new ItemBuilder(currentItem);
             ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
-            boolean meta = getMetaSettings().checkMeta(customItemOther, customItem);
+            boolean meta = getMetaSettings().check(customItemOther, customItem);
                 /*
                 ItemMeta itemMeta = customItem.getItemMeta();
                 ItemMeta itemMetaOther = customItemOther.getItemMeta();
@@ -532,7 +534,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     }
 
     /**
-     * This item should only be used to visulize the namespacekey!
+     * This item should only be used to visualize the namespacedkey!
      * It doesn't include a NBT Tag with the namspacekey and non of the WU features!
      *
      * @param amount The stacksize of the item
@@ -868,7 +870,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
                 JsonNode customDataNode = node.path("custom_data");
                 {
                     customDataNode.fields().forEachRemaining(entry -> {
-                        me.wolfyscript.utilities.util.NamespacedKey namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.getByString(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ Registry.CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
+                        me.wolfyscript.utilities.util.NamespacedKey namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.of(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ Registry.CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
                         if (namespacedKey != null) {
                             CustomData.Provider<?> provider = Registry.CUSTOM_ITEM_DATA.get(namespacedKey);
                             if (provider != null) {

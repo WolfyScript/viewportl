@@ -96,7 +96,7 @@ public class PlayerStore {
             JsonNode node = jsonParser.readValueAsTree();
             PlayerStore store = new PlayerStore();
             node.path("data").fields().forEachRemaining(entry -> {
-                NamespacedKey key = NamespacedKey.getByString(entry.getKey());
+                NamespacedKey key = NamespacedKey.of(entry.getKey());
                 CustomPlayerData.Provider<?> provider = CustomPlayerData.providers.get(key);
                 if (provider != null) {
                     store.data.put(key, provider.loadData(entry.getValue(), deserializationContext));

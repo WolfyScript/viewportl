@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.chat.ChatColor;
@@ -33,7 +34,7 @@ Contains the location, offset, ParticleEffects, etc.
  */
 @JsonSerialize(using = ParticleEffect.Serializer.class)
 @JsonDeserialize(using = ParticleEffect.Deserializer.class)
-public class ParticleEffect {
+public class ParticleEffect implements Keyed {
 
     private NamespacedKey namespacedKey;
     private NamespacedKey superParticle;
@@ -112,6 +113,7 @@ public class ParticleEffect {
         this.animator = animator;
     }
 
+    @Override
     public NamespacedKey getNamespacedKey() {
         return namespacedKey;
     }
@@ -338,7 +340,7 @@ public class ParticleEffect {
                 final ParticleEffect resultParticleEffect;
                 if (node.has("particle")) {
                     String particle = node.path("particle").asText();
-                    NamespacedKey namespacedKey = particle.contains(":") ? NamespacedKey.getByString(particle) : new NamespacedKey("wolfyutilities", particle);
+                    NamespacedKey namespacedKey = particle.contains(":") ? NamespacedKey.of(particle) : new NamespacedKey("wolfyutilities", particle);
                     if (namespacedKey.getNamespace().equalsIgnoreCase("minecraft")) {
                         resultParticleEffect = new ParticleEffect();
                         org.bukkit.Particle particleType = org.bukkit.Particle.valueOf(namespacedKey.getKey().toUpperCase(Locale.ROOT));

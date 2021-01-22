@@ -337,7 +337,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     final Button<C> getButton(GuiWindow<C> guiWindow, int slot) {
         String id = customCache.getButtons(guiWindow).get(slot);
         if (id != null && id.contains(":")) {
-            return invAPI.getButton(NamespacedKey.getByString(id));
+            return invAPI.getButton(NamespacedKey.of(id));
         }
         return guiWindow.getButton(id);
     }

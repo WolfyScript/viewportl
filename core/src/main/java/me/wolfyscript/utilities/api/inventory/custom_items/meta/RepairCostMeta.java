@@ -8,7 +8,6 @@ import org.bukkit.inventory.meta.Repairable;
 public class RepairCostMeta extends Meta {
 
     public RepairCostMeta() {
-        super("repairCost");
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
     }

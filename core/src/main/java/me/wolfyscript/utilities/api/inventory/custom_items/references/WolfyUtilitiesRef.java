@@ -95,7 +95,7 @@ public class WolfyUtilitiesRef extends APIReference {
             if (itemMeta != null) {
                 PersistentDataContainer container = itemMeta.getPersistentDataContainer();
                 if (container.has(CUSTOM_ITEM_KEY, PersistentDataType.STRING)) {
-                    return new WolfyUtilitiesRef(me.wolfyscript.utilities.util.NamespacedKey.getByString(container.get(CUSTOM_ITEM_KEY, PersistentDataType.STRING)));
+                    return new WolfyUtilitiesRef(me.wolfyscript.utilities.util.NamespacedKey.of(container.get(CUSTOM_ITEM_KEY, PersistentDataType.STRING)));
                 }
             }
             return null;
@@ -103,7 +103,7 @@ public class WolfyUtilitiesRef extends APIReference {
 
         @Override
         public @Nullable WolfyUtilitiesRef parse(JsonNode element) {
-            return new WolfyUtilitiesRef(NamespacedKey.getByString(element.asText()));
+            return new WolfyUtilitiesRef(NamespacedKey.of(element.asText()));
         }
     }
 }
