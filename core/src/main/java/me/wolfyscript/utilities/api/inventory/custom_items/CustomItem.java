@@ -57,7 +57,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     private final Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData> customDataMap = new HashMap<>();
 
     public static void registerAPIReferenceParser(APIReference.Parser<?> parser) {
-        if (!(parser instanceof APIReference.PluginParser) || !WolfyUtilities.hasPlugin(((APIReference.PluginParser<?>) parser).getPluginName())) {
+        if (!(parser instanceof APIReference.PluginParser) || WolfyUtilities.hasPlugin(((APIReference.PluginParser<?>) parser).getPluginName())) {
             API_REFERENCE_PARSER.put(parser.getId(), parser);
             if (!parser.getAliases().isEmpty()) {
                 parser.getAliases().forEach(s -> API_REFERENCE_PARSER.putIfAbsent(s, parser));
@@ -779,6 +779,30 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      */
     public void setAmount(int amount) {
         getApiReference().setAmount(amount);
+    }
+
+    @Override
+    public String toString() {
+        return "CustomItem{" +
+                "customDataMap=" + customDataMap +
+                ", namespacedKey=" + namespacedKey +
+                ", craftRemain=" + craftRemain +
+                ", consumed=" + consumed +
+                ", replacement=" + replacement +
+                ", durabilityCost=" + durabilityCost +
+                ", allowedBlocks=" + allowedBlocks +
+                ", permission='" + permission + '\'' +
+                ", rarityPercentage=" + rarityPercentage +
+                ", burnTime=" + burnTime +
+                ", blockPlacement=" + blockPlacement +
+                ", blockVanillaEquip=" + blockVanillaEquip +
+                ", blockVanillaRecipes=" + blockVanillaRecipes +
+                ", equipmentSlots=" + equipmentSlots +
+                ", advanced=" + advanced +
+                ", apiReference=" + apiReference +
+                ", particleContent=" + particleContent +
+                ", metaSettings=" + metaSettings +
+                "} " + super.toString();
     }
 
     static class Serializer extends StdSerializer<CustomItem> {

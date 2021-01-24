@@ -89,22 +89,21 @@ public class WUPlugin extends JavaPlugin {
         //Register custom item data
 
         //Register meta settings providers
-        Registry.MetaRegistry providers = Registry.META_PROVIDER;
-        providers.register(NamespacedKey.wolfyutilties("attributes_modifiers"), AttributesModifiersMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("custom_damage"), CustomDamageMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("custom_durability"), CustomDurabilityMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("customitem_tag"), CustomItemTagMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("custom_model_data"), CustomModelDataMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("damage"), DamageMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("enchant"), EnchantMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("flags"), FlagsMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("lore"), LoreMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("name"), NameMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("player_head"), PlayerHeadMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("potion"), PotionMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("repair_cost"), RepairCostMeta.class);
-        providers.register(NamespacedKey.wolfyutilties("unbreakable"), UnbreakableMeta.class);
-
+        Registry.MetaRegistry meta = Registry.META_PROVIDER;
+        meta.register(NamespacedKey.wolfyutilties("attributes_modifiers"), AttributesModifiersMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("custom_damage"), CustomDamageMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("custom_durability"), CustomDurabilityMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("customitem_tag"), CustomItemTagMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("custom_model_data"), CustomModelDataMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("damage"), DamageMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("enchant"), EnchantMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("flags"), FlagsMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("lore"), LoreMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("name"), NameMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("player_head"), PlayerHeadMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("potion"), PotionMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("repair_cost"), RepairCostMeta.class);
+        meta.register(NamespacedKey.wolfyutilties("unbreakable"), UnbreakableMeta.class);
     }
 
     public void onEnable() {
@@ -183,15 +182,13 @@ public class WUPlugin extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equalsIgnoreCase("wolfyutils")) {
             if (sender instanceof Player) {
-                Player p = (Player) sender;
-                chat.sendMessage(p, "~*~*~*~*&8[&3&lWolfyUtilities&8]&7~*~*~*~*~");
-                chat.sendMessage(p, "");
-                chat.sendMessage(p, "      &n     by &b&n&lWolfyScript&7&n      ");
-                chat.sendMessage(p, "        ------------------");
-                chat.sendMessage(p, "");
-                chat.sendMessage(p, "             &nVersion:&r&b " + getDescription().getVersion());
-                chat.sendMessage(p, "");
-                chat.sendMessage(p, "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~");
+                chat.sendMessages((Player) sender, "——————— &3&lWolfyUtilities &7———————",
+                        "",
+                        "&7Author: &l" + String.join(", ", getDescription().getAuthors()),
+                        "",
+                        "&7Version: &l" + ServerVersion.getWUVersion().getVersion(),
+                        "",
+                        "———————————————————————");
                 return true;
             }
         }

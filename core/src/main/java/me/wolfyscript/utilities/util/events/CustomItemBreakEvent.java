@@ -19,7 +19,7 @@ public class CustomItemBreakEvent extends Event {
 
     public CustomItemBreakEvent(CustomItem customItem, BlockBreakEvent event){
         this.player = event.getPlayer();
-        this.dropItems = event.isDropItems();
+        this.dropItems = true;
         this.exp = event.getExpToDrop();
         this.block = event.getBlock();
         this.customItem = customItem;

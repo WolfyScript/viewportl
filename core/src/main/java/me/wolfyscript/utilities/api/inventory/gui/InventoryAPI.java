@@ -141,6 +141,11 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         return plugin;
     }
 
+    /**
+     * This method will reset the entire GUI Buttons and re-initiates the GUIClusters afterwards.
+     * Be careful when calling this method.
+     * It's main purpose is to reload the GUI after the language was changed or other data changed that requires the buttons to re-initiate.
+     */
     public void reset() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             player.closeInventory();
@@ -151,6 +156,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             guiCluster.getButtons().clear();
             guiCluster.getGuiWindows().values().forEach(guiWindow -> guiWindow.buttons.clear());
         });
+        guiClusters.forEach((s, cGuiCluster) -> cGuiCluster.onInit());
     }
 
     /**
@@ -225,7 +231,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             }
             if (guiHandler.openedPreviousWindow) {
                 guiHandler.openedPreviousWindow = false;
-            } else if (guiHandler.getWindow() != null) {
+            } else if (guiHandler.getWindow() != null && guiHandler.isWindowOpen()) {
                 Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
             }
         }

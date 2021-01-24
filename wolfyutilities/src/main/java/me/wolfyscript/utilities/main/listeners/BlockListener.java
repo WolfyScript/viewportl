@@ -45,11 +45,10 @@ public class BlockListener implements Listener {
                 CustomItemBreakEvent event1 = new CustomItemBreakEvent(storedItem, event);
                 Bukkit.getPluginManager().callEvent(event1);
                 event.setCancelled(event1.isCancelled());
-                event.setDropItems(event1.isDropItems());
                 storedItem = event1.getCustomItem();
                 if (!event1.isCancelled() && !ItemUtils.isAirOrNull(storedItem)) {
                     ItemStack result = dropItems(block, storedItem);
-                    if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
+                    if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && event1.isDropItems()) {
                         block.getWorld().dropItemNaturally(block.getLocation(), result);
                     }
                     removeMultiBlockItems(block);

@@ -28,7 +28,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
      * <br/>
      * It allows you to save and load custom data into a CustomItem and makes things a lot easier if you have some items that perform specific actions with the data etc.
      * <br/>
-     * For example CustomCrafting registers it's own CustomData, that isn't in this base API, for it's Elite Workbenches that open up custom GUIs dependent on their CustomData.
+     * For example CustomCrafting registers it's own CustomData, that isn't in this core API, for it's Elite Workbenches that open up custom GUIs dependent on their CustomData.
      * And also the Recipe Book uses a CustomData object to store some data.
      */
     Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA = new SimpleRegistry<>();
