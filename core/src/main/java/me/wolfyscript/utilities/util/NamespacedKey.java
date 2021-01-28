@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
 public class NamespacedKey implements Comparable<NamespacedKey> {
 
     public static final String WOLFYUTILITIES = "wolfyutilities";
+    private static final String BUKKIT_SPLITTER = "/";
 
     @JsonIgnore
     private static final Pattern VALID_NAMESPACE = Pattern.compile("[a-z0-9._-]+");
@@ -70,6 +72,12 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     }
 
     public static NamespacedKey of(org.bukkit.NamespacedKey namespacedKey) {
+        if (namespacedKey.getNamespace().equalsIgnoreCase(WOLFYUTILITIES)) {
+            String[] values = namespacedKey.getKey().split(BUKKIT_SPLITTER, 2);
+            if (values.length > 1) {
+                return new NamespacedKey(values[0], values[1]);
+            }
+        }
         return new NamespacedKey(namespacedKey.getNamespace(), namespacedKey.getKey());
     }
 
@@ -105,7 +113,7 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     }
 
     public org.bukkit.NamespacedKey toBukkit() {
-        return new org.bukkit.NamespacedKey(this.namespace, this.getKey());
+        return new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), this.namespace + BUKKIT_SPLITTER + this.getKey());
     }
 
     @Override
