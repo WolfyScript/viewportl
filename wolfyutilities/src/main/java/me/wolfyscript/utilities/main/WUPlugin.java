@@ -9,6 +9,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.network.MessageChannelHandler;
+import me.wolfyscript.utilities.main.commands.ChatActionCommand;
 import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
@@ -72,6 +73,7 @@ public class WUPlugin extends JavaPlugin {
         ServerVersion.setWUVersion(getDescription().getVersion());
 
         //Jackson Serializer
+        getLogger().info("Register json serializer/deserializer");
         SimpleModule module = new SimpleModule();
         ItemStackSerialization.create(module);
         ColorSerialization.create(module);
@@ -89,6 +91,7 @@ public class WUPlugin extends JavaPlugin {
         //Register custom item data
 
         //Register meta settings providers
+        getLogger().info("Register Meta Setting providers");
         Registry.MetaRegistry meta = Registry.META_PROVIDER;
         meta.register(NamespacedKey.wolfyutilties("attributes_modifiers"), AttributesModifiersMeta.class);
         meta.register(NamespacedKey.wolfyutilties("custom_damage"), CustomDamageMeta.class);
@@ -130,6 +133,7 @@ public class WUPlugin extends JavaPlugin {
         WorldUtils.load();
         PlayerUtils.loadStores();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::load, 300000, 300000);
+        Bukkit.getPluginManager().registerEvents(new Chat.ChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
@@ -139,6 +143,7 @@ public class WUPlugin extends JavaPlugin {
         Bukkit.getServer().getPluginCommand("particle_animation").setExecutor(new SpawnParticleAnimationCommand(wolfyUtilities));
         Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand());
         Bukkit.getServer().getPluginCommand("wui").setTabCompleter(new InputCommand());
+        Bukkit.getServer().getPluginCommand("wua").setExecutor(new ChatActionCommand());
 
         Metrics metrics = new Metrics(this, 5114);
         CreativeModeTab.init();

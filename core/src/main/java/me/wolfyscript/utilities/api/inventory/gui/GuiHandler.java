@@ -253,9 +253,11 @@ public class GuiHandler<C extends CustomCache> implements Listener {
      * @param cluster The {@link GuiCluster} to open.
      */
     public void openCluster(GuiCluster<C> cluster) {
+        if (cluster == null) return;
         NamespacedKey guiWindowID = cluster.getEntry();
-        if (getWindow(cluster) != null) {
-            guiWindowID = getWindow(cluster).getNamespacedKey();
+        GuiWindow<C> window = getWindow(cluster);
+        if (window != null) {
+            guiWindowID = window.getNamespacedKey();
         }
         openWindow(guiWindowID);
     }

@@ -47,7 +47,6 @@ public class ItemStackSerialization {
             } catch (InvalidConfigurationException e) {
                 e.printStackTrace();
             }
-            //TODO: Find out the reason why the Material is changed after setItemMeta() in the ItemStack.deserialize() method!
             return null;
         });
     }
