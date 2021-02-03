@@ -33,7 +33,7 @@ public class MMOItemsRef extends APIReference {
 
     @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
-        gen.writeStartObject("mmoitems");
+        gen.writeObjectFieldStart("mmoitems");
         gen.writeStringField("type", itemType.toString());
         gen.writeStringField("name", itemName);
         gen.writeEndObject();
@@ -58,6 +58,12 @@ public class MMOItemsRef extends APIReference {
 
         @Override
         public @Nullable MMOItemsRef parse(JsonNode element) {
+            if (element.has("type") && element.has("name")) {
+                String typeID = element.get("type").asText();
+                if (MMOItems.plugin.getTypes().has(typeID)) {
+                    return new MMOItemsRef(MMOItems.plugin.getTypes().get(typeID), element.get("name").asText());
+                }
+            }
             return null;
         }
     }
