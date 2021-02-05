@@ -34,7 +34,7 @@ public class MMOItemsRef extends APIReference {
     @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeObjectFieldStart("mmoitems");
-        gen.writeStringField("type", itemType.toString());
+        gen.writeStringField("type", itemType.getId());
         gen.writeStringField("name", itemName);
         gen.writeEndObject();
     }
