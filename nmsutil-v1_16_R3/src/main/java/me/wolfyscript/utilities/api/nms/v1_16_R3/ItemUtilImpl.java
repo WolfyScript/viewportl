@@ -3,6 +3,8 @@ package me.wolfyscript.utilities.api.nms.v1_16_R3;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.wolfyscript.utilities.api.nms.ItemUtil;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
+import me.wolfyscript.utilities.api.nms.item.NBTItem;
+import me.wolfyscript.utilities.api.nms.v1_16_R3.item.NBTItemImpl;
 import net.minecraft.server.v1_16_R3.ItemStack;
 import net.minecraft.server.v1_16_R3.MojangsonParser;
 import net.minecraft.server.v1_16_R3.NBTCompressedStreamTools;
@@ -19,6 +21,10 @@ public class ItemUtilImpl extends ItemUtil {
 
     protected ItemUtilImpl(NMSUtil nmsUtil) {
         super(nmsUtil);
+    }
+
+    public NBTItem getNBTItem(org.bukkit.inventory.ItemStack bukkitItemStack) {
+        return new NBTItemImpl(bukkitItemStack);
     }
 
     @Override
