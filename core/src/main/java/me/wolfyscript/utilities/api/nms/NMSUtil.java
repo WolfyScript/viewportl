@@ -4,10 +4,17 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Reflection;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Constructor;
+
 public abstract class NMSUtil {
 
     private final WolfyUtilities wolfyUtilities;
     private final Plugin plugin;
+
+    protected BlockUtil blockUtil;
+    protected ItemUtil itemUtil;
+    protected InventoryUtil inventoryUtil;
+    protected NBTUtil nbtUtil;
 
     /**
      * The class that implements this NMSUtil needs to have a constructor with just the WolfyUtilities parameter.
@@ -31,12 +38,13 @@ public abstract class NMSUtil {
      */
     public static NMSUtil create(WolfyUtilities wolfyUtilities) {
         String version = Reflection.getVersion();
-
         try {
             String className = NMSUtil.class.getPackage().getName() + '.' + version + ".NMSEntry";
             Class<?> numUtilsType = Class.forName(className);
             if (NMSUtil.class.isAssignableFrom(numUtilsType)) {
-                return ((NMSUtil) numUtilsType.getDeclaredConstructor(WolfyUtilities.class).newInstance(wolfyUtilities));
+                Constructor<?> constructor = numUtilsType.getDeclaredConstructor(WolfyUtilities.class);
+                constructor.setAccessible(true);
+                return ((NMSUtil) constructor.newInstance(wolfyUtilities));
             }
         } catch (ReflectiveOperationException ex) {
             ex.printStackTrace();
@@ -49,11 +57,21 @@ public abstract class NMSUtil {
         return wolfyUtilities;
     }
 
-    public abstract BlockUtil getBlockUtil();
+    public BlockUtil getBlockUtil() {
+        return blockUtil;
+    }
 
-    public abstract ItemUtil getItemUtil();
+    public ItemUtil getItemUtil() {
+        return itemUtil;
+    }
 
-    public abstract InventoryUtil getInventoryUtil();
+    public InventoryUtil getInventoryUtil() {
+        return inventoryUtil;
+    }
+
+    public NBTUtil getNBTUtil() {
+        return nbtUtil;
+    }
 
 
 }

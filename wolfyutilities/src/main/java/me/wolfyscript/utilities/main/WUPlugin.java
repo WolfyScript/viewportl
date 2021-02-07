@@ -9,6 +9,9 @@ import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.network.MessageChannelHandler;
+import me.wolfyscript.utilities.api.nms.NBTUtil;
+import me.wolfyscript.utilities.api.nms.nbt.NBTCompound;
+import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
 import me.wolfyscript.utilities.main.commands.ChatActionCommand;
 import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
@@ -25,6 +28,7 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
+import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
@@ -32,13 +36,18 @@ import me.wolfyscript.utilities.util.version.ServerVersion;
 import me.wolfyscript.utilities.util.world.WorldUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class WUPlugin extends JavaPlugin {
 
@@ -181,6 +190,73 @@ public class WUPlugin extends JavaPlugin {
         }
 
         //System.out.println("TestItem: "+ ItemUtils.serializeItemStack(new ItemBuilder(Material.DIAMOND_SWORD).addItemFlags(ItemFlag.HIDE_UNBREAKABLE).setDisplayName("LUL").addLoreLine("Test Item").create()));
+
+        ItemBuilder itemBuilder = new ItemBuilder(Material.DIAMOND_SWORD);
+        itemBuilder.addLoreLine("Test");
+        itemBuilder.addEnchantment(Enchantment.DAMAGE_ALL, 5);
+        itemBuilder.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+        ItemStack itemStack = itemBuilder.create();
+
+        NBTUtil nbt = wolfyUtilities.getNmsUtil().getNBTUtil();
+        NBTItem nbtItem = nbt.getItem(itemStack);
+
+        nbtItem.setTag("test_string", nbt.getTag().ofString("Test String!"));
+
+        NBTCompound compound = nbtItem.getCompound();
+        compound.setInt("Test_Int", 10);
+
+        NBTCompound wolfyCompound = nbt.getTag().compound();
+        wolfyCompound.setByte("Byte", (byte) 4);
+        wolfyCompound.setBoolean("Boolean", true);
+        wolfyCompound.setDouble("Double", 2d);
+        wolfyCompound.setFloat("Float", 7f);
+        wolfyCompound.setInt("Int", 9);
+        wolfyCompound.setLong("Long", 9999);
+        wolfyCompound.setShort("Short", (short) 200);
+        wolfyCompound.setString("String", "TestString");
+        wolfyCompound.setByteArray("ByteArray", new byte[]{9, 9, 5, 2, 3});
+        wolfyCompound.setIntArray("IntArray", new int[]{9, 3543, 2134, 123});
+        wolfyCompound.setLongArray("LongArray", new long[]{54, 65, 23244343, 1000000000000000000L});
+
+        NBTCompound nestedComp = nbt.getTag().compound();
+        nestedComp.setString("LUL", "xD this is a nested Text!");
+        nestedComp.setBoolean("Funny", false);
+
+        wolfyCompound.set("Nested", nestedComp);
+        compound.set("wolfy", wolfyCompound);
+
+        System.out.println("Item: ");
+        System.out.println("Tag: " + nbtItem.getCompound().toString());
+        System.out.println("Keys: ");
+        System.out.println("    - " + String.join("\n    - ", nbtItem.getKeys()));
+
+        ItemStack newItem = nbtItem.create();
+        NBTItem newNBTItem = nbt.getItem(newItem);
+        System.out.println("New Item: ");
+        System.out.println("Tag: " + nbtItem.getCompound().toString());
+        System.out.println("Item Keys: ");
+        for (String key : newNBTItem.getKeys()) {
+            System.out.println(" - " + key + " = " + newNBTItem.getTag(key));
+        }
+
+        NBTCompound wolfyComp = newNBTItem.getCompound("wolfy");
+        if (wolfyComp != null) {
+            System.out.println("Wolfy Values: ");
+            System.out.println("    Byte = " + wolfyComp.getByte("Byte"));
+            System.out.println("    Boolean = " + wolfyComp.getBoolean("Boolean"));
+            System.out.println("    Double = " + wolfyComp.getDouble("Double"));
+            System.out.println("    Float = " + wolfyComp.getFloat("Float"));
+            System.out.println("    Int = " + wolfyComp.getInt("Int"));
+            System.out.println("    Long = " + wolfyComp.getLong("Long"));
+            System.out.println("    Short = " + wolfyComp.getShort("Short"));
+            System.out.println("    String = " + wolfyComp.getString("String"));
+            System.out.println("    ByteArray = " + Arrays.toString(wolfyComp.getByteArray("ByteArray")));
+            System.out.println("    IntArray = " + Arrays.toString(wolfyComp.getIntArray("IntArray")));
+            System.out.println("    LongArray = " + Arrays.toString(wolfyComp.getLongArray("LongArray")));
+            System.out.println("    Nested = " + wolfyComp.get("Nested"));
+        }
+
     }
 
     @Override
