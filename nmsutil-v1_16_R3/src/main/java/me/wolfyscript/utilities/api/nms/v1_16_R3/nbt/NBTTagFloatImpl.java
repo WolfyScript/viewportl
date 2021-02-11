@@ -1,10 +1,11 @@
 package me.wolfyscript.utilities.api.nms.v1_16_R3.nbt;
 
 import me.wolfyscript.utilities.api.nms.nbt.NBTTagFloat;
+import me.wolfyscript.utilities.api.nms.nbt.NBTTagType;
 
 public class NBTTagFloatImpl extends NBTNumberImpl<net.minecraft.server.v1_16_R3.NBTTagFloat> implements NBTTagFloat {
 
-    public static final NBTTagType<NBTTagFloat> TYPE = nbtBase -> nbtBase instanceof net.minecraft.server.v1_16_R3.NBTTagFloat ? new NBTTagFloatImpl((net.minecraft.server.v1_16_R3.NBTTagFloat) nbtBase) : null;
+    public static final NBTTagType<NBTTagFloat> TYPE = new NBTTagTypeImpl<>(NBTTagType.Type.FLOAT, nbtBase -> new NBTTagFloatImpl((net.minecraft.server.v1_16_R3.NBTTagFloat) nbtBase));
 
     private NBTTagFloatImpl() {
         super(net.minecraft.server.v1_16_R3.NBTTagFloat.a(0f));
@@ -19,7 +20,7 @@ public class NBTTagFloatImpl extends NBTNumberImpl<net.minecraft.server.v1_16_R3
     }
 
     @Override
-    public NBTTagType<?> getTagType() {
+    public NBTTagType<NBTTagFloat> getType() {
         return TYPE;
     }
 }

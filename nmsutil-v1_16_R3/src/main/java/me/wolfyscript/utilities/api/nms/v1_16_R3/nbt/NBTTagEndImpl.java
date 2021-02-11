@@ -1,10 +1,11 @@
 package me.wolfyscript.utilities.api.nms.v1_16_R3.nbt;
 
 import me.wolfyscript.utilities.api.nms.nbt.NBTTagEnd;
+import me.wolfyscript.utilities.api.nms.nbt.NBTTagType;
 
 public class NBTTagEndImpl extends NBTBaseImpl<net.minecraft.server.v1_16_R3.NBTTagEnd> implements NBTTagEnd {
 
-    public static final NBTTagType<NBTTagEnd> TYPE = nbtBase -> new NBTTagEndImpl();
+    public static final NBTTagType<NBTTagEnd> TYPE = new NBTTagTypeImpl<>(NBTTagType.Type.TAG_END, nbtBase -> new NBTTagEndImpl());
 
     private NBTTagEndImpl() {
         super(net.minecraft.server.v1_16_R3.NBTTagEnd.b);
@@ -19,7 +20,7 @@ public class NBTTagEndImpl extends NBTBaseImpl<net.minecraft.server.v1_16_R3.NBT
     }
 
     @Override
-    public NBTTagType<?> getTagType() {
+    public NBTTagType<NBTTagEnd> getType() {
         return TYPE;
     }
 }

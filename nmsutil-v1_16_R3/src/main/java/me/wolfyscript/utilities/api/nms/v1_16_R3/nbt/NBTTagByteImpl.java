@@ -1,10 +1,11 @@
 package me.wolfyscript.utilities.api.nms.v1_16_R3.nbt;
 
 import me.wolfyscript.utilities.api.nms.nbt.NBTTagByte;
+import me.wolfyscript.utilities.api.nms.nbt.NBTTagType;
 
 public class NBTTagByteImpl extends NBTNumberImpl<net.minecraft.server.v1_16_R3.NBTTagByte> implements NBTTagByte {
 
-    public static final NBTTagType<NBTTagByte> TYPE = nbtBase -> nbtBase instanceof net.minecraft.server.v1_16_R3.NBTTagByte ? new NBTTagByteImpl((net.minecraft.server.v1_16_R3.NBTTagByte) nbtBase) : null;
+    public static final NBTTagType<NBTTagByte> TYPE = new NBTTagTypeImpl<>(NBTTagType.Type.BYTE, nbtBase -> new NBTTagByteImpl((net.minecraft.server.v1_16_R3.NBTTagByte) nbtBase));
 
     private NBTTagByteImpl() {
         super(net.minecraft.server.v1_16_R3.NBTTagByte.b);
@@ -19,7 +20,7 @@ public class NBTTagByteImpl extends NBTNumberImpl<net.minecraft.server.v1_16_R3.
     }
 
     @Override
-    public NBTTagType<?> getTagType() {
+    public NBTTagType<NBTTagByte> getType() {
         return TYPE;
     }
 }

@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.nms.v1_16_R3.nbt;
 
-import me.wolfyscript.utilities.api.nms.nbt.NBTBase;
+import me.wolfyscript.utilities.api.nms.nbt.NBTTagType;
 
 public class NBTTagTypes {
 
@@ -19,10 +19,6 @@ public class NBTTagTypes {
             NBTTagIntArrayImpl.TYPE,
             NBTTagLongArrayImpl.TYPE
     };
-
-    public static NBTTagType<?> of(NBTBase base) {
-        return of(base.getTypeId());
-    }
 
     public static NBTTagType<?> of(int typeId) {
         return typeId >= 0 && typeId < types.length ? types[typeId] : NBTTagType.invalidType(typeId);

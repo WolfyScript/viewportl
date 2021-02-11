@@ -4,5 +4,5 @@ public interface NBTBase {
 
     byte getTypeId();
 
-    NBTType getType();
+    NBTTagType<?> getType();
 }

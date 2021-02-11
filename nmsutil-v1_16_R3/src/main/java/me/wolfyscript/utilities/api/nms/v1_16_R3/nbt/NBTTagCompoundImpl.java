@@ -2,14 +2,14 @@ package me.wolfyscript.utilities.api.nms.v1_16_R3.nbt;
 
 import me.wolfyscript.utilities.api.nms.nbt.NBTBase;
 import me.wolfyscript.utilities.api.nms.nbt.NBTCompound;
-import me.wolfyscript.utilities.api.nms.nbt.NBTType;
+import me.wolfyscript.utilities.api.nms.nbt.NBTTagType;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 
 import java.util.Set;
 
 public class NBTTagCompoundImpl extends NBTBaseImpl<NBTTagCompound> implements NBTCompound {
 
-    public static final NBTTagType<NBTCompound> TYPE = nbtBase -> NBTType.COMPOUND.is(nbtBase.getTypeId()) ? new NBTTagCompoundImpl((NBTTagCompound) nbtBase) : null;
+    public static final NBTTagType<NBTCompound> TYPE = new NBTTagTypeImpl<>(NBTTagType.Type.COMPOUND, nbtBase -> new NBTTagCompoundImpl((NBTTagCompound) nbtBase));
 
     private NBTTagCompoundImpl() {
         super(new NBTTagCompound());
@@ -49,8 +49,7 @@ public class NBTTagCompoundImpl extends NBTBaseImpl<NBTTagCompound> implements N
 
     @Override
     public NBTBase set(String key, NBTBase nbtBase) {
-        net.minecraft.server.v1_16_R3.NBTBase prevBase = nbt.set(key, ((NBTBaseImpl<?>) nbtBase).nbt);
-        return prevBase != null ? NBTTagTypes.of(nbtBase).of(prevBase) : null;
+        return nbtBase.getType().get(nbt.set(key, ((NBTBaseImpl<?>) nbtBase).nbt));
     }
 
     @Override
@@ -111,7 +110,7 @@ public class NBTTagCompoundImpl extends NBTBaseImpl<NBTTagCompound> implements N
     @Override
     public NBTBase get(String key) {
         net.minecraft.server.v1_16_R3.NBTBase base = nbt.get(key);
-        return base != null ? NBTTagTypes.of(base.getTypeId()).of(base) : null;
+        return base != null ? NBTTagTypes.of(base.getTypeId()).get(base) : null;
     }
 
     @Override
@@ -175,7 +174,7 @@ public class NBTTagCompoundImpl extends NBTBaseImpl<NBTTagCompound> implements N
     }
 
     @Override
-    public NBTTagType<?> getTagType() {
+    public NBTTagType<NBTCompound> getType() {
         return TYPE;
     }
 }
