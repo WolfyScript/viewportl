@@ -656,7 +656,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
 
     private Material getCraftRemain() {
         ItemStack item = getItemStack();
-        if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_14)) {
+        if (ServerVersion.isAfter(MinecraftVersions.v1_14)) {
             if (item.getType().isItem()) {
                 Material replaceType = item.getType().getCraftingRemainingItem();
                 if (replaceType != null) return replaceType;
