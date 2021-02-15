@@ -1,5 +1,6 @@
 package me.wolfyscript.utilities.api.nms.v1_16_R1.nbt;
 
+import me.wolfyscript.utilities.api.nms.nbt.NBTBase;
 import me.wolfyscript.utilities.api.nms.nbt.NBTTagType;
 
 public class NBTTagTypes {
@@ -22,5 +23,9 @@ public class NBTTagTypes {
 
     public static NBTTagType<?> of(int typeId) {
         return typeId >= 0 && typeId < types.length ? types[typeId] : NBTTagType.invalidType(typeId);
+    }
+
+    public static NBTBase convert(net.minecraft.server.v1_16_R1.NBTBase base) {
+        return base != null ? NBTTagTypes.of(base.getTypeId()).get(base) : null;
     }
 }

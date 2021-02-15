@@ -12,6 +12,7 @@ import me.wolfyscript.utilities.api.network.MessageChannelHandler;
 import me.wolfyscript.utilities.api.nms.NBTUtil;
 import me.wolfyscript.utilities.api.nms.nbt.NBTCompound;
 import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
+import me.wolfyscript.utilities.api.nms.nbt.NBTTagList;
 import me.wolfyscript.utilities.main.commands.ChatActionCommand;
 import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
@@ -190,7 +191,7 @@ public class WUPlugin extends JavaPlugin {
         }
 
         //System.out.println("TestItem: "+ ItemUtils.serializeItemStack(new ItemBuilder(Material.DIAMOND_SWORD).addItemFlags(ItemFlag.HIDE_UNBREAKABLE).setDisplayName("LUL").addLoreLine("Test Item").create()));
-
+        //*
         ItemBuilder itemBuilder = new ItemBuilder(Material.DIAMOND_SWORD);
         itemBuilder.addLoreLine("Test");
         itemBuilder.addEnchantment(Enchantment.DAMAGE_ALL, 5);
@@ -219,11 +220,17 @@ public class WUPlugin extends JavaPlugin {
         wolfyCompound.setIntArray("IntArray", new int[]{9, 3543, 2134, 123});
         wolfyCompound.setLongArray("LongArray", new long[]{54, 65, 23244343, 1000000000000000000L});
 
+        NBTTagList customList = nbt.getTag().list();
+        customList.add(0, nbt.getTag().ofIntArray(new int[]{4, 543654, 235, 223, 423, 32}));
+        customList.add(0, nbt.getTag().ofIntArray(new int[]{543, 345, 76, 21, 8, 65, 456, 4}));
+        customList.add(0, nbt.getTag().ofIntArray(new int[]{897, 567, 98, 899, 878712, 12}));
+        wolfyCompound.set("IntArrayList", customList);
+
         NBTCompound nestedComp = nbt.getTag().compound();
         nestedComp.setString("LUL", "xD this is a nested Text!");
         nestedComp.setBoolean("Funny", false);
-
         wolfyCompound.set("Nested", nestedComp);
+
         compound.set("wolfy", wolfyCompound);
 
         System.out.println("Item: ");
@@ -255,8 +262,13 @@ public class WUPlugin extends JavaPlugin {
             System.out.println("    IntArray = " + Arrays.toString(wolfyComp.getIntArray("IntArray")));
             System.out.println("    LongArray = " + Arrays.toString(wolfyComp.getLongArray("LongArray")));
             System.out.println("    Nested = " + wolfyComp.get("Nested"));
+            NBTTagList nbtTagList = (NBTTagList) wolfyComp.get("IntArrayList");
+            System.out.println("    IntArrayList = " + nbtTagList);
+            for (int i = 0; i < nbtTagList.size(); i++) {
+                System.out.println("       - " + nbtTagList.getTag(i));
+            }
         }
-
+        //*/
     }
 
     @Override

@@ -4,6 +4,7 @@ version: ${project.version}
 author: WolfyScript
 
 loadbefore:
+  - CustomCrafting
   - ChatColor
   - ChatColor2
 

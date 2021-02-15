@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.inventory.custom_items.references;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +15,7 @@ public class VanillaRef extends APIReference {
 
     private final ItemStack itemStack;
 
-    public VanillaRef(ItemStack itemStack){
+    public VanillaRef(ItemStack itemStack) {
         this.itemStack = itemStack;
     }
 
@@ -48,7 +49,7 @@ public class VanillaRef extends APIReference {
         return Objects.hash(super.hashCode(), itemStack);
     }
 
-    public static class Parser extends APIReference.Parser<VanillaRef> {
+    public static class Parser extends APIReference.Parser<APIReference> {
 
         public Parser() {
             super("item", 1000);
@@ -60,8 +61,18 @@ public class VanillaRef extends APIReference {
         }
 
         @Override
-        public @Nullable VanillaRef parse(JsonNode element) {
-            return new VanillaRef(JacksonUtil.getObjectMapper().convertValue(element, ItemStack.class));
+        public @Nullable APIReference parse(JsonNode element) {
+            ItemStack itemStack = JacksonUtil.getObjectMapper().convertValue(element, ItemStack.class);
+            if (itemStack != null) {
+                APIReference.Parser<?> parser = CustomItem.getApiReferenceParser("wolfyutilities");
+                if (parser != null) {
+                    APIReference reference = parser.construct(itemStack);
+                    if (reference != null) {
+                        return reference;
+                    }
+                }
+            }
+            return new VanillaRef(itemStack);
         }
     }
 }

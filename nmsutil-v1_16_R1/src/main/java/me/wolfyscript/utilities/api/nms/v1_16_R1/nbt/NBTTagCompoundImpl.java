@@ -49,7 +49,7 @@ public class NBTTagCompoundImpl extends NBTBaseImpl<NBTTagCompound> implements N
 
     @Override
     public NBTBase set(String key, NBTBase nbtBase) {
-        return nbtBase.getType().get(nbt.set(key, ((NBTBaseImpl<?>) nbtBase).nbt));
+        return NBTTagTypes.convert(nbt.set(key, ((NBTBaseImpl<?>) nbtBase).nbt));
     }
 
     @Override
@@ -109,8 +109,7 @@ public class NBTTagCompoundImpl extends NBTBaseImpl<NBTTagCompound> implements N
 
     @Override
     public NBTBase get(String key) {
-        net.minecraft.server.v1_16_R1.NBTBase base = nbt.get(key);
-        return base != null ? NBTTagTypes.of(base.getTypeId()).get(base) : null;
+        return NBTTagTypes.convert(nbt.get(key));
     }
 
     @Override

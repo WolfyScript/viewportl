@@ -91,6 +91,7 @@ public class WolfyUtilitiesRef extends APIReference {
 
         @Override
         public @Nullable WolfyUtilitiesRef construct(ItemStack itemStack) {
+            if (itemStack == null) return null;
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
                 PersistentDataContainer container = itemMeta.getPersistentDataContainer();
