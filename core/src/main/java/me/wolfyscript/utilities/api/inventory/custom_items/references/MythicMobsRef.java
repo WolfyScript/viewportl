@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.util.jnbt.CompoundTag;
+import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.nms.nbt.NBTBase;
+import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
+import me.wolfyscript.utilities.api.nms.nbt.NBTTagString;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,11 +54,14 @@ public class MythicMobsRef extends APIReference {
 
         @Override
         public @Nullable MythicMobsRef construct(ItemStack itemStack) {
-            if (MythicMobs.inst().getVolatileCodeHandler().getItemHandler() != null) {
-                CompoundTag compoundTag = MythicMobs.inst().getVolatileCodeHandler().getItemHandler().getNBTData(itemStack);
-                String name = compoundTag.getString("MYTHIC_TYPE");
-                if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
-                    return new MythicMobsRef(name);
+            NBTItem nbtItem = WolfyUtilities.getWUCore().getNmsUtil().getNBTUtil().getItem(itemStack);
+            if (nbtItem != null && nbtItem.hasKey("MYTHIC_TYPE")) {
+                NBTBase nbtBase = nbtItem.getTag("MYTHIC_TYPE");
+                if (nbtBase instanceof NBTTagString) {
+                    String name = ((NBTTagString) nbtBase).asString();
+                    if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
+                        return new MythicMobsRef(name);
+                    }
                 }
             }
             return null;
