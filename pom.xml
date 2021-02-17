@@ -128,19 +128,19 @@
             <artifactId>mcMMO</artifactId>
             <version>2.1.139-SNAPSHOT</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine.xikage</groupId>
-            <artifactId>mythicmobs</artifactId>
-            <version>4.10.1</version>
+            <artifactId>MythicMobs</artifactId>
+            <version>4.10.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.Indyuce</groupId>
-            <artifactId>mmolib</artifactId>
-            <version>1.7.4</version>
+            <groupId>io.lumine</groupId>
+            <artifactId>MythicLib</artifactId>
+            <version>1.0.6</version>
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <!--Dependencies from private repo! They require credentials to access!-->
         <dependency>
@@ -153,7 +153,7 @@
         <dependency>
             <groupId>net.Indyuce</groupId>
             <artifactId>mmoitems</artifactId>
-            <version>6.5.1</version>
+            <version>6.5.4</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
