@@ -397,10 +397,10 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * @return true if the ItemStack is equal to this CustomItems ItemStack
      */
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta) {
-        ItemStack currentItem = create();
+        ItemStack currentItem = getItemStack();
         if (otherItem == null) return false;
         if (otherItem == currentItem) return true;
-        if (otherItem.getType().equals(currentItem.getType()) && otherItem.getAmount() >= currentItem.getAmount()) {
+        if (otherItem.getType().equals(currentItem.getType()) && otherItem.getAmount() >= getAmount()) {
             if (!isAdvanced() && hasNamespacedKey()) {
                 CustomItem otherCustomItem = CustomItem.getByItemStack(otherItem);
                 if (ItemUtils.isAirOrNull(otherCustomItem) || !otherCustomItem.hasNamespacedKey()) return false;
