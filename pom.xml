@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolfyscript.wolfyutilities</groupId>
     <artifactId>wolfyutilities-parent</artifactId>
-    <version>1.6.3.10</version>
+    <version>1.6.3.11</version>
 
     <packaging>pom</packaging>
 
@@ -39,7 +39,7 @@
         Public repo: https://maven.wolfyscript.com/repository/public/
         -->
         <repository>
-            <id>wolfyscript-private</id>
+            <id>wolfyscript-admin</id>
             <url>https://maven.wolfyscript.com/repository/private/</url>
         </repository>
     </repositories>
@@ -191,12 +191,12 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>wolfyscript-private</id>
+            <id>wolfyscript-admin</id>
             <name>Releases</name>
             <url>https://maven.wolfyscript.com/repository/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>wolfyscript-private</id>
+            <id>wolfyscript-admin</id>
             <name>Snapshot</name>
             <url>https://maven.wolfyscript.com/repository/snapshots/</url>
         </snapshotRepository>
