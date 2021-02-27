@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 
 import java.io.IOException;
@@ -70,7 +71,7 @@ public abstract class CustomData {
      *
      * @param <T> The CustomData type that this Provider is used for.
      */
-    public static class Provider<T extends CustomData> {
+    public static class Provider<T extends CustomData> implements Keyed {
 
         private final NamespacedKey namespacedKey;
         private final Class<T> customDataClass;
@@ -105,7 +106,7 @@ public abstract class CustomData {
             try {
                 T instance = createData();
                 instance.readFromJson(customItem, node, context);
-                customItem.addCustomData(instance.getNamespacedKey(), instance);
+                customItem.addCustomData(namespacedKey, instance);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -10,25 +10,21 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Chat {
 
+    public static final Map<UUID, PlayerAction> CLICK_DATA_MAP = new HashMap<>();
+
     private String CONSOLE_PREFIX;
     private String IN_GAME_PREFIX;
 
-    private final HashMap<UUID, PlayerAction> clickDataMap = new HashMap<>();
 
     private final WolfyUtilities wolfyUtilities;
     private final LanguageAPI languageAPI;
@@ -40,7 +36,6 @@ public class Chat {
         this.plugin = wolfyUtilities.getPlugin();
         this.CONSOLE_PREFIX = "[" + plugin.getName() + "]";
         this.IN_GAME_PREFIX = this.CONSOLE_PREFIX;
-        Bukkit.getPluginManager().registerEvents(new ChatListener(), plugin);
     }
 
     public String getIN_GAME_PREFIX() {
@@ -95,13 +90,13 @@ public class Chat {
         Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.convert(message));
     }
 
-    public void sendPlayerMessage(Player player, String message) {
+    public void sendMessage(Player player, String message) {
         if (player != null) {
             player.sendMessage(ChatColor.convert(IN_GAME_PREFIX + languageAPI.replaceKeys(message)));
         }
     }
 
-    public void sendPlayerMessage(Player player, String... messages) {
+    public void sendMessages(Player player, String... messages) {
         if (player != null) {
             for (String message : messages) {
                 player.sendMessage(ChatColor.convert(IN_GAME_PREFIX + languageAPI.replaceKeys(message)));
@@ -109,29 +104,8 @@ public class Chat {
         }
     }
 
-    /*
-    Sends a global message from an GuiCluster to the player!
-     */
-    public void sendPlayerMessage(Player player, GuiCluster<?> guiCluster, String msgKey) {
-        sendPlayerMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
-    }
-
-    public void sendPlayerMessage(Player player, NamespacedKey namespacedKey, String msgKey) {
-        sendPlayerMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$");
-    }
-
     @SafeVarargs
-    public final void sendPlayerMessage(Player player, GuiCluster<?> guiCluster, String msgKey, Pair<String, String>... replacements) {
-        sendPlayerMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$", replacements);
-    }
-
-    @SafeVarargs
-    public final void sendPlayerMessage(Player player, NamespacedKey namespacedKey, String msgKey, Pair<String, String>... replacements) {
-        sendPlayerMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$", replacements);
-    }
-
-    @SafeVarargs
-    public final void sendPlayerMessage(Player player, String message, Pair<String, String>... replacements) {
+    public final void sendMessage(Player player, String message, Pair<String, String>... replacements) {
         if (player == null) return;
         if (replacements != null) {
             message = IN_GAME_PREFIX + languageAPI.replaceColoredKeys(message);
@@ -140,6 +114,31 @@ public class Chat {
             }
         }
         player.sendMessage(ChatColor.convert(message));
+    }
+
+    /*
+    Sends a global message from an GuiCluster to the player!
+     */
+    public void sendKey(Player player, String clusterID, String msgKey) {
+        sendMessage(player, "$inventories." + clusterID + ".global_messages." + msgKey + "$");
+    }
+
+    public void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey) {
+        sendMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
+    }
+
+    public void sendKey(Player player, NamespacedKey namespacedKey, String msgKey) {
+        sendMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$");
+    }
+
+    @SafeVarargs
+    public final void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey, Pair<String, String>... replacements) {
+        sendMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$", replacements);
+    }
+
+    @SafeVarargs
+    public final void sendKey(Player player, NamespacedKey namespacedKey, String msgKey, Pair<String, String>... replacements) {
+        sendMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$", replacements);
     }
 
     public void sendActionMessage(Player player, ClickData... clickData) {
@@ -155,11 +154,11 @@ public class Chat {
             TextComponent component = new TextComponent(languageAPI.replaceColoredKeys(data.getMessage()));
             if (data.getClickAction() != null) {
                 UUID id = UUID.randomUUID();
-                while (clickDataMap.containsKey(id)) {
+                while (CLICK_DATA_MAP.containsKey(id)) {
                     id = UUID.randomUUID();
                 }
                 PlayerAction playerAction = new PlayerAction(wolfyUtilities, player, data);
-                clickDataMap.put(id, playerAction);
+                CLICK_DATA_MAP.put(id, playerAction);
                 component.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/wua " + id.toString()));
             }
             for (ChatEvent<?, ?> chatEvent : data.getChatEvents()) {
@@ -190,37 +189,11 @@ public class Chat {
         }
     }
 
-    private class ChatListener implements Listener {
-
-        //TODO: Move the logic to a CommandExecutor
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void actionCommands(PlayerCommandPreprocessEvent event) {
-            if (event.getMessage().startsWith("/wua ")) {
-                UUID uuid;
-                try {
-                    uuid = UUID.fromString(event.getMessage().substring("/wua ".length()));
-                } catch (IllegalArgumentException expected) {
-                    return;
-                }
-                PlayerAction action = clickDataMap.get(uuid);
-                Player player = event.getPlayer();
-                event.setCancelled(true);
-                if (action != null) {
-                    if (player.getUniqueId().equals(action.getUuid())) {
-                        action.run(player);
-                        if (action.isDiscard()) {
-                            clickDataMap.remove(uuid);
-                        }
-                    }
-                } else {
-                    sendDebugMessage(player.getName() + "&c tried to use a invalid action!");
-                }
-            }
-        }
+    public static class ChatListener implements Listener {
 
         @EventHandler
         public void actionRemoval(PlayerQuitEvent event) {
-            clickDataMap.keySet().removeIf(uuid -> clickDataMap.get(uuid).getUuid().equals(event.getPlayer().getUniqueId()));
+            CLICK_DATA_MAP.keySet().removeIf(uuid -> CLICK_DATA_MAP.get(uuid).getUuid().equals(event.getPlayer().getUniqueId()));
         }
     }
 

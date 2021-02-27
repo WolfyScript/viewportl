@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.util.chat;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.util.version.MinecraftVersions;
+import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
@@ -8,8 +9,7 @@ import java.util.regex.Pattern;
 
 public class ChatColor {
 
-    public static final String HEX_PATTERN = "&#\\([A-Fa-f0-9]{6}\\)";
-    public static final Pattern HEX_PATTERN_COMPILED = Pattern.compile(HEX_PATTERN);
+    private static final Pattern HEX_PATTERN = Pattern.compile("&#\\([A-Fa-f0-9]{6}\\)");
 
     public static String convert(@Nullable String msg) {
         if (msg == null) return null;
@@ -29,8 +29,8 @@ public class ChatColor {
 
     public static String parseHexColorsString(@Nullable String string) {
         if (string == null) return null;
-        if (WolfyUtilities.hasNetherUpdate()) {
-            Matcher matcher = HEX_PATTERN_COMPILED.matcher(string);
+        if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_16)) {
+            Matcher matcher = HEX_PATTERN.matcher(string);
             while (matcher.find()) {
                 String group = matcher.group(0);
                 if (string.contains(group)) {

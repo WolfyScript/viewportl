@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolfyscript.wolfyutilities</groupId>
     <artifactId>wolfyutilities-parent</artifactId>
-    <version>1.6.3.0</version>
+    <version>1.6.3.11</version>
 
     <packaging>pom</packaging>
 
@@ -39,7 +39,7 @@
         Public repo: https://maven.wolfyscript.com/repository/public/
         -->
         <repository>
-            <id>wolfyscript-private</id>
+            <id>wolfyscript-admin</id>
             <url>https://maven.wolfyscript.com/repository/private/</url>
         </repository>
     </repositories>
@@ -128,31 +128,43 @@
             <artifactId>mcMMO</artifactId>
             <version>2.1.139-SNAPSHOT</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine.xikage</groupId>
-            <artifactId>mythicmobs</artifactId>
-            <version>4.10.1</version>
+            <artifactId>MythicMobs</artifactId>
+            <version>4.10.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.lumine</groupId>
+            <artifactId>MythicLib</artifactId>
+            <version>1.0.6</version>
             <scope>provided</scope>
         </dependency>
         <!--Dependencies from private repo! They require credentials to access!-->
         <dependency>
             <groupId>io.th0rgal</groupId>
             <artifactId>oraxen</artifactId>
-            <version>1.40.0</version>
+            <version>1.66.2</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>dev.lone</groupId>
-            <artifactId>itemsadder</artifactId>
-            <version>2.1.5</version>
+            <groupId>net.Indyuce</groupId>
+            <artifactId>mmoitems</artifactId>
+            <version>6.5.4</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.8.1</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -179,12 +191,12 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>wolfyscript-private</id>
+            <id>wolfyscript-admin</id>
             <name>Releases</name>
             <url>https://maven.wolfyscript.com/repository/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>wolfyscript-private</id>
+            <id>wolfyscript-admin</id>
             <name>Snapshot</name>
             <url>https://maven.wolfyscript.com/repository/snapshots/</url>
         </snapshotRepository>

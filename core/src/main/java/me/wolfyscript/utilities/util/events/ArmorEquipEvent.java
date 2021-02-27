@@ -3,11 +3,11 @@ package me.wolfyscript.utilities.util.events;
 import me.wolfyscript.utilities.api.inventory.custom_items.ArmorType;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.ParticleContent;
-import me.wolfyscript.utilities.api.particles.ParticleEffect;
-import me.wolfyscript.utilities.api.particles.ParticleEffects;
-import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
+import me.wolfyscript.utilities.util.particles.ParticleAnimation;
+import me.wolfyscript.utilities.util.particles.ParticleLocation;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -58,9 +58,9 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
                 PlayerUtils.stopActiveParticleEffect(getPlayer(), equipmentSlot);
                 ParticleContent particleContent = newCustomArmorPiece.getParticleContent();
                 if (particleContent != null) {
-                    NamespacedKey particleID = particleContent.getParticleEffect(ParticleEffect.Action.valueOf(equipmentSlot.name()));
-                    if (particleID != null) {
-                        PlayerUtils.setActiveParticleEffect(getPlayer(), equipmentSlot, ParticleEffects.spawnEffectOnPlayer(particleID, equipmentSlot, getPlayer()));
+                    ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(particleContent.getParticleEffect(ParticleLocation.valueOf(equipmentSlot.name())));
+                    if (animation != null) {
+                        animation.spawnOnPlayer(player, equipmentSlot);
                     }
                 }
                 setCancelled(false);

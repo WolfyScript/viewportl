@@ -5,7 +5,6 @@ import me.wolfyscript.utilities.api.chat.ClickData;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
-import me.wolfyscript.utilities.api.inventory.gui.events.GuiCloseEvent;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
@@ -136,21 +135,15 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public abstract void onUpdateAsync(GuiUpdate<C> update);
 
     /**
-     * This method allows you to execute code when this window is closed.
-     * It does not require verification like the GuiCloseEvent.
-     * <p>
-     *     This method can be overridden and you can either call this super method or not.
-     *     If you decide not to, then the GuiCloseEvent won't be called.
-     * </p>
+     * This method allows you to execute code when this window is closed and block players from closing the GUI.
      *
-     * @param guiHandler  the gui handler that caused this close event.
-     * @param transaction the inventory view of the player.
+     * @param guiHandler   the gui handler that caused this close event.
+     * @param guiInventory The {@link GUIInventory} that is being closed.
+     * @param transaction  the inventory view of the player.
      * @return true if the gui close should be cancelled.
      */
-    public boolean onClose(GuiHandler<C> guiHandler, InventoryView transaction) {
-        GuiCloseEvent closeEvent = new GuiCloseEvent(namespacedKey.getNamespace(), this, guiHandler, transaction);
-        Bukkit.getPluginManager().callEvent(closeEvent);
-        return closeEvent.isCancelled();
+    public boolean onClose(GuiHandler<C> guiHandler, GUIInventory<C> guiInventory, InventoryView transaction) {
+        return false;
     }
 
     void create(GuiHandler<C> guiHandler) {
@@ -158,7 +151,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     void update(GUIInventory<C> inventory, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event) {
-        update(inventory, inventory.getGuiHandler(), postExecuteBtns, event, false); //TODO: Check if new method works
+        update(inventory, inventory.getGuiHandler(), postExecuteBtns, event, false);
     }
 
     private void update(GUIInventory<C> inventory, GuiHandler<C> guiHandler, HashMap<Integer, Button<C>> postExecuteBtns, InventoryInteractEvent event, boolean openInventory) {
@@ -252,7 +245,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public void openChat(GuiHandler<C> guiHandler, String msg, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), msg);
+        guiHandler.getApi().getChat().sendMessage(guiHandler.getPlayer(), msg);
     }
 
     /**
@@ -268,7 +261,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public void openChat(GuiCluster<C> guiCluster, String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
+        guiHandler.getApi().getChat().sendMessage(guiHandler.getPlayer(), "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
     }
 
     /**
@@ -283,7 +276,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public void openChat(String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
+        guiHandler.getApi().getChat().sendKey(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
     }
 
     /**
@@ -315,7 +308,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param msgKey The key of the message.
      */
     public final void sendMessage(Player player, String msgKey) {
-        wolfyUtilities.getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey);
+        wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey);
     }
 
     /**
@@ -325,7 +318,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      */
     @SafeVarargs
     public final void sendMessage(GuiHandler<C> guiHandler, String msgKey, Pair<String, String>... replacements) {
-        wolfyUtilities.getChat().sendPlayerMessage(guiHandler.getPlayer(), getNamespacedKey(), msgKey, replacements);
+        wolfyUtilities.getChat().sendKey(guiHandler.getPlayer(), getNamespacedKey(), msgKey, replacements);
     }
 
     /**
@@ -335,7 +328,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      */
     @SafeVarargs
     public final void sendMessage(Player player, String msgKey, Pair<String, String>... replacements) {
-        wolfyUtilities.getChat().sendPlayerMessage(player, getNamespacedKey(), msgKey, replacements);
+        wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey, replacements);
     }
 
     /**

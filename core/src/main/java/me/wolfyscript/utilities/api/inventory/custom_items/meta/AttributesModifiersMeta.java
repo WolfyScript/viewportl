@@ -10,7 +10,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class AttributesModifiersMeta extends Meta {
 
     public AttributesModifiersMeta() {
-        super("attributes_modifiers");
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
     }

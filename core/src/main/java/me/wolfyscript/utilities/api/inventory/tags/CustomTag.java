@@ -1,30 +1,36 @@
 package me.wolfyscript.utilities.api.inventory.tags;
 
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import org.bukkit.Material;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-public class CustomTag {
+public class CustomTag<T extends Keyed> implements Keyed {
 
     private final NamespacedKey namespacedKey;
 
-    private List<Material> materials = new ArrayList<>();
-    private List<CustomItem> customItems = new ArrayList<>();
+    protected final Set<T> values;
 
-    public CustomTag(NamespacedKey namespacedKey, List<Material> materials){
+    public CustomTag(NamespacedKey namespacedKey) {
         this.namespacedKey = namespacedKey;
-        this.materials = materials;
+        this.values = new HashSet<>();
     }
 
-    public void setCustomItems(List<CustomItem> customItems) {
-        this.customItems = customItems;
+    public Set<T> getValues() {
+        return values;
     }
 
-    public void setMaterials(List<Material> materials) {
-        this.materials = materials;
+    public void register(T value) {
+        values.add(value);
+    }
+
+    public void remove(T value) {
+        values.remove(value);
+    }
+
+    public NamespacedKey getNamespacedKey() {
+        return namespacedKey;
     }
 
 }

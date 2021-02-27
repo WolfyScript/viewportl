@@ -194,7 +194,6 @@ public class EquipListener implements Listener {
                         event.getWhoClicked().setItemOnCursor(equipEvent.getOldArmorPiece());
                         return;
                     }
-                    //TODO
                     int newAmount = newArmor.getAmount();
                     int oldAmount = oldArmor.getAmount();
                     if(newAmount + oldAmount > oldArmor.getMaxStackSize()){

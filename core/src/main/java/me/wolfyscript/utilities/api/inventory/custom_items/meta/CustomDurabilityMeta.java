@@ -7,7 +7,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class CustomDurabilityMeta extends Meta {
 
     public CustomDurabilityMeta() {
-        super("custom_durability");
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
     }

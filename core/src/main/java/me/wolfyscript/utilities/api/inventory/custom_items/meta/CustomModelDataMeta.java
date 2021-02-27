@@ -7,7 +7,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class CustomModelDataMeta extends Meta {
 
     public CustomModelDataMeta() {
-        super("customModelData");
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
     }

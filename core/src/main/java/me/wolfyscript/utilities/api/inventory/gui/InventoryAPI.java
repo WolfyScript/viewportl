@@ -4,7 +4,6 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
-import me.wolfyscript.utilities.api.inventory.gui.events.GuiItemDragEvent;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
@@ -142,6 +141,11 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         return plugin;
     }
 
+    /**
+     * This method will reset the entire GUI Buttons and re-initiates the GUIClusters afterwards.
+     * Be careful when calling this method.
+     * It's main purpose is to reload the GUI after the language was changed or other data changed that requires the buttons to re-initiate.
+     */
     public void reset() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             player.closeInventory();
@@ -152,6 +156,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             guiCluster.getButtons().clear();
             guiCluster.getGuiWindows().values().forEach(guiWindow -> guiWindow.buttons.clear());
         });
+        guiClusters.forEach((s, cGuiCluster) -> cGuiCluster.onInit());
     }
 
     /**
@@ -224,7 +229,9 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
                     event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, slot, event));
                 }
             }
-            if (guiHandler.getWindow() != null) {
+            if (guiHandler.openedPreviousWindow) {
+                guiHandler.openedPreviousWindow = false;
+            } else if (guiHandler.getWindow() != null && guiHandler.isWindowOpen()) {
                 Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
             }
         }
@@ -242,11 +249,6 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             }
             GuiWindow<C> guiWindow = guiHandler.getWindow();
             if (guiWindow != null) {
-                GuiItemDragEvent guiItemDragEvent = new GuiItemDragEvent(guiHandler, event);
-                Bukkit.getPluginManager().callEvent(guiItemDragEvent);
-                if (guiItemDragEvent.isCancelled()) {
-                    event.setCancelled(true);
-                }
                 HashMap<Integer, Button<C>> buttons = new HashMap<>();
                 for (int slot : event.getInventorySlots()) {
                     Button<C> button = guiHandler.getButton(guiWindow, slot);
@@ -259,7 +261,9 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
                 for (Map.Entry<Integer, Button<C>> button : buttons.entrySet()) {
                     event.setCancelled(executeButton(button.getValue(), guiHandler, (Player) event.getWhoClicked(), guiInventory, button.getKey(), event));
                 }
-                if (guiHandler.getWindow() != null) {
+                if (guiHandler.openedPreviousWindow) {
+                    guiHandler.openedPreviousWindow = false;
+                } else if (guiHandler.getWindow() != null) {
                     Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
                 }
             }

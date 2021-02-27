@@ -8,7 +8,6 @@ import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
-import me.wolfyscript.utilities.util.Reflection;
 import me.wolfyscript.utilities.util.exceptions.InvalidCacheTypeException;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Bukkit;
@@ -21,37 +20,6 @@ public class WolfyUtilities {
 
     private static final HashMap<Plugin, WolfyUtilities> wolfyUtilitiesList = new HashMap<>();
     private static final HashMap<String, Boolean> classes = new HashMap<>();
-
-    /**
-     * @return if the minecraft version is 1.16 or higher
-     */
-    public static boolean hasNetherUpdate() {
-        return hasSpecificUpdate(116);
-    }
-
-    /**
-     * @return if the minecraft version is 1.15 or higher
-     */
-    public static boolean hasBuzzyBeesUpdate() {
-        return hasSpecificUpdate(115);
-    }
-
-    /**
-     * This can be used to make sure that this API is running on a supported Minecraft version, because pre-1.14 MC versions are no longer supported!
-     *
-     * @return if the minecraft version is 1.14 or higher
-     */
-    public static boolean hasVillagePillageUpdate() {
-        return hasSpecificUpdate(114);
-    }
-
-    public static boolean hasSpecificUpdate(String versionString) {
-        return Reflection.getVersionNumber() >= Integer.parseInt(versionString.replace("_", "").replace(".", "").replace("-", ""));
-    }
-
-    public static boolean hasSpecificUpdate(int versionNumber) {
-        return Reflection.getVersionNumber() >= versionNumber;
-    }
 
     public static boolean hasJavaXScripting() {
         return hasClass("javax.script.ScriptEngine");
@@ -106,6 +74,10 @@ public class WolfyUtilities {
         return wolfyUtilitiesList.get(plugin);
     }
 
+    private WolfyUtilities(Plugin plugin) {
+        this(plugin, CustomCache.class);
+    }
+
     private final Plugin plugin;
     private String dataBasePrefix;
     private final ConfigAPI configAPI;
@@ -117,7 +89,7 @@ public class WolfyUtilities {
     private final BookUtil bookUtil;
     private final NMSUtil nmsUtil;
 
-    private WolfyUtilities(Plugin plugin) {
+    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
         this.plugin = plugin;
         if (!has(plugin)) {
             wolfyUtilitiesList.put(plugin, this);
@@ -125,12 +97,27 @@ public class WolfyUtilities {
         this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT) + "_";
         this.configAPI = new ConfigAPI(this);
         this.languageAPI = new LanguageAPI(this);
-        this.inventoryAPI = new InventoryAPI<>(this.plugin, this, CustomCache.class);
+        this.inventoryAPI = new InventoryAPI<>(this.plugin, this, customCacheClass);
         this.chat = new Chat(this);
         this.permissions = new Permissions(this);
         this.itemUtils = new ItemUtils(this);
         this.nmsUtil = NMSUtil.create(this);
         this.bookUtil = new BookUtil(this);
+    }
+
+    /**
+     * Gets or create the {@link WolfyUtilities} instance for the specified plugin.
+     * This method also creates the InventoryAPI with the specified custom class of the {@link CustomCache}.
+     *
+     * @param plugin           The plugin to get the instance from.
+     * @param customCacheClass The class of the custom cache you created. Must extend {@link CustomCache}
+     * @return The WolfyUtilities instance for the plugin.
+     */
+    public static WolfyUtilities get(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
+        if (!has(plugin)) {
+            new WolfyUtilities(plugin, customCacheClass);
+        }
+        return wolfyUtilitiesList.get(plugin);
     }
 
     /**

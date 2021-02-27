@@ -26,7 +26,7 @@ public class WorldUtils {
     }
 
     /**
-     * Loads the store from the file.
+     * Save the stored Custom Item into a file.
      */
     public static void save() {
         WolfyUtilities.getWUPlugin().getLogger().info("Save stored Custom Items");
@@ -42,7 +42,7 @@ public class WorldUtils {
     }
 
     /**
-     * Save the stored Custom Item into a file.
+     * Loads the store from the file.
      */
     public static void load() {
         WolfyUtilities.getWUPlugin().getLogger().info("Loading stored Custom Items");
@@ -79,7 +79,7 @@ public class WorldUtils {
                     loadMap.forEach((key, value) -> {
                         Location location = stringToLocation(key);
                         if (location != null) {
-                            worldCustomItemStore.setStore(location, new BlockCustomItemStore(NamespacedKey.getByString(value), null));
+                            worldCustomItemStore.setStore(location, new BlockCustomItemStore(NamespacedKey.of(value), null));
                         }
                     });
                 } catch (ClassNotFoundException e) {

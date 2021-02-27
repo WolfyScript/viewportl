@@ -10,13 +10,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import me.wolfyscript.utilities.api.inventory.custom_items.ParticleContent;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
-import me.wolfyscript.utilities.api.particles.ParticleEffect;
-import me.wolfyscript.utilities.api.particles.ParticleEffects;
-import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import me.wolfyscript.utilities.util.particles.ParticleLocation;
+import me.wolfyscript.utilities.util.particles.ParticleUtils;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,19 +30,13 @@ public class WorldCustomItemStore {
     private final HashMap<Location, BlockCustomItemStore> store = new HashMap<>();
 
     public WorldCustomItemStore() {
-
     }
 
     public void store(Location location, CustomItem customItem) {
-        ParticleEffects.stopEffect(getStoredEffect(location));
+        ParticleUtils.stopAnimation(getStoredEffect(location));
         if (customItem.getApiReference() instanceof WolfyUtilitiesRef || customItem.hasNamespacedKey()) {
-            ParticleContent particleContent = customItem.getParticleContent();
-            UUID uuid = null;
-            if (particleContent != null) {
-                NamespacedKey particle = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
-                uuid = ParticleEffects.spawnEffectOnBlock(particle, location.getBlock());
-            }
-            store.put(location, new BlockCustomItemStore(customItem, uuid));
+            store.put(location, new BlockCustomItemStore(customItem, null));
+            ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), location.getBlock());
         }
     }
 
@@ -55,7 +46,7 @@ public class WorldCustomItemStore {
      * @param location The target location of the block
      */
     public void remove(Location location) {
-        ParticleEffects.stopEffect(getStoredEffect(location));
+        ParticleUtils.stopAnimation(getStoredEffect(location));
         store.remove(location);
     }
 
@@ -102,14 +93,8 @@ public class WorldCustomItemStore {
         store.entrySet().stream().filter(entry -> !hasStoredEffect(entry.getKey())).forEach(entry -> {
             CustomItem customItem = entry.getValue().getCustomItem();
             if (customItem != null) {
-                if (customItem.getParticleContent() != null && customItem.getParticleContent().containsKey(ParticleEffect.Action.BLOCK)) {
-                    ParticleContent particleContent = customItem.getParticleContent();
-                    NamespacedKey effectID = particleContent.getParticleEffect(ParticleEffect.Action.BLOCK);
-                    if (effectID != null) {
-                        UUID uuid = ParticleEffects.spawnEffectOnBlock(effectID, entry.getKey().getBlock());
-                        store.put(entry.getKey(), new BlockCustomItemStore(customItem, uuid));
-                    }
-                }
+                store.put(entry.getKey(), new BlockCustomItemStore(customItem, null));
+                ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), entry.getKey().getBlock());
             }
         });
     }
@@ -156,7 +141,7 @@ public class WorldCustomItemStore {
             node.elements().forEachRemaining(jsonNode -> {
                 Location location = JacksonUtil.getObjectMapper().convertValue(jsonNode.path("loc"), Location.class);
                 BlockCustomItemStore blockStore = JacksonUtil.getObjectMapper().convertValue(jsonNode.path("store"), BlockCustomItemStore.class);
-                if (blockStore != null && !ItemUtils.isAirOrNull(blockStore.getCustomItem())) {
+                if (blockStore != null) {
                     worldStore.setStore(location, blockStore);
                 }
             });

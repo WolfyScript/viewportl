@@ -4,6 +4,7 @@ version: ${project.version}
 author: WolfyScript
 
 loadbefore:
+  - CustomCrafting
   - ChatColor
   - ChatColor2
 
@@ -12,6 +13,7 @@ softdepend:
   - PlotSquared
   - WorldGuard
   - MythicMobs
+  - MMOItems
   - BungeeChat
   - mcMMO
   - Oraxen
@@ -23,7 +25,9 @@ commands:
   wolfyutils:
     description: displays version of this plugin
   particle_effect:
-    description: spawn/stop particle effects
+    description: spawn particle effects
+  particle_animation:
+    description: spawn/stop particle animations
   wua:
     description: handles and executes ChatClickActions
   wui:

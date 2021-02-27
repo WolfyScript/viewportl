@@ -45,11 +45,10 @@ public class BlockListener implements Listener {
                 CustomItemBreakEvent event1 = new CustomItemBreakEvent(storedItem, event);
                 Bukkit.getPluginManager().callEvent(event1);
                 event.setCancelled(event1.isCancelled());
-                event.setDropItems(event1.isDropItems());
                 storedItem = event1.getCustomItem();
                 if (!event1.isCancelled() && !ItemUtils.isAirOrNull(storedItem)) {
                     ItemStack result = dropItems(block, storedItem);
-                    if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
+                    if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && event1.isDropItems()) {
                         block.getWorld().dropItemNaturally(block.getLocation(), result);
                     }
                     removeMultiBlockItems(block);
@@ -214,7 +213,7 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (!event.isCancelled() && event.canBuild()) {
-            CustomItem customItem = Registry.CUSTOM_ITEMS.get(NamespacedKey.getByString(getCustomItemID(event.getItemInHand())));
+            CustomItem customItem = Registry.CUSTOM_ITEMS.get(NamespacedKey.of(getCustomItemID(event.getItemInHand())));
             if (!ItemUtils.isAirOrNull(customItem) && customItem.getItemStack().getType().isBlock()) {
                 if (customItem.isBlockPlacement()) {
                     event.setCancelled(true);
@@ -238,7 +237,7 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlaceMulti(BlockMultiPlaceEvent event) {
         if (!event.isCancelled()) {
-            CustomItem customItem = Registry.CUSTOM_ITEMS.get(NamespacedKey.getByString(getCustomItemID(event.getItemInHand())));
+            CustomItem customItem = Registry.CUSTOM_ITEMS.get(NamespacedKey.of(getCustomItemID(event.getItemInHand())));
             if (!ItemUtils.isAirOrNull(customItem)) {
                 if (customItem.isBlockPlacement()) {
                     event.setCancelled(true);

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 public class LoreMeta extends Meta {
 
     public LoreMeta() {
-        super("lore");
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
     }

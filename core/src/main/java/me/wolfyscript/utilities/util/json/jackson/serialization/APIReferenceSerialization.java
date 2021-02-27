@@ -2,7 +2,9 @@ package me.wolfyscript.utilities.util.json.jackson.serialization;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -31,31 +33,15 @@ public class APIReferenceSerialization {
                         continue;
                     }
                     String key = entry.getKey();
-                    JsonNode element = entry.getValue();
-                    switch (key){
-                        case "item":
-                            apiReference = JacksonUtil.getObjectMapper().treeToValue(element, VanillaRef.class);
+                    APIReference.Parser<?> parser = CustomItem.getApiReferenceParser(key);
+                    if (parser != null) {
+                        JsonNode element = entry.getValue();
+                        if (element != null) {
+                            apiReference = parser.parse(element);
                             break;
-                        case "wolfyutilities":
-                        case "item_key":
-                            apiReference = JacksonUtil.getObjectMapper().treeToValue(element, WolfyUtilitiesRef.class);
-                            break;
-                        case "oraxen":
-                            apiReference = JacksonUtil.getObjectMapper().treeToValue(element, OraxenRef.class);
-                            break;
-                        case "itemsadder":
-                            apiReference = JacksonUtil.getObjectMapper().treeToValue(element, ItemsAdderRef.class);
-                            break;
-                        case "mythicmobs":
-                            apiReference = JacksonUtil.getObjectMapper().treeToValue(element, MythicMobsRef.class);
-                            break;
-                        case "mmoitems":
-                            apiReference = JacksonUtil.getObjectMapper().treeToValue(element, MMOItemsRef.class);
+                        }
                     }
-                    //Break if CustomItem was found, else check next fields
-                    if(apiReference != null) break;
                 }
-
             } else if (node.isTextual()) {
                 //Legacy items saved as string!
                 apiReference = JacksonUtil.getObjectMapper().treeToValue(node, VanillaRef.class);

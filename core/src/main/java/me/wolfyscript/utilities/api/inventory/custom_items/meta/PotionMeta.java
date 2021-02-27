@@ -7,7 +7,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class PotionMeta extends Meta {
 
     public PotionMeta() {
-        super("potion");
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
     }

@@ -50,16 +50,21 @@ public class ItemUtils {
         return false;
     }
 
+    public static boolean isTool(Material material) {
+        return material.name().endsWith("AXE") || material.name().endsWith("HOE") || material.name().endsWith("SWORD") || material.name().endsWith("SHOVEL") || material.name().endsWith("PICKAXE");
+    }
+
+    public static boolean isAllowedInGrindStone(Material material) {
+        //TODO
+        return true;
+    }
+
     public static boolean isAirOrNull(ItemStack item) {
         return item == null || item.getType().equals(Material.AIR);
     }
 
     public static boolean isAirOrNull(CustomItem item) {
         return item == null || item.getApiReference() == null || isAirOrNull(item.getItemStack());
-    }
-
-    public static boolean isTool(Material material) {
-        return material.name().endsWith("AXE") || material.name().endsWith("HOE") || material.name().endsWith("SWORD") || material.name().endsWith("SHOVEL") || material.name().endsWith("PICKAXE");
     }
 
     /*

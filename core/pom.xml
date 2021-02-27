@@ -7,7 +7,7 @@
     <parent>
         <artifactId>wolfyutilities-parent</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <version>1.6.3.0</version>
+        <version>1.6.3.11</version>
     </parent>
     <dependencies>
         <dependency>

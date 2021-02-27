@@ -1,18 +1,24 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.references;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.nms.nbt.NBTBase;
+import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
+import me.wolfyscript.utilities.api.nms.nbt.NBTTagString;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
 
-public class MythicMobsRef extends APIReference{
+public class MythicMobsRef extends APIReference {
 
     private final String itemName;
 
-    public MythicMobsRef(String itemName){
+    public MythicMobsRef(String itemName) {
         this.itemName = itemName;
     }
 
@@ -38,5 +44,32 @@ public class MythicMobsRef extends APIReference{
     @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStringField("mythicmobs", itemName);
+    }
+
+    public static class Parser extends APIReference.PluginParser<MythicMobsRef> {
+
+        public Parser() {
+            super("MythicMobs", "mythicmobs");
+        }
+
+        @Override
+        public @Nullable MythicMobsRef construct(ItemStack itemStack) {
+            NBTItem nbtItem = WolfyUtilities.getWUCore().getNmsUtil().getNBTUtil().getItem(itemStack);
+            if (nbtItem != null && nbtItem.hasKey("MYTHIC_TYPE")) {
+                NBTBase nbtBase = nbtItem.getTag("MYTHIC_TYPE");
+                if (nbtBase instanceof NBTTagString) {
+                    String name = ((NBTTagString) nbtBase).asString();
+                    if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
+                        return new MythicMobsRef(name);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public @Nullable MythicMobsRef parse(JsonNode element) {
+            return new MythicMobsRef(element.asText());
+        }
     }
 }

@@ -38,6 +38,10 @@ public class InventoryUtils {
         return free;
     }
 
+    public static boolean hasInventorySpace(Inventory inventory, ItemStack itemStack, int amount) {
+        return getInventorySpace(inventory, itemStack) >= itemStack.getAmount() * amount;
+    }
+
     public static boolean hasInventorySpace(Inventory inventory, ItemStack itemStack) {
         return getInventorySpace(inventory, itemStack) >= itemStack.getAmount();
     }
@@ -53,11 +57,11 @@ public class InventoryUtils {
     public static int firstSimilar(Inventory inventory, ItemStack itemStack){
         for(int i = 0; i < inventory.getSize(); i++){
             ItemStack slotItem = inventory.getItem(i);
-            if(slotItem == null){
+            if (slotItem == null) {
                 return i;
             }
-            if(slotItem.isSimilar(itemStack) || itemStack.isSimilar(slotItem)){
-                if(slotItem.getAmount() + itemStack.getAmount() <= slotItem.getMaxStackSize()){
+            if (itemStack.isSimilar(slotItem)) {
+                if (slotItem.getAmount() + itemStack.getAmount() <= slotItem.getMaxStackSize()) {
                     return i;
                 }
             }

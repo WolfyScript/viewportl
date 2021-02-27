@@ -1,17 +1,28 @@
 package me.wolfyscript.utilities.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+@JsonDeserialize(using = NamespacedKey.Deserializer.class, keyUsing = NamespacedKey.KeyDeserializer.class)
 public class NamespacedKey implements Comparable<NamespacedKey> {
+
+    public static final String WOLFYUTILITIES = "wolfyutilities";
+    private static final String BUKKIT_SPLITTER = "/";
 
     @JsonIgnore
     private static final Pattern VALID_NAMESPACE = Pattern.compile("[a-z0-9._-]+");
@@ -50,14 +61,28 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         return this.key;
     }
 
+    /**
+     * @param namespaceKey The String with a column.
+     * @return The NamespacedKey of the String or null, if the String doesn't contain a ":".
+     */
     @Nullable
-    public static NamespacedKey getByString(@Nullable String namespaceKey) {
+    public static NamespacedKey of(@Nullable String namespaceKey) {
         if (namespaceKey == null || namespaceKey.isEmpty()) return null;
         return new NamespacedKey(namespaceKey.split(":")[0].toLowerCase(Locale.ROOT), namespaceKey.split(":")[1].toLowerCase(Locale.ROOT));
     }
 
-    public static NamespacedKey getByBukkit(org.bukkit.NamespacedKey namespacedKey) {
+    public static NamespacedKey of(org.bukkit.NamespacedKey namespacedKey) {
+        if (namespacedKey.getNamespace().equalsIgnoreCase(WOLFYUTILITIES)) {
+            String[] values = namespacedKey.getKey().split(BUKKIT_SPLITTER, 2);
+            if (values.length > 1) {
+                return new NamespacedKey(values[0], values[1]);
+            }
+        }
         return new NamespacedKey(namespacedKey.getNamespace(), namespacedKey.getKey());
+    }
+
+    public static NamespacedKey wolfyutilties(String key) {
+        return new NamespacedKey(WOLFYUTILITIES, key);
     }
 
     @Override
@@ -74,6 +99,8 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         return Objects.hash(namespace, key);
     }
 
+    @JsonValue
+    @Override
     public String toString() {
         return toString(":");
     }
@@ -86,12 +113,28 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     }
 
     public org.bukkit.NamespacedKey toBukkit() {
-        return new org.bukkit.NamespacedKey(this.namespace, this.getKey());
+        return new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), this.namespace + BUKKIT_SPLITTER + this.getKey());
     }
 
     @Override
     public int compareTo(@NotNull NamespacedKey namespacedKey) {
-        int namepsaceDifference = getNamespace().compareTo(namespacedKey.getNamespace());
-        return namepsaceDifference == 0 ? getKey().compareTo(namespacedKey.getKey()) : namepsaceDifference;
+        int namespaceDifference = getNamespace().compareTo(namespacedKey.getNamespace());
+        return namespaceDifference == 0 ? getKey().compareTo(namespacedKey.getKey()) : namespaceDifference;
+    }
+
+    static class Deserializer extends JsonDeserializer<NamespacedKey> {
+
+        @Override
+        public NamespacedKey deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+            return NamespacedKey.of(jsonParser.readValueAs(String.class));
+        }
+    }
+
+    static class KeyDeserializer extends com.fasterxml.jackson.databind.KeyDeserializer {
+
+        @Override
+        public NamespacedKey deserializeKey(String s, DeserializationContext deserializationContext) throws IOException {
+            return NamespacedKey.of(s);
+        }
     }
 }

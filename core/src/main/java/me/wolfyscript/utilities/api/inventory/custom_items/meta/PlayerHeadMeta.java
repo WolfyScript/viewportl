@@ -6,7 +6,6 @@ import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 public class PlayerHeadMeta extends Meta {
 
     public PlayerHeadMeta() {
-        super("playerHead");
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
     }
