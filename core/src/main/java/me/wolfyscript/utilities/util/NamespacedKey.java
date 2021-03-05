@@ -73,6 +73,14 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
 
     public static NamespacedKey of(org.bukkit.NamespacedKey namespacedKey) {
         if (namespacedKey.getNamespace().equalsIgnoreCase(WOLFYUTILITIES)) {
+            /*TODO:
+               This only works with CutomCrafting... What if there are other keys with "/", but are not an actual namespace that should be used?
+               e.g.: an item created via WolfyUtilities "wolfyutilities:group/item" would be converted to "group:item", which is wrong!
+               To convert them to bukkit and back you need to use #toBukkit(), which messes up the key: "wolfyutilities:wolfyutilities/group/item"!
+               -
+               Change the way this is handled!
+               E.g. CustomCrafting should also use "customcrafting:<userdefined_namespace>/<userdefined_key>" instead of "<userdefined_namespace>:<userdefined_key>" to detect which plugin the namespacedkey belongs to!
+             */
             String[] values = namespacedKey.getKey().split(BUKKIT_SPLITTER, 2);
             if (values.length > 1) {
                 return new NamespacedKey(values[0], values[1]);
@@ -113,7 +121,11 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     }
 
     public org.bukkit.NamespacedKey toBukkit() {
-        return new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), this.namespace + BUKKIT_SPLITTER + this.getKey());
+        return toBukkit(WolfyUtilities.getWUPlugin());
+    }
+
+    public org.bukkit.NamespacedKey toBukkit(Plugin plugin) {
+        return new org.bukkit.NamespacedKey(plugin, this.namespace + BUKKIT_SPLITTER + this.getKey());
     }
 
     @Override

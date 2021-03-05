@@ -176,7 +176,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * </p>
      * <p>
      * If the reference points to an actual registered CustomItem ({@link WolfyUtilitiesRef}) then that item is returned.<br/>
-     * If the reference points to any other API such as Oraxen, MMOItems, etc. it redirects uses the {@link #with(APIReference)} method.<br/>
+     * If the reference points to any other API such as Oraxen, MMOItems, etc. it redirects to the {@link #with(APIReference)} method.<br/>
      * </p>
      * <p>
      * <b>
@@ -657,18 +657,19 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     private Material getCraftRemain() {
         ItemStack item = getItemStack();
         if (ItemUtils.isAirOrNull(item)) return null;
-        if (ServerVersion.isAfter(MinecraftVersions.v1_14)) {
-            if (item.getType().isItem()) {
-                Material replaceType = item.getType().getCraftingRemainingItem();
+        Material type = item.getType();
+        if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_15)) {
+            if (type.isItem()) {
+                Material replaceType = type.getCraftingRemainingItem();
                 if (replaceType != null) return replaceType;
             }
-        } else switch (item.getType()) {
+        } else switch (type) {
             case LAVA_BUCKET:
             case MILK_BUCKET:
             case WATER_BUCKET:
                 return Material.BUCKET;
         }
-        switch (item.getType()) {
+        switch (type) {
             case COD_BUCKET:
             case SALMON_BUCKET:
             case PUFFERFISH_BUCKET:
