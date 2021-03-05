@@ -5,6 +5,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomData;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
+import me.wolfyscript.utilities.api.inventory.tags.Tags;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +36,9 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     MetaRegistry META_PROVIDER = new MetaRegistry();
     ParticleRegistry PARTICLE_EFFECTS = new ParticleRegistry();
     ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry();
+
+    //Tags
+    Tags<CustomItem> ITEM_TAGS = new Tags<>();
 
     /**
      * Get the value of the registry by it's {@link NamespacedKey}
