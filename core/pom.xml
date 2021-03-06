@@ -7,7 +7,7 @@
     <parent>
         <artifactId>wolfyutilities-parent</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <version>1.6.3.11</version>
+        <version>1.6.3.12</version>
     </parent>
     <dependencies>
         <dependency>
@@ -26,6 +26,7 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
         </plugins>
