@@ -75,7 +75,7 @@ public class WorldCustomItemStore {
      */
     @Nullable
     public UUID getStoredEffect(@NotNull Location location) {
-        return store.entrySet().stream().filter(entry -> entry.getKey().equals(location) && entry.getValue() != null && entry.getValue().getParticleUUID() != null).map(entry -> entry.getValue().getParticleUUID()).findFirst().orElse(null);
+        return store.entrySet().stream().filter(entry -> location.equals(entry.getKey()) && entry.getValue() != null && entry.getValue().getParticleUUID() != null).map(entry -> entry.getValue().getParticleUUID()).findFirst().orElse(null);
     }
 
     public boolean hasStoredEffect(Location location) {
