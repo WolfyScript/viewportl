@@ -31,6 +31,12 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     private final String namespace;
     private final String key;
 
+    /**
+     * @param namespace The namespace, that fits the pattern [a-z0-9._-]
+     * @param key       The key that fits the pattern [a-z0-9/._-]
+     * @deprecated Only for internal use. Must be converted to a namespaced key with your plugins name as the namespaced key, if you register data in WolfyUtilities!
+     */
+    @Deprecated
     public NamespacedKey(String namespace, String key) {
         Preconditions.checkArgument(namespace != null && VALID_NAMESPACE.matcher(namespace).matches(), "Invalid namespace. Must be [a-z0-9._-]: %s", namespace);
         Preconditions.checkArgument(key != null && VALID_KEY.matcher(key).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", key);
@@ -40,6 +46,10 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters", string);
     }
 
+    /**
+     * @param plugin The plugin that this data belongs to
+     * @param key    The key that fits the pattern [a-z0-9/._-]
+     */
     public NamespacedKey(@NotNull Plugin plugin, @NotNull String key) {
         Preconditions.checkArgument(plugin != null, "Plugin cannot be null");
         Preconditions.checkArgument(key != null, "Key cannot be null");
@@ -71,6 +81,12 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         return new NamespacedKey(namespaceKey.split(":")[0].toLowerCase(Locale.ROOT), namespaceKey.split(":")[1].toLowerCase(Locale.ROOT));
     }
 
+    /**
+     * @param namespacedKey The Bukkit NamespacedKey
+     * @return the WolfyUtilities copy of the Bukkit namespaced key
+     * @deprecated This method does some weird formatting and is messed up. use {@link #fromBukkit(org.bukkit.NamespacedKey)} instead!
+     */
+    @Deprecated
     public static NamespacedKey of(org.bukkit.NamespacedKey namespacedKey) {
         if (namespacedKey.getNamespace().equalsIgnoreCase(WOLFYUTILITIES)) {
             /*TODO:
@@ -86,8 +102,13 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
                 return new NamespacedKey(values[0], values[1]);
             }
         }
+        return fromBukkit(namespacedKey);
+    }
+
+    public static NamespacedKey fromBukkit(org.bukkit.NamespacedKey namespacedKey) {
         return new NamespacedKey(namespacedKey.getNamespace(), namespacedKey.getKey());
     }
+
 
     public static NamespacedKey wolfyutilties(String key) {
         return new NamespacedKey(WOLFYUTILITIES, key);

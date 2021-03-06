@@ -173,8 +173,8 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
             if (item == null || (item.getApiReference() instanceof WolfyUtilitiesRef && ((WolfyUtilitiesRef) item.getApiReference()).getNamespacedKey().equals(namespacedKey))) {
                 return;
             }
-            item.setNamespacedKey(namespacedKey);
             this.map.put(namespacedKey, item);
+            item.setNamespacedKey(namespacedKey);
         }
     }
 
@@ -183,8 +183,8 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
         @Override
         public void register(NamespacedKey namespacedKey, ParticleEffect value) {
             if (value != null) {
-                value.setNamespacedKey(namespacedKey);
                 super.register(namespacedKey, value);
+                value.setNamespacedKey(namespacedKey);
             }
         }
     }
@@ -194,8 +194,8 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
         @Override
         public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
             if (value != null) {
-                value.setNamespacedKey(namespacedKey);
                 super.register(namespacedKey, value);
+                value.setNamespacedKey(namespacedKey);
             }
         }
     }
