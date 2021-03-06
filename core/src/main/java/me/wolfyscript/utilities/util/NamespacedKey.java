@@ -32,11 +32,11 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     private final String key;
 
     /**
+     * <b>Only for internal use. Must be converted to a namespaced key with your plugins name as the namespaced key, if you register data in WolfyUtilities!</b>
+     *
      * @param namespace The namespace, that fits the pattern [a-z0-9._-]
      * @param key       The key that fits the pattern [a-z0-9/._-]
-     * @deprecated Only for internal use. Must be converted to a namespaced key with your plugins name as the namespaced key, if you register data in WolfyUtilities!
      */
-    @Deprecated
     public NamespacedKey(String namespace, String key) {
         Preconditions.checkArgument(namespace != null && VALID_NAMESPACE.matcher(namespace).matches(), "Invalid namespace. Must be [a-z0-9._-]: %s", namespace);
         Preconditions.checkArgument(key != null && VALID_KEY.matcher(key).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", key);
