@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -15,11 +16,10 @@ import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
 import me.wolfyscript.utilities.util.particles.ParticleUtils;
 import org.bukkit.Location;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,15 +27,16 @@ import java.util.UUID;
 @JsonDeserialize(using = WorldCustomItemStore.Deserializer.class)
 public class WorldCustomItemStore {
 
-    private final HashMap<Location, BlockCustomItemStore> store = new HashMap<>();
+    private final Map<Location, BlockCustomItemStore> store = new Hashtable<>();
 
     public WorldCustomItemStore() {
     }
 
     public void store(Location location, CustomItem customItem) {
+        if (location == null) return;
         ParticleUtils.stopAnimation(getStoredEffect(location));
         if (customItem.getApiReference() instanceof WolfyUtilitiesRef || customItem.hasNamespacedKey()) {
-            store.put(location, new BlockCustomItemStore(customItem, null));
+            setStore(location, new BlockCustomItemStore(customItem, null));
             ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), location.getBlock());
         }
     }
@@ -46,25 +47,24 @@ public class WorldCustomItemStore {
      * @param location The target location of the block
      */
     public void remove(Location location) {
-        ParticleUtils.stopAnimation(getStoredEffect(location));
-        store.remove(location);
+        if (location != null) {
+            ParticleUtils.stopAnimation(getStoredEffect(location));
+            store.remove(location);
+        }
     }
 
     public boolean isStored(Location location) {
-        return store.containsKey(location);
+        return location != null && store.containsKey(location);
     }
 
     @Nullable
     public BlockCustomItemStore get(Location location) {
-        return store.get(location);
+        return location == null ? null : store.get(location);
     }
 
     public CustomItem getCustomItem(Location location) {
         BlockCustomItemStore blockStore = get(location);
-        if (blockStore != null) {
-            return blockStore.getCustomItem();
-        }
-        return null;
+        return blockStore != null ? blockStore.getCustomItem() : null;
     }
 
     /**
@@ -74,26 +74,26 @@ public class WorldCustomItemStore {
      * @return The uuid of the currently active particle effect.
      */
     @Nullable
-    public UUID getStoredEffect(@NotNull Location location) {
-        return store.entrySet().stream().filter(entry -> location.equals(entry.getKey()) && entry.getValue() != null && entry.getValue().getParticleUUID() != null).map(entry -> entry.getValue().getParticleUUID()).findFirst().orElse(null);
+    public UUID getStoredEffect(@Nullable Location location) {
+        BlockCustomItemStore blockStore = get(location);
+        return blockStore != null ? blockStore.getParticleUUID() : null;
     }
 
     public boolean hasStoredEffect(Location location) {
-        if (isStored(location)) {
-            return getStoredEffect(location) != null;
-        }
-        return false;
+        return isStored(location) && getStoredEffect(location) != null;
     }
 
     void setStore(Location location, BlockCustomItemStore blockStore) {
-        store.put(location, blockStore);
+        if (location != null && blockStore != null) {
+            store.put(location, blockStore);
+        }
     }
 
     public void initiateMissingBlockEffects() {
         store.entrySet().stream().filter(entry -> !hasStoredEffect(entry.getKey())).forEach(entry -> {
             CustomItem customItem = entry.getValue().getCustomItem();
             if (customItem != null) {
-                store.put(entry.getKey(), new BlockCustomItemStore(customItem, null));
+                setStore(entry.getKey(), new BlockCustomItemStore(customItem, null));
                 ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), entry.getKey().getBlock());
             }
         });
@@ -138,13 +138,8 @@ public class WorldCustomItemStore {
         public WorldCustomItemStore deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             WorldCustomItemStore worldStore = new WorldCustomItemStore();
             JsonNode node = p.readValueAsTree();
-            node.elements().forEachRemaining(jsonNode -> {
-                Location location = JacksonUtil.getObjectMapper().convertValue(jsonNode.path("loc"), Location.class);
-                BlockCustomItemStore blockStore = JacksonUtil.getObjectMapper().convertValue(jsonNode.path("store"), BlockCustomItemStore.class);
-                if (blockStore != null) {
-                    worldStore.setStore(location, blockStore);
-                }
-            });
+            ObjectMapper mapper = JacksonUtil.getObjectMapper();
+            node.elements().forEachRemaining(jsonNode -> worldStore.setStore(mapper.convertValue(jsonNode.path("loc"), Location.class), mapper.convertValue(jsonNode.path("store"), BlockCustomItemStore.class)));
             return worldStore;
         }
     }
