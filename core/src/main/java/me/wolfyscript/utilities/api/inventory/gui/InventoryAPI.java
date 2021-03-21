@@ -6,7 +6,6 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -217,16 +216,16 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             } else {
                 event.setCancelled(false);
                 if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
-                    int slot = event.getCurrentItem() != null ? InventoryUtils.firstSimilar(event.getView().getTopInventory(), event.getCurrentItem()) : -1;
-                    if (slot == -1) {
-                        slot = event.getView().getTopInventory().firstEmpty();
+                    for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
+                        Button<C> button = guiWindow.getButton(buttonEntry.getValue());
+                        if (button instanceof ItemInputButton) {
+                            buttons.put(buttonEntry.getKey(), button);
+                            if (executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, buttonEntry.getKey(), event)) {
+                                event.setCancelled(true);
+                                break;
+                            }
+                        }
                     }
-                    Button<C> button = guiHandler.getButton(guiWindow, slot);
-                    if (button == null) {
-                        event.setCancelled(true);
-                        return;
-                    }
-                    event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, slot, event));
                 }
             }
             if (guiHandler.openedPreviousWindow) {
