@@ -32,7 +32,6 @@ import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
-import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import me.wolfyscript.utilities.util.world.WorldUtils;
 import org.bstats.bukkit.Metrics;
@@ -54,34 +53,28 @@ public class WUPlugin extends JavaPlugin {
 
     private static WUPlugin instance;
 
+    private final WolfyUtilities wolfyUtilities;
+
+    private final Chat chat;
+    private Metrics metrics;
+    private MessageChannelHandler messageChannelHandler;
+
+    public WUPlugin() {
+        super();
+        instance = this;
+        this.wolfyUtilities = WolfyUtilities.get(this, false);
+        ServerVersion.setWUVersion(getDescription().getVersion());
+        this.chat = wolfyUtilities.getChat();
+        chat.setCONSOLE_PREFIX("[WU] ");
+        chat.setIN_GAME_PREFIX("§8[§3WU§8] §7");
+    }
+
     public static WUPlugin getInstance() {
         return instance;
     }
 
-    private WolfyUtilities wolfyUtilities;
-    private Chat chat;
-
-    private MessageChannelHandler messageChannelHandler;
-
-    public void loadParticleEffects() throws IOException {
-        getLogger().info("Loading Particles");
-        WorldUtils.getWorldCustomItemStore().initiateMissingBlockEffects();
-    }
-
-    public void onDisable() {
-        wolfyUtilities.getConfigAPI().saveConfigs();
-        PlayerUtils.saveStores();
-        WorldUtils.save();
-    }
-
-    public WolfyUtilities getWolfyUtilities() {
-        return wolfyUtilities;
-    }
-
+    @Override
     public void onLoad() {
-        instance = this;
-        ServerVersion.setWUVersion(getDescription().getVersion());
-
         //Jackson Serializer
         getLogger().info("Register json serializer/deserializer");
         SimpleModule module = new SimpleModule();
@@ -119,13 +112,12 @@ public class WUPlugin extends JavaPlugin {
         meta.register(NamespacedKey.wolfyutilties("unbreakable"), UnbreakableMeta.class);
     }
 
+    @Override
     public void onEnable() {
+        this.wolfyUtilities.initialize();
         getLogger().info("Minecraft version: " + ServerVersion.getVersion().getVersion());
         getLogger().info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
-        wolfyUtilities = WolfyUtilities.get(this);
-        this.chat = wolfyUtilities.getChat();
-        chat.setCONSOLE_PREFIX("[WU] ");
-        chat.setIN_GAME_PREFIX("§8[§3WU§8] §7");
+        this.metrics = new Metrics(this, 5114);
 
         // Register plugin CustomItem API ReferenceParser
         getLogger().info("Register API references");
@@ -142,28 +134,58 @@ public class WUPlugin extends JavaPlugin {
 
         WorldUtils.load();
         PlayerUtils.loadStores();
+
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::load, 300000, 300000);
+
+        registerListeners();
+        registerCommands();
+        registerPluginMessages();
+
+        CreativeModeTab.init();
+
+        loadParticleEffects();
+
+        ParticleEffects.load();
+        try {
+            File file = new File(getDataFolder(), "test_animation.json");
+            JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_ANIMATIONS.get(new NamespacedKey("wolfyutilities", "flame_circle")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Used to test the NBT Tag API!
+        testNBTAPI(false);
+    }
+
+    @Override
+    public void onDisable() {
+        wolfyUtilities.getConfigAPI().saveConfigs();
+        PlayerUtils.saveStores();
+        WorldUtils.save();
+    }
+
+    public void loadParticleEffects() {
+        getLogger().info("Loading Particles");
+        WorldUtils.getWorldCustomItemStore().initiateMissingBlockEffects();
+    }
+
+    private void registerListeners() {
         Bukkit.getPluginManager().registerEvents(new Chat.ChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new EquipListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+    }
+
+    private void registerCommands() {
         Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand(wolfyUtilities));
         Bukkit.getServer().getPluginCommand("particle_animation").setExecutor(new SpawnParticleAnimationCommand(wolfyUtilities));
         Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand());
         Bukkit.getServer().getPluginCommand("wui").setTabCompleter(new InputCommand());
         Bukkit.getServer().getPluginCommand("wua").setExecutor(new ChatActionCommand());
+    }
 
-        Metrics metrics = new Metrics(this, 5114);
-        CreativeModeTab.init();
-
-        try {
-            loadParticleEffects();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    private void registerPluginMessages() {
         messageChannelHandler = new MessageChannelHandler(this, new NamespacedKey("wolfyutilities", "main"));
         messageChannelHandler.registerMessage(1, WolfyUtilitiesVerifyMessage.class, (message, output) -> {
             output.writeBoolean(message.hasWolfyUtilities());
@@ -173,25 +195,33 @@ public class WUPlugin extends JavaPlugin {
                 messageChannelHandler.sendTo(player, new WolfyUtilitiesVerifyMessage(true, getDescription().getVersion()));
             }
         });
-
         messageChannelHandler.registerMessage(2, InputButtonMessage.class, (inputButtonMessage, output) -> {
             output.writeUTF(inputButtonMessage.getButtonID());
             output.writeUTF(inputButtonMessage.getMessage());
         }, null, (inputButtonMessage, player) -> {
         });
+    }
 
-        ParticleEffects.load();
-        try {
-            File file = new File(getDataFolder(), "test_animation.json");
-            JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_ANIMATIONS.get(new NamespacedKey("wolfyutilities", "flame_circle")));
-            ParticleAnimation animation = JacksonUtil.getObjectMapper().readValue(file, ParticleAnimation.class);
-            //System.out.println("Loaded: " + animation);
-        } catch (IOException e) {
-            e.printStackTrace();
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (label.equalsIgnoreCase("wolfyutils") && sender instanceof Player) {
+            chat.sendMessages((Player) sender, "——————— &3&lWolfyUtilities &7———————",
+                    "",
+                    "&7Author: &l" + String.join(", ", getDescription().getAuthors()),
+                    "",
+                    "&7Version: &l" + ServerVersion.getWUVersion().getVersion(),
+                    "",
+                    "———————————————————————");
         }
+        return true;
+    }
 
-        //System.out.println("TestItem: "+ ItemUtils.serializeItemStack(new ItemBuilder(Material.DIAMOND_SWORD).addItemFlags(ItemFlag.HIDE_UNBREAKABLE).setDisplayName("LUL").addLoreLine("Test Item").create()));
-        //*
+    public MessageChannelHandler getPacketHandler() {
+        return messageChannelHandler;
+    }
+
+    private void testNBTAPI(boolean test) {
+        if (!test) return;
         ItemBuilder itemBuilder = new ItemBuilder(Material.DIAMOND_SWORD);
         itemBuilder.addLoreLine("Test");
         itemBuilder.addEnchantment(Enchantment.DAMAGE_ALL, 5);
@@ -233,62 +263,40 @@ public class WUPlugin extends JavaPlugin {
 
         compound.set("wolfy", wolfyCompound);
 
-        System.out.println("Item: ");
-        System.out.println("Tag: " + nbtItem.getCompound().toString());
-        System.out.println("Keys: ");
-        System.out.println("    - " + String.join("\n    - ", nbtItem.getKeys()));
+        getLogger().info("Item: ");
+        getLogger().info("Tag: " + nbtItem.getCompound().toString());
+        getLogger().info("Keys: ");
+        getLogger().info("    - " + String.join("\n    - ", nbtItem.getKeys()));
 
         ItemStack newItem = nbtItem.create();
         NBTItem newNBTItem = nbt.getItem(newItem);
-        System.out.println("New Item: ");
-        System.out.println("Tag: " + nbtItem.getCompound().toString());
-        System.out.println("Item Keys: ");
+        getLogger().info("New Item: ");
+        getLogger().info("Tag: " + nbtItem.getCompound().toString());
+        getLogger().info("Item Keys: ");
         for (String key : newNBTItem.getKeys()) {
-            System.out.println(" - " + key + " = " + newNBTItem.getTag(key));
+            getLogger().info(" - " + key + " = " + newNBTItem.getTag(key));
         }
 
         NBTCompound wolfyComp = newNBTItem.getCompound("wolfy");
         if (wolfyComp != null) {
-            System.out.println("Wolfy Values: ");
-            System.out.println("    Byte = " + wolfyComp.getByte("Byte"));
-            System.out.println("    Boolean = " + wolfyComp.getBoolean("Boolean"));
-            System.out.println("    Double = " + wolfyComp.getDouble("Double"));
-            System.out.println("    Float = " + wolfyComp.getFloat("Float"));
-            System.out.println("    Int = " + wolfyComp.getInt("Int"));
-            System.out.println("    Long = " + wolfyComp.getLong("Long"));
-            System.out.println("    Short = " + wolfyComp.getShort("Short"));
-            System.out.println("    String = " + wolfyComp.getString("String"));
-            System.out.println("    ByteArray = " + Arrays.toString(wolfyComp.getByteArray("ByteArray")));
-            System.out.println("    IntArray = " + Arrays.toString(wolfyComp.getIntArray("IntArray")));
-            System.out.println("    LongArray = " + Arrays.toString(wolfyComp.getLongArray("LongArray")));
-            System.out.println("    Nested = " + wolfyComp.get("Nested"));
+            getLogger().info("Wolfy Values: ");
+            getLogger().info("    Byte = " + wolfyComp.getByte("Byte"));
+            getLogger().info("    Boolean = " + wolfyComp.getBoolean("Boolean"));
+            getLogger().info("    Double = " + wolfyComp.getDouble("Double"));
+            getLogger().info("    Float = " + wolfyComp.getFloat("Float"));
+            getLogger().info("    Int = " + wolfyComp.getInt("Int"));
+            getLogger().info("    Long = " + wolfyComp.getLong("Long"));
+            getLogger().info("    Short = " + wolfyComp.getShort("Short"));
+            getLogger().info("    String = " + wolfyComp.getString("String"));
+            getLogger().info("    ByteArray = " + Arrays.toString(wolfyComp.getByteArray("ByteArray")));
+            getLogger().info("    IntArray = " + Arrays.toString(wolfyComp.getIntArray("IntArray")));
+            getLogger().info("    LongArray = " + Arrays.toString(wolfyComp.getLongArray("LongArray")));
+            getLogger().info("    Nested = " + wolfyComp.get("Nested"));
             NBTTagList nbtTagList = (NBTTagList) wolfyComp.get("IntArrayList");
-            System.out.println("    IntArrayList = " + nbtTagList);
+            getLogger().info("    IntArrayList = " + nbtTagList);
             for (int i = 0; i < nbtTagList.size(); i++) {
-                System.out.println("       - " + nbtTagList.getTag(i));
+                getLogger().info("       - " + nbtTagList.getTag(i));
             }
         }
-        //*/
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("wolfyutils")) {
-            if (sender instanceof Player) {
-                chat.sendMessages((Player) sender, "——————— &3&lWolfyUtilities &7———————",
-                        "",
-                        "&7Author: &l" + String.join(", ", getDescription().getAuthors()),
-                        "",
-                        "&7Version: &l" + ServerVersion.getWUVersion().getVersion(),
-                        "",
-                        "———————————————————————");
-                return true;
-            }
-        }
-        return true;
-    }
-
-    public MessageChannelHandler getPacketHandler() {
-        return messageChannelHandler;
     }
 }

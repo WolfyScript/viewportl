@@ -61,24 +61,16 @@ public class WolfyUtilities {
         return wolfyUtilitiesList.containsKey(plugin);
     }
 
-    /**
-     * Gets or create the {@link WolfyUtilities} instance for the specified plugin.
-     *
-     * @param plugin The plugin to get the instance from.
-     * @return The WolfyUtilities instance for the plugin.
-     */
-    public static WolfyUtilities get(Plugin plugin) {
-        if (!has(plugin)) {
-            new WolfyUtilities(plugin);
-        }
-        return wolfyUtilitiesList.get(plugin);
+    private WolfyUtilities(Plugin plugin, boolean init) {
+        this(plugin, CustomCache.class, init);
     }
 
-    private WolfyUtilities(Plugin plugin) {
-        this(plugin, CustomCache.class);
+    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
+        this(plugin, customCacheClass, true);
     }
 
     private final Plugin plugin;
+
     private String dataBasePrefix;
     private final ConfigAPI configAPI;
     private InventoryAPI<?> inventoryAPI;
@@ -89,7 +81,7 @@ public class WolfyUtilities {
     private final BookUtil bookUtil;
     private final NMSUtil nmsUtil;
 
-    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
+    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass, boolean initialize) {
         this.plugin = plugin;
         if (!has(plugin)) {
             wolfyUtilitiesList.put(plugin, this);
@@ -103,6 +95,30 @@ public class WolfyUtilities {
         this.itemUtils = new ItemUtils(this);
         this.nmsUtil = NMSUtil.create(this);
         this.bookUtil = new BookUtil(this);
+        if (initialize) {
+            initialize();
+        }
+    }
+
+    /**
+     * Gets or create the {@link WolfyUtilities} instance for the specified plugin.
+     *
+     * @param plugin The plugin to get the instance from.
+     * @return The WolfyUtilities instance for the plugin.
+     */
+    public static WolfyUtilities get(Plugin plugin) {
+        return get(plugin, true);
+    }
+
+    public static WolfyUtilities get(Plugin plugin, boolean init) {
+        if (!has(plugin)) {
+            new WolfyUtilities(plugin, init);
+        }
+        return wolfyUtilitiesList.get(plugin);
+    }
+
+    public final void initialize() {
+        Bukkit.getPluginManager().registerEvents(this.inventoryAPI, plugin);
     }
 
     /**

@@ -46,7 +46,6 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     /**

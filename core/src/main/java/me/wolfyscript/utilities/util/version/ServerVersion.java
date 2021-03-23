@@ -8,6 +8,9 @@ public class ServerVersion {
         return MinecraftVersions.RUNTIME_VERSION;
     }
 
+    private ServerVersion() {
+    }
+
     public static WUVersion getWUVersion() {
         return wolfyUtilitiesVersion;
     }
