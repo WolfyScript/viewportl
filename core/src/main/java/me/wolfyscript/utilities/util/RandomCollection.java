@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.util;
 
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Random;
@@ -41,6 +42,7 @@ public class RandomCollection<E> extends TreeMap<Double, E> {
      *
      * @return The next random value or null if none can be found.
      */
+    @Nullable
     public E next() {
         double value = random.nextDouble() * total;
         Map.Entry<Double, E> entry = higherEntry(value);

@@ -288,7 +288,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             if (guiHandler.isChatEventActive()) {
                 final String message = event.getMessage();
                 //Wraps normal written message into command to be executed
-                Bukkit.getScheduler().runTask(getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wui" + ' ' + getPlugin().getName() + ' ' + event.getPlayer().getUniqueId().toString() + ' ' + message));
+                Bukkit.getScheduler().runTask(getPlugin(), () -> Bukkit.dispatchCommand(event.getPlayer(), "wui " + message));
                 event.setCancelled(true);
             }
         }

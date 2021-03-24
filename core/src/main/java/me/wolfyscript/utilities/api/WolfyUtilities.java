@@ -13,7 +13,9 @@ import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 public class WolfyUtilities {
@@ -59,6 +61,10 @@ public class WolfyUtilities {
      */
     public static boolean has(Plugin plugin) {
         return wolfyUtilitiesList.containsKey(plugin);
+    }
+
+    public static List<WolfyUtilities> getAPIList() {
+        return new ArrayList<>(wolfyUtilitiesList.values());
     }
 
     private WolfyUtilities(Plugin plugin, boolean init) {
