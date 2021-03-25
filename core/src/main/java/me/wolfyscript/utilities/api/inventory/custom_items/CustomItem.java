@@ -656,36 +656,31 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
 
     private Material getCraftRemain() {
         ItemStack item = getItemStack();
-        if (ItemUtils.isAirOrNull(item)) return null;
-        Material type = item.getType();
-        if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_15)) {
-            if (type.isItem()) {
-                Material replaceType = type.getCraftingRemainingItem();
+        if (!ItemUtils.isAirOrNull(item) && item.getType().isItem()) {
+            if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_15)) {
+                Material replaceType = item.getType().getCraftingRemainingItem();
                 if (replaceType != null) return replaceType;
             }
-        } else switch (type) {
-            case LAVA_BUCKET:
-            case MILK_BUCKET:
-            case WATER_BUCKET:
-                return Material.BUCKET;
-            default:
-                //Continue
+            switch (item.getType()) {
+                case LAVA_BUCKET:
+                case MILK_BUCKET:
+                case WATER_BUCKET:
+                case COD_BUCKET:
+                case SALMON_BUCKET:
+                case PUFFERFISH_BUCKET:
+                case TROPICAL_FISH_BUCKET:
+                    return Material.BUCKET;
+                case POTION:
+                    return Material.GLASS_BOTTLE;
+                case BEETROOT_SOUP:
+                case MUSHROOM_STEW:
+                case RABBIT_STEW:
+                    return Material.BOWL;
+                default:
+                    return null;
+            }
         }
-        switch (type) {
-            case COD_BUCKET:
-            case SALMON_BUCKET:
-            case PUFFERFISH_BUCKET:
-            case TROPICAL_FISH_BUCKET:
-                return Material.BUCKET;
-            case POTION:
-                return Material.GLASS_BOTTLE;
-            case BEETROOT_SOUP:
-            case MUSHROOM_STEW:
-            case RABBIT_STEW:
-                return Material.BOWL;
-            default:
-                return null;
-        }
+        return null;
     }
 
     public boolean hasPermission() {

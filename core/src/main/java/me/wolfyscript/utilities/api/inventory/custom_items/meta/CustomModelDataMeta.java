@@ -26,7 +26,8 @@ public class CustomModelDataMeta extends Meta {
                 return meta1.getCustomModelData() < meta2.getCustomModelData();
             case HIGHER:
                 return meta1.getCustomModelData() > meta2.getCustomModelData();
+            default:
+                return true;
         }
-        return true;
     }
 }

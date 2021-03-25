@@ -45,7 +45,7 @@ public class GsonUtil {
         gsonBuilder.registerTypeAdapter(type, typeAdapter);
     }
 
-    public static void registerTypeHierarchyAdapter(TypeAdapterFactory factory){
+    public static void registerTypeAdapterFactory(TypeAdapterFactory factory) {
         gsonBuilder.registerTypeAdapterFactory(factory);
     }
 }

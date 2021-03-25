@@ -171,13 +171,13 @@ public class ButtonState<C extends CustomCache> {
         createIcon(clusterID, "");
     }
 
-    public ItemStack getIcon() {
-        return icon.clone();
-    }
-
     public void init(GuiWindow<C> window) {
         this.wolfyUtilities = window.wolfyUtilities;
         createIcon(this.clusterID, "inventories." + window.getCluster().getId() + "." + window.getNamespacedKey().getKey() + ".items." + key);
+    }
+
+    public ItemStack getIcon() {
+        return icon.clone();
     }
 
     private void createIcon(String clusterID, String path) {

@@ -95,24 +95,6 @@ public class GuiUpdate<C extends CustomCache> {
     }
 
     /**
-     * Tries to add an Locally registered Button. If it doesn't exist then
-     * it will try to get the button globally registered for this GuiCluster.
-     *
-     * @param slot The slot the button should be rendered in.
-     * @param id   The id of the button.
-     */
-    public void setLocalOrGlobalButton(int slot, String id) {
-        Button<C> button = guiWindow.getButton(id);
-        if (button == null) {
-            button = inventoryAPI.getButton(new NamespacedKey(guiWindow.getNamespacedKey().getNamespace(), id));
-        }
-        if (button != null) {
-            guiHandler.setButton(guiWindow, slot, id);
-            renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
-        }
-    }
-
-    /**
      * Directly render a Button into a specific slot.
      *
      * @param slot   The slot the button should be rendered in.
@@ -148,6 +130,24 @@ public class GuiUpdate<C extends CustomCache> {
      */
     public void setButton(int slot, String clusterKey, String buttonId) {
         setButton(slot, new NamespacedKey(clusterKey, buttonId));
+    }
+
+    /**
+     * Tries to add an Locally registered Button. If it doesn't exist then
+     * it will try to get the button globally registered for this GuiCluster.
+     *
+     * @param slot The slot the button should be rendered in.
+     * @param id   The id of the button.
+     */
+    public void setLocalOrGlobalButton(int slot, String id) {
+        Button<C> button = guiWindow.getButton(id);
+        if (button == null) {
+            button = inventoryAPI.getButton(new NamespacedKey(guiWindow.getNamespacedKey().getNamespace(), id));
+        }
+        if (button != null) {
+            guiHandler.setButton(guiWindow, slot, id);
+            renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
+        }
     }
 
     private void renderButton(Button<C> button, GuiHandler<C> guiHandler, Player player, int slot, boolean help) {

@@ -19,23 +19,23 @@ public class PlayerUtils {
     static final File STORE_FOLDER = new File(WolfyUtilities.getWUPlugin().getDataFolder(), "players");
 
 
-    /**
-     * Gets the particle effects that are currently active on the player.
-     *
-     * @param player The player object
-     * @return The active particle effects on the player
-     */
-    public static HashMap<EquipmentSlot, UUID> getActiveItemEffects(Player player) {
-        playerItemParticles.putIfAbsent(player.getUniqueId(), new HashMap<>());
-        return playerItemParticles.get(player.getUniqueId());
-    }
-
     public static boolean hasActiveItemEffects(Player player) {
         return playerItemParticles.containsKey(player.getUniqueId());
     }
 
     public static boolean hasActiveItemEffects(Player player, EquipmentSlot equipmentSlot) {
         return playerItemParticles.getOrDefault(player.getUniqueId(), new HashMap<>()).containsKey(equipmentSlot);
+    }
+
+    /**
+     * Gets the particle effects that are currently active on the player.
+     *
+     * @param player The player object
+     * @return The active particle effects on the player
+     */
+    public static Map<EquipmentSlot, UUID> getActiveItemEffects(Player player) {
+        playerItemParticles.putIfAbsent(player.getUniqueId(), new HashMap<>());
+        return playerItemParticles.get(player.getUniqueId());
     }
 
     public static UUID getActiveItemEffects(Player player, EquipmentSlot equipmentSlot) {

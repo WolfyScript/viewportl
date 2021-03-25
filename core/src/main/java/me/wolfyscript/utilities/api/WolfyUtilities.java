@@ -106,6 +106,10 @@ public class WolfyUtilities {
         }
     }
 
+    public final void initialize() {
+        Bukkit.getPluginManager().registerEvents(this.inventoryAPI, plugin);
+    }
+
     /**
      * Gets or create the {@link WolfyUtilities} instance for the specified plugin.
      *
@@ -121,10 +125,6 @@ public class WolfyUtilities {
             new WolfyUtilities(plugin, init);
         }
         return wolfyUtilitiesList.get(plugin);
-    }
-
-    public final void initialize() {
-        Bukkit.getPluginManager().registerEvents(this.inventoryAPI, plugin);
     }
 
     /**
@@ -252,16 +252,6 @@ public class WolfyUtilities {
     }
 
     /**
-     * You can use this method to get the InventoryAPI, if you don't know type of cache it uses.
-     *
-     * @return The {@link InventoryAPI} with unknown type.
-     * @see InventoryAPI
-     */
-    public InventoryAPI<?> getInventoryAPI() {
-        return getInventoryAPI(inventoryAPI.getCacheInstance().getClass());
-    }
-
-    /**
      * This method sets the InventoryAPI.
      * <br/>
      * Use this method to set an InventoryAPI instance, that uses a custom cache.
@@ -273,6 +263,16 @@ public class WolfyUtilities {
      */
     public <T extends CustomCache> void setInventoryAPI(InventoryAPI<T> inventoryAPI) {
         this.inventoryAPI = inventoryAPI;
+    }
+
+    /**
+     * You can use this method to get the InventoryAPI, if you don't know type of cache it uses.
+     *
+     * @return The {@link InventoryAPI} with unknown type.
+     * @see InventoryAPI
+     */
+    public InventoryAPI<?> getInventoryAPI() {
+        return getInventoryAPI(inventoryAPI.getCacheInstance().getClass());
     }
 
     /**

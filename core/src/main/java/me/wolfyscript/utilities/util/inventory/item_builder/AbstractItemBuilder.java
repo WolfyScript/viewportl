@@ -140,10 +140,6 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
         return false;
     }
 
-    public int getCustomDamage() {
-        return getCustomDamage(getItemMeta());
-    }
-
     public T setCustomDamage(int damage) {
         ItemMeta itemMeta = getItemMeta();
         if (itemMeta != null) {
@@ -159,6 +155,10 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
             ((Damageable) itemMeta).setDamage(value);
         }
         return setItemMeta(itemMeta);
+    }
+
+    public int getCustomDamage() {
+        return getCustomDamage(getItemMeta());
     }
 
     public int getCustomDamage(ItemMeta itemMeta) {
