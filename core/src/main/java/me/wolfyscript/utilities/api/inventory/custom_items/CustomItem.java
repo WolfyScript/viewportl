@@ -223,7 +223,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * If you want to detect what plugin this ItemStack is from and use it's corresponding Reference use {@link #getReferenceByItemStack(ItemStack)} instead!
      *
      * @param itemStack
-     * @return CustomItem the ItemStack is linked, only if it is saved, else returns null
+     * @return CustomItem the ItemStack is linked to, only if it is saved, else returns null
      */
     @org.jetbrains.annotations.Nullable
     public static CustomItem getByItemStack(ItemStack itemStack) {
@@ -668,6 +668,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             case MILK_BUCKET:
             case WATER_BUCKET:
                 return Material.BUCKET;
+            default:
+                //Continue
         }
         switch (type) {
             case COD_BUCKET:
@@ -681,8 +683,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             case MUSHROOM_STEW:
             case RABBIT_STEW:
                 return Material.BOWL;
+            default:
+                return null;
         }
-        return null;
     }
 
     public boolean hasPermission() {

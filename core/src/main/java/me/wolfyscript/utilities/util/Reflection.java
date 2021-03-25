@@ -86,17 +86,14 @@ public class Reflection {
         if (loadedNMSClasses.containsKey(nmsClassName)) {
             return loadedNMSClasses.get(nmsClassName);
         }
-
         String clazzName = "net.minecraft.server." + getVersion() + "." + nmsClassName;
         Class<?> clazz;
-
         try {
             clazz = Class.forName(clazzName);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             return loadedNMSClasses.put(nmsClassName, null);
         }
-
         loadedNMSClasses.put(nmsClassName, clazz);
         return clazz;
     }
@@ -159,9 +156,7 @@ public class Reflection {
      * @return The method with appropriate parameters
      */
     public static Method getMethod(boolean silent, @NotNull Class<?> clazz, String methodName, Class<?>... params) {
-        if (!loadedMethods.containsKey(clazz)) {
-            loadedMethods.put(clazz, new HashMap<String, Method>());
-        }
+        loadedMethods.computeIfAbsent(clazz, aClass -> new HashMap<>());
         Map<String, Method> methods = loadedMethods.get(clazz);
         if (methods.containsKey(methodName)) {
             return methods.get(methodName);
@@ -203,9 +198,7 @@ public class Reflection {
      * @return The method with appropriate parameters
      */
     public static Method getDeclaredMethod(boolean silent, @NotNull Class<?> clazz, String methodName, Class<?>... params) {
-        if (!loadedDeclaredMethods.containsKey(clazz)) {
-            loadedDeclaredMethods.put(clazz, new HashMap<String, Method>());
-        }
+        loadedDeclaredMethods.computeIfAbsent(clazz, aClass -> new HashMap<>());
         Map<String, Method> methods = loadedDeclaredMethods.get(clazz);
         if (methods.containsKey(methodName)) {
             return methods.get(methodName);
@@ -233,16 +226,11 @@ public class Reflection {
      * @return The field object
      */
     public static Field getField(@NotNull Class<?> clazz, String fieldName) {
-        if (!loadedFields.containsKey(clazz)) {
-            loadedFields.put(clazz, new HashMap<String, Field>());
-        }
-
+        loadedFields.computeIfAbsent(clazz, aClass -> new HashMap<>());
         Map<String, Field> fields = loadedFields.get(clazz);
-
         if (fields.containsKey(fieldName)) {
             return fields.get(fieldName);
         }
-
         try {
             Field field = clazz.getField(fieldName);
             fields.put(fieldName, field);
@@ -264,15 +252,11 @@ public class Reflection {
      * @return The field object
      */
     public static Field getDeclaredField(@NotNull Class<?> clazz, String fieldName) {
-        if (!loadedDeclaredFields.containsKey(clazz)) {
-            loadedDeclaredFields.put(clazz, new HashMap<String, Field>());
-        }
+        loadedDeclaredFields.computeIfAbsent(clazz, aClass -> new HashMap<>());
         Map<String, Field> fields = loadedDeclaredFields.get(clazz);
-
         if (fields.containsKey(fieldName)) {
             return fields.get(fieldName);
         }
-
         try {
             Field field = clazz.getDeclaredField(fieldName);
             fields.put(fieldName, field);
@@ -294,9 +278,7 @@ public class Reflection {
      * @return The field object
      */
     public static Field findField(@NotNull Class<?> clazz, Class<?> type) {
-        if (!foundFields.containsKey(clazz)) {
-            foundFields.put(clazz, new HashMap<>());
-        }
+        foundFields.computeIfAbsent(clazz, aClass -> new HashMap<>());
         Map<Class<?>, Field> fields = foundFields.get(clazz);
         if (fields.containsKey(type)) {
             return fields.get(type);

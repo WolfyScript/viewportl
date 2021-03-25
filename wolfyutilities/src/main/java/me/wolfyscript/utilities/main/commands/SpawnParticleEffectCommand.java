@@ -105,6 +105,9 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                             case 5:
                                 results.add("z");
                                 results.add(String.valueOf(player.getLocation().getZ()));
+                                break;
+                            default:
+                                return results;
                         }
                     }
                 } else {

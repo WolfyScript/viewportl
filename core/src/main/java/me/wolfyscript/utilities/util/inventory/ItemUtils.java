@@ -32,8 +32,9 @@ public class ItemUtils {
             case ELYTRA:
             case CARVED_PUMPKIN:
                 return true;
+            default:
+                return false;
         }
-        return false;
     }
 
     public static boolean isEquipable(Material material, ArmorType type) {
@@ -46,8 +47,9 @@ public class ItemUtils {
                 return material.name().endsWith("_LEGGINGS");
             case BOOTS:
                 return material.name().endsWith("_BOOTS");
+            default:
+                return false;
         }
-        return false;
     }
 
     public static boolean isTool(Material material) {
