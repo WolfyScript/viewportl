@@ -87,6 +87,8 @@ public class WolfyUtilities {
     private final BookUtil bookUtil;
     private final NMSUtil nmsUtil;
 
+    private final boolean initialize;
+
     private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass, boolean initialize) {
         this.plugin = plugin;
         if (!has(plugin)) {
@@ -101,6 +103,7 @@ public class WolfyUtilities {
         this.itemUtils = new ItemUtils(this);
         this.nmsUtil = NMSUtil.create(this);
         this.bookUtil = new BookUtil(this);
+        this.initialize = initialize;
         if (initialize) {
             initialize();
         }
@@ -263,6 +266,9 @@ public class WolfyUtilities {
      */
     public <T extends CustomCache> void setInventoryAPI(InventoryAPI<T> inventoryAPI) {
         this.inventoryAPI = inventoryAPI;
+        if (initialize) {
+            initialize();
+        }
     }
 
     /**
