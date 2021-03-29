@@ -13,6 +13,7 @@ public abstract class NMSUtil {
 
     protected BlockUtil blockUtil;
     protected ItemUtil itemUtil;
+    protected RecipeUtil recipeUtil;
     protected InventoryUtil inventoryUtil;
     protected NBTUtil nbtUtil;
 
@@ -73,5 +74,7 @@ public abstract class NMSUtil {
         return nbtUtil;
     }
 
-
+    public RecipeUtil getRecipeUtil() {
+        return recipeUtil;
+    }
 }
