@@ -86,6 +86,7 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
         this(id, new ButtonState<>(id, material, action, postAction, preRender, render));
     }
 
+    @Override
     public void init(GuiWindow<C> guiWindow) {
         state.init(guiWindow);
     }

@@ -1,9 +1,11 @@
 package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.chat.ClickData;
 import me.wolfyscript.utilities.api.inventory.gui.ChatInputAction;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
+import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonAction;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonRender;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
@@ -23,6 +25,7 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
 
     private final ChatInputAction<C> action;
     private String msg = "";
+    private boolean global = false;
     private ClickData clickData = null;
 
     public ChatInputButton(String id, ButtonState<C> buttonState, String msg, ChatInputAction<C> action) {
@@ -123,6 +126,18 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
     }
 
     @Override
+    public void init(GuiWindow<C> guiWindow) {
+        super.init(guiWindow);
+        this.global = false;
+    }
+
+    @Override
+    public void init(String clusterID, WolfyUtilities api) {
+        super.init(clusterID, api);
+        this.global = true;
+    }
+
+    @Override
     public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
         guiHandler.setChatInputAction(action);
         Chat chat = guiHandler.getApi().getChat();
@@ -136,8 +151,12 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
         } else if (clickData != null) {
             guiHandler.getApi().getChat().sendActionMessage(guiHandler.getPlayer(), clickData);
         } else {
-            if (guiHandler.getWindow() != null) {
-                chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + "." + guiHandler.getWindow().getNamespacedKey().getKey() + ".items." + getId() + ".message$");
+            if (global) {
+                chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + ".global_items." + getId() + ".message$");
+            } else {
+                if (guiHandler.getWindow() != null) {
+                    chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + "." + guiHandler.getWindow().getNamespacedKey().getKey() + ".items." + getId() + ".message$");
+                }
             }
         }
         guiHandler.close();
