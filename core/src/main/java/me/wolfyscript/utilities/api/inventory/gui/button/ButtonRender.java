@@ -6,7 +6,7 @@ import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
+import java.util.HashMap;
 
 public interface ButtonRender<C extends CustomCache> {
 
@@ -25,5 +25,5 @@ public interface ButtonRender<C extends CustomCache> {
      * @param helpEnabled  Returns true if help is enabled.
      * @return The itemStack that should be set into the GUI.
      */
-    ItemStack render(Map<String, Object> values, C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, ItemStack itemStack, int slot, boolean helpEnabled);
+    ItemStack render(HashMap<String, Object> values, C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, ItemStack itemStack, int slot, boolean helpEnabled);
 }
