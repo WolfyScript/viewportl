@@ -55,6 +55,7 @@ public class ButtonState<C extends CustomCache> {
 
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this.key = key;
+        this.clusterID = null;
         this.presetIcon = presetIcon;
         this.action = action;
         this.postAction = postAction;
@@ -168,7 +169,10 @@ public class ButtonState<C extends CustomCache> {
 
     public void init(String clusterID, WolfyUtilities api) {
         this.wolfyUtilities = api;
-        createIcon(clusterID, "");
+        if (this.clusterID == null) {
+            this.clusterID = clusterID;
+        }
+        createIcon(this.clusterID, "");
     }
 
     public void init(GuiWindow<C> window) {
