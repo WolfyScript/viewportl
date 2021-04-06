@@ -124,6 +124,7 @@ public class WUPlugin extends JavaPlugin {
         CustomItem.registerAPIReferenceParser(new VanillaRef.Parser());
         CustomItem.registerAPIReferenceParser(new WolfyUtilitiesRef.Parser());
         CustomItem.registerAPIReferenceParser(new OraxenRef.Parser());
+        CustomItem.registerAPIReferenceParser(new ItemsAdderRef.Parser());
         CustomItem.registerAPIReferenceParser(new MythicMobsRef.Parser());
         CustomItem.registerAPIReferenceParser(new MMOItemsRef.Parser());
 
