@@ -4,6 +4,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.chat.ClickData;
 import me.wolfyscript.utilities.api.inventory.gui.ChatInputAction;
+import me.wolfyscript.utilities.api.inventory.gui.ChatTabComplete;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonAction;
@@ -24,18 +25,28 @@ import java.io.IOException;
 public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
 
     private final ChatInputAction<C> action;
+    private final ChatTabComplete<C> tabComplete;
     private String msg = "";
     private boolean global = false;
     private ClickData clickData = null;
 
     public ChatInputButton(String id, ButtonState<C> buttonState, String msg, ChatInputAction<C> action) {
+        this(id, buttonState, msg, action, null);
+    }
+
+    public ChatInputButton(String id, ButtonState<C> buttonState, String msg, ChatInputAction<C> action, ChatTabComplete<C> tabComplete) {
         super(id, buttonState);
         this.action = action;
+        this.tabComplete = tabComplete;
         this.msg = msg;
     }
 
     public ChatInputButton(String id, ItemStack itemStack, String msg, ChatInputAction<C> action) {
         this(id, new ButtonState<>(id, itemStack), msg, action);
+    }
+
+    public ChatInputButton(String id, ItemStack itemStack, String msg, ChatInputAction<C> action, ChatTabComplete<C> tabComplete) {
+        this(id, new ButtonState<>(id, itemStack), msg, action, tabComplete);
     }
 
     public ChatInputButton(String id, ItemStack itemStack, ButtonAction<C> btnAction, String msg, ChatInputAction<C> action) {
@@ -51,12 +62,21 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
     }
 
     public ChatInputButton(String id, ButtonState<C> buttonState, ChatInputAction<C> action) {
+        this(id, buttonState, action, null);
+    }
+
+    public ChatInputButton(String id, ButtonState<C> buttonState, ChatInputAction<C> action, ChatTabComplete<C> tabComplete) {
         super(id, buttonState);
         this.action = action;
+        this.tabComplete = tabComplete;
     }
 
     public ChatInputButton(String id, ItemStack itemStack, ChatInputAction<C> action) {
         this(id, new ButtonState<>(id, itemStack), action);
+    }
+
+    public ChatInputButton(String id, ItemStack itemStack, ChatInputAction<C> action, ChatTabComplete<C> tabComplete) {
+        this(id, new ButtonState<>(id, itemStack), action, tabComplete);
     }
 
     public ChatInputButton(String id, ItemStack itemStack, ButtonAction<C> btnAction, ChatInputAction<C> action) {
@@ -75,6 +95,10 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
         this(id, new ButtonState<>(id, material), action);
     }
 
+    public ChatInputButton(String id, Material material, ChatInputAction<C> action, ChatTabComplete<C> tabComplete) {
+        this(id, new ButtonState<>(id, material), action, tabComplete);
+    }
+
     public ChatInputButton(String id, Material material, ButtonAction<C> btnAction, ChatInputAction<C> action) {
         this(id, new ButtonState<>(id, material, btnAction), action);
     }
@@ -88,8 +112,13 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
     }
 
     public ChatInputButton(String id, ButtonState<C> buttonState, ClickData clickData, ChatInputAction<C> action) {
+        this(id, buttonState, clickData, action, null);
+    }
+
+    public ChatInputButton(String id, ButtonState<C> buttonState, ClickData clickData, ChatInputAction<C> chatInput, ChatTabComplete<C> tabComplete) {
         super(id, buttonState);
-        this.action = action;
+        this.action = chatInput;
+        this.tabComplete = tabComplete;
         this.clickData = clickData;
     }
 
@@ -139,27 +168,27 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
 
     @Override
     public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
-        guiHandler.setChatInputAction(action);
-        Chat chat = guiHandler.getApi().getChat();
-        /*
-        WUPlugin wuPlugin = WUPlugin.getInstance();
-        InputButtonMessage message = new InputButtonMessage(getId(), "Test Message!");
-        wuPlugin.getPacketHandler().sendTo(player, message);
-         */
-        if (!msg.isEmpty()) {
-            chat.sendMessage(guiHandler.getPlayer(), msg);
-        } else if (clickData != null) {
-            guiHandler.getApi().getChat().sendActionMessage(guiHandler.getPlayer(), clickData);
-        } else {
-            if (global) {
-                chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + ".global_items." + getId() + ".message$");
+        //If the ButtonAction returns true then the ChatInput will be created.
+        if (super.execute(guiHandler, player, inventory, slot, event)) {
+            guiHandler.setChatTabComplete(tabComplete);
+            guiHandler.setChatInputAction(action);
+            Chat chat = guiHandler.getApi().getChat();
+            if (!msg.isEmpty()) {
+                chat.sendMessage(guiHandler.getPlayer(), msg);
+            } else if (clickData != null) {
+                guiHandler.getApi().getChat().sendActionMessage(guiHandler.getPlayer(), clickData);
             } else {
-                if (guiHandler.getWindow() != null) {
-                    chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + "." + guiHandler.getWindow().getNamespacedKey().getKey() + ".items." + getId() + ".message$");
+                if (global) {
+                    chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + ".global_items." + getId() + ".message$");
+                } else {
+                    if (guiHandler.getWindow() != null) {
+                        chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + "." + guiHandler.getWindow().getNamespacedKey().getKey() + ".items." + getId() + ".message$");
+                    }
                 }
             }
+            guiHandler.close();
         }
-        guiHandler.close();
-        return true;
+        //If the ButtonAction returns false then the ChatInput won't be created.
+        return true; //The click is always cancelled.
     }
 }
