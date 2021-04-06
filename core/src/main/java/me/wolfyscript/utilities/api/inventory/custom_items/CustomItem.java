@@ -80,6 +80,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      */
     private me.wolfyscript.utilities.util.NamespacedKey namespacedKey;
 
+    private final Material type;
     private final Material craftRemain;
     private boolean consumed;
     private APIReference replacement;
@@ -124,11 +125,12 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.blockPlacement = false;
         this.blockVanillaEquip = false;
         this.blockVanillaRecipes = false;
-        this.advanced = true;
+        this.advanced = false;
 
         this.consumed = true;
         this.replacement = null;
         this.durabilityCost = 0;
+        this.type = getItemStack() != null ? getItemStack().getType() : Material.AIR;
         this.craftRemain = getCraftRemain();
     }
 
@@ -288,6 +290,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
 
     public void setMetaSettings(MetaSettings metaSettings) {
         this.metaSettings = metaSettings;
+        this.advanced = metaSettings.values().parallelStream().anyMatch(meta -> !meta.getOption().equals(MetaSettings.Option.EXACT) && !meta.getOption().equals(MetaSettings.Option.IGNORE));
     }
 
     public int getBurnTime() {
@@ -397,31 +400,21 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * @return true if the ItemStack is equal to this CustomItems ItemStack
      */
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta) {
-        ItemStack currentItem = getItemStack();
-        if (otherItem == null) return false;
-        if (otherItem == currentItem) return true;
-        if (otherItem.getType().equals(currentItem.getType()) && otherItem.getAmount() >= getAmount()) {
-            if (!isAdvanced() && hasNamespacedKey()) {
-                CustomItem otherCustomItem = CustomItem.getByItemStack(otherItem);
-                if (ItemUtils.isAirOrNull(otherCustomItem) || !otherCustomItem.hasNamespacedKey()) return false;
-                return getNamespacedKey().equals(otherCustomItem.getNamespacedKey());
+        if (otherItem != null && otherItem.getType().equals(type) && otherItem.getAmount() >= getAmount()) {
+            if (hasNamespacedKey()) {
+                CustomItem other = CustomItem.getByItemStack(otherItem);
+                if ((ItemUtils.isAirOrNull(other) || !other.hasNamespacedKey()) || !getNamespacedKey().equals(other.getNamespacedKey())) {
+                    return false;
+                }
+            } else if (!getApiReference().isValidItem(otherItem)) {
+                return false;
             }
-            if (!exactMeta && !currentItem.hasItemMeta()) return true;
-            ItemBuilder customItem = new ItemBuilder(currentItem);
-            ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
-            boolean meta = getMetaSettings().check(customItemOther, customItem);
-                /*
-                ItemMeta itemMeta = customItem.getItemMeta();
-                ItemMeta itemMetaOther = customItemOther.getItemMeta();
-                itemMeta.setVersion(2580);
-                itemMetaOther.setVersion(2580);
-
-                This can be used to bypass different versions of saved and current input item.
-                However I am not sure what could happen by forcing the version to change.
-                Best way to handle this issue is to re-save all the items and the load them again. That will update them including the version number.
-                CustomCrafting handles it with "/recipes save" where all items are re-saved!
-                */
-            return meta && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
+            if ((exactMeta || hasItemMeta()) && (isAdvanced() || getApiReference() instanceof VanillaRef)) {
+                ItemBuilder customItem = new ItemBuilder(getItemStack());
+                ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
+                return getMetaSettings().check(customItemOther, customItem) && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
+            }
+            return true;
         }
         return false;
     }
