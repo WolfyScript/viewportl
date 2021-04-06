@@ -29,6 +29,8 @@ public abstract class APIReference {
      */
     public abstract ItemStack getIdItem();
 
+    public abstract boolean isValidItem(ItemStack itemStack);
+
     /**
      * The amount of the reference.
      * <p>

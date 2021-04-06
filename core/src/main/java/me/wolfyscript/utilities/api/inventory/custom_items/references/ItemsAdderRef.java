@@ -34,6 +34,12 @@ public class ItemsAdderRef extends APIReference {
     }
 
     @Override
+    public boolean isValidItem(ItemStack itemStack) {
+        CustomStack customStack = CustomStack.byItemStack(itemStack);
+        return customStack != null && Objects.equals(itemID, customStack.getNamespacedID());
+    }
+
+    @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStringField("itemsadder", itemID);
     }

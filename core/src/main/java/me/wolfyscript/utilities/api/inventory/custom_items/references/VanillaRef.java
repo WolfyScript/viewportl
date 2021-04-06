@@ -30,6 +30,11 @@ public class VanillaRef extends APIReference {
     }
 
     @Override
+    public boolean isValidItem(ItemStack itemStack) {
+        return true;
+    }
+
+    @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeFieldName("item");
         JacksonUtil.getObjectMapper().writeValue(gen, itemStack);

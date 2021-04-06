@@ -33,6 +33,15 @@ public class MMOItemsRef extends APIReference {
     }
 
     @Override
+    public boolean isValidItem(ItemStack itemStack) {
+        NBTItem nbtItem = NBTItem.get(itemStack);
+        if (nbtItem.hasType()) {
+            return Objects.equals(this.itemType, MMOItems.plugin.getTypes().get(nbtItem.getType())) && Objects.equals(this.itemName, nbtItem.getString("MMOITEMS_ITEM_ID"));
+        }
+        return false;
+    }
+
+    @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeObjectFieldStart("mmoitems");
         gen.writeStringField("type", itemType.getId());

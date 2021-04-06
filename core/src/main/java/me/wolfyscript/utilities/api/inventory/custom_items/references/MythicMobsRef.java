@@ -33,6 +33,18 @@ public class MythicMobsRef extends APIReference {
     }
 
     @Override
+    public boolean isValidItem(ItemStack itemStack) {
+        NBTItem nbtItem = WolfyUtilities.getWUCore().getNmsUtil().getNBTUtil().getItem(itemStack);
+        if (nbtItem != null && nbtItem.hasKey("MYTHIC_TYPE")) {
+            NBTBase nbtBase = nbtItem.getTag("MYTHIC_TYPE");
+            if (nbtBase instanceof NBTTagString) {
+                return Objects.equals(this.itemName, ((NBTTagString) nbtBase).asString());
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
