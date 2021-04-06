@@ -11,11 +11,11 @@ public interface ButtonPreRender<C extends CustomCache> {
 
     /**
      * This method is run before the render method and provides the previous inventory, which includes all the items of last render.
-     * <br/>
+     * <br>
      * It can be used for caching or other code that needs to be executed just before render, requires items from last render or needs to prepare data for the next render.
-     * <br/>
+     * <br>
      * For example it can be used for setting items into cache for something like item input see {@link ItemInputButton}
-     * <br/>
+     * <br>
      * .
      *
      * @param cache       The current cache of the GuiHandler

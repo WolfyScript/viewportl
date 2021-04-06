@@ -324,7 +324,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     }
 
     /**
-     * Cancels the current active ChatInputAction & ChatTabComplete.
+     * Cancels the current active ChatInputAction and ChatTabComplete.
      * After this is called no chat input will execute any actions anymore.
      */
     public void cancelChatInput() {

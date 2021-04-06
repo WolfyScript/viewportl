@@ -7,9 +7,9 @@ import org.bukkit.inventory.Inventory;
 
 /**
  * This interface extends the bukkit inventory interface and is fully compatible with bukkit.
- * <br/>
+ * <br>
  * It is also transferable over Bukkit's API like Inventory Events and player inventories.
- * <br/>
+ * <br>
  * This makes it possible to easily check which inventory updates are called from and which GuiHandlers are involved.
  *
  * @param <C> The type of {@link CustomCache}

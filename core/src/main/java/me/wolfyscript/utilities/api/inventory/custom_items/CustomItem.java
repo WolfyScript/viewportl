@@ -175,8 +175,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * This method tries to get the actual {@link CustomItem} of the {@link APIReference}!
      * </p>
      * <p>
-     * If the reference points to an actual registered CustomItem ({@link WolfyUtilitiesRef}) then that item is returned.<br/>
-     * If the reference points to any other API such as Oraxen, MMOItems, etc. it redirects to the {@link #with(APIReference)} method.<br/>
+     * If the reference points to an actual registered CustomItem ({@link WolfyUtilitiesRef}) then that item is returned.<br>
+     * If the reference points to any other API such as Oraxen, MMOItems, etc. it redirects to the {@link #with(APIReference)} method.<br>
      * </p>
      * <p>
      * <b>
@@ -376,7 +376,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     /**
      * Checks if the ItemStack is a similar to this CustomItem.
      * This method checks all the available ItemMeta on similarity and uses the meta options
-     * when they are available. <p><b>
+     * when they are available.
      * Use {@link #isSimilar(ItemStack, boolean)} to only check for Material and Amount!
      *
      * @param otherItem the ItemStack that should be checked
@@ -556,7 +556,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * Consumes the totalAmount of the input ItemStack!
      * <p>
      * The totalAmount is multiplied with the value from {@link #getAmount()} and then this amount is removed from the input.
-     * <br/>
+     * <br>
      * This method will directly edit the input ItemStack and won't return a result value.
      * </p>
      * <p>
@@ -564,15 +564,15 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * </p>
      * <p>
      * Else if the item is stackable, then there are couple of settings for the replacement.
-     * <br/>
+     * <br>
      * If the custom item has a replacement:
      *     <ul>
      *         <li><b>If location is null and inventory is not null,</b> then it will try to add the item to the inventory. When inventory is full it will try to get the location from the inventory and if valid drops the items at that location instead.</li>
      *         <li><b>If location is not null,</b> then it will drop the items at that location.</li>
      *         <li><b>If location and inventory are null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
      *     </ul>
-     * </p>
-     * <br/>
+     * <p>
+     * <br>
      *
      * @param input       The input ItemStack, that is also going to be edited.
      * @param totalAmount The amount of this custom item should be removed from the input.

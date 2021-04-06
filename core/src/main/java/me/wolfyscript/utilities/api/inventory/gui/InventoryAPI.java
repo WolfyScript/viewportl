@@ -159,9 +159,9 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
 
     /**
      * Will create a new instance of the cache.
-     * <br/>
+     * <br>
      * It's going to use the defined class from the constructor to create the cache.
-     * <br/>
+     * <br>
      * <b>The cache requires a default constructor with no params!</b>, else if the constructor doesn't exist or other errors occur it will return null.
      *
      * @return A new instance of the cache, or null if there was an error (e.g. The cache class doesn't contain a default constructor).

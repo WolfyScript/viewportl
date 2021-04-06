@@ -30,7 +30,7 @@ public class JsonConfig<T> {
     /**
      * This allows you to configure your own function to load the Object from the file.
      * The function is only called when the file exists.
-     * <br/>
+     * <br>
      * If you don't want to use a file use {@link #JsonConfig(File, Supplier)} instead.
      *
      * @param file         The file to load the config from. Must not be null!

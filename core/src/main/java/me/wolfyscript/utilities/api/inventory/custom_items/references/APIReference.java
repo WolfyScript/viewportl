@@ -37,7 +37,7 @@ public abstract class APIReference {
      *         <li>is equal or less than 0, then this method will return the amount of the {@link ItemStack#getAmount()} from {@link #getLinkedItem()}.</li>
      *         <li>is greater than 0, then this method will return the amount</li>
      *     </ul>
-     * </p>
+     * <p>
      *
      * @return The correct amount of this reference or linked item.
      */
@@ -59,7 +59,6 @@ public abstract class APIReference {
      * Used to serialize the APIReferenc Object to Json
      *
      * @param gen the initial JsonGenerator containing the custom amount field
-     * @return the initial object with the properties of this APIReference
      */
     public abstract void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException;
 

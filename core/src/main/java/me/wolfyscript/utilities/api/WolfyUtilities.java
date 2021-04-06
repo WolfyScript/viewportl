@@ -256,7 +256,7 @@ public class WolfyUtilities {
 
     /**
      * This method sets the InventoryAPI.
-     * <br/>
+     * <br>
      * Use this method to set an InventoryAPI instance, that uses a custom cache.
      *
      * @param inventoryAPI The InventoryAPI instance with it's custom cache type.
@@ -283,9 +283,9 @@ public class WolfyUtilities {
 
     /**
      * This method is used to get the InventoryAPI, that uses the type class as the cache.
-     * <br/>
+     * <br>
      * If there is no active {@link InventoryAPI} instance, then this method will create one with the specified type.
-     * <br/>
+     * <br>
      * If there is an active {@link InventoryAPI} instance, then the specified class must be an instance of the cache, else it will throw a {@link InvalidCacheTypeException}.
      *
      * @param type The class of the custom cache.
