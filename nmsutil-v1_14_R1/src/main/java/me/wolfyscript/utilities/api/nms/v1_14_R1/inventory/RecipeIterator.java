@@ -6,16 +6,40 @@ import net.minecraft.server.v1_14_R1.MinecraftServer;
 import net.minecraft.server.v1_14_R1.Recipes;
 import org.bukkit.inventory.Recipe;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 public class RecipeIterator implements Iterator<Recipe> {
 
     private final Iterator<IRecipe<?>> recipes;
 
     public RecipeIterator(RecipeType recipeType) {
-        this.recipes = MinecraftServer.getServer().getCraftingManager().recipes.get(Recipes.a(recipeType.toString().toLowerCase(Locale.ROOT))).values().iterator();
+        Recipes<?> recipesReg = getRecipes(recipeType);
+        if (recipesReg != null) {
+            this.recipes = MinecraftServer.getServer().getCraftingManager().recipes.get(recipesReg).values().iterator();
+        } else {
+            this.recipes = Collections.emptyIterator();
+        }
+    }
+
+    private Recipes<?> getRecipes(RecipeType type) {
+        switch (type) {
+            case CRAFTING:
+                return Recipes.CRAFTING;
+            case SMELTING:
+                return Recipes.SMELTING;
+            case BLASTING:
+                return Recipes.BLASTING;
+            case SMOKING:
+                return Recipes.SMOKING;
+            case CAMPFIRE_COOKING:
+                return Recipes.CAMPFIRE_COOKING;
+            case STONECUTTING:
+                return Recipes.STONECUTTING;
+            default:
+                return null;
+        }
     }
 
     public RecipeIterator(List<IRecipe<?>> recipeList) {

@@ -18,4 +18,6 @@ public class RecipeUtilImpl extends me.wolfyscript.utilities.api.nms.RecipeUtil 
     public @NotNull Iterator<Recipe> recipeIterator(RecipeType recipeType) {
         return new RecipeIterator(recipeType);
     }
+
+
 }
