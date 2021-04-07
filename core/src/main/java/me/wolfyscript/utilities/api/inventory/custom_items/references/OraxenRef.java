@@ -33,6 +33,15 @@ public class OraxenRef extends APIReference {
     }
 
     @Override
+    public boolean isValidItem(ItemStack itemStack) {
+        String itemId = OraxenItems.getIdByItem(itemStack);
+        if (itemId != null && !itemId.isEmpty()) {
+            return Objects.equals(this.itemID, itemId);
+        }
+        return false;
+    }
+
+    @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStringField("oraxen", itemID);
     }

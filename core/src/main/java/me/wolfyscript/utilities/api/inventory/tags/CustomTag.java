@@ -21,12 +21,16 @@ public class CustomTag<T extends Keyed> implements Keyed {
         return values;
     }
 
-    public void register(T value) {
+    public void add(T value) {
         values.add(value);
     }
 
     public void remove(T value) {
         values.remove(value);
+    }
+
+    public boolean contains(T value) {
+        return values.contains(value);
     }
 
     public NamespacedKey getNamespacedKey() {

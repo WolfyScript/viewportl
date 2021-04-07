@@ -81,7 +81,6 @@ public class LanguageAPI {
         return fallbackLanguage;
     }
 
-
     private JsonNode getNodeAt(String path) {
         JsonNode node = getActiveLanguage().getNodeAt(path);
         if(node.isMissingNode()){
@@ -104,14 +103,6 @@ public class LanguageAPI {
             }
         }
         return msg;
-    }
-
-    public String replaceColoredKeys(String msg){
-        return ChatColor.convert(replaceKeys(msg));
-    }
-
-    public List<String> replaceColoredKeys(List<String> msg) {
-        return replaceKeys(msg).stream().map(ChatColor::convert).collect(Collectors.toList());
     }
 
     public List<String> replaceKeys(List<String> msg) {
@@ -153,6 +144,14 @@ public class LanguageAPI {
         return Arrays.stream(msg).map(this::replaceKeys).collect(Collectors.toList());
     }
 
+    public String replaceColoredKeys(String msg) {
+        return ChatColor.convert(replaceKeys(msg));
+    }
+
+    public List<String> replaceColoredKeys(List<String> msg) {
+        return replaceKeys(msg).stream().map(ChatColor::convert).collect(Collectors.toList());
+    }
+
     /*
         Get's the List<String> from the language file for this key!
      */
@@ -162,7 +161,6 @@ public class LanguageAPI {
             JsonNode node = getNodeAt(key.replace("$", ""));
             if (node.isArray()) {
                 node.elements().forEachRemaining(n -> message.add(n.asText()));
-                //message.addAll(Streams.stream(node.elements()).map(n -> n.asText()).collect(Collectors.toSet()));
             }
         }
         return message;

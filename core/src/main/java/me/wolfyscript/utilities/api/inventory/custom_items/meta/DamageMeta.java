@@ -20,16 +20,17 @@ public class DamageMeta extends Meta {
             case EXACT:
                 return ((Damageable)metaOther).getDamage() == ((Damageable)meta).getDamage();
             case IGNORE:
-                ((Damageable)metaOther).setDamage(0);
-                ((Damageable)meta).setDamage(0);
+                ((Damageable) metaOther).setDamage(0);
+                ((Damageable) meta).setDamage(0);
                 itemOther.setItemMeta(metaOther);
                 item.setItemMeta(meta);
                 return true;
             case LOWER:
-                return ((Damageable)metaOther).getDamage() < ((Damageable)meta).getDamage();
+                return ((Damageable) metaOther).getDamage() < ((Damageable) meta).getDamage();
             case HIGHER:
-                return ((Damageable)metaOther).getDamage() > ((Damageable)meta).getDamage();
+                return ((Damageable) metaOther).getDamage() > ((Damageable) meta).getDamage();
+            default:
+                return false;
         }
-        return false;
     }
 }

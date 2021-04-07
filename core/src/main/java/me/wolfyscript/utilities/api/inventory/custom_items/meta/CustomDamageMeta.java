@@ -24,8 +24,8 @@ public class CustomDamageMeta extends Meta {
                 case IGNORE:
                     itemOther.setCustomDamage(0);
                     item.setCustomDamage(0);
-                    ((Damageable)metaOther).setDamage(0);
-                    ((Damageable)meta).setDamage(0);
+                    ((Damageable) metaOther).setDamage(0);
+                    ((Damageable) meta).setDamage(0);
                     itemOther.setItemMeta(metaOther);
                     item.setItemMeta(meta);
                     return true;
@@ -33,8 +33,9 @@ public class CustomDamageMeta extends Meta {
                     return itemOther.getCustomDamage() < item.getCustomDamage();
                 case HIGHER:
                     return itemOther.getCustomDamage() > item.getCustomDamage();
+                default:
+                    return true;
             }
-            return true;
         } else return !meta0 && !meta1;
     }
 }

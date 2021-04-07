@@ -188,9 +188,9 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
 
     /**
      * The NamespacedKey consists of the namespace and key representing this window.
-     * <br/>
+     * <br>
      * namespace: cluster key
-     * <br/>
+     * <br>
      * key: window key.
      *
      * @return The NamespacedKey of this Window, consisting of the cluster key and this window key.
@@ -249,7 +249,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     /**
-     * Opens the chat, send the player the defined message, which is set inside of the language under "inventories.<guiCluster>.global_items.<msgKey>"
+     * Opens the chat, send the player the defined message, which is set inside of the language under "inventories.&#60;guiCluster&#62;.global_items.&#60;msgKey&#62;"
      * Then it waits for the player's input.
      * When the player sends the message the inputAction method is executed.
      *
@@ -265,7 +265,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     /**
-     * Opens the chat, send the player the defined message, which is set inside of the language under "inventories.<guiCluster>.<guiWindow>.<msgKey>"
+     * Opens the chat, send the player the defined message, which is set inside of the language under "inventories.&#60;guiCluster&#62;.&#60;guiWindow&#62;.&#60;msgKey&#62;"
      * Then it waits for the player's input.
      * When the player sends the message the inputAction method is executed
      *
@@ -352,7 +352,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     /**
      * ForceSyncUpdate will make sure that no async code is executed on the GUI update
      * and will also open the Inventory one tick after the initial update request, instead of being opened after the async update.
-     * <br/>
+     * <br>
      * It should be enabled when using {@link ItemInputButton}
      * to make sure that no item could be duplicated, because of tick lag!
      *
@@ -365,7 +365,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     /**
      * ForceSyncUpdate will make sure that no async code is executed on the GUI update
      * and will also open the Inventory one tick after the initial update request, instead of being opened after the async update.
-     * <br/>
+     * <br>
      * It should be enabled when using {@link ItemInputButton}
      * to make sure that no item could be duplicated, because of tick lag!
      *

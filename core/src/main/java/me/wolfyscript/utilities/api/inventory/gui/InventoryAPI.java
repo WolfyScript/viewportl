@@ -6,7 +6,6 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -47,7 +46,6 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     /**
@@ -161,9 +159,9 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
 
     /**
      * Will create a new instance of the cache.
-     * <br/>
+     * <br>
      * It's going to use the defined class from the constructor to create the cache.
-     * <br/>
+     * <br>
      * <b>The cache requires a default constructor with no params!</b>, else if the constructor doesn't exist or other errors occur it will return null.
      *
      * @return A new instance of the cache, or null if there was an error (e.g. The cache class doesn't contain a default constructor).
@@ -217,16 +215,16 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             } else {
                 event.setCancelled(false);
                 if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
-                    int slot = event.getCurrentItem() != null ? InventoryUtils.firstSimilar(event.getView().getTopInventory(), event.getCurrentItem()) : -1;
-                    if (slot == -1) {
-                        slot = event.getView().getTopInventory().firstEmpty();
+                    for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
+                        Button<C> button = guiWindow.getButton(buttonEntry.getValue());
+                        if (button instanceof ItemInputButton) {
+                            buttons.put(buttonEntry.getKey(), button);
+                            if (executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, buttonEntry.getKey(), event)) {
+                                event.setCancelled(true);
+                                break;
+                            }
+                        }
                     }
-                    Button<C> button = guiHandler.getButton(guiWindow, slot);
-                    if (button == null) {
-                        event.setCancelled(true);
-                        return;
-                    }
-                    event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, slot, event));
                 }
             }
             if (guiHandler.openedPreviousWindow) {
@@ -290,7 +288,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             if (guiHandler.isChatEventActive()) {
                 final String message = event.getMessage();
                 //Wraps normal written message into command to be executed
-                Bukkit.getScheduler().runTask(getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wui" + ' ' + getPlugin().getName() + ' ' + event.getPlayer().getUniqueId().toString() + ' ' + message));
+                Bukkit.getScheduler().runTask(getPlugin(), () -> Bukkit.dispatchCommand(event.getPlayer(), "wui " + message));
                 event.setCancelled(true);
             }
         }

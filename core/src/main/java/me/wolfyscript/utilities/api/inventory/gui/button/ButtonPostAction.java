@@ -13,9 +13,9 @@ import java.io.IOException;
 /**
  * This interface is identical to the {@link ButtonAction}, however the behavior is different as it is similar to {@link ButtonPreRender}.
  * It is called 1 tick after the execution, right before the ButtonPreRender and only if the button was clicked!
- * <br/>
+ * <br>
  * It can be used for caching or other code that needs to be executed just before render, but only after execution happened, to prepare data for the next render.
- * <br/>
+ * <br>
  * For example it can be used for setting items into cache for something like item input see {@link ItemInputButton}
  *
  * @param <C> The type of the cache to support custom cache objects.

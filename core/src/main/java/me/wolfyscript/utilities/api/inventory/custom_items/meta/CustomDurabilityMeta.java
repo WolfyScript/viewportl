@@ -24,8 +24,8 @@ public class CustomDurabilityMeta extends Meta {
                 case IGNORE:
                     itemOther.setCustomDurability(0);
                     item.setCustomDurability(0);
-                    ((Damageable)metaOther).setDamage(0);
-                    ((Damageable)meta).setDamage(0);
+                    ((Damageable) metaOther).setDamage(0);
+                    ((Damageable) meta).setDamage(0);
                     itemOther.setItemMeta(metaOther);
                     item.setItemMeta(meta);
                     return true;
@@ -33,8 +33,9 @@ public class CustomDurabilityMeta extends Meta {
                     return itemOther.getCustomDurability() < item.getCustomDurability();
                 case HIGHER:
                     return itemOther.getCustomDurability() > item.getCustomDurability();
+                default:
+                    return true;
             }
-            return true;
         } else {
             return !meta0 && !meta1;
         }

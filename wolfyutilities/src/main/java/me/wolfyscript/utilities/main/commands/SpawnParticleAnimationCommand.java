@@ -108,6 +108,9 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
                             case 5:
                                 results.add("z");
                                 results.add(String.valueOf(player.getLocation().getZ()));
+                                break;
+                            default:
+                                return results;
                         }
                     } else if (args[0].equalsIgnoreCase("stop")) {
                         ParticleUtils.getRunningAnimations().forEach(uuid -> results.add(uuid.toString()));

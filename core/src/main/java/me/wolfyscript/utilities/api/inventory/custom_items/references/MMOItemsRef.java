@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class MMOItemsRef extends APIReference {
 
@@ -32,11 +33,34 @@ public class MMOItemsRef extends APIReference {
     }
 
     @Override
+    public boolean isValidItem(ItemStack itemStack) {
+        NBTItem nbtItem = NBTItem.get(itemStack);
+        if (nbtItem.hasType()) {
+            return Objects.equals(this.itemType, MMOItems.plugin.getTypes().get(nbtItem.getType())) && Objects.equals(this.itemName, nbtItem.getString("MMOITEMS_ITEM_ID"));
+        }
+        return false;
+    }
+
+    @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeObjectFieldStart("mmoitems");
         gen.writeStringField("type", itemType.getId());
         gen.writeStringField("name", itemName);
         gen.writeEndObject();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        MMOItemsRef that = (MMOItemsRef) o;
+        return Objects.equals(itemType, that.itemType) && Objects.equals(itemName, that.itemName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), itemType, itemName);
     }
 
     public static class Parser extends PluginParser<MMOItemsRef> {

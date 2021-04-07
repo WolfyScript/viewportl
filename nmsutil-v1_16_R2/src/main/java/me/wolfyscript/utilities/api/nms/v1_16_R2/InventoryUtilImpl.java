@@ -8,12 +8,19 @@ import me.wolfyscript.utilities.api.nms.NMSUtil;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.api.nms.v1_16_R2.inventory.util.GUIInventoryCreator;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
+import net.minecraft.server.v1_16_R2.IRecipe;
 import net.minecraft.server.v1_16_R2.Item;
+import net.minecraft.server.v1_16_R2.MinecraftServer;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_16_R2.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_16_R2.util.CraftNamespacedKey;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 
 import java.util.Locale;
+import java.util.Optional;
 
 public class InventoryUtilImpl extends InventoryUtil {
 
@@ -39,6 +46,13 @@ public class InventoryUtilImpl extends InventoryUtil {
     @Override
     public <C extends CustomCache> GUIInventory<C> createGUIInventory(GuiHandler<C> guiHandler, GuiWindow<C> window, int size, String title) {
         return GUIInventoryCreator.INSTANCE.createInventory(guiHandler, window, null, size, title);
+    }
+
+    @Override
+    public void setCurrentRecipe(Inventory inventory, NamespacedKey recipe) {
+        CraftInventory craftInventory = (CraftInventory) inventory;
+        Optional<? extends IRecipe<?>> recipeOptional = MinecraftServer.getServer().getCraftingManager().getRecipe(CraftNamespacedKey.toMinecraft(recipe));
+        craftInventory.getInventory().setCurrentRecipe(recipeOptional.orElse(null));
     }
 
     @Override

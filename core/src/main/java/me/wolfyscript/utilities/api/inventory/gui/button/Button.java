@@ -23,12 +23,12 @@ public abstract class Button<C extends CustomCache> {
     private final String id;
     private final ButtonType type;
 
-    public Button(String id, ButtonType type) {
+    protected Button(String id, ButtonType type) {
         this.id = id;
         this.type = type;
     }
 
-    public Button(String id) {
+    protected Button(String id) {
         this(id, ButtonType.NORMAL);
     }
 
@@ -55,7 +55,9 @@ public abstract class Button<C extends CustomCache> {
     protected void applyItem(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ButtonState<C> state, int slot, boolean help) {
         ItemStack item = state.getIcon();
         HashMap<String, Object> values = new HashMap<>();
-        values.put("%wolfyutilities.help%", guiHandler.getWindow().getHelpInformation());
+        if (guiHandler.getWindow() != null) {
+            values.put("%wolfyutilities.help%", guiHandler.getWindow().getHelpInformation());
+        }
         values.put("%plugin.version%", guiHandler.getApi().getPlugin().getDescription().getVersion());
         if (state.getRenderAction() != null) {
             item = state.getRenderAction().render(values, guiHandler.getCustomCache(), guiHandler, player, guiInventory, item, slot, help);
@@ -63,7 +65,7 @@ public abstract class Button<C extends CustomCache> {
         inventory.setItem(slot, replaceKeysWithValue(item, values));
     }
 
-    protected ItemStack replaceKeysWithValue(ItemStack itemStack, HashMap<String, Object> values) {
+    protected ItemStack replaceKeysWithValue(ItemStack itemStack, Map<String, Object> values) {
         if (itemStack != null) {
             ItemMeta meta = itemStack.getItemMeta();
             if (meta != null && meta.hasDisplayName()) {
@@ -75,7 +77,7 @@ public abstract class Button<C extends CustomCache> {
                         if (meta.hasLore()) {
                             for (int i = 0; i < lore.size(); i++) {
                                 if (!lore.get(i).contains(entry.getKey())) continue;
-                                lore.set(i, list.size() > 0 ? lore.get(i).replace(entry.getKey(), ChatColor.convert(String.valueOf(list.get(list.size() - 1)))) : "");
+                                lore.set(i, !list.isEmpty() ? lore.get(i).replace(entry.getKey(), ChatColor.convert(String.valueOf(list.get(list.size() - 1)))) : "");
                                 if (list.size() > 1) {
                                     for (int j = list.size() - 2; j >= 0; j--) {
                                         lore.add(i, ChatColor.convert(String.valueOf(list.get(j))));

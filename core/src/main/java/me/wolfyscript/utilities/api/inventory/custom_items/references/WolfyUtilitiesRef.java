@@ -21,6 +21,8 @@ import java.util.Objects;
 
 public class WolfyUtilitiesRef extends APIReference {
 
+    private static final org.bukkit.NamespacedKey CUSTOM_ITEM_KEY = new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
+
     private final NamespacedKey namespacedKey;
 
     public WolfyUtilitiesRef(NamespacedKey namespacedKey) {
@@ -61,6 +63,20 @@ public class WolfyUtilitiesRef extends APIReference {
     }
 
     @Override
+    public boolean isValidItem(ItemStack itemStack) {
+        if (itemStack != null) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta != null) {
+                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+                if (container.has(CUSTOM_ITEM_KEY, PersistentDataType.STRING)) {
+                    return Objects.equals(this.namespacedKey, me.wolfyscript.utilities.util.NamespacedKey.of(container.get(CUSTOM_ITEM_KEY, PersistentDataType.STRING)));
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
         if (namespacedKey != null) {
             gen.writeStringField("wolfyutilities", namespacedKey.toString());
@@ -82,8 +98,6 @@ public class WolfyUtilitiesRef extends APIReference {
     }
 
     public static class Parser extends APIReference.Parser<WolfyUtilitiesRef> {
-
-        private static final org.bukkit.NamespacedKey CUSTOM_ITEM_KEY = new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
 
         public Parser() {
             super("wolfyutilities", "item_key");

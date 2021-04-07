@@ -16,6 +16,8 @@ import java.util.Objects;
 
 public class MythicMobsRef extends APIReference {
 
+    private static final String ITEM_KEY = "MYTHIC_TYPE";
+
     private final String itemName;
 
     public MythicMobsRef(String itemName) {
@@ -33,12 +35,29 @@ public class MythicMobsRef extends APIReference {
     }
 
     @Override
+    public boolean isValidItem(ItemStack itemStack) {
+        NBTItem nbtItem = WolfyUtilities.getWUCore().getNmsUtil().getNBTUtil().getItem(itemStack);
+        if (nbtItem != null && nbtItem.hasKey(ITEM_KEY)) {
+            NBTBase nbtBase = nbtItem.getTag(ITEM_KEY);
+            if (nbtBase instanceof NBTTagString) {
+                return Objects.equals(this.itemName, ((NBTTagString) nbtBase).asString());
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MythicMobsRef)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         MythicMobsRef that = (MythicMobsRef) o;
         return Objects.equals(itemName, that.itemName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), itemName);
     }
 
     @Override
@@ -55,8 +74,8 @@ public class MythicMobsRef extends APIReference {
         @Override
         public @Nullable MythicMobsRef construct(ItemStack itemStack) {
             NBTItem nbtItem = WolfyUtilities.getWUCore().getNmsUtil().getNBTUtil().getItem(itemStack);
-            if (nbtItem != null && nbtItem.hasKey("MYTHIC_TYPE")) {
-                NBTBase nbtBase = nbtItem.getTag("MYTHIC_TYPE");
+            if (nbtItem != null && nbtItem.hasKey(ITEM_KEY)) {
+                NBTBase nbtBase = nbtItem.getTag(ITEM_KEY);
                 if (nbtBase instanceof NBTTagString) {
                     String name = ((NBTTagString) nbtBase).asString();
                     if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {

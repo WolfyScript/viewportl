@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.Material;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class contains enums for the creative menu tabs.
@@ -26,7 +26,7 @@ public enum CreativeModeTab {
 
     private static boolean register = true;
     @JsonIgnore
-    protected List<Material> materials;
+    protected Set<Material> materials;
 
     public static boolean isValid(Material material, CreativeModeTab creativeModeTab) {
         return creativeModeTab.isValid(material);
@@ -40,7 +40,7 @@ public enum CreativeModeTab {
     }
 
     CreativeModeTab() {
-        this.materials = new ArrayList<>();
+        this.materials = new HashSet<>();
     }
 
     public static void init() {
@@ -53,8 +53,12 @@ public enum CreativeModeTab {
         return materials.contains(material);
     }
 
+    public Set<Material> getMaterials() {
+        return new HashSet<>(materials);
+    }
+
     public void registerMaterial(Material material) {
-        if (register && !materials.contains(material)) {
+        if (register) {
             materials.add(material);
         }
     }

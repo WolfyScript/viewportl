@@ -80,6 +80,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      */
     private me.wolfyscript.utilities.util.NamespacedKey namespacedKey;
 
+    private final Material type;
     private final Material craftRemain;
     private boolean consumed;
     private APIReference replacement;
@@ -124,11 +125,12 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         this.blockPlacement = false;
         this.blockVanillaEquip = false;
         this.blockVanillaRecipes = false;
-        this.advanced = true;
+        this.advanced = false;
 
         this.consumed = true;
         this.replacement = null;
         this.durabilityCost = 0;
+        this.type = getItemStack() != null ? getItemStack().getType() : Material.AIR;
         this.craftRemain = getCraftRemain();
     }
 
@@ -175,8 +177,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * This method tries to get the actual {@link CustomItem} of the {@link APIReference}!
      * </p>
      * <p>
-     * If the reference points to an actual registered CustomItem ({@link WolfyUtilitiesRef}) then that item is returned.<br/>
-     * If the reference points to any other API such as Oraxen, MMOItems, etc. it redirects uses the {@link #with(APIReference)} method.<br/>
+     * If the reference points to an actual registered CustomItem ({@link WolfyUtilitiesRef}) then that item is returned.<br>
+     * If the reference points to any other API such as Oraxen, MMOItems, etc. it redirects to the {@link #with(APIReference)} method.<br>
      * </p>
      * <p>
      * <b>
@@ -223,7 +225,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * If you want to detect what plugin this ItemStack is from and use it's corresponding Reference use {@link #getReferenceByItemStack(ItemStack)} instead!
      *
      * @param itemStack
-     * @return CustomItem the ItemStack is linked, only if it is saved, else returns null
+     * @return CustomItem the ItemStack is linked to, only if it is saved, else returns null
      */
     @org.jetbrains.annotations.Nullable
     public static CustomItem getByItemStack(ItemStack itemStack) {
@@ -288,6 +290,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
 
     public void setMetaSettings(MetaSettings metaSettings) {
         this.metaSettings = metaSettings;
+        this.advanced = metaSettings.values().parallelStream().anyMatch(meta -> !meta.getOption().equals(MetaSettings.Option.EXACT) && !meta.getOption().equals(MetaSettings.Option.IGNORE));
     }
 
     public int getBurnTime() {
@@ -376,7 +379,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     /**
      * Checks if the ItemStack is a similar to this CustomItem.
      * This method checks all the available ItemMeta on similarity and uses the meta options
-     * when they are available. <p><b>
+     * when they are available.
      * Use {@link #isSimilar(ItemStack, boolean)} to only check for Material and Amount!
      *
      * @param otherItem the ItemStack that should be checked
@@ -397,31 +400,21 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * @return true if the ItemStack is equal to this CustomItems ItemStack
      */
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta) {
-        ItemStack currentItem = getItemStack();
-        if (otherItem == null) return false;
-        if (otherItem == currentItem) return true;
-        if (otherItem.getType().equals(currentItem.getType()) && otherItem.getAmount() >= getAmount()) {
-            if (!isAdvanced() && hasNamespacedKey()) {
-                CustomItem otherCustomItem = CustomItem.getByItemStack(otherItem);
-                if (ItemUtils.isAirOrNull(otherCustomItem) || !otherCustomItem.hasNamespacedKey()) return false;
-                return getNamespacedKey().equals(otherCustomItem.getNamespacedKey());
+        if (otherItem != null && otherItem.getType().equals(type) && otherItem.getAmount() >= getAmount()) {
+            if (hasNamespacedKey()) {
+                CustomItem other = CustomItem.getByItemStack(otherItem);
+                if (ItemUtils.isAirOrNull(other) || !other.hasNamespacedKey() || !getNamespacedKey().equals(other.getNamespacedKey())) {
+                    return false;
+                }
+            } else if (!getApiReference().isValidItem(otherItem)) {
+                return false;
             }
-            if (!exactMeta && !currentItem.hasItemMeta()) return true;
-            ItemBuilder customItem = new ItemBuilder(currentItem);
-            ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
-            boolean meta = getMetaSettings().check(customItemOther, customItem);
-                /*
-                ItemMeta itemMeta = customItem.getItemMeta();
-                ItemMeta itemMetaOther = customItemOther.getItemMeta();
-                itemMeta.setVersion(2580);
-                itemMetaOther.setVersion(2580);
-
-                This can be used to bypass different versions of saved and current input item.
-                However I am not sure what could happen by forcing the version to change.
-                Best way to handle this issue is to re-save all the items and the load them again. That will update them including the version number.
-                CustomCrafting handles it with "/recipes save" where all items are re-saved!
-                */
-            return meta && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
+            if ((exactMeta || hasItemMeta()) && (isAdvanced() || getApiReference() instanceof VanillaRef)) {
+                ItemBuilder customItem = new ItemBuilder(getItemStack());
+                ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
+                return getMetaSettings().check(customItemOther, customItem) && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
+            }
+            return true;
         }
         return false;
     }
@@ -556,7 +549,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * Consumes the totalAmount of the input ItemStack!
      * <p>
      * The totalAmount is multiplied with the value from {@link #getAmount()} and then this amount is removed from the input.
-     * <br/>
+     * <br>
      * This method will directly edit the input ItemStack and won't return a result value.
      * </p>
      * <p>
@@ -564,15 +557,15 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * </p>
      * <p>
      * Else if the item is stackable, then there are couple of settings for the replacement.
-     * <br/>
+     * <br>
      * If the custom item has a replacement:
      *     <ul>
      *         <li><b>If location is null and inventory is not null,</b> then it will try to add the item to the inventory. When inventory is full it will try to get the location from the inventory and if valid drops the items at that location instead.</li>
      *         <li><b>If location is not null,</b> then it will drop the items at that location.</li>
      *         <li><b>If location and inventory are null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
      *     </ul>
-     * </p>
-     * <br/>
+     * <p>
+     * <br>
      *
      * @param input       The input ItemStack, that is also going to be edited.
      * @param totalAmount The amount of this custom item should be removed from the input.
@@ -656,30 +649,29 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
 
     private Material getCraftRemain() {
         ItemStack item = getItemStack();
-        if (ItemUtils.isAirOrNull(item)) return null;
-        if (ServerVersion.isAfter(MinecraftVersions.v1_14)) {
-            if (item.getType().isItem()) {
+        if (!ItemUtils.isAirOrNull(item) && item.getType().isItem()) {
+            if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_15)) {
                 Material replaceType = item.getType().getCraftingRemainingItem();
                 if (replaceType != null) return replaceType;
             }
-        } else switch (item.getType()) {
-            case LAVA_BUCKET:
-            case MILK_BUCKET:
-            case WATER_BUCKET:
-                return Material.BUCKET;
-        }
-        switch (item.getType()) {
-            case COD_BUCKET:
-            case SALMON_BUCKET:
-            case PUFFERFISH_BUCKET:
-            case TROPICAL_FISH_BUCKET:
-                return Material.BUCKET;
-            case POTION:
-                return Material.GLASS_BOTTLE;
-            case BEETROOT_SOUP:
-            case MUSHROOM_STEW:
-            case RABBIT_STEW:
-                return Material.BOWL;
+            switch (item.getType()) {
+                case LAVA_BUCKET:
+                case MILK_BUCKET:
+                case WATER_BUCKET:
+                case COD_BUCKET:
+                case SALMON_BUCKET:
+                case PUFFERFISH_BUCKET:
+                case TROPICAL_FISH_BUCKET:
+                    return Material.BUCKET;
+                case POTION:
+                    return Material.GLASS_BOTTLE;
+                case BEETROOT_SOUP:
+                case MUSHROOM_STEW:
+                case RABBIT_STEW:
+                    return Material.BOWL;
+                default:
+                    return null;
+            }
         }
         return null;
     }

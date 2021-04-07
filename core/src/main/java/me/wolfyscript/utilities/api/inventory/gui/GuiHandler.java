@@ -25,6 +25,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     private final UUID uuid;
     private final HashMap<GuiCluster<C>, List<GuiWindow<C>>> clusterHistory = new HashMap<>();
     private ChatInputAction<C> chatInputAction = null;
+    private ChatTabComplete<C> chatTabComplete = null;
     private GuiCluster<C> cluster = null;
     private boolean isWindowOpen = false;
     private boolean helpEnabled = false;
@@ -97,7 +98,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
      */
     @Nullable
     public GuiWindow<C> getWindow(GuiCluster<C> cluster) {
-        if (clusterHistory.get(cluster) != null && clusterHistory.get(cluster).size() > 0) {
+        if (clusterHistory.get(cluster) != null && !clusterHistory.get(cluster).isEmpty()) {
             return invAPI.getGuiWindow(clusterHistory.get(cluster).get(clusterHistory.get(cluster).size() - 1).getNamespacedKey());
         }
         return null;
@@ -184,7 +185,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         }
     }
 
-    public HashMap<GuiCluster<C>, List<GuiWindow<C>>> getClusterHistory() {
+    public Map<GuiCluster<C>, List<GuiWindow<C>>> getClusterHistory() {
         return clusterHistory;
     }
 
@@ -263,7 +264,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     }
 
     /**
-     * @return If there is currently active {@link ChatInputAction}, that will be called on chat input.
+     * @return If there is currently an active {@link ChatInputAction}, that will be called on chat input.
      */
     public boolean isChatEventActive() {
         return getChatInputAction() != null;
@@ -287,11 +288,55 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     }
 
     /**
-     * Cancels the current active ChatInputAction.
+     * @return The active {@link ChatTabComplete} or null if not active.
+     */
+    @Nullable
+    public ChatTabComplete<C> getChatTabComplete() {
+        return chatTabComplete;
+    }
+
+    /**
+     * Set the {@link ChatTabComplete} to be used on the next Chat Input.
+     * Requires a {@link ChatInputAction} to be called!
+     *
+     * @param chatTabComplete The new {@link ChatTabComplete}
+     */
+    public void setChatTabComplete(ChatTabComplete<C> chatTabComplete) {
+        this.chatTabComplete = chatTabComplete;
+    }
+
+    /**
+     * @return If there is currently an active {@link ChatInputAction}, that will be used for the next chat input.
+     */
+    public boolean hasChatTabComplete() {
+        return chatTabComplete != null;
+    }
+
+    /**
+     * Sets both the {@link ChatInputAction} as well as the {@link ChatTabComplete}.
+     *
+     * @param chatInputAction The new {@link ChatInputAction}
+     * @param chatTabComplete The new {@link ChatTabComplete}
+     */
+    public void setChatInput(@Nullable ChatInputAction<C> chatInputAction, @Nullable ChatTabComplete<C> chatTabComplete) {
+        setChatInputAction(chatInputAction);
+        setChatTabComplete(chatTabComplete);
+    }
+
+    /**
+     * Cancels the current active ChatInputAction and ChatTabComplete.
      * After this is called no chat input will execute any actions anymore.
      */
+    public void cancelChatInput() {
+        setChatInput(null, null);
+    }
+
+    /**
+     * @deprecated Name is misleading with the introduction of additional ChatTabComplete
+     */
+    @Deprecated
     public void cancelChatInputAction() {
-        setChatInputAction(null);
+        cancelChatInput();
     }
 
     /**
@@ -361,7 +406,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
 
     @EventHandler
     private void onCommand(PlayerCommandPreprocessEvent event) {
-        if (!event.getMessage().startsWith("/wua")) {
+        if (!event.getMessage().startsWith("/wua") && !event.getMessage().startsWith("/wui")) {
             Player player = event.getPlayer();
             if (player.getUniqueId().equals(uuid)) {
                 if (isChatEventActive()) {

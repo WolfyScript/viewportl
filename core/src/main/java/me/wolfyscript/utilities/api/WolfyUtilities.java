@@ -13,7 +13,9 @@ import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 public class WolfyUtilities {
@@ -61,24 +63,20 @@ public class WolfyUtilities {
         return wolfyUtilitiesList.containsKey(plugin);
     }
 
-    /**
-     * Gets or create the {@link WolfyUtilities} instance for the specified plugin.
-     *
-     * @param plugin The plugin to get the instance from.
-     * @return The WolfyUtilities instance for the plugin.
-     */
-    public static WolfyUtilities get(Plugin plugin) {
-        if (!has(plugin)) {
-            new WolfyUtilities(plugin);
-        }
-        return wolfyUtilitiesList.get(plugin);
+    public static List<WolfyUtilities> getAPIList() {
+        return new ArrayList<>(wolfyUtilitiesList.values());
     }
 
-    private WolfyUtilities(Plugin plugin) {
-        this(plugin, CustomCache.class);
+    private WolfyUtilities(Plugin plugin, boolean init) {
+        this(plugin, CustomCache.class, init);
+    }
+
+    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
+        this(plugin, customCacheClass, true);
     }
 
     private final Plugin plugin;
+
     private String dataBasePrefix;
     private final ConfigAPI configAPI;
     private InventoryAPI<?> inventoryAPI;
@@ -89,7 +87,9 @@ public class WolfyUtilities {
     private final BookUtil bookUtil;
     private final NMSUtil nmsUtil;
 
-    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
+    private final boolean initialize;
+
+    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass, boolean initialize) {
         this.plugin = plugin;
         if (!has(plugin)) {
             wolfyUtilitiesList.put(plugin, this);
@@ -103,6 +103,31 @@ public class WolfyUtilities {
         this.itemUtils = new ItemUtils(this);
         this.nmsUtil = NMSUtil.create(this);
         this.bookUtil = new BookUtil(this);
+        this.initialize = initialize;
+        if (initialize) {
+            initialize();
+        }
+    }
+
+    public final void initialize() {
+        Bukkit.getPluginManager().registerEvents(this.inventoryAPI, plugin);
+    }
+
+    /**
+     * Gets or create the {@link WolfyUtilities} instance for the specified plugin.
+     *
+     * @param plugin The plugin to get the instance from.
+     * @return The WolfyUtilities instance for the plugin.
+     */
+    public static WolfyUtilities get(Plugin plugin) {
+        return get(plugin, true);
+    }
+
+    public static WolfyUtilities get(Plugin plugin, boolean init) {
+        if (!has(plugin)) {
+            new WolfyUtilities(plugin, init);
+        }
+        return wolfyUtilitiesList.get(plugin);
     }
 
     /**
@@ -230,6 +255,23 @@ public class WolfyUtilities {
     }
 
     /**
+     * This method sets the InventoryAPI.
+     * <br>
+     * Use this method to set an InventoryAPI instance, that uses a custom cache.
+     *
+     * @param inventoryAPI The InventoryAPI instance with it's custom cache type.
+     * @param <T>          The type of cache that was detected in the instance.
+     * @see CustomCache CustomCache which can be extended and used as a custom cache for your GUI.
+     * @see InventoryAPI InventoryAPI for more information about it.
+     */
+    public <T extends CustomCache> void setInventoryAPI(InventoryAPI<T> inventoryAPI) {
+        this.inventoryAPI = inventoryAPI;
+        if (initialize) {
+            initialize();
+        }
+    }
+
+    /**
      * You can use this method to get the InventoryAPI, if you don't know type of cache it uses.
      *
      * @return The {@link InventoryAPI} with unknown type.
@@ -240,24 +282,10 @@ public class WolfyUtilities {
     }
 
     /**
-     * This method sets the InventoryAPI.
-     * <br/>
-     * Use this method to set an InventoryAPI instance, that uses a custom cache.
-     *
-     * @param inventoryAPI The InventoryAPI instance with it's custom cache type.
-     * @param <T>          The type of cache that was detected in the instance.
-     * @see CustomCache CustomCache which can be extended and used as a custom cache for your GUI.
-     * @see InventoryAPI InventoryAPI for more information about it.
-     */
-    public <T extends CustomCache> void setInventoryAPI(InventoryAPI<T> inventoryAPI) {
-        this.inventoryAPI = inventoryAPI;
-    }
-
-    /**
      * This method is used to get the InventoryAPI, that uses the type class as the cache.
-     * <br/>
+     * <br>
      * If there is no active {@link InventoryAPI} instance, then this method will create one with the specified type.
-     * <br/>
+     * <br>
      * If there is an active {@link InventoryAPI} instance, then the specified class must be an instance of the cache, else it will throw a {@link InvalidCacheTypeException}.
      *
      * @param type The class of the custom cache.

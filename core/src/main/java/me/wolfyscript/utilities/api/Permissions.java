@@ -15,8 +15,8 @@ public class Permissions {
     }
 
     /**
-     * This permission key is the first key of the permission.<br/>
-     * For example <b><i>wolfyutilities.*<i/><b/>
+     * This permission key is the first key of the permission.<br>
+     * For example <b><i>wolfyutilities.*</i></b>
      *
      * @return the first permission key
      */

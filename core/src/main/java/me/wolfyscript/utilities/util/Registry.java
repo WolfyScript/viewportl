@@ -5,6 +5,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomData;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
+import me.wolfyscript.utilities.api.inventory.tags.Tags;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import org.jetbrains.annotations.NotNull;
@@ -23,11 +24,11 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
 
     /**
      * Contains {@link CustomData.Provider} that can be used in any Custom Item from the point of registration.
-     * <br/>
+     * <br>
      * You can register any CustomData you might want to add to your CustomItems and then save and load it from config too.
-     * <br/>
+     * <br>
      * It allows you to save and load custom data into a CustomItem and makes things a lot easier if you have some items that perform specific actions with the data etc.
-     * <br/>
+     * <br>
      * For example CustomCrafting registers it's own CustomData, that isn't in this core API, for it's Elite Workbenches that open up custom GUIs dependent on their CustomData.
      * And also the Recipe Book uses a CustomData object to store some data.
      */
@@ -35,6 +36,9 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     MetaRegistry META_PROVIDER = new MetaRegistry();
     ParticleRegistry PARTICLE_EFFECTS = new ParticleRegistry();
     ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry();
+
+    //Tags
+    Tags<CustomItem> ITEM_TAGS = new Tags<>();
 
     /**
      * Get the value of the registry by it's {@link NamespacedKey}
@@ -152,14 +156,14 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
 
         /**
          * Add a CustomItem to the registry or update a existing one and sets the NamespacedKey in the CustomItem object.
-         * <br/>
+         * <br>
          * If the registry already contains a value for the NamespacedKey then the value will be updated with the new one.
-         * <br/>
+         * <br>
          * <b>
          * If the CustomItem is linked with a {@link WolfyUtilitiesRef}, which NamespacedKey is the same as the passed in NamespacedKey, the CustomItem will neither be added or updated!
-         * <br/>
+         * <br>
          * This is to prevent a infinite loop where a reference tries to call itself when it tries to get the values from it's parent item.
-         * <b/>
+         * </b>
          *
          * @param namespacedKey The NamespacedKey the CustomItem will be saved under.
          * @param item          The CustomItem to add or update.
@@ -169,8 +173,8 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
             if (item == null || (item.getApiReference() instanceof WolfyUtilitiesRef && ((WolfyUtilitiesRef) item.getApiReference()).getNamespacedKey().equals(namespacedKey))) {
                 return;
             }
-            item.setNamespacedKey(namespacedKey);
             this.map.put(namespacedKey, item);
+            item.setNamespacedKey(namespacedKey);
         }
     }
 
@@ -179,8 +183,8 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
         @Override
         public void register(NamespacedKey namespacedKey, ParticleEffect value) {
             if (value != null) {
-                value.setNamespacedKey(namespacedKey);
                 super.register(namespacedKey, value);
+                value.setNamespacedKey(namespacedKey);
             }
         }
     }
@@ -190,8 +194,8 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
         @Override
         public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
             if (value != null) {
-                value.setNamespacedKey(namespacedKey);
                 super.register(namespacedKey, value);
+                value.setNamespacedKey(namespacedKey);
             }
         }
     }

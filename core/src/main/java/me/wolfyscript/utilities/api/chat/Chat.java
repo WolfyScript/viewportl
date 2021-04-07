@@ -60,10 +60,6 @@ public class Chat {
         Bukkit.getServer().getConsoleSender().sendMessage(message);
     }
 
-    public void sendConsoleWarning(String message) {
-        sendConsoleMessage("[WARN] " + message);
-    }
-
     public void sendConsoleMessage(String message, String... replacements) {
         message = CONSOLE_PREFIX + languageAPI.replaceKeys(message);
         List<String> keys = new ArrayList<>();
@@ -88,6 +84,10 @@ public class Chat {
             }
         }
         Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.convert(message));
+    }
+
+    public void sendConsoleWarning(String message) {
+        sendConsoleMessage("[WARN] " + message);
     }
 
     public void sendMessage(Player player, String message) {

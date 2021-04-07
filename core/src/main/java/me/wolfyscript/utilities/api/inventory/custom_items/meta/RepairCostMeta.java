@@ -30,6 +30,8 @@ public class RepairCostMeta extends Meta {
                     return ((Repairable) metaOther).getRepairCost() < ((Repairable) meta).getRepairCost();
                 case HIGHER:
                     return ((Repairable) metaOther).getRepairCost() > ((Repairable) meta).getRepairCost();
+                default:
+                    return true;
             }
         }
         return true;

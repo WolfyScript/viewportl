@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolfyscript.wolfyutilities</groupId>
     <artifactId>wolfyutilities-parent</artifactId>
-    <version>1.6.3.11</version>
+    <version>1.6.3.21</version>
 
     <packaging>pom</packaging>
 
@@ -39,7 +39,7 @@
         Public repo: https://maven.wolfyscript.com/repository/public/
         -->
         <repository>
-            <id>wolfyscript-admin</id>
+            <id>wolfyscript-private</id>
             <url>https://maven.wolfyscript.com/repository/private/</url>
         </repository>
     </repositories>
@@ -147,6 +147,13 @@
             <groupId>io.th0rgal</groupId>
             <artifactId>oraxen</artifactId>
             <version>1.66.2</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>dev.lone</groupId>
+            <artifactId>itemsadder</artifactId>
+            <version>2.2.10</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
