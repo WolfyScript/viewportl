@@ -403,7 +403,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
         if (otherItem != null && otherItem.getType().equals(type) && otherItem.getAmount() >= getAmount()) {
             if (hasNamespacedKey()) {
                 CustomItem other = CustomItem.getByItemStack(otherItem);
-                if ((ItemUtils.isAirOrNull(other) || !other.hasNamespacedKey()) || !getNamespacedKey().equals(other.getNamespacedKey())) {
+                if (ItemUtils.isAirOrNull(other) || !other.hasNamespacedKey() || !getNamespacedKey().equals(other.getNamespacedKey())) {
                     return false;
                 }
             } else if (!getApiReference().isValidItem(otherItem)) {
