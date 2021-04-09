@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.api.inventory.gui;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
@@ -153,6 +154,9 @@ public class GuiUpdate<C extends CustomCache> {
     private void renderButton(Button<C> button, GuiHandler<C> guiHandler, Player player, int slot, boolean help) {
         try {
             ItemStack itemStack = this.inventory.getItem(slot);
+            if (button instanceof ToggleButton) {
+                ((ToggleButton<C>) button).setState(this);
+            }
             button.preRender(guiHandler, player, this.inventory, itemStack, slot, help);
             button.render(guiHandler, player, this.inventory, this.queueInventory, itemStack, slot, guiHandler.isHelpEnabled());
         } catch (IOException e) {
