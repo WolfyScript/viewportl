@@ -3,6 +3,8 @@ package me.wolfyscript.utilities.api.nms.inventory;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 
 /**
@@ -25,4 +27,12 @@ public interface GUIInventory<C extends CustomCache> extends Inventory {
      * @return The {@link GuiHandler} that this inventory belongs to.
      */
     GuiHandler<C> getGuiHandler();
+
+    default void onClick(InventoryClickEvent event) {
+        getGuiHandler().getInvAPI().onClick(getGuiHandler(), this, event);
+    }
+
+    default void onDrag(InventoryDragEvent event) {
+        getGuiHandler().getInvAPI().onDrag(getGuiHandler(), this, event);
+    }
 }

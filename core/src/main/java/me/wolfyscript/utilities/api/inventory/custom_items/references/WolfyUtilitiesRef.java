@@ -7,6 +7,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
+import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,8 +16,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class WolfyUtilitiesRef extends APIReference {
@@ -49,17 +49,11 @@ public class WolfyUtilitiesRef extends APIReference {
         if (itemStack.getType().equals(Material.AIR)) {
             return itemStack;
         }
-        ItemStack idItem = new ItemStack(itemStack);
+        ItemBuilder idItem = new ItemBuilder(itemStack);
         if (this.namespacedKey != null) {
-            ItemMeta idItemMeta = idItem.getItemMeta();
-            List<String> lore = idItemMeta.hasLore() ? idItemMeta.getLore() : new ArrayList<>();
-            lore.add("");
-            lore.add("§7[§3wolfyutilities§r§7]");
-            lore.add("§3" + this.namespacedKey.toString());
-            idItemMeta.setLore(lore);
-            idItem.setItemMeta(idItemMeta);
+            idItem.setLore(Arrays.asList("", "§7[§3wolfyutilities§r§7]", "§3" + this.namespacedKey));
         }
-        return idItem;
+        return idItem.create();
     }
 
     @Override

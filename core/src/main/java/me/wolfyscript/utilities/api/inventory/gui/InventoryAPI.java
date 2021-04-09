@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -184,86 +183,73 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         return getGuiCluster(namespacedKey.getNamespace()).getButton(namespacedKey.getKey());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInvClick(InventoryClickEvent event) {
-        Inventory inventory = event.getInventory();
-        if (inventory instanceof GUIInventory && ((GUIInventory<?>) inventory).getGuiHandler().getInvAPI().equals(this)) {
-            GUIInventory<C> guiInventory = (GUIInventory<C>) inventory;
-            GuiHandler<C> guiHandler = guiInventory.getGuiHandler();
-            GuiWindow<C> guiWindow = guiInventory.getWindow();
-            event.setCancelled(true);
-            if (guiWindow == null) return;
-
-            HashMap<Integer, Button<C>> buttons = new HashMap<>();
-            if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+    public void onClick(GuiHandler<C> guiHandler, GUIInventory<C> inventory, InventoryClickEvent event) {
+        GuiWindow<C> guiWindow = inventory.getWindow();
+        event.setCancelled(true);
+        if (guiWindow == null) return;
+        HashMap<Integer, Button<C>> buttons = new HashMap<>();
+        if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+            for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
+                if (event.getSlot() != buttonEntry.getKey()) {
+                    Button<C> button = guiWindow.getButton(buttonEntry.getValue());
+                    if (button instanceof ItemInputButton) {
+                        buttons.put(buttonEntry.getKey(), button);
+                        event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), inventory, buttonEntry.getKey(), event));
+                    }
+                }
+            }
+        }
+        if (inventory.equals(event.getClickedInventory())) {
+            Button<C> button = guiHandler.getButton(guiWindow, event.getSlot());
+            if (button != null) {
+                buttons.put(event.getSlot(), button);
+                event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), inventory, event.getSlot(), event));
+            }
+        } else {
+            event.setCancelled(false);
+            if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                 for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
-                    if (event.getSlot() != buttonEntry.getKey()) {
-                        Button<C> button = guiWindow.getButton(buttonEntry.getValue());
-                        if (button instanceof ItemInputButton) {
-                            buttons.put(buttonEntry.getKey(), button);
-                            event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, buttonEntry.getKey(), event));
+                    Button<C> button = guiWindow.getButton(buttonEntry.getValue());
+                    if (button instanceof ItemInputButton) {
+                        buttons.put(buttonEntry.getKey(), button);
+                        if (executeButton(button, guiHandler, (Player) event.getWhoClicked(), inventory, buttonEntry.getKey(), event)) {
+                            event.setCancelled(true);
+                            break;
                         }
                     }
                 }
             }
-            if (inventory.equals(event.getClickedInventory())) {
-                Button<C> button = guiHandler.getButton(guiWindow, event.getSlot());
-                if (button != null) {
-                    buttons.put(event.getSlot(), button);
-                    event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, event.getSlot(), event));
-                }
-            } else {
-                event.setCancelled(false);
-                if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
-                    for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
-                        Button<C> button = guiWindow.getButton(buttonEntry.getValue());
-                        if (button instanceof ItemInputButton) {
-                            buttons.put(buttonEntry.getKey(), button);
-                            if (executeButton(button, guiHandler, (Player) event.getWhoClicked(), guiInventory, buttonEntry.getKey(), event)) {
-                                event.setCancelled(true);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            if (guiHandler.openedPreviousWindow) {
-                guiHandler.openedPreviousWindow = false;
-            } else if (guiHandler.getWindow() != null && guiHandler.isWindowOpen()) {
-                Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
-            }
+        }
+        if (guiHandler.openedPreviousWindow) {
+            guiHandler.openedPreviousWindow = false;
+        } else if (guiHandler.getWindow() != null && guiHandler.isWindowOpen()) {
+            Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(inventory, buttons, event));
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onItemDrag(InventoryDragEvent event) {
-        Inventory inventory = event.getInventory();
-        if (inventory instanceof GUIInventory && ((GUIInventory<?>) inventory).getGuiHandler().getInvAPI().equals(this)) {
-            GUIInventory<C> guiInventory = (GUIInventory<C>) inventory;
-            GuiHandler<C> guiHandler = guiInventory.getGuiHandler();
-            if (event.getRawSlots().parallelStream().anyMatch(rawSlot -> !Objects.equals(event.getView().getInventory(rawSlot), inventory))) {
-                event.setCancelled(true);
-                return;
+    public void onDrag(GuiHandler<C> guiHandler, GUIInventory<C> inventory, InventoryDragEvent event) {
+        if (event.getRawSlots().parallelStream().anyMatch(rawSlot -> !Objects.equals(event.getView().getInventory(rawSlot), inventory))) {
+            event.setCancelled(true);
+            return;
+        }
+        GuiWindow<C> guiWindow = guiHandler.getWindow();
+        if (guiWindow != null) {
+            HashMap<Integer, Button<C>> buttons = new HashMap<>();
+            for (int slot : event.getInventorySlots()) {
+                Button<C> button = guiHandler.getButton(guiWindow, slot);
+                if (button == null) {
+                    event.setCancelled(true);
+                    return;
+                }
+                buttons.put(slot, button);
             }
-            GuiWindow<C> guiWindow = guiHandler.getWindow();
-            if (guiWindow != null) {
-                HashMap<Integer, Button<C>> buttons = new HashMap<>();
-                for (int slot : event.getInventorySlots()) {
-                    Button<C> button = guiHandler.getButton(guiWindow, slot);
-                    if (button == null) {
-                        event.setCancelled(true);
-                        return;
-                    }
-                    buttons.put(slot, button);
-                }
-                for (Map.Entry<Integer, Button<C>> button : buttons.entrySet()) {
-                    event.setCancelled(executeButton(button.getValue(), guiHandler, (Player) event.getWhoClicked(), guiInventory, button.getKey(), event));
-                }
-                if (guiHandler.openedPreviousWindow) {
-                    guiHandler.openedPreviousWindow = false;
-                } else if (guiHandler.getWindow() != null) {
-                    Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(guiInventory, buttons, event));
-                }
+            for (Map.Entry<Integer, Button<C>> button : buttons.entrySet()) {
+                event.setCancelled(executeButton(button.getValue(), guiHandler, (Player) event.getWhoClicked(), inventory, button.getKey(), event));
+            }
+            if (guiHandler.openedPreviousWindow) {
+                guiHandler.openedPreviousWindow = false;
+            } else if (guiHandler.getWindow() != null) {
+                Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(inventory, buttons, event));
             }
         }
     }
