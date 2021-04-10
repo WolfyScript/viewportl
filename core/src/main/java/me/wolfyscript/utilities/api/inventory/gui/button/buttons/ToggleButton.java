@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
-import me.wolfyscript.utilities.api.inventory.gui.GuiUpdate;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.function.Function;
 
 /**
  * This Button toggles between two states and executes the corresponding action!
@@ -32,33 +30,27 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
 
     private final Pair<ButtonState<C>, ButtonState<C>> states;
     private final boolean defaultState;
-    private final Function<GuiUpdate<C>, Boolean> stateFunction;
+    private final StateFunction<C> stateFunction;
     private final HashMap<GuiHandler<C>, Boolean> settings;
 
-    public ToggleButton(String id, boolean defaultState, @Nullable Function<GuiUpdate<C>, Boolean> stateFunction, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
+    public ToggleButton(String id, boolean defaultState, @Nullable ToggleButton.StateFunction<C> stateFunction, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
         super(id, ButtonType.TOGGLE);
         this.defaultState = defaultState;
         states = new Pair<>(state, state2);
         settings = new HashMap<>();
-        this.stateFunction = stateFunction;
+        this.stateFunction = stateFunction == null ? (cache, guiHandler, player, inventory, slot) -> settings.getOrDefault(guiHandler, defaultState) : stateFunction;
     }
 
     public ToggleButton(String id, boolean defaultState, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
         this(id, defaultState, null, state, state2);
     }
 
-    public ToggleButton(String id, @Nullable Function<GuiUpdate<C>, Boolean> stateFunction, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
+    public ToggleButton(String id, @Nullable ToggleButton.StateFunction<C> stateFunction, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
         this(id, false, stateFunction, state, state2);
     }
 
     public ToggleButton(String id, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
         this(id, false, null, state, state2);
-    }
-
-    public void setState(GuiUpdate<C> update) {
-        if (stateFunction != null) {
-            setState(update.getGuiHandler(), stateFunction.apply(update));
-        }
     }
 
     public void setState(GuiHandler<C> guiHandler, boolean enabled) {
@@ -94,14 +86,32 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public void preRender(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, boolean help) {
-        ButtonState<C> state = settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue();
-        if (state.getPrepareRender() != null) {
-            state.getPrepareRender().prepare(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, help);
+        boolean state = stateFunction.run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot);
+        settings.put(guiHandler, state);
+        ButtonState<C> buttonState = state ? states.getKey() : states.getValue();
+        if (buttonState.getPrepareRender() != null) {
+            buttonState.getPrepareRender().prepare(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, help);
         }
     }
 
     @Override
     public void render(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
         applyItem(guiHandler, player, guiInventory, inventory, settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue(), slot, help);
+    }
+
+    public interface StateFunction<C extends CustomCache> {
+
+        /**
+         * Used to set the state for the {@link ToggleButton} depending on data from the cache or player, etc.
+         *
+         * @param cache      The current cache of the GuiHandler
+         * @param guiHandler The current GuiHandler.
+         * @param player     The current Player.
+         * @param inventory  The original/previous inventory. No changes to this inventory will be applied on render!
+         * @param slot       The slot in which the button is rendered.
+         * @return a boolean indicating the state of the button.
+         */
+        boolean run(C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot);
+
     }
 }

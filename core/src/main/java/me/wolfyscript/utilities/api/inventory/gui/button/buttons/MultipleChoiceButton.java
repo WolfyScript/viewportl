@@ -22,18 +22,25 @@ import java.util.List;
 public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
 
     private final List<ButtonState<C>> states;
+    private final StateFunction<C> stateFunction;
     private final HashMap<GuiHandler<C>, Integer> settings;
 
     /*
-    This Button goes through ech of the States.
-    Each click the index increases by 1.
+    This Button goes through each of the States.
+    Each click the index increases by 1 and it goes to the next State.
     After the index reached the size of the States it is reset to 0!
      */
     @SafeVarargs
-    public MultipleChoiceButton(String id, @Nonnull ButtonState<C>... states) {
+    public MultipleChoiceButton(String id, StateFunction<C> stateFunction, @Nonnull ButtonState<C>... states) {
         super(id, ButtonType.CHOICES);
         this.states = Arrays.asList(states);
         settings = new HashMap<>();
+        this.stateFunction = stateFunction == null ? (cache, guiHandler, player, inventory, slot) -> settings.getOrDefault(guiHandler, 0) : stateFunction;
+    }
+
+    @SafeVarargs
+    public MultipleChoiceButton(String id, @Nonnull ButtonState<C>... states) {
+        this(id, null, states);
     }
 
     @Override
@@ -79,11 +86,9 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public void preRender(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, boolean help) {
-        int setting = settings.getOrDefault(guiHandler, 0);
-        if (states != null && states.size() > setting) {
-            if (states.get(setting).getPrepareRender() != null) {
-                states.get(setting).getPrepareRender().prepare(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, help);
-            }
+        int setting = stateFunction.run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot);
+        if (states != null && states.size() > setting && states.get(setting).getPrepareRender() != null) {
+            states.get(setting).getPrepareRender().prepare(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, help);
         }
     }
 
@@ -97,5 +102,21 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
 
     public void setState(GuiHandler<C> guiHandler, int state) {
         this.settings.put(guiHandler, state);
+    }
+
+    public interface StateFunction<C extends CustomCache> {
+
+        /**
+         * Used to set the state for the {@link MultipleChoiceButton} depending on data from the cache or player, etc.
+         *
+         * @param cache      The current cache of the GuiHandler
+         * @param guiHandler The current GuiHandler.
+         * @param player     The current Player.
+         * @param inventory  The original/previous inventory. No changes to this inventory will be applied on render!
+         * @param slot       The slot in which the button is rendered.
+         * @return a int indicating the state of the button.
+         */
+        int run(C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot);
+
     }
 }
