@@ -11,12 +11,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * ButtonState represents the state an Button can be in.
- * It contains the ItemStack and language keys required to render the correct Item.
+ * ButtonState represents the state of a Button.
+ * <br>
+ * It contains the ItemStack and language keys required to render the Item in the inventory.
  * <p>
- * The rendering can be manipulated using the render method that returns the ItemStack that will be rendered.
+ * The rendering can be manipulated using the {@link ButtonRender} method that returns the ItemStack that will be rendered.
  * <p>
- * To execute code on a Button click you need to use the action method, which is called each time the button is clicked.
+ * To execute code on a Button click you need to use the {@link ButtonAction} method, which is called each time the button is clicked.
+ *
+ * @param <C> The type of the {@link CustomCache}
  */
 public class ButtonState<C extends CustomCache> {
 

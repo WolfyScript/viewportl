@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.IOException;
 
 /**
- *
+ * @param <C> The type of the {@link CustomCache}
  */
 public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
 

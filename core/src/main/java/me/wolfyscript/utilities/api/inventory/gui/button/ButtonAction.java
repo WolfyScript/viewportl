@@ -9,7 +9,7 @@ import org.bukkit.event.inventory.InventoryInteractEvent;
 import java.io.IOException;
 
 /**
- * @param <C> The type of the cache to support custom cache objects.
+ * @param <C> The type of the {@link CustomCache}
  */
 public interface ButtonAction<C extends CustomCache> {
 

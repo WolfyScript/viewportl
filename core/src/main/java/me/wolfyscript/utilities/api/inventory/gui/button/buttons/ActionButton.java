@@ -28,6 +28,7 @@ import java.io.IOException;
  * If the ButtonState requires another key (e.g. when using global item names from lang file) you need to create an ButtonState instance and use
  * {@link ActionButton#ActionButton(String, ButtonState)}
  *
+ * @param <C> The type of the {@link CustomCache}
  */
 public class ActionButton<C extends CustomCache> extends Button<C> {
 

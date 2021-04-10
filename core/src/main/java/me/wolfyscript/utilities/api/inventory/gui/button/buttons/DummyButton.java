@@ -14,11 +14,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 
+/**
+ * This Button acts as a dummy, it will not run the action, even if you set one for the ButtonState!
+ *
+ * @param <C> The type of the {@link CustomCache}
+ */
 public class DummyButton<C extends CustomCache> extends ActionButton<C> {
-
-    /*
-    This Button acts as a dummy, it will not run the action, even if you set one for the ButtonState!
-     */
 
     public DummyButton(String id, ButtonState<C> state) {
         super(id, ButtonType.DUMMY, state);
@@ -36,28 +37,44 @@ public class DummyButton<C extends CustomCache> extends ActionButton<C> {
         this(id, new ButtonState<>(id, material));
     }
 
-    public DummyButton(String id, ItemStack itemStack, ButtonAction<C> action) {
-        this(id, itemStack, action, null);
-    }
-
     public DummyButton(String id, ItemStack itemStack, ButtonRender<C> render) {
-        this(id, itemStack, null, render);
-    }
-
-    public DummyButton(String id, ItemStack itemStack, ButtonAction<C> action, ButtonRender<C> render) {
-        this(id, new ButtonState<>(id, itemStack, action, render));
-    }
-
-    public DummyButton(String id, Material material, ButtonAction<C> action) {
-        this(id, material, action, null);
+        this(id, new ButtonState<>(id, itemStack, render));
     }
 
     public DummyButton(String id, Material material, ButtonRender<C> render) {
-        this(id, material, null, render);
+        this(id, new ButtonState<>(id, material, render));
     }
 
+    /**
+     * @deprecated no need to use this... it can't execute the action anyways!
+     */
+    @Deprecated
+    public DummyButton(String id, ItemStack itemStack, ButtonAction<C> action) {
+        this(id, itemStack);
+    }
+
+    /**
+     * @deprecated no need to use this... it can't execute the action anyways!
+     */
+    @Deprecated
+    public DummyButton(String id, ItemStack itemStack, ButtonAction<C> action, ButtonRender<C> render) {
+        this(id, new ButtonState<>(id, itemStack, render));
+    }
+
+    /**
+     * @deprecated no need to use this... it can't execute the action anyways!
+     */
+    @Deprecated
+    public DummyButton(String id, Material material, ButtonAction<C> action) {
+        this(id, material);
+    }
+
+    /**
+     * @deprecated no need to use this... it can't execute the action anyways!
+     */
+    @Deprecated
     public DummyButton(String id, Material material, ButtonAction<C> action, ButtonRender<C> render) {
-        this(id, new ItemStack(material), action, render);
+        this(id, new ItemStack(material), render);
     }
 
     public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {

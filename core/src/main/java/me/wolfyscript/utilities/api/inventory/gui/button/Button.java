@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @param <C> The type of the {@link CustomCache}
+ */
 public abstract class Button<C extends CustomCache> {
 
     private final String id;

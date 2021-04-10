@@ -24,7 +24,7 @@ import java.util.HashMap;
  * The actions are not allowed to be null!
  * You can add a empty action, but then you should consider using a normal Button!
  *
- * @param <C> The type of the CustomCache
+ * @param <C> The type of the {@link CustomCache}
  */
 public class ToggleButton<C extends CustomCache> extends Button<C> {
 

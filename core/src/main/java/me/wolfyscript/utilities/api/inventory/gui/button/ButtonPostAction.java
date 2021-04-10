@@ -18,7 +18,7 @@ import java.io.IOException;
  * <br>
  * For example it can be used for setting items into cache for something like item input see {@link ItemInputButton}
  *
- * @param <C> The type of the cache to support custom cache objects.
+ * @param <C> The type of the {@link CustomCache}
  */
 public interface ButtonPostAction<C extends CustomCache> {
 

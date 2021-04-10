@@ -21,7 +21,7 @@ import java.util.Map;
  * This Button acts as a container for Items.
  * It saves the placed in item and can also execute an action on each click.
  *
- * @param <C>
+ * @param <C> The type of the {@link CustomCache}
  */
 public class ItemInputButton<C extends CustomCache> extends ActionButton<C> {
 

@@ -24,7 +24,7 @@ import java.util.List;
  * Each click the index increases by 1 and it goes to the next State.
  * After the index reached the size of the States it is reset to 0 and the first state is selected.
  *
- * @param <C> The type of the CustomCache
+ * @param <C> The type of the {@link CustomCache}
  */
 public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
 
