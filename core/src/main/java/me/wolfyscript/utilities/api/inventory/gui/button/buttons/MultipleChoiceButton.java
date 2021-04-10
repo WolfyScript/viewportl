@@ -19,16 +19,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This Button goes through each of the States.
+ * Each click the index increases by 1 and it goes to the next State.
+ * After the index reached the size of the States it is reset to 0 and the first state is selected.
+ *
+ * @param <C> The type of the CustomCache
+ */
 public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
 
     private final List<ButtonState<C>> states;
     private final StateFunction<C> stateFunction;
     private final HashMap<GuiHandler<C>, Integer> settings;
 
-    /*
-    This Button goes through each of the States.
-    Each click the index increases by 1 and it goes to the next State.
-    After the index reached the size of the States it is reset to 0!
+    /**
+     * @param id            The id of the Button
+     * @param stateFunction The {@link StateFunction} to set the state of the Button depending on the player, cached data, etc.
+     * @param states        The {@link ButtonState}s that this Button will cycle through.
      */
     @SafeVarargs
     public MultipleChoiceButton(String id, StateFunction<C> stateFunction, @Nonnull ButtonState<C>... states) {
@@ -38,6 +45,10 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
         this.stateFunction = stateFunction == null ? (cache, guiHandler, player, inventory, slot) -> settings.getOrDefault(guiHandler, 0) : stateFunction;
     }
 
+    /**
+     * @param id     The id of the Button
+     * @param states The {@link ButtonState}s that this Button will cycle through.
+     */
     @SafeVarargs
     public MultipleChoiceButton(String id, @Nonnull ButtonState<C>... states) {
         this(id, null, states);

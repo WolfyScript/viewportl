@@ -24,7 +24,7 @@ import java.util.HashMap;
  * The actions are not allowed to be null!
  * You can add a empty action, but then you should consider using a normal Button!
  *
- * @param <C>
+ * @param <C> The type of the CustomCache
  */
 public class ToggleButton<C extends CustomCache> extends Button<C> {
 
@@ -33,6 +33,13 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
     private final StateFunction<C> stateFunction;
     private final HashMap<GuiHandler<C>, Boolean> settings;
 
+    /**
+     * @param id            The id of the Button
+     * @param defaultState  The state to use when the Button is first rendered and haven't been clicked before.
+     * @param stateFunction The {@link StateFunction} to set the state of the Button depending on the player, cached data, etc.
+     * @param state         The {@link ButtonState} that is rendered if the state is true.
+     * @param state2        The {@link ButtonState} that is rendered if the state is false.
+     */
     public ToggleButton(String id, boolean defaultState, @Nullable ToggleButton.StateFunction<C> stateFunction, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
         super(id, ButtonType.TOGGLE);
         this.defaultState = defaultState;
@@ -41,14 +48,31 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
         this.stateFunction = stateFunction == null ? (cache, guiHandler, player, inventory, slot) -> settings.getOrDefault(guiHandler, defaultState) : stateFunction;
     }
 
+    /**
+     * @param id           The id of the Button
+     * @param defaultState The state to use when the Button is first rendered and haven't been clicked before.
+     * @param state        The {@link ButtonState} that is rendered if the state is true.
+     * @param state2       The {@link ButtonState} that is rendered if the state is false.
+     */
     public ToggleButton(String id, boolean defaultState, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
         this(id, defaultState, null, state, state2);
     }
 
+    /**
+     * @param id            The id of the Button
+     * @param stateFunction The {@link StateFunction} to set the state of the Button depending on the player, cached data, etc.
+     * @param state         The {@link ButtonState} that is rendered if the state is true.
+     * @param state2        The {@link ButtonState} that is rendered if the state is false.
+     */
     public ToggleButton(String id, @Nullable ToggleButton.StateFunction<C> stateFunction, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
         this(id, false, stateFunction, state, state2);
     }
 
+    /**
+     * @param id     The id of the Button
+     * @param state  The {@link ButtonState} that is rendered if the state is true.
+     * @param state2 The {@link ButtonState} that is rendered if the state is false.
+     */
     public ToggleButton(String id, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
         this(id, false, null, state, state2);
     }

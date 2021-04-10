@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 
 /**
- * Button that executes the action method and renders the item as set in the render method of the ButtonState.
+ * Button that executes the action method and renders the item manipulated via the render method of the ButtonState.
  *
  * action - these methods are executed when the button is clicked.
  *
