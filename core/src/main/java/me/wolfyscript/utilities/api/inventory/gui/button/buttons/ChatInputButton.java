@@ -176,10 +176,8 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
             } else {
                 if (global) {
                     chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + ".global_items." + getId() + ".message$");
-                } else {
-                    if (guiHandler.getWindow() != null) {
-                        chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + "." + guiHandler.getWindow().getNamespacedKey().getKey() + ".items." + getId() + ".message$");
-                    }
+                } else if (guiHandler.getWindow() != null) {
+                    chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + "." + guiHandler.getWindow().getNamespacedKey().getKey() + ".items." + getId() + ".message$");
                 }
             }
             guiHandler.close();

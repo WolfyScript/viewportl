@@ -263,9 +263,10 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         }
     }
 
-    /*
-    Checks if the player sending the message has active chat events. If he has, it's executed!
-    It cancels the event and parses the message into the /wui command.
+    /**
+     * Checks if the player sending the message has active chat events. If he has, it's executed!
+     * It cancels the event and passes the message into the /wui command.
+     * <strong>It is recommended to use the /wui command instead of typing directly into the chat.</ strong>
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPreChat(AsyncPlayerChatEvent event) {

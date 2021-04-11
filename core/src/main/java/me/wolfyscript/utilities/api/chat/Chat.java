@@ -22,9 +22,8 @@ public class Chat {
 
     public static final Map<UUID, PlayerAction> CLICK_DATA_MAP = new HashMap<>();
 
-    private String CONSOLE_PREFIX;
-    private String IN_GAME_PREFIX;
-
+    private String consolePrefix;
+    private String inGamePrefix;
 
     private final WolfyUtilities wolfyUtilities;
     private final LanguageAPI languageAPI;
@@ -34,34 +33,54 @@ public class Chat {
         this.wolfyUtilities = wolfyUtilities;
         this.languageAPI = wolfyUtilities.getLanguageAPI();
         this.plugin = wolfyUtilities.getPlugin();
-        this.CONSOLE_PREFIX = "[" + plugin.getName() + "]";
-        this.IN_GAME_PREFIX = this.CONSOLE_PREFIX;
+        this.consolePrefix = "[" + plugin.getName() + "]";
+        this.inGamePrefix = this.consolePrefix;
     }
 
+    public String getConsolePrefix() {
+        return consolePrefix;
+    }
+
+    public void setConsolePrefix(String consolePrefix) {
+        this.consolePrefix = consolePrefix;
+    }
+
+    public String getInGamePrefix() {
+        return inGamePrefix;
+    }
+
+    public void setInGamePrefix(String inGamePrefix) {
+        this.inGamePrefix = inGamePrefix;
+    }
+
+    @Deprecated
     public String getIN_GAME_PREFIX() {
-        return IN_GAME_PREFIX;
+        return inGamePrefix;
     }
 
-    public void setCONSOLE_PREFIX(String CONSOLE_PREFIX) {
-        this.CONSOLE_PREFIX = CONSOLE_PREFIX;
+    @Deprecated
+    public void setIN_GAME_PREFIX(String inGamePrefix) {
+        this.inGamePrefix = inGamePrefix;
     }
 
-    public void setIN_GAME_PREFIX(String IN_GAME_PREFIX) {
-        this.IN_GAME_PREFIX = IN_GAME_PREFIX;
-    }
-
+    @Deprecated
     public String getCONSOLE_PREFIX() {
-        return CONSOLE_PREFIX;
+        return consolePrefix;
+    }
+
+    @Deprecated
+    public void setCONSOLE_PREFIX(String consolePrefix) {
+        this.consolePrefix = consolePrefix;
     }
 
     public void sendConsoleMessage(String message) {
-        message = CONSOLE_PREFIX + languageAPI.replaceKeys(message);
+        message = consolePrefix + languageAPI.replaceKeys(message);
         message = org.bukkit.ChatColor.translateAlternateColorCodes('&', message);
         Bukkit.getServer().getConsoleSender().sendMessage(message);
     }
 
     public void sendConsoleMessage(String message, String... replacements) {
-        message = CONSOLE_PREFIX + languageAPI.replaceKeys(message);
+        message = consolePrefix + languageAPI.replaceKeys(message);
         List<String> keys = new ArrayList<>();
         Pattern pattern = Pattern.compile("%([A-Z]*?)(_*?)%");
         Matcher matcher = pattern.matcher(message);
@@ -76,7 +95,7 @@ public class Chat {
 
     public void sendConsoleMessage(String message, String[]... replacements) {
         if (replacements != null) {
-            message = IN_GAME_PREFIX + languageAPI.replaceColoredKeys(message);
+            message = inGamePrefix + languageAPI.replaceColoredKeys(message);
             for (String[] replace : replacements) {
                 if (replace.length > 1) {
                     message = message.replaceAll(replace[0], replace[1]);
@@ -92,14 +111,14 @@ public class Chat {
 
     public void sendMessage(Player player, String message) {
         if (player != null) {
-            player.sendMessage(ChatColor.convert(IN_GAME_PREFIX + languageAPI.replaceKeys(message)));
+            player.sendMessage(ChatColor.convert(inGamePrefix + languageAPI.replaceKeys(message)));
         }
     }
 
     public void sendMessages(Player player, String... messages) {
         if (player != null) {
             for (String message : messages) {
-                player.sendMessage(ChatColor.convert(IN_GAME_PREFIX + languageAPI.replaceKeys(message)));
+                player.sendMessage(ChatColor.convert(inGamePrefix + languageAPI.replaceKeys(message)));
             }
         }
     }
@@ -108,7 +127,7 @@ public class Chat {
     public final void sendMessage(Player player, String message, Pair<String, String>... replacements) {
         if (player == null) return;
         if (replacements != null) {
-            message = IN_GAME_PREFIX + languageAPI.replaceColoredKeys(message);
+            message = inGamePrefix + languageAPI.replaceColoredKeys(message);
             for (Pair<String, String> pair : replacements) {
                 message = message.replaceAll(pair.getKey(), pair.getValue());
             }
@@ -142,7 +161,7 @@ public class Chat {
     }
 
     public void sendActionMessage(Player player, ClickData... clickData) {
-        TextComponent[] textComponents = getActionMessage(IN_GAME_PREFIX, player, clickData);
+        TextComponent[] textComponents = getActionMessage(inGamePrefix, player, clickData);
         player.spigot().sendMessage(textComponents);
     }
 
@@ -159,7 +178,7 @@ public class Chat {
                 }
                 PlayerAction playerAction = new PlayerAction(wolfyUtilities, player, data);
                 CLICK_DATA_MAP.put(id, playerAction);
-                component.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/wua " + id.toString()));
+                component.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/wua " + id));
             }
             for (ChatEvent<?, ?> chatEvent : data.getChatEvents()) {
                 if (chatEvent instanceof HoverEvent) {
@@ -175,7 +194,7 @@ public class Chat {
 
     public void sendDebugMessage(String message) {
         if (wolfyUtilities.hasDebuggingMode()) {
-            String prefix = org.bukkit.ChatColor.translateAlternateColorCodes('&', this.IN_GAME_PREFIX);
+            String prefix = org.bukkit.ChatColor.translateAlternateColorCodes('&', this.inGamePrefix);
             message = org.bukkit.ChatColor.translateAlternateColorCodes('&', message);
             if (message.length() > 70) {
                 int count = message.length() / 70;
