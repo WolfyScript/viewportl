@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.inventory.gui.button;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
@@ -35,9 +36,32 @@ public abstract class Button<C extends CustomCache> {
         this(id, ButtonType.NORMAL);
     }
 
+    /**
+     * Called when registered locally inside the {@link GuiWindow#onInit()}.
+     *
+     * @param guiWindow The {@link GuiWindow} this button is registered in.
+     */
     public abstract void init(GuiWindow<C> guiWindow);
 
-    public abstract void init(String clusterID, WolfyUtilities api);
+    /**
+     * Called when registered globally inside the {@link GuiCluster#onInit()}
+     *
+     * @param guiCluster The {@link GuiCluster} this button is registered in.
+     */
+    public void init(GuiCluster<C> guiCluster) {
+        init(guiCluster.getId(), guiCluster.getWolfyUtilities());
+    }
+
+    /**
+     * Called when registered globally inside the {@link GuiCluster#onInit()}
+     *
+     * @param clusterID The ID of the Cluster this button is registered in.
+     * @param api       The {@link WolfyUtilities} instance this button is linked to.
+     * @deprecated This method is replaced with {@link #init(GuiCluster)} and soon will be removed!
+     */
+    @Deprecated
+    public void init(String clusterID, WolfyUtilities api) {
+    }
 
     public abstract boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException;
 

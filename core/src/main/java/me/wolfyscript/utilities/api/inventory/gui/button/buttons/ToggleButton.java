@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
@@ -88,9 +88,10 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
     }
 
     @Override
-    public void init(String windowKey, WolfyUtilities api) {
-        states.getKey().init(windowKey, api);
-        states.getValue().init(windowKey, api);
+    public void init(GuiCluster<C> guiCluster) {
+        super.init(guiCluster);
+        states.getKey().init(guiCluster);
+        states.getValue().init(guiCluster);
     }
 
     @Override

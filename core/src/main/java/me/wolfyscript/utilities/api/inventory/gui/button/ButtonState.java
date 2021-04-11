@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.inventory.gui.button;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -169,11 +170,18 @@ public class ButtonState<C extends CustomCache> {
     }
 
     //------------------------------------------------
-
+    @Deprecated
     public void init(String clusterID, WolfyUtilities api) {
-        this.wolfyUtilities = api;
+        //Nothing!
+    }
+
+    public void init(GuiCluster<C> cluster) {
+        //For backwards compatibility!
+        init(cluster.getId(), cluster.getWolfyUtilities());
+
+        this.wolfyUtilities = cluster.getWolfyUtilities();
         if (this.clusterID == null) {
-            this.clusterID = clusterID;
+            this.clusterID = cluster.getId();
         }
         createIcon(this.clusterID, "");
     }

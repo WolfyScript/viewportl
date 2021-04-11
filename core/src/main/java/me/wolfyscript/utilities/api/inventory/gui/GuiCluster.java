@@ -17,7 +17,7 @@ public abstract class GuiCluster<C extends CustomCache> {
 
     private NamespacedKey entry;
 
-    public GuiCluster(InventoryAPI<C> inventoryAPI, String id) {
+    protected GuiCluster(InventoryAPI<C> inventoryAPI, String id) {
         this.inventoryAPI = inventoryAPI;
         this.wolfyUtilities = inventoryAPI.getWolfyUtilities();
         this.id = id;
@@ -40,7 +40,7 @@ public abstract class GuiCluster<C extends CustomCache> {
     }
 
     protected void registerButton(Button<C> button) {
-        button.init(id, wolfyUtilities);
+        button.init(this);
         buttons.putIfAbsent(button.getId(), button);
     }
 
@@ -58,6 +58,13 @@ public abstract class GuiCluster<C extends CustomCache> {
 
     public GuiWindow<C> getGuiWindow(String id) {
         return guiWindows.get(id);
+    }
+
+    /**
+     * @return The {@link WolfyUtilities} this cluster belongs to.
+     */
+    public WolfyUtilities getWolfyUtilities() {
+        return wolfyUtilities;
     }
 
     void setId(String id) {

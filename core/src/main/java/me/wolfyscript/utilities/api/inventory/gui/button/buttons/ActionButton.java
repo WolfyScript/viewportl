@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiUpdate;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
@@ -93,8 +93,9 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
     }
 
     @Override
-    public void init(String clusterID, WolfyUtilities api) {
-        state.init(clusterID, api);
+    public void init(GuiCluster<C> guiCluster) {
+        super.init(guiCluster);
+        state.init(guiCluster);
     }
 
     @Override
