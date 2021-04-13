@@ -30,8 +30,7 @@ public class WorldUtils {
      */
     public static void save() {
         WolfyUtilities.getWUPlugin().getLogger().info("Save stored Custom Items");
-        try {
-            FileOutputStream fos = new FileOutputStream(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store");
+        try (FileOutputStream fos = new FileOutputStream(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store")) {
             GZIPOutputStream gzip = new GZIPOutputStream(fos);
             JacksonUtil.getObjectWriter(false).writeValue(gzip, worldCustomItemStore);
             gzip.flush();
@@ -48,8 +47,7 @@ public class WorldUtils {
         WolfyUtilities.getWUPlugin().getLogger().info("Loading stored Custom Items");
         File file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store");
         if (file.exists()) {
-            try {
-                FileInputStream fin = new FileInputStream(file);
+            try (FileInputStream fin = new FileInputStream(file)) {
                 GZIPInputStream gzip = new GZIPInputStream(fin);
                 worldCustomItemStore = JacksonUtil.getObjectMapper().readValue(gzip, WorldCustomItemStore.class);
                 gzip.close();
@@ -69,24 +67,16 @@ public class WorldUtils {
         File file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "stored_block_items.dat");
         worldCustomItemStore = new WorldCustomItemStore();
         if (file.exists()) {
-            FileInputStream fis;
-            try {
-                fis = new FileInputStream(file);
-                BukkitObjectInputStream ois = new BukkitObjectInputStream(fis);
-                try {
-                    Object object = ois.readObject();
-                    HashMap<String, String> loadMap = (HashMap<String, String>) object;
-                    loadMap.forEach((key, value) -> {
-                        Location location = stringToLocation(key);
-                        if (location != null) {
-                            worldCustomItemStore.setStore(location, new BlockCustomItemStore(NamespacedKey.of(value), null));
-                        }
-                    });
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-                ois.close();
-            } catch (IOException e) {
+            try (FileInputStream fis = new FileInputStream(file); BukkitObjectInputStream ois = new BukkitObjectInputStream(fis)) {
+                Object object = ois.readObject();
+                HashMap<String, String> loadMap = (HashMap<String, String>) object;
+                loadMap.forEach((key, value) -> {
+                    Location location = stringToLocation(key);
+                    if (location != null) {
+                        worldCustomItemStore.setStore(location, new BlockCustomItemStore(NamespacedKey.of(value), null));
+                    }
+                });
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
