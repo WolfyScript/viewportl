@@ -10,18 +10,18 @@ This API is the core that powers all of my plugins like CustomCrafting, ArmorSta
 
 - **InventoryAPI** to create and manage in-game GUIs.
 - **ConfigAPI** to easily manage _YAML_ and _JSON_ configs.
-- **LanguageAPI** to languages files and support multiple languages for GUIs, messages, etc.!
+- **LanguageAPI** to load languages and support multiple languages for GUIs, messages, etc.!
 - **ChatAPI** to send translatable messages, make clickable text execute code, and more.
 - **NMS API** including a fully featured **NBTTag API**, custom **RecipeIterator**, and some block and Inventory Utils.
 - **CustomItems** allow creating custom items with special settings.
 
 #### and Utils:
 
-- **Serialize/Deserialize ItemStacks** via Base64
-- Basic **Reflection** Utils
+- **Serialize/Deserialize ItemStacks** via Base64.
+- Basic **Reflection** Utils.
 - **Player Head** utils to set textures and more.
-- Basic **MySQL** connection to run queries.
-- ItemBuilder to edit/create ItemStacks
+- Basic **MySQL** connection to run queries and updates.
+- ItemBuilder to edit/create ItemStacks.
 - Save player specific data.
 
 The API is build with customization in mind, so that you can register a lot of your own settings, data, CustomItems into
@@ -102,7 +102,7 @@ public class YourPlugin extends JavaPlugin {
         //Get the LanguageAPI of the api
         LanguageAPI languageAPI = this.api.getLanguageAPI();
         //Create the language
-        Language fallBackLanguage = new Language(customCrafting, "en_US");
+        Language fallBackLanguage = new Language(this, "en_US");
         //Register the language. The first registered language will be automatically be used as the fallback and active language.
         languageAPI.registerLanguage(fallBackLanguage);
         
@@ -110,7 +110,7 @@ public class YourPlugin extends JavaPlugin {
         //- Optionally load another active language. -
         saveResource("lang/de_DE.json", true);
         //Optionally you can register another active language.
-        Language language = new Language(customCrafting, "de_DE");
+        Language language = new Language(this, "de_DE");
         languageAPI.registerLanguage(language);
         //Just requires to set the active language manually.
         languageAPI.setActiveLanguage(language);
@@ -119,5 +119,5 @@ public class YourPlugin extends JavaPlugin {
 }
 ```
 
-More coming soon™
+###### More coming soon™
 
