@@ -1,22 +1,32 @@
-### WolfyUtilities
-###### _by WolfyScript_
-##
-This API is the core that powers all of my plugins (right now only CustomCrafting).
+<div align="center">
+  <img src="docs/wu_banner.png" alt="WolfyUtilities Banner" />
+</div>
 
-##### WolfyUtilities contains a lot of useful APIs, such as:
-- **InventoryAPI** to create in-game GUIs
-- **ConfigAPI** to easily manage your configs needs. It supports _YAML_ and _JSON_
-- **LanguageAPI** that allows you to connect your plugin to a language file and support multiple languages for GUIs,
-  messages, etc.!
+## WolfyUtilities
 
-##### and Utils:
+This API is the core that powers all of my plugins like CustomCrafting, ArmorStandTool, and possible future ones.
 
-- Easily send **chat messages** to players which can _execute code_ on click.
+#### WolfyUtilities contains a lot of useful APIs, such as:
+
+- **InventoryAPI** to create and manage in-game GUIs.
+- **ConfigAPI** to easily manage _YAML_ and _JSON_ configs.
+- **LanguageAPI** to languages files and support multiple languages for GUIs, messages, etc.!
+- **ChatAPI** to send translatable messages, make clickable text execute code, and more.
+- **NMS API** including a fully featured **NBTTag API**, custom **RecipeIterator**, and some block and Inventory Utils.
+- **CustomItems** allow creating custom items with special settings.
+
+#### and Utils:
+
 - **Serialize/Deserialize ItemStacks** via Base64
 - Basic **Reflection** Utils
-- **Skull texture** utils
-- Basic **MySQL** connection (WIP)
-- ItemBuilder class (WIP)
+- **Player Head** utils to set textures and more.
+- Basic **MySQL** connection to run queries.
+- ItemBuilder to edit/create ItemStacks
+- Save player specific data.
+
+The API is build with customization in mind, so that you can register a lot of your own settings, data, CustomItems into
+the Registry and share it across plugins.  
+It constantly receives updates to improve, fix issues, and make it as easy as possible to use.
 
 # Getting started
 
