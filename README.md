@@ -91,38 +91,5 @@ public class YourPlugin extends JavaPlugin {
 
 ```
 
-The most important part to start using GUIs and literally anything else is to set up a language to use.<br>
-Language Files are loaded from the `YourPlugin/lang` directory.<br>
-You can load and set two languages at once: one active language, and one fallback language.
-
-```java
-import me.wolfyscript.utilities.api.language.Language;
-import me.wolfyscript.utilities.api.language.LanguageAPI;
-
-public class YourPlugin extends JavaPlugin {
-    
-    public void loadLang(){
-        //Save the language file resource to the plugin folder.
-        saveResource("lang/en_US.json", true);
-        //Get the LanguageAPI of the api
-        LanguageAPI languageAPI = this.api.getLanguageAPI();
-        //Create the language
-        Language fallBackLanguage = new Language(this, "en_US");
-        //Register the language. The first registered language will be automatically be used as the fallback and active language.
-        languageAPI.registerLanguage(fallBackLanguage);
-        
-        
-        //- Optionally load another active language. -
-        saveResource("lang/de_DE.json", true);
-        //Optionally you can register another active language.
-        Language language = new Language(this, "de_DE");
-        languageAPI.registerLanguage(language);
-        //Just requires to set the active language manually.
-        languageAPI.setActiveLanguage(language);
-    }
-    
-}
-```
-
-###### More coming soon™
-
+More info about the API can be found in the [Wiki](https://github.com/WolfyScript/WolfyUtilities/wiki).
+<br>
