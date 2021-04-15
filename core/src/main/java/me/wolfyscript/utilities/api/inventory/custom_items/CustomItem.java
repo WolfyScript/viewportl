@@ -409,7 +409,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
             } else if (!getApiReference().isValidItem(otherItem)) {
                 return false;
             }
-            if ((exactMeta || hasItemMeta()) && (isAdvanced() || getApiReference() instanceof VanillaRef)) {
+            if ((exactMeta || hasItemMeta()) && (isAdvanced() || (getApiReference() instanceof VanillaRef && !hasNamespacedKey()))) {
                 ItemBuilder customItem = new ItemBuilder(getItemStack());
                 ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
                 return getMetaSettings().check(customItemOther, customItem) && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());

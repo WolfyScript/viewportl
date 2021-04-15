@@ -7,7 +7,6 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
-import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -16,7 +15,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class WolfyUtilitiesRef extends APIReference {
@@ -45,15 +43,8 @@ public class WolfyUtilitiesRef extends APIReference {
 
     @Override
     public ItemStack getIdItem() {
-        ItemStack itemStack = Registry.CUSTOM_ITEMS.get(namespacedKey).create();
-        if (itemStack.getType().equals(Material.AIR)) {
-            return itemStack;
-        }
-        ItemBuilder idItem = new ItemBuilder(itemStack);
-        if (this.namespacedKey != null) {
-            idItem.setLore(Arrays.asList("", "§7[§3wolfyutilities§r§7]", "§3" + this.namespacedKey));
-        }
-        return idItem.create();
+        ItemStack itemStack = getLinkedItem();
+        return itemStack == null ? new ItemStack(Material.AIR) : itemStack;
     }
 
     @Override
