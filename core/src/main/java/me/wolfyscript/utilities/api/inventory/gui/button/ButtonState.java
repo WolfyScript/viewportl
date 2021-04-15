@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.inventory.gui.button;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -11,12 +12,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * ButtonState represents the state an Button can be in.
- * It contains the ItemStack and language keys required to render the correct Item.
+ * ButtonState represents the state of a Button.
+ * <br>
+ * It contains the ItemStack and language keys required to render the Item in the inventory.
  * <p>
- * The rendering can be manipulated using the render method that returns the ItemStack that will be rendered.
+ * The rendering can be manipulated using the {@link ButtonRender} method that returns the ItemStack that will be rendered.
  * <p>
- * To execute code on a Button click you need to use the action method, which is called each time the button is clicked.
+ * To execute code on a Button click you need to use the {@link ButtonAction} method, which is called each time the button is clicked.
+ *
+ * @param <C> The type of the {@link CustomCache}
  */
 public class ButtonState<C extends CustomCache> {
 
@@ -166,11 +170,18 @@ public class ButtonState<C extends CustomCache> {
     }
 
     //------------------------------------------------
-
+    @Deprecated
     public void init(String clusterID, WolfyUtilities api) {
-        this.wolfyUtilities = api;
+        //Nothing!
+    }
+
+    public void init(GuiCluster<C> cluster) {
+        //For backwards compatibility!
+        init(cluster.getId(), cluster.getWolfyUtilities());
+
+        this.wolfyUtilities = cluster.getWolfyUtilities();
         if (this.clusterID == null) {
-            this.clusterID = clusterID;
+            this.clusterID = cluster.getId();
         }
         createIcon(this.clusterID, "");
     }

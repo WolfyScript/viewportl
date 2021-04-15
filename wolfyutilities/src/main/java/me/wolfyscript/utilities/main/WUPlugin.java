@@ -19,6 +19,7 @@ import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
 import me.wolfyscript.utilities.main.listeners.BlockListener;
 import me.wolfyscript.utilities.main.listeners.EquipListener;
+import me.wolfyscript.utilities.main.listeners.GUIInventoryListener;
 import me.wolfyscript.utilities.main.listeners.PlayerListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
@@ -176,6 +177,7 @@ public class WUPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new EquipListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+        Bukkit.getPluginManager().registerEvents(new GUIInventoryListener(), this);
     }
 
     private void registerCommands() {

@@ -53,7 +53,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param key     The key for this window. This must be comply with the {@link NamespacedKey} key pattern!
      * @param size    The size of the window. Must be a multiple of 9 and less or equal to 54.
      */
-    public GuiWindow(GuiCluster<C> cluster, String key, int size) {
+    protected GuiWindow(GuiCluster<C> cluster, String key, int size) {
         this(cluster, key, size, false);
     }
 
@@ -63,7 +63,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param size            The size of the window. Must be a multiple of 9 and less or equal to 54.
      * @param forceSyncUpdate If the window should only allow sync code and no async code.
      */
-    public GuiWindow(GuiCluster<C> cluster, String key, int size, boolean forceSyncUpdate) {
+    protected GuiWindow(GuiCluster<C> cluster, String key, int size, boolean forceSyncUpdate) {
         this(cluster, key, null, size, forceSyncUpdate);
     }
 
@@ -72,7 +72,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param key           The key for this window. This must be comply with the {@link NamespacedKey} key pattern!
      * @param inventoryType The type of the window.
      */
-    public GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType) {
+    protected GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType) {
         this(cluster, key, inventoryType, false);
     }
 
@@ -82,7 +82,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param inventoryType   The type of the window.
      * @param forceSyncUpdate If the window should only allow sync code and no async code.
      */
-    public GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType, boolean forceSyncUpdate) {
+    protected GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType, boolean forceSyncUpdate) {
         this(cluster, key, inventoryType, 0, forceSyncUpdate);
     }
 
@@ -94,6 +94,13 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         this.size = size;
         this.forceSyncUpdate = forceSyncUpdate;
         Bukkit.getPluginManager().registerEvents(this, wolfyUtilities.getPlugin());
+    }
+
+    /**
+     * @return The {@link WolfyUtilities} that this window belongs to.
+     */
+    public WolfyUtilities getWolfyUtilities() {
+        return wolfyUtilities;
     }
 
     /**

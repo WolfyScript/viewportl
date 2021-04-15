@@ -7,6 +7,9 @@ import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * @param <C> The type of the {@link CustomCache}
+ */
 public interface ButtonPreRender<C extends CustomCache> {
 
     /**

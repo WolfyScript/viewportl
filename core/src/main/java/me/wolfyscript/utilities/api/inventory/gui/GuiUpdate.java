@@ -17,6 +17,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 /**
+ * Contains all the data that is used in {@link GuiWindow} updates like {@link GuiWindow#onUpdateAsync(GuiUpdate)} or {@link GuiWindow#onUpdateSync(GuiUpdate)}.
+ * <br>
+ * It is used to render the GUI inventory and place Buttons into place.
+ *
  * @param <C> The type of the {@link CustomCache}.
  */
 public class GuiUpdate<C extends CustomCache> {
@@ -82,6 +86,8 @@ public class GuiUpdate<C extends CustomCache> {
 
     /**
      * Set an locally registered Button from the current {@link GuiWindow}.
+     * <br><br>
+     * <strong>It is recommended to save IDs of Buttons as constants in their corresponding {@link GuiWindow} to prevent magic values!</strong>
      *
      * @param slot The slot the Button should be rendered in.
      * @param id   The id of the Button.
@@ -95,20 +101,9 @@ public class GuiUpdate<C extends CustomCache> {
     }
 
     /**
-     * Directly render a Button into a specific slot.
-     *
-     * @param slot   The slot the button should be rendered in.
-     * @param button The {@link Button} that should be rendered.
-     */
-    public void setButton(int slot, @Nonnull Button<C> button) {
-        if (button != null) {
-            guiHandler.setButton(guiWindow, slot, button.getId());
-            renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
-        }
-    }
-
-    /**
-     * Set a globally Button registered in the {@link GuiCluster}.
+     * Set a globally Button registered in a {@link GuiCluster}.
+     * <br><br>
+     * <strong>It is recommended to save {@link NamespacedKey}s of Buttons as constants in their corresponding {@link GuiCluster} to prevent magic values!</strong>
      *
      * @param slot          The slot the Button should be rendered in.
      * @param namespacedKey The NamespacedKey of the button. The namespace is the cluster key and the key is the button id.
@@ -127,9 +122,24 @@ public class GuiUpdate<C extends CustomCache> {
      * @param slot       The slot the Button should be rendered in.
      * @param clusterKey The cluster key.
      * @param buttonId   The button id.
+     * @deprecated You can easily do mistakes using this method. It is recommended to use constants in your {@link GuiCluster} to save the {@link NamespacedKey}s and use {@link #setButton(int, NamespacedKey)} instead!
      */
+    @Deprecated
     public void setButton(int slot, String clusterKey, String buttonId) {
         setButton(slot, new NamespacedKey(clusterKey, buttonId));
+    }
+
+    /**
+     * Directly render a Button into a specific slot.
+     *
+     * @param slot   The slot the button should be rendered in.
+     * @param button The {@link Button} that should be rendered.
+     */
+    public void setButton(int slot, @Nonnull Button<C> button) {
+        if (button != null) {
+            guiHandler.setButton(guiWindow, slot, button.getId());
+            renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
+        }
     }
 
     /**

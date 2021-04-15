@@ -1,12 +1,8 @@
 package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.chat.ClickData;
-import me.wolfyscript.utilities.api.inventory.gui.ChatInputAction;
-import me.wolfyscript.utilities.api.inventory.gui.ChatTabComplete;
-import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
-import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
+import me.wolfyscript.utilities.api.inventory.gui.*;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonAction;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonRender;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
@@ -20,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.IOException;
 
 /**
- *
+ * @param <C> The type of the {@link CustomCache}
  */
 public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
 
@@ -161,8 +157,8 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
     }
 
     @Override
-    public void init(String clusterID, WolfyUtilities api) {
-        super.init(clusterID, api);
+    public void init(GuiCluster<C> guiCluster) {
+        super.init(guiCluster);
         this.global = true;
     }
 
@@ -180,10 +176,8 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
             } else {
                 if (global) {
                     chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + ".global_items." + getId() + ".message$");
-                } else {
-                    if (guiHandler.getWindow() != null) {
-                        chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + "." + guiHandler.getWindow().getNamespacedKey().getKey() + ".items." + getId() + ".message$");
-                    }
+                } else if (guiHandler.getWindow() != null) {
+                    chat.sendMessage(player, "$inventories." + guiHandler.getCluster().getId() + "." + guiHandler.getWindow().getNamespacedKey().getKey() + ".items." + getId() + ".message$");
                 }
             }
             guiHandler.close();

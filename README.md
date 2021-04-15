@@ -1,23 +1,95 @@
+<div align="center">
+  <img src="docs/wu_banner.png" alt="WolfyUtilities Banner" />
+</div>
+
 ## WolfyUtilities
+![bstats_server](https://img.shields.io/bstats/servers/5114)
+![spigot_down](https://img.shields.io/spiget/downloads/64124)
+![spigot_stars](https://img.shields.io/spiget/stars/64124)
+![github_commit](https://img.shields.io/github/last-commit/WolfyScript/WolfyUtilities)
+![lines_code](https://img.shields.io/tokei/lines/github/WolfyScript/WolfyUtilities)
 
-![bStats Servers](https://img.shields.io/bstats/servers/5114)
-![Spiget Downloads](https://img.shields.io/spiget/downloads/64124)
-![Spiget Stars](https://img.shields.io/spiget/stars/64124)
+This API is the core that powers all of my plugins like CustomCrafting, ArmorStandTool, and possible future ones.
 
-![GitHub last commit](https://img.shields.io/github/last-commit/WolfyScript/WolfyUtilities)
-![Lines of code](https://img.shields.io/tokei/lines/github/WolfyScript/WolfyUtilities)
+#### WolfyUtilities contains a lot of useful APIs, such as:
 
-WolfyUtilities provides a vast amount of utils, apis for use in other Spigot plugins.
-It allows you to create advanced **in-game GUIs** with tons of customization options.
-Additionally it integrates a **Language API** to easily support multiple languages for the GUIs chat messages and more.
+- **InventoryAPI** to create and manage in-game GUIs.
+- **ConfigAPI** to easily manage _YAML_ and _JSON_ configs.
+- **LanguageAPI** to load languages and support multiple languages for GUIs, messages, etc.!
+- **ChatAPI** to send translatable messages, make clickable text execute code, and more.
+- **NMS API** including a fully featured **NBTTag API**, custom **RecipeIterator**, and some block and Inventory Utils.
+- **CustomItems** allow creating custom items with special settings.
 
-Other than that there are many other Utils and APIs that make steps in development of plugins easier.
-For example, 
-- a **Config API** to easily manage your configs. It supports YAML and JSON (The JacksonUtil makes it easy to use the Jackson library),
-- **NMS API** to easily edit NBTTags of ItemsStacks and no need to use reflection,
-- **Chat API** to send messages to players, console and also easily execute code on chat clicks,
-- tons of Utils for ItemStacks and ItemBuilder,
-- Database support for MySQL,
-- and a lot more. 
+#### and Utils:
 
-Note: There is no documentation on how to use API yet, but it is planned for the near future.
+- **Serialize/Deserialize ItemStacks** via Base64.
+- Basic **Reflection** Utils.
+- **Player Head** utils to set textures and more.
+- Basic **MySQL** connection to run queries and updates.
+- ItemBuilder to edit/create ItemStacks.
+- Save player specific data.
+
+The API is build with customization in mind, so that you can register a lot of your own settings, data, CustomItems into
+the Registry and share it across plugins.  
+It constantly receives updates to improve, fix issues, and make it as easy as possible to use.
+
+# Getting started
+
+You can get the API from the public maven repo:
+
+```xml
+<repositories>
+    <repository>
+        <id>wolfyscript-public</id>
+        <url>https://maven.wolfyscript.com/repository/public/</url>
+    </repository>
+</repositories>
+```
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.wolfyscript.wolfyutilities</groupId>
+        <artifactId>wolfyutilities</artifactId>
+        <version>1.6.3.22</version>
+    </dependency>
+</dependencies>
+```
+
+To start using it you need to create an API instance for your plugin.<br>
+It's best to initiate it in your constructor, so you don't mistakenly change the instance of the api.
+(And we are able to use some options of the API **onLoad()**)
+
+```java
+import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.chat.Chat;
+
+public class YourPlugin extends JavaPlugin {
+    
+    private final WolfyUtilities api;
+
+    public YourPlugin() {
+        super();
+        //Create the instance for your plugin. We don't want to initialize the events yet (so set it to false)!
+        api = WolfyUtilities.get(this, false);
+        this.chat = api.getChat();
+        //We should set our prefixes for the chat and console.
+        this.chat.setInGamePrefix("§7[§3CC§7] ");
+        this.chat.setConsolePrefix("§7[§3CC§7] ");
+        
+        //Optionally you can set a custom cache object to save custom data for your GUI. (More detail soon)
+        api.setInventoryAPI(new InventoryAPI<>(api.getPlugin(), api, CCCache.class));
+    }
+
+    @Override
+    public void onEnable() {
+        //Once the plugin is enabled we can initialize the events!
+        this.api.initialize();
+    }
+    
+}
+
+```
+
+More info about the API can be found in the [Wiki](https://github.com/WolfyScript/WolfyUtilities/wiki).
+<br>

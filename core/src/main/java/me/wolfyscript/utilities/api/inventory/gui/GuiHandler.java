@@ -8,16 +8,27 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * This object is used to store all relevant data for the Player using the GUI.
+ * <br>
+ * It stores the:
+ * - cache,
+ * - the current {@link GuiCluster},
+ * - the GUI history,
+ * - possible active {@link ChatInputAction} and {@link ChatTabComplete},
+ * - and other necessary data.
+ * <br>
+ *
+ * @param <C>
+ */
 public class GuiHandler<C extends CustomCache> implements Listener {
 
     private final WolfyUtilities api;
@@ -389,30 +400,26 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         return guiWindow.getButton(id);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onClose(InventoryCloseEvent event) {
-        Inventory bukkitInventory = event.getInventory();
-        if (bukkitInventory instanceof GUIInventory && ((GUIInventory<?>) bukkitInventory).getGuiHandler().equals(this)) {
-            GUIInventory<C> guiInventory = (GUIInventory<C>) bukkitInventory;
-            if (!clusterHistory.isEmpty() && !switchWindow) {
-                if (guiInventory.getWindow().onClose(this, guiInventory, event.getView())) {
-                    this.openCluster();
-                } else {
-                    this.isWindowOpen = false;
-                }
+    /**
+     * Called when the inventory is closed.
+     *
+     * @param guiInventory The {@link GUIInventory} that is closed.
+     * @param event        The {@link InventoryCloseEvent} that caused this action.
+     */
+    public void onClose(GUIInventory<C> guiInventory, InventoryCloseEvent event) {
+        if (!clusterHistory.isEmpty() && !switchWindow) {
+            if (guiInventory.getWindow().onClose(this, guiInventory, event.getView())) {
+                this.openCluster();
+            } else {
+                this.isWindowOpen = false;
             }
         }
     }
 
     @EventHandler
     private void onCommand(PlayerCommandPreprocessEvent event) {
-        if (!event.getMessage().startsWith("/wua") && !event.getMessage().startsWith("/wui")) {
-            Player player = event.getPlayer();
-            if (player.getUniqueId().equals(uuid)) {
-                if (isChatEventActive()) {
-                    cancelChatInputAction();
-                }
-            }
+        if (!event.getMessage().startsWith("/wua") && !event.getMessage().startsWith("/wui") && event.getPlayer().getUniqueId().equals(uuid) && isChatEventActive()) {
+            cancelChatInput();
         }
     }
 }

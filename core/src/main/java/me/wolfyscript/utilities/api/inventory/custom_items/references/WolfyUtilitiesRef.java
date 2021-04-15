@@ -15,8 +15,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class WolfyUtilitiesRef extends APIReference {
@@ -45,21 +43,8 @@ public class WolfyUtilitiesRef extends APIReference {
 
     @Override
     public ItemStack getIdItem() {
-        ItemStack itemStack = Registry.CUSTOM_ITEMS.get(namespacedKey).create();
-        if (itemStack.getType().equals(Material.AIR)) {
-            return itemStack;
-        }
-        ItemStack idItem = new ItemStack(itemStack);
-        if (this.namespacedKey != null) {
-            ItemMeta idItemMeta = idItem.getItemMeta();
-            List<String> lore = idItemMeta.hasLore() ? idItemMeta.getLore() : new ArrayList<>();
-            lore.add("");
-            lore.add("§7[§3wolfyutilities§r§7]");
-            lore.add("§3" + this.namespacedKey.toString());
-            idItemMeta.setLore(lore);
-            idItem.setItemMeta(idItemMeta);
-        }
-        return idItem;
+        ItemStack itemStack = getLinkedItem();
+        return itemStack == null ? new ItemStack(Material.AIR) : itemStack;
     }
 
     @Override

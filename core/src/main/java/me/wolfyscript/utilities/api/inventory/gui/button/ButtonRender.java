@@ -8,6 +8,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 
+/**
+ * @param <C> The type of the {@link CustomCache}
+ */
 public interface ButtonRender<C extends CustomCache> {
 
     /**

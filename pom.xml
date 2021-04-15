@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolfyscript.wolfyutilities</groupId>
     <artifactId>wolfyutilities-parent</artifactId>
-    <version>1.6.3.21</version>
+    <version>1.6.3.23</version>
 
     <packaging>pom</packaging>
 
@@ -94,13 +94,13 @@
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
-            <version>7.1.0-SNAPSHOT</version>
+            <version>7.2.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.1-SNAPSHOT</version>
+            <version>7.0.5-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

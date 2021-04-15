@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiUpdate;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 
 /**
- * Button that executes the action method and renders the item as set in the render method of the ButtonState.
+ * Button that executes the action method and renders the item manipulated via the render method of the ButtonState.
  *
  * action - these methods are executed when the button is clicked.
  *
@@ -28,6 +28,7 @@ import java.io.IOException;
  * If the ButtonState requires another key (e.g. when using global item names from lang file) you need to create an ButtonState instance and use
  * {@link ActionButton#ActionButton(String, ButtonState)}
  *
+ * @param <C> The type of the {@link CustomCache}
  */
 public class ActionButton<C extends CustomCache> extends Button<C> {
 
@@ -92,8 +93,9 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
     }
 
     @Override
-    public void init(String clusterID, WolfyUtilities api) {
-        state.init(clusterID, api);
+    public void init(GuiCluster<C> guiCluster) {
+        super.init(guiCluster);
+        state.init(guiCluster);
     }
 
     @Override

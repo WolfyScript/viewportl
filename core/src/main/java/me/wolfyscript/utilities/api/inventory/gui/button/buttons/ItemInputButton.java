@@ -15,16 +15,17 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * This Button acts as a container for Items.
+ * It saves the placed in item and can also execute an action on each click.
+ *
+ * @param <C> The type of the {@link CustomCache}
+ */
 public class ItemInputButton<C extends CustomCache> extends ActionButton<C> {
 
-    private final HashMap<GuiHandler<C>, ItemStack> content;
-
-    /*
-    This Button acts as a container for Items.
-    It saves the placed in item and can also execute
-    an action on each click.
-     */
+    private final Map<GuiHandler<C>, ItemStack> content;
 
     public ItemInputButton(String id, ButtonState<C> state) {
         super(id, ButtonType.ITEM_SLOT, state);
