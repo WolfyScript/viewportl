@@ -3,6 +3,11 @@
 </div>
 
 ## WolfyUtilities
+![bstats_server](https://img.shields.io/bstats/servers/5114)
+![spigot_down](https://img.shields.io/spiget/downloads/64124)
+![spigot_stars](https://img.shields.io/spiget/stars/64124)
+![github_commit](https://img.shields.io/github/last-commit/WolfyScript/WolfyUtilities)
+![lines_code](https://img.shields.io/tokei/lines/github/WolfyScript/WolfyUtilities)
 
 This API is the core that powers all of my plugins like CustomCrafting, ArmorStandTool, and possible future ones.
 
