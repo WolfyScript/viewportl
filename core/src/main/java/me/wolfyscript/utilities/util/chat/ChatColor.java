@@ -19,7 +19,7 @@ public class ChatColor {
                 if (b[i + 1] == '&') {
                     b[i + 1] = '=';
                 } else {
-                    b[i] = 167;
+                    b[i] = org.bukkit.ChatColor.COLOR_CHAR;
                     b[i + 1] = Character.toLowerCase(b[i + 1]);
                 }
             }
