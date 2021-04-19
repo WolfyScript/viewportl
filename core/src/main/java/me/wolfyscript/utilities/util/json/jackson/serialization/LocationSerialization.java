@@ -41,13 +41,13 @@ public class LocationSerialization {
                         float pitch = jsonNode.get(4).floatValue();
                         return new Location(world, x, y, z, yaw, pitch);
                     }
-                    api.getChat().sendConsoleWarning("Error Deserializing Location! Invalid Position: expected array size 5 got " + jsonNode.size());
+                    api.getConsole().warn("Error Deserializing Location! Invalid Position: expected array size 5 got " + jsonNode.size());
                     return null;
                 }
-                api.getChat().sendConsoleWarning("Error Deserializing Location! Missing World with uid " + uuid.toString());
+                api.getConsole().warn("Error Deserializing Location! Missing World with uid " + uuid);
                 return null;
             }
-            api.getChat().sendConsoleWarning("Error Deserializing Location! Invalid Location object!");
+            api.getConsole().warn("Error Deserializing Location! Invalid Location object!");
             return null;
         });
     }

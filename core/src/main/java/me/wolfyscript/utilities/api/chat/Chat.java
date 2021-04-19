@@ -22,7 +22,6 @@ public class Chat {
 
     public static final Map<UUID, PlayerAction> CLICK_DATA_MAP = new HashMap<>();
 
-    private String consolePrefix;
     private String inGamePrefix;
 
     private final WolfyUtilities wolfyUtilities;
@@ -33,8 +32,7 @@ public class Chat {
         this.wolfyUtilities = wolfyUtilities;
         this.languageAPI = wolfyUtilities.getLanguageAPI();
         this.plugin = wolfyUtilities.getPlugin();
-        this.consolePrefix = "[" + plugin.getName() + "]";
-        this.inGamePrefix = this.consolePrefix;
+        this.inGamePrefix = "[" + plugin.getName() + "]";
     }
 
     public String getInGamePrefix() {
@@ -50,7 +48,7 @@ public class Chat {
      */
     @Deprecated
     public String getConsolePrefix() {
-        return consolePrefix;
+        return "[" + plugin.getName() + "]";
     }
 
     /**
@@ -58,14 +56,20 @@ public class Chat {
      */
     @Deprecated
     public void setConsolePrefix(String consolePrefix) {
-        this.consolePrefix = consolePrefix;
+        //NOTHING!
     }
 
+    /**
+     * @deprecated Replaced by {@link #getInGamePrefix()}
+     */
     @Deprecated
     public String getIN_GAME_PREFIX() {
         return inGamePrefix;
     }
 
+    /**
+     * @deprecated Replaced by {@link #setInGamePrefix(String)}
+     */
     @Deprecated
     public void setIN_GAME_PREFIX(String inGamePrefix) {
         this.inGamePrefix = inGamePrefix;
@@ -81,23 +85,31 @@ public class Chat {
         setConsolePrefix(consolePrefix);
     }
 
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#info(String)}!
+     */
     @Deprecated
     public void sendConsoleMessage(String message) {
         wolfyUtilities.getConsole().info(message);
     }
 
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#log(Level, String, String...)}!
+     */
     @Deprecated
     public void sendConsoleMessage(String message, String... replacements) {
         wolfyUtilities.getConsole().log(Level.INFO, message, replacements);
     }
 
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#log(Level, String, String[]...)}!
+     */
     @Deprecated
     public void sendConsoleMessage(String message, String[]... replacements) {
         wolfyUtilities.getConsole().log(Level.INFO, message, replacements);
     }
 
     /**
-     * @see me.wolfyscript.utilities.api.console.Console
      * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#warn(String)}!
      */
     @Deprecated
@@ -105,6 +117,10 @@ public class Chat {
         wolfyUtilities.getConsole().warn(message);
     }
 
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#debug(String)}!
+     */
+    @Deprecated
     public void sendDebugMessage(String message) {
         if (wolfyUtilities.hasDebuggingMode()) {
             wolfyUtilities.getConsole().info(message);

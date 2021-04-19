@@ -23,7 +23,7 @@ public class ColorSerialization {
                 int blue = node.get("blue").asInt();
                 return Color.fromBGR(blue, green, red);
             }
-            WolfyUtilities.getWUCore().getChat().sendConsoleWarning("Error Deserializing Color! Invalid Color object!");
+            WolfyUtilities.getWUCore().getConsole().warn("Error Deserializing Color! Invalid Color object!");
             return null;
         });
     }

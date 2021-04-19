@@ -23,7 +23,7 @@ public class VectorSerialization {
                 ArrayNode arrayNode = (ArrayNode) node;
                 return new Vector(arrayNode.get(0).asDouble(0), arrayNode.get(1).asDouble(0), arrayNode.get(2).asDouble(0));
             }
-            api.getChat().sendConsoleWarning("Error Deserializing Vector! Invalid Vector object!");
+            api.getConsole().warn("Error Deserializing Vector! Invalid Vector object!");
             return null;
         });
     }
