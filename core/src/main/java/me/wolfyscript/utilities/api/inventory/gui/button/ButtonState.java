@@ -4,12 +4,11 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * ButtonState represents the state of a Button.
@@ -33,9 +32,6 @@ public class ButtonState<C extends CustomCache> {
     private ButtonRender<C> buttonRender;
     private ButtonPreRender<C> prepareRender;
     private ButtonPostAction<C> postAction;
-
-    private String displayName;
-    private String[] normalLore;
 
     public ButtonState(String key, ItemStack presetIcon) {
         this(key, presetIcon, null, null);
@@ -94,30 +90,87 @@ public class ButtonState<C extends CustomCache> {
         this(key, new ItemStack(presetIcon), action, postAction, prepareRender, render);
     }
 
-    /**
-     * Constructors with ClusterID, Key and ItemStacks
-     */
 
+    public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon) {
+        this(buttonKey, presetIcon, null, null);
+    }
+
+    public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
+        this(buttonKey, presetIcon, null, render);
+    }
+
+    public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
+        this(buttonKey, presetIcon, action, null);
+    }
+
+    public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
+        this(buttonKey, presetIcon, action, null, render);
+    }
+
+    public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
+        this(buttonKey, presetIcon, action, null, prepareRender, render);
+    }
+
+    public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
+        this.action = action;
+        this.postAction = postAction;
+        this.prepareRender = prepareRender;
+        this.buttonRender = render;
+        this.presetIcon = presetIcon;
+        this.clusterID = buttonKey.getNamespace();
+        this.key = buttonKey.getKey();
+    }
+
+    public ButtonState(NamespacedKey buttonKey, Material presetIcon) {
+        this(buttonKey, presetIcon, null, null);
+    }
+
+    public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonRender<C> render) {
+        this(buttonKey, presetIcon, null, render);
+    }
+
+    public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action) {
+        this(buttonKey, presetIcon, action, null);
+    }
+
+    public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
+        this(buttonKey, presetIcon, action, null, render);
+    }
+
+    public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
+        this(buttonKey, presetIcon, action, null, prepareRender, render);
+    }
+
+    public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
+        this(buttonKey, new ItemStack(presetIcon), action, postAction, prepareRender, render);
+    }
+
+    @Deprecated
     public ButtonState(String clusterID, String key, ItemStack presetIcon) {
         this(clusterID, key, presetIcon, null, null);
     }
 
+    @Deprecated
     public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
         this(clusterID, key, presetIcon, null, render);
     }
 
+    @Deprecated
     public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
         this(clusterID, key, presetIcon, action, null);
     }
 
+    @Deprecated
     public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(clusterID, key, presetIcon, action, null, render);
     }
 
+    @Deprecated
     public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(clusterID, key, presetIcon, action, null, prepareRender, render);
     }
 
+    @Deprecated
     public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this.action = action;
         this.postAction = postAction;
@@ -128,30 +181,32 @@ public class ButtonState<C extends CustomCache> {
         this.key = key;
     }
 
-    /**
-     * Constructors with ClusterID, Key and Materials
-     */
-
+    @Deprecated
     public ButtonState(String clusterID, String key, Material presetIcon) {
         this(clusterID, key, presetIcon, null, null);
     }
 
+    @Deprecated
     public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonRender<C> render) {
         this(clusterID, key, presetIcon, null, render);
     }
 
+    @Deprecated
     public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action) {
         this(clusterID, key, presetIcon, action, null);
     }
 
+    @Deprecated
     public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(clusterID, key, presetIcon, action, null, render);
     }
 
+    @Deprecated
     public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(clusterID, key, presetIcon, action, null, prepareRender, render);
     }
 
+    @Deprecated
     public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(clusterID, key, new ItemStack(presetIcon), action, postAction, prepareRender, render);
     }
@@ -176,34 +231,30 @@ public class ButtonState<C extends CustomCache> {
     }
 
     public void init(GuiCluster<C> cluster) {
-        //For backwards compatibility!
-        init(cluster.getId(), cluster.getWolfyUtilities());
-
         this.wolfyUtilities = cluster.getWolfyUtilities();
+        //For backwards compatibility!
+        init(cluster.getId(), this.wolfyUtilities);
         if (this.clusterID == null) {
             this.clusterID = cluster.getId();
         }
-        createIcon(this.clusterID, "");
+        createIcon("");
     }
 
     public void init(GuiWindow<C> window) {
         this.wolfyUtilities = window.wolfyUtilities;
-        createIcon(this.clusterID, "inventories." + window.getCluster().getId() + "." + window.getNamespacedKey().getKey() + ".items." + key);
+        createIcon("inventories." + window.getCluster().getId() + "." + window.getNamespacedKey().getKey() + ".items." + key);
     }
 
     public ItemStack getIcon() {
         return icon.clone();
     }
 
-    private void createIcon(String clusterID, String path) {
+    private void createIcon(String path) {
         if (key != null && !key.isEmpty()) {
-            if (clusterID != null && !clusterID.isEmpty()) {
+            if (clusterID != null) {
                 path = "inventories." + clusterID + ".global_items." + key;
             }
-            displayName = wolfyUtilities.getLanguageAPI().replaceKeys("$" + path + ".name" + "$");
-            List<String> normal = wolfyUtilities.getLanguageAPI().replaceKey(path + ".lore");
-            normalLore = !normal.isEmpty() ? normal.toArray(new String[0]) : new String[0];
-            this.icon = ItemUtils.createItem(presetIcon, displayName, normalLore);
+            this.icon = ItemUtils.createItem(presetIcon, wolfyUtilities.getLanguageAPI().replaceKeys("$" + path + ".name" + "$"), wolfyUtilities.getLanguageAPI().replaceKey(path + ".lore").toArray(new String[0]));
         }
     }
 

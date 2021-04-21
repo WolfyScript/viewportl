@@ -23,7 +23,7 @@ public class DustOptionsSerialization {
                 Color color = ctxt.readValue(node.get("color").traverse(JacksonUtil.getObjectMapper()), Color.class);
                 return new Particle.DustOptions(color, size);
             }
-            WolfyUtilities.getWUCore().getChat().sendConsoleWarning("Error Deserializing DustOptions! Invalid DustOptions object!");
+            WolfyUtilities.getWUCore().getConsole().warn("Error Deserializing DustOptions! Invalid DustOptions object!");
             return null;
         });
     }

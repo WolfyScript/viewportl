@@ -173,7 +173,7 @@ public class GuiUpdate<C extends CustomCache> {
 
     final void applyChanges() {
         if (queueInventory.getContents().length > 0) {
-            Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> inventory.setContents(Arrays.copyOfRange(queueInventory.getContents(), 0, inventory.getSize())));
+            inventory.setContents(Arrays.copyOfRange(queueInventory.getContents(), 0, inventory.getSize()));
         }
     }
 

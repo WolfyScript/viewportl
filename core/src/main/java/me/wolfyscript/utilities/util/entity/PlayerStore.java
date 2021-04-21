@@ -38,10 +38,8 @@ public class PlayerStore {
         File file = new File(PlayerUtils.STORE_FOLDER + File.separator + uuid.toString() + ".store");
         PlayerStore data = new PlayerStore();
         if (file.exists()) {
-            try {
-                GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file));
+            try (GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file))) {
                 data = JacksonUtil.getObjectMapper().readValue(gzip, PlayerStore.class);
-                gzip.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -54,11 +52,9 @@ public class PlayerStore {
     }
 
     void save(UUID uuid) {
-        try {
-            GZIPOutputStream gzip = new GZIPOutputStream(new FileOutputStream(PlayerUtils.STORE_FOLDER + File.separator + uuid.toString() + ".store"));
+        try (GZIPOutputStream gzip = new GZIPOutputStream(new FileOutputStream(PlayerUtils.STORE_FOLDER + File.separator + uuid.toString() + ".store"))) {
             JacksonUtil.getObjectWriter(false).writeValue(gzip, this);
             gzip.flush();
-            gzip.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

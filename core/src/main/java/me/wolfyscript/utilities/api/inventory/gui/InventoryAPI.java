@@ -223,7 +223,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         if (guiHandler.openedPreviousWindow) {
             guiHandler.openedPreviousWindow = false;
         } else if (guiHandler.getWindow() != null && guiHandler.isWindowOpen()) {
-            Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(inventory, buttons, event));
+            guiWindow.update(inventory, buttons, event);
         }
     }
 
@@ -249,7 +249,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             if (guiHandler.openedPreviousWindow) {
                 guiHandler.openedPreviousWindow = false;
             } else if (guiHandler.getWindow() != null) {
-                Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> guiWindow.update(inventory, buttons, event));
+                guiWindow.update(inventory, buttons, event);
             }
         }
     }

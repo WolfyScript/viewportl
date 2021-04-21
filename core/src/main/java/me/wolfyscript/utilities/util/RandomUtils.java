@@ -7,6 +7,9 @@ import java.util.Random;
 
 public class RandomUtils {
 
+    private RandomUtils() {
+    }
+
     public static final Random random = new Random(System.currentTimeMillis());
 
     public static Vector getRandomVector() {

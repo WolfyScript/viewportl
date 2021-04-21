@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.YamlConfiguration;
+import me.wolfyscript.utilities.api.console.Console;
 import me.wolfyscript.utilities.api.inventory.BookUtil;
 import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
@@ -82,6 +83,7 @@ public class WolfyUtilities {
     private InventoryAPI<?> inventoryAPI;
     private final LanguageAPI languageAPI;
     private final Chat chat;
+    private final Console console;
     private final ItemUtils itemUtils;
     private final Permissions permissions;
     private final BookUtil bookUtil;
@@ -99,6 +101,7 @@ public class WolfyUtilities {
         this.languageAPI = new LanguageAPI(this);
         this.inventoryAPI = new InventoryAPI<>(this.plugin, this, customCacheClass);
         this.chat = new Chat(this);
+        this.console = new Console(this);
         this.permissions = new Permissions(this);
         this.itemUtils = new ItemUtils(this);
         this.nmsUtil = NMSUtil.create(this);
@@ -220,6 +223,14 @@ public class WolfyUtilities {
      */
     public Chat getChat() {
         return chat;
+    }
+
+    /**
+     * @return The {@link Console} instance.
+     * @see Console More information about the Console Util.
+     */
+    public Console getConsole() {
+        return console;
     }
 
     /**

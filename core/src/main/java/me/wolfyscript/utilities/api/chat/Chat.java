@@ -7,22 +7,21 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
 
 public class Chat {
 
     public static final Map<UUID, PlayerAction> CLICK_DATA_MAP = new HashMap<>();
 
-    private String consolePrefix;
     private String inGamePrefix;
 
     private final WolfyUtilities wolfyUtilities;
@@ -33,16 +32,7 @@ public class Chat {
         this.wolfyUtilities = wolfyUtilities;
         this.languageAPI = wolfyUtilities.getLanguageAPI();
         this.plugin = wolfyUtilities.getPlugin();
-        this.consolePrefix = "[" + plugin.getName() + "]";
-        this.inGamePrefix = this.consolePrefix;
-    }
-
-    public String getConsolePrefix() {
-        return consolePrefix;
-    }
-
-    public void setConsolePrefix(String consolePrefix) {
-        this.consolePrefix = consolePrefix;
+        this.inGamePrefix = "[" + plugin.getName() + "]";
     }
 
     public String getInGamePrefix() {
@@ -53,11 +43,33 @@ public class Chat {
         this.inGamePrefix = inGamePrefix;
     }
 
+    /**
+     * @deprecated Due to logger changes it is no longer used!
+     */
+    @Deprecated
+    public String getConsolePrefix() {
+        return "[" + plugin.getName() + "]";
+    }
+
+    /**
+     * @deprecated Due to logger changes it is no longer used!
+     */
+    @Deprecated
+    public void setConsolePrefix(String consolePrefix) {
+        //NOTHING!
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getInGamePrefix()}
+     */
     @Deprecated
     public String getIN_GAME_PREFIX() {
         return inGamePrefix;
     }
 
+    /**
+     * @deprecated Replaced by {@link #setInGamePrefix(String)}
+     */
     @Deprecated
     public void setIN_GAME_PREFIX(String inGamePrefix) {
         this.inGamePrefix = inGamePrefix;
@@ -65,48 +77,54 @@ public class Chat {
 
     @Deprecated
     public String getCONSOLE_PREFIX() {
-        return consolePrefix;
+        return getConsolePrefix();
     }
 
     @Deprecated
     public void setCONSOLE_PREFIX(String consolePrefix) {
-        this.consolePrefix = consolePrefix;
+        setConsolePrefix(consolePrefix);
     }
 
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#info(String)}!
+     */
+    @Deprecated
     public void sendConsoleMessage(String message) {
-        message = consolePrefix + languageAPI.replaceKeys(message);
-        message = org.bukkit.ChatColor.translateAlternateColorCodes('&', message);
-        Bukkit.getServer().getConsoleSender().sendMessage(message);
+        wolfyUtilities.getConsole().info(message);
     }
 
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#log(Level, String, String...)}!
+     */
+    @Deprecated
     public void sendConsoleMessage(String message, String... replacements) {
-        message = consolePrefix + languageAPI.replaceKeys(message);
-        List<String> keys = new ArrayList<>();
-        Pattern pattern = Pattern.compile("%([A-Z]*?)(_*?)%");
-        Matcher matcher = pattern.matcher(message);
-        while (matcher.find()) {
-            keys.add(matcher.group(0));
-        }
-        for (int i = 0; i < keys.size(); i++) {
-            message = message.replace(keys.get(i), replacements[i]);
-        }
-        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.convert(message));
+        wolfyUtilities.getConsole().log(Level.INFO, message, replacements);
     }
 
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#log(Level, String, String[]...)}!
+     */
+    @Deprecated
     public void sendConsoleMessage(String message, String[]... replacements) {
-        if (replacements != null) {
-            message = inGamePrefix + languageAPI.replaceColoredKeys(message);
-            for (String[] replace : replacements) {
-                if (replace.length > 1) {
-                    message = message.replaceAll(replace[0], replace[1]);
-                }
-            }
-        }
-        Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.convert(message));
+        wolfyUtilities.getConsole().log(Level.INFO, message, replacements);
     }
 
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#warn(String)}!
+     */
+    @Deprecated
     public void sendConsoleWarning(String message) {
-        sendConsoleMessage("[WARN] " + message);
+        wolfyUtilities.getConsole().warn(message);
+    }
+
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#debug(String)}!
+     */
+    @Deprecated
+    public void sendDebugMessage(String message) {
+        if (wolfyUtilities.hasDebuggingMode()) {
+            wolfyUtilities.getConsole().info(message);
+        }
     }
 
     public void sendMessage(Player player, String message) {
@@ -134,10 +152,10 @@ public class Chat {
         }
         player.sendMessage(ChatColor.convert(message));
     }
-
     /*
     Sends a global message from an GuiCluster to the player!
      */
+
     public void sendKey(Player player, String clusterID, String msgKey) {
         sendMessage(player, "$inventories." + clusterID + ".global_messages." + msgKey + "$");
     }
@@ -190,22 +208,6 @@ public class Chat {
             textComponents[i] = component;
         }
         return textComponents;
-    }
-
-    public void sendDebugMessage(String message) {
-        if (wolfyUtilities.hasDebuggingMode()) {
-            String prefix = org.bukkit.ChatColor.translateAlternateColorCodes('&', this.inGamePrefix);
-            message = org.bukkit.ChatColor.translateAlternateColorCodes('&', message);
-            if (message.length() > 70) {
-                int count = message.length() / 70;
-                for (int text = 0; text <= count; text++) {
-                    Bukkit.getServer().getConsoleSender().sendMessage(prefix + (text < count ? message.substring(text * 70, 70 + 70 * text) : message.substring(text * 70)));
-                }
-            } else {
-                message = prefix + message;
-                Bukkit.getServer().getConsoleSender().sendMessage(message);
-            }
-        }
     }
 
     public static class ChatListener implements Listener {
