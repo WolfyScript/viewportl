@@ -42,7 +42,7 @@ import java.util.*;
 
 @JsonSerialize(using = CustomItem.Serializer.class)
 @JsonDeserialize(using = CustomItem.Deserializer.class)
-public class CustomItem extends AbstractItemBuilder<CustomItem> implements Cloneable, Keyed {
+public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed {
 
     /**
      *
@@ -488,34 +488,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     @Override
     public int hashCode() {
         return Objects.hash(getCustomDataMap(), getNamespacedKey(), getReplacement(), getAllowedBlocks(), getPermission(), getRarityPercentage(), getBurnTime(), getDurabilityCost(), isConsumed(), blockPlacement, isAdvanced(), isBlockVanillaEquip(), isBlockVanillaRecipes(), getEquipmentSlots(), getApiReference(), getParticleContent(), getMetaSettings());
-    }
-
-    /**
-     * If linked to config it will create a new instance with the values from the config,
-     * else copies this instance of the ItemStack.
-     *
-     * @return exact copy of this instance
-     */
-    @Override
-    public CustomItem clone() {
-        CustomItem customItem = new CustomItem(getApiReference());
-        if (hasNamespacedKey()) {
-            customItem.setNamespacedKey(getNamespacedKey());
-        }
-        customItem.setBlockVanillaRecipes(isBlockVanillaRecipes());
-        customItem.setBlockVanillaEquip(isBlockVanillaEquip());
-        customItem.setAllowedBlocks(getAllowedBlocks());
-        customItem.setBurnTime(getBurnTime());
-        customItem.setConsumed(isConsumed());
-        customItem.setDurabilityCost(getDurabilityCost());
-        customItem.setMetaSettings(getMetaSettings());
-        customItem.setParticleContent(getParticleContent());
-        customItem.setPermission(getPermission());
-        customItem.setRarityPercentage(getRarityPercentage());
-        customItem.setReplacement(getReplacement());
-        customItem.setAdvanced(isAdvanced());
-        customItem.setAmount(getAmount());
-        return customItem;
     }
 
     /**
