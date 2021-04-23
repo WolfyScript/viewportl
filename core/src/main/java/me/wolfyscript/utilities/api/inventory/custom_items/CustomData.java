@@ -26,6 +26,10 @@ public abstract class CustomData {
         this.namespacedKey = namespacedKey;
     }
 
+    protected CustomData(CustomData customData) {
+        this.namespacedKey = customData.namespacedKey;
+    }
+
     /**
      * Called whenever this data object is saved to the {@link CustomItem} config.
      *
@@ -64,6 +68,17 @@ public abstract class CustomData {
     @Override
     public int hashCode() {
         return Objects.hash(namespacedKey);
+    }
+
+    /**
+     * Your CustomData should implement this method to be cloned correctly using a copy constructor.<br>
+     * <strong>If you don't override this method it will just return the original instance! Future update (1.6.4.0) will require this method to be implemented!</strong>
+     *
+     * @return A cloned instance if overridden else just returns this instance.
+     */
+    @Override
+    public CustomData clone() {
+        return this;
     }
 
     /**
