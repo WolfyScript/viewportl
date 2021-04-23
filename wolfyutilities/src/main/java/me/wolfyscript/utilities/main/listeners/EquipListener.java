@@ -83,7 +83,6 @@ public class EquipListener implements Listener {
         if (event.getClickedInventory() == null) return;
         if (!event.getClickedInventory().getType().equals(InventoryType.PLAYER)) return;
 
-        boolean shift = event.isShiftClick();
         boolean numberkey = event.getClick().equals(ClickType.NUMBER_KEY);
         Player player = (Player) event.getWhoClicked();
 
@@ -92,7 +91,7 @@ public class EquipListener implements Listener {
         ItemStack currentItem = event.getCurrentItem();
         CustomItem customCurrentItem = CustomItem.getByItemStack(currentItem);
 
-        if (shift) {
+        if (event.isShiftClick()) {
             if (!event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
                 //Equip
                 if (!ItemUtils.isAirOrNull(customCurrentItem) && customCurrentItem.hasEquipmentSlot()) {
@@ -117,8 +116,8 @@ public class EquipListener implements Listener {
                 event.setCancelled(equipEvent.isCancelled());
             }
         } else if (event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
+            // Prevents checking clicks in the 2x2 crafting grid
             if (numberkey) {
-                // Prevents checking clicks in the 2x2 crafting grid
                 // getClickedInventory() == The players inventory
                 // getHotBarButton() == key players are pressing to equip or unequip the item to or from.
                 // getRawSlot() == The slot the item is going to.

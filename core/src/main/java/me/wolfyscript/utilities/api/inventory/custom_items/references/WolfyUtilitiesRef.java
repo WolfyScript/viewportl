@@ -27,6 +27,11 @@ public class WolfyUtilitiesRef extends APIReference {
         this.namespacedKey = namespacedKey;
     }
 
+    public WolfyUtilitiesRef(WolfyUtilitiesRef wolfyUtilitiesRef) {
+        super(wolfyUtilitiesRef);
+        this.namespacedKey = wolfyUtilitiesRef.namespacedKey;
+    }
+
     public NamespacedKey getNamespacedKey() {
         return namespacedKey;
     }
@@ -80,6 +85,11 @@ public class WolfyUtilitiesRef extends APIReference {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), namespacedKey);
+    }
+
+    @Override
+    public WolfyUtilitiesRef clone() {
+        return null;
     }
 
     public static class Parser extends APIReference.Parser<WolfyUtilitiesRef> {

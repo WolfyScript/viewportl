@@ -153,6 +153,48 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     }
 
     /**
+     * @param customItem A new deep copy of the passed in CustomItem.
+     */
+    private CustomItem(CustomItem customItem) {
+        super(CustomItem.class);
+        this.apiReference = customItem.apiReference.clone();
+
+        this.namespacedKey = customItem.getNamespacedKey();
+        this.burnTime = customItem.burnTime;
+        this.allowedBlocks = new ArrayList<>(customItem.allowedBlocks);
+        this.metaSettings = customItem.metaSettings;
+        this.permission = customItem.permission;
+        this.rarityPercentage = customItem.rarityPercentage;
+        this.customDataMap.clear();
+        for (Map.Entry<me.wolfyscript.utilities.util.NamespacedKey, CustomData> entry : customItem.customDataMap.entrySet()) {
+            this.customDataMap.put(entry.getKey(), entry.getValue().clone());
+
+        }
+
+        this.equipmentSlots = new ArrayList<>(customItem.equipmentSlots);
+        this.particleContent = customItem.particleContent;
+        this.blockPlacement = customItem.blockPlacement;
+        this.blockVanillaEquip = customItem.blockVanillaEquip;
+        this.blockVanillaRecipes = customItem.blockVanillaRecipes;
+        this.advanced = customItem.advanced;
+
+        this.consumed = customItem.consumed;
+        this.replacement = customItem.replacement;
+        this.durabilityCost = customItem.durabilityCost;
+        this.type = getItemStack() != null ? getItemStack().getType() : Material.AIR;
+        this.craftRemain = getCraftRemain();
+    }
+
+    /**
+     * Clones the CustomItem and all the containing data.
+     *
+     * @return A exact deep copy of this CustomItem instance.
+     */
+    public CustomItem clone() {
+        return new CustomItem(this);
+    }
+
+    /**
      * <p>
      * This will create a <b>new</b> {@link CustomItem} instance with the specified APIReference.
      * </p>

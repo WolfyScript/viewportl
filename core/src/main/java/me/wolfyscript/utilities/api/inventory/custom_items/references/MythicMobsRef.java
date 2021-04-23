@@ -21,7 +21,13 @@ public class MythicMobsRef extends APIReference {
     private final String itemName;
 
     public MythicMobsRef(String itemName) {
+        super();
         this.itemName = itemName;
+    }
+
+    public MythicMobsRef(MythicMobsRef mythicMobsRef) {
+        super(mythicMobsRef);
+        this.itemName = mythicMobsRef.itemName;
     }
 
     @Override
@@ -58,6 +64,11 @@ public class MythicMobsRef extends APIReference {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), itemName);
+    }
+
+    @Override
+    public MythicMobsRef clone() {
+        return new MythicMobsRef(this);
     }
 
     @Override

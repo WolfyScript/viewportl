@@ -16,7 +16,13 @@ public class VanillaRef extends APIReference {
     private final ItemStack itemStack;
 
     public VanillaRef(ItemStack itemStack) {
+        super();
         this.itemStack = itemStack;
+    }
+
+    public VanillaRef(VanillaRef vanillaRef) {
+        super(vanillaRef);
+        this.itemStack = vanillaRef.itemStack.clone();
     }
 
     @Override
@@ -52,6 +58,11 @@ public class VanillaRef extends APIReference {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), itemStack);
+    }
+
+    @Override
+    public VanillaRef clone() {
+        return new VanillaRef(this);
     }
 
     public static class Parser extends APIReference.Parser<APIReference> {

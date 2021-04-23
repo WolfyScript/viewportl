@@ -16,7 +16,13 @@ public class ItemsAdderRef extends APIReference {
     private final String itemID;
 
     public ItemsAdderRef(String itemID) {
+        super();
         this.itemID = itemID;
+    }
+
+    public ItemsAdderRef(ItemsAdderRef itemsAdderRef) {
+        super(itemsAdderRef);
+        this.itemID = itemsAdderRef.itemID;
     }
 
     @Override
@@ -60,6 +66,11 @@ public class ItemsAdderRef extends APIReference {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), itemID);
+    }
+
+    @Override
+    public ItemsAdderRef clone() {
+        return new ItemsAdderRef(this);
     }
 
     public static class Parser extends PluginParser<ItemsAdderRef> {
