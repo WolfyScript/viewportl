@@ -89,7 +89,7 @@ public class WolfyUtilitiesRef extends APIReference {
 
     @Override
     public WolfyUtilitiesRef clone() {
-        return null;
+        return new WolfyUtilitiesRef(this);
     }
 
     public static class Parser extends APIReference.Parser<WolfyUtilitiesRef> {
