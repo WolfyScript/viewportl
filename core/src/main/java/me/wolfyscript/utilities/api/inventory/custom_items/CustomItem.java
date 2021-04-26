@@ -106,7 +106,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     private ParticleContent particleContent;
     private MetaSettings metaSettings;
 
-
     public CustomItem(APIReference apiReference) {
         super(CustomItem.class);
         this.apiReference = apiReference;
@@ -168,9 +167,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         this.customDataMap.clear();
         for (Map.Entry<me.wolfyscript.utilities.util.NamespacedKey, CustomData> entry : customItem.customDataMap.entrySet()) {
             this.customDataMap.put(entry.getKey(), entry.getValue().clone());
-
         }
-
         this.equipmentSlots = new ArrayList<>(customItem.equipmentSlots);
         this.particleContent = customItem.particleContent;
         this.blockPlacement = customItem.blockPlacement;
@@ -190,6 +187,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      *
      * @return A exact deep copy of this CustomItem instance.
      */
+    @Override
     public CustomItem clone() {
         return new CustomItem(this);
     }

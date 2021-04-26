@@ -59,8 +59,8 @@ public class ItemsAdderRef extends APIReference {
         if (this == o) return true;
         if (!(o instanceof ItemsAdderRef)) return false;
         if (!super.equals(o)) return false;
-        ItemsAdderRef oraxenRef = (ItemsAdderRef) o;
-        return Objects.equals(itemID, oraxenRef.itemID);
+        ItemsAdderRef itemsAdderRef = (ItemsAdderRef) o;
+        return Objects.equals(itemID, itemsAdderRef.itemID);
     }
 
     @Override
