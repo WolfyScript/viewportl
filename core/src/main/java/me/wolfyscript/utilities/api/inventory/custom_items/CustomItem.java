@@ -44,26 +44,9 @@ import java.util.*;
 @JsonDeserialize(using = CustomItem.Deserializer.class)
 public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed {
 
-    /**
-     *
-     */
     private static final Map<String, APIReference.Parser<?>> API_REFERENCE_PARSER = new HashMap<>();
 
-    /**
-     * Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
-     * All registered CustomData is added to this item and cannot be removed!
-     * Only the single CustomData objects can be edit in it's values.
-     */
     private final Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData> customDataMap = new HashMap<>();
-
-    public static void registerAPIReferenceParser(APIReference.Parser<?> parser) {
-        if (!(parser instanceof APIReference.PluginParser) || WolfyUtilities.hasPlugin(((APIReference.PluginParser<?>) parser).getPluginName())) {
-            API_REFERENCE_PARSER.put(parser.getId(), parser);
-            if (!parser.getAliases().isEmpty()) {
-                parser.getAliases().forEach(s -> API_REFERENCE_PARSER.putIfAbsent(s, parser));
-            }
-        }
-    }
 
     @Nullable
     public static APIReference.Parser<?> getApiReferenceParser(String id) {
@@ -79,6 +62,20 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * If it is null the item isn't saved and the variables of this Object will get lost when {@link #create()} is called!
      */
     private me.wolfyscript.utilities.util.NamespacedKey namespacedKey;
+
+    /**
+     * Register a new {@link APIReference.Parser} that can parse ItemStacks and keys from another plugin to a usable {@link APIReference}
+     *
+     * @param parser an {@link APIReference.Parser} instance.
+     */
+    public static void registerAPIReferenceParser(APIReference.Parser<?> parser) {
+        if (!(parser instanceof APIReference.PluginParser) || WolfyUtilities.hasPlugin(((APIReference.PluginParser<?>) parser).getPluginName())) {
+            API_REFERENCE_PARSER.put(parser.getId(), parser);
+            if (!parser.getAliases().isEmpty()) {
+                parser.getAliases().forEach(s -> API_REFERENCE_PARSER.putIfAbsent(s, parser));
+            }
+        }
+    }
 
     private final Material type;
     private final Material craftRemain;
