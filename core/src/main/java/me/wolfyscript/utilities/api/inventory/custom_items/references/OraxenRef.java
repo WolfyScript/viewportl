@@ -16,7 +16,13 @@ public class OraxenRef extends APIReference {
     private final String itemID;
 
     public OraxenRef(String itemID) {
+        super();
         this.itemID = itemID;
+    }
+
+    public OraxenRef(OraxenRef oraxenRef) {
+        super(oraxenRef);
+        this.itemID = oraxenRef.itemID;
     }
 
     @Override
@@ -62,6 +68,11 @@ public class OraxenRef extends APIReference {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), itemID);
+    }
+
+    @Override
+    public OraxenRef clone() {
+        return new OraxenRef(this);
     }
 
     public static class Parser extends APIReference.PluginParser<OraxenRef> {

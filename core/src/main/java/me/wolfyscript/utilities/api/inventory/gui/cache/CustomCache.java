@@ -6,10 +6,13 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+/**
+ * Warning! In upcoming update 1.6.4.0 this class will no longer extend the {@link TreeMap}!
+ * Please create a custom class that extends this one instead!
+ */
 public class CustomCache extends TreeMap<String, Object> {
 
     private final HashMap<GuiWindow<?>, TreeMap<Integer, String>> cachedButtons;
-
     private final TreeMap<NamespacedKey, Object> windows;
 
     public CustomCache() {
@@ -31,6 +34,7 @@ public class CustomCache extends TreeMap<String, Object> {
     private void setWindowCache(GuiWindow<?> guiWindow, TreeMap<String, Object> cache) {
         windows.put(guiWindow.getNamespacedKey(), cache);
     }
+
 
     public TreeMap<Integer, String> getButtons(GuiWindow<?> window) {
         return cachedButtons.getOrDefault(window, new TreeMap<>());

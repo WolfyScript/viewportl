@@ -15,7 +15,15 @@ import java.util.Objects;
 
 public abstract class APIReference {
 
-    protected int amount = 0;
+    protected int amount;
+
+    protected APIReference() {
+        this.amount = 0;
+    }
+
+    protected APIReference(APIReference apiReference) {
+        this.amount = apiReference.amount;
+    }
 
     /**
      * @return the ItemStack of the API
@@ -76,6 +84,8 @@ public abstract class APIReference {
     public int hashCode() {
         return Objects.hash(amount);
     }
+
+    public abstract APIReference clone();
 
     public abstract static class Parser<T extends APIReference> implements Comparable<Parser<?>> {
 

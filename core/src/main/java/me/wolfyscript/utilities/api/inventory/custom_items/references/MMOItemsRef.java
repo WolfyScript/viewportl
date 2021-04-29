@@ -18,8 +18,15 @@ public class MMOItemsRef extends APIReference {
     private final String itemName;
 
     public MMOItemsRef(Type itemType, String itemName) {
+        super();
         this.itemType = itemType;
         this.itemName = itemName;
+    }
+
+    public MMOItemsRef(MMOItemsRef mmoItemsRef) {
+        super(mmoItemsRef);
+        this.itemName = mmoItemsRef.itemName;
+        this.itemType = mmoItemsRef.itemType;
     }
 
     @Override
@@ -61,6 +68,11 @@ public class MMOItemsRef extends APIReference {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), itemType, itemName);
+    }
+
+    @Override
+    public MMOItemsRef clone() {
+        return new MMOItemsRef(this);
     }
 
     public static class Parser extends PluginParser<MMOItemsRef> {

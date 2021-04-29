@@ -44,31 +44,35 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
         this.oldCustomArmorPiece = oldCustomArmorPiece;
         this.newCustomArmorPiece = newCustomArmorPiece;
 
-        EquipmentSlot equipmentSlot = type.getEquipmentSlot();
-        if (!ItemUtils.isAirOrNull(newArmorPiece)) {
-            //Equiping new armor!
-            if (ItemUtils.isEquipable(newArmorPiece.getType())) {
-                if (!ItemUtils.isEquipable(newArmorPiece.getType(), type) && (ItemUtils.isAirOrNull(newCustomArmorPiece) || !newCustomArmorPiece.isBlockVanillaEquip())) {
+        if (type != null) {
+            EquipmentSlot equipmentSlot = type.getEquipmentSlot();
+            if (!ItemUtils.isAirOrNull(newArmorPiece)) {
+                //Equiping new armor!
+                if (ItemUtils.isEquipable(newArmorPiece.getType())) {
+                    if (!ItemUtils.isEquipable(newArmorPiece.getType(), type) && (ItemUtils.isAirOrNull(newCustomArmorPiece) || !newCustomArmorPiece.isBlockVanillaEquip())) {
+                        setCancelled(true);
+                    }
+                } else {
                     setCancelled(true);
                 }
+                if (!ItemUtils.isAirOrNull(newCustomArmorPiece) && newCustomArmorPiece.hasEquipmentSlot(equipmentSlot)) {
+                    PlayerUtils.stopActiveParticleEffect(getPlayer(), equipmentSlot);
+                    ParticleContent particleContent = newCustomArmorPiece.getParticleContent();
+                    if (particleContent != null) {
+                        ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(particleContent.getParticleEffect(ParticleLocation.valueOf(equipmentSlot.name())));
+                        if (animation != null) {
+                            animation.spawnOnPlayer(player, equipmentSlot);
+                        }
+                    }
+                    setCancelled(false);
+                }
             } else {
+                PlayerUtils.stopActiveParticleEffect(getPlayer(), equipmentSlot);
+            }
+            if (!ItemUtils.isAirOrNull(oldArmorPiece) && oldArmorPiece.hasItemMeta() && oldArmorPiece.getItemMeta().hasEnchant(Enchantment.BINDING_CURSE)) {
                 setCancelled(true);
             }
-            if (!ItemUtils.isAirOrNull(newCustomArmorPiece) && newCustomArmorPiece.hasEquipmentSlot(equipmentSlot)) {
-                PlayerUtils.stopActiveParticleEffect(getPlayer(), equipmentSlot);
-                ParticleContent particleContent = newCustomArmorPiece.getParticleContent();
-                if (particleContent != null) {
-                    ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(particleContent.getParticleEffect(ParticleLocation.valueOf(equipmentSlot.name())));
-                    if (animation != null) {
-                        animation.spawnOnPlayer(player, equipmentSlot);
-                    }
-                }
-                setCancelled(false);
-            }
         } else {
-            PlayerUtils.stopActiveParticleEffect(getPlayer(), equipmentSlot);
-        }
-        if (!ItemUtils.isAirOrNull(oldArmorPiece) && oldArmorPiece.hasItemMeta() && oldArmorPiece.getItemMeta().hasEnchant(Enchantment.BINDING_CURSE)) {
             setCancelled(true);
         }
     }

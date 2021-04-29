@@ -16,7 +16,13 @@ public class ItemsAdderRef extends APIReference {
     private final String itemID;
 
     public ItemsAdderRef(String itemID) {
+        super();
         this.itemID = itemID;
+    }
+
+    public ItemsAdderRef(ItemsAdderRef itemsAdderRef) {
+        super(itemsAdderRef);
+        this.itemID = itemsAdderRef.itemID;
     }
 
     @Override
@@ -53,13 +59,18 @@ public class ItemsAdderRef extends APIReference {
         if (this == o) return true;
         if (!(o instanceof ItemsAdderRef)) return false;
         if (!super.equals(o)) return false;
-        ItemsAdderRef oraxenRef = (ItemsAdderRef) o;
-        return Objects.equals(itemID, oraxenRef.itemID);
+        ItemsAdderRef itemsAdderRef = (ItemsAdderRef) o;
+        return Objects.equals(itemID, itemsAdderRef.itemID);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), itemID);
+    }
+
+    @Override
+    public ItemsAdderRef clone() {
+        return new ItemsAdderRef(this);
     }
 
     public static class Parser extends PluginParser<ItemsAdderRef> {

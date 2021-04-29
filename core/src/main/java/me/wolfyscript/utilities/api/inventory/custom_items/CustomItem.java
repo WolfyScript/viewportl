@@ -42,28 +42,11 @@ import java.util.*;
 
 @JsonSerialize(using = CustomItem.Serializer.class)
 @JsonDeserialize(using = CustomItem.Deserializer.class)
-public class CustomItem extends AbstractItemBuilder<CustomItem> implements Cloneable, Keyed {
+public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed {
 
-    /**
-     *
-     */
     private static final Map<String, APIReference.Parser<?>> API_REFERENCE_PARSER = new HashMap<>();
 
-    /**
-     * Other than the availableCustomData, this Map is only available for the specific CustomItem instance!
-     * All registered CustomData is added to this item and cannot be removed!
-     * Only the single CustomData objects can be edit in it's values.
-     */
     private final Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData> customDataMap = new HashMap<>();
-
-    public static void registerAPIReferenceParser(APIReference.Parser<?> parser) {
-        if (!(parser instanceof APIReference.PluginParser) || WolfyUtilities.hasPlugin(((APIReference.PluginParser<?>) parser).getPluginName())) {
-            API_REFERENCE_PARSER.put(parser.getId(), parser);
-            if (!parser.getAliases().isEmpty()) {
-                parser.getAliases().forEach(s -> API_REFERENCE_PARSER.putIfAbsent(s, parser));
-            }
-        }
-    }
 
     @Nullable
     public static APIReference.Parser<?> getApiReferenceParser(String id) {
@@ -79,6 +62,20 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      * If it is null the item isn't saved and the variables of this Object will get lost when {@link #create()} is called!
      */
     private me.wolfyscript.utilities.util.NamespacedKey namespacedKey;
+
+    /**
+     * Register a new {@link APIReference.Parser} that can parse ItemStacks and keys from another plugin to a usable {@link APIReference}
+     *
+     * @param parser an {@link APIReference.Parser} instance.
+     */
+    public static void registerAPIReferenceParser(APIReference.Parser<?> parser) {
+        if (!(parser instanceof APIReference.PluginParser) || WolfyUtilities.hasPlugin(((APIReference.PluginParser<?>) parser).getPluginName())) {
+            API_REFERENCE_PARSER.put(parser.getId(), parser);
+            if (!parser.getAliases().isEmpty()) {
+                parser.getAliases().forEach(s -> API_REFERENCE_PARSER.putIfAbsent(s, parser));
+            }
+        }
+    }
 
     private final Material type;
     private final Material craftRemain;
@@ -105,7 +102,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     private final APIReference apiReference;
     private ParticleContent particleContent;
     private MetaSettings metaSettings;
-
 
     public CustomItem(APIReference apiReference) {
         super(CustomItem.class);
@@ -150,6 +146,47 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
      */
     public CustomItem(Material material) {
         this(new ItemStack(material));
+    }
+
+    /**
+     * @param customItem A new deep copy of the passed in CustomItem.
+     */
+    private CustomItem(CustomItem customItem) {
+        super(CustomItem.class);
+        this.apiReference = customItem.apiReference.clone();
+
+        this.namespacedKey = customItem.getNamespacedKey();
+        this.burnTime = customItem.burnTime;
+        this.allowedBlocks = new ArrayList<>(customItem.allowedBlocks);
+        this.metaSettings = customItem.metaSettings;
+        this.permission = customItem.permission;
+        this.rarityPercentage = customItem.rarityPercentage;
+        this.customDataMap.clear();
+        for (Map.Entry<me.wolfyscript.utilities.util.NamespacedKey, CustomData> entry : customItem.customDataMap.entrySet()) {
+            this.customDataMap.put(entry.getKey(), entry.getValue().clone());
+        }
+        this.equipmentSlots = new ArrayList<>(customItem.equipmentSlots);
+        this.particleContent = customItem.particleContent;
+        this.blockPlacement = customItem.blockPlacement;
+        this.blockVanillaEquip = customItem.blockVanillaEquip;
+        this.blockVanillaRecipes = customItem.blockVanillaRecipes;
+        this.advanced = customItem.advanced;
+
+        this.consumed = customItem.consumed;
+        this.replacement = customItem.replacement;
+        this.durabilityCost = customItem.durabilityCost;
+        this.type = getItemStack() != null ? getItemStack().getType() : Material.AIR;
+        this.craftRemain = getCraftRemain();
+    }
+
+    /**
+     * Clones the CustomItem and all the containing data.
+     *
+     * @return A exact deep copy of this CustomItem instance.
+     */
+    @Override
+    public CustomItem clone() {
+        return new CustomItem(this);
     }
 
     /**
@@ -446,34 +483,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Clone
     @Override
     public int hashCode() {
         return Objects.hash(getCustomDataMap(), getNamespacedKey(), getReplacement(), getAllowedBlocks(), getPermission(), getRarityPercentage(), getBurnTime(), getDurabilityCost(), isConsumed(), blockPlacement, isAdvanced(), isBlockVanillaEquip(), isBlockVanillaRecipes(), getEquipmentSlots(), getApiReference(), getParticleContent(), getMetaSettings());
-    }
-
-    /**
-     * If linked to config it will create a new instance with the values from the config,
-     * else copies this instance of the ItemStack.
-     *
-     * @return exact copy of this instance
-     */
-    @Override
-    public CustomItem clone() {
-        CustomItem customItem = new CustomItem(getApiReference());
-        if (hasNamespacedKey()) {
-            customItem.setNamespacedKey(getNamespacedKey());
-        }
-        customItem.setBlockVanillaRecipes(isBlockVanillaRecipes());
-        customItem.setBlockVanillaEquip(isBlockVanillaEquip());
-        customItem.setAllowedBlocks(getAllowedBlocks());
-        customItem.setBurnTime(getBurnTime());
-        customItem.setConsumed(isConsumed());
-        customItem.setDurabilityCost(getDurabilityCost());
-        customItem.setMetaSettings(getMetaSettings());
-        customItem.setParticleContent(getParticleContent());
-        customItem.setPermission(getPermission());
-        customItem.setRarityPercentage(getRarityPercentage());
-        customItem.setReplacement(getReplacement());
-        customItem.setAdvanced(isAdvanced());
-        customItem.setAmount(getAmount());
-        return customItem;
     }
 
     /**
