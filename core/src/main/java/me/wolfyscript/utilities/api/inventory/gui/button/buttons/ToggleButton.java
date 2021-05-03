@@ -89,7 +89,6 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public void init(GuiCluster<C> guiCluster) {
-        super.init(guiCluster);
         states.getKey().init(guiCluster);
         states.getValue().init(guiCluster);
     }

@@ -145,72 +145,6 @@ public class ButtonState<C extends CustomCache> {
         this(buttonKey, new ItemStack(presetIcon), action, postAction, prepareRender, render);
     }
 
-    @Deprecated
-    public ButtonState(String clusterID, String key, ItemStack presetIcon) {
-        this(clusterID, key, presetIcon, null, null);
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
-        this(clusterID, key, presetIcon, null, render);
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
-        this(clusterID, key, presetIcon, action, null);
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
-        this(clusterID, key, presetIcon, action, null, render);
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
-        this(clusterID, key, presetIcon, action, null, prepareRender, render);
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
-        this.action = action;
-        this.postAction = postAction;
-        this.prepareRender = prepareRender;
-        this.buttonRender = render;
-        this.presetIcon = presetIcon;
-        this.clusterID = clusterID;
-        this.key = key;
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, Material presetIcon) {
-        this(clusterID, key, presetIcon, null, null);
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonRender<C> render) {
-        this(clusterID, key, presetIcon, null, render);
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action) {
-        this(clusterID, key, presetIcon, action, null);
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
-        this(clusterID, key, presetIcon, action, null, render);
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
-        this(clusterID, key, presetIcon, action, null, prepareRender, render);
-    }
-
-    @Deprecated
-    public ButtonState(String clusterID, String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
-        this(clusterID, key, new ItemStack(presetIcon), action, postAction, prepareRender, render);
-    }
-
     /*
     Not linked to language file
      */
@@ -224,16 +158,9 @@ public class ButtonState<C extends CustomCache> {
         this(new ItemStack(presetIcon), displayName, normalLore, action);
     }
 
-    //------------------------------------------------
-    @Deprecated
-    public void init(String clusterID, WolfyUtilities api) {
-        //Nothing!
-    }
-
     public void init(GuiCluster<C> cluster) {
         this.wolfyUtilities = cluster.getWolfyUtilities();
         //For backwards compatibility!
-        init(cluster.getId(), this.wolfyUtilities);
         if (this.clusterID == null) {
             this.clusterID = cluster.getId();
         }

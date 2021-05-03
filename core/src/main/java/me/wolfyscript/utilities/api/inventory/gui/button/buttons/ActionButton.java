@@ -94,7 +94,6 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public void init(GuiCluster<C> guiCluster) {
-        super.init(guiCluster);
         state.init(guiCluster);
     }
 

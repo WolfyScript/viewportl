@@ -63,11 +63,10 @@ public class WUPlugin extends JavaPlugin {
     public WUPlugin() {
         super();
         instance = this;
-        this.wolfyUtilities = WolfyUtilities.get(this, false);
+        this.wolfyUtilities = WolfyUtilities.get(this);
         ServerVersion.setWUVersion(getDescription().getVersion());
         this.chat = wolfyUtilities.getChat();
-        chat.setCONSOLE_PREFIX("[WU] ");
-        chat.setIN_GAME_PREFIX("§8[§3WU§8] §7");
+        chat.setInGamePrefix("§8[§3WU§8] §7");
     }
 
     public static WUPlugin getInstance() {

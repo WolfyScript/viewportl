@@ -79,11 +79,6 @@ public class ItemInputButton<C extends CustomCache> extends ActionButton<C> {
     }
 
     @Override
-    public void preRender(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, boolean help) {
-        super.preRender(guiHandler, player, inventory, itemStack, slot, help);
-    }
-
-    @Override
     public void render(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ItemStack itemStack, int slot, boolean help) throws IOException {
         ItemStack item = content.getOrDefault(guiHandler, new ItemStack(Material.AIR));
         HashMap<String, Object> values = new HashMap<>();

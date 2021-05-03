@@ -63,7 +63,6 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public void init(GuiCluster<C> guiCluster) {
-        super.init(guiCluster);
         for (ButtonState<C> btnState : states) {
             btnState.init(guiCluster);
         }
