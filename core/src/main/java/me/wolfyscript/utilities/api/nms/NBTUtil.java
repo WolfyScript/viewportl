@@ -2,20 +2,12 @@ package me.wolfyscript.utilities.api.nms;
 
 import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
 
-public abstract class NBTUtil {
+public abstract class NBTUtil extends UtilComponent {
 
-    private final NMSUtil nmsUtil;
     protected NBTTag nbtTag;
 
     protected NBTUtil(NMSUtil nmsUtil) {
-        this.nmsUtil = nmsUtil;
-    }
-
-    /**
-     * @return The current NMSUtil
-     */
-    public NMSUtil getNmsUtil() {
-        return nmsUtil;
+        super(nmsUtil);
     }
 
     /**

@@ -6,16 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
-public abstract class RecipeUtil {
-
-    private final NMSUtil nmsUtil;
+public abstract class RecipeUtil extends UtilComponent {
 
     protected RecipeUtil(NMSUtil nmsUtil) {
-        this.nmsUtil = nmsUtil;
-    }
-
-    public NMSUtil getNmsUtil() {
-        return nmsUtil;
+        super(nmsUtil);
     }
 
     /**

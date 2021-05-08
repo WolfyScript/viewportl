@@ -9,16 +9,10 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 
-public abstract class InventoryUtil {
-
-    private final NMSUtil nmsUtil;
+public abstract class InventoryUtil extends UtilComponent {
 
     protected InventoryUtil(NMSUtil nmsUtil) {
-        this.nmsUtil = nmsUtil;
-    }
-
-    public NMSUtil getNmsUtil() {
-        return nmsUtil;
+        super(nmsUtil);
     }
 
     public abstract <C extends CustomCache> GUIInventory<C> createGUIInventory(GuiHandler<C> guiHandler, GuiWindow<C> window, InventoryType type);

@@ -3,16 +3,10 @@ package me.wolfyscript.utilities.api.nms;
 import me.wolfyscript.utilities.api.nms.block.NMSBrewingStand;
 import org.bukkit.block.BrewingStand;
 
-public abstract class BlockUtil {
-
-    private final NMSUtil nmsUtil;
+public abstract class BlockUtil extends UtilComponent {
 
     protected BlockUtil(NMSUtil nmsUtil) {
-        this.nmsUtil = nmsUtil;
-    }
-
-    public NMSUtil getNmsUtil() {
-        return nmsUtil;
+        super(nmsUtil);
     }
 
     /**
