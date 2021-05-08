@@ -8,7 +8,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
-import me.wolfyscript.utilities.api.network.MessageChannelHandler;
+import me.wolfyscript.utilities.api.network.messages.MessageChannelHandler;
 import me.wolfyscript.utilities.api.nms.NBTUtil;
 import me.wolfyscript.utilities.api.nms.nbt.NBTCompound;
 import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
@@ -188,18 +188,21 @@ public class WUPlugin extends JavaPlugin {
     }
 
     private void registerPluginMessages() {
-        messageChannelHandler = new MessageChannelHandler(this, new NamespacedKey("wolfyutilities", "main"));
+        messageChannelHandler = new MessageChannelHandler(wolfyUtilities, new NamespacedKey("wolfyutilities", "main"));
+
         messageChannelHandler.registerMessage(1, WolfyUtilitiesVerifyMessage.class, (message, output) -> {
             output.writeBoolean(message.hasWolfyUtilities());
-            output.writeUTF(message.getVersion());
+            output.writeUtf(message.getVersion());
         }, in -> new WolfyUtilitiesVerifyMessage(false, ""), (message, player) -> {
-            if (player.hasPermission("wolfyutilities.network.verify_plugin")) {
-                messageChannelHandler.sendTo(player, new WolfyUtilitiesVerifyMessage(true, getDescription().getVersion()));
+            System.out.println("Received Message from client: ");
+            if (player.hasPermission("wolfyutilities.network.connect")) {
+                Bukkit.getScheduler().runTaskLater(this, () -> messageChannelHandler.sendTo(player, new WolfyUtilitiesVerifyMessage(true, getDescription().getVersion())), 40);
             }
         });
+
         messageChannelHandler.registerMessage(2, InputButtonMessage.class, (inputButtonMessage, output) -> {
-            output.writeUTF(inputButtonMessage.getButtonID());
-            output.writeUTF(inputButtonMessage.getMessage());
+            output.writeUtf(inputButtonMessage.getButtonID());
+            output.writeUtf(inputButtonMessage.getMessage());
         }, null, (inputButtonMessage, player) -> {
         });
     }
