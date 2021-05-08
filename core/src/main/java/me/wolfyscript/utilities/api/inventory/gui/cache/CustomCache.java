@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public abstract class CustomCache {
+public class CustomCache {
 
     private final Map<GuiWindow<?>, Map<Integer, String>> cachedButtons;
     private final Map<NamespacedKey, Map<String, Object>> windows;

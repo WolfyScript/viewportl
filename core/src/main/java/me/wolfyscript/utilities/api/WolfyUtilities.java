@@ -7,7 +7,6 @@ import me.wolfyscript.utilities.api.console.Console;
 import me.wolfyscript.utilities.api.inventory.BookUtil;
 import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
-import me.wolfyscript.utilities.api.inventory.gui.cache.WUCache;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
 import me.wolfyscript.utilities.util.exceptions.InvalidCacheTypeException;
@@ -109,7 +108,7 @@ public class WolfyUtilities {
     }
 
     private WolfyUtilities(Plugin plugin, boolean init) {
-        this(plugin, WUCache.class, init);
+        this(plugin, CustomCache.class, init);
     }
 
     public final void initialize() {
