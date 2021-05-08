@@ -16,6 +16,7 @@ public abstract class NMSUtil {
     protected RecipeUtil recipeUtil;
     protected InventoryUtil inventoryUtil;
     protected NBTUtil nbtUtil;
+    protected NetworkUtil networkUtil;
 
     /**
      * The class that implements this NMSUtil needs to have a constructor with just the WolfyUtilities parameter.
@@ -76,5 +77,9 @@ public abstract class NMSUtil {
 
     public RecipeUtil getRecipeUtil() {
         return recipeUtil;
+    }
+
+    public NetworkUtil getNetworkUtil() {
+        return networkUtil;
     }
 }
