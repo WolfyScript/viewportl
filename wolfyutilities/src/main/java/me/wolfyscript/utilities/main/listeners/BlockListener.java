@@ -1,9 +1,6 @@
 package me.wolfyscript.utilities.main.listeners;
 
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import me.wolfyscript.utilities.main.WUPlugin;
-import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.events.CustomItemBreakEvent;
 import me.wolfyscript.utilities.util.events.CustomItemPlaceEvent;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -26,8 +23,6 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -213,7 +208,7 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (!event.isCancelled() && event.canBuild()) {
-            CustomItem customItem = Registry.CUSTOM_ITEMS.get(NamespacedKey.of(getCustomItemID(event.getItemInHand())));
+            CustomItem customItem = CustomItem.getByItemStack(event.getItemInHand());
             if (!ItemUtils.isAirOrNull(customItem) && customItem.getItemStack().getType().isBlock()) {
                 if (customItem.isBlockPlacement()) {
                     event.setCancelled(true);
@@ -237,7 +232,7 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPlaceMulti(BlockMultiPlaceEvent event) {
         if (!event.isCancelled()) {
-            CustomItem customItem = Registry.CUSTOM_ITEMS.get(NamespacedKey.of(getCustomItemID(event.getItemInHand())));
+            CustomItem customItem = CustomItem.getByItemStack(event.getItemInHand());
             if (!ItemUtils.isAirOrNull(customItem)) {
                 if (customItem.isBlockPlacement()) {
                     event.setCancelled(true);
@@ -246,15 +241,5 @@ public class BlockListener implements Listener {
                 event.getReplacedBlockStates().forEach(state -> WorldUtils.getWorldCustomItemStore().store(state.getLocation(), customItem));
             }
         }
-    }
-
-    private String getCustomItemID(ItemStack itemStack) {
-        if (!ItemUtils.isAirOrNull(itemStack)) {
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            if (itemMeta != null && itemMeta.getPersistentDataContainer().has(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "custom_item"), PersistentDataType.STRING)) {
-                return itemMeta.getPersistentDataContainer().get(new org.bukkit.NamespacedKey(WUPlugin.getInstance(), "custom_item"), PersistentDataType.STRING);
-            }
-        }
-        return "";
     }
 }

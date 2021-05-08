@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
 import me.wolfyscript.utilities.util.particles.ParticleUtils;
@@ -35,7 +34,7 @@ public class WorldCustomItemStore {
     public void store(Location location, CustomItem customItem) {
         if (location == null) return;
         ParticleUtils.stopAnimation(getStoredEffect(location));
-        if (customItem.getApiReference() instanceof WolfyUtilitiesRef || customItem.hasNamespacedKey()) {
+        if (customItem.hasNamespacedKey()) {
             setStore(location, new BlockCustomItemStore(customItem, null));
             ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), location.getBlock());
         }
