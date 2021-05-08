@@ -41,11 +41,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         this.wolfyUtilities = wolfyUtilities;
         this.plugin = plugin;
         this.customCacheClass = customCacheClass;
-        try {
-            customCacheClass.getDeclaredConstructor().newInstance();
-        } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        getCacheInstance();
     }
 
     /**
