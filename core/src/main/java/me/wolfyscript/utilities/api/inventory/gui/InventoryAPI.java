@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -167,7 +168,9 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
      */
     public C getCacheInstance() {
         try {
-            return this.customCacheClass.getDeclaredConstructor().newInstance();
+            Constructor<C> constructor = this.customCacheClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor.newInstance();
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
