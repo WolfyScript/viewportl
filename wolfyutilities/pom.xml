@@ -26,6 +26,12 @@
             <version>2.11.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.63.Final</version>
+            <scope>compile</scope>
+        </dependency>
         <!-- NMS module -->
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
@@ -97,6 +103,10 @@
                                     <shadedPattern>me.wolfyscript.utilities.libraries.com.fasterxml.jackson
                                     </shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>io.netty</pattern>
+                                    <shadedPattern>me.wolfyscript.utilities.libraries.io.netty4</shadedPattern>
+                                </relocation>
                             </relocations>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
@@ -105,6 +115,7 @@
                                     <include>com.wolfyscript.wolfyutilities</include>
                                     <include>org.bstats</include>
                                     <include>com.fasterxml.jackson.core</include>
+                                    <include>io.netty</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
