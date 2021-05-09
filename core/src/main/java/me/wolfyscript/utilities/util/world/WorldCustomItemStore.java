@@ -18,7 +18,7 @@ import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,13 +26,12 @@ import java.util.UUID;
 @JsonDeserialize(using = WorldCustomItemStore.Deserializer.class)
 public class WorldCustomItemStore {
 
-    private final Map<Location, BlockCustomItemStore> store = new Hashtable<>();
+    private final Map<Location, BlockCustomItemStore> store = new HashMap<>();
 
     public WorldCustomItemStore() {
     }
 
     public void store(Location location, CustomItem customItem) {
-        if (location == null) return;
         ParticleUtils.stopAnimation(getStoredEffect(location));
         if (customItem.hasNamespacedKey()) {
             setStore(location, new BlockCustomItemStore(customItem, null));
@@ -46,10 +45,8 @@ public class WorldCustomItemStore {
      * @param location The target location of the block
      */
     public void remove(Location location) {
-        if (location != null) {
-            ParticleUtils.stopAnimation(getStoredEffect(location));
-            store.remove(location);
-        }
+        ParticleUtils.stopAnimation(getStoredEffect(location));
+        store.remove(location);
     }
 
     public boolean isStored(Location location) {
@@ -83,9 +80,7 @@ public class WorldCustomItemStore {
     }
 
     void setStore(Location location, BlockCustomItemStore blockStore) {
-        if (location != null && blockStore != null) {
-            store.put(location, blockStore);
-        }
+        store.put(location, blockStore);
     }
 
     public void initiateMissingBlockEffects() {

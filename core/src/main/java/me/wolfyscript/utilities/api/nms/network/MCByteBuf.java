@@ -21,8 +21,8 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * This Class acts as a Wrapper for the Minecraft ByteBuf to make it able to encode ItemStacks and more correctly.
- * Using this wrapper makes sure the data is correctly encoded and can be decoded on the client.
+ * This Class acts as a Wrapper for the Minecraft ByteBuf to make it able to correctly encode ItemStacks and more.
+ * This wrapper makes sure the data is correctly encoded and can be decoded on the client.
  */
 public interface MCByteBuf {
 

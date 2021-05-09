@@ -51,16 +51,11 @@ public class MessageChannelHandler implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message) {
-        api.getConsole().info("    Got message from channel: " + channel);
         if (!channel.equals(channelTag.toString())) {
             return;
         }
-        //TODO: Receive message from FABRIC Client
         MCByteBuf byteBuf = api.getNmsUtil().getNetworkUtil().buffer(Unpooled.wrappedBuffer(message));
-
         int index = byteBuf.readVarInt();
-        api.getConsole().info("ID: " + index);
-
         MessageHandler<?> messageHandler = indexedMessages.get(index);
         if (messageHandler != null) {
             messageHandler.fromBytes(byteBuf, player);
