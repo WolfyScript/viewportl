@@ -136,7 +136,7 @@ public class WUPlugin extends JavaPlugin {
         WorldUtils.load();
         PlayerUtils.loadStores();
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::load, 300000, 300000);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::save, 6000, 6000);
 
         registerListeners();
         registerCommands();
@@ -145,14 +145,6 @@ public class WUPlugin extends JavaPlugin {
         CreativeModeTab.init();
 
         loadParticleEffects();
-
-        ParticleEffects.load();
-        try {
-            File file = new File(getDataFolder(), "test_animation.json");
-            JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_ANIMATIONS.get(new NamespacedKey("wolfyutilities", "flame_circle")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         //Used to test the NBT Tag API!
         testNBTAPI(false);
     }
@@ -161,11 +153,19 @@ public class WUPlugin extends JavaPlugin {
     public void onDisable() {
         wolfyUtilities.getConfigAPI().saveConfigs();
         PlayerUtils.saveStores();
+        getLogger().info("Save stored Custom Items");
         WorldUtils.save();
     }
 
     public void loadParticleEffects() {
         getLogger().info("Loading Particles");
+        ParticleEffects.load();
+        try {
+            File file = new File(getDataFolder(), "test_animation.json");
+            JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_ANIMATIONS.get(new NamespacedKey("wolfyutilities", "flame_circle")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         WorldUtils.getWorldCustomItemStore().initiateMissingBlockEffects();
     }
 
@@ -194,7 +194,6 @@ public class WUPlugin extends JavaPlugin {
             output.writeBoolean(message.hasWolfyUtilities());
             output.writeUtf(message.getVersion());
         }, in -> new WolfyUtilitiesVerifyMessage(false, ""), (message, player) -> {
-            System.out.println("Received Message from client: ");
             if (player.hasPermission("wolfyutilities.network.connect")) {
                 Bukkit.getScheduler().runTaskLater(this, () -> messageChannelHandler.sendTo(player, new WolfyUtilitiesVerifyMessage(true, getDescription().getVersion())), 40);
             }
