@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.main;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
+import me.wolfyscript.utilities.api.console.Console;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
@@ -57,6 +58,7 @@ public class WUPlugin extends JavaPlugin {
     private final WolfyUtilities wolfyUtilities;
 
     private final Chat chat;
+    private final Console console;
     private Metrics metrics;
     private MessageChannelHandler messageChannelHandler;
 
@@ -66,6 +68,7 @@ public class WUPlugin extends JavaPlugin {
         this.wolfyUtilities = WolfyUtilities.get(this);
         ServerVersion.setWUVersion(getDescription().getVersion());
         this.chat = wolfyUtilities.getChat();
+        this.console = wolfyUtilities.getConsole();
         chat.setInGamePrefix("§8[§3WU§8] §7");
     }
 
@@ -115,12 +118,12 @@ public class WUPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         this.wolfyUtilities.initialize();
-        getLogger().info("Minecraft version: " + ServerVersion.getVersion().getVersion());
-        getLogger().info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
+        console.info("Minecraft version: " + ServerVersion.getVersion().getVersion());
+        console.info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
         this.metrics = new Metrics(this, 5114);
 
         // Register plugin CustomItem API ReferenceParser
-        getLogger().info("Register API references");
+        console.info("Register API references");
         CustomItem.registerAPIReferenceParser(new VanillaRef.Parser());
         CustomItem.registerAPIReferenceParser(new WolfyUtilitiesRef.Parser());
         CustomItem.registerAPIReferenceParser(new OraxenRef.Parser());
@@ -153,12 +156,12 @@ public class WUPlugin extends JavaPlugin {
     public void onDisable() {
         wolfyUtilities.getConfigAPI().saveConfigs();
         PlayerUtils.saveStores();
-        getLogger().info("Save stored Custom Items");
+        console.info("Save stored Custom Items");
         WorldUtils.save();
     }
 
     public void loadParticleEffects() {
-        getLogger().info("Loading Particles");
+        console.info("Loading Particles");
         ParticleEffects.load();
         try {
             File file = new File(getDataFolder(), "test_animation.json");
@@ -267,39 +270,39 @@ public class WUPlugin extends JavaPlugin {
 
         compound.set("wolfy", wolfyCompound);
 
-        getLogger().info("Item: ");
-        getLogger().info("Tag: " + nbtItem.getCompound().toString());
-        getLogger().info("Keys: ");
-        getLogger().info("    - " + String.join("\n    - ", nbtItem.getKeys()));
+        console.info("Item: ");
+        console.info("Tag: " + nbtItem.getCompound().toString());
+        console.info("Keys: ");
+        console.info("    - " + String.join("\n    - ", nbtItem.getKeys()));
 
         ItemStack newItem = nbtItem.create();
         NBTItem newNBTItem = nbt.getItem(newItem);
-        getLogger().info("New Item: ");
-        getLogger().info("Tag: " + nbtItem.getCompound().toString());
-        getLogger().info("Item Keys: ");
+        console.info("New Item: ");
+        console.info("Tag: " + nbtItem.getCompound().toString());
+        console.info("Item Keys: ");
         for (String key : newNBTItem.getKeys()) {
-            getLogger().info(" - " + key + " = " + newNBTItem.getTag(key));
+            console.info(" - " + key + " = " + newNBTItem.getTag(key));
         }
 
         NBTCompound wolfyComp = newNBTItem.getCompound("wolfy");
         if (wolfyComp != null) {
-            getLogger().info("Wolfy Values: ");
-            getLogger().info("    Byte = " + wolfyComp.getByte("Byte"));
-            getLogger().info("    Boolean = " + wolfyComp.getBoolean("Boolean"));
-            getLogger().info("    Double = " + wolfyComp.getDouble("Double"));
-            getLogger().info("    Float = " + wolfyComp.getFloat("Float"));
-            getLogger().info("    Int = " + wolfyComp.getInt("Int"));
-            getLogger().info("    Long = " + wolfyComp.getLong("Long"));
-            getLogger().info("    Short = " + wolfyComp.getShort("Short"));
-            getLogger().info("    String = " + wolfyComp.getString("String"));
-            getLogger().info("    ByteArray = " + Arrays.toString(wolfyComp.getByteArray("ByteArray")));
-            getLogger().info("    IntArray = " + Arrays.toString(wolfyComp.getIntArray("IntArray")));
-            getLogger().info("    LongArray = " + Arrays.toString(wolfyComp.getLongArray("LongArray")));
-            getLogger().info("    Nested = " + wolfyComp.get("Nested"));
+            console.info("Wolfy Values: ");
+            console.info("    Byte = " + wolfyComp.getByte("Byte"));
+            console.info("    Boolean = " + wolfyComp.getBoolean("Boolean"));
+            console.info("    Double = " + wolfyComp.getDouble("Double"));
+            console.info("    Float = " + wolfyComp.getFloat("Float"));
+            console.info("    Int = " + wolfyComp.getInt("Int"));
+            console.info("    Long = " + wolfyComp.getLong("Long"));
+            console.info("    Short = " + wolfyComp.getShort("Short"));
+            console.info("    String = " + wolfyComp.getString("String"));
+            console.info("    ByteArray = " + Arrays.toString(wolfyComp.getByteArray("ByteArray")));
+            console.info("    IntArray = " + Arrays.toString(wolfyComp.getIntArray("IntArray")));
+            console.info("    LongArray = " + Arrays.toString(wolfyComp.getLongArray("LongArray")));
+            console.info("    Nested = " + wolfyComp.get("Nested"));
             NBTTagList nbtTagList = (NBTTagList) wolfyComp.get("IntArrayList");
-            getLogger().info("    IntArrayList = " + nbtTagList);
+            console.info("    IntArrayList = " + nbtTagList);
             for (int i = 0; i < nbtTagList.size(); i++) {
-                getLogger().info("       - " + nbtTagList.getTag(i));
+                console.info("       - " + nbtTagList.getTag(i));
             }
         }
     }
