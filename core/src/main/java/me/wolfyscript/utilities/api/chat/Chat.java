@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class Chat {
 
@@ -139,6 +140,94 @@ public class Chat {
         public void actionRemoval(PlayerQuitEvent event) {
             CLICK_DATA_MAP.keySet().removeIf(uuid -> CLICK_DATA_MAP.get(uuid).getUuid().equals(event.getPlayer().getUniqueId()));
         }
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getInGamePrefix()}
+     */
+    @Deprecated
+    public String getIN_GAME_PREFIX() {
+        return inGamePrefix;
+    }
+
+    /**
+     * @deprecated Replaced by {@link #setInGamePrefix(String)}
+     */
+    @Deprecated
+    public void setIN_GAME_PREFIX(String inGamePrefix) {
+        this.inGamePrefix = inGamePrefix;
+    }
+
+    /**
+     * @deprecated Due to logger changes it is no longer used and required!
+     */
+    @Deprecated
+    public String getConsolePrefix() {
+        return "[" + plugin.getName() + "]";
+    }
+
+    /**
+     * @deprecated Due to logger changes it is no longer used and required!
+     */
+    @Deprecated
+    public void setConsolePrefix(String consolePrefix) {
+        //NOTHING!
+    }
+
+    /**
+     * @deprecated Due to logger changes it is no longer used and required!
+     */
+    @Deprecated
+    public String getCONSOLE_PREFIX() {
+        return getConsolePrefix();
+    }
+
+    /**
+     * @deprecated Due to logger changes it is no longer used and required!
+     */
+    @Deprecated
+    public void setCONSOLE_PREFIX(String consolePrefix) {
+        setConsolePrefix(consolePrefix);
+    }
+
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#info(String)}!
+     */
+    @Deprecated
+    public void sendConsoleMessage(String message) {
+        wolfyUtilities.getConsole().info(message);
+    }
+
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#log(Level, String, String...)}!
+     */
+    @Deprecated
+    public void sendConsoleMessage(String message, String... replacements) {
+        wolfyUtilities.getConsole().log(Level.INFO, message, replacements);
+    }
+
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#log(Level, String, String[]...)}!
+     */
+    @Deprecated
+    public void sendConsoleMessage(String message, String[]... replacements) {
+        wolfyUtilities.getConsole().log(Level.INFO, message, replacements);
+    }
+
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#warn(String)}!
+     */
+    @Deprecated
+    public void sendConsoleWarning(String message) {
+        wolfyUtilities.getConsole().warn(message);
+    }
+
+    /**
+     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#debug(String)}!
+     */
+    @Deprecated
+    public void sendDebugMessage(String message) {
+        wolfyUtilities.getConsole().debug(message);
     }
 
 }
