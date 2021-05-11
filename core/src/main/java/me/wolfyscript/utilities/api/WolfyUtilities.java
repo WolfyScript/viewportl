@@ -8,6 +8,7 @@ import me.wolfyscript.utilities.api.inventory.BookUtil;
 import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
+import me.wolfyscript.utilities.api.network.messages.MessageAPI;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
 import me.wolfyscript.utilities.util.exceptions.InvalidCacheTypeException;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -79,6 +80,7 @@ public class WolfyUtilities {
     private final ItemUtils itemUtils;
     private final Permissions permissions;
     private final BookUtil bookUtil;
+    private final MessageAPI messageAPI;
     private final NMSUtil nmsUtil;
     private final boolean initialize;
 
@@ -97,6 +99,7 @@ public class WolfyUtilities {
         this.itemUtils = new ItemUtils(this);
         this.nmsUtil = NMSUtil.create(this);
         this.bookUtil = new BookUtil(this);
+        this.messageAPI = new MessageAPI(this);
         this.initialize = initialize;
         if (initialize) {
             initialize();
@@ -262,6 +265,10 @@ public class WolfyUtilities {
      */
     public BookUtil getBookUtil() {
         return bookUtil;
+    }
+
+    public MessageAPI getMessageAPI() {
+        return messageAPI;
     }
 
     /**

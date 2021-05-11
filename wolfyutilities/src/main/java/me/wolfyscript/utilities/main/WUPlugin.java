@@ -9,7 +9,6 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
-import me.wolfyscript.utilities.api.network.messages.MessageChannelHandler;
 import me.wolfyscript.utilities.api.nms.NBTUtil;
 import me.wolfyscript.utilities.api.nms.nbt.NBTCompound;
 import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
@@ -24,8 +23,8 @@ import me.wolfyscript.utilities.main.listeners.GUIInventoryListener;
 import me.wolfyscript.utilities.main.listeners.PlayerListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
-import me.wolfyscript.utilities.main.messages.InputButtonMessage;
-import me.wolfyscript.utilities.main.messages.WolfyUtilitiesVerifyMessage;
+import me.wolfyscript.utilities.main.messages.MessageFactory;
+import me.wolfyscript.utilities.main.messages.MessageHandler;
 import me.wolfyscript.utilities.main.particles.ParticleEffects;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
@@ -60,7 +59,9 @@ public class WUPlugin extends JavaPlugin {
     private final Chat chat;
     private final Console console;
     private Metrics metrics;
-    private MessageChannelHandler messageChannelHandler;
+
+    private final MessageHandler messageHandler;
+    private final MessageFactory messageFactory;
 
     public WUPlugin() {
         super();
@@ -70,10 +71,17 @@ public class WUPlugin extends JavaPlugin {
         this.chat = wolfyUtilities.getChat();
         this.console = wolfyUtilities.getConsole();
         chat.setInGamePrefix("§8[§3WU§8] §7");
+
+        this.messageHandler = new MessageHandler(this);
+        this.messageFactory = new MessageFactory(this);
     }
 
     public static WUPlugin getInstance() {
         return instance;
+    }
+
+    public WolfyUtilities getWolfyUtilities() {
+        return wolfyUtilities;
     }
 
     @Override
@@ -191,22 +199,7 @@ public class WUPlugin extends JavaPlugin {
     }
 
     private void registerPluginMessages() {
-        messageChannelHandler = new MessageChannelHandler(wolfyUtilities, new NamespacedKey("wolfyutilities", "main"));
 
-        messageChannelHandler.registerMessage(1, WolfyUtilitiesVerifyMessage.class, (message, output) -> {
-            output.writeBoolean(message.hasWolfyUtilities());
-            output.writeUtf(message.getVersion());
-        }, in -> new WolfyUtilitiesVerifyMessage(false, ""), (message, player) -> {
-            if (player.hasPermission("wolfyutilities.network.connect")) {
-                Bukkit.getScheduler().runTaskLater(this, () -> messageChannelHandler.sendTo(player, new WolfyUtilitiesVerifyMessage(true, getDescription().getVersion())), 40);
-            }
-        });
-
-        messageChannelHandler.registerMessage(2, InputButtonMessage.class, (inputButtonMessage, output) -> {
-            output.writeUtf(inputButtonMessage.getButtonID());
-            output.writeUtf(inputButtonMessage.getMessage());
-        }, null, (inputButtonMessage, player) -> {
-        });
     }
 
     @Override
@@ -223,8 +216,12 @@ public class WUPlugin extends JavaPlugin {
         return true;
     }
 
-    public MessageChannelHandler getPacketHandler() {
-        return messageChannelHandler;
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
+    }
+
+    public MessageFactory getMessageFactory() {
+        return messageFactory;
     }
 
     private void testNBTAPI(boolean test) {
