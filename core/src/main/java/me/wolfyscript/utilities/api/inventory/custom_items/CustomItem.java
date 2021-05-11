@@ -437,7 +437,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @return true if the ItemStack is equal to this CustomItems ItemStack
      */
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta) {
-        if (otherItem != null && otherItem.getType().equals(type) && otherItem.getAmount() >= getAmount()) {
+        if (otherItem != null && otherItem.getType().equals(this.type) && otherItem.getAmount() >= getAmount()) {
             if (hasNamespacedKey()) {
                 CustomItem other = CustomItem.getByItemStack(otherItem);
                 if (ItemUtils.isAirOrNull(other) || !other.hasNamespacedKey() || !getNamespacedKey().equals(other.getNamespacedKey())) {
@@ -447,7 +447,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 return false;
             }
             if ((exactMeta || hasItemMeta()) && (isAdvanced() || (getApiReference() instanceof VanillaRef && !hasNamespacedKey()))) {
-                ItemBuilder customItem = new ItemBuilder(getItemStack());
+                ItemBuilder customItem = new ItemBuilder(getItemStack().clone());
                 ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
                 return getMetaSettings().check(customItemOther, customItem) && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
             }
