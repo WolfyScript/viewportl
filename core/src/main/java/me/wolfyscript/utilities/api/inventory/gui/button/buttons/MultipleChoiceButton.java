@@ -86,7 +86,7 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public void postExecute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
-        int setting = settings.getOrDefault(guiHandler, 0);
+        int setting = settings.computeIfAbsent(guiHandler, g -> 0);
         if (states != null && setting < states.size()) {
             ButtonState<C> btnState = states.get(setting);
             if (btnState.getPostAction() != null) {
@@ -105,7 +105,7 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public void render(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
-        int setting = settings.getOrDefault(guiHandler, 0);
+        int setting = settings.computeIfAbsent(guiHandler, g -> 0);
         if (states != null && states.size() > setting) {
             applyItem(guiHandler, player, guiInventory, inventory, states.get(setting), slot, help);
         }

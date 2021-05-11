@@ -81,6 +81,10 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
         settings.put(guiHandler, enabled);
     }
 
+    public ButtonState<C> getState(GuiHandler<C> guiHandler) {
+        return Boolean.TRUE.equals(settings.getOrDefault(guiHandler, defaultState)) ? states.getKey() : states.getValue();
+    }
+
     @Override
     public void init(GuiWindow<C> guiWindow) {
         states.getKey().init(guiWindow);
@@ -95,7 +99,7 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public void postExecute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, ItemStack itemStack, int slot, InventoryInteractEvent event) throws IOException {
-        ButtonState<C> state = settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue();
+        ButtonState<C> state = getState(guiHandler);
         if (state.getPostAction() != null) {
             state.getPostAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, itemStack, slot, event);
         }
@@ -103,7 +107,7 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
-        boolean result = (settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue()).getAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot, event);
+        boolean result = getState(guiHandler).getAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot, event);
         settings.put(guiHandler, !settings.getOrDefault(guiHandler, defaultState));
         return result;
     }
@@ -120,7 +124,7 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public void render(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ItemStack itemStack, int slot, boolean help) {
-        applyItem(guiHandler, player, guiInventory, inventory, settings.getOrDefault(guiHandler, defaultState) ? states.getKey() : states.getValue(), slot, help);
+        applyItem(guiHandler, player, guiInventory, inventory, getState(guiHandler), slot, help);
     }
 
     public interface StateFunction<C extends CustomCache> {
