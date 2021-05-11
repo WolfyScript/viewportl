@@ -582,7 +582,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @param location    The location where the replacements should be dropped. (Only for stackable items)
      */
     public void consumeItem(ItemStack input, int totalAmount, Inventory inventory, Location location) {
-        if (this.create().getMaxStackSize() > 1) {
+        if (this.type.getMaxStackSize() > 1) {
             int amount = input.getAmount() - getAmount() * totalAmount;
             if (this.isConsumed()) {
                 input.setAmount(amount);
