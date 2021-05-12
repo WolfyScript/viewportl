@@ -14,7 +14,7 @@ public class MessageHandler {
         this.plugin = wuPlugin;
         this.wolfyUtils = wuPlugin.getWolfyUtilities();
         this.messageAPI = this.wolfyUtils.getMessageAPI();
-        init();
+        //init(); //Disabled for now to prevent misuse from clients!
     }
 
     public void init() {

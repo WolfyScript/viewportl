@@ -151,7 +151,6 @@ public class WUPlugin extends JavaPlugin {
 
         registerListeners();
         registerCommands();
-        registerPluginMessages();
 
         CreativeModeTab.init();
 
@@ -196,10 +195,6 @@ public class WUPlugin extends JavaPlugin {
         Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand());
         Bukkit.getServer().getPluginCommand("wui").setTabCompleter(new InputCommand());
         Bukkit.getServer().getPluginCommand("wua").setExecutor(new ChatActionCommand());
-    }
-
-    private void registerPluginMessages() {
-
     }
 
     @Override
