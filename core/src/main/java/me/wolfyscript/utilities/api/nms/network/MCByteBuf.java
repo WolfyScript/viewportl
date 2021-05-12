@@ -1,8 +1,8 @@
 package me.wolfyscript.utilities.api.nms.network;
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import me.wolfyscript.utilities.api.nms.NetworkUtil;
 import me.wolfyscript.utilities.api.nms.nbt.NBTCompound;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +22,17 @@ import java.util.UUID;
 
 /**
  * This Class acts as a Wrapper for the Minecraft ByteBuf to make it able to correctly encode ItemStacks and more.
- * This wrapper makes sure the data is correctly encoded and can be decoded on the client.
+ * This wrapper makes sure the data is correctly encoded and can be decoded on the client.<br>
+ * <p>
+ * It can be created via the {@link me.wolfyscript.utilities.api.nms.NetworkUtil}:<br>
+ * {@link NetworkUtil#buffer()}<br>
+ * {@link NetworkUtil#buffer(ByteBuf)}<br>
+ * For example:
+ * <pre>
+ *     MCByteBuf buf = wolfyUtils.getNMSUtil().getNetworkUtil().buffer();
+ *     buf.writeUtf("test");
+ *     ...
+ * </pre>
  */
 public interface MCByteBuf {
 
