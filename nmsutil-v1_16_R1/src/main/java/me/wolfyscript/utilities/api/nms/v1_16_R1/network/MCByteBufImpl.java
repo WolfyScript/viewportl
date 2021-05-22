@@ -610,16 +610,16 @@ public class MCByteBufImpl implements MCByteBuf {
         return this.byteBuf.readDouble();
     }
 
-    public ByteBuf readBytes(int i) {
-        return this.byteBuf.readBytes(i);
-    }
-
     public ByteBuf readSlice(int i) {
         return this.byteBuf.readSlice(i);
     }
 
     public ByteBuf readRetainedSlice(int i) {
         return this.byteBuf.readRetainedSlice(i);
+    }
+
+    public ByteBuf readBytes(int i) {
+        return this.byteBuf.readBytes(i);
     }
 
     public ByteBuf readBytes(ByteBuf bytebuf) {
@@ -654,12 +654,12 @@ public class MCByteBufImpl implements MCByteBuf {
         return this.byteBuf.readBytes(gatheringbytechannel, i);
     }
 
-    public CharSequence readCharSequence(int i, Charset charset) {
-        return this.byteBuf.readCharSequence(i, charset);
-    }
-
     public int readBytes(FileChannel filechannel, long i, int j) throws IOException {
         return this.byteBuf.readBytes(filechannel, i, j);
+    }
+
+    public CharSequence readCharSequence(int i, Charset charset) {
+        return this.byteBuf.readCharSequence(i, charset);
     }
 
     public ByteBuf skipBytes(int i) {
@@ -806,12 +806,12 @@ public class MCByteBufImpl implements MCByteBuf {
         return this.byteBuf.slice();
     }
 
-    public ByteBuf retainedSlice() {
-        return this.byteBuf.retainedSlice();
-    }
-
     public ByteBuf slice(int i, int j) {
         return this.byteBuf.slice(i, j);
+    }
+
+    public ByteBuf retainedSlice() {
+        return this.byteBuf.retainedSlice();
     }
 
     public ByteBuf retainedSlice(int i, int j) {
@@ -878,6 +878,10 @@ public class MCByteBufImpl implements MCByteBuf {
         return this.byteBuf.toString(i, j, charset);
     }
 
+    public String toString() {
+        return this.byteBuf.toString();
+    }
+
     public int hashCode() {
         return this.byteBuf.hashCode();
     }
@@ -888,10 +892,6 @@ public class MCByteBufImpl implements MCByteBuf {
 
     public int compareTo(ByteBuf bytebuf) {
         return this.byteBuf.compareTo(bytebuf);
-    }
-
-    public String toString() {
-        return this.byteBuf.toString();
     }
 
     public ByteBuf retain(int i) {

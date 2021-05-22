@@ -326,11 +326,11 @@ public interface MCByteBuf {
 
     double readDouble();
 
-    ByteBuf readBytes(int i);
-
     ByteBuf readSlice(int i);
 
     ByteBuf readRetainedSlice(int i);
+
+    ByteBuf readBytes(int i);
 
     ByteBuf readBytes(ByteBuf bytebuf);
 
@@ -348,9 +348,9 @@ public interface MCByteBuf {
 
     int readBytes(GatheringByteChannel gatheringbytechannel, int i) throws IOException;
 
-    CharSequence readCharSequence(int i, Charset charset);
-
     int readBytes(FileChannel filechannel, long i, int j) throws IOException;
+
+    CharSequence readCharSequence(int i, Charset charset);
 
     ByteBuf skipBytes(int i);
 
@@ -424,9 +424,9 @@ public interface MCByteBuf {
 
     ByteBuf slice();
 
-    ByteBuf retainedSlice();
-
     ByteBuf slice(int i, int j);
+
+    ByteBuf retainedSlice();
 
     ByteBuf retainedSlice(int i, int j);
 
@@ -460,13 +460,13 @@ public interface MCByteBuf {
 
     String toString(int i, int j, Charset charset);
 
+    String toString();
+
     int hashCode();
 
     boolean equals(Object object);
 
     int compareTo(ByteBuf bytebuf);
-
-    String toString();
 
     ByteBuf retain(int i);
 
