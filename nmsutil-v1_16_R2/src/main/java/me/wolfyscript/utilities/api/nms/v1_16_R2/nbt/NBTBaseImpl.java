@@ -20,4 +20,7 @@ public abstract class NBTBaseImpl<NBT extends net.minecraft.server.v1_16_R2.NBTB
         return nbt.toString();
     }
 
+    public NBT getNbt() {
+        return nbt;
+    }
 }

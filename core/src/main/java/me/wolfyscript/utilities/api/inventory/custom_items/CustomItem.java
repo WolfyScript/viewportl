@@ -437,7 +437,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @return true if the ItemStack is equal to this CustomItems ItemStack
      */
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta) {
-        if (otherItem != null && otherItem.getType().equals(type) && otherItem.getAmount() >= getAmount()) {
+        if (otherItem != null && otherItem.getType().equals(this.type) && otherItem.getAmount() >= getAmount()) {
             if (hasNamespacedKey()) {
                 CustomItem other = CustomItem.getByItemStack(otherItem);
                 if (ItemUtils.isAirOrNull(other) || !other.hasNamespacedKey() || !getNamespacedKey().equals(other.getNamespacedKey())) {
@@ -447,7 +447,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 return false;
             }
             if ((exactMeta || hasItemMeta()) && (isAdvanced() || (getApiReference() instanceof VanillaRef && !hasNamespacedKey()))) {
-                ItemBuilder customItem = new ItemBuilder(getItemStack());
+                ItemBuilder customItem = new ItemBuilder(getItemStack().clone());
                 ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
                 return getMetaSettings().check(customItemOther, customItem) && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
             }
@@ -582,7 +582,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @param location    The location where the replacements should be dropped. (Only for stackable items)
      */
     public void consumeItem(ItemStack input, int totalAmount, Inventory inventory, Location location) {
-        if (this.create().getMaxStackSize() > 1) {
+        if (this.type.getMaxStackSize() > 1) {
             int amount = input.getAmount() - getAmount() * totalAmount;
             if (this.isConsumed()) {
                 input.setAmount(amount);

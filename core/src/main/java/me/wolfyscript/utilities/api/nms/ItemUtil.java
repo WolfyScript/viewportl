@@ -2,19 +2,10 @@ package me.wolfyscript.utilities.api.nms;
 
 import java.io.IOException;
 
-public abstract class ItemUtil {
-
-    private final NMSUtil nmsUtil;
+public abstract class ItemUtil extends UtilComponent {
 
     protected ItemUtil(NMSUtil nmsUtil) {
-        this.nmsUtil = nmsUtil;
-    }
-
-    /**
-     * @return The current NMSUtil
-     */
-    public NMSUtil getNmsUtil() {
-        return nmsUtil;
+        super(nmsUtil);
     }
 
     /**

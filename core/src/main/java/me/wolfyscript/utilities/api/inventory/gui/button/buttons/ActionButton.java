@@ -94,7 +94,6 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public void init(GuiCluster<C> guiCluster) {
-        super.init(guiCluster);
         state.init(guiCluster);
     }
 
@@ -125,6 +124,7 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
         applyItem(guiHandler, player, guiInventory, inventory, state, slot, help);
     }
 
+    @Override
     public ButtonType getType() {
         return type;
     }
@@ -133,6 +133,7 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
         return state;
     }
 
+    @Override
     public String getId() {
         return id;
     }

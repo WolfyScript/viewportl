@@ -26,11 +26,11 @@ public class ChatActionCommand implements TabExecutor {
             } catch (IllegalArgumentException expected) {
                 return true;
             }
-            PlayerAction action = Chat.CLICK_DATA_MAP.get(uuid);
+            PlayerAction action = Chat.getClickData(uuid);
             if (action != null && player.getUniqueId().equals(action.getUuid())) {
                 action.run(player);
                 if (action.isDiscard()) {
-                    Chat.CLICK_DATA_MAP.remove(uuid);
+                    Chat.removeClickData(uuid);
                 }
             }
         }

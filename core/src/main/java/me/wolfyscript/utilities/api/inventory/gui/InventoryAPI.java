@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,11 +41,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         this.wolfyUtilities = wolfyUtilities;
         this.plugin = plugin;
         this.customCacheClass = customCacheClass;
-        try {
-            customCacheClass.getDeclaredConstructor().newInstance();
-        } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        getCacheInstance();
     }
 
     /**
@@ -167,7 +164,9 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
      */
     public C getCacheInstance() {
         try {
-            return this.customCacheClass.getDeclaredConstructor().newInstance();
+            Constructor<C> constructor = this.customCacheClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor.newInstance();
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -188,24 +187,24 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         event.setCancelled(true);
         if (guiWindow == null) return;
         HashMap<Integer, Button<C>> buttons = new HashMap<>();
-        if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
-            for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
-                if (event.getSlot() != buttonEntry.getKey()) {
-                    Button<C> button = guiWindow.getButton(buttonEntry.getValue());
-                    if (button instanceof ItemInputButton) {
-                        buttons.put(buttonEntry.getKey(), button);
-                        event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), inventory, buttonEntry.getKey(), event));
+        if (inventory.equals(event.getClickedInventory())) {
+            if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+                for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
+                    if (event.getSlot() != buttonEntry.getKey()) {
+                        Button<C> button = guiWindow.getButton(buttonEntry.getValue());
+                        if (button instanceof ItemInputButton) {
+                            buttons.put(buttonEntry.getKey(), button);
+                            event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), inventory, buttonEntry.getKey(), event));
+                        }
                     }
                 }
             }
-        }
-        if (inventory.equals(event.getClickedInventory())) {
             Button<C> button = guiHandler.getButton(guiWindow, event.getSlot());
             if (button != null) {
                 buttons.put(event.getSlot(), button);
                 event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), inventory, event.getSlot(), event));
             }
-        } else {
+        } else if (!event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
             event.setCancelled(false);
             if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                 for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {

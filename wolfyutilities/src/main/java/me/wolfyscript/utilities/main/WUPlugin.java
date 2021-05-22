@@ -3,12 +3,12 @@ package me.wolfyscript.utilities.main;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
+import me.wolfyscript.utilities.api.console.Console;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
-import me.wolfyscript.utilities.api.network.MessageChannelHandler;
 import me.wolfyscript.utilities.api.nms.NBTUtil;
 import me.wolfyscript.utilities.api.nms.nbt.NBTCompound;
 import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
@@ -23,8 +23,8 @@ import me.wolfyscript.utilities.main.listeners.GUIInventoryListener;
 import me.wolfyscript.utilities.main.listeners.PlayerListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
-import me.wolfyscript.utilities.main.messages.InputButtonMessage;
-import me.wolfyscript.utilities.main.messages.WolfyUtilitiesVerifyMessage;
+import me.wolfyscript.utilities.main.messages.MessageFactory;
+import me.wolfyscript.utilities.main.messages.MessageHandler;
 import me.wolfyscript.utilities.main.particles.ParticleEffects;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
@@ -57,21 +57,31 @@ public class WUPlugin extends JavaPlugin {
     private final WolfyUtilities wolfyUtilities;
 
     private final Chat chat;
+    private final Console console;
     private Metrics metrics;
-    private MessageChannelHandler messageChannelHandler;
+
+    private final MessageHandler messageHandler;
+    private final MessageFactory messageFactory;
 
     public WUPlugin() {
         super();
         instance = this;
-        this.wolfyUtilities = WolfyUtilities.get(this, false);
+        this.wolfyUtilities = WolfyUtilities.get(this);
         ServerVersion.setWUVersion(getDescription().getVersion());
         this.chat = wolfyUtilities.getChat();
-        chat.setCONSOLE_PREFIX("[WU] ");
-        chat.setIN_GAME_PREFIX("§8[§3WU§8] §7");
+        this.console = wolfyUtilities.getConsole();
+        chat.setInGamePrefix("§8[§3WU§8] §7");
+
+        this.messageHandler = new MessageHandler(this);
+        this.messageFactory = new MessageFactory(this);
     }
 
     public static WUPlugin getInstance() {
         return instance;
+    }
+
+    public WolfyUtilities getWolfyUtilities() {
+        return wolfyUtilities;
     }
 
     @Override
@@ -116,12 +126,12 @@ public class WUPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         this.wolfyUtilities.initialize();
-        getLogger().info("Minecraft version: " + ServerVersion.getVersion().getVersion());
-        getLogger().info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
+        console.info("Minecraft version: " + ServerVersion.getVersion().getVersion());
+        console.info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
         this.metrics = new Metrics(this, 5114);
 
         // Register plugin CustomItem API ReferenceParser
-        getLogger().info("Register API references");
+        console.info("Register API references");
         CustomItem.registerAPIReferenceParser(new VanillaRef.Parser());
         CustomItem.registerAPIReferenceParser(new WolfyUtilitiesRef.Parser());
         CustomItem.registerAPIReferenceParser(new OraxenRef.Parser());
@@ -137,23 +147,14 @@ public class WUPlugin extends JavaPlugin {
         WorldUtils.load();
         PlayerUtils.loadStores();
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::load, 300000, 300000);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::save, 6000, 6000);
 
         registerListeners();
         registerCommands();
-        registerPluginMessages();
 
         CreativeModeTab.init();
 
         loadParticleEffects();
-
-        ParticleEffects.load();
-        try {
-            File file = new File(getDataFolder(), "test_animation.json");
-            JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_ANIMATIONS.get(new NamespacedKey("wolfyutilities", "flame_circle")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         //Used to test the NBT Tag API!
         testNBTAPI(false);
     }
@@ -162,11 +163,19 @@ public class WUPlugin extends JavaPlugin {
     public void onDisable() {
         wolfyUtilities.getConfigAPI().saveConfigs();
         PlayerUtils.saveStores();
+        console.info("Save stored Custom Items");
         WorldUtils.save();
     }
 
     public void loadParticleEffects() {
-        getLogger().info("Loading Particles");
+        console.info("Loading Particles");
+        ParticleEffects.load();
+        try {
+            File file = new File(getDataFolder(), "test_animation.json");
+            JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_ANIMATIONS.get(new NamespacedKey("wolfyutilities", "flame_circle")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         WorldUtils.getWorldCustomItemStore().initiateMissingBlockEffects();
     }
 
@@ -188,23 +197,6 @@ public class WUPlugin extends JavaPlugin {
         Bukkit.getServer().getPluginCommand("wua").setExecutor(new ChatActionCommand());
     }
 
-    private void registerPluginMessages() {
-        messageChannelHandler = new MessageChannelHandler(this, new NamespacedKey("wolfyutilities", "main"));
-        messageChannelHandler.registerMessage(1, WolfyUtilitiesVerifyMessage.class, (message, output) -> {
-            output.writeBoolean(message.hasWolfyUtilities());
-            output.writeUTF(message.getVersion());
-        }, in -> new WolfyUtilitiesVerifyMessage(false, ""), (message, player) -> {
-            if (player.hasPermission("wolfyutilities.network.verify_plugin")) {
-                messageChannelHandler.sendTo(player, new WolfyUtilitiesVerifyMessage(true, getDescription().getVersion()));
-            }
-        });
-        messageChannelHandler.registerMessage(2, InputButtonMessage.class, (inputButtonMessage, output) -> {
-            output.writeUTF(inputButtonMessage.getButtonID());
-            output.writeUTF(inputButtonMessage.getMessage());
-        }, null, (inputButtonMessage, player) -> {
-        });
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equalsIgnoreCase("wolfyutils") && sender instanceof Player) {
@@ -219,8 +211,12 @@ public class WUPlugin extends JavaPlugin {
         return true;
     }
 
-    public MessageChannelHandler getPacketHandler() {
-        return messageChannelHandler;
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
+    }
+
+    public MessageFactory getMessageFactory() {
+        return messageFactory;
     }
 
     private void testNBTAPI(boolean test) {
@@ -266,39 +262,39 @@ public class WUPlugin extends JavaPlugin {
 
         compound.set("wolfy", wolfyCompound);
 
-        getLogger().info("Item: ");
-        getLogger().info("Tag: " + nbtItem.getCompound().toString());
-        getLogger().info("Keys: ");
-        getLogger().info("    - " + String.join("\n    - ", nbtItem.getKeys()));
+        console.info("Item: ");
+        console.info("Tag: " + nbtItem.getCompound().toString());
+        console.info("Keys: ");
+        console.info("    - " + String.join("\n    - ", nbtItem.getKeys()));
 
         ItemStack newItem = nbtItem.create();
         NBTItem newNBTItem = nbt.getItem(newItem);
-        getLogger().info("New Item: ");
-        getLogger().info("Tag: " + nbtItem.getCompound().toString());
-        getLogger().info("Item Keys: ");
+        console.info("New Item: ");
+        console.info("Tag: " + nbtItem.getCompound().toString());
+        console.info("Item Keys: ");
         for (String key : newNBTItem.getKeys()) {
-            getLogger().info(" - " + key + " = " + newNBTItem.getTag(key));
+            console.info(" - " + key + " = " + newNBTItem.getTag(key));
         }
 
         NBTCompound wolfyComp = newNBTItem.getCompound("wolfy");
         if (wolfyComp != null) {
-            getLogger().info("Wolfy Values: ");
-            getLogger().info("    Byte = " + wolfyComp.getByte("Byte"));
-            getLogger().info("    Boolean = " + wolfyComp.getBoolean("Boolean"));
-            getLogger().info("    Double = " + wolfyComp.getDouble("Double"));
-            getLogger().info("    Float = " + wolfyComp.getFloat("Float"));
-            getLogger().info("    Int = " + wolfyComp.getInt("Int"));
-            getLogger().info("    Long = " + wolfyComp.getLong("Long"));
-            getLogger().info("    Short = " + wolfyComp.getShort("Short"));
-            getLogger().info("    String = " + wolfyComp.getString("String"));
-            getLogger().info("    ByteArray = " + Arrays.toString(wolfyComp.getByteArray("ByteArray")));
-            getLogger().info("    IntArray = " + Arrays.toString(wolfyComp.getIntArray("IntArray")));
-            getLogger().info("    LongArray = " + Arrays.toString(wolfyComp.getLongArray("LongArray")));
-            getLogger().info("    Nested = " + wolfyComp.get("Nested"));
+            console.info("Wolfy Values: ");
+            console.info("    Byte = " + wolfyComp.getByte("Byte"));
+            console.info("    Boolean = " + wolfyComp.getBoolean("Boolean"));
+            console.info("    Double = " + wolfyComp.getDouble("Double"));
+            console.info("    Float = " + wolfyComp.getFloat("Float"));
+            console.info("    Int = " + wolfyComp.getInt("Int"));
+            console.info("    Long = " + wolfyComp.getLong("Long"));
+            console.info("    Short = " + wolfyComp.getShort("Short"));
+            console.info("    String = " + wolfyComp.getString("String"));
+            console.info("    ByteArray = " + Arrays.toString(wolfyComp.getByteArray("ByteArray")));
+            console.info("    IntArray = " + Arrays.toString(wolfyComp.getIntArray("IntArray")));
+            console.info("    LongArray = " + Arrays.toString(wolfyComp.getLongArray("LongArray")));
+            console.info("    Nested = " + wolfyComp.get("Nested"));
             NBTTagList nbtTagList = (NBTTagList) wolfyComp.get("IntArrayList");
-            getLogger().info("    IntArrayList = " + nbtTagList);
+            console.info("    IntArrayList = " + nbtTagList);
             for (int i = 0; i < nbtTagList.size(); i++) {
-                getLogger().info("       - " + nbtTagList.getTag(i));
+                console.info("       - " + nbtTagList.getTag(i));
             }
         }
     }

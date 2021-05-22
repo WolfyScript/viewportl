@@ -1,6 +1,5 @@
 package me.wolfyscript.utilities.api.inventory.gui.button;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
@@ -48,20 +47,7 @@ public abstract class Button<C extends CustomCache> {
      *
      * @param guiCluster The {@link GuiCluster} this button is registered in.
      */
-    public void init(GuiCluster<C> guiCluster) {
-        init(guiCluster.getId(), guiCluster.getWolfyUtilities());
-    }
-
-    /**
-     * Called when registered globally inside the {@link GuiCluster#onInit()}
-     *
-     * @param clusterID The ID of the Cluster this button is registered in.
-     * @param api       The {@link WolfyUtilities} instance this button is linked to.
-     * @deprecated This method is replaced with {@link #init(GuiCluster)} and soon will be removed!
-     */
-    @Deprecated
-    public void init(String clusterID, WolfyUtilities api) {
-    }
+    public abstract void init(GuiCluster<C> guiCluster);
 
     public abstract boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException;
 

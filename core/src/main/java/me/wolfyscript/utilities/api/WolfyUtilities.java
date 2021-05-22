@@ -8,6 +8,7 @@ import me.wolfyscript.utilities.api.inventory.BookUtil;
 import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
+import me.wolfyscript.utilities.api.network.messages.MessageAPI;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
 import me.wolfyscript.utilities.util.exceptions.InvalidCacheTypeException;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -68,14 +69,6 @@ public class WolfyUtilities {
         return new ArrayList<>(wolfyUtilitiesList.values());
     }
 
-    private WolfyUtilities(Plugin plugin, boolean init) {
-        this(plugin, CustomCache.class, init);
-    }
-
-    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
-        this(plugin, customCacheClass, true);
-    }
-
     private final Plugin plugin;
 
     private String dataBasePrefix;
@@ -87,11 +80,11 @@ public class WolfyUtilities {
     private final ItemUtils itemUtils;
     private final Permissions permissions;
     private final BookUtil bookUtil;
+    private final MessageAPI messageAPI;
     private final NMSUtil nmsUtil;
-
     private final boolean initialize;
 
-    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass, boolean initialize) {
+    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> cacheType, boolean initialize) {
         this.plugin = plugin;
         if (!has(plugin)) {
             wolfyUtilitiesList.put(plugin, this);
@@ -99,17 +92,26 @@ public class WolfyUtilities {
         this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT) + "_";
         this.configAPI = new ConfigAPI(this);
         this.languageAPI = new LanguageAPI(this);
-        this.inventoryAPI = new InventoryAPI<>(this.plugin, this, customCacheClass);
+        this.inventoryAPI = new InventoryAPI<>(this.plugin, this, cacheType);
         this.chat = new Chat(this);
         this.console = new Console(this);
         this.permissions = new Permissions(this);
         this.itemUtils = new ItemUtils(this);
         this.nmsUtil = NMSUtil.create(this);
         this.bookUtil = new BookUtil(this);
+        this.messageAPI = new MessageAPI(this);
         this.initialize = initialize;
         if (initialize) {
             initialize();
         }
+    }
+
+    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
+        this(plugin, customCacheClass, false);
+    }
+
+    private WolfyUtilities(Plugin plugin, boolean init) {
+        this(plugin, CustomCache.class, init);
     }
 
     public final void initialize() {
@@ -123,7 +125,7 @@ public class WolfyUtilities {
      * @return The WolfyUtilities instance for the plugin.
      */
     public static WolfyUtilities get(Plugin plugin) {
-        return get(plugin, true);
+        return get(plugin, false);
     }
 
     public static WolfyUtilities get(Plugin plugin, boolean init) {
@@ -265,6 +267,10 @@ public class WolfyUtilities {
         return bookUtil;
     }
 
+    public MessageAPI getMessageAPI() {
+        return messageAPI;
+    }
+
     /**
      * This method sets the InventoryAPI.
      * <br>
@@ -341,9 +347,6 @@ public class WolfyUtilities {
      * @see ConfigAPI#registerConfig(YamlConfiguration) More information about registration of configs.
      */
     public boolean hasDebuggingMode() {
-        if (getConfigAPI().getConfig("config") != null) {
-            return getConfigAPI().getConfig("config").getBoolean("debug");
-        }
-        return false;
+        return getConfigAPI().getConfig("config") != null && getConfigAPI().getConfig("config").getBoolean("debug");
     }
 }

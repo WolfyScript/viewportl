@@ -166,7 +166,7 @@ public class GuiUpdate<C extends CustomCache> {
             button.preRender(guiHandler, player, this.inventory, itemStack, slot, help);
             button.render(guiHandler, player, this.inventory, this.queueInventory, itemStack, slot, guiHandler.isHelpEnabled());
         } catch (IOException e) {
-            System.out.println("Error while rendering Button \"" + button.getId() + "\"!");
+            wolfyUtilities.getConsole().severe("Error while rendering Button \"" + button.getId() + "\"!");
             e.printStackTrace();
         }
     }

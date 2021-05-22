@@ -29,7 +29,6 @@ public class WorldUtils {
      * Save the stored Custom Item into a file.
      */
     public static void save() {
-        WolfyUtilities.getWUPlugin().getLogger().info("Save stored Custom Items");
         try (FileOutputStream fos = new FileOutputStream(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store")) {
             GZIPOutputStream gzip = new GZIPOutputStream(fos);
             JacksonUtil.getObjectWriter(false).writeValue(gzip, worldCustomItemStore);

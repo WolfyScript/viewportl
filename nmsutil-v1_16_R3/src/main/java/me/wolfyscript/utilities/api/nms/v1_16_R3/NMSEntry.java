@@ -18,6 +18,7 @@ public class NMSEntry extends NMSUtil {
         this.inventoryUtil = new InventoryUtilImpl(this);
         this.nbtUtil = new NBTUtilImpl(this);
         this.recipeUtil = new RecipeUtilImpl(this);
+        this.networkUtil = new NetworkUtilImpl(this);
     }
 
 }

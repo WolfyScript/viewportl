@@ -34,7 +34,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     private final WolfyUtilities api;
     private final InventoryAPI<C> invAPI;
     private final UUID uuid;
-    private final HashMap<GuiCluster<C>, List<GuiWindow<C>>> clusterHistory = new HashMap<>();
+    private final Map<GuiCluster<C>, List<GuiWindow<C>>> clusterHistory;
     private ChatInputAction<C> chatInputAction = null;
     private ChatTabComplete<C> chatTabComplete = null;
     private GuiCluster<C> cluster = null;
@@ -50,6 +50,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         this.invAPI = invAPI;
         this.uuid = player.getUniqueId();
         this.customCache = customCache;
+        this.clusterHistory = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, api.getPlugin());
     }
 
@@ -94,9 +95,8 @@ public class GuiHandler<C extends CustomCache> implements Listener {
      */
     public void reloadWindow(NamespacedKey namespacedKey) {
         GuiCluster<C> cluster = invAPI.getGuiCluster(namespacedKey.getNamespace());
-        List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
+        List<GuiWindow<C>> history = getHistory(cluster);
         history.remove(history.get(history.size() - 1));
-        clusterHistory.put(cluster, history);
         openWindow(namespacedKey);
     }
 
@@ -109,8 +109,9 @@ public class GuiHandler<C extends CustomCache> implements Listener {
      */
     @Nullable
     public GuiWindow<C> getWindow(GuiCluster<C> cluster) {
-        if (clusterHistory.get(cluster) != null && !clusterHistory.get(cluster).isEmpty()) {
-            return invAPI.getGuiWindow(clusterHistory.get(cluster).get(clusterHistory.get(cluster).size() - 1).getNamespacedKey());
+        List<GuiWindow<C>> history = getHistory(cluster);
+        if (!history.isEmpty()) {
+            return invAPI.getGuiWindow(history.get(history.size() - 1).getNamespacedKey());
         }
         return null;
     }
@@ -145,7 +146,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     }
 
     public GuiWindow<C> getPreviousWindow(GuiCluster<C> cluster, int stepsBack) {
-        List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
+        List<GuiWindow<C>> history = getHistory(cluster);
         if (history.size() > stepsBack) {
             return invAPI.getGuiWindow(history.get(history.size() - (stepsBack + 1)).getNamespacedKey());
         }
@@ -182,13 +183,12 @@ public class GuiHandler<C extends CustomCache> implements Listener {
 
     public void openPreviousWindow(GuiCluster<C> cluster, int stepsBack) {
         openedPreviousWindow = true;
-        List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
+        List<GuiWindow<C>> history = getHistory(cluster);
         for (int i = 0; i < stepsBack; i++) {
             if (!history.isEmpty()) {
                 history.remove(history.size() - 1);
             }
         }
-        clusterHistory.put(cluster, history);
         if (history.isEmpty()) {
             openCluster(cluster);
         } else {
@@ -198,6 +198,10 @@ public class GuiHandler<C extends CustomCache> implements Listener {
 
     public Map<GuiCluster<C>, List<GuiWindow<C>>> getClusterHistory() {
         return clusterHistory;
+    }
+
+    public List<GuiWindow<C>> getHistory(GuiCluster<C> cluster) {
+        return clusterHistory.computeIfAbsent(cluster, c -> new ArrayList<>());
     }
 
     /*
@@ -230,11 +234,10 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         final GuiCluster<C> cluster = window.getCluster();
         Player player1 = getPlayer();
         if (api.getPermissions().hasPermission(player1, (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")))) {
-            List<GuiWindow<C>> history = clusterHistory.getOrDefault(cluster, new ArrayList<>());
+            List<GuiWindow<C>> history = getHistory(cluster);
             if (getWindow(cluster) == null || !Objects.equals(getWindow(cluster), window)) {
                 history.add(window);
             }
-            clusterHistory.put(cluster, history);
             this.cluster = cluster;
             isWindowOpen = true;
             window.create(this);

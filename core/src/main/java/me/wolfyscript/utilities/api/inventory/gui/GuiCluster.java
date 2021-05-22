@@ -6,14 +6,15 @@ import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.NamespacedKey;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class GuiCluster<C extends CustomCache> {
 
     protected final WolfyUtilities wolfyUtilities;
     protected final InventoryAPI<C> inventoryAPI;
     private String id;
-    private final HashMap<String, Button<C>> buttons;
-    private final HashMap<String, GuiWindow<C>> guiWindows;
+    private final Map<String, Button<C>> buttons;
+    private final Map<String, GuiWindow<C>> guiWindows;
 
     private NamespacedKey entry;
 
@@ -75,11 +76,11 @@ public abstract class GuiCluster<C extends CustomCache> {
         return id;
     }
 
-    HashMap<String, Button<C>> getButtons() {
+    Map<String, Button<C>> getButtons() {
         return buttons;
     }
 
-    HashMap<String, GuiWindow<C>> getGuiWindows() {
+    Map<String, GuiWindow<C>> getGuiWindows() {
         return guiWindows;
     }
 }

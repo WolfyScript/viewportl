@@ -3,7 +3,6 @@ package me.wolfyscript.utilities.api.config;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,18 +48,17 @@ public class ConfigAPI {
 
     public static void exportFile(Class<?> reference, String resourcePath, String savePath) {
         InputStream ddlStream = reference.getClassLoader().getResourceAsStream(resourcePath);
-        File target = new File(savePath);
-        try {
-            target.createNewFile();
-            FileOutputStream fos = new FileOutputStream(savePath);
-            byte[] buf = new byte[2048];
-            int r;
-            while ((r = ddlStream.read(buf)) != -1) {
-                fos.write(buf, 0, r);
+        if (ddlStream != null) {
+            try (FileOutputStream fos = new FileOutputStream(savePath)) {
+                byte[] buf = new byte[2048];
+                int r;
+                while ((r = ddlStream.read(buf)) != -1) {
+                    fos.write(buf, 0, r);
+                }
+                ddlStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            ddlStream.close();
-        } catch (IOException e) {
-            //EMPTY
         }
     }
 
@@ -71,7 +69,7 @@ public class ConfigAPI {
                     configuration.reloadAuto();
                 }
             }
-        }, 1200, intervalInMin * 60 * 20);
+        }, 1200, intervalInMin * 60L * 20L);
     }
 
     public void registerConfig(YamlConfiguration configuration) {

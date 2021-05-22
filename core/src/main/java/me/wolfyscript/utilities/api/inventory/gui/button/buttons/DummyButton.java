@@ -1,7 +1,6 @@
 package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
-import me.wolfyscript.utilities.api.inventory.gui.button.ButtonAction;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonRender;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonType;
@@ -43,38 +42,6 @@ public class DummyButton<C extends CustomCache> extends ActionButton<C> {
 
     public DummyButton(String id, Material material, ButtonRender<C> render) {
         this(id, new ButtonState<>(id, material, render));
-    }
-
-    /**
-     * @deprecated no need to use this... it can't execute the action anyways!
-     */
-    @Deprecated
-    public DummyButton(String id, ItemStack itemStack, ButtonAction<C> action) {
-        this(id, itemStack);
-    }
-
-    /**
-     * @deprecated no need to use this... it can't execute the action anyways!
-     */
-    @Deprecated
-    public DummyButton(String id, ItemStack itemStack, ButtonAction<C> action, ButtonRender<C> render) {
-        this(id, new ButtonState<>(id, itemStack, render));
-    }
-
-    /**
-     * @deprecated no need to use this... it can't execute the action anyways!
-     */
-    @Deprecated
-    public DummyButton(String id, Material material, ButtonAction<C> action) {
-        this(id, material);
-    }
-
-    /**
-     * @deprecated no need to use this... it can't execute the action anyways!
-     */
-    @Deprecated
-    public DummyButton(String id, Material material, ButtonAction<C> action, ButtonRender<C> render) {
-        this(id, new ItemStack(material), render);
     }
 
     public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
