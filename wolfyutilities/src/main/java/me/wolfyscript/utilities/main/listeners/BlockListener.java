@@ -30,24 +30,22 @@ import java.util.List;
 
 public class BlockListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (!event.isCancelled()) {
-            Block block = event.getBlock();
-            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
-            if (!ItemUtils.isAirOrNull(storedItem)) {
-                event.setDropItems(false);
-                CustomItemBreakEvent event1 = new CustomItemBreakEvent(storedItem, event);
-                Bukkit.getPluginManager().callEvent(event1);
-                event.setCancelled(event1.isCancelled());
-                storedItem = event1.getCustomItem();
-                if (!event1.isCancelled() && !ItemUtils.isAirOrNull(storedItem)) {
-                    ItemStack result = dropItems(block, storedItem);
-                    if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && event1.isDropItems()) {
-                        block.getWorld().dropItemNaturally(block.getLocation(), result);
-                    }
-                    removeMultiBlockItems(block);
+        Block block = event.getBlock();
+        CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+        if (!ItemUtils.isAirOrNull(storedItem)) {
+            event.setDropItems(false);
+            CustomItemBreakEvent event1 = new CustomItemBreakEvent(storedItem, event);
+            Bukkit.getPluginManager().callEvent(event1);
+            event.setCancelled(event1.isCancelled());
+            storedItem = event1.getCustomItem();
+            if (!event1.isCancelled() && !ItemUtils.isAirOrNull(storedItem)) {
+                ItemStack result = dropItems(block, storedItem);
+                if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && event1.isDropItems()) {
+                    block.getWorld().dropItemNaturally(block.getLocation(), result);
                 }
+                removeMultiBlockItems(block);
             }
         }
     }
@@ -111,15 +109,13 @@ public class BlockListener implements Listener {
     Called when liquid flows or when an Dragon Egg teleports.
     This Listener only listens for the Dragon Egg
     */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event) {
-        if (!event.isCancelled()) {
-            Block block = event.getBlock();
-            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
-            if (!ItemUtils.isAirOrNull(storedItem)) {
-                WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
-                WorldUtils.getWorldCustomItemStore().store(event.getToBlock().getLocation(), storedItem);
-            }
+        Block block = event.getBlock();
+        CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+        if (!ItemUtils.isAirOrNull(storedItem)) {
+            WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
+            WorldUtils.getWorldCustomItemStore().store(event.getToBlock().getLocation(), storedItem);
         }
     }
 
@@ -128,18 +124,14 @@ public class BlockListener implements Listener {
      *
      */
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (!event.isCancelled()) {
-            updatePistonBlocks(event.getBlocks(), event.getDirection());
-        }
+        updatePistonBlocks(event.getBlocks(), event.getDirection());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (!event.isCancelled() && event.isSticky()) {
-            updatePistonBlocks(event.getBlocks(), event.getDirection());
-        }
+        updatePistonBlocks(event.getBlocks(), event.getDirection());
     }
 
     private void updatePistonBlocks(List<Block> blocks, BlockFace direction) {
@@ -161,34 +153,30 @@ public class BlockListener implements Listener {
     /*
     Unregisters the placed CustomItem when the block is burned by fire.
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBurn(BlockBurnEvent event) {
-        if (!event.isCancelled()) {
-            Block block = event.getBlock();
-            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
-            if (storedItem != null) {
-                WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
-            }
+        Block block = event.getBlock();
+        CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+        if (storedItem != null) {
+            WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
         }
     }
 
     /*
     Unregisters the placed CustomItem when the CustomItem is a leaf and decays.
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event) {
-        if (!event.isCancelled()) {
-            Block block = event.getBlock();
-            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
-            if (storedItem != null) {
-                WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
-            }
+        Block block = event.getBlock();
+        CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+        if (storedItem != null) {
+            WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockFade(BlockFadeEvent event) {
-        if (!event.isCancelled() && event.getNewState().getType().equals(Material.AIR)) {
+        if (event.getNewState().getType().equals(Material.AIR)) {
             Block block = event.getBlock();
             CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
             if (storedItem != null) {
@@ -205,9 +193,9 @@ public class BlockListener implements Listener {
     /**
      * Update the CustomItem when it is placed by an Player
      */
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (!event.isCancelled() && event.canBuild()) {
+        if (event.canBuild()) {
             CustomItem customItem = CustomItem.getByItemStack(event.getItemInHand());
             if (!ItemUtils.isAirOrNull(customItem) && customItem.getItemStack().getType().isBlock()) {
                 if (customItem.isBlockPlacement()) {
@@ -229,17 +217,15 @@ public class BlockListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onBlockPlaceMulti(BlockMultiPlaceEvent event) {
-        if (!event.isCancelled()) {
-            CustomItem customItem = CustomItem.getByItemStack(event.getItemInHand());
-            if (!ItemUtils.isAirOrNull(customItem)) {
-                if (customItem.isBlockPlacement()) {
-                    event.setCancelled(true);
-                    return;
-                }
-                event.getReplacedBlockStates().forEach(state -> WorldUtils.getWorldCustomItemStore().store(state.getLocation(), customItem));
+        CustomItem customItem = CustomItem.getByItemStack(event.getItemInHand());
+        if (!ItemUtils.isAirOrNull(customItem)) {
+            if (customItem.isBlockPlacement()) {
+                event.setCancelled(true);
+                return;
             }
+            event.getReplacedBlockStates().forEach(state -> WorldUtils.getWorldCustomItemStore().store(state.getLocation(), customItem));
         }
     }
 }
