@@ -51,7 +51,8 @@ public class WorldUtils {
                 worldCustomItemStore = JacksonUtil.getObjectMapper().readValue(gzip, WorldCustomItemStore.class);
                 gzip.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                WolfyUtilities.getWUPlugin().getLogger().severe("Couldn't load stored Custom Items! Resetting to default!");
+                worldCustomItemStore = new WorldCustomItemStore();
             }
         } else {
             //Load from the old file if the new one doesn't exist!
