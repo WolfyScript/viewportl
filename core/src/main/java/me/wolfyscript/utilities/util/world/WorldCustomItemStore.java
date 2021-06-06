@@ -86,7 +86,7 @@ public class WorldCustomItemStore {
     public void initiateMissingBlockEffects() {
         store.entrySet().stream().filter(entry -> !hasStoredEffect(entry.getKey())).forEach(entry -> {
             CustomItem customItem = entry.getValue().getCustomItem();
-            if (customItem != null) {
+            if (customItem != null && entry.getKey() != null) {
                 setStore(entry.getKey(), new BlockCustomItemStore(customItem, null));
                 ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), entry.getKey().getBlock());
             }
