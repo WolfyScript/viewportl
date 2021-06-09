@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -32,7 +31,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
@@ -266,7 +264,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     @org.jetbrains.annotations.Nullable
     public static CustomItem getByItemStack(ItemStack itemStack) {
         if (itemStack != null) {
-            ItemMeta itemMeta = itemStack.getItemMeta();
+            var itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
                 var container = itemMeta.getPersistentDataContainer();
                 var namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
@@ -438,7 +436,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta) {
         if (otherItem != null && otherItem.getType().equals(this.type) && otherItem.getAmount() >= getAmount()) {
             if (hasNamespacedKey()) {
-                CustomItem other = CustomItem.getByItemStack(otherItem);
+                var other = CustomItem.getByItemStack(otherItem);
                 if (ItemUtils.isAirOrNull(other) || !other.hasNamespacedKey() || !getNamespacedKey().equals(other.getNamespacedKey())) {
                     return false;
                 }
@@ -446,8 +444,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 return false;
             }
             if ((exactMeta || hasItemMeta()) && (isAdvanced() || (getApiReference() instanceof VanillaRef && !hasNamespacedKey()))) {
-                ItemBuilder customItem = new ItemBuilder(getItemStack().clone());
-                ItemBuilder customItemOther = new ItemBuilder(otherItem.clone());
+                var customItem = new ItemBuilder(getItemStack().clone());
+                var customItemOther = new ItemBuilder(otherItem.clone());
                 return getMetaSettings().check(customItemOther, customItem) && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
             }
             return true;
@@ -458,8 +456,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CustomItem that = (CustomItem) o;
+        if (!(o instanceof CustomItem that)) return false;
         return Double.compare(that.rarityPercentage, rarityPercentage) == 0 &&
                 burnTime == that.burnTime &&
                 durabilityCost == that.durabilityCost &&
@@ -512,9 +509,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @return the item from the external API that is linked to this object
      */
     public ItemStack create(int amount) {
-        ItemStack itemStack = apiReference.getLinkedItem().clone();
+        var itemStack = apiReference.getLinkedItem().clone();
         if (this.hasNamespacedKey()) {
-            ItemMeta itemMeta = itemStack.getItemMeta();
+            var itemMeta = itemStack.getItemMeta();
             itemMeta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item"), PersistentDataType.STRING, namespacedKey.toString());
             itemStack.setItemMeta(itemMeta);
         }
@@ -542,7 +539,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @return ItemStack that visually represents the namespacekey
      */
     public ItemStack getIDItem(int amount) {
-        ItemStack itemStack = apiReference.getIdItem();
+        var itemStack = apiReference.getIdItem();
         if (amount > 0) {
             itemStack.setAmount(amount);
         }
@@ -587,7 +584,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 input.setAmount(amount);
             }
             if (this.hasReplacement()) {
-                ItemStack replacement = new CustomItem(this.getReplacement()).create();
+                var replacement = new CustomItem(this.getReplacement()).create();
                 replacement.setAmount(replacement.getAmount() * totalAmount);
                 if (location == null) {
                     if (inventory == null) return;
@@ -637,12 +634,12 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
             input.setData(replace.getData());
             input.setAmount(replace.getAmount());
         } else if (this.getDurabilityCost() != 0) {
-            ItemBuilder itemBuilder = new ItemBuilder(input);
+            var itemBuilder = new ItemBuilder(input);
             if (itemBuilder.hasCustomDurability()) {
                 itemBuilder.setCustomDamage(itemBuilder.getCustomDamage() + this.getDurabilityCost());
                 return;
             }
-            ItemMeta itemMeta = input.getItemMeta();
+            var itemMeta = input.getItemMeta();
             if (itemMeta instanceof Damageable) {
                 int damage = ((Damageable) itemMeta).getDamage() + this.getDurabilityCost();
                 if (damage > create().getType().getMaxDurability()) {
@@ -656,7 +653,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     private Material getCraftRemain() {
-        ItemStack item = getItemStack();
+        var item = getItemStack();
         if (!ItemUtils.isAirOrNull(item) && item.getType().isItem()) {
             if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_15)) {
                 Material replaceType = item.getType().getCraftingRemainingItem();
@@ -719,11 +716,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     public void setParticleContent(ParticleContent particleContent) {
-        if (particleContent == null) {
-            this.particleContent = new ParticleContent();
-        } else {
-            this.particleContent = particleContent;
-        }
+        this.particleContent = Objects.requireNonNullElseGet(particleContent, ParticleContent::new);
     }
 
     /**
@@ -861,10 +854,10 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
 
         @Override
         public CustomItem deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            ObjectMapper mapper = JacksonUtil.getObjectMapper();
+            var mapper = JacksonUtil.getObjectMapper();
             JsonNode node = p.readValueAsTree();
             if (node.isObject()) {
-                CustomItem customItem = new CustomItem(mapper.convertValue(node.path(node.has("api_reference") ? "api_reference" : "item"), APIReference.class));
+                var customItem = new CustomItem(mapper.convertValue(node.path(node.has("api_reference") ? "api_reference" : "item"), APIReference.class));
                 customItem.setAdvanced(node.path("advanced").asBoolean(true));
                 customItem.setConsumed(node.path("consumed").asBoolean(true));
                 customItem.setBlockVanillaEquip(node.path("blockVanillaEquip").asBoolean());

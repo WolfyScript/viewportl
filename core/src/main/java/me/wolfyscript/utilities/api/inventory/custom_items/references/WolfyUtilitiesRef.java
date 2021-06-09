@@ -75,9 +75,8 @@ public class WolfyUtilitiesRef extends APIReference {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof WolfyUtilitiesRef)) return false;
+        if (!(o instanceof WolfyUtilitiesRef that)) return false;
         if (!super.equals(o)) return false;
-        WolfyUtilitiesRef that = (WolfyUtilitiesRef) o;
         return Objects.equals(namespacedKey, that.namespacedKey);
     }
 
@@ -100,7 +99,7 @@ public class WolfyUtilitiesRef extends APIReference {
         @Override
         public @Nullable WolfyUtilitiesRef construct(ItemStack itemStack) {
             if (itemStack == null) return null;
-            ItemMeta itemMeta = itemStack.getItemMeta();
+            var itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
                 var container = itemMeta.getPersistentDataContainer();
                 if (container.has(CUSTOM_ITEM_KEY, PersistentDataType.STRING)) {

@@ -17,8 +17,7 @@ public class InputCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
             WolfyUtilities.getAPIList().parallelStream()
                     .filter(WolfyUtilities::hasInventoryAPI)
                     .map(wolfyUtilities -> wolfyUtilities.getInventoryAPI().getGuiHandler(player))
@@ -39,8 +38,7 @@ public class InputCommand implements TabExecutor {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
             return WolfyUtilities.getAPIList().stream()
                     .filter(WolfyUtilities::hasInventoryAPI)
                     .map(wolfyUtilities -> wolfyUtilities.getInventoryAPI().getGuiHandler(player))

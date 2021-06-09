@@ -31,8 +31,7 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
-        if (commandSender instanceof Player) {
-            Player player = (Player) commandSender;
+        if (commandSender instanceof Player player) {
             if (args.length > 0) {
                 if (args[0].equalsIgnoreCase("spawn")) {
                     if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_animation.spawn")) {
@@ -85,8 +84,7 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
     public List<String> onTabComplete(@Nonnull CommandSender commandSender, @Nonnull Command command, @Nonnull String s, @Nonnull String[] args) {
         List<String> results = new ArrayList<>();
         if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_animation.complete")) {
-            if (commandSender instanceof Player) {
-                Player player = (Player) commandSender;
+            if (commandSender instanceof Player player) {
                 if (args.length > 1) {
                     if (args[0].equalsIgnoreCase("spawn")) {
                         switch (args.length) {

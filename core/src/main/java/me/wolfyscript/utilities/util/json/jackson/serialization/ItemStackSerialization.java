@@ -17,7 +17,7 @@ public class ItemStackSerialization {
     public static void create(SimpleModule module){
         JacksonUtil.addSerializerAndDeserializer(module, ItemStack.class, (itemStack, gen, serializerProvider) -> {
             if (itemStack != null) {
-                Yaml yaml = new Yaml();
+                var yaml = new Yaml();
                 var config = new YamlConfiguration();
                 config.set("i", itemStack);
                 Map<String, Object> map = yaml.load(config.saveToString());

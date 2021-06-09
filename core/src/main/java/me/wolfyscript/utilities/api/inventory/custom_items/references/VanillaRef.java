@@ -49,9 +49,8 @@ public class VanillaRef extends APIReference {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof VanillaRef)) return false;
+        if (!(o instanceof VanillaRef that)) return false;
         if (!super.equals(o)) return false;
-        VanillaRef that = (VanillaRef) o;
         return Objects.equals(itemStack, that.itemStack);
     }
 

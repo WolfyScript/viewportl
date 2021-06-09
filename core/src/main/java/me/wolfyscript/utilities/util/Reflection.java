@@ -56,7 +56,7 @@ public class Reflection {
      * @param obcClassName the path to the class
      * @return the found class at the specified path
      */
-    public synchronized static Class<?> getOBC(String obcClassName) {
+    public static synchronized Class<?> getOBC(String obcClassName) {
         if (loadedOBCClasses.containsKey(obcClassName)) {
             return loadedOBCClasses.get(obcClassName);
         }
@@ -105,8 +105,7 @@ public class Reflection {
      * @return The players connection
      */
     public static Object getConnection(Player player) {
-        Method getHandleMethod = getMethod(player.getClass(), "getHandle");
-
+        var getHandleMethod = getMethod(player.getClass(), "getHandle");
         if (getHandleMethod != null) {
             try {
                 Object nmsPlayer = getHandleMethod.invoke(player);

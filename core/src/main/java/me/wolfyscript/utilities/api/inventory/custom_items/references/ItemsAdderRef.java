@@ -57,9 +57,8 @@ public class ItemsAdderRef extends APIReference {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ItemsAdderRef)) return false;
+        if (!(o instanceof ItemsAdderRef itemsAdderRef)) return false;
         if (!super.equals(o)) return false;
-        ItemsAdderRef itemsAdderRef = (ItemsAdderRef) o;
         return Objects.equals(itemID, itemsAdderRef.itemID);
     }
 

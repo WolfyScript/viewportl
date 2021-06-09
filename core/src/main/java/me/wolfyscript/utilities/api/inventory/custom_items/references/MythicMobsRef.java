@@ -41,7 +41,7 @@ public class MythicMobsRef extends APIReference {
 
     @Override
     public boolean isValidItem(ItemStack itemStack) {
-        NBTItem nbtItem = WolfyUtilities.getWUCore().getNmsUtil().getNBTUtil().getItem(itemStack);
+        var nbtItem = WolfyUtilities.getWUCore().getNmsUtil().getNBTUtil().getItem(itemStack);
         if (nbtItem != null && nbtItem.hasKey(ITEM_KEY) && nbtItem.getTag(ITEM_KEY) instanceof NBTTagString nbtTagString) {
             return Objects.equals(this.itemName, nbtTagString.asString());
         }

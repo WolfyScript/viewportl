@@ -162,7 +162,7 @@ public class GuiUpdate<C extends CustomCache> {
 
     private void renderButton(Button<C> button, GuiHandler<C> guiHandler, Player player, int slot, boolean help) {
         try {
-            ItemStack itemStack = this.inventory.getItem(slot);
+            var itemStack = this.inventory.getItem(slot);
             button.preRender(guiHandler, player, this.inventory, itemStack, slot, help);
             button.render(guiHandler, player, this.inventory, this.queueInventory, itemStack, slot, guiHandler.isHelpEnabled());
         } catch (IOException e) {
