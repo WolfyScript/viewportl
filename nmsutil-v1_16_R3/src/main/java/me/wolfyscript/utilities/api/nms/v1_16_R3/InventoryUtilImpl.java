@@ -62,7 +62,7 @@ public class InventoryUtilImpl extends InventoryUtil {
             if (material.isLegacy()) continue;
             Item item = CraftMagicNumbers.getItem(material);
             if (item != null) {
-                net.minecraft.server.v1_16_R3.CreativeModeTab creativeModeTab = item.q();
+                var creativeModeTab = item.q();
                 if (creativeModeTab != null) {
                     CreativeModeTab category = CreativeModeTab.valueOf(creativeModeTab.b().toUpperCase(Locale.ROOT));
                     category.registerMaterial(material);

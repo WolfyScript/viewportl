@@ -113,11 +113,6 @@
                                     <shadedPattern>me.wolfyscript.utilities.libraries.com.fasterxml.jackson
                                     </shadedPattern>
                                 </relocation>
-                                <!--
-                                <relocation>
-                                    <pattern>io.netty</pattern>
-                                    <shadedPattern>me.wolfyscript.utilities.libraries.io.netty4</shadedPattern>
-                                </relocation>-->
                             </relocations>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <shadedArtifactAttached>false</shadedArtifactAttached>

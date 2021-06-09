@@ -18,7 +18,7 @@ public class ItemStackSerialization {
         JacksonUtil.addSerializerAndDeserializer(module, ItemStack.class, (itemStack, gen, serializerProvider) -> {
             if (itemStack != null) {
                 Yaml yaml = new Yaml();
-                YamlConfiguration config = new YamlConfiguration();
+                var config = new YamlConfiguration();
                 config.set("i", itemStack);
                 Map<String, Object> map = yaml.load(config.saveToString());
                 gen.writeObject(map.get("i"));
@@ -33,7 +33,7 @@ public class ItemStackSerialization {
                 }
                 return value.equals("empty") ? null : WolfyUtilities.getWUCore().getNmsUtil().getItemUtil().getJsonItemStack(value);
             }
-            YamlConfiguration config = new YamlConfiguration();
+            var config = new YamlConfiguration();
             //Loads the Map from the JsonNode && Sets the Map to YamlConfig
             config.set("i", JacksonUtil.getObjectMapper().convertValue(node, new TypeReference<Map<String, Object>>() {
             }));

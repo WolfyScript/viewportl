@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.util.events;
 
 import me.wolfyscript.utilities.api.inventory.custom_items.ArmorType;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import me.wolfyscript.utilities.api.inventory.custom_items.ParticleContent;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
@@ -45,7 +43,7 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
         this.newCustomArmorPiece = newCustomArmorPiece;
 
         if (type != null) {
-            EquipmentSlot equipmentSlot = type.getEquipmentSlot();
+            var equipmentSlot = type.getEquipmentSlot();
             if (!ItemUtils.isAirOrNull(newArmorPiece)) {
                 //Equiping new armor!
                 if (ItemUtils.isEquipable(newArmorPiece.getType())) {
@@ -57,7 +55,7 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
                 }
                 if (!ItemUtils.isAirOrNull(newCustomArmorPiece) && newCustomArmorPiece.hasEquipmentSlot(equipmentSlot)) {
                     PlayerUtils.stopActiveParticleEffect(getPlayer(), equipmentSlot);
-                    ParticleContent particleContent = newCustomArmorPiece.getParticleContent();
+                    var particleContent = newCustomArmorPiece.getParticleContent();
                     if (particleContent != null) {
                         ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(particleContent.getParticleEffect(ParticleLocation.valueOf(equipmentSlot.name())));
                         if (animation != null) {

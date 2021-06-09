@@ -35,9 +35,9 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
         this.typeClass = typeClass;
     }
 
-    abstract protected ItemStack getItemStack();
+    protected abstract ItemStack getItemStack();
 
-    abstract public ItemStack create();
+    public abstract ItemStack create();
 
     private T get() {
         return typeClass.cast(this);
@@ -86,19 +86,19 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     }
 
     public T addItemFlags(ItemFlag... itemFlags) {
-        ItemMeta itemMeta = getItemStack().getItemMeta();
+        var itemMeta = getItemStack().getItemMeta();
         itemMeta.addItemFlags(itemFlags);
         return setItemMeta(itemMeta);
     }
 
     public T removeItemFlags(ItemFlag... itemFlags) {
-        ItemMeta itemMeta = getItemStack().getItemMeta();
+        var itemMeta = getItemStack().getItemMeta();
         itemMeta.removeItemFlags(itemFlags);
         return setItemMeta(itemMeta);
     }
 
     public T setDisplayName(String name) {
-        ItemMeta itemMeta = getItemStack().getItemMeta();
+        var itemMeta = getItemStack().getItemMeta();
         itemMeta.setDisplayName(name);
         return setItemMeta(itemMeta);
     }
@@ -109,20 +109,20 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     }
 
     public T setLore(List<String> lore) {
-        ItemMeta itemMeta = getItemStack().getItemMeta();
+        var itemMeta = getItemStack().getItemMeta();
         itemMeta.setLore(lore);
         return setItemMeta(itemMeta);
     }
 
     public T addLoreLine(String line) {
-        ItemMeta itemMeta = getItemStack().getItemMeta();
+        var itemMeta = getItemStack().getItemMeta();
         List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
         lore.add(line);
         return setLore(lore);
     }
 
     public T addLoreLine(int index, String line) {
-        ItemMeta itemMeta = getItemStack().getItemMeta();
+        var itemMeta = getItemStack().getItemMeta();
         List<String> lore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
         lore.add(index, line);
         return setLore(lore);
@@ -132,7 +132,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
      * Checks if this item has Custom Durability set.
      */
     public boolean hasCustomDurability() {
-        ItemMeta itemMeta = getItemMeta();
+        var itemMeta = getItemMeta();
         if (itemMeta != null) {
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
             return dataContainer.has(CUSTOM_DURABILITY_VALUE, PersistentDataType.INTEGER);
@@ -141,9 +141,9 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     }
 
     public T setCustomDamage(int damage) {
-        ItemMeta itemMeta = getItemMeta();
+        var itemMeta = getItemMeta();
         if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            var dataContainer = itemMeta.getPersistentDataContainer();
             dataContainer.set(CUSTOM_DURABILITY_DAMAGE, PersistentDataType.INTEGER, damage);
             updateCustomDurabilityTag(itemMeta);
         }
@@ -163,7 +163,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
 
     public int getCustomDamage(ItemMeta itemMeta) {
         if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            var dataContainer = itemMeta.getPersistentDataContainer();
             if (dataContainer.has(CUSTOM_DURABILITY_DAMAGE, PersistentDataType.INTEGER)) {
                 return dataContainer.get(CUSTOM_DURABILITY_DAMAGE, PersistentDataType.INTEGER);
             }
@@ -172,9 +172,9 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     }
 
     public T setCustomDurability(int durability) {
-        ItemMeta itemMeta = getItemMeta();
+        var itemMeta = getItemMeta();
         if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            var dataContainer = itemMeta.getPersistentDataContainer();
             dataContainer.set(CUSTOM_DURABILITY_VALUE, PersistentDataType.INTEGER, durability);
             if (!dataContainer.has(CUSTOM_DURABILITY_DAMAGE, PersistentDataType.INTEGER)) {
                 dataContainer.set(CUSTOM_DURABILITY_DAMAGE, PersistentDataType.INTEGER, 0);
@@ -190,7 +190,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
 
     public int getCustomDurability(ItemMeta itemMeta) {
         if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            var dataContainer = itemMeta.getPersistentDataContainer();
             if (dataContainer.has(CUSTOM_DURABILITY_VALUE, PersistentDataType.INTEGER)) {
                 return dataContainer.get(CUSTOM_DURABILITY_VALUE, PersistentDataType.INTEGER);
             }
@@ -199,9 +199,9 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     }
 
     public T removeCustomDurability() {
-        ItemMeta itemMeta = getItemMeta();
+        var itemMeta = getItemMeta();
         if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            var dataContainer = itemMeta.getPersistentDataContainer();
             dataContainer.remove(CUSTOM_DURABILITY_VALUE);
             dataContainer.remove(CUSTOM_DURABILITY_DAMAGE);
             dataContainer.remove(CUSTOM_DURABILITY_TAG);
@@ -210,9 +210,9 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     }
 
     public T setCustomDurabilityTag(String tag) {
-        ItemMeta itemMeta = getItemMeta();
+        var itemMeta = getItemMeta();
         if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            var dataContainer = itemMeta.getPersistentDataContainer();
             dataContainer.set(CUSTOM_DURABILITY_TAG, PersistentDataType.STRING, tag);
             updateCustomDurabilityTag();
         }
@@ -225,7 +225,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
 
     public String getCustomDurabilityTag(ItemMeta itemMeta) {
         if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            var dataContainer = itemMeta.getPersistentDataContainer();
             if (dataContainer.has(CUSTOM_DURABILITY_TAG, PersistentDataType.STRING)) {
                 return dataContainer.get(CUSTOM_DURABILITY_TAG, PersistentDataType.STRING);
             }
@@ -234,7 +234,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     }
 
     public T updateCustomDurabilityTag() {
-        ItemMeta itemMeta = getItemMeta();
+        var itemMeta = getItemMeta();
         updateCustomDurabilityTag(itemMeta);
         return setItemMeta(itemMeta);
     }
@@ -242,7 +242,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     public void updateCustomDurabilityTag(ItemMeta itemMeta) {
         if (itemMeta != null) {
             String tag = ChatColor.convert(getCustomDurabilityTag().replace("%dur%", String.valueOf(getCustomDurability(itemMeta) - getCustomDamage(itemMeta))).replace("%max_dur%", String.valueOf(getCustomDurability(itemMeta))));
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            var dataContainer = itemMeta.getPersistentDataContainer();
             List<String> lore = itemMeta.getLore() != null ? itemMeta.getLore() : new ArrayList<>();
             if (dataContainer.has(CUSTOM_DURABILITY_INDEX, PersistentDataType.INTEGER)) {
                 int index = dataContainer.get(CUSTOM_DURABILITY_INDEX, PersistentDataType.INTEGER);
@@ -259,9 +259,53 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
         }
     }
 
+    public T removePlayerHeadValue() {
+        if (getItemMeta() instanceof SkullMeta skullMeta) {
+            //GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+            //profile.getProperties().put("textures", new Property("textures", null));
+            Field profileField = null;
+            try {
+                profileField = skullMeta.getClass().getDeclaredField("profile");
+                profileField.setAccessible(true);
+                profileField.set(skullMeta, null);
+            } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            return setItemMeta(skullMeta);
+        }
+        return get();
+    }
+
+    public T setPlayerHeadURL(String value) {
+        if (value.startsWith("http://textures.minecraft.net/texture/")) {
+            return setPlayerHeadValue(value);
+        }
+        return setPlayerHeadValue("http://textures.minecraft.net/texture/" + value);
+    }
+
+    public String getPlayerHeadValue() {
+        if (getItemMeta() instanceof SkullMeta skullMeta) {
+            GameProfile profile = null;
+            Field profileField;
+            try {
+                profileField = skullMeta.getClass().getDeclaredField("profile");
+                profileField.setAccessible(true);
+                profile = (GameProfile) profileField.get(skullMeta);
+            } catch (NoSuchFieldException | SecurityException | IllegalAccessException ex) {
+                ex.printStackTrace();
+            }
+            if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
+                for (Property property : profile.getProperties().get("textures")) {
+                    if (!property.getValue().isEmpty())
+                        return property.getValue();
+                }
+            }
+        }
+        return "";
+    }
+
     public T setPlayerHeadValue(String value) {
-        if (getItemMeta() instanceof SkullMeta) {
-            SkullMeta skullMeta = (SkullMeta) getItemMeta();
+        if (getItemMeta() instanceof SkullMeta skullMeta) {
             if (value != null && !value.isEmpty()) {
                 String texture = value;
                 if (value.startsWith("https://") || value.startsWith("http://")) {
@@ -281,54 +325,6 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
             return setItemMeta(skullMeta);
         }
         return get();
-    }
-
-    public T setPlayerHeadURL(String value) {
-        if (value.startsWith("http://textures.minecraft.net/texture/")) {
-            return setPlayerHeadValue(value);
-        }
-        return setPlayerHeadValue("http://textures.minecraft.net/texture/" + value);
-    }
-
-    public T removePlayerHeadValue() {
-        if (getItemMeta() instanceof SkullMeta) {
-            SkullMeta skullMeta = (SkullMeta) getItemMeta();
-
-            //GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-            //profile.getProperties().put("textures", new Property("textures", null));
-            Field profileField = null;
-            try {
-                profileField = skullMeta.getClass().getDeclaredField("profile");
-                profileField.setAccessible(true);
-                profileField.set(skullMeta, null);
-            } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            return setItemMeta(skullMeta);
-        }
-        return get();
-    }
-
-    public String getPlayerHeadValue() {
-        if (getItemMeta() instanceof SkullMeta) {
-            SkullMeta skullMeta = (SkullMeta) getItemMeta();
-            GameProfile profile = null;
-            Field profileField;
-            try {
-                profileField = skullMeta.getClass().getDeclaredField("profile");
-                profileField.setAccessible(true);
-                profile = (GameProfile) profileField.get(skullMeta);
-            } catch (NoSuchFieldException | SecurityException | IllegalAccessException ex) {
-                ex.printStackTrace();
-            }
-            if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
-                for (Property property : profile.getProperties().get("textures")) {
-                    if (!property.getValue().isEmpty())
-                        return property.getValue();
-                }
-            }
-        }
-        return "";
     }
 
 

@@ -28,28 +28,19 @@ public class ItemUtils {
         if (material.name().endsWith("_CHESTPLATE") || material.name().endsWith("_LEGGINGS") || material.name().endsWith("_HELMET") || material.name().endsWith("_BOOTS") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL")) {
             return true;
         }
-        switch (material) {
-            case ELYTRA:
-            case CARVED_PUMPKIN:
-                return true;
-            default:
-                return false;
-        }
+        return switch (material) {
+            case ELYTRA, CARVED_PUMPKIN -> true;
+            default -> false;
+        };
     }
 
     public static boolean isEquipable(Material material, ArmorType type) {
-        switch (type) {
-            case HELMET:
-                return material.name().endsWith("_HELMET") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL") || material.equals(Material.CARVED_PUMPKIN);
-            case CHESTPLATE:
-                return material.equals(Material.ELYTRA) || material.name().endsWith("_CHESTPLATE");
-            case LEGGINGS:
-                return material.name().endsWith("_LEGGINGS");
-            case BOOTS:
-                return material.name().endsWith("_BOOTS");
-            default:
-                return false;
-        }
+        return switch (type) {
+            case HELMET -> material.name().endsWith("_HELMET") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL") || material.equals(Material.CARVED_PUMPKIN);
+            case CHESTPLATE -> material.equals(Material.ELYTRA) || material.name().endsWith("_CHESTPLATE");
+            case LEGGINGS -> material.name().endsWith("_LEGGINGS");
+            case BOOTS -> material.name().endsWith("_BOOTS");
+        };
     }
 
     public static boolean isTool(Material material) {

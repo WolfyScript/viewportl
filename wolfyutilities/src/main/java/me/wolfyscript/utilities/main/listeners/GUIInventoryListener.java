@@ -7,31 +7,27 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.Inventory;
 
 public class GUIInventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInvClick(InventoryClickEvent event) {
-        Inventory inventory = event.getInventory();
-        if (inventory instanceof GUIInventory) {
-            ((GUIInventory<?>) inventory).onClick(event);
+        if (event.getInventory() instanceof GUIInventory<?> inventory) {
+            inventory.onClick(event);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onItemDrag(InventoryDragEvent event) {
-        Inventory inventory = event.getInventory();
-        if (inventory instanceof GUIInventory) {
-            ((GUIInventory<?>) inventory).onDrag(event);
+        if (event.getInventory() instanceof GUIInventory<?> inventory) {
+            inventory.onDrag(event);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onClose(InventoryCloseEvent event) {
-        Inventory inventory = event.getInventory();
-        if (inventory instanceof GUIInventory) {
-            ((GUIInventory<?>) inventory).onClose(event);
+        if (event.getInventory() instanceof GUIInventory<?> inventory) {
+            inventory.onClose(event);
         }
     }
 

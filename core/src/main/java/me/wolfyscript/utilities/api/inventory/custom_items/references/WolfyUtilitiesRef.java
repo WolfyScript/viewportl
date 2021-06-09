@@ -10,7 +10,6 @@ import me.wolfyscript.utilities.util.Registry;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,7 +56,7 @@ public class WolfyUtilitiesRef extends APIReference {
         if (itemStack != null) {
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+                var container = itemMeta.getPersistentDataContainer();
                 if (container.has(CUSTOM_ITEM_KEY, PersistentDataType.STRING)) {
                     return Objects.equals(this.namespacedKey, me.wolfyscript.utilities.util.NamespacedKey.of(container.get(CUSTOM_ITEM_KEY, PersistentDataType.STRING)));
                 }
@@ -103,7 +102,7 @@ public class WolfyUtilitiesRef extends APIReference {
             if (itemStack == null) return null;
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+                var container = itemMeta.getPersistentDataContainer();
                 if (container.has(CUSTOM_ITEM_KEY, PersistentDataType.STRING)) {
                     return new WolfyUtilitiesRef(me.wolfyscript.utilities.util.NamespacedKey.of(container.get(CUSTOM_ITEM_KEY, PersistentDataType.STRING)));
                 }

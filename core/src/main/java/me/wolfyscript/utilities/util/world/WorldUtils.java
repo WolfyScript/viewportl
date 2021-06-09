@@ -29,8 +29,8 @@ public class WorldUtils {
      * Save the stored Custom Item into a file.
      */
     public static void save() {
-        try (FileOutputStream fos = new FileOutputStream(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store")) {
-            GZIPOutputStream gzip = new GZIPOutputStream(fos);
+        try (var fos = new FileOutputStream(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store")) {
+            var gzip = new GZIPOutputStream(fos);
             JacksonUtil.getObjectWriter(false).writeValue(gzip, worldCustomItemStore);
             gzip.flush();
             gzip.close();
@@ -67,7 +67,7 @@ public class WorldUtils {
         File file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "stored_block_items.dat");
         worldCustomItemStore = new WorldCustomItemStore();
         if (file.exists()) {
-            try (FileInputStream fis = new FileInputStream(file); BukkitObjectInputStream ois = new BukkitObjectInputStream(fis)) {
+            try (var fis = new FileInputStream(file); BukkitObjectInputStream ois = new BukkitObjectInputStream(fis)) {
                 Object object = ois.readObject();
                 HashMap<String, String> loadMap = (HashMap<String, String>) object;
                 loadMap.forEach((key, value) -> {

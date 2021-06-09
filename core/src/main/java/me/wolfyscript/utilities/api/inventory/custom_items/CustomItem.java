@@ -33,7 +33,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
@@ -269,8 +268,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         if (itemStack != null) {
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-                NamespacedKey namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
+                var container = itemMeta.getPersistentDataContainer();
+                var namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
                 if (container.has(namespacedKey, PersistentDataType.STRING)) {
                     return Registry.CUSTOM_ITEMS.get(me.wolfyscript.utilities.util.NamespacedKey.of(container.get(namespacedKey, PersistentDataType.STRING)));
                 }
@@ -663,24 +662,12 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 Material replaceType = item.getType().getCraftingRemainingItem();
                 if (replaceType != null) return replaceType;
             }
-            switch (item.getType()) {
-                case LAVA_BUCKET:
-                case MILK_BUCKET:
-                case WATER_BUCKET:
-                case COD_BUCKET:
-                case SALMON_BUCKET:
-                case PUFFERFISH_BUCKET:
-                case TROPICAL_FISH_BUCKET:
-                    return Material.BUCKET;
-                case POTION:
-                    return Material.GLASS_BOTTLE;
-                case BEETROOT_SOUP:
-                case MUSHROOM_STEW:
-                case RABBIT_STEW:
-                    return Material.BOWL;
-                default:
-                    return null;
-            }
+            return switch (item.getType()) {
+                case LAVA_BUCKET, MILK_BUCKET, WATER_BUCKET, COD_BUCKET, SALMON_BUCKET, PUFFERFISH_BUCKET, TROPICAL_FISH_BUCKET -> Material.BUCKET;
+                case POTION -> Material.GLASS_BOTTLE;
+                case BEETROOT_SOUP, MUSHROOM_STEW, RABBIT_STEW -> Material.BOWL;
+                default -> null;
+            };
         }
         return null;
     }
@@ -896,7 +883,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 JsonNode customDataNode = node.path("custom_data");
                 {
                     customDataNode.fields().forEachRemaining(entry -> {
-                        me.wolfyscript.utilities.util.NamespacedKey namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.of(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ Registry.CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
+                        var namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.of(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ Registry.CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
                         if (namespacedKey != null) {
                             CustomData.Provider<?> provider = Registry.CUSTOM_ITEM_DATA.get(namespacedKey);
                             if (provider != null) {

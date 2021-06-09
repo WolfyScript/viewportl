@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.nms.nbt.NBTBase;
 import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
 import me.wolfyscript.utilities.api.nms.nbt.NBTTagString;
 import org.bukkit.inventory.ItemStack;
@@ -43,11 +42,8 @@ public class MythicMobsRef extends APIReference {
     @Override
     public boolean isValidItem(ItemStack itemStack) {
         NBTItem nbtItem = WolfyUtilities.getWUCore().getNmsUtil().getNBTUtil().getItem(itemStack);
-        if (nbtItem != null && nbtItem.hasKey(ITEM_KEY)) {
-            NBTBase nbtBase = nbtItem.getTag(ITEM_KEY);
-            if (nbtBase instanceof NBTTagString) {
-                return Objects.equals(this.itemName, ((NBTTagString) nbtBase).asString());
-            }
+        if (nbtItem != null && nbtItem.hasKey(ITEM_KEY) && nbtItem.getTag(ITEM_KEY) instanceof NBTTagString nbtTagString) {
+            return Objects.equals(this.itemName, nbtTagString.asString());
         }
         return false;
     }
@@ -85,13 +81,10 @@ public class MythicMobsRef extends APIReference {
         @Override
         public @Nullable MythicMobsRef construct(ItemStack itemStack) {
             NBTItem nbtItem = WolfyUtilities.getWUCore().getNmsUtil().getNBTUtil().getItem(itemStack);
-            if (nbtItem != null && nbtItem.hasKey(ITEM_KEY)) {
-                NBTBase nbtBase = nbtItem.getTag(ITEM_KEY);
-                if (nbtBase instanceof NBTTagString) {
-                    String name = ((NBTTagString) nbtBase).asString();
-                    if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
-                        return new MythicMobsRef(name);
-                    }
+            if (nbtItem != null && nbtItem.hasKey(ITEM_KEY) && nbtItem.getTag(ITEM_KEY) instanceof NBTTagString nbtTagString) {
+                String name = nbtTagString.asString();
+                if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
+                    return new MythicMobsRef(name);
                 }
             }
             return null;
