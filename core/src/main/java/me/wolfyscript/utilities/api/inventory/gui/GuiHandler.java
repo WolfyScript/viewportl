@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This object is used to store all relevant data for the Player using the GUI.
@@ -94,8 +95,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     Reloads the GuiWindow of the GuiCluster.
      */
     public void reloadWindow(NamespacedKey namespacedKey) {
-        GuiCluster<C> cluster = invAPI.getGuiCluster(namespacedKey.getNamespace());
-        List<GuiWindow<C>> history = getHistory(cluster);
+        List<GuiWindow<C>> history = getHistory(invAPI.getGuiCluster(namespacedKey.getNamespace()));
         history.remove(history.get(history.size() - 1));
         openWindow(namespacedKey);
     }
@@ -184,15 +184,14 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     public void openPreviousWindow(GuiCluster<C> cluster, int stepsBack) {
         openedPreviousWindow = true;
         List<GuiWindow<C>> history = getHistory(cluster);
-        for (int i = 0; i < stepsBack; i++) {
-            if (!history.isEmpty()) {
-                history.remove(history.size() - 1);
-            }
-        }
-        if (history.isEmpty()) {
-            openCluster(cluster);
+        long size = history.size() - (long) stepsBack;
+        if (size > 0) {
+            setHistory(cluster, history.stream().limit(size).collect(Collectors.toList()));
+            List<GuiWindow<C>> updatedHistory = getHistory(cluster);
+            openWindow(updatedHistory.get(updatedHistory.size() - 1).getNamespacedKey());
         } else {
-            openWindow(history.get(history.size() - 1).getNamespacedKey());
+            history.clear();
+            openCluster(cluster);
         }
     }
 
@@ -202,6 +201,10 @@ public class GuiHandler<C extends CustomCache> implements Listener {
 
     public List<GuiWindow<C>> getHistory(GuiCluster<C> cluster) {
         return clusterHistory.computeIfAbsent(cluster, c -> new ArrayList<>());
+    }
+
+    private void setHistory(GuiCluster<C> cluster, List<GuiWindow<C>> history) {
+        clusterHistory.put(cluster, history);
     }
 
     /*
@@ -357,7 +360,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
      * Closes the current open window.
      */
     public void close() {
-        Player player = getPlayer();
+        var player = getPlayer();
         if (player != null) player.closeInventory();
     }
 
