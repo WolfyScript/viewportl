@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolfyscript.wolfyutilities</groupId>
     <artifactId>wolfyutilities-parent</artifactId>
-    <version>1.6.4.2</version>
+    <version>1.7.0.0</version>
 
     <packaging>pom</packaging>
 
@@ -95,6 +95,12 @@
             <artifactId>worldedit-bukkit</artifactId>
             <version>7.2.0-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
@@ -132,7 +138,7 @@
         <dependency>
             <groupId>io.lumine.xikage</groupId>
             <artifactId>MythicMobs</artifactId>
-            <version>4.10.0</version>
+            <version>4.12.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
