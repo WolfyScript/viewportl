@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
+
 public class RecipeUtilImpl extends me.wolfyscript.utilities.api.nms.RecipeUtil {
 
     protected RecipeUtilImpl(NMSUtil nmsUtil) {

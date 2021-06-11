@@ -17,9 +17,9 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -98,7 +98,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
      * @param player The player for the GuiHandler
      * @return The GuiHandler for this player.
      */
-    @Nonnull
+    @NotNull
     public GuiHandler<C> getGuiHandler(Player player) {
         if (!hasGuiHandler(player)) {
             createGuiHandler(player);

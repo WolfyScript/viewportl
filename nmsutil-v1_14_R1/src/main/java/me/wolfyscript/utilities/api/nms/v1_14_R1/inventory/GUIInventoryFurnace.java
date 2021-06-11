@@ -7,7 +7,6 @@ import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import net.minecraft.server.v1_14_R1.TileEntityFurnace;
 import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftInventoryFurnace;
 
-
 public class GUIInventoryFurnace<C extends CustomCache> extends CraftInventoryFurnace implements GUIInventory<C> {
 
     private final GuiWindow<C> window;

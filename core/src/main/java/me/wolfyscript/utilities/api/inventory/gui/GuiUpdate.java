@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -135,7 +135,7 @@ public class GuiUpdate<C extends CustomCache> {
      * @param slot   The slot the button should be rendered in.
      * @param button The {@link Button} that should be rendered.
      */
-    public void setButton(int slot, @Nonnull Button<C> button) {
+    public void setButton(int slot, @NotNull Button<C> button) {
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, button.getId());
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());

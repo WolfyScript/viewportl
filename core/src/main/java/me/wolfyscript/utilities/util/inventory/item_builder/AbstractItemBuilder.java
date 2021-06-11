@@ -14,8 +14,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,27 +60,27 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
         return getItemStack().hasItemMeta();
     }
 
-    public T addEnchantment(@Nonnull Enchantment ench, int level) {
+    public T addEnchantment(@NotNull Enchantment ench, int level) {
         getItemStack().addEnchantment(ench, level);
         return get();
     }
 
-    public T removeEnchantment(@Nonnull Enchantment ench) {
+    public T removeEnchantment(@NotNull Enchantment ench) {
         getItemStack().removeEnchantment(ench);
         return get();
     }
 
-    public T addUnsafeEnchantment(@Nonnull Enchantment ench, int level) {
+    public T addUnsafeEnchantment(@NotNull Enchantment ench, int level) {
         getItemStack().addUnsafeEnchantment(ench, level);
         return get();
     }
 
-    public T addEnchantments(@Nonnull Map<Enchantment, Integer> enchantments) {
+    public T addEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
         getItemStack().addEnchantments(enchantments);
         return get();
     }
 
-    public T addUnsafeEnchantments(@Nonnull Map<Enchantment, Integer> enchantments) {
+    public T addUnsafeEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
         getItemStack().addUnsafeEnchantments(enchantments);
         return get();
     }
