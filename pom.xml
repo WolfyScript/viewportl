@@ -15,18 +15,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <spigot.version>1.16.4-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.17-R0.1-SNAPSHOT</spigot.version>
         <spigot.groupId>org.spigotmc</spigot.groupId>
         <spigot.artifactId>spigot-api</spigot.artifactId>
     </properties>
 
     <modules>
         <module>core</module>
+        <module>nmsutil-v1_14_R1</module>
+        <module>nmsutil-v1_15_R1</module>
         <module>nmsutil-v1_16_R1</module>
         <module>nmsutil-v1_16_R2</module>
         <module>nmsutil-v1_16_R3</module>
-        <module>nmsutil-v1_14_R1</module>
-        <module>nmsutil-v1_15_R1</module>
+        <module>nmsutil-v1_17_R1</module>
         <module>wolfyutilities</module>
     </modules>
 
