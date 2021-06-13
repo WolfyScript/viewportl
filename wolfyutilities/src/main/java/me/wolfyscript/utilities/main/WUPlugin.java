@@ -245,12 +245,13 @@ public class WUPlugin extends JavaPlugin {
         wolfyCompound.setIntArray("IntArray", new int[]{9, 3543, 2134, 123});
         wolfyCompound.setLongArray("LongArray", new long[]{54, 65, 23244343, 1000000000000000000L});
 
+        /*
         var customList = nbt.getTag().list();
         customList.add(0, nbt.getTag().ofIntArray(new int[]{4, 543654, 235, 223, 423, 32}));
         customList.add(0, nbt.getTag().ofIntArray(new int[]{543, 345, 76, 21, 8, 65, 456, 4}));
         customList.add(0, nbt.getTag().ofIntArray(new int[]{897, 567, 98, 899, 878712, 12}));
         wolfyCompound.set("IntArrayList", customList);
-
+        //*/
         var nestedComp = nbt.getTag().compound();
         nestedComp.setString("LUL", "xD this is a nested Text!");
         nestedComp.setBoolean("Funny", false);
@@ -289,8 +290,10 @@ public class WUPlugin extends JavaPlugin {
             console.info("    Nested = " + wolfyComp.get("Nested"));
             var nbtTagList = (NBTTagList) wolfyComp.get("IntArrayList");
             console.info("    IntArrayList = " + nbtTagList);
-            for (int i = 0; i < nbtTagList.size(); i++) {
-                console.info("       - " + nbtTagList.getTag(i));
+            if (nbtTagList != null) {
+                for (int i = 0; i < nbtTagList.size(); i++) {
+                    console.info("       - " + nbtTagList.getTag(i));
+                }
             }
         }
     }
