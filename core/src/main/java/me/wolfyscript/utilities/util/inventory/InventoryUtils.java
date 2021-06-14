@@ -3,7 +3,6 @@ package me.wolfyscript.utilities.util.inventory;
 import com.google.common.collect.Streams;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -65,8 +64,8 @@ public class InventoryUtils {
         return Streams.stream(p.getInventory()).filter(Objects::isNull).count() >= count;
     }
 
-    public static int firstSimilar(Inventory inventory, ItemStack itemStack){
-        for(int i = 0; i < inventory.getSize(); i++){
+    public static int firstSimilar(Inventory inventory, ItemStack itemStack) {
+        for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack slotItem = inventory.getItem(i);
             if (slotItem == null) {
                 return i;
@@ -81,20 +80,22 @@ public class InventoryUtils {
     }
 
     public static void calculateClickedSlot(InventoryClickEvent event) {
-        final ItemStack cursor = event.getCursor();
+        calculateClickedSlot(event, event.getCursor(), event.getCurrentItem());
+    }
+
+    public static void calculateClickedSlot(final InventoryClickEvent event, final ItemStack cursor, final ItemStack currentItem) {
         if (cursor == null) return;
-        final ItemStack fuel = event.getCurrentItem();
-        if (event.getClick().equals(ClickType.LEFT)) {
-            if (!ItemUtils.isAirOrNull(fuel)) {
+        if (event.getClick().isLeftClick()) {
+            if (!ItemUtils.isAirOrNull(currentItem)) {
                 event.setCancelled(true);
-                if (fuel.isSimilar(cursor)) {
-                    int possibleAmount = fuel.getMaxStackSize() - fuel.getAmount();
-                    fuel.setAmount(fuel.getAmount() + (Math.min(cursor.getAmount(), possibleAmount)));
+                if (currentItem.isSimilar(cursor)) {
+                    int possibleAmount = currentItem.getMaxStackSize() - currentItem.getAmount();
+                    currentItem.setAmount(currentItem.getAmount() + (Math.min(cursor.getAmount(), possibleAmount)));
                     cursor.setAmount(cursor.getAmount() - possibleAmount);
-                    event.setCurrentItem(fuel);
+                    event.setCurrentItem(currentItem);
                     event.setCursor(cursor);
                 } else {
-                    event.setCursor(fuel);
+                    event.setCursor(currentItem);
                     event.setCurrentItem(cursor);
                 }
             } else if (!event.getAction().equals(InventoryAction.PICKUP_ALL)) {
@@ -102,22 +103,22 @@ public class InventoryUtils {
                 event.setCursor(ItemUtils.AIR);
                 event.setCurrentItem(cursor);
             }
-        } else {
-            if (!ItemUtils.isAirOrNull(fuel)) {
-                if (fuel.isSimilar(cursor)) {
-                    if (fuel.getAmount() < fuel.getMaxStackSize() && cursor.getAmount() > 0) {
+        } else if (event.getClick().isRightClick()) {
+            if (!ItemUtils.isAirOrNull(currentItem)) {
+                if (currentItem.isSimilar(cursor)) {
+                    if (currentItem.getAmount() < currentItem.getMaxStackSize() && cursor.getAmount() > 0) {
                         event.setCancelled(true);
-                        fuel.setAmount(fuel.getAmount() + 1);
+                        currentItem.setAmount(currentItem.getAmount() + 1);
                         cursor.setAmount(cursor.getAmount() - 1);
                     }
                 } else {
                     event.setCancelled(true);
-                    event.setCursor(fuel);
+                    event.setCursor(currentItem);
                     event.setCurrentItem(cursor);
                 }
             } else {
                 event.setCancelled(true);
-                ItemStack itemStack = cursor.clone();
+                var itemStack = cursor.clone();
                 cursor.setAmount(cursor.getAmount() - 1);
                 itemStack.setAmount(1);
                 event.setCurrentItem(itemStack);
