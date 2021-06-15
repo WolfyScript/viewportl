@@ -9,8 +9,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 
 public class CustomItemPlaceEvent extends Event {
 
@@ -38,7 +38,7 @@ public class CustomItemPlaceEvent extends Event {
         this.customItem = customItem;
     }
 
-    public CustomItemPlaceEvent(CustomItem customItem, @Nonnull Block placedBlock, @Nonnull BlockState replacedBlockState, @Nonnull Block placedAgainst, @Nonnull ItemStack itemInHand, @Nonnull Player thePlayer, boolean canBuild, @Nonnull EquipmentSlot hand) {
+    public CustomItemPlaceEvent(CustomItem customItem, @NotNull Block placedBlock, @NotNull BlockState replacedBlockState, @NotNull Block placedAgainst, @NotNull ItemStack itemInHand, @NotNull Player thePlayer, boolean canBuild, @NotNull EquipmentSlot hand) {
         this.block = placedBlock;
         this.placedAgainst = placedAgainst;
         this.itemInHand = itemInHand;
@@ -58,39 +58,39 @@ public class CustomItemPlaceEvent extends Event {
         this.cancel = cancel;
     }
 
-    @Nonnull
+    @NotNull
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @NotNull
     public final Block getBlock() {
         return this.block;
     }
 
-    @Nonnull
+    @NotNull
     public Player getPlayer() {
         return this.player;
     }
 
-    @Nonnull
+    @NotNull
     public Block getBlockPlaced() {
         return this.getBlock();
     }
 
-    @Nonnull
+    @NotNull
     public BlockState getBlockReplacedState() {
         return this.replacedBlockState;
     }
 
-    @Nonnull
+    @NotNull
     public Block getBlockAgainst() {
         return this.placedAgainst;
     }
 
-    @Nonnull
+    @NotNull
     public ItemStack getItemInHand() {
         return this.itemInHand;
-    }
-
-    @Nonnull
-    public EquipmentSlot getHand() {
-        return this.hand;
     }
 
     public boolean canBuild() {
@@ -101,13 +101,13 @@ public class CustomItemPlaceEvent extends Event {
         this.canBuild = canBuild;
     }
 
-    @Nonnull
-    public HandlerList getHandlers() {
-        return handlers;
+    @NotNull
+    public EquipmentSlot getHand() {
+        return this.hand;
     }
 
-    @Nonnull
-    public static HandlerList getHandlerList() {
+    @NotNull
+    public HandlerList getHandlers() {
         return handlers;
     }
 

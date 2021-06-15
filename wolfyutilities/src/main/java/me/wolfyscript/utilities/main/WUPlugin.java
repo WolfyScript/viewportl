@@ -8,10 +8,6 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
-import me.wolfyscript.utilities.api.language.LanguageAPI;
-import me.wolfyscript.utilities.api.nms.NBTUtil;
-import me.wolfyscript.utilities.api.nms.nbt.NBTCompound;
-import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
 import me.wolfyscript.utilities.api.nms.nbt.NBTTagList;
 import me.wolfyscript.utilities.main.commands.ChatActionCommand;
 import me.wolfyscript.utilities.main.commands.InputCommand;
@@ -88,7 +84,7 @@ public class WUPlugin extends JavaPlugin {
     public void onLoad() {
         //Jackson Serializer
         getLogger().info("Register json serializer/deserializer");
-        SimpleModule module = new SimpleModule();
+        var module = new SimpleModule();
         ItemStackSerialization.create(module);
         ColorSerialization.create(module);
         DustOptionsSerialization.create(module);
@@ -139,7 +135,7 @@ public class WUPlugin extends JavaPlugin {
         CustomItem.registerAPIReferenceParser(new MythicMobsRef.Parser());
         CustomItem.registerAPIReferenceParser(new MMOItemsRef.Parser());
 
-        LanguageAPI languageAPI = wolfyUtilities.getLanguageAPI();
+        var languageAPI = wolfyUtilities.getLanguageAPI();
 
         saveResource("lang/en_US.json", true);
         languageAPI.setActiveLanguage(new Language(this, "en_US"));
@@ -221,22 +217,22 @@ public class WUPlugin extends JavaPlugin {
 
     private void testNBTAPI(boolean test) {
         if (!test) return;
-        ItemBuilder itemBuilder = new ItemBuilder(Material.DIAMOND_SWORD);
+        var itemBuilder = new ItemBuilder(Material.DIAMOND_SWORD);
         itemBuilder.addLoreLine("Test");
         itemBuilder.addEnchantment(Enchantment.DAMAGE_ALL, 5);
         itemBuilder.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
-        ItemStack itemStack = itemBuilder.create();
+        var itemStack = itemBuilder.create();
 
-        NBTUtil nbt = wolfyUtilities.getNmsUtil().getNBTUtil();
-        NBTItem nbtItem = nbt.getItem(itemStack);
+        var nbt = wolfyUtilities.getNmsUtil().getNBTUtil();
+        var nbtItem = nbt.getItem(itemStack);
 
         nbtItem.setTag("test_string", nbt.getTag().ofString("Test String!"));
 
-        NBTCompound compound = nbtItem.getCompound();
+        var compound = nbtItem.getCompound();
         compound.setInt("Test_Int", 10);
 
-        NBTCompound wolfyCompound = nbt.getTag().compound();
+        var wolfyCompound = nbt.getTag().compound();
         wolfyCompound.setByte("Byte", (byte) 4);
         wolfyCompound.setBoolean("Boolean", true);
         wolfyCompound.setDouble("Double", 2d);
@@ -249,13 +245,14 @@ public class WUPlugin extends JavaPlugin {
         wolfyCompound.setIntArray("IntArray", new int[]{9, 3543, 2134, 123});
         wolfyCompound.setLongArray("LongArray", new long[]{54, 65, 23244343, 1000000000000000000L});
 
-        NBTTagList customList = nbt.getTag().list();
+        /*
+        var customList = nbt.getTag().list();
         customList.add(0, nbt.getTag().ofIntArray(new int[]{4, 543654, 235, 223, 423, 32}));
         customList.add(0, nbt.getTag().ofIntArray(new int[]{543, 345, 76, 21, 8, 65, 456, 4}));
         customList.add(0, nbt.getTag().ofIntArray(new int[]{897, 567, 98, 899, 878712, 12}));
         wolfyCompound.set("IntArrayList", customList);
-
-        NBTCompound nestedComp = nbt.getTag().compound();
+        //*/
+        var nestedComp = nbt.getTag().compound();
         nestedComp.setString("LUL", "xD this is a nested Text!");
         nestedComp.setBoolean("Funny", false);
         wolfyCompound.set("Nested", nestedComp);
@@ -268,7 +265,7 @@ public class WUPlugin extends JavaPlugin {
         console.info("    - " + String.join("\n    - ", nbtItem.getKeys()));
 
         ItemStack newItem = nbtItem.create();
-        NBTItem newNBTItem = nbt.getItem(newItem);
+        var newNBTItem = nbt.getItem(newItem);
         console.info("New Item: ");
         console.info("Tag: " + nbtItem.getCompound().toString());
         console.info("Item Keys: ");
@@ -276,7 +273,7 @@ public class WUPlugin extends JavaPlugin {
             console.info(" - " + key + " = " + newNBTItem.getTag(key));
         }
 
-        NBTCompound wolfyComp = newNBTItem.getCompound("wolfy");
+        var wolfyComp = newNBTItem.getCompound("wolfy");
         if (wolfyComp != null) {
             console.info("Wolfy Values: ");
             console.info("    Byte = " + wolfyComp.getByte("Byte"));
@@ -291,10 +288,12 @@ public class WUPlugin extends JavaPlugin {
             console.info("    IntArray = " + Arrays.toString(wolfyComp.getIntArray("IntArray")));
             console.info("    LongArray = " + Arrays.toString(wolfyComp.getLongArray("LongArray")));
             console.info("    Nested = " + wolfyComp.get("Nested"));
-            NBTTagList nbtTagList = (NBTTagList) wolfyComp.get("IntArrayList");
+            var nbtTagList = (NBTTagList) wolfyComp.get("IntArrayList");
             console.info("    IntArrayList = " + nbtTagList);
-            for (int i = 0; i < nbtTagList.size(); i++) {
-                console.info("       - " + nbtTagList.getTag(i));
+            if (nbtTagList != null) {
+                for (int i = 0; i < nbtTagList.size(); i++) {
+                    console.info("       - " + nbtTagList.getTag(i));
+                }
             }
         }
     }

@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -135,7 +135,7 @@ public class GuiUpdate<C extends CustomCache> {
      * @param slot   The slot the button should be rendered in.
      * @param button The {@link Button} that should be rendered.
      */
-    public void setButton(int slot, @Nonnull Button<C> button) {
+    public void setButton(int slot, @NotNull Button<C> button) {
         if (button != null) {
             guiHandler.setButton(guiWindow, slot, button.getId());
             renderButton(button, guiHandler, player, slot, guiHandler.isHelpEnabled());
@@ -162,7 +162,7 @@ public class GuiUpdate<C extends CustomCache> {
 
     private void renderButton(Button<C> button, GuiHandler<C> guiHandler, Player player, int slot, boolean help) {
         try {
-            ItemStack itemStack = this.inventory.getItem(slot);
+            var itemStack = this.inventory.getItem(slot);
             button.preRender(guiHandler, player, this.inventory, itemStack, slot, help);
             button.render(guiHandler, player, this.inventory, this.queueInventory, itemStack, slot, guiHandler.isHelpEnabled());
         } catch (IOException e) {

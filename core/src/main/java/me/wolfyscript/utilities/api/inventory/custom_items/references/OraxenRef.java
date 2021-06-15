@@ -59,9 +59,8 @@ public class OraxenRef extends APIReference {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof OraxenRef)) return false;
+        if (!(o instanceof OraxenRef oraxenRef)) return false;
         if (!super.equals(o)) return false;
-        OraxenRef oraxenRef = (OraxenRef) o;
         return Objects.equals(itemID, oraxenRef.itemID);
     }
 

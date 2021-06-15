@@ -4,17 +4,15 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
-import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,8 +32,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
-        if (commandSender instanceof Player) {
-            Player player = (Player) commandSender;
+        if (commandSender instanceof Player player) {
             if (args.length > 0) {
                 if (args[0].equalsIgnoreCase("spawn")) {
                     if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_effect.spawn")) {
@@ -52,8 +49,8 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                                     double x = Double.parseDouble(args[2]);
                                     double y = Double.parseDouble(args[3]);
                                     double z = Double.parseDouble(args[4]);
-                                    Location location = new Location(player.getWorld(), x, y, z);
-                                    ParticleEffect particleEffect = Registry.PARTICLE_EFFECTS.get(nameSpacedKey);
+                                    var location = new Location(player.getWorld(), x, y, z);
+                                    var particleEffect = Registry.PARTICLE_EFFECTS.get(nameSpacedKey);
                                     if (particleEffect != null) {
                                         particleEffect.onLocation(location);
                                     }
@@ -62,9 +59,9 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                                     return true;
                                 }
                             } else {
-                                Block block = player.getTargetBlockExact(10);
+                                var block = player.getTargetBlockExact(10);
                                 if (block != null) {
-                                    ParticleEffect particleEffect = Registry.PARTICLE_EFFECTS.get(nameSpacedKey);
+                                    var particleEffect = Registry.PARTICLE_EFFECTS.get(nameSpacedKey);
                                     if (particleEffect != null) {
                                         particleEffect.onBlock(block);
                                     }
@@ -79,7 +76,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
     }
 
     @Override
-    public List<String> onTabComplete(@Nonnull CommandSender commandSender, @Nonnull Command command, @Nonnull String s, @Nonnull String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         List<String> results = new ArrayList<>();
         if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_effect.complete")) {
             if (commandSender instanceof Player) {

@@ -24,24 +24,15 @@ public class RecipeIterator implements Iterator<Recipe> {
     }
 
     private Recipes<?> getRecipes(RecipeType type) {
-        switch (type) {
-            case CRAFTING:
-                return Recipes.CRAFTING;
-            case SMELTING:
-                return Recipes.SMELTING;
-            case BLASTING:
-                return Recipes.BLASTING;
-            case SMOKING:
-                return Recipes.SMOKING;
-            case CAMPFIRE_COOKING:
-                return Recipes.CAMPFIRE_COOKING;
-            case STONECUTTING:
-                return Recipes.STONECUTTING;
-            case SMITHING:
-                return Recipes.SMITHING;
-            default:
-                return null;
-        }
+        return switch (type) {
+            case CRAFTING -> Recipes.CRAFTING;
+            case SMELTING -> Recipes.SMELTING;
+            case BLASTING -> Recipes.BLASTING;
+            case SMOKING -> Recipes.SMOKING;
+            case CAMPFIRE_COOKING -> Recipes.CAMPFIRE_COOKING;
+            case STONECUTTING -> Recipes.STONECUTTING;
+            case SMITHING -> Recipes.SMITHING;
+        };
     }
 
     public RecipeIterator(List<IRecipe<?>> recipeList) {

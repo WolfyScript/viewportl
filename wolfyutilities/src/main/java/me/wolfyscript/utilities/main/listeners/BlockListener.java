@@ -32,11 +32,11 @@ public class BlockListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent event) {
-        Block block = event.getBlock();
-        CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+        var block = event.getBlock();
+        var storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
         if (!ItemUtils.isAirOrNull(storedItem)) {
             event.setDropItems(false);
-            CustomItemBreakEvent event1 = new CustomItemBreakEvent(storedItem, event);
+            var event1 = new CustomItemBreakEvent(storedItem, event);
             Bukkit.getPluginManager().callEvent(event1);
             event.setCancelled(event1.isCancelled());
             storedItem = event1.getCustomItem();
@@ -64,8 +64,8 @@ public class BlockListener implements Listener {
         if (!cancelled) {
             Iterator<Block> blockList = blocks.iterator();
             while (blockList.hasNext()) {
-                Block block = blockList.next();
-                CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+                var block = blockList.next();
+                var storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
                 if (!ItemUtils.isAirOrNull(storedItem)) {
                     blockList.remove();
                     block.setType(Material.AIR);
@@ -79,15 +79,14 @@ public class BlockListener implements Listener {
     private ItemStack dropItems(Block block, CustomItem storedItem) {
         ItemStack result = storedItem.create();
         WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
-        if (block.getState() instanceof Container) {
-            Container container = (Container) block.getState();
-            BlockStateMeta blockStateMeta = (BlockStateMeta) result.getItemMeta();
+        if (block.getState() instanceof Container container) {
+            var blockStateMeta = (BlockStateMeta) result.getItemMeta();
             if (container instanceof ShulkerBox) {
-                ShulkerBox shulkerBox = (ShulkerBox) blockStateMeta.getBlockState();
+                var shulkerBox = (ShulkerBox) blockStateMeta.getBlockState();
                 shulkerBox.getInventory().setContents(container.getInventory().getContents());
                 blockStateMeta.setBlockState(shulkerBox);
             } else {
-                Container itemContainer = (Container) blockStateMeta.getBlockState();
+                var itemContainer = (Container) blockStateMeta.getBlockState();
                 itemContainer.getInventory().clear();
                 blockStateMeta.setBlockState(itemContainer);
             }
@@ -97,10 +96,9 @@ public class BlockListener implements Listener {
     }
 
     private void removeMultiBlockItems(Block block) {
-        if (block.getBlockData() instanceof Bisected) {
-            WorldUtils.getWorldCustomItemStore().remove(((Bisected) block.getBlockData()).getHalf().equals(Bisected.Half.BOTTOM) ? block.getLocation().add(0, 1, 0) : block.getLocation().subtract(0, 1, 0));
-        } else if (block.getBlockData() instanceof Bed) {
-            Bed bed = (Bed) block.getBlockData();
+        if (block.getBlockData() instanceof Bisected bisected) {
+            WorldUtils.getWorldCustomItemStore().remove(bisected.getHalf().equals(Bisected.Half.BOTTOM) ? block.getLocation().add(0, 1, 0) : block.getLocation().subtract(0, 1, 0));
+        } else if (block.getBlockData() instanceof Bed bed) {
             WorldUtils.getWorldCustomItemStore().remove(block.getLocation().add(bed.getFacing().getDirection()));
         }
     }
@@ -111,8 +109,8 @@ public class BlockListener implements Listener {
     */
     @EventHandler(ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event) {
-        Block block = event.getBlock();
-        CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+        var block = event.getBlock();
+        var storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
         if (!ItemUtils.isAirOrNull(storedItem)) {
             WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
             WorldUtils.getWorldCustomItemStore().store(event.getToBlock().getLocation(), storedItem);
@@ -137,7 +135,7 @@ public class BlockListener implements Listener {
     private void updatePistonBlocks(List<Block> blocks, BlockFace direction) {
         HashMap<Location, CustomItem> newLocations = new HashMap<>();
         blocks.forEach(block -> {
-            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+            var storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
             if (storedItem != null) {
                 WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
                 newLocations.put(block.getRelative(direction).getLocation(), storedItem);
@@ -155,8 +153,8 @@ public class BlockListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onBlockBurn(BlockBurnEvent event) {
-        Block block = event.getBlock();
-        CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+        var block = event.getBlock();
+        var storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
         if (storedItem != null) {
             WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
         }
@@ -167,8 +165,8 @@ public class BlockListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event) {
-        Block block = event.getBlock();
-        CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+        var block = event.getBlock();
+        var storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
         if (storedItem != null) {
             WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
         }
@@ -177,8 +175,8 @@ public class BlockListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onBlockFade(BlockFadeEvent event) {
         if (event.getNewState().getType().equals(Material.AIR)) {
-            Block block = event.getBlock();
-            CustomItem storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+            var block = event.getBlock();
+            var storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
             if (storedItem != null) {
                 WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
             }
@@ -196,12 +194,12 @@ public class BlockListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.canBuild()) {
-            CustomItem customItem = CustomItem.getByItemStack(event.getItemInHand());
+            var customItem = CustomItem.getByItemStack(event.getItemInHand());
             if (!ItemUtils.isAirOrNull(customItem) && customItem.getItemStack().getType().isBlock()) {
                 if (customItem.isBlockPlacement()) {
                     event.setCancelled(true);
                 }
-                CustomItemPlaceEvent event1 = new CustomItemPlaceEvent(customItem, event);
+                var event1 = new CustomItemPlaceEvent(customItem, event);
                 Bukkit.getPluginManager().callEvent(event1);
                 customItem = event1.getCustomItem();
 
@@ -213,13 +211,12 @@ public class BlockListener implements Listener {
                     event.setCancelled(true);
                 }
             }
-
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onBlockPlaceMulti(BlockMultiPlaceEvent event) {
-        CustomItem customItem = CustomItem.getByItemStack(event.getItemInHand());
+        var customItem = CustomItem.getByItemStack(event.getItemInHand());
         if (!ItemUtils.isAirOrNull(customItem)) {
             if (customItem.isBlockPlacement()) {
                 event.setCancelled(true);

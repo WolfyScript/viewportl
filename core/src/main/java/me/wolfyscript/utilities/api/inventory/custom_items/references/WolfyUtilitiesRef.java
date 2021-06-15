@@ -10,7 +10,6 @@ import me.wolfyscript.utilities.util.Registry;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,7 +56,7 @@ public class WolfyUtilitiesRef extends APIReference {
         if (itemStack != null) {
             ItemMeta itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+                var container = itemMeta.getPersistentDataContainer();
                 if (container.has(CUSTOM_ITEM_KEY, PersistentDataType.STRING)) {
                     return Objects.equals(this.namespacedKey, me.wolfyscript.utilities.util.NamespacedKey.of(container.get(CUSTOM_ITEM_KEY, PersistentDataType.STRING)));
                 }
@@ -76,9 +75,8 @@ public class WolfyUtilitiesRef extends APIReference {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof WolfyUtilitiesRef)) return false;
+        if (!(o instanceof WolfyUtilitiesRef that)) return false;
         if (!super.equals(o)) return false;
-        WolfyUtilitiesRef that = (WolfyUtilitiesRef) o;
         return Objects.equals(namespacedKey, that.namespacedKey);
     }
 
@@ -101,9 +99,9 @@ public class WolfyUtilitiesRef extends APIReference {
         @Override
         public @Nullable WolfyUtilitiesRef construct(ItemStack itemStack) {
             if (itemStack == null) return null;
-            ItemMeta itemMeta = itemStack.getItemMeta();
+            var itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+                var container = itemMeta.getPersistentDataContainer();
                 if (container.has(CUSTOM_ITEM_KEY, PersistentDataType.STRING)) {
                     return new WolfyUtilitiesRef(me.wolfyscript.utilities.util.NamespacedKey.of(container.get(CUSTOM_ITEM_KEY, PersistentDataType.STRING)));
                 }

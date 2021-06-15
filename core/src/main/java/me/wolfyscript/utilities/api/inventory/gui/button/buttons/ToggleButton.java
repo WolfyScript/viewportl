@@ -13,9 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -40,7 +40,7 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
      * @param state         The {@link ButtonState} that is rendered if the state is true.
      * @param state2        The {@link ButtonState} that is rendered if the state is false.
      */
-    public ToggleButton(String id, boolean defaultState, @Nullable ToggleButton.StateFunction<C> stateFunction, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
+    public ToggleButton(String id, boolean defaultState, @Nullable ToggleButton.StateFunction<C> stateFunction, @NotNull ButtonState<C> state, @NotNull ButtonState<C> state2) {
         super(id, ButtonType.TOGGLE);
         this.defaultState = defaultState;
         states = new Pair<>(state, state2);
@@ -54,7 +54,7 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
      * @param state        The {@link ButtonState} that is rendered if the state is true.
      * @param state2       The {@link ButtonState} that is rendered if the state is false.
      */
-    public ToggleButton(String id, boolean defaultState, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
+    public ToggleButton(String id, boolean defaultState, @NotNull ButtonState<C> state, @NotNull ButtonState<C> state2) {
         this(id, defaultState, null, state, state2);
     }
 
@@ -64,7 +64,7 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
      * @param state         The {@link ButtonState} that is rendered if the state is true.
      * @param state2        The {@link ButtonState} that is rendered if the state is false.
      */
-    public ToggleButton(String id, @Nullable ToggleButton.StateFunction<C> stateFunction, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
+    public ToggleButton(String id, @Nullable ToggleButton.StateFunction<C> stateFunction, @NotNull ButtonState<C> state, @NotNull ButtonState<C> state2) {
         this(id, false, stateFunction, state, state2);
     }
 
@@ -73,7 +73,7 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
      * @param state  The {@link ButtonState} that is rendered if the state is true.
      * @param state2 The {@link ButtonState} that is rendered if the state is false.
      */
-    public ToggleButton(String id, @Nonnull ButtonState<C> state, @Nonnull ButtonState<C> state2) {
+    public ToggleButton(String id, @NotNull ButtonState<C> state, @NotNull ButtonState<C> state2) {
         this(id, false, null, state, state2);
     }
 

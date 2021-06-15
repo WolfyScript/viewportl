@@ -23,15 +23,15 @@ public class ItemUtilImpl extends ItemUtil {
 
     @Override
     public String getItemStackJson(org.bukkit.inventory.ItemStack itemStack) {
-        ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+        var nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
         return nmsItemStack.save(new NBTTagCompound()).toString();
     }
 
     @Override
     public org.bukkit.inventory.ItemStack getJsonItemStack(String json) {
         try {
-            NBTTagCompound nbtTagCompound = MojangsonParser.parse(json);
-            ItemStack itemStack = ItemStack.a(nbtTagCompound);
+            var nbtTagCompound = MojangsonParser.parse(json);
+            var itemStack = ItemStack.a(nbtTagCompound);
             return CraftItemStack.asBukkitCopy(itemStack);
         } catch (CommandSyntaxException e) {
             e.printStackTrace();
@@ -42,8 +42,8 @@ public class ItemUtilImpl extends ItemUtil {
     @Override
     public String getItemStackBase64(org.bukkit.inventory.ItemStack itemStack) throws IOException {
         if (itemStack == null) return "null";
-        ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        var nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+        var outputStream = new ByteArrayOutputStream();
         NBTCompressedStreamTools.a(nmsItemStack.save(new NBTTagCompound()), outputStream);
         return Base64.getEncoder().encodeToString(outputStream.toByteArray());
     }
@@ -56,9 +56,9 @@ public class ItemUtilImpl extends ItemUtil {
     @Override
     public org.bukkit.inventory.ItemStack getBase64ItemStack(byte[] bytes) throws IOException {
         if (bytes == null || bytes.length == 0) return null;
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-        NBTTagCompound nbtTagCompound = NBTCompressedStreamTools.a(inputStream);
-        ItemStack itemStack = ItemStack.a(nbtTagCompound);
+        var inputStream = new ByteArrayInputStream(bytes);
+        var nbtTagCompound = NBTCompressedStreamTools.a(inputStream);
+        var itemStack = ItemStack.a(nbtTagCompound);
         if (itemStack != null) {
             return CraftItemStack.asBukkitCopy(itemStack);
         }

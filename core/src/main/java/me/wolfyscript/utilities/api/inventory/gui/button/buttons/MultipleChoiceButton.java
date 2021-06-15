@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
      * @param states        The {@link ButtonState}s that this Button will cycle through.
      */
     @SafeVarargs
-    public MultipleChoiceButton(String id, StateFunction<C> stateFunction, @Nonnull ButtonState<C>... states) {
+    public MultipleChoiceButton(String id, StateFunction<C> stateFunction, @NotNull ButtonState<C>... states) {
         super(id, ButtonType.CHOICES);
         this.states = Arrays.asList(states);
         settings = new HashMap<>();
@@ -50,7 +50,7 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
      * @param states The {@link ButtonState}s that this Button will cycle through.
      */
     @SafeVarargs
-    public MultipleChoiceButton(String id, @Nonnull ButtonState<C>... states) {
+    public MultipleChoiceButton(String id, @NotNull ButtonState<C>... states) {
         this(id, null, states);
     }
 

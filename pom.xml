@@ -5,28 +5,29 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolfyscript.wolfyutilities</groupId>
     <artifactId>wolfyutilities-parent</artifactId>
-    <version>1.6.4.2</version>
+    <version>1.7.0.0</version>
 
     <packaging>pom</packaging>
 
     <properties>
         <!-- Generic properties -->
-        <java.version>1.8</java.version>
+        <java.version>16</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <spigot.version>1.16.4-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.17-R0.1-SNAPSHOT</spigot.version>
         <spigot.groupId>org.spigotmc</spigot.groupId>
         <spigot.artifactId>spigot-api</spigot.artifactId>
     </properties>
 
     <modules>
         <module>core</module>
+        <module>nmsutil-v1_14_R1</module>
+        <module>nmsutil-v1_15_R1</module>
         <module>nmsutil-v1_16_R1</module>
         <module>nmsutil-v1_16_R2</module>
         <module>nmsutil-v1_16_R3</module>
-        <module>nmsutil-v1_14_R1</module>
-        <module>nmsutil-v1_15_R1</module>
+        <module>nmsutil-v1_17_R1</module>
         <module>wolfyutilities</module>
     </modules>
 
@@ -96,6 +97,12 @@
             <artifactId>worldedit-bukkit</artifactId>
             <version>7.2.0-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
@@ -133,7 +140,7 @@
         <dependency>
             <groupId>io.lumine.xikage</groupId>
             <artifactId>MythicMobs</artifactId>
-            <version>4.10.0</version>
+            <version>4.12.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -165,6 +172,7 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -177,22 +185,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${java.version}</release>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

@@ -7,6 +7,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -15,7 +16,7 @@ public class PlayerUtils {
 
     static final Map<UUID, PlayerStore> indexedStores = new HashMap<>();
 
-    private static final HashMap<UUID, HashMap<EquipmentSlot, UUID>> playerItemParticles = new HashMap<>();
+    private static final HashMap<UUID, Map<EquipmentSlot, UUID>> playerItemParticles = new HashMap<>();
     static final File STORE_FOLDER = new File(WolfyUtilities.getWUPlugin().getDataFolder(), "players");
 
 
@@ -24,7 +25,7 @@ public class PlayerUtils {
     }
 
     public static boolean hasActiveItemEffects(Player player, EquipmentSlot equipmentSlot) {
-        return playerItemParticles.getOrDefault(player.getUniqueId(), new HashMap<>()).containsKey(equipmentSlot);
+        return playerItemParticles.getOrDefault(player.getUniqueId(), new EnumMap<>(EquipmentSlot.class)).containsKey(equipmentSlot);
     }
 
     /**
@@ -34,12 +35,12 @@ public class PlayerUtils {
      * @return The active particle effects on the player
      */
     public static Map<EquipmentSlot, UUID> getActiveItemEffects(Player player) {
-        playerItemParticles.putIfAbsent(player.getUniqueId(), new HashMap<>());
+        playerItemParticles.putIfAbsent(player.getUniqueId(), new EnumMap<>(EquipmentSlot.class));
         return playerItemParticles.get(player.getUniqueId());
     }
 
     public static UUID getActiveItemEffects(Player player, EquipmentSlot equipmentSlot) {
-        return playerItemParticles.getOrDefault(player.getUniqueId(), new HashMap<>()).get(equipmentSlot);
+        return playerItemParticles.getOrDefault(player.getUniqueId(), new EnumMap<>(EquipmentSlot.class)).get(equipmentSlot);
     }
 
     public static void setActiveParticleEffect(Player player, EquipmentSlot equipmentSlot, UUID uuid) {
@@ -79,11 +80,11 @@ public class PlayerUtils {
 
     @NotNull
     public static PlayerStore getStore(@NotNull UUID uuid) {
-        if (!indexedStores.containsKey(uuid)) {
-            PlayerStore playerStore = new PlayerStore();
-            indexedStores.put(uuid, playerStore);
-            playerStore.save(uuid);
-        }
+        indexedStores.computeIfAbsent(uuid, key -> {
+            var playerStore = new PlayerStore();
+            playerStore.save(key);
+            return playerStore;
+        });
         return indexedStores.get(uuid);
     }
 

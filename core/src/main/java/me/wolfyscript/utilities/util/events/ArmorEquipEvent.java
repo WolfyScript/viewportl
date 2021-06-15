@@ -2,29 +2,30 @@ package me.wolfyscript.utilities.util.events;
 
 import me.wolfyscript.utilities.api.inventory.custom_items.ArmorType;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import me.wolfyscript.utilities.api.inventory.custom_items.ParticleContent;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
-    private boolean cancel = false;
+    private boolean cancel;
     private final EquipMethod equipType;
     private final ArmorType type;
     private final CustomItem oldCustomArmorPiece, newCustomArmorPiece;
     private final ItemStack oldArmorPiece;
     private final ItemStack newArmorPiece;
+
+    public ArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final ItemStack oldArmorPiece, final ItemStack newArmorPiece) {
+        this(player, equipType, type, oldArmorPiece, newArmorPiece, oldArmorPiece == null ? null : CustomItem.getByItemStack(oldArmorPiece), newArmorPiece == null ? null : CustomItem.getByItemStack(newArmorPiece));
+    }
 
     /**
      * Constructor for the ArmorEquipEvent.
@@ -36,44 +37,29 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
      */
     public ArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final ItemStack oldArmorPiece, final ItemStack newArmorPiece, final CustomItem oldCustomArmorPiece, final CustomItem newCustomArmorPiece) {
         super(player);
-
         this.equipType = equipType;
         this.type = type;
         this.oldArmorPiece = oldArmorPiece;
         this.newArmorPiece = newArmorPiece;
         this.oldCustomArmorPiece = oldCustomArmorPiece;
         this.newCustomArmorPiece = newCustomArmorPiece;
+        this.cancel = !canBeEquipped();
 
-        if (type != null) {
-            EquipmentSlot equipmentSlot = type.getEquipmentSlot();
-            if (!ItemUtils.isAirOrNull(newArmorPiece)) {
-                //Equiping new armor!
-                if (ItemUtils.isEquipable(newArmorPiece.getType())) {
-                    if (!ItemUtils.isEquipable(newArmorPiece.getType(), type) && (ItemUtils.isAirOrNull(newCustomArmorPiece) || !newCustomArmorPiece.isBlockVanillaEquip())) {
-                        setCancelled(true);
-                    }
-                } else {
-                    setCancelled(true);
-                }
-                if (!ItemUtils.isAirOrNull(newCustomArmorPiece) && newCustomArmorPiece.hasEquipmentSlot(equipmentSlot)) {
-                    PlayerUtils.stopActiveParticleEffect(getPlayer(), equipmentSlot);
-                    ParticleContent particleContent = newCustomArmorPiece.getParticleContent();
-                    if (particleContent != null) {
-                        ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(particleContent.getParticleEffect(ParticleLocation.valueOf(equipmentSlot.name())));
-                        if (animation != null) {
-                            animation.spawnOnPlayer(player, equipmentSlot);
-                        }
-                    }
-                    setCancelled(false);
-                }
-            } else {
+        var equipmentSlot = type.getEquipmentSlot();
+        if (!ItemUtils.isAirOrNull(newArmorPiece)) {
+            //Equipping new armor!
+            if (!ItemUtils.isAirOrNull(newCustomArmorPiece) && newCustomArmorPiece.hasEquipmentSlot(equipmentSlot)) {
                 PlayerUtils.stopActiveParticleEffect(getPlayer(), equipmentSlot);
-            }
-            if (!ItemUtils.isAirOrNull(oldArmorPiece) && oldArmorPiece.hasItemMeta() && oldArmorPiece.getItemMeta().hasEnchant(Enchantment.BINDING_CURSE)) {
-                setCancelled(true);
+                var particleContent = newCustomArmorPiece.getParticleContent();
+                if (particleContent != null) {
+                    ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(particleContent.getParticleEffect(ParticleLocation.valueOf(equipmentSlot.name())));
+                    if (animation != null) {
+                        animation.spawnOnPlayer(player, equipmentSlot);
+                    }
+                }
             }
         } else {
-            setCancelled(true);
+            PlayerUtils.stopActiveParticleEffect(getPlayer(), equipmentSlot);
         }
     }
 
@@ -82,7 +68,7 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
      *
      * @return A list of handlers handling this event.
      */
-    public final static HandlerList getHandlerList(){
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 
@@ -92,17 +78,8 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
      * @return A list of handlers handling this event.
      */
     @Override
-    public final HandlerList getHandlers(){
+    public final HandlerList getHandlers() {
         return handlers;
-    }
-
-    /**
-     * Sets if this event should be cancelled.
-     *
-     * @param cancel If this event should be cancelled.
-     */
-    public final void setCancelled(final boolean cancel){
-        this.cancel = cancel;
     }
 
     /**
@@ -110,11 +87,20 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
      *
      * @return If this event is cancelled
      */
-    public final boolean isCancelled(){
+    public final boolean isCancelled() {
         return cancel;
     }
 
-    public final ArmorType getType(){
+    /**
+     * Sets if this event should be cancelled.
+     *
+     * @param cancel If this event should be cancelled.
+     */
+    public final void setCancelled(final boolean cancel) {
+        this.cancel = cancel;
+    }
+
+    public final ArmorType getType() {
         return type;
     }
 
@@ -147,7 +133,35 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
         return equipType;
     }
 
-    public enum EquipMethod{
+    /**
+     * Checks if the the item of the event can be equipped.
+     * Empty or null items are treated as equipable!
+     *
+     * @return true if the item can be equipped or is null or AIR.
+     */
+    public boolean canBeEquipped() {
+        if (type != null) {
+            if (!ItemUtils.isAirOrNull(newArmorPiece)) {
+                return (ItemUtils.isEquipable(newArmorPiece.getType(), type) && (ItemUtils.isAirOrNull(newCustomArmorPiece) || !newCustomArmorPiece.isBlockVanillaEquip()))
+                        || !ItemUtils.isAirOrNull(newCustomArmorPiece) && newCustomArmorPiece.hasEquipmentSlot(type.getEquipmentSlot());
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return true if the item can be equipped in vanilla mc.
+     */
+    public boolean canBeEquippedVanilla() {
+        if (type != null) {
+            return !ItemUtils.isAirOrNull(newArmorPiece) && ItemUtils.isEquipable(newArmorPiece.getType(), type);
+        }
+        return false;
+    }
+
+    public enum EquipMethod {
         /**
          * When you shift click an armor piece to equip or unequip
          */
@@ -169,17 +183,20 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
          */
         HOTBAR_SWAP,
         /**
-         * When in range of a dispenser that shoots an armor piece to equip.<br>
-         * Requires the spigot version to have {@link org.bukkit.event.block.BlockDispenseArmorEvent} implemented.
+         * TODO: When in range of a dispenser that shoots an armor piece to equip.
          */
         DISPENSER,
         /**
-         * When an armor piece is removed due to it losing all durability.
+         * TODO: When an armor piece is removed due to it losing all durability.
          */
         BROKE,
         /**
-         * When you die causing all armor to unequip
+         * TODO: When you die causing all armor to unequip
          */
-        DEATH
+        DEATH,
+        /**
+         * When you drop the item using out of the inventory
+         */
+        DROP
     }
 }

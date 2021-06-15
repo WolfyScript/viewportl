@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.util.protection;
 
 import com.plotsquared.bukkit.util.BukkitUtil;
 import com.plotsquared.core.api.PlotAPI;
-import com.plotsquared.core.location.Location;
 import com.plotsquared.core.plot.Plot;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -19,11 +18,11 @@ public class PSUtils {
     }
 
     public static boolean hasPerm(Player player, org.bukkit.Location location) {
-        Location location1 = BukkitUtil.getLocation(location);
+        var location1 = BukkitUtil.getLocation(location);
         if (!isPlotWorld(player.getWorld())) {
             return true;
         }
-        Plot plot = location1.getPlot();
+        var plot = location1.getPlot();
         return hasPlotPerm(player.getUniqueId(), plot);
     }
 

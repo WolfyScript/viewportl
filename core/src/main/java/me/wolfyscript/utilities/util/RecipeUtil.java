@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ListIterator;
 
 public class RecipeUtil {
@@ -36,7 +37,7 @@ public class RecipeUtil {
      * @param shape the recipe that should be formatted
      * @return the shrunken ArrayList of the recipe shape
      */
-    public static ArrayList<String> formatShape(String... shape) {
+    public static List<String> formatShape(String... shape) {
         ArrayList<String> cleared = new ArrayList<>(Arrays.asList(shape));
         ListIterator<String> rowIterator = cleared.listIterator();
         while (rowIterator.hasNext()) {
@@ -55,7 +56,7 @@ public class RecipeUtil {
             rowIterator.remove();
         }
         if (!cleared.isEmpty()) {
-            boolean columnBlocked = false;
+            var columnBlocked = false;
             while (!columnBlocked) {
                 if (checkColumn(cleared, 0)) {
                     columnBlocked = true;

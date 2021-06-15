@@ -20,6 +20,6 @@ public class ScriptUtil {
      */
     @Deprecated
     public static ScriptEngine getEngine() {
-        return new ScriptEngineManager().getEngineByName("Nashorn");
+        throw new UnsupportedOperationException();
     }
 }

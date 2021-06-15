@@ -8,7 +8,6 @@ import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,33 +22,20 @@ public class ItemUtils {
         this.wolfyUtilities = wolfyUtilities;
     }
 
-    //SOME ITEMMETA UTILS
     public static boolean isEquipable(Material material) {
-        if (material.name().endsWith("_CHESTPLATE") || material.name().endsWith("_LEGGINGS") || material.name().endsWith("_HELMET") || material.name().endsWith("_BOOTS") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL")) {
-            return true;
-        }
-        switch (material) {
-            case ELYTRA:
-            case CARVED_PUMPKIN:
-                return true;
-            default:
-                return false;
-        }
+        return switch (material) {
+            case ELYTRA, CARVED_PUMPKIN -> true;
+            default -> material.name().endsWith("_CHESTPLATE") || material.name().endsWith("_LEGGINGS") || material.name().endsWith("_HELMET") || material.name().endsWith("_BOOTS") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL");
+        };
     }
 
     public static boolean isEquipable(Material material, ArmorType type) {
-        switch (type) {
-            case HELMET:
-                return material.name().endsWith("_HELMET") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL") || material.equals(Material.CARVED_PUMPKIN);
-            case CHESTPLATE:
-                return material.equals(Material.ELYTRA) || material.name().endsWith("_CHESTPLATE");
-            case LEGGINGS:
-                return material.name().endsWith("_LEGGINGS");
-            case BOOTS:
-                return material.name().endsWith("_BOOTS");
-            default:
-                return false;
-        }
+        return switch (type) {
+            case HELMET -> material.name().endsWith("_HELMET") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL") || material.equals(Material.CARVED_PUMPKIN);
+            case CHESTPLATE -> material.equals(Material.ELYTRA) || material.name().endsWith("_CHESTPLATE");
+            case LEGGINGS -> material.name().endsWith("_LEGGINGS");
+            case BOOTS -> material.name().endsWith("_BOOTS");
+        };
     }
 
     public static boolean isTool(Material material) {
@@ -73,8 +59,8 @@ public class ItemUtils {
     Prepare and configure the ItemStack for the GUI!
      */
     public static ItemStack createItem(ItemStack itemStack, String displayName, String... lore) {
-        ItemBuilder itemBuilder = new ItemBuilder(itemStack);
-        ItemMeta itemMeta = itemBuilder.getItemMeta();
+        var itemBuilder = new ItemBuilder(itemStack);
+        var itemMeta = itemBuilder.getItemMeta();
         if (itemMeta != null) {
             itemBuilder.setDisplayName(ChatColor.convert(displayName));
             if (lore != null) {
@@ -88,33 +74,31 @@ public class ItemUtils {
     }
 
     public ItemStack translateItemStack(ItemStack itemStack) {
-        if (itemStack != null) {
-            if (itemStack.hasItemMeta()) {
-                ItemMeta itemMeta = itemStack.getItemMeta();
-                if (itemMeta.hasDisplayName()) {
-                    String displayName = itemMeta.getDisplayName();
-                    if (wolfyUtilities.getLanguageAPI().getActiveLanguage() != null) {
-                        displayName = wolfyUtilities.getLanguageAPI().replaceKeys(displayName);
-                    }
-                    itemMeta.setDisplayName(ChatColor.convert(displayName));
+        if (itemStack != null && itemStack.hasItemMeta()) {
+            var itemMeta = itemStack.getItemMeta();
+            if (itemMeta.hasDisplayName()) {
+                String displayName = itemMeta.getDisplayName();
+                if (wolfyUtilities.getLanguageAPI().getActiveLanguage() != null) {
+                    displayName = wolfyUtilities.getLanguageAPI().replaceKeys(displayName);
                 }
-                if (itemMeta.hasLore() && wolfyUtilities.getLanguageAPI().getActiveLanguage() != null) {
-                    List<String> newLore = new ArrayList<>();
-                    for (String row : itemMeta.getLore()) {
-                        if (row.startsWith("[WU]")) {
-                            newLore.add(wolfyUtilities.getLanguageAPI().replaceKeys(row.substring("[WU]".length())));
-                        } else if (row.startsWith("[WU!]")) {
-                            for (String newRow : wolfyUtilities.getLanguageAPI().replaceKey(row.substring("[WU!]".length()))) {
-                                newLore.add(ChatColor.convert(newRow));
-                            }
-                        } else {
-                            newLore.add(row);
-                        }
-                    }
-                    itemMeta.setLore(newLore);
-                }
-                itemStack.setItemMeta(itemMeta);
+                itemMeta.setDisplayName(ChatColor.convert(displayName));
             }
+            if (itemMeta.hasLore() && wolfyUtilities.getLanguageAPI().getActiveLanguage() != null) {
+                List<String> newLore = new ArrayList<>();
+                for (String row : itemMeta.getLore()) {
+                    if (row.startsWith("[WU]")) {
+                        newLore.add(wolfyUtilities.getLanguageAPI().replaceKeys(row.substring("[WU]".length())));
+                    } else if (row.startsWith("[WU!]")) {
+                        for (String newRow : wolfyUtilities.getLanguageAPI().replaceKey(row.substring("[WU!]".length()))) {
+                            newLore.add(ChatColor.convert(newRow));
+                        }
+                    } else {
+                        newLore.add(row);
+                    }
+                }
+                itemMeta.setLore(newLore);
+            }
+            itemStack.setItemMeta(itemMeta);
         }
         return itemStack;
     }

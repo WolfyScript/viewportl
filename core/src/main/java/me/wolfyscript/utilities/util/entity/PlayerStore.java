@@ -52,7 +52,7 @@ public class PlayerStore {
     }
 
     void save(UUID uuid) {
-        try (GZIPOutputStream gzip = new GZIPOutputStream(new FileOutputStream(PlayerUtils.STORE_FOLDER + File.separator + uuid.toString() + ".store"))) {
+        try (var gzip = new GZIPOutputStream(new FileOutputStream(PlayerUtils.STORE_FOLDER + File.separator + uuid.toString() + ".store"))) {
             JacksonUtil.getObjectWriter(false).writeValue(gzip, this);
             gzip.flush();
         } catch (IOException e) {

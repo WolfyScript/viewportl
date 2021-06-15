@@ -59,9 +59,8 @@ public class MMOItemsRef extends APIReference {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof MMOItemsRef that)) return false;
         if (!super.equals(o)) return false;
-        MMOItemsRef that = (MMOItemsRef) o;
         return Objects.equals(itemType, that.itemType) && Objects.equals(itemName, that.itemName);
     }
 

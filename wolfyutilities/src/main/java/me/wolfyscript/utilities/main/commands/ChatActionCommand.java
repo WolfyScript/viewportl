@@ -16,9 +16,7 @@ public class ChatActionCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        System.out.println("sender: " + sender.getName());
-        if (!(sender instanceof Player)) return true;
-        Player player = (Player) sender;
+        if (!(sender instanceof Player player)) return true;
         if (args.length > 0) {
             UUID uuid;
             try {

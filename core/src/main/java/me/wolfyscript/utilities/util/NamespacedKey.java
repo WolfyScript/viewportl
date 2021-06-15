@@ -12,7 +12,6 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Objects;
@@ -61,12 +60,12 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters (%s)", string);
     }
 
-    @Nonnull
+    @NotNull
     public String getNamespace() {
         return this.namespace;
     }
 
-    @Nonnull
+    @NotNull
     public String getKey() {
         return this.key;
     }
