@@ -194,7 +194,7 @@ public class EquipListener implements Listener {
 
     @EventHandler
     public void onEquipTest(ArmorEquipEvent event) {
-        //*
+        /*
         System.out.println("- Equipment-Test -");
         System.out.println("    New: " + event.getNewArmorPiece());
         System.out.println("    Old: " + event.getOldArmorPiece());
