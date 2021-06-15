@@ -64,7 +64,7 @@ public enum ArmorType {
     public static ArmorType matchType(final ItemStack itemStack, final CustomItem customItem, final PlayerInventory playerInventory) {
         if (!ItemUtils.isAirOrNull(customItem) && customItem.hasEquipmentSlot()) {
             if (playerInventory == null) return getBySlot(customItem.getEquipmentSlots().get(0));
-            ArmorType armorType = customItem.getEquipmentSlots().stream().map(ArmorType::getBySlot).filter(type -> ItemUtils.isAirOrNull(playerInventory.getItem(type.getSlot()))).findFirst().orElse(null);
+            var armorType = customItem.getEquipmentSlots().stream().map(ArmorType::getBySlot).filter(type -> ItemUtils.isAirOrNull(playerInventory.getItem(type.getSlot()))).findFirst().orElse(null);
             if (armorType != null) {
                 return armorType;
             }else if(customItem.isBlockVanillaEquip()){

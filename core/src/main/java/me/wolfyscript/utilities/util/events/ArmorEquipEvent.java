@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
-    private boolean cancel = false;
+    private boolean cancel;
     private final EquipMethod equipType;
     private final ArmorType type;
     private final CustomItem oldCustomArmorPiece, newCustomArmorPiece;
@@ -24,7 +24,7 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
     private final ItemStack newArmorPiece;
 
     public ArmorEquipEvent(final Player player, final EquipMethod equipType, final ArmorType type, final ItemStack oldArmorPiece, final ItemStack newArmorPiece) {
-        this(player, equipType, type, oldArmorPiece, newArmorPiece, CustomItem.getByItemStack(oldArmorPiece), CustomItem.getByItemStack(newArmorPiece));
+        this(player, equipType, type, oldArmorPiece, newArmorPiece, oldArmorPiece == null ? null : CustomItem.getByItemStack(oldArmorPiece), newArmorPiece == null ? null : CustomItem.getByItemStack(newArmorPiece));
     }
 
     /**
