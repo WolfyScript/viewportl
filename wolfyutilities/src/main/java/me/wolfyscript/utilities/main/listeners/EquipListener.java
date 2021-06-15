@@ -3,9 +3,9 @@ package me.wolfyscript.utilities.main.listeners;
 import me.wolfyscript.utilities.api.inventory.custom_items.ArmorType;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.events.ArmorEquipEvent;
+import me.wolfyscript.utilities.util.events.EventFactory;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -39,8 +39,7 @@ public class EquipListener implements Listener {
         if (event.isShiftClick() && !event.getClick().isKeyboardClick()) {
             if (event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
                 //Unequip
-                var equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.getBySlot(event.getSlot()), currentItem, null, customCurrentItem, null);
-                Bukkit.getPluginManager().callEvent(equipEvent);
+                var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.getBySlot(event.getSlot()), currentItem, null, customCurrentItem, null);
                 event.setCancelled(equipEvent.isCancelled());
             } else {
                 //Equip
@@ -48,8 +47,7 @@ public class EquipListener implements Listener {
                     Optional<ArmorType> optionalArmorType = Stream.of(ArmorType.values()).filter(t -> ItemUtils.isAirOrNull(inv.getItem(t.getSlot())) && customCurrentItem.hasEquipmentSlot(t.getEquipmentSlot())).findFirst();
                     if (optionalArmorType.isPresent()) {
                         var type = optionalArmorType.get();
-                        var equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, type, null, currentItem, null, customCurrentItem);
-                        Bukkit.getPluginManager().callEvent(equipEvent);
+                        var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, type, null, currentItem, null, customCurrentItem);
                         if (equipEvent.isCancelled()) {
                             event.setCancelled(true);
                         } else if (!equipEvent.canBeEquippedVanilla()) {
@@ -71,9 +69,8 @@ public class EquipListener implements Listener {
                     // getRawSlot() == The slot the item is going to.
                     // getSlot() == Armor slot, can't use e.getRawSlot() as that gives a hotbar slot
                     var hotbarItem = inv.getItem(event.getHotbarButton());
-                    var method = ArmorEquipEvent.EquipMethod.HOTBAR_SWAP;
-                    var equipEvent = !ItemUtils.isAirOrNull(hotbarItem) ? new ArmorEquipEvent(player, method, type, inv.getItem(event.getSlot()), hotbarItem) : new ArmorEquipEvent(player, method, type, currentItem, cursorItem);
-                    Bukkit.getPluginManager().callEvent(equipEvent);
+                    boolean hotbar = !ItemUtils.isAirOrNull(hotbarItem);
+                    var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.HOTBAR_SWAP, type, hotbar ? inv.getItem(event.getSlot()) : cursorItem, hotbar ? hotbarItem : cursorItem);
                     if (equipEvent.isCancelled()) {
                         event.setCancelled(true);
                     } else if (!equipEvent.canBeEquippedVanilla()) {
@@ -82,14 +79,12 @@ public class EquipListener implements Listener {
                         inv.setItem(event.getSlot(), equipEvent.getNewArmorPiece());
                     }
                 } else if (event.getClick().equals(ClickType.DROP) || event.getClick().equals(ClickType.CONTROL_DROP)) {
-                    var equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.DROP, type, currentItem, cursorItem);
-                    Bukkit.getPluginManager().callEvent(equipEvent);
+                    var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.DROP, type, currentItem, cursorItem);
                     event.setCancelled(equipEvent.isCancelled());
                 } else {
                     // e.getCurrentItem() == Unequip
                     // e.getCursor() == Equip
-                    var equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.PICK_DROP, type, currentItem, cursorItem);
-                    Bukkit.getPluginManager().callEvent(equipEvent);
+                    var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.PICK_DROP, type, currentItem, cursorItem);
                     event.setCancelled(true);
                     if (!equipEvent.isCancelled()) {
                         InventoryUtils.calculateClickedSlot(event, equipEvent.getNewArmorPiece(), equipEvent.getOldArmorPiece());
@@ -115,8 +110,7 @@ public class EquipListener implements Listener {
             var customItem = CustomItem.getByItemStack(e.getItem());
             var armorType = ArmorType.matchType(e.getItem(), customItem, player.getInventory());
             if (armorType != null) {
-                var equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.HOTBAR, armorType, null, e.getItem(), null, customItem);
-                Bukkit.getPluginManager().callEvent(equipEvent);
+                var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.HOTBAR, armorType, null, e.getItem(), null, customItem);
                 if (equipEvent.isCancelled()) {
                     e.setCancelled(true);
                     player.updateInventory();
