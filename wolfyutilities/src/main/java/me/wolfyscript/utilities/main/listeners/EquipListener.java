@@ -32,29 +32,34 @@ public class EquipListener implements Listener {
             return;
         }
         var inv = event.getClickedInventory();
-
         ItemStack currentItem = event.getCurrentItem();
-        var customCurrentItem = CustomItem.getByItemStack(currentItem);
 
         if (event.isShiftClick() && !event.getClick().isKeyboardClick()) {
             if (event.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
                 //Unequip
-                var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.getBySlot(event.getSlot()), currentItem, null, customCurrentItem, null);
+                var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, ArmorType.getBySlot(event.getSlot()), currentItem, null);
                 event.setCancelled(equipEvent.isCancelled());
             } else {
                 //Equip
+                var customCurrentItem = CustomItem.getByItemStack(currentItem);
+                final ArmorType type;
                 if (!ItemUtils.isAirOrNull(customCurrentItem) && customCurrentItem.hasEquipmentSlot()) {
                     Optional<ArmorType> optionalArmorType = Stream.of(ArmorType.values()).filter(t -> ItemUtils.isAirOrNull(inv.getItem(t.getSlot())) && customCurrentItem.hasEquipmentSlot(t.getEquipmentSlot())).findFirst();
-                    if (optionalArmorType.isPresent()) {
-                        var type = optionalArmorType.get();
-                        var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, type, null, currentItem, null, customCurrentItem);
-                        if (equipEvent.isCancelled()) {
-                            event.setCancelled(true);
-                        } else if (!equipEvent.canBeEquippedVanilla()) {
-                            event.setCancelled(true);
-                            inv.setItem(type.getSlot(), equipEvent.getNewArmorPiece());
-                            inv.setItem(event.getSlot(), equipEvent.getOldArmorPiece());
-                        }
+                    if (optionalArmorType.isEmpty()) {
+                        return;
+                    }
+                    type = optionalArmorType.get();
+                } else {
+                    type = ArmorType.matchType(currentItem);
+                }
+                if (type != null) {
+                    var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.SHIFT_CLICK, type, null, currentItem);
+                    if (equipEvent.isCancelled()) {
+                        event.setCancelled(true);
+                    } else if (!equipEvent.canBeEquippedVanilla()) {
+                        event.setCancelled(true);
+                        inv.setItem(type.getSlot(), equipEvent.getNewArmorPiece());
+                        inv.setItem(event.getSlot(), equipEvent.getOldArmorPiece());
                     }
                 }
             }
