@@ -70,7 +70,7 @@ public class EquipListener implements Listener {
                     // getSlot() == Armor slot, can't use e.getRawSlot() as that gives a hotbar slot
                     var hotbarItem = inv.getItem(event.getHotbarButton());
                     boolean hotbar = !ItemUtils.isAirOrNull(hotbarItem);
-                    var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.HOTBAR_SWAP, type, hotbar ? inv.getItem(event.getSlot()) : cursorItem, hotbar ? hotbarItem : cursorItem);
+                    var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.HOTBAR_SWAP, type, hotbar ? inv.getItem(event.getSlot()) : currentItem, hotbar ? hotbarItem : cursorItem);
                     if (equipEvent.isCancelled()) {
                         event.setCancelled(true);
                     } else if (!equipEvent.canBeEquippedVanilla()) {
