@@ -37,7 +37,7 @@ public class RecipeUtil {
      * @param shape the recipe that should be formatted
      * @return the shrunken ArrayList of the recipe shape
      */
-    public static List<String> formatShape(String... shape) {
+    public static List<String> formatShape(String[] shape) {
         ArrayList<String> cleared = new ArrayList<>(Arrays.asList(shape));
         ListIterator<String> rowIterator = cleared.listIterator();
         while (rowIterator.hasNext()) {
