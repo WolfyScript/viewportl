@@ -16,11 +16,15 @@ import java.util.Map;
 public class CustomTypeIdResolver extends TypeIdResolverBase {
 
     private static final Map<Class<?>, Registry<?>> TYPE_REGISTRIES = new HashMap<>();
+    private JavaType superType;
 
     public static <T extends Keyed> void registerTypeRegistry(Class<T> type, Registry<T> registry) {
-        if (!TYPE_REGISTRIES.containsKey(type)) {
-            TYPE_REGISTRIES.put(type, registry);
-        }
+        TYPE_REGISTRIES.putIfAbsent(type, registry);
+    }
+
+    @Override
+    public void init(JavaType baseType) {
+        superType = baseType;
     }
 
     @Override
@@ -42,13 +46,13 @@ public class CustomTypeIdResolver extends TypeIdResolverBase {
 
     @Override
     public JavaType typeFromId(DatabindContext context, String id) throws IOException {
-        Registry<?> registry = TYPE_REGISTRIES.get(_baseType.getRawClass());
+        Registry<?> registry = TYPE_REGISTRIES.get(superType.getRawClass());
         if (registry != null) {
             var namespacedKey = NamespacedKey.of(id);
             if (namespacedKey != null) {
                 var object = registry.get(namespacedKey);
                 if (object != null) {
-                    return context.constructSpecializedType(TypeFactory.unknownType(), object.getClass());
+                    return context.constructSpecializedType(superType, object.getClass());
                 }
             }
         }
