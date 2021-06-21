@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomTypeIdResolver extends TypeIdResolverBase {
+public class KeyedTypeIdResolver extends TypeIdResolverBase {
 
     private static final Map<Class<?>, Registry<?>> TYPE_REGISTRIES = new HashMap<>();
     private JavaType superType;
