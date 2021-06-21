@@ -11,7 +11,7 @@ import me.wolfyscript.utilities.util.Keyed;
 
 import java.util.Collection;
 
-public class CustomTypeResolver extends StdTypeResolverBuilder {
+public class KeyedTypeResolver extends StdTypeResolverBuilder {
 
     @Override
     public TypeSerializer buildTypeSerializer(SerializationConfig config, JavaType baseType, Collection<NamedType> subtypes) {
