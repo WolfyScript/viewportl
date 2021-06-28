@@ -4,15 +4,21 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
+import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
-public abstract class CustomData {
+@JsonTypeResolver(KeyedTypeResolver.class)
+@JsonTypeIdResolver(KeyedTypeIdResolver.class)
+public abstract class CustomData implements Keyed {
 
     private final NamespacedKey namespacedKey;
 
@@ -53,6 +59,7 @@ public abstract class CustomData {
     /**
      * @return The namespacedKey, that is passed to this CustomData by it's {@link Provider}
      */
+    @Override
     public final NamespacedKey getNamespacedKey() {
         return namespacedKey;
     }
@@ -145,3 +152,4 @@ public abstract class CustomData {
 
     }
 }
+
