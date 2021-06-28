@@ -35,10 +35,10 @@ public class PlayerStore {
     }
 
     static PlayerStore load(UUID uuid) {
-        File file = new File(PlayerUtils.STORE_FOLDER + File.separator + uuid.toString() + ".store");
-        PlayerStore data = new PlayerStore();
+        var file = new File(PlayerUtils.STORE_FOLDER + File.separator + uuid.toString() + ".store");
+        var data = new PlayerStore();
         if (file.exists()) {
-            try (GZIPInputStream gzip = new GZIPInputStream(new FileInputStream(file))) {
+            try (var gzip = new GZIPInputStream(new FileInputStream(file))) {
                 data = JacksonUtil.getObjectMapper().readValue(gzip, PlayerStore.class);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -90,9 +90,9 @@ public class PlayerStore {
         @Override
         public PlayerStore deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
             JsonNode node = jsonParser.readValueAsTree();
-            PlayerStore store = new PlayerStore();
+            var store = new PlayerStore();
             node.path("data").fields().forEachRemaining(entry -> {
-                NamespacedKey key = NamespacedKey.of(entry.getKey());
+                var key = NamespacedKey.of(entry.getKey());
                 CustomPlayerData.Provider<?> provider = CustomPlayerData.providers.get(key);
                 if (provider != null) {
                     store.data.put(key, provider.loadData(entry.getValue(), deserializationContext));

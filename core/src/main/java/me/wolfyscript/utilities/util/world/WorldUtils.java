@@ -46,8 +46,8 @@ public class WorldUtils {
         WolfyUtilities.getWUPlugin().getLogger().info("Loading stored Custom Items");
         File file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store");
         if (file.exists()) {
-            try (FileInputStream fin = new FileInputStream(file)) {
-                GZIPInputStream gzip = new GZIPInputStream(fin);
+            try (var fin = new FileInputStream(file)) {
+                var gzip = new GZIPInputStream(fin);
                 worldCustomItemStore = JacksonUtil.getObjectMapper().readValue(gzip, WorldCustomItemStore.class);
                 gzip.close();
             } catch (IOException e) {

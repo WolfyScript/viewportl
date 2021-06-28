@@ -61,7 +61,7 @@ public class PlayerUtils {
             STORE_FOLDER.mkdirs();
         }
         for (String s : STORE_FOLDER.list()) {
-            UUID uuid = UUID.fromString(s.replace(".store", ""));
+            var uuid = UUID.fromString(s.replace(".store", ""));
             indexedStores.put(uuid, PlayerStore.load(uuid));
         }
     }
