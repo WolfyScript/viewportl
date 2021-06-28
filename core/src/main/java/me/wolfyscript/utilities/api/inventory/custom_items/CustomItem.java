@@ -434,7 +434,29 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @return true if the ItemStack is equal to this CustomItems ItemStack
      */
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta) {
-        if (otherItem != null && otherItem.getType().equals(this.type) && otherItem.getAmount() >= getAmount()) {
+        return isSimilar(otherItem, exactMeta, false);
+    }
+
+    /**
+     * Checks if the ItemStack is a similar to this CustomItem.
+     *
+     * <p>
+     * <strong>Exact Meta:</strong>
+     *     <ul>
+     *         <li>false - Only checks for Material and amount (if ignoreAmount isn't enabled!).</li>
+     *         <li>true - Checks all the available ItemMeta and uses the meta options when they are available.</li>
+     *     </ul>
+     * </p>
+     *
+     * <br>
+     *
+     * @param otherItem    the ItemStack that should be checked
+     * @param exactMeta    if the ItemMeta should be checked. If false only checks Material and Amount!
+     * @param ignoreAmount If true ignores the amount check.
+     * @return true if the ItemStack is equal to this CustomItems ItemStack
+     */
+    public boolean isSimilar(ItemStack otherItem, boolean exactMeta, boolean ignoreAmount) {
+        if (otherItem != null && otherItem.getType().equals(this.type) && (ignoreAmount || otherItem.getAmount() >= getAmount())) {
             if (hasNamespacedKey()) {
                 var other = CustomItem.getByItemStack(otherItem);
                 if (ItemUtils.isAirOrNull(other) || !other.hasNamespacedKey() || !getNamespacedKey().equals(other.getNamespacedKey())) {
