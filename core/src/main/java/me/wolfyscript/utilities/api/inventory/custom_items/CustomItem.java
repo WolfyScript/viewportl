@@ -15,6 +15,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReferen
 import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.util.Keyed;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -26,7 +27,6 @@ import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -43,7 +43,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
 
     private static final Map<String, APIReference.Parser<?>> API_REFERENCE_PARSER = new HashMap<>();
 
-    private final Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData> customDataMap = new HashMap<>();
+    private final Map<NamespacedKey, CustomData> customDataMap = new HashMap<>();
 
     @Nullable
     public static APIReference.Parser<?> getApiReferenceParser(String id) {
@@ -58,7 +58,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * <p>
      * If it is null the item isn't saved and the variables of this Object will get lost when {@link #create()} is called!
      */
-    private me.wolfyscript.utilities.util.NamespacedKey namespacedKey;
+    private NamespacedKey namespacedKey;
 
     /**
      * Register a new {@link APIReference.Parser} that can parse ItemStacks and keys from another plugin to a usable {@link APIReference}
@@ -159,7 +159,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         this.permission = customItem.permission;
         this.rarityPercentage = customItem.rarityPercentage;
         this.customDataMap.clear();
-        for (Map.Entry<me.wolfyscript.utilities.util.NamespacedKey, CustomData> entry : customItem.customDataMap.entrySet()) {
+        for (Map.Entry<NamespacedKey, CustomData> entry : customItem.customDataMap.entrySet()) {
             this.customDataMap.put(entry.getKey(), entry.getValue().clone());
         }
         this.equipmentSlots = new ArrayList<>(customItem.equipmentSlots);
@@ -267,9 +267,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
             var itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
                 var container = itemMeta.getPersistentDataContainer();
-                var namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
+                var namespacedKey = new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
                 if (container.has(namespacedKey, PersistentDataType.STRING)) {
-                    return Registry.CUSTOM_ITEMS.get(me.wolfyscript.utilities.util.NamespacedKey.of(container.get(namespacedKey, PersistentDataType.STRING)));
+                    return Registry.CUSTOM_ITEMS.get(NamespacedKey.of(container.get(namespacedKey, PersistentDataType.STRING)));
                 }
             }
         }
@@ -281,11 +281,11 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     @Override
-    public me.wolfyscript.utilities.util.NamespacedKey getNamespacedKey() {
+    public NamespacedKey getNamespacedKey() {
         return namespacedKey;
     }
 
-    public void setNamespacedKey(me.wolfyscript.utilities.util.NamespacedKey namespacedKey) {
+    public void setNamespacedKey(NamespacedKey namespacedKey) {
         this.namespacedKey = namespacedKey;
     }
 
@@ -515,7 +515,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     * Gets a copy of the current version of the external linked item.
+     * Gets a copy of the current version of the external linked item.<br>
      * The item can be linked to Vanilla, WolfyUtilities, ItemsAdder, Oraxen, MythicMobs or MMOItems
      *
      * @return the item from the external API that is linked to this object
@@ -525,9 +525,13 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     * Gets a copy of the current version of the external linked item.
-     * The item can be linked to Vanilla, WolfyUtilities, ItemsAdder, Oraxen, MythicMobs or MMOItems
+     * Gets a copy of the current version of the external linked item.<br>
+     * The item can be linked to Vanilla, WolfyUtilities, ItemsAdder, Oraxen, MythicMobs or MMOItems.
+     * <p>
+     * If this CustomItem has an NamespacedKey it will include it in the NBT of the returned item!
+     * </p>
      *
+     * @param amount Modifies the amount of the returned ItemStack.
      * @return the item from the external API that is linked to this object
      */
     public ItemStack create(int amount) {
@@ -580,7 +584,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * This method will directly edit the input ItemStack and won't return a result value.
      * </p>
      * <p>
-     * If this item is an un-stackable item then this method will use the {@link #consumeUnstackableItem(ItemStack)} method.
+     * If this item is an un-stackable item then this method will use the {@link #removeUnStackableItem(ItemStack)} method.
      * </p>
      * <p>
      * Else if the item is stackable, then there are couple of settings for the replacement.
@@ -599,49 +603,103 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @param inventory   The optional inventory to add the replacements to. (Only for stackable items)
      * @param location    The location where the replacements should be dropped. (Only for stackable items)
      */
+    @Deprecated
     public void consumeItem(ItemStack input, int totalAmount, Inventory inventory, Location location) {
+        remove(input, totalAmount, inventory, location);
+    }
+
+    @Deprecated
+    public void consumeItem(ItemStack input, int totalAmount, Inventory inventory) {
+        remove(input, totalAmount, inventory);
+    }
+
+    @Deprecated
+    public ItemStack consumeItem(ItemStack input, int totalAmount, Location location) {
+        return remove(input, totalAmount, location);
+    }
+
+    /**
+     * Removes the specified amount from the input ItemStack inside a inventory!
+     * <p>
+     * This method will directly edit the input ItemStack and won't return a result value.
+     *
+     * <p>
+     * <strong>Stackable:</strong><br>
+     * The amount removed from the input ItemStack is equals to <strong><code>{@link #getAmount()} * totalAmount</code></strong>
+     * <p>
+     * If the custom item has a replacement:
+     * <ul>
+     *     <li><b>If location is null and inventory is not null,</b> then it will try to add the item to the inventory. When inventory is full it will try to get the location from the inventory and if valid drops the items at that location instead.</li>
+     *     <li><b>If location is not null,</b> then it will drop the items at that location.</li>
+     *     <li><b>If location and inventory are null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
+     * </ul>
+     * </p>
+     * </p>
+     *     <p>
+     *         <strong>Un-stackable:</strong><br>
+     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack)} method.
+     *     </p>
+     * </p>
+     * <br>
+     *
+     * @param input       The input ItemStack, that is also going to be edited.
+     * @param totalAmount The amount of this custom item should be removed from the input.
+     * @param inventory   The optional inventory to add the replacements to. (Only for stackable items)
+     * @param location    The location where the replacements should be dropped. (Only for stackable items)
+     */
+    public void remove(ItemStack input, int totalAmount, Inventory inventory, Location location) {
         if (this.type.getMaxStackSize() > 1) {
             int amount = input.getAmount() - getAmount() * totalAmount;
             if (this.isConsumed()) {
                 input.setAmount(amount);
             }
-            if (this.hasReplacement()) {
-                var replacement = new CustomItem(this.getReplacement()).create();
-                replacement.setAmount(replacement.getAmount() * totalAmount);
-                if (location == null) {
-                    if (inventory == null) return;
-                    if (InventoryUtils.hasInventorySpace(inventory, replacement)) {
-                        inventory.addItem(replacement);
-                        return;
-                    }
-                    location = inventory.getLocation();
-                }
-                if (location != null && location.getWorld() != null) {
-                    location.getWorld().dropItemNaturally(location.add(0.5, 1.0, 0.5), replacement);
-                }
-            }
+            applyStackableReplacement(totalAmount, inventory, location);
         } else {
-            consumeUnstackableItem(input);
+            removeUnStackableItem(input);
         }
     }
 
-    public void consumeItem(ItemStack input, int totalAmount, Inventory inventory) {
-        consumeItem(input, totalAmount, inventory, null);
+    public void remove(ItemStack input, int totalAmount, Inventory inventory) {
+        remove(input, totalAmount, inventory, null);
     }
 
-    public ItemStack consumeItem(ItemStack input, int totalAmount, Location location) {
-        consumeItem(input, totalAmount, null, location);
+    public ItemStack remove(ItemStack input, int totalAmount, Location location) {
+        remove(input, totalAmount, null, location);
         return input;
     }
 
+    private void applyStackableReplacement(int totalAmount, Inventory inventory, Location location) {
+        if (this.hasReplacement()) {
+            var replacement = new CustomItem(getReplacement()).create();
+            replacement.setAmount(replacement.getAmount() * totalAmount);
+            if (location == null) {
+                if (inventory == null) return;
+                if (InventoryUtils.hasInventorySpace(inventory, replacement)) {
+                    inventory.addItem(replacement);
+                    return;
+                }
+                location = inventory.getLocation();
+            }
+            if (location != null && location.getWorld() != null) {
+                location.getWorld().dropItemNaturally(location.add(0.5, 1.0, 0.5), replacement);
+            }
+        }
+    }
+
     /**
-     * This method consumes the input as it is a un-stackable item.
-     * Default items will be replaced e.g. buckets, potions, stew/soup.
-     * If it has a replacement then the input will be replaced with the replacement.
+     * Removes the input as an un-stackable item.
+     * <p>
+     * Items that have replacements by default will be replaced with the according {@link Material} <br>
+     * Like Buckets, Potions, Stew/Soup.
+     * </p>
+     * <p>
+     * If this CustomItem has a custom replacement then the input will be replaced with that.
+     * </p>
+     * <br>
      *
      * @param input The input ItemStack, that is going to be edited.
      */
-    public void consumeUnstackableItem(ItemStack input) {
+    public void removeUnStackableItem(ItemStack input) {
         if (this.isConsumed()) {
             if (craftRemain != null) {
                 input.setType(craftRemain);
@@ -672,6 +730,11 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
             }
             input.setItemMeta(itemMeta);
         }
+    }
+
+    @Deprecated
+    public void consumeUnstackableItem(ItemStack input) {
+        removeUnStackableItem(input);
     }
 
     private Material getCraftRemain() {
@@ -721,15 +784,15 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         this.rarityPercentage = rarityPercentage;
     }
 
-    public CustomData getCustomData(me.wolfyscript.utilities.util.NamespacedKey namespacedKey) {
+    public CustomData getCustomData(NamespacedKey namespacedKey) {
         return customDataMap.get(namespacedKey);
     }
 
-    public Map<me.wolfyscript.utilities.util.NamespacedKey, CustomData> getCustomDataMap() {
+    public Map<NamespacedKey, CustomData> getCustomDataMap() {
         return customDataMap;
     }
 
-    public void addCustomData(me.wolfyscript.utilities.util.NamespacedKey namespacedKey, CustomData customData) {
+    public void addCustomData(NamespacedKey namespacedKey, CustomData customData) {
         this.customDataMap.put(namespacedKey, customData);
     }
 
@@ -843,7 +906,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
             gen.writeEndObject();
             gen.writeObjectFieldStart("custom_data");
             {
-                for (Map.Entry<me.wolfyscript.utilities.util.NamespacedKey, CustomData> value : customItem.getCustomDataMap().entrySet()) {
+                for (Map.Entry<NamespacedKey, CustomData> value : customItem.getCustomDataMap().entrySet()) {
                     gen.writeObjectFieldStart(value.getKey().toString());
                     value.getValue().writeToJson(customItem, gen, provider);
                     gen.writeEndObject();
@@ -898,7 +961,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 JsonNode customDataNode = node.path("custom_data");
                 {
                     customDataNode.fields().forEachRemaining(entry -> {
-                        var namespacedKey = entry.getKey().contains(":") ? me.wolfyscript.utilities.util.NamespacedKey.of(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ Registry.CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
+                        var namespacedKey = entry.getKey().contains(":") ? NamespacedKey.of(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ Registry.CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
                         if (namespacedKey != null) {
                             CustomData.Provider<?> provider = Registry.CUSTOM_ITEM_DATA.get(namespacedKey);
                             if (provider != null) {
