@@ -703,6 +703,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         if (this.isConsumed()) {
             if (craftRemain != null) {
                 input.setType(craftRemain);
+                input.setItemMeta(Bukkit.getItemFactory().getItemMeta(craftRemain));
             } else {
                 input.setAmount(0);
             }
