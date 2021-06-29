@@ -1,26 +1,26 @@
 package me.wolfyscript.utilities.api.inventory.custom_items;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
-import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
-import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
+import me.wolfyscript.utilities.util.Registry;
+import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 
-@JsonTypeResolver(KeyedTypeResolver.class)
-@JsonTypeIdResolver(KeyedTypeIdResolver.class)
-@JsonPropertyOrder("key")
 public abstract class CustomData implements Keyed {
 
     @JsonProperty("key")
@@ -154,6 +154,57 @@ public abstract class CustomData implements Keyed {
             return null;
         }
 
+    }
+
+    public static class Deserializer extends StdDeserializer<Map<NamespacedKey, CustomData>> {
+
+        public Deserializer() {
+            super(JacksonUtil.getObjectMapper().getTypeFactory().constructMapType(Map.class, NamespacedKey.class, CustomData.class));
+        }
+
+        @Override
+        public Map<NamespacedKey, CustomData> deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
+            JsonNode node = jsonParser.readValueAsTree();
+            Map<NamespacedKey, CustomData> dataMap = new HashMap<>();
+            var parentObject = jsonParser.getParsingContext().getCurrentValue();
+            if (parentObject instanceof CustomItem customItem) {
+                Iterator<Map.Entry<String, JsonNode>> itr = node.fields();
+                while (itr.hasNext()) {
+                    Map.Entry<String, JsonNode> entry = itr.next();
+                    var namespacedKey = entry.getKey().contains(":") ? NamespacedKey.of(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ Registry.CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
+                    if (namespacedKey != null) {
+                        CustomData.Provider<?> provider = Registry.CUSTOM_ITEM_DATA.get(namespacedKey);
+                        if (provider != null) {
+                            CustomData data = provider.createData();
+                            data.readFromJson(customItem, entry.getValue(), context);
+                            dataMap.put(namespacedKey, data);
+                        }
+                    }
+                }
+            }
+            return dataMap;
+        }
+    }
+
+    public static class Serializer extends StdSerializer<Map<NamespacedKey, CustomData>> {
+
+        public Serializer() {
+            super(JacksonUtil.getObjectMapper().getTypeFactory().constructMapType(Map.class, NamespacedKey.class, CustomData.class));
+        }
+
+        @Override
+        public void serialize(Map<NamespacedKey, CustomData> dataMap, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            gen.writeStartObject();
+            var parentObject = gen.getOutputContext().getParent().getCurrentValue();
+            if (parentObject instanceof CustomItem customItem) {
+                for (Map.Entry<NamespacedKey, CustomData> value : dataMap.entrySet()) {
+                    gen.writeObjectFieldStart(value.getKey().toString());
+                    value.getValue().writeToJson(customItem, gen, provider);
+                    gen.writeEndObject();
+                }
+            }
+            gen.writeEndObject();
+        }
     }
 }
 
