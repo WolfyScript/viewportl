@@ -345,7 +345,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     * @return The allowed blocks this item can be used as fuel
+     * @return The blocks in which the item can be used as fuel
      * @deprecated Use {@link #getFuelSettings()} and {@link FuelSettings#getAllowedBlocks()}
      */
     @Deprecated
@@ -354,7 +354,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     * @param allowedBlocks The allowed blocks this item can be used as fuel
+     * @param allowedBlocks The blocks in which the item can be used as fuel
      * @deprecated Use {@link #getFuelSettings()} and {@link FuelSettings#setAllowedBlocks(List)}
      */
     @Deprecated
@@ -362,6 +362,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         fuelSettings.setAllowedBlocks(allowedBlocks);
     }
 
+    /**
+     * @return The EquipmentSlots this item can be equipped to.
+     */
     public List<EquipmentSlot> getEquipmentSlots() {
         return equipmentSlots;
     }
@@ -695,7 +698,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     /**
      * Removes the input as an un-stackable item.
      * <p>
-     * Items that have replacements by default will be replaced with the according {@link Material} <br>
+     * Items that have craft remains by default will be replaced with the according {@link Material} <br>
      * Like Buckets, Potions, Stew/Soup.
      * </p>
      * <p>
@@ -706,8 +709,26 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @param input The input ItemStack, that is going to be edited.
      */
     public void removeUnStackableItem(ItemStack input) {
+        removeUnStackableItem(input, true);
+    }
+
+    /**
+     * Removes the input as an un-stackable item.
+     * <p>
+     * Items that have craft remains by default will be replaced with the according {@link Material} <br>
+     * Like Buckets, Potions, Stew/Soup.
+     * </p>
+     * <p>
+     * If this CustomItem has a custom replacement then the input will be replaced with that.
+     * </p>
+     * <br>
+     *
+     * @param input              The input ItemStack, that is going to be edited.
+     * @param replaceWithRemains If the item should be replaced by it's remains if removed. Not including custom replacement options!
+     */
+    public void removeUnStackableItem(ItemStack input, boolean replaceWithRemains) {
         if (this.isConsumed()) {
-            if (craftRemain != null) {
+            if (craftRemain != null && replaceWithRemains) {
                 input.setType(craftRemain);
                 input.setItemMeta(Bukkit.getItemFactory().getItemMeta(craftRemain));
             } else {
