@@ -33,12 +33,27 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * <p>
+ * This Object acts as a wrapper for the {@link APIReference} with additional options that make it possible to manipulate the behaviour of the wrapped reference.
+ * <br>
+ * The {@link APIReference} can be any kind of reference, a simple {@link ItemStack} ({@link VanillaRef}) or an item from another API.
+ * </p>
+ * <p>
+ * For most additional features the CustomItem has to be registered into the {@link Registry#CUSTOM_ITEMS}.
+ * <br>
+ * To make sure the CustomItem can be detected later on, it must be created via any of the {@link #create()} methods.
+ * <br>
+ * These methods will include an extra {@link PersistentDataContainer} entry to identify the item later on!
+ * </p>
+ */
 @JsonSerialize(using = CustomItem.Serializer.class)
 @JsonDeserialize(using = CustomItem.Deserializer.class)
 public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed {
@@ -617,11 +632,23 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         remove(input, totalAmount, inventory, location);
     }
 
+    /**
+     * @param input       The input ItemStack, that is also going to be edited.
+     * @param totalAmount The amount of this custom item that should be removed from the input.
+     * @param inventory   The optional inventory to add the replacements to. (Only for stackable items)
+     * @deprecated Renamed to {@link #remove(ItemStack, int, Inventory)} to better show it's functionality.
+     */
     @Deprecated
     public void consumeItem(ItemStack input, int totalAmount, Inventory inventory) {
         remove(input, totalAmount, inventory);
     }
 
+    /**
+     * @param input       The input ItemStack, that is also going to be edited.
+     * @param totalAmount The amount of this custom item that should be removed from the input.
+     * @param location    The location where the replacements should be dropped. (Only for stackable items)
+     * @deprecated Renamed to {@link #remove(ItemStack, int, Location)} to better show it's functionality.
+     */
     @Deprecated
     public ItemStack consumeItem(ItemStack input, int totalAmount, Location location) {
         return remove(input, totalAmount, location);
@@ -646,7 +673,49 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * </p>
      *     <p>
      *         <strong>Un-stackable:</strong><br>
-     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack)} method.
+     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack, boolean)} method.<br>
+     *     </p>
+     * </p>
+     * <br>
+     *
+     * @param input              The input ItemStack, that is also going to be edited.
+     * @param totalAmount        The amount of this custom item that should be removed from the input.
+     * @param inventory          The optional inventory to add the replacements to. (Only for stackable items)
+     * @param location           The location where the replacements should be dropped. (Only for stackable items)
+     * @param replaceWithRemains If the Item should be replaced by the default craft remains (Only for un-stackable items).
+     */
+    public void remove(ItemStack input, int totalAmount, Inventory inventory, Location location, boolean replaceWithRemains) {
+        if (this.type.getMaxStackSize() > 1) {
+            int amount = input.getAmount() - getAmount() * totalAmount;
+            if (this.isConsumed()) {
+                input.setAmount(amount);
+            }
+            applyStackableReplacement(totalAmount, inventory, location);
+        } else {
+            removeUnStackableItem(input, replaceWithRemains);
+        }
+    }
+
+    /**
+     * Removes the specified amount from the input ItemStack inside a inventory!
+     * <p>
+     * This method will directly edit the input ItemStack and won't return a result value.
+     *
+     * <p>
+     * <strong>Stackable:</strong><br>
+     * The amount removed from the input ItemStack is equals to <strong><code>{@link #getAmount()} * totalAmount</code></strong>
+     * <p>
+     * If the custom item has a replacement:
+     * <ul>
+     *     <li><b>If location is null and inventory is not null,</b> then it will try to add the item to the inventory. When inventory is full it will try to get the location from the inventory and if valid drops the items at that location instead.</li>
+     *     <li><b>If location is not null,</b> then it will drop the items at that location.</li>
+     *     <li><b>If location and inventory are null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
+     * </ul>
+     * </p>
+     * </p>
+     *     <p>
+     *         <strong>Un-stackable:</strong><br>
+     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack)} method and replaces the item with it's craft remains if available.
      *     </p>
      * </p>
      * <br>
@@ -655,23 +724,73 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @param totalAmount The amount of this custom item that should be removed from the input.
      * @param inventory   The optional inventory to add the replacements to. (Only for stackable items)
      * @param location    The location where the replacements should be dropped. (Only for stackable items)
+     * @see #remove(ItemStack, int, Inventory, Location, boolean)
      */
     public void remove(ItemStack input, int totalAmount, Inventory inventory, Location location) {
-        if (this.type.getMaxStackSize() > 1) {
-            int amount = input.getAmount() - getAmount() * totalAmount;
-            if (this.isConsumed()) {
-                input.setAmount(amount);
-            }
-            applyStackableReplacement(totalAmount, inventory, location);
-        } else {
-            removeUnStackableItem(input);
-        }
+        remove(input, totalAmount, inventory, location, true);
     }
 
+    /**
+     * Removes the specified amount from the input ItemStack inside a inventory!
+     * <p>
+     * This method will directly edit the input ItemStack and won't return a result value.
+     *
+     * <p>
+     * <strong>Stackable:</strong><br>
+     * The amount removed from the input ItemStack is equals to <strong><code>{@link #getAmount()} * totalAmount</code></strong>
+     * <p>
+     * If the custom item has a replacement:
+     * <ul>
+     *     <li><b>If the inventory is not null,</b> then it will try to add the item to the inventory. When inventory is full it will try to get the location from the inventory and if valid drops the items at that location instead.</li>
+     *     <li><b>If the inventory is null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
+     * </ul>
+     * </p>
+     * </p>
+     *     <p>
+     *         <strong>Un-stackable:</strong><br>
+     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack)} method and replaces the item with it's craft remains if available.
+     *     </p>
+     * </p>
+     * <br>
+     *
+     * @param input       The input ItemStack, that is also going to be edited.
+     * @param totalAmount The amount of this custom item that should be removed from the input.
+     * @param inventory   The optional inventory to add the replacements to. (Only for stackable items)
+     * @see #remove(ItemStack, int, Inventory, Location, boolean)
+     */
     public void remove(ItemStack input, int totalAmount, Inventory inventory) {
         remove(input, totalAmount, inventory, null);
     }
 
+    /**
+     * Removes the specified amount from the input ItemStack inside a inventory!
+     * <p>
+     * This method will directly edit the input ItemStack and won't return a result value.
+     *
+     * <p>
+     * <strong>Stackable:</strong><br>
+     * The amount removed from the input ItemStack is equals to <strong><code>{@link #getAmount()} * totalAmount</code></strong>
+     * <p>
+     * If the custom item has a replacement:
+     * <ul>
+     *     <li><b>If location is not null,</b> then it will drop the items at that location.</li>
+     *     <li><b>If location is null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
+     * </ul>
+     * </p>
+     * </p>
+     *     <p>
+     *         <strong>Un-stackable:</strong><br>
+     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack)} method and replaces the item with it's craft remains if available.
+     *     </p>
+     * </p>
+     * <br>
+     *
+     * @param input       The input ItemStack, that is also going to be edited.
+     * @param totalAmount The amount of this custom item that should be removed from the input.
+     * @param location    The location where the replacements should be dropped. (Only for stackable items)
+     * @return The original input {@link ItemStack} that was directly edited by the method.
+     * @see #remove(ItemStack, int, Inventory, Location, boolean)
+     */
     public ItemStack remove(ItemStack input, int totalAmount, Location location) {
         remove(input, totalAmount, null, location);
         return input;
@@ -965,6 +1084,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 customItem.setPermission(node.path("permission").asText());
                 customItem.setMetaSettings(mapper.convertValue(node.path("meta"), MetaSettings.class));
                 customItem.setFuelSettings(mapper.convertValue(node.path("fuel"), FuelSettings.class));
+                customItem.setReplacement(mapper.convertValue(node.path("replacement"), APIReference.class));
+                customItem.setParticleContent(mapper.convertValue(node.path("particles"), ParticleContent.class));
                 JsonNode customDataNode = node.path("custom_data");
                 {
                     customDataNode.fields().forEachRemaining(entry -> {
@@ -977,11 +1098,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                         }
                     });
                 }
-                customItem.setReplacement(mapper.convertValue(node.path("replacement"), APIReference.class));
                 customItem.setDurabilityCost(node.path("durability_cost").asInt());
                 mapper.convertValue(node.path("equipment_slots"), new TypeReference<ArrayList<EquipmentSlot>>() {
                 }).forEach(customItem::addEquipmentSlots);
-                customItem.setParticleContent(mapper.convertValue(node.path("particles"), ParticleContent.class));
                 return customItem;
             }
             return new CustomItem(Material.AIR);
