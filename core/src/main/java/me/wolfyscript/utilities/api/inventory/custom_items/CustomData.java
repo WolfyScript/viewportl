@@ -1,5 +1,7 @@
 package me.wolfyscript.utilities.api.inventory.custom_items;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,8 +20,10 @@ import java.util.Objects;
 
 @JsonTypeResolver(KeyedTypeResolver.class)
 @JsonTypeIdResolver(KeyedTypeIdResolver.class)
+@JsonPropertyOrder("key")
 public abstract class CustomData implements Keyed {
 
+    @JsonProperty("key")
     private final NamespacedKey namespacedKey;
 
     /**
