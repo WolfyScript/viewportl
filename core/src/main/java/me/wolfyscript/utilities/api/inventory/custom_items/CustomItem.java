@@ -1,6 +1,6 @@
 package me.wolfyscript.utilities.api.inventory.custom_items;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -54,28 +54,19 @@ import java.util.*;
  * These methods will include an extra {@link PersistentDataContainer} entry to identify the item later on!
  * </p>
  */
-@JsonSerialize(using = CustomItem.Serializer.class)
-@JsonDeserialize(using = CustomItem.Deserializer.class)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed {
 
     private static final Map<String, APIReference.Parser<?>> API_REFERENCE_PARSER = new HashMap<>();
-
-    private final Map<NamespacedKey, CustomData> customDataMap = new HashMap<>();
 
     @Nullable
     public static APIReference.Parser<?> getApiReferenceParser(String id) {
         return API_REFERENCE_PARSER.get(id);
     }
 
-    /**
-     * This namespacedKey can either be null or non-null.
-     * <p>
-     * If it's non-null, the item is saved and the variables of this Object will be persistent </p>
-     * when converted to ItemStack via {@link #create()}.
-     * <p>
-     * If it is null, the item isn't saved and the variables of this Object will get lost when {@link #create()} is called!
-     */
-    private NamespacedKey namespacedKey;
+
+    @JsonIgnore
+    private final Material type;
 
     /**
      * Register a new {@link APIReference.Parser} that can parse ItemStacks and keys from another plugin to a usable {@link APIReference}
@@ -91,32 +82,46 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         }
     }
 
-    private final Material type;
+    @JsonIgnore
     private final Material craftRemain;
-    private boolean consumed;
-    private APIReference replacement;
-    private int durabilityCost;
-
-    private String permission;
-    private double rarityPercentage;
-    private FuelSettings fuelSettings;
-    private boolean blockPlacement;
-    private boolean blockVanillaEquip;
-    private boolean blockVanillaRecipes;
-    private final List<EquipmentSlot> equipmentSlots;
-    private boolean advanced;
-
-    /**
-     * Upcoming change to CustomItem will include an APIReference to link it
-     * to other external APIs.
-     *
-     * @see APIReference
-     */
+    @JsonAlias("api_reference")
     private final APIReference apiReference;
-    private ParticleContent particleContent;
+    @JsonAlias("custom_data")
+    @JsonDeserialize(using = CustomData.Deserializer.class)
+    @JsonSerialize(using = CustomData.Serializer.class)
+    private final Map<NamespacedKey, CustomData> customDataMap = new HashMap<>();
+    @JsonAlias("equipment_slots")
+    private final List<EquipmentSlot> equipmentSlots;
+    private boolean consumed;
+    /**
+     * This namespacedKey can either be null or non-null.
+     * <p>
+     * If it's non-null, the item is saved and the variables of this Object will be persistent </p>
+     * when converted to ItemStack via {@link #create()}.
+     * <p>
+     * If it is null, the item isn't saved and the variables of this Object will get lost when {@link #create()} is called!
+     */
+    @JsonIgnore
+    private NamespacedKey namespacedKey;
+    private boolean advanced;
+    private boolean blockVanillaEquip;
+    private boolean blockPlacement;
+    private boolean blockVanillaRecipes;
+    @JsonAlias("rarity_percentage")
+    private double rarityPercentage;
+    private String permission;
+    @JsonAlias("meta")
     private MetaSettings metaSettings;
+    private APIReference replacement;
+    @JsonAlias("fuel")
+    private FuelSettings fuelSettings;
+    @JsonAlias("durability_cost")
+    private int durabilityCost;
+    @JsonAlias("particles")
+    private ParticleContent particleContent;
 
-    public CustomItem(APIReference apiReference) {
+    @JsonCreator
+    public CustomItem(@JsonProperty("apiReference") @JsonAlias({"item", "api_reference"}) APIReference apiReference) {
         super(CustomItem.class);
         this.apiReference = apiReference;
 
@@ -346,6 +351,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @deprecated Use {@link #getFuelSettings()} and {@link FuelSettings#getBurnTime()}
      */
     @Deprecated
+    @JsonIgnore
     public int getBurnTime() {
         return fuelSettings.getBurnTime();
     }
@@ -355,6 +361,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @deprecated Use {@link #getFuelSettings()} and {@link FuelSettings#setBurnTime(int)}
      */
     @Deprecated
+    @JsonIgnore
     public void setBurnTime(int burnTime) {
         fuelSettings.setBurnTime(burnTime);
     }
@@ -364,6 +371,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @deprecated Use {@link #getFuelSettings()} and {@link FuelSettings#getAllowedBlocks()}
      */
     @Deprecated
+    @JsonIgnore
     public List<Material> getAllowedBlocks() {
         return fuelSettings.getAllowedBlocks();
     }
@@ -373,6 +381,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @deprecated Use {@link #getFuelSettings()} and {@link FuelSettings#setAllowedBlocks(List)}
      */
     @Deprecated
+    @JsonIgnore
     public void setAllowedBlocks(List<Material> allowedBlocks) {
         fuelSettings.setAllowedBlocks(allowedBlocks);
     }

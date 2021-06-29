@@ -1,5 +1,7 @@
 package me.wolfyscript.utilities.util.inventory.item_builder;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.wolfyscript.utilities.util.EncryptionUtils;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
 
     private static final NamespacedKey CUSTOM_DURABILITY_VALUE = new NamespacedKey("wolfyutilities", "custom_durability.value");
@@ -29,6 +32,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     private static final NamespacedKey CUSTOM_DURABILITY_INDEX = new NamespacedKey("wolfyutilities", "custom_durability.index");
     private static final NamespacedKey CUSTOM_DURABILITY_TAG = new NamespacedKey("wolfyutilities", "custom_durability.tag");
 
+    @JsonIgnore
     private final Class<T> typeClass;
 
     protected AbstractItemBuilder(Class<T> typeClass) {
@@ -52,6 +56,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
         return get();
     }
 
+    @JsonIgnore
     public ItemMeta getItemMeta() {
         return getItemStack().getItemMeta();
     }
