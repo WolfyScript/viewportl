@@ -1,16 +1,18 @@
 package me.wolfyscript.utilities.api.inventory.custom_items;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class FuelSettings {
 
     @JsonAlias("allowed_blocks")
     private List<Material> allowedBlocks = new ArrayList<>();
-    @JsonAlias("burn_time")
+    @JsonAlias({"burn_time", "burntime"})
     private int burnTime = 20;
 
     public FuelSettings() {
