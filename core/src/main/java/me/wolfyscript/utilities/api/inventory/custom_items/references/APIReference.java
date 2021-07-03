@@ -8,11 +8,27 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This object is a wrapper for items that are part of external APIs or vanilla minecraft. <br>
+ * It makes it possible to reference and manage items from possibly multiple plugins at the same time.
+ *
+ * <p>
+ * There are following references available:
+ * <ul>
+ *     <li>{@link VanillaRef}</li>
+ *     <li>{@link WolfyUtilitiesRef}</li>
+ *     <li>{@link OraxenRef}</li>
+ *     <li>{@link ItemsAdderRef}</li>
+ *     <li>{@link MMOItemsRef}</li>
+ *     <li>{@link MythicMobsRef}</li>
+ * </ul>
+ * </p>
+ * <p>
+ * You can register additional references inside your plugin (onEnable) using {@link me.wolfyscript.utilities.api.inventory.custom_items.CustomItem#registerAPIReferenceParser(Parser)}.
+ */
 public abstract class APIReference {
 
     protected int amount;
@@ -31,10 +47,12 @@ public abstract class APIReference {
     public abstract ItemStack getLinkedItem();
 
     /**
-     * Use this method inside of GUIs that you need to handle APIs that don't save NamespacedKeys inside the ItemStack PersistentData!
+     * Use this method inside of GUIs that you need, to handle APIs that don't save NamespacedKeys inside the ItemStack PersistentData!
      *
      * @return a ItemStack of the API with additional PersistentDataHolder that contains the NamespacedKey or other value of the API
+     * @deprecated This method should not be used! It usually returns the same as {@link #getLinkedItem()}!
      */
+    @Deprecated
     public abstract ItemStack getIdItem();
 
     public abstract boolean isValidItem(ItemStack itemStack);
@@ -93,22 +111,22 @@ public abstract class APIReference {
         private final String id;
         private final List<String> aliases;
 
-        public Parser(String id) {
+        protected Parser(String id) {
             this(id, 0);
         }
 
-        public Parser(String id, int priority) {
+        protected Parser(String id, int priority) {
             this(id, priority, new String[0]);
         }
 
-        public Parser(String id, String... aliases) {
+        protected Parser(String id, String... aliases) {
             this(id, 0, aliases);
         }
 
-        public Parser(String id, int priority, String... aliases) {
+        protected Parser(String id, int priority, String... aliases) {
             this.id = id;
             this.priority = priority;
-            this.aliases = Collections.unmodifiableList(Arrays.asList(aliases));
+            this.aliases = List.of(aliases);
         }
 
         public String getId() {
@@ -136,7 +154,7 @@ public abstract class APIReference {
 
         private final String pluginName;
 
-        public PluginParser(String pluginName, String id, String... aliases) {
+        protected PluginParser(String pluginName, String id, String... aliases) {
             super(id, aliases);
             this.pluginName = pluginName;
         }

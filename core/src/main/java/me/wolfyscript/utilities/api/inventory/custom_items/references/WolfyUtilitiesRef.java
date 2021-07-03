@@ -4,18 +4,19 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Links to items of WolfyUtilities and saves the specified {@link NamespacedKey}
+ */
 public class WolfyUtilitiesRef extends APIReference {
 
     private static final org.bukkit.NamespacedKey CUSTOM_ITEM_KEY = new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
@@ -37,7 +38,7 @@ public class WolfyUtilitiesRef extends APIReference {
 
     @Override
     public ItemStack getLinkedItem() {
-        CustomItem customItem = Registry.CUSTOM_ITEMS.get(namespacedKey);
+        var customItem = Registry.CUSTOM_ITEMS.get(namespacedKey);
         if (customItem != null) {
             return customItem.create();
         }
@@ -47,14 +48,14 @@ public class WolfyUtilitiesRef extends APIReference {
 
     @Override
     public ItemStack getIdItem() {
-        ItemStack itemStack = getLinkedItem();
+        var itemStack = getLinkedItem();
         return itemStack == null ? new ItemStack(Material.AIR) : itemStack;
     }
 
     @Override
     public boolean isValidItem(ItemStack itemStack) {
         if (itemStack != null) {
-            ItemMeta itemMeta = itemStack.getItemMeta();
+            var itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
                 var container = itemMeta.getPersistentDataContainer();
                 if (container.has(CUSTOM_ITEM_KEY, PersistentDataType.STRING)) {

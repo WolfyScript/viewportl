@@ -299,19 +299,37 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         this.namespacedKey = namespacedKey;
     }
 
+    /**
+     * The replacement can be any of {@link APIReference} and it will replace this item when it is removed from the inventory using {@link #remove(ItemStack, int, Inventory, Location, boolean)}.
+     *
+     * @return True if this item has an replacement that is not AIR, else false.
+     */
     public boolean hasReplacement() {
         return replacement != null && !replacement.getLinkedItem().getType().equals(Material.AIR);
     }
 
+    /**
+     * The replacement can be any of {@link APIReference} and it will replace this item when it is removed from the inventory using {@link #remove(ItemStack, int, Inventory, Location, boolean)}.
+     *
+     * @return The {@link APIReference} of the custom replacement.
+     */
     @Nullable
     public APIReference getReplacement() {
         return hasReplacement() ? replacement : null;
     }
 
+    /**
+     * The replacement can be any of {@link APIReference} and it will replace this item when it is removed from the inventory using {@link #remove(ItemStack, int, Inventory, Location, boolean)}.
+     *
+     * @param replacement The replacement for this item.
+     */
     public void setReplacement(@Nullable APIReference replacement) {
         this.replacement = replacement;
     }
 
+    /**
+     * @return The durability that is removed from the item when removed from an inventory using {@link #remove(ItemStack, int, Inventory, Location, boolean)}
+     */
     public int getDurabilityCost() {
         return durabilityCost;
     }
@@ -320,6 +338,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         this.durabilityCost = durabilityCost;
     }
 
+    /**
+     * @return True if the item is removed by calling {@link #remove(ItemStack, int, Inventory, Location, boolean)}.
+     */
     public boolean isConsumed() {
         return consumed;
     }
@@ -384,12 +405,27 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         return equipmentSlots;
     }
 
+    /**
+     * @return True if the item has a custom {@link EquipmentSlot} it can be equipped to.
+     */
     public boolean hasEquipmentSlot() {
         return !getEquipmentSlots().isEmpty();
     }
 
     public boolean hasEquipmentSlot(EquipmentSlot slot) {
         return hasEquipmentSlot() && getEquipmentSlots().contains(slot);
+    }
+
+    public void addEquipmentSlots(EquipmentSlot... slots) {
+        for (EquipmentSlot slot : slots) {
+            if (!equipmentSlots.contains(slot)) {
+                equipmentSlots.add(slot);
+            }
+        }
+    }
+
+    public void removeEquipmentSlots(EquipmentSlot... slots) {
+        equipmentSlots.removeAll(Arrays.asList(slots));
     }
 
     /**
@@ -433,18 +469,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
 
     public void setBlockPlacement(boolean blockPlacement) {
         this.blockPlacement = blockPlacement;
-    }
-
-    public void addEquipmentSlots(EquipmentSlot... slots) {
-        for (EquipmentSlot slot : slots) {
-            if (!equipmentSlots.contains(slot)) {
-                equipmentSlots.add(slot);
-            }
-        }
-    }
-
-    public void removeEquipmentSlots(EquipmentSlot... slots) {
-        equipmentSlots.removeAll(Arrays.asList(slots));
     }
 
     public FuelSettings getFuelSettings() {
@@ -879,6 +903,10 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         }
     }
 
+    /**
+     * @param input The input ItemStack, that is going to be edited.
+     * @deprecated Replaced by {@link #removeUnStackableItem(ItemStack)}
+     */
     @Deprecated
     public void consumeUnstackableItem(ItemStack input) {
         removeUnStackableItem(input);
@@ -901,6 +929,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         return null;
     }
 
+    /**
+     * @return True if this item requires permission to be used, else false.
+     */
     public boolean hasPermission() {
         return !permission.isEmpty();
     }

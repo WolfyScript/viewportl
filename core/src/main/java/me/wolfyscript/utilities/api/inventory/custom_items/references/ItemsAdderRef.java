@@ -11,6 +11,11 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Links to an ItemsAdder item and saves the item key accordingly.
+ * <br>
+ * It will always get the latest item version available in ItemsAdder or AIR if not available.
+ */
 public class ItemsAdderRef extends APIReference {
 
     private final String itemID;
@@ -25,9 +30,12 @@ public class ItemsAdderRef extends APIReference {
         this.itemID = itemsAdderRef.itemID;
     }
 
+    /**
+     * @return The latest ItemStack available in ItemsAdder under the specified itemID or AIR.
+     */
     @Override
     public ItemStack getLinkedItem() {
-        CustomStack customStack = CustomStack.getInstance(itemID);
+        var customStack = CustomStack.getInstance(itemID);
         if (customStack != null) {
             return customStack.getItemStack();
         }
@@ -41,7 +49,7 @@ public class ItemsAdderRef extends APIReference {
 
     @Override
     public boolean isValidItem(ItemStack itemStack) {
-        CustomStack customStack = CustomStack.byItemStack(itemStack);
+        var customStack = CustomStack.byItemStack(itemStack);
         return customStack != null && Objects.equals(itemID, customStack.getNamespacedID());
     }
 
@@ -80,7 +88,7 @@ public class ItemsAdderRef extends APIReference {
 
         @Override
         public @Nullable ItemsAdderRef construct(ItemStack itemStack) {
-            CustomStack customStack = CustomStack.byItemStack(itemStack);
+            var customStack = CustomStack.byItemStack(itemStack);
             if (customStack != null) {
                 return new ItemsAdderRef(customStack.getNamespacedID());
             }
