@@ -64,7 +64,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         return API_REFERENCE_PARSER.get(id);
     }
 
-
     @JsonIgnore
     private final Material type;
 
@@ -82,17 +81,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         }
     }
 
-    @JsonIgnore
-    private final Material craftRemain;
-    @JsonAlias("api_reference")
-    private final APIReference apiReference;
-    @JsonAlias("custom_data")
-    @JsonDeserialize(using = CustomData.Deserializer.class)
-    @JsonSerialize(using = CustomData.Serializer.class)
-    private final Map<NamespacedKey, CustomData> customDataMap = new HashMap<>();
-    @JsonAlias("equipment_slots")
-    private final List<EquipmentSlot> equipmentSlots;
-    private boolean consumed;
     /**
      * This namespacedKey can either be null or non-null.
      * <p>
@@ -103,6 +91,18 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      */
     @JsonIgnore
     private NamespacedKey namespacedKey;
+    @JsonIgnore
+    private final Material craftRemain;
+
+    @JsonAlias("api_reference")
+    private final APIReference apiReference;
+    @JsonAlias("custom_data")
+    @JsonDeserialize(using = CustomData.Deserializer.class)
+    @JsonSerialize(using = CustomData.Serializer.class)
+    private final Map<NamespacedKey, CustomData> customDataMap = new HashMap<>();
+    @JsonAlias("equipment_slots")
+    private final List<EquipmentSlot> equipmentSlots;
+    private boolean consumed;
     private boolean advanced;
     private boolean blockVanillaEquip;
     private boolean blockPlacement;
@@ -299,6 +299,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         return namespacedKey != null;
     }
 
+    @Nullable
     @Override
     public NamespacedKey getNamespacedKey() {
         return namespacedKey;
