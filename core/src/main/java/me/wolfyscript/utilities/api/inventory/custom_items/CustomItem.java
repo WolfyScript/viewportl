@@ -1,16 +1,8 @@
 package me.wolfyscript.utilities.api.inventory.custom_items;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
@@ -23,7 +15,6 @@ import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.inventory.item_builder.AbstractItemBuilder;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
-import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.version.MinecraftVersions;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.Bukkit;
@@ -37,7 +28,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -1026,94 +1016,5 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 ", particleContent=" + particleContent +
                 ", metaSettings=" + metaSettings +
                 "} " + super.toString();
-    }
-
-    static class Serializer extends StdSerializer<CustomItem> {
-
-        public Serializer() {
-            this(CustomItem.class);
-        }
-
-        protected Serializer(Class<CustomItem> t) {
-            super(t);
-        }
-
-        @Override
-        public void serialize(CustomItem customItem, JsonGenerator gen, SerializerProvider provider) throws IOException {
-            gen.writeStartObject();
-            gen.writeObjectField("api_reference", customItem.getApiReference());
-            gen.writeObjectField("advanced", customItem.isAdvanced());
-            gen.writeBooleanField("consumed", customItem.isConsumed());
-            gen.writeBooleanField("blockVanillaEquip", customItem.isBlockVanillaEquip());
-            gen.writeBooleanField("blockPlacement", customItem.isBlockPlacement());
-            gen.writeBooleanField("blockVanillaRecipes", customItem.isBlockVanillaRecipes());
-            gen.writeNumberField("rarity_percentage", customItem.getRarityPercentage());
-            gen.writeStringField("permission", customItem.getPermission());
-            gen.writeObjectField("meta", customItem.getMetaSettings());
-            gen.writeObjectField("fuel", customItem.fuelSettings);
-            gen.writeObjectFieldStart("custom_data");
-            {
-                for (Map.Entry<NamespacedKey, CustomData> value : customItem.getCustomDataMap().entrySet()) {
-                    gen.writeObjectFieldStart(value.getKey().toString());
-                    value.getValue().writeToJson(customItem, gen, provider);
-                    gen.writeEndObject();
-                }
-            }
-            gen.writeEndObject();
-            gen.writeObjectField("replacement", customItem.getReplacement());
-            gen.writeNumberField("durability_cost", customItem.getDurabilityCost());
-            gen.writeObjectField("equipment_slots", customItem.getEquipmentSlots());
-            gen.writeEndArray();
-            gen.writeObjectField("particles", customItem.getParticleContent());
-            gen.writeEndObject();
-        }
-    }
-
-    static class Deserializer extends StdDeserializer<CustomItem> {
-
-        public Deserializer() {
-            this(CustomItem.class);
-        }
-
-        protected Deserializer(Class<CustomItem> t) {
-            super(t);
-        }
-
-        @Override
-        public CustomItem deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var mapper = JacksonUtil.getObjectMapper();
-            JsonNode node = p.readValueAsTree();
-            if (node.isObject()) {
-                var customItem = new CustomItem(mapper.convertValue(node.path(node.has("api_reference") ? "api_reference" : "item"), APIReference.class));
-                customItem.setAdvanced(node.path("advanced").asBoolean(true));
-                customItem.setConsumed(node.path("consumed").asBoolean(true));
-                customItem.setBlockVanillaEquip(node.path("blockVanillaEquip").asBoolean());
-                customItem.setBlockPlacement(node.path("blockPlacement").asBoolean());
-                customItem.setBlockVanillaRecipes(node.path("blockVanillaRecipes").asBoolean());
-                customItem.setRarityPercentage(node.path("rarity_percentage").asDouble(1.0));
-                customItem.setPermission(node.path("permission").asText());
-                customItem.setMetaSettings(mapper.convertValue(node.path("meta"), MetaSettings.class));
-                customItem.setFuelSettings(mapper.convertValue(node.path("fuel"), FuelSettings.class));
-                customItem.setReplacement(mapper.convertValue(node.path("replacement"), APIReference.class));
-                customItem.setParticleContent(mapper.convertValue(node.path("particles"), ParticleContent.class));
-                JsonNode customDataNode = node.path("custom_data");
-                {
-                    customDataNode.fields().forEachRemaining(entry -> {
-                        var namespacedKey = entry.getKey().contains(":") ? NamespacedKey.of(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ Registry.CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
-                        if (namespacedKey != null) {
-                            CustomData.Provider<?> provider = Registry.CUSTOM_ITEM_DATA.get(namespacedKey);
-                            if (provider != null) {
-                                provider.addData(customItem, entry.getValue(), ctxt);
-                            }
-                        }
-                    });
-                }
-                customItem.setDurabilityCost(node.path("durability_cost").asInt());
-                mapper.convertValue(node.path("equipment_slots"), new TypeReference<ArrayList<EquipmentSlot>>() {
-                }).forEach(customItem::addEquipmentSlots);
-                return customItem;
-            }
-            return new CustomItem(Material.AIR);
-        }
     }
 }
