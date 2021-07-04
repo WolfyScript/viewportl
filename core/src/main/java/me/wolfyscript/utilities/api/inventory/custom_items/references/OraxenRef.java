@@ -11,6 +11,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Links to Oraxen and saves the specified id of the item.
+ */
 public class OraxenRef extends APIReference {
 
     private final String itemID;

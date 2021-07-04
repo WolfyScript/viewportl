@@ -12,6 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Links to MMOItems and saves the specified {@link Type} and Name of the item.
+ */
 public class MMOItemsRef extends APIReference {
 
     private final Type itemType;
@@ -41,7 +44,7 @@ public class MMOItemsRef extends APIReference {
 
     @Override
     public boolean isValidItem(ItemStack itemStack) {
-        NBTItem nbtItem = NBTItem.get(itemStack);
+        var nbtItem = NBTItem.get(itemStack);
         if (nbtItem.hasType()) {
             return Objects.equals(this.itemType, MMOItems.plugin.getTypes().get(nbtItem.getType())) && Objects.equals(this.itemName, nbtItem.getString("MMOITEMS_ITEM_ID"));
         }

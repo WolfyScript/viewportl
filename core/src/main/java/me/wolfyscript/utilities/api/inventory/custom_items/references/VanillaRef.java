@@ -11,6 +11,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Links to and saves a vanilla Bukkit ItemStack.
+ */
 public class VanillaRef extends APIReference {
 
     private final ItemStack itemStack;
@@ -77,7 +80,7 @@ public class VanillaRef extends APIReference {
 
         @Override
         public @Nullable APIReference parse(JsonNode element) {
-            ItemStack itemStack = JacksonUtil.getObjectMapper().convertValue(element, ItemStack.class);
+            var itemStack = JacksonUtil.getObjectMapper().convertValue(element, ItemStack.class);
             if (itemStack != null) {
                 APIReference.Parser<?> parser = CustomItem.getApiReferenceParser("wolfyutilities");
                 if (parser != null) {

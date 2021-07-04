@@ -117,6 +117,8 @@ public class WUPlugin extends JavaPlugin {
         meta.register(NamespacedKey.wolfyutilties("potion"), PotionMeta.class);
         meta.register(NamespacedKey.wolfyutilties("repair_cost"), RepairCostMeta.class);
         meta.register(NamespacedKey.wolfyutilties("unbreakable"), UnbreakableMeta.class);
+
+        //KeyedTypeIdResolver.registerTypeRegistry(CustomData.class, Registry.CUSTOM_ITEM_DATA);
     }
 
     @Override

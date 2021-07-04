@@ -13,6 +13,15 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Links to MythicMobs items and saves the specified item type.
+ * <p>
+ * For items to be detected by plugins in-game you need to add an additional Option to your MythicMobs item!
+ * <pre>
+ * Options:
+ *     AppendType: true
+ * </pre>
+ */
 public class MythicMobsRef extends APIReference {
 
     private static final String ITEM_KEY = "MYTHIC_TYPE";
