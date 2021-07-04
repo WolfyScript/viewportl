@@ -6,7 +6,6 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 
 import java.util.UUID;
 
@@ -27,12 +26,12 @@ public class LocationSerialization {
             gen.writeEndObject();
         }, (p, d) -> {
             JsonNode node = p.readValueAsTree();
-            WolfyUtilities api = WolfyUtilities.getWUCore();
+            var api = WolfyUtilities.getWUCore();
             if (node.isObject()) {
-                UUID uuid = UUID.fromString(node.get("world").asText());
-                World world = Bukkit.getWorld(uuid);
+                var uuid = UUID.fromString(node.get("world").asText());
+                var world = Bukkit.getWorld(uuid);
                 if (world != null) {
-                    JsonNode jsonNode = node.get("pos");
+                    var jsonNode = node.get("pos");
                     if (jsonNode.size() == 5) {
                         double x = jsonNode.get(0).asDouble();
                         double y = jsonNode.get(1).asDouble();

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -85,7 +84,7 @@ public class WorldCustomItemStore {
 
     public void initiateMissingBlockEffects() {
         store.entrySet().stream().filter(entry -> !hasStoredEffect(entry.getKey())).forEach(entry -> {
-            CustomItem customItem = entry.getValue().getCustomItem();
+            var customItem = entry.getValue().getCustomItem();
             if (customItem != null && entry.getKey() != null) {
                 setStore(entry.getKey(), new BlockCustomItemStore(customItem, null));
                 ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), entry.getKey().getBlock());
@@ -130,9 +129,9 @@ public class WorldCustomItemStore {
 
         @Override
         public WorldCustomItemStore deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            WorldCustomItemStore worldStore = new WorldCustomItemStore();
+            var worldStore = new WorldCustomItemStore();
             JsonNode node = p.readValueAsTree();
-            ObjectMapper mapper = JacksonUtil.getObjectMapper();
+            var mapper = JacksonUtil.getObjectMapper();
             node.elements().forEachRemaining(jsonNode -> worldStore.setStore(mapper.convertValue(jsonNode.path("loc"), Location.class), mapper.convertValue(jsonNode.path("store"), BlockCustomItemStore.class)));
             return worldStore;
         }

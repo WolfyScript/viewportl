@@ -5,7 +5,6 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.util.io.BukkitObjectInputStream;
 
 import java.io.File;
@@ -18,6 +17,9 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public class WorldUtils {
+
+    private WorldUtils() {
+    }
 
     private static WorldCustomItemStore worldCustomItemStore;
 
@@ -44,7 +46,7 @@ public class WorldUtils {
      */
     public static void load() {
         WolfyUtilities.getWUPlugin().getLogger().info("Loading stored Custom Items");
-        File file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store");
+        var file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "world_custom_item.store");
         if (file.exists()) {
             try (var fin = new FileInputStream(file)) {
                 var gzip = new GZIPInputStream(fin);
@@ -64,14 +66,14 @@ public class WorldUtils {
 
     @Deprecated
     private static void loadOld() {
-        File file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "stored_block_items.dat");
+        var file = new File(WolfyUtilities.getWUPlugin().getDataFolder() + File.separator + "stored_block_items.dat");
         worldCustomItemStore = new WorldCustomItemStore();
         if (file.exists()) {
             try (var fis = new FileInputStream(file); BukkitObjectInputStream ois = new BukkitObjectInputStream(fis)) {
-                Object object = ois.readObject();
+                var object = ois.readObject();
                 HashMap<String, String> loadMap = (HashMap<String, String>) object;
                 loadMap.forEach((key, value) -> {
-                    Location location = stringToLocation(key);
+                    var location = stringToLocation(key);
                     if (location != null) {
                         worldCustomItemStore.setStore(location, new BlockCustomItemStore(NamespacedKey.of(value), null));
                     }
@@ -86,8 +88,8 @@ public class WorldUtils {
     private static Location stringToLocation(String loc) {
         String[] args = loc.split(";");
         try {
-            UUID uuid = UUID.fromString(args[0]);
-            World world = Bukkit.getWorld(uuid);
+            var uuid = UUID.fromString(args[0]);
+            var world = Bukkit.getWorld(uuid);
             if (world != null) {
                 return new Location(world, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
             }

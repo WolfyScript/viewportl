@@ -42,7 +42,7 @@ public class WolfyUtilitiesRef extends APIReference {
         if (customItem != null) {
             return customItem.create();
         }
-        System.out.println("Couldn't find CustomItem for " + namespacedKey.toString());
+        WolfyUtilities.getWUCore().getConsole().warn("Couldn't find CustomItem for " + namespacedKey.toString());
         return null;
     }
 

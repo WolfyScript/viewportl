@@ -7,6 +7,9 @@ import java.util.regex.Pattern;
 
 public class MinecraftVersions {
 
+    private MinecraftVersions() {
+    }
+
     public static final MinecraftVersion v1_17 = MinecraftVersion.parse("1.17");
     public static final MinecraftVersion v1_16 = MinecraftVersion.parse("1.16");
     public static final MinecraftVersion v1_15 = MinecraftVersion.parse("1.15");

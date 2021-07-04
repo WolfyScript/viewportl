@@ -14,6 +14,9 @@ import java.util.UUID;
 
 public class PlayerUtils {
 
+    private PlayerUtils() {
+    }
+
     static final Map<UUID, PlayerStore> indexedStores = new HashMap<>();
 
     private static final HashMap<UUID, Map<EquipmentSlot, UUID>> playerItemParticles = new HashMap<>();
@@ -57,20 +60,18 @@ public class PlayerUtils {
 
     public static void loadStores() {
         WolfyUtilities.getWUPlugin().getLogger().info("Loading Player Data");
-        if (!STORE_FOLDER.exists()) {
-            STORE_FOLDER.mkdirs();
-        }
-        for (String s : STORE_FOLDER.list()) {
-            var uuid = UUID.fromString(s.replace(".store", ""));
-            indexedStores.put(uuid, PlayerStore.load(uuid));
+        if (STORE_FOLDER.exists() || STORE_FOLDER.mkdirs()) {
+            for (String s : STORE_FOLDER.list()) {
+                var uuid = UUID.fromString(s.replace(".store", ""));
+                indexedStores.put(uuid, PlayerStore.load(uuid));
+            }
         }
     }
 
     public static void saveStores() {
-        if (!STORE_FOLDER.exists()) {
-            STORE_FOLDER.mkdirs();
+        if (STORE_FOLDER.exists() || STORE_FOLDER.mkdirs()) {
+            indexedStores.forEach((uuid, playerStore) -> playerStore.save(uuid));
         }
-        indexedStores.forEach((uuid, playerStore) -> playerStore.save(uuid));
     }
 
     @NotNull

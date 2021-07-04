@@ -19,7 +19,8 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
     private boolean cancel;
     private final EquipMethod equipType;
     private final ArmorType type;
-    private final CustomItem oldCustomArmorPiece, newCustomArmorPiece;
+    private final CustomItem oldCustomArmorPiece;
+    private final CustomItem newCustomArmorPiece;
     private final ItemStack oldArmorPiece;
     private final ItemStack newArmorPiece;
 

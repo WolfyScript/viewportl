@@ -13,7 +13,7 @@ public class PotionUtils {
     private static final DecimalFormat timeFormat = new DecimalFormat("00");
 
     public static String getPotionName(PotionEffectType type) {
-        PotionType potionType = PotionType.getByEffect(type);
+        var potionType = PotionType.getByEffect(type);
         return StringUtils.capitalize((potionType != null ? potionType.name() : type.getName()).toLowerCase(Locale.ENGLISH).replace("_", ""));
     }
 

@@ -41,7 +41,7 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         Preconditions.checkArgument(key != null && VALID_KEY.matcher(key).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", key);
         this.namespace = namespace;
         this.key = key;
-        String string = this.toString();
+        var string = this.toString();
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters", string);
     }
 
@@ -116,8 +116,7 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NamespacedKey)) return false;
-        NamespacedKey that = (NamespacedKey) o;
+        if (!(o instanceof NamespacedKey that)) return false;
         return Objects.equals(namespace, that.namespace) &&
                 Objects.equals(key, that.key);
     }

@@ -17,10 +17,10 @@ public class VectorSerialization {
             gen.writeNumber(value.getZ());
             gen.writeEndArray();
         }, (p, deserializationContext) -> {
-            WolfyUtilities api = WolfyUtilities.getWUCore();
+            var api = WolfyUtilities.getWUCore();
             JsonNode node = p.readValueAsTree();
             if (node.isArray()) {
-                ArrayNode arrayNode = (ArrayNode) node;
+                var arrayNode = (ArrayNode) node;
                 return new Vector(arrayNode.get(0).asDouble(0), arrayNode.get(1).asDouble(0), arrayNode.get(2).asDouble(0));
             }
             api.getConsole().warn("Error Deserializing Vector! Invalid Vector object!");

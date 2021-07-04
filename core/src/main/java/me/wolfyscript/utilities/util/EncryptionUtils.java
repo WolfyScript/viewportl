@@ -35,8 +35,8 @@ public class EncryptionUtils {
     }
 
     public static String getCode() {
-        Random random = new Random();
-        String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var random = new Random();
+        var alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         final int x = alphabet.length();
         StringBuilder sB = new StringBuilder();
         for (int i = 0; i < 16; i++) {

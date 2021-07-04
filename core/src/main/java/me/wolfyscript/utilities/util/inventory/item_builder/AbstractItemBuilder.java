@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
@@ -139,8 +138,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
     public boolean hasCustomDurability() {
         var itemMeta = getItemMeta();
         if (itemMeta != null) {
-            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            return dataContainer.has(CUSTOM_DURABILITY_VALUE, PersistentDataType.INTEGER);
+            return itemMeta.getPersistentDataContainer().has(CUSTOM_DURABILITY_VALUE, PersistentDataType.INTEGER);
         }
         return false;
     }
@@ -168,10 +166,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
 
     public int getCustomDamage(ItemMeta itemMeta) {
         if (itemMeta != null) {
-            var dataContainer = itemMeta.getPersistentDataContainer();
-            if (dataContainer.has(CUSTOM_DURABILITY_DAMAGE, PersistentDataType.INTEGER)) {
-                return dataContainer.get(CUSTOM_DURABILITY_DAMAGE, PersistentDataType.INTEGER);
-            }
+            return itemMeta.getPersistentDataContainer().getOrDefault(CUSTOM_DURABILITY_DAMAGE, PersistentDataType.INTEGER, 0);
         }
         return 0;
     }
@@ -195,10 +190,7 @@ public abstract class AbstractItemBuilder<T extends AbstractItemBuilder<?>> {
 
     public int getCustomDurability(ItemMeta itemMeta) {
         if (itemMeta != null) {
-            var dataContainer = itemMeta.getPersistentDataContainer();
-            if (dataContainer.has(CUSTOM_DURABILITY_VALUE, PersistentDataType.INTEGER)) {
-                return dataContainer.get(CUSTOM_DURABILITY_VALUE, PersistentDataType.INTEGER);
-            }
+            return itemMeta.getPersistentDataContainer().getOrDefault(CUSTOM_DURABILITY_VALUE, PersistentDataType.INTEGER, 0);
         }
         return 0;
     }
