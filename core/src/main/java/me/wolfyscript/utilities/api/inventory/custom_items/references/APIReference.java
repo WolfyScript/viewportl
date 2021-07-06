@@ -32,13 +32,16 @@ import java.util.Objects;
 public abstract class APIReference {
 
     protected int amount;
+    private double weight;
 
     protected APIReference() {
         this.amount = 0;
+        this.weight = 0;
     }
 
     protected APIReference(APIReference apiReference) {
         this.amount = apiReference.amount;
+        this.weight = apiReference.weight;
     }
 
     /**
@@ -81,6 +84,30 @@ public abstract class APIReference {
      */
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    /**
+     * The weight can be used to select an item randomly based on their weight.
+     * For example for recipes like CustomCrafting does.
+     * <br>
+     * If the weight is bigger than 0 it will override the weight of the {@link me.wolfyscript.utilities.api.inventory.custom_items.CustomItem}, that is created from this reference.
+     *
+     * @return The weight of this reference.
+     */
+    public double getWeight() {
+        return weight;
+    }
+
+    /**
+     * The weight can be used to select an item randomly based on their weight.
+     * For example for recipes like CustomCrafting does.
+     * <br>
+     * If the weight is bigger than 0 it will override the weight of the {@link me.wolfyscript.utilities.api.inventory.custom_items.CustomItem}, that is created from this reference.
+     *
+     * @param weight The weight of this reference.
+     */
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 
     /**

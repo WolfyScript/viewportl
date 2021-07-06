@@ -119,7 +119,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         this.fuelSettings = new FuelSettings();
         this.metaSettings = new MetaSettings();
         this.permission = "";
-        this.rarityPercentage = 1.0d;
+        this.rarityPercentage = apiReference.getWeight() > 0 ? apiReference.getWeight() : 1.0d;
         for (CustomData.Provider<?> customData : Registry.CUSTOM_ITEM_DATA.values()) {
             addCustomData(customData.getNamespacedKey(), customData.createData());
         }
@@ -954,10 +954,34 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         this.permission = permission;
     }
 
+    /**
+     * @return The weight of the item. Can be changed by the {@link APIReference} of the item.
+     */
+    public double getWeight() {
+        return getRarityPercentage();
+    }
+
+    /**
+     * @param weight The weight of the item. Can be changed by the {@link APIReference} of the item.
+     */
+    public void setWeight(double weight) {
+        setRarityPercentage(weight);
+    }
+
+    /**
+     * @return The weight of the item. Can be changed by the {@link APIReference} of the item.
+     * @deprecated replaced with {@link #getWeight()}
+     */
+    @Deprecated
     public double getRarityPercentage() {
         return rarityPercentage;
     }
 
+    /**
+     * @param rarityPercentage The weight of the item. Can be changed by the {@link APIReference} of the item.
+     * @deprecated replaced with {@link #setWeight(double)}
+     */
+    @Deprecated
     public void setRarityPercentage(double rarityPercentage) {
         this.rarityPercentage = rarityPercentage;
     }
