@@ -126,6 +126,7 @@ public class WUPlugin extends JavaPlugin {
         this.wolfyUtilities.initialize();
         console.info("Minecraft version: " + ServerVersion.getVersion().getVersion());
         console.info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
+        console.info("Environment: " + WolfyUtilities.getENVIRONMENT());
         this.metrics = new Metrics(this, 5114);
 
         // Register plugin CustomItem API ReferenceParser

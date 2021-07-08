@@ -1,6 +1,5 @@
 package me.wolfyscript.utilities.api.nms.v1_17_R1;
 
-
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
@@ -53,7 +52,6 @@ public class InventoryUtilImpl extends InventoryUtil {
                     category.registerMaterial(material);
                 }
             }
-
         }
     }
 }

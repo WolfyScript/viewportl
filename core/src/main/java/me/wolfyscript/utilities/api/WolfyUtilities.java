@@ -22,8 +22,22 @@ import java.util.Locale;
 
 public class WolfyUtilities {
 
+    private static final String ENVIRONMENT = System.getProperties().getProperty("com.wolfyscript.env", "PROD");
+
     private static final HashMap<Plugin, WolfyUtilities> wolfyUtilitiesList = new HashMap<>();
     private static final HashMap<String, Boolean> classes = new HashMap<>();
+
+    public static String getENVIRONMENT() {
+        return ENVIRONMENT;
+    }
+
+    public static boolean isDevEnv() {
+        return ENVIRONMENT.equalsIgnoreCase("DEV");
+    }
+
+    public static boolean isProdEnv() {
+        return ENVIRONMENT.equalsIgnoreCase("PROD");
+    }
 
     public static boolean hasJavaXScripting() {
         return hasClass("javax.script.ScriptEngine");
