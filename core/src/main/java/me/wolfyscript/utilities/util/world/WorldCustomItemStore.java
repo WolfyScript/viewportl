@@ -132,7 +132,13 @@ public class WorldCustomItemStore {
             var worldStore = new WorldCustomItemStore();
             JsonNode node = p.readValueAsTree();
             var mapper = JacksonUtil.getObjectMapper();
-            node.elements().forEachRemaining(jsonNode -> worldStore.setStore(mapper.convertValue(jsonNode.path("loc"), Location.class), mapper.convertValue(jsonNode.path("store"), BlockCustomItemStore.class)));
+            node.elements().forEachRemaining(jsonNode -> {
+                var location = mapper.convertValue(jsonNode.path("loc"), Location.class);
+                var blockCustomItemStore = mapper.convertValue(jsonNode.path("store"), BlockCustomItemStore.class);
+                if (location != null && blockCustomItemStore != null) {
+                    worldStore.setStore(location, blockCustomItemStore);
+                }
+            });
             return worldStore;
         }
     }

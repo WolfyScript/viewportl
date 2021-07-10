@@ -493,7 +493,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     * Checks if the ItemStack is a similar to this CustomItem.
+     * Checks if the ItemStack is similar to this CustomItem.
      * <p>If exactMeta is false it only checks for Material and amount.
      * <p>If exactMeta is true it checks all the available ItemMeta and uses the meta options
      * when they are available.
@@ -507,7 +507,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     * Checks if the ItemStack is a similar to this CustomItem.
+     * Checks if the ItemStack is similar to this CustomItem.
      *
      * <p>
      * <strong>Exact Meta:</strong>
