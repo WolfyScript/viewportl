@@ -13,6 +13,7 @@ import me.wolfyscript.utilities.main.commands.ChatActionCommand;
 import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
+import me.wolfyscript.utilities.main.configs.WUConfig;
 import me.wolfyscript.utilities.main.listeners.BlockListener;
 import me.wolfyscript.utilities.main.listeners.EquipListener;
 import me.wolfyscript.utilities.main.listeners.GUIInventoryListener;
@@ -55,6 +56,7 @@ public class WUPlugin extends JavaPlugin {
     private final Chat chat;
     private final Console console;
     private Metrics metrics;
+    private WUConfig config;
 
     private final MessageHandler messageHandler;
     private final MessageFactory messageFactory;
@@ -127,16 +129,18 @@ public class WUPlugin extends JavaPlugin {
         console.info("Minecraft version: " + ServerVersion.getVersion().getVersion());
         console.info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
         console.info("Environment: " + WolfyUtilities.getENVIRONMENT());
+        this.config = new WUConfig(wolfyUtilities.getConfigAPI(), this);
+
         this.metrics = new Metrics(this, 5114);
 
         // Register plugin CustomItem API ReferenceParser
         console.info("Register API references");
-        CustomItem.registerAPIReferenceParser(new VanillaRef.Parser());
-        CustomItem.registerAPIReferenceParser(new WolfyUtilitiesRef.Parser());
-        CustomItem.registerAPIReferenceParser(new OraxenRef.Parser());
-        CustomItem.registerAPIReferenceParser(new ItemsAdderRef.Parser());
-        CustomItem.registerAPIReferenceParser(new MythicMobsRef.Parser());
-        CustomItem.registerAPIReferenceParser(new MMOItemsRef.Parser());
+        registerAPIReference(new VanillaRef.Parser());
+        registerAPIReference(new WolfyUtilitiesRef.Parser());
+        registerAPIReference(new OraxenRef.Parser());
+        registerAPIReference(new ItemsAdderRef.Parser());
+        registerAPIReference(new MythicMobsRef.Parser());
+        registerAPIReference(new MMOItemsRef.Parser());
 
         var languageAPI = wolfyUtilities.getLanguageAPI();
 
@@ -156,6 +160,12 @@ public class WUPlugin extends JavaPlugin {
         loadParticleEffects();
         //Used to test the NBT Tag API!
         testNBTAPI(false);
+    }
+
+    private void registerAPIReference(APIReference.Parser<?> parser) {
+        if (parser instanceof VanillaRef.Parser || parser instanceof WolfyUtilitiesRef.Parser || config.isAPIReferenceEnabled(parser)) {
+            CustomItem.registerAPIReferenceParser(parser);
+        }
     }
 
     @Override
