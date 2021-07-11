@@ -2,20 +2,33 @@ package me.wolfyscript.utilities.api.nms;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Reflection;
+import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
 
 public abstract class NMSUtil {
 
-    private final WolfyUtilities wolfyUtilities;
-    private final Plugin plugin;
+    private static final HashMap<String, VersionAdapter> versionAdapters = new HashMap<>();
 
+    static {
+        registerAdapter(new VersionAdapter("v1_17_R1"));
+    }
+
+    public static void registerAdapter(VersionAdapter adapter) {
+        versionAdapters.putIfAbsent(adapter.version, adapter);
+    }
+
+    private final WolfyUtilities wolfyUtilities;
+
+    private final Plugin plugin;
     protected BlockUtil blockUtil;
     protected ItemUtil itemUtil;
     protected RecipeUtil recipeUtil;
     protected InventoryUtil inventoryUtil;
     protected NBTUtil nbtUtil;
+
     protected NetworkUtil networkUtil;
 
     /**
@@ -41,6 +54,10 @@ public abstract class NMSUtil {
     public static NMSUtil create(WolfyUtilities wolfyUtilities) {
         String version = Reflection.getVersion();
         try {
+            var adapter = versionAdapters.get(version);
+            if (adapter != null) {
+                version = adapter.getPackageName();
+            }
             String className = NMSUtil.class.getPackage().getName() + '.' + version + ".NMSEntry";
             Class<?> numUtilsType = Class.forName(className);
             if (NMSUtil.class.isAssignableFrom(numUtilsType)) {
@@ -52,7 +69,7 @@ public abstract class NMSUtil {
             ex.printStackTrace();
         }
         //Unsupported version
-        return null; // unreachable
+        throw new UnsupportedOperationException("This server version (" + version + ") is not supported!");
     }
 
     public WolfyUtilities getWolfyUtilities() {
@@ -81,5 +98,18 @@ public abstract class NMSUtil {
 
     public NetworkUtil getNetworkUtil() {
         return networkUtil;
+    }
+
+    private static class VersionAdapter {
+
+        protected final String version;
+
+        public VersionAdapter(String entryVersion) {
+            this.version = entryVersion;
+        }
+
+        public String getPackageName() {
+            return version + "_P" + ServerVersion.getVersion().getPatch();
+        }
     }
 }
