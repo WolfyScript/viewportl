@@ -1,2 +1,5 @@
-debug: false
-securityCode: "generated Code"
+api_references:
+  mmoitems: true
+  oraxen: true
+  mythicmobs: true
+  itemsadder: true
