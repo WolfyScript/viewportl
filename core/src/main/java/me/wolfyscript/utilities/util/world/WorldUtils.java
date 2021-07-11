@@ -51,9 +51,13 @@ public class WorldUtils {
             try (var fin = new FileInputStream(file)) {
                 var gzip = new GZIPInputStream(fin);
                 worldCustomItemStore = JacksonUtil.getObjectMapper().readValue(gzip, WorldCustomItemStore.class);
+                if (worldCustomItemStore == null) {
+                    WolfyUtilities.getWUPlugin().getLogger().severe("Couldn't load stored CustomItems! Resetting to default!");
+                    worldCustomItemStore = new WorldCustomItemStore();
+                }
                 gzip.close();
             } catch (IOException e) {
-                WolfyUtilities.getWUPlugin().getLogger().severe("Couldn't load stored Custom Items! Resetting to default!");
+                WolfyUtilities.getWUPlugin().getLogger().severe("Couldn't load stored CustomItems! Resetting to default!");
                 worldCustomItemStore = new WorldCustomItemStore();
             }
         } else {
