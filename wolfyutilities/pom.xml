@@ -59,7 +59,13 @@
         </dependency>
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
-            <artifactId>nmsutil-v1_17_R1</artifactId>
+            <artifactId>nmsutil-v1_17_R1_P0</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.wolfyscript.wolfyutilities</groupId>
+            <artifactId>nmsutil-v1_17_R1_P1</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
