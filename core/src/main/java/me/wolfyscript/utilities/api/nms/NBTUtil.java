@@ -28,4 +28,6 @@ public abstract class NBTUtil extends UtilComponent {
      */
     public abstract NBTItem getItem(org.bukkit.inventory.ItemStack bukkitItemStack);
 
+    public abstract NBTItem getDirectItem(org.bukkit.inventory.ItemStack bukkitItemStack);
+
 }

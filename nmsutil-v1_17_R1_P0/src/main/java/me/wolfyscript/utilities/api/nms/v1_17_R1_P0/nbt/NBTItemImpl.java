@@ -3,27 +3,42 @@ package me.wolfyscript.utilities.api.nms.v1_17_R1_P0.nbt;
 import me.wolfyscript.utilities.api.nms.nbt.NBTBase;
 import me.wolfyscript.utilities.api.nms.nbt.NBTCompound;
 import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
+import me.wolfyscript.utilities.util.Reflection;
 import net.minecraft.nbt.CompoundTag;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.util.Set;
 
 public class NBTItemImpl extends NBTItem {
 
+    static final Field HANDLE_FIELD = Reflection.getDeclaredField(CraftItemStack.class, "handle");
+
     final NBTTagCompoundImpl compound;
     private final net.minecraft.world.item.ItemStack nms;
 
-    public NBTItemImpl(ItemStack bukkitItemStack) {
-        super(bukkitItemStack);
-        this.nms = CraftItemStack.asNMSCopy(bukkitItemStack);
+    public NBTItemImpl(ItemStack bukkitItemStack, boolean directAccess) {
+        super(bukkitItemStack, directAccess);
+        net.minecraft.world.item.ItemStack mcItemStack = null;
+        if (directAccess && HANDLE_FIELD != null && HANDLE_FIELD.trySetAccessible()) {
+            var craftItemStack = (CraftItemStack) bukkitItemStack;
+            try {
+                if (HANDLE_FIELD.get(craftItemStack) instanceof net.minecraft.world.item.ItemStack handle) {
+                    mcItemStack = handle;
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        this.nms = mcItemStack == null ? CraftItemStack.asNMSCopy(bukkitItemStack) : mcItemStack;
         this.compound = new NBTTagCompoundImpl(this.nms.hasTag() ? this.nms.getTag() : new CompoundTag());
+        this.nms.setTag(compound.nbt);
     }
 
     @Override
     public ItemStack create() {
-        nms.setTag(compound.nbt);
         return CraftItemStack.asBukkitCopy(nms);
     }
 
