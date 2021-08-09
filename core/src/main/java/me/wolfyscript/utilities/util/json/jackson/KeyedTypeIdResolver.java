@@ -5,21 +5,27 @@ import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import me.wolfyscript.utilities.util.ClassRegistry;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class KeyedTypeIdResolver extends TypeIdResolverBase {
 
     private static final Map<Class<?>, Registry<?>> TYPE_REGISTRIES = new HashMap<>();
+    private static final Map<Class<?>, ClassRegistry<?>> TYPE_CLASS_REGISTRIES = new HashMap<>();
     private JavaType superType;
 
     public static <T extends Keyed> void registerTypeRegistry(Class<T> type, Registry<T> registry) {
         TYPE_REGISTRIES.putIfAbsent(type, registry);
+    }
+
+    public static <T extends Keyed> void registerTypeRegistry(Class<T> type, ClassRegistry<T> registry) {
+        TYPE_CLASS_REGISTRIES.putIfAbsent(type, registry);
     }
 
     @Override
@@ -45,18 +51,27 @@ public class KeyedTypeIdResolver extends TypeIdResolverBase {
     }
 
     @Override
-    public JavaType typeFromId(DatabindContext context, String id) throws IOException {
-        Registry<?> registry = TYPE_REGISTRIES.get(superType.getRawClass());
-        if (registry != null) {
-            var namespacedKey = NamespacedKey.of(id);
-            if (namespacedKey != null) {
-                var object = registry.get(namespacedKey);
+    public JavaType typeFromId(DatabindContext context, String id) {
+        Class<?> clazz = getTypeClass(NamespacedKey.of(id));
+        return clazz != null ? context.constructSpecializedType(superType, clazz) : TypeFactory.unknownType();
+    }
+
+    @Nullable
+    protected Class<?> getTypeClass(NamespacedKey key) {
+        if (key != null) {
+            ClassRegistry<?> classRegistry = TYPE_CLASS_REGISTRIES.get(superType.getRawClass());
+            if (classRegistry != null) {
+                return classRegistry.get(key);
+            }
+            Registry<?> registry = TYPE_REGISTRIES.get(superType.getRawClass());
+            if (registry != null) {
+                var object = registry.get(key);
                 if (object != null) {
-                    return context.constructSpecializedType(superType, object.getClass());
+                    return object.getClass();
                 }
             }
         }
-        return TypeFactory.unknownType();
+        return null;
     }
 
     @Override
