@@ -95,7 +95,7 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<V>> {
             Class<V> clazz = get(key);
             if (clazz != null) {
                 try {
-                    clazz.getDeclaredConstructor().newInstance();
+                    return clazz.getDeclaredConstructor().newInstance();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     e.printStackTrace();
                 }
