@@ -14,7 +14,7 @@ import java.util.Map.Entry;
  * To get a new instance of an entry you must use {@link #create(NamespacedKey)} or create it manually. <br>
  * <p>
  * Main use case of this registry would be to prevent using the {@link Registry} with default objects <br>
- * and prevents mistakenly usage of those values, as this registry enforces to create new instances.
+ * and prevents unwanted usage of those values, as this registry enforces to create new instances.
  *
  * @param <V> The type of the values.
  */
