@@ -1,7 +1,10 @@
 package me.wolfyscript.utilities.api.nms.network;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.util.ByteProcessor;
 import me.wolfyscript.utilities.api.nms.NetworkUtil;
 import me.wolfyscript.utilities.api.nms.nbt.NBTCompound;
 import me.wolfyscript.utilities.util.NamespacedKey;
@@ -17,8 +20,11 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 
 /**
  * This Class acts as a Wrapper for the Minecraft ByteBuf to make it able to correctly encode ItemStacks and more.
@@ -43,6 +49,52 @@ public interface MCByteBuf {
             }
         }
         return 5;
+    }
+
+    default <T, C extends Collection<T>> C readCollection(IntFunction<C> collectionSupplier, Function<MCByteBuf, T> converter) {
+        int size = readVarInt();
+        C collection = collectionSupplier.apply(size);
+        for (int i = 0; i < size; i++) {
+            collection.add(converter.apply(this));
+        }
+        return collection;
+    }
+
+    default <T> void writeCollection(Collection<T> collection, BiConsumer<MCByteBuf, T> converter) {
+        writeVarInt(collection.size());
+        collection.forEach(value -> converter.accept(this, value));
+    }
+
+    default <T> List<T> readList(Function<MCByteBuf, T> function) {
+        return readCollection(Lists::newArrayListWithCapacity, function);
+    }
+
+    default <K, V, M extends Map<K, V>> M readMap(IntFunction<M> mapSupplier, Function<MCByteBuf, K> keyConverter, Function<MCByteBuf, V> valueConverter) {
+        int size = this.readVarInt();
+        M map = mapSupplier.apply(size);
+        for (int j = 0; j < size; ++j) {
+            map.put(keyConverter.apply(this), valueConverter.apply(this));
+        }
+        return map;
+    }
+
+    default <K, V> Map<K, V> readMap(Function<MCByteBuf, K> keyConverter, Function<MCByteBuf, V> valueConverter) {
+        return readMap(Maps::newHashMapWithExpectedSize, keyConverter, valueConverter);
+    }
+
+    default <K, V> void writeMap(Map<K, V> map, BiConsumer<MCByteBuf, K> keyConverter, BiConsumer<MCByteBuf, V> valueConverter) {
+        writeVarInt(map.size());
+        map.forEach((key, value) -> {
+            keyConverter.accept(this, key);
+            valueConverter.accept(this, value);
+        });
+    }
+
+    default void readWithCount(Consumer<MCByteBuf> consumer) {
+        int size = readVarInt();
+        for (int j = 0; j < size; ++j) {
+            consumer.accept(this);
+        }
     }
 
     MCByteBuf writeByteArray(byte[] byteArray);
