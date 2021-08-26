@@ -28,7 +28,7 @@ import java.util.UUID;
 
 public class MCByteBufImpl implements MCByteBuf {
 
-    private FriendlyByteBuf byteBuf;
+    private final FriendlyByteBuf byteBuf;
 
     public MCByteBufImpl() {
         this.byteBuf = new FriendlyByteBuf(Unpooled.buffer());
@@ -40,7 +40,7 @@ public class MCByteBufImpl implements MCByteBuf {
 
     @Override
     public MCByteBuf writeByteArray(byte[] byteArray) {
-        this.byteBuf = this.byteBuf.writeByteArray(byteArray);
+        this.byteBuf.writeByteArray(byteArray);
         return this;
     }
 
@@ -56,7 +56,7 @@ public class MCByteBufImpl implements MCByteBuf {
 
     @Override
     public MCByteBuf writeVarIntArray(int[] intArray) {
-        this.byteBuf = this.byteBuf.writeVarIntArray(intArray);
+        this.byteBuf.writeVarIntArray(intArray);
         return this;
     }
 
@@ -72,7 +72,7 @@ public class MCByteBufImpl implements MCByteBuf {
 
     @Override
     public MCByteBuf writeLongArray(long[] longArray) {
-        this.byteBuf = this.byteBuf.writeLongArray(longArray);
+        this.byteBuf.writeLongArray(longArray);
         return this;
     }
 
@@ -83,7 +83,7 @@ public class MCByteBufImpl implements MCByteBuf {
 
     @Override
     public MCByteBuf writeEnum(Enum<?> anEnum) {
-        this.byteBuf = this.byteBuf.writeEnum(anEnum);
+        this.byteBuf.writeEnum(anEnum);
         return this;
     }
 
@@ -99,7 +99,7 @@ public class MCByteBufImpl implements MCByteBuf {
 
     @Override
     public MCByteBuf writeUUID(UUID uuid) {
-        this.byteBuf = this.byteBuf.writeUUID(uuid);
+        this.byteBuf.writeUUID(uuid);
         return this;
     }
 
@@ -110,20 +110,20 @@ public class MCByteBufImpl implements MCByteBuf {
 
     @Override
     public MCByteBuf writeVarInt(int i) {
-        this.byteBuf = this.byteBuf.writeVarInt(i);
+        this.byteBuf.writeVarInt(i);
         return this;
     }
 
     @Override
     public MCByteBuf writeVarLong(long i) {
-        this.byteBuf = this.byteBuf.writeVarLong(i);
+        this.byteBuf.writeVarLong(i);
         return this;
     }
 
     @Override
     public MCByteBuf writeNBT(@Nullable NBTCompound nbtTagCompound) {
-        if (nbtTagCompound instanceof NBTTagCompoundImpl) {
-            this.byteBuf = this.byteBuf.writeNbt(((NBTTagCompoundImpl) nbtTagCompound).getNbt());
+        if (nbtTagCompound instanceof NBTTagCompoundImpl impl) {
+            this.byteBuf.writeNbt(impl.getNbt());
         }
         return this;
     }
@@ -142,7 +142,7 @@ public class MCByteBufImpl implements MCByteBuf {
 
     @Override
     public MCByteBuf writeItemStack(ItemStack itemstack) {
-        this.byteBuf = this.byteBuf.writeItem(CraftItemStack.asNMSCopy(itemstack));
+        this.byteBuf.writeItem(CraftItemStack.asNMSCopy(itemstack));
         return this;
     }
 
@@ -158,13 +158,13 @@ public class MCByteBufImpl implements MCByteBuf {
 
     @Override
     public MCByteBuf writeUtf(String s) {
-        this.byteBuf = this.byteBuf.writeUtf(s);
+        this.byteBuf.writeUtf(s);
         return this;
     }
 
     @Override
     public MCByteBuf writeUtf(String s, int i) {
-        this.byteBuf = this.byteBuf.writeUtf(s, i);
+        this.byteBuf.writeUtf(s, i);
         return this;
     }
 
@@ -175,7 +175,7 @@ public class MCByteBufImpl implements MCByteBuf {
 
     @Override
     public MCByteBuf writeNamespacedKey(NamespacedKey namespacedKey) {
-        this.byteBuf = this.byteBuf.writeResourceLocation(ResourceLocation.tryParse(namespacedKey.toString()));
+        this.byteBuf.writeResourceLocation(ResourceLocation.tryParse(namespacedKey.toString()));
         return this;
     }
 
@@ -186,7 +186,7 @@ public class MCByteBufImpl implements MCByteBuf {
 
     @Override
     public MCByteBuf writeDate(Date date) {
-        this.byteBuf = this.byteBuf.writeDate(date);
+        this.byteBuf.writeDate(date);
         return this;
     }
 
