@@ -462,13 +462,13 @@ public interface MCByteBuf {
 
     int bytesBefore(int i, int j, byte b0);
 
-    //int forEachByte(ByteProcessor byteprocessor);
+    int forEachByte(ByteProcessor byteprocessor);
 
-    //int forEachByte(int i, int j, io.netty.util.ByteProcessor byteprocessor);
+    int forEachByte(int i, int j, ByteProcessor byteprocessor);
 
-    //int forEachByteDesc(ByteProcessor byteprocessor);
+    int forEachByteDesc(ByteProcessor byteprocessor);
 
-    //int forEachByteDesc(int i, int j, ByteProcessor byteprocessor);
+    int forEachByteDesc(int i, int j, ByteProcessor byteprocessor);
 
     ByteBuf copy();
 
