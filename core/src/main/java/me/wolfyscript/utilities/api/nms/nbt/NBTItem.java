@@ -9,7 +9,7 @@ public abstract class NBTItem {
 
     protected final ItemStack bukkitItemStack;
 
-    public NBTItem(ItemStack bukkitItemStack) {
+    protected NBTItem(ItemStack bukkitItemStack, boolean directAccess) {
         this.bukkitItemStack = bukkitItemStack;
     }
 
