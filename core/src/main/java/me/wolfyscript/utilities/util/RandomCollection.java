@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.util;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -60,7 +61,8 @@ public class RandomCollection<E> extends TreeMap<Double, E> {
     @Nullable
     public E next(Random random) {
         double value = random.nextDouble() * total;
-        return ceilingEntry(value).getValue();
+        Map.Entry<Double, E> entry = ceilingEntry(value);
+        return entry != null ? entry.getValue() : null;
     }
 
     public RandomCollection<E> addAll(RandomCollection<E> randomCollection) {
