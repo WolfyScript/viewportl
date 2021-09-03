@@ -4,7 +4,11 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
-import org.bukkit.Location;
+import me.wolfyscript.utilities.util.particles.ParticleEffect;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorSphere;
+import me.wolfyscript.utilities.util.particles.timer.TimeSupplierLinear;
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +29,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
     private final WolfyUtilities wolfyUtilities;
     private final Chat chat;
 
-    public SpawnParticleEffectCommand(WolfyUtilities wolfyUtilities){
+    public SpawnParticleEffectCommand(WolfyUtilities wolfyUtilities) {
         this.wolfyUtilities = wolfyUtilities;
         this.chat = wolfyUtilities.getChat();
     }
@@ -36,37 +40,13 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
             if (args.length > 0) {
                 if (args[0].equalsIgnoreCase("spawn")) {
                     if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_effect.spawn")) {
-                        if (args.length >= 2) {
-                            String effectName = args[1];
-                            NamespacedKey nameSpacedKey;
-                            if (effectName.contains(":")) {
-                                nameSpacedKey = new NamespacedKey(effectName.split(":")[0], effectName.split(":")[1]);
-                            } else {
-                                nameSpacedKey = new NamespacedKey("wolfyutilities", effectName);
-                            }
-                            if (args.length >= 5) {
-                                try {
-                                    double x = Double.parseDouble(args[2]);
-                                    double y = Double.parseDouble(args[3]);
-                                    double z = Double.parseDouble(args[4]);
-                                    var location = new Location(player.getWorld(), x, y, z);
-                                    var particleEffect = Registry.PARTICLE_EFFECTS.get(nameSpacedKey);
-                                    if (particleEffect != null) {
-                                        particleEffect.onLocation(location);
-                                    }
-                                } catch (NumberFormatException ex) {
-                                    chat.sendMessage(player, "&cInvalid position! Please make sure you only use numbers for x/y/z!");
-                                    return true;
-                                }
-                            } else {
-                                var block = player.getTargetBlockExact(10);
-                                if (block != null) {
-                                    var particleEffect = Registry.PARTICLE_EFFECTS.get(nameSpacedKey);
-                                    if (particleEffect != null) {
-                                        particleEffect.onBlock(block);
-                                    }
-                                }
-                            }
+                        var block = player.getTargetBlockExact(10);
+                        if (block != null) {
+                            var particleEffect = new ParticleEffect(NamespacedKey.wolfyutilties("test"), "", List.of(), Material.FIREWORK_STAR);
+                            particleEffect.setParticle(Particle.FLAME);
+                            particleEffect.setTimeSupplier(new TimeSupplierLinear(1, 40));
+                            particleEffect.setAnimator(new AnimatorSphere(2));
+                            particleEffect.spawn(block);
                         }
                     }
                 }

@@ -68,7 +68,7 @@ public class ParticleAnimation implements Keyed {
      * @param location The location to spawn the animation at.
      */
     public void spawnOnLocation(Location location) {
-        runTimer(() -> particleEffects.forEach(particleEffect -> particleEffect.onLocation(location)));
+        runTimer(() -> particleEffects.forEach(particleEffect -> particleEffect.spawn(location)));
     }
 
     /**
@@ -79,7 +79,7 @@ public class ParticleAnimation implements Keyed {
     public void spawnOnBlock(Block block) {
         BlockCustomItemStore blockStore = WorldUtils.getWorldCustomItemStore().get(block.getLocation());
         if (blockStore != null) {
-            blockStore.setParticleUUID(runTimer(() -> particleEffects.forEach(particleEffect -> particleEffect.onBlock(block))));
+            blockStore.setParticleUUID(runTimer(() -> particleEffects.forEach(particleEffect -> particleEffect.spawn(block))));
         }
     }
 
@@ -89,7 +89,7 @@ public class ParticleAnimation implements Keyed {
      * @param entity The entity to spawn the animation on.
      */
     public void spawnOnEntity(Entity entity) {
-        runTimer(() -> particleEffects.forEach(particleEffect -> particleEffect.onEntity(entity)));
+        runTimer(() -> particleEffects.forEach(particleEffect -> particleEffect.spawn(entity)));
     }
 
     /**
@@ -101,7 +101,7 @@ public class ParticleAnimation implements Keyed {
     public void spawnOnPlayer(Player player, EquipmentSlot slot) {
         PlayerUtils.setActiveParticleEffect(player, slot, runTimer(() -> {
             if (player != null && player.isValid()) {
-                particleEffects.forEach(particleEffect -> particleEffect.onPlayer(player, slot));
+                particleEffects.forEach(particleEffect -> particleEffect.spawn(player.getLocation()));
             }
         }));
     }

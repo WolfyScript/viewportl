@@ -1,137 +1,89 @@
 package me.wolfyscript.utilities.util.particles;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
-import me.wolfyscript.utilities.util.chat.ChatColor;
-import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
-import me.wolfyscript.utilities.util.particles.animators.BasicAnimator;
+import me.wolfyscript.utilities.util.particles.animators.Animator;
+import me.wolfyscript.utilities.util.particles.timer.TimeSupplier;
+import me.wolfyscript.utilities.util.particles.timer.TimeSupplierLinear;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.Objects;
 
-/*
-Contains the location, offset, ParticleEffects, etc.
+/**
+ * Contains the location, offset, ParticleEffects, etc.
  */
-@JsonSerialize(using = ParticleEffect.Serializer.class)
-@JsonDeserialize(using = ParticleEffect.Deserializer.class)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ParticleEffect implements Keyed {
 
-    private NamespacedKey namespacedKey;
-    private NamespacedKey superParticle;
-    private org.bukkit.Particle particle;
+    private final NamespacedKey key;
+    private final String name;
+    private final List<String> description;
+    private final Material icon;
 
-    private String name;
-    private List<String> description;
-    private Material icon;
+    @JsonIgnore
     private Class<?> dataClass;
-    private Object data;
-    private Vector relative, offset;
-    private Integer count;
-    private Double speed;
+    private org.bukkit.Particle particle = Particle.FLAME;
+    private Object data = null;
+    private Vector offset = new Vector(0, 0, 0);
+    private Integer count = 1;
+    private Double speed = 0d;
+    private TimeSupplier timeSupplier = new TimeSupplierLinear();
     private Animator animator;
 
+    @JsonCreator
+    public ParticleEffect(@JsonProperty NamespacedKey key, @JsonProperty String name, @JsonProperty List<String> description, @JsonProperty Material icon) {
+        this.key = Objects.requireNonNull(key, "Namespaced Key must not be null!");
+        this.name = name;
+        this.description = description;
+        this.icon = icon;
+    }
+
     public ParticleEffect(ParticleEffect particleEffect) {
+        this.key = particleEffect.getNamespacedKey();
         this.particle = particleEffect.getParticle();
-        this.superParticle = getSuperParticle();
         this.name = particleEffect.getName();
         this.description = particleEffect.getDescription();
         this.icon = particleEffect.getIcon();
 
         this.dataClass = particleEffect.dataClass;
         this.data = particleEffect.data;
-        this.relative = particleEffect.getRelative();
         this.offset = particleEffect.getOffset();
         this.count = particleEffect.getCount();
         this.speed = particleEffect.getSpeed();
         this.animator = particleEffect.animator;
     }
 
-    public ParticleEffect() {
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, int count) {
-        this(particle, count, 0);
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, int count, double speed) {
-        this(particle, count, speed, null);
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Animator animator) {
-        this(particle, count, speed, null, animator);
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data) {
-        this(particle, count, speed, data, new Vector());
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data, Animator animator) {
-        this(particle, count, speed, data, new Vector(), animator);
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data, Vector relative) {
-        this(particle, count, speed, data, relative, new Vector());
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data, Vector relative, Animator animator) {
-        this(particle, count, speed, data, relative, new Vector(), animator);
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data, Vector relative, Vector offset) {
-        this(particle, count, speed, data, relative, offset, new BasicAnimator(false));
-    }
-
-    public ParticleEffect(org.bukkit.Particle particle, int count, double speed, Object data, Vector relative, Vector offset, Animator animator) {
-        this.particle = particle;
-        this.dataClass = particle.getDataType();
-        this.data = data;
-        this.icon = Material.FIREWORK_STAR;
-        this.relative = relative;
-        this.offset = offset;
-        this.count = count;
-        this.speed = speed;
-        this.animator = animator;
-    }
-
+    @JsonIgnore
     @Override
     public NamespacedKey getNamespacedKey() {
-        return namespacedKey;
+        return key;
     }
 
-    public void setNamespacedKey(NamespacedKey namespacedKey) {
-        this.namespacedKey = namespacedKey;
+    public String getName() {
+        return this.name;
     }
 
-    public NamespacedKey getSuperParticle() {
-        return superParticle;
+    public List<String> getDescription() {
+        return description;
     }
 
-    public void setSuperParticle(NamespacedKey superParticle) {
-        this.superParticle = superParticle;
-    }
-
-    public boolean hasSuperParticle() {
-        return superParticle != null;
+    public Material getIcon() {
+        return this.icon;
     }
 
     public org.bukkit.Particle getParticle() {
@@ -151,36 +103,12 @@ public class ParticleEffect implements Keyed {
         this.data = data;
     }
 
-    public Material getIcon() {
-        return this.icon;
-    }
-
-    public void setIcon(Material icon) {
-        this.icon = icon;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Class<?> getDataClass() {
         return dataClass;
     }
 
     public void setDataClass(Class<?> dataClass) {
         this.dataClass = dataClass;
-    }
-
-    public Vector getRelative() {
-        return relative;
-    }
-
-    public void setRelative(Vector relative) {
-        this.relative = relative;
     }
 
     public Vector getOffset() {
@@ -207,12 +135,12 @@ public class ParticleEffect implements Keyed {
         this.speed = speed;
     }
 
-    public List<String> getDescription() {
-        return description;
+    public TimeSupplier getTimeSupplier() {
+        return timeSupplier;
     }
 
-    public void setDescription(List<String> description) {
-        this.description = description;
+    public void setTimeSupplier(TimeSupplier timeSupplier) {
+        this.timeSupplier = timeSupplier;
     }
 
     public Animator getAnimator() {
@@ -226,15 +154,12 @@ public class ParticleEffect implements Keyed {
     @Override
     public String toString() {
         return "ParticleEffect{" +
-                "namespacedKey=" + namespacedKey +
-                ", superParticle=" + superParticle +
                 ", particle=" + particle +
                 ", name='" + name + '\'' +
                 ", description=" + description +
                 ", icon=" + icon +
                 ", dataClass=" + dataClass +
                 ", data=" + data +
-                ", relative=" + relative +
                 ", offset=" + offset +
                 ", count=" + count +
                 ", speed=" + speed +
@@ -242,153 +167,68 @@ public class ParticleEffect implements Keyed {
                 '}';
     }
 
-    public void onLocation(Location location) {
-        animator.onLocation(new Animator.Data(this), location);
+    /**
+     * Spawns the effect at the specified location.
+     * Particles are sent to all players in range.
+     *
+     * @param location The location at which the effect is spawned at.
+     */
+    public void spawn(Location location) {
+        new Task(location).run();
     }
 
-    public void onBlock(@NotNull Block block) {
-        animator.onBlock(new Animator.Data(this), block);
+    /**
+     * Spawns the effect at the specified location.
+     * If the player is specified, the particles are only send to that player.
+     *
+     * @param location The location at which the effect is spawned at.
+     * @param player   The optional player to send the particles to.
+     */
+    public void spawn(Location location, @Nullable Player player) {
+        new Task(location, player).run();
     }
 
-    public void onPlayer(Player player, EquipmentSlot slot) {
-        animator.onPlayer(new Animator.Data(this), player, slot);
+    public void spawn(@NotNull Block block) {
+        new Task(block.getLocation()).run();
     }
 
-    public void onEntity(Entity entity) {
-        animator.onEntity(new Animator.Data(this), entity);
+    public void spawn(Entity entity) {
+        new Task(entity.getLocation()).run();
     }
 
-    static class Serializer extends StdSerializer<ParticleEffect> {
+    /**
+     * Task that executes the particle effect and runs it in a new thread.
+     */
+    public class Task implements Runnable {
 
-        public Serializer() {
-            this(ParticleEffect.class);
+        private final Player player;
+        private final Location origin;
+        private double time;
+
+        public Task(Location origin) {
+            this.player = null;
+            this.origin = origin;
+            this.time = timeSupplier.getStartValue();
         }
 
-        protected Serializer(Class<ParticleEffect> t) {
-            super(t);
-        }
-
-        private static boolean checkValue(Object particleValue, Object supParticleValue) {
-            return particleValue != null && !particleValue.equals(supParticleValue);
+        public Task(Location origin, Player player) {
+            this.player = player;
+            this.origin = origin;
+            this.time = timeSupplier.getStartValue();
         }
 
         @Override
-        public void serialize(ParticleEffect particleEffect, JsonGenerator gen, SerializerProvider provider) throws IOException {
-            ParticleEffect supParticleEffect = Registry.PARTICLE_EFFECTS.get(particleEffect.getSuperParticle());
-            boolean hasSup = supParticleEffect != null;
-            gen.writeStartObject();
-            if (supParticleEffect != null) {
-                gen.writeStringField("particle", particleEffect.getSuperParticle().toString());
-            } else {
-                gen.writeStringField("particle", "minecraft:" + particleEffect.getParticle().toString().toLowerCase(Locale.ROOT));
-            }
-
-            if (checkValue(particleEffect.getIcon(), hasSup ? supParticleEffect.getIcon() : null)) {
-                gen.writeStringField("icon", particleEffect.getIcon().toString());
-            }
-            if (checkValue(particleEffect.getName(), hasSup ? supParticleEffect.getName() : null)) {
-                gen.writeStringField("name", particleEffect.getName());
-            }
-            if (checkValue(particleEffect.getDescription(), hasSup ? supParticleEffect.getDescription() : null)) {
-                gen.writeArrayFieldStart("description");
-                List<String> description = particleEffect.getDescription();
-                if (description != null) {
-                    for (String line : description) {
-                        gen.writeString(line);
+        public void run() {
+            Bukkit.getScheduler().runTaskTimer(WolfyUtilities.getWUPlugin(), task -> {
+                if (!task.isCancelled()) {
+                    this.time = timeSupplier.increase(this.time);
+                    animator.draw(time, ParticleEffect.this, origin, player);
+                    if (timeSupplier.shouldStop(this.time)) {
+                        task.cancel();
                     }
                 }
-                gen.writeEndArray();
-            }
-            if (checkValue(particleEffect.getCount(), hasSup ? supParticleEffect.getCount() : null)) {
-                gen.writeNumberField("count", particleEffect.getCount());
-            }
-            if (checkValue(particleEffect.getSpeed(), hasSup ? supParticleEffect.getSpeed() : null)) {
-                gen.writeNumberField("speed", particleEffect.getSpeed());
-            }
-            if (checkValue(particleEffect.getData(), hasSup ? supParticleEffect.getData() : null)) {
-                gen.writeObjectField("data", particleEffect.getData());
-            }
-            if (checkValue(particleEffect.getRelative(), hasSup ? supParticleEffect.getRelative() : null)) {
-                gen.writeObjectField("relative", particleEffect.getRelative());
-            }
-            if (checkValue(particleEffect.getOffset(), hasSup ? supParticleEffect.getOffset() : null)) {
-                gen.writeObjectField("offset", particleEffect.getOffset());
-            }
-            if (checkValue(particleEffect.getAnimator(), hasSup ? supParticleEffect.getAnimator() : null)) {
-                gen.writeObjectField("animator", particleEffect.getAnimator());
-            }
-            //particleObject.add("data", jsonSerializationContext.serialize(particle.getData(), particle.getDataClass()));
-            gen.writeEndObject();
-        }
+            }, 0, 1);
 
-    }
-
-    static class Deserializer extends StdDeserializer<ParticleEffect> {
-
-        public Deserializer() {
-            this(ParticleEffect.class);
-        }
-
-        protected Deserializer(Class<ParticleEffect> t) {
-            super(t);
-        }
-
-        @Override
-        public ParticleEffect deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            JsonNode node = p.readValueAsTree();
-            if (node.isObject()) {
-                final ParticleEffect resultParticleEffect;
-                if (node.has("particle")) {
-                    String particle = node.path("particle").asText();
-                    NamespacedKey namespacedKey = particle.contains(":") ? NamespacedKey.of(particle) : new NamespacedKey("wolfyutilities", particle);
-                    if (namespacedKey.getNamespace().equalsIgnoreCase("minecraft")) {
-                        resultParticleEffect = new ParticleEffect();
-                        org.bukkit.Particle particleType = org.bukkit.Particle.valueOf(namespacedKey.getKey().toUpperCase(Locale.ROOT));
-                        resultParticleEffect.setParticle(particleType);
-                    } else {
-                        ParticleEffect particleEffect1 = Registry.PARTICLE_EFFECTS.get(namespacedKey);
-                        resultParticleEffect = new ParticleEffect(particleEffect1);
-                        resultParticleEffect.setSuperParticle(namespacedKey);
-                    }
-                } else {
-                    resultParticleEffect = new ParticleEffect();
-                }
-                if (node.has("icon")) {
-                    resultParticleEffect.setIcon(Material.matchMaterial(node.get("icon").asText()));
-                }
-                if (node.has("name")) {
-                    resultParticleEffect.setName(ChatColor.convert(node.get("name").asText()));
-                }
-                if (node.has("description")) {
-                    List<String> description = new ArrayList<>();
-                    node.get("description").elements().forEachRemaining(line -> description.add(ChatColor.convert(line.asText())));
-                    resultParticleEffect.setDescription(description);
-                }
-                if (node.has("count")) {
-                    resultParticleEffect.setCount(node.get("count").asInt());
-                }
-                if (node.has("speed")) {
-                    resultParticleEffect.setSpeed(node.get("speed").asDouble());
-                }
-                if (node.has("data")) {
-                    if (resultParticleEffect.getParticle().equals(org.bukkit.Particle.REDSTONE)) {
-                        resultParticleEffect.setData(JacksonUtil.getObjectMapper().convertValue(node.get("data"), org.bukkit.Particle.DustOptions.class));
-                    } else {
-                        resultParticleEffect.setData(JacksonUtil.getObjectMapper().convertValue(node.get("data"), resultParticleEffect.getDataClass()));
-                    }
-                }
-                if (node.has("relative")) {
-                    resultParticleEffect.setRelative(JacksonUtil.getObjectMapper().convertValue(node.get("relative"), Vector.class));
-                }
-                if (node.has("offset")) {
-                    resultParticleEffect.setOffset(JacksonUtil.getObjectMapper().convertValue(node.get("offset"), Vector.class));
-                }
-                if (node.has("animator")) {
-                    resultParticleEffect.setAnimator(JacksonUtil.getObjectMapper().convertValue(node.path("animator"), Animator.class));
-                }
-                return resultParticleEffect;
-            }
-            return null;
         }
     }
 }

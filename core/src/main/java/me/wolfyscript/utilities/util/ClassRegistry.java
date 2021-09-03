@@ -1,6 +1,8 @@
 package me.wolfyscript.utilities.util;
 
 import com.google.common.base.Preconditions;
+import me.wolfyscript.utilities.util.particles.animators.Animator;
+import me.wolfyscript.utilities.util.particles.timer.TimeSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +21,9 @@ import java.util.Map.Entry;
  * @param <V> The type of the values.
  */
 public interface ClassRegistry<V extends Keyed> extends Iterable<Class<V>> {
+
+    SimpleClassRegistry<Animator> PARTICLE_ANIMATORS = new SimpleClassRegistry<>();
+    SimpleClassRegistry<TimeSupplier> PARTICLE_TIMER = new SimpleClassRegistry<>();
 
     /**
      * Get the value of the registry by it's {@link NamespacedKey}

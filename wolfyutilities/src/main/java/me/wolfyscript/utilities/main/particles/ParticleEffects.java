@@ -2,19 +2,27 @@ package me.wolfyscript.utilities.main.particles;
 
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
-import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
-import me.wolfyscript.utilities.util.particles.animators.SphereAnimator;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
+import me.wolfyscript.utilities.util.particles.timer.TimeSupplierLinear;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+
+import java.util.List;
 
 public class ParticleEffects {
 
     public static void load() {
-        var testParticleEffect = new ParticleEffect(Particle.FLAME, 10, 0, new SphereAnimator(false, 2));
+        var testParticleEffect = new ParticleEffect(NamespacedKey.wolfyutilties("flame_sphere"), "", List.of(), Material.IRON_SWORD);
+        testParticleEffect.setParticle(Particle.FLAME);
+        testParticleEffect.setTimeSupplier(new TimeSupplierLinear(0.5, 70));
+        testParticleEffect.setAnimator(new AnimatorBasic());
+        Registry.PARTICLE_EFFECTS.register(testParticleEffect);
+
+        /*
         var testParticleAnimation = new ParticleAnimation(Material.IRON_SWORD, "FLAME_CIRLCE", null, 1, 50, testParticleEffect);
-        Registry.PARTICLE_EFFECTS.register(new NamespacedKey("wolfyutilities", "flame_circle"), testParticleEffect);
         Registry.PARTICLE_ANIMATIONS.register(new NamespacedKey("wolfyutilities", "flame_circle"), testParticleAnimation);
+         */
 
     }
 

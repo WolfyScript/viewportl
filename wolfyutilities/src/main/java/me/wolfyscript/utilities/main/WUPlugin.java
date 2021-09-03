@@ -23,13 +23,17 @@ import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListene
 import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
 import me.wolfyscript.utilities.main.particles.ParticleEffects;
+import me.wolfyscript.utilities.util.ClassRegistry;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
+import me.wolfyscript.utilities.util.particles.animators.Animator;
+import me.wolfyscript.utilities.util.particles.timer.TimeSupplier;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import me.wolfyscript.utilities.util.world.WorldUtils;
 import org.bstats.bukkit.Metrics;
@@ -120,7 +124,8 @@ public class WUPlugin extends JavaPlugin {
         meta.register(NamespacedKey.wolfyutilties("repair_cost"), RepairCostMeta.class);
         meta.register(NamespacedKey.wolfyutilties("unbreakable"), UnbreakableMeta.class);
 
-        //KeyedTypeIdResolver.registerTypeRegistry(CustomData.class, Registry.CUSTOM_ITEM_DATA);
+        KeyedTypeIdResolver.registerTypeRegistry(Animator.class, ClassRegistry.PARTICLE_ANIMATORS);
+        KeyedTypeIdResolver.registerTypeRegistry(TimeSupplier.class, ClassRegistry.PARTICLE_TIMER);
     }
 
     @Override
@@ -181,10 +186,11 @@ public class WUPlugin extends JavaPlugin {
         ParticleEffects.load();
         try {
             File file = new File(getDataFolder(), "test_animation.json");
-            JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_ANIMATIONS.get(new NamespacedKey("wolfyutilities", "flame_circle")));
+            JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_EFFECTS.get(NamespacedKey.wolfyutilties("flame_sphere")));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         WorldUtils.getWorldCustomItemStore().initiateMissingBlockEffects();
     }
 
