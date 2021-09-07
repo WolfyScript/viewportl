@@ -226,16 +226,14 @@ public class ParticleAnimation implements Keyed {
          *
          */
         public void stop() {
-            if (isRunning()) {
-                Objects.requireNonNull(task).cancel();
-                ParticleUtils.stopAnimation(uuid);
-                this.uuid = null;
-                this.task = null;
-            }
+            Objects.requireNonNull(task).cancel();
+            ParticleUtils.removeScheduler(uuid);
+            this.uuid = null;
+            this.task = null;
         }
 
         public boolean isRunning() {
-            return task != null && !task.isCancelled() && this.uuid != null;
+            return task != null && !task.isCancelled();
         }
 
         public void run() {
@@ -246,8 +244,7 @@ public class ParticleAnimation implements Keyed {
                     if (settings != null && !settings.isEmpty()) {
                         for (ParticleEffectSettings setting : settings) {
                             if(location != null && location.getWorld() != null) {
-                                setting.getEffect().spawn(location.add(setting.offset), player);
-                                location.subtract(setting.offset);
+                                setting.getEffect().spawn(location.clone().add(setting.offset), player);
                             }
                         }
                     }

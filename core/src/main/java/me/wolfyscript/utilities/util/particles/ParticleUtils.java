@@ -65,6 +65,15 @@ public class ParticleUtils {
         }
     }
 
+    public static void removeScheduler(UUID uuid) {
+        if (uuid != null) {
+            ParticleAnimation.Scheduler scheduler = activeAnimations.get(uuid);
+            if (scheduler != null) {
+                activeAnimations.remove(uuid);
+            }
+        }
+    }
+
     public static UUID addScheduler(ParticleAnimation.Scheduler scheduler) {
         UUID id = UUID.randomUUID();
         while (activeAnimations.containsKey(id)) {
