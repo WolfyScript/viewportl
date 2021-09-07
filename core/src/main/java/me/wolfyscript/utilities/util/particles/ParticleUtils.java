@@ -10,6 +10,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ Contains the ParticleEffects
  */
 public class ParticleUtils {
 
-    private static final LinkedHashMap<UUID, BukkitTask> currentEffects = new LinkedHashMap<>();
+    private static final Map<UUID, ParticleAnimation.Scheduler> activeAnimations = new LinkedHashMap<>();
 
     public static void spawnAnimationOnBlock(NamespacedKey nameSpacedKey, Block block) {
         ParticleAnimation animation = Registry.PARTICLE_ANIMATIONS.get(nameSpacedKey);
@@ -56,30 +57,24 @@ public class ParticleUtils {
      */
     public static void stopAnimation(UUID uuid) {
         if (uuid != null) {
-            BukkitTask task = currentEffects.get(uuid);
-            if (task != null) {
-                task.cancel();
-                currentEffects.remove(uuid);
+            ParticleAnimation.Scheduler scheduler = activeAnimations.get(uuid);
+            if (scheduler != null) {
+                scheduler.stop();
+                activeAnimations.remove(uuid);
             }
         }
     }
 
-    /**
-     * Add a new Effect Task to the running map under a new created UUID.
-     *
-     * @param task The task to add.
-     * @return The new UUID for that task.
-     */
-    public static UUID addTask(BukkitTask task) {
+    public static UUID addScheduler(ParticleAnimation.Scheduler scheduler) {
         UUID id = UUID.randomUUID();
-        while (currentEffects.containsKey(id)) {
+        while (activeAnimations.containsKey(id)) {
             id = UUID.randomUUID();
         }
-        currentEffects.put(id, task);
+        activeAnimations.put(id, scheduler);
         return id;
     }
 
-    public static Set<UUID> getRunningAnimations() {
-        return currentEffects.keySet();
+    public static Set<UUID> getActiveAnimations() {
+        return activeAnimations.keySet();
     }
 }

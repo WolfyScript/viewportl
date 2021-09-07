@@ -2,6 +2,7 @@ package me.wolfyscript.utilities.util.particles;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
@@ -15,11 +16,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class is for combining multiple ParticleEffects and spawn them simultaneously.
@@ -29,21 +30,18 @@ import java.util.UUID;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ParticleAnimation implements Keyed {
 
+    @JsonIgnore
+    private NamespacedKey key;
+
     private final String name;
     private final List<String> description;
     private final Material icon;
+
     private final int delay;
     private final int interval;
-    private final List<ParticleEffect> particleEffects;
-    @JsonIgnore
-    private NamespacedKey namespacedKey;
-
-    /**
-     * Default constructor to create the default values for deserialization.
-     */
-    public ParticleAnimation() {
-        this(Material.FIREWORK_ROCKET, "DEFAULT", null, 0, 1);
-    }
+    private final int loop;
+    private final List<ParticleEffectSettings> particleEffects;
+    private final Map<Integer, List<ParticleEffectSettings>> effectsPerTick;
 
     /**
      * @param icon            The Material as the icon.
@@ -51,15 +49,24 @@ public class ParticleAnimation implements Keyed {
      * @param description     The description of this animation.
      * @param delay           The delay before the particles are spawned.
      * @param interval        The interval in which the ParticleEffects are spawned. In ticks.
-     * @param particleEffects The ParticleEffects that will be spawned by this animation.
+     * @param effectSettings The ParticleEffects that will be spawned by this animation.
      */
-    public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, ParticleEffect... particleEffects) {
+    public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, int loop, ParticleEffectSettings... effectSettings) {
         this.icon = icon;
-        this.particleEffects = particleEffects == null ? new ArrayList<>() : Arrays.asList(particleEffects);
+        this.particleEffects = Arrays.asList(effectSettings);
+        this.effectsPerTick = particleEffects.stream().collect(Collectors.toMap(settings -> settings.tick, settings -> {
+            List<ParticleEffectSettings> values = new ArrayList<>();
+            values.add(settings);
+            return values;
+        }, (list, list2) -> {
+            list.addAll(list2);
+            return list;
+        }));
         this.name = name;
-        this.description = description == null ? new ArrayList<>() : description;
+        this.description = Objects.requireNonNullElse(description, new ArrayList<>());
         this.delay = delay;
         this.interval = interval;
+        this.loop = loop;
     }
 
     /**
@@ -68,7 +75,7 @@ public class ParticleAnimation implements Keyed {
      * @param location The location to spawn the animation at.
      */
     public void spawnOnLocation(Location location) {
-        runTimer(() -> particleEffects.forEach(particleEffect -> particleEffect.spawn(location)));
+        runScheduler(location);
     }
 
     /**
@@ -79,7 +86,7 @@ public class ParticleAnimation implements Keyed {
     public void spawnOnBlock(Block block) {
         BlockCustomItemStore blockStore = WorldUtils.getWorldCustomItemStore().get(block.getLocation());
         if (blockStore != null) {
-            blockStore.setParticleUUID(runTimer(() -> particleEffects.forEach(particleEffect -> particleEffect.spawn(block))));
+            blockStore.setParticleUUID(runScheduler(block.getLocation()));
         }
     }
 
@@ -89,7 +96,7 @@ public class ParticleAnimation implements Keyed {
      * @param entity The entity to spawn the animation on.
      */
     public void spawnOnEntity(Entity entity) {
-        runTimer(() -> particleEffects.forEach(particleEffect -> particleEffect.spawn(entity)));
+        runScheduler(entity.getLocation());
     }
 
     /**
@@ -99,24 +106,20 @@ public class ParticleAnimation implements Keyed {
      * @param slot   The {@link EquipmentSlot} this animation is spawned on.
      */
     public void spawnOnPlayer(Player player, EquipmentSlot slot) {
-        PlayerUtils.setActiveParticleEffect(player, slot, runTimer(() -> {
-            if (player != null && player.isValid()) {
-                particleEffects.forEach(particleEffect -> particleEffect.spawn(player.getLocation()));
-            }
-        }));
+        PlayerUtils.setActiveParticleEffect(player, slot, runScheduler(player.getLocation()));
     }
 
-    private UUID runTimer(Runnable runnable) {
-        return ParticleUtils.addTask(Bukkit.getScheduler().runTaskTimerAsynchronously(WolfyUtilities.getWUPlugin(), runnable, delay, interval));
+    private UUID runScheduler(Location location) {
+        return new Scheduler(location).start();
     }
 
     @Override
     public NamespacedKey getNamespacedKey() {
-        return namespacedKey;
+        return key;
     }
 
-    public void setNamespacedKey(NamespacedKey namespacedKey) {
-        this.namespacedKey = namespacedKey;
+    public void setKey(NamespacedKey key) {
+        this.key = key;
     }
 
     @Override
@@ -128,7 +131,137 @@ public class ParticleAnimation implements Keyed {
                 ", delay=" + delay +
                 ", interval=" + interval +
                 ", particleEffects=" + particleEffects +
-                ", namespacedKey=" + namespacedKey +
+                ", namespacedKey=" + key +
                 '}';
+    }
+
+    public static class ParticleEffectSettings {
+
+        private final ParticleEffect effect;
+        private final Vector offset;
+        private final int tick;
+
+        public ParticleEffectSettings(ParticleEffect effect, Vector offset, int tick) {
+            this.effect = effect;
+            this.offset = offset;
+            this.tick = tick;
+        }
+
+        public ParticleEffect getEffect() {
+            return effect;
+        }
+
+        public Vector getOffset() {
+            return offset;
+        }
+    }
+
+    /**
+     * This scheduler runs the ParticleAnimations with the specified delay and interval.
+     * If it is started it is saved in cache and is assigned a UUID (See ParticleUtils).
+     * Using these UUIDs you can stop specific animations.
+     *
+     */
+    public class Scheduler implements Runnable {
+
+        private BukkitTask task = null;
+        private UUID uuid = null;
+        private final Location location;
+        private final Player player;
+        private final Block block;
+        private final Entity entity;
+        private int tick = 0;
+        private int looped = 0;
+
+        public Scheduler(Location location) {
+            this(location, null);
+        }
+
+        public Scheduler(Block block) {
+            this(block, null);
+        }
+
+        public Scheduler(Entity entity) {
+            this(entity, null);
+        }
+
+        /**
+         *
+         * @param location The location to spawn the animation at.
+         * @param player The player to send the particles to. If null particles are sent to all surrounding players.
+         */
+        public Scheduler(Location location, Player player) {
+            this(location, null, null, player);
+        }
+
+        public Scheduler(Block block, Player player) {
+            this(null, block, null, player);
+        }
+
+        public Scheduler(Entity entity, Player player) {
+            this(null, null, entity, player);
+        }
+
+        private Scheduler(Location location, Block block, Entity entity, Player player) {
+            this.location = location;
+            this.block = block;
+            this.entity = entity;
+            this.player = player;
+        }
+
+        /**
+         * Starts and caches the animation.
+         * It may be stopped if it is a continues animations, or before it is stopped automatically if it is limited.
+         *
+         * @return The UUID of the running animation.
+         */
+        public UUID start() {
+            this.task = Bukkit.getScheduler().runTaskTimer(WolfyUtilities.getWUPlugin(), this, delay, 1);
+            this.uuid = ParticleUtils.addScheduler(this);
+            return uuid;
+        }
+
+        /**
+         * Stops the current running animation.
+         *
+         */
+        public void stop() {
+            if (isRunning()) {
+                Objects.requireNonNull(task).cancel();
+                ParticleUtils.stopAnimation(uuid);
+                this.uuid = null;
+                this.task = null;
+            }
+        }
+
+        public boolean isRunning() {
+            return task != null && !task.isCancelled() && this.uuid != null;
+        }
+
+        public void run() {
+            if (loop == -1 || looped < loop) {
+                if (tick < interval) {
+                    //Spawn tick specific ParticleEffects
+                    List<ParticleEffectSettings> settings = effectsPerTick.get(tick);
+                    if (settings != null && !settings.isEmpty()) {
+                        for (ParticleEffectSettings setting : settings) {
+                            if(location != null && location.getWorld() != null) {
+                                setting.getEffect().spawn(location.add(setting.offset), player);
+                                location.subtract(setting.offset);
+                            }
+                        }
+                    }
+                    tick++;
+                } else {
+                    tick = 0;
+                    if (loop != -1) {
+                        looped++;
+                    }
+                }
+            } else {
+                stop();
+            }
+        }
+
     }
 }
