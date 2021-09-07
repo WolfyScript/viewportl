@@ -29,7 +29,9 @@ public abstract class Animator implements Keyed {
     }
 
     protected void spawnParticle(ParticleEffect effect, Location location) {
-        location.getWorld().spawnParticle(effect.getParticle(), location, effect.getCount(), effect.getOffset().getX(), effect.getOffset().getY(), effect.getOffset().getZ(), effect.getSpeed(), effect.getData());
+        if(location.getWorld() != null) {
+            location.getWorld().spawnParticle(effect.getParticle(), location, effect.getCount(), effect.getOffset().getX(), effect.getOffset().getY(), effect.getOffset().getZ(), effect.getSpeed(), effect.getData());
+        }
     }
 
     protected void spawnParticle(ParticleEffect effect, Location location, @Nullable Player player) {
@@ -40,12 +42,6 @@ public abstract class Animator implements Keyed {
         }
     }
 
-    /**
-     * @param time
-     * @param effect
-     * @param origin
-     * @param player
-     */
     public abstract void draw(double time, ParticleEffect effect, Location origin, @Nullable Player player);
 
     @JsonIgnore
