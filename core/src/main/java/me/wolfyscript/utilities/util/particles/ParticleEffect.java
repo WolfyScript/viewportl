@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Contains the location, offset, ParticleEffects, etc.
@@ -30,48 +29,59 @@ import java.util.Objects;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ParticleEffect implements Keyed {
 
-    private final NamespacedKey key;
+    @JsonIgnore
+    private NamespacedKey key;
+
     private final String name;
     private final List<String> description;
     private final Material icon;
 
     @JsonIgnore
-    private Class<?> dataClass;
-    private org.bukkit.Particle particle = Particle.FLAME;
+    private final Class<?> dataType;
+    private final org.bukkit.Particle particle;
     private Object data = null;
     private Vector offset = new Vector(0, 0, 0);
-    private Integer count = 1;
-    private Double speed = 0d;
+    private int count = 1;
+    private double speed = 0d;
     private TimeSupplier timeSupplier = new TimeSupplierLinear();
     private Animator animator;
 
     @JsonCreator
-    public ParticleEffect(@JsonProperty NamespacedKey key, @JsonProperty String name, @JsonProperty List<String> description, @JsonProperty Material icon) {
-        this.key = Objects.requireNonNull(key, "Namespaced Key must not be null!");
+    public ParticleEffect(@JsonProperty Particle particle, @JsonProperty String name, @JsonProperty List<String> description, @JsonProperty Material icon) {
+        this.particle = particle;
+        this.dataType = particle.getDataType();
         this.name = name;
         this.description = description;
         this.icon = icon;
     }
 
-    public ParticleEffect(ParticleEffect particleEffect) {
-        this.key = particleEffect.getNamespacedKey();
-        this.particle = particleEffect.getParticle();
-        this.name = particleEffect.getName();
-        this.description = particleEffect.getDescription();
-        this.icon = particleEffect.getIcon();
+    public ParticleEffect(Particle particle, int count, Vector offset, double speed, Object data, TimeSupplier timeSupplier, Animator animator) {
+        this.name = "";
+        this.description = List.of();
+        this.icon = Material.FIREWORK_ROCKET;
 
-        this.dataClass = particleEffect.dataClass;
-        this.data = particleEffect.data;
-        this.offset = particleEffect.getOffset();
-        this.count = particleEffect.getCount();
-        this.speed = particleEffect.getSpeed();
-        this.animator = particleEffect.animator;
+        this.particle = particle;
+        this.dataType = particle.getDataType();
+        this.count = count;
+        this.offset = offset;
+        this.speed = speed;
+        this.data = data;
+        this.timeSupplier = timeSupplier;
+        this.animator = animator;
     }
 
     @JsonIgnore
     @Override
     public NamespacedKey getNamespacedKey() {
         return key;
+    }
+
+    public void setKey(NamespacedKey key) {
+        this.key = key;
+    }
+
+    public boolean hasKey() {
+        return key != null;
     }
 
     public String getName() {
@@ -90,11 +100,6 @@ public class ParticleEffect implements Keyed {
         return particle;
     }
 
-    public void setParticle(org.bukkit.Particle particle) {
-        this.particle = particle;
-        this.dataClass = particle.getDataType();
-    }
-
     public Object getData() {
         return data;
     }
@@ -103,12 +108,8 @@ public class ParticleEffect implements Keyed {
         this.data = data;
     }
 
-    public Class<?> getDataClass() {
-        return dataClass;
-    }
-
-    public void setDataClass(Class<?> dataClass) {
-        this.dataClass = dataClass;
+    public Class<?> getDataType() {
+        return dataType;
     }
 
     public Vector getOffset() {
@@ -119,19 +120,19 @@ public class ParticleEffect implements Keyed {
         this.offset = offset;
     }
 
-    public Integer getCount() {
+    public int getCount() {
         return count;
     }
 
-    public void setCount(Integer count) {
+    public void setCount(int count) {
         this.count = count;
     }
 
-    public Double getSpeed() {
+    public double getSpeed() {
         return speed;
     }
 
-    public void setSpeed(Double speed) {
+    public void setSpeed(double speed) {
         this.speed = speed;
     }
 
@@ -158,7 +159,7 @@ public class ParticleEffect implements Keyed {
                 ", name='" + name + '\'' +
                 ", description=" + description +
                 ", icon=" + icon +
-                ", dataClass=" + dataClass +
+                ", dataClass=" + dataType +
                 ", data=" + data +
                 ", offset=" + offset +
                 ", count=" + count +

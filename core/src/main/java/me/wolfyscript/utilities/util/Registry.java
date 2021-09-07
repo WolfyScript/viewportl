@@ -34,8 +34,21 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
      */
     Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA = new SimpleRegistry<>();
     MetaRegistry META_PROVIDER = new MetaRegistry();
-    SimpleRegistry<ParticleEffect> PARTICLE_EFFECTS = new SimpleRegistry<>();
-    ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry();
+
+    SimpleRegistry<ParticleEffect> PARTICLE_EFFECTS = new SimpleRegistry<>() {
+        @Override
+        public void register(NamespacedKey namespacedKey, ParticleEffect value) {
+            super.register(namespacedKey, value);
+            value.setKey(namespacedKey);
+        }
+    };
+    ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry() {
+        @Override
+        public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
+            super.register(namespacedKey, value);
+            value.setKey(namespacedKey);
+        }
+    };
 
     //Tags
     Tags<CustomItem> ITEM_TAGS = new Tags<>();
@@ -184,7 +197,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
         public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
             if (value != null) {
                 super.register(namespacedKey, value);
-                value.setNamespacedKey(namespacedKey);
+                value.setKey(namespacedKey);
             }
         }
     }
