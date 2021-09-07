@@ -4,8 +4,17 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
+import me.wolfyscript.utilities.util.particles.ParticleAnimation;
+import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.ParticleUtils;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorCircle;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorSphere;
+import me.wolfyscript.utilities.util.particles.timer.TimeSupplierLinear;
+import me.wolfyscript.utilities.util.particles.timer.TimeSupplierPi;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,6 +22,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import org.bukkit.util.Vector;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -35,32 +45,25 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
             if (args.length > 0) {
                 if (args[0].equalsIgnoreCase("spawn")) {
                     if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_animation.spawn")) {
-                        if (args.length >= 2) {
-                            String effectName = args[1];
-                            NamespacedKey nameSpacedKey;
-                            if (effectName.contains(":")) {
-                                nameSpacedKey = new NamespacedKey(effectName.split(":")[0], effectName.split(":")[1]);
-                            } else {
-                                nameSpacedKey = new NamespacedKey("wolfyutilities", effectName);
-                            }
-                            if (args.length >= 5) {
-                                try {
-                                    double x = Double.parseDouble(args[2]);
-                                    double y = Double.parseDouble(args[3]);
-                                    double z = Double.parseDouble(args[4]);
-                                    Location location = new Location(player.getWorld(), x, y, z);
-                                    ParticleUtils.spawnAnimationOnLocation(nameSpacedKey, location);
-                                } catch (NumberFormatException ex) {
-                                    chat.sendMessage(player, "&cInvalid position! Please make sure you only use numbers for x/y/z!");
-                                    return true;
-                                }
-                            } else {
-                                Block block = player.getTargetBlockExact(10);
-                                if (block != null) {
-                                    ParticleUtils.spawnAnimationOnBlock(nameSpacedKey, block);
-                                }
-                            }
-                        }
+                        var location = player.getLocation();
+                        var particleEffect = new ParticleEffect(Particle.FLAME, "", List.of(), Material.FIREWORK_STAR);
+                        particleEffect.setTimeSupplier(new TimeSupplierPi(40, 2*Math.PI));
+                        particleEffect.setAnimator(new AnimatorSphere(2));
+
+                        var first = new ParticleEffect(Particle.SMOKE_NORMAL, "", List.of(), Material.STONE);
+                        first.setTimeSupplier(new TimeSupplierLinear(1, 20));
+                        first.setAnimator(new AnimatorBasic());
+
+                        var second = new ParticleEffect(Particle.SMOKE_NORMAL, "", List.of(), Material.STONE);
+                        second.setTimeSupplier(new TimeSupplierPi(20, 2*Math.PI));
+                        second.setAnimator(new AnimatorCircle(1));
+
+                        var animation = new ParticleAnimation(Material.DIAMOND, "", null, 0, 40, 1,
+                                new ParticleAnimation.ParticleEffectSettings(first, new Vector(0,0,0), 0),
+                                new ParticleAnimation.ParticleEffectSettings(second, new Vector(0,0,0), 5),
+                                new ParticleAnimation.ParticleEffectSettings(particleEffect, new Vector(0,0,0), 20)
+                        );
+                        animation.spawnOnLocation(location);
                     }
                 } else if (args[0].equalsIgnoreCase("stop")) {
                     if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_effect.spawn")) {
@@ -111,7 +114,7 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
                                 return results;
                         }
                     } else if (args[0].equalsIgnoreCase("stop")) {
-                        ParticleUtils.getRunningAnimations().forEach(uuid -> results.add(uuid.toString()));
+                        ParticleUtils.getActiveAnimations().forEach(uuid -> results.add(uuid.toString()));
                     }
                 } else {
                     StringUtil.copyPartialMatches(args[0], COMMANDS, results);
