@@ -30,16 +30,24 @@ public class TimeSupplierLinear extends TimeSupplier {
     }
 
     @Override
-    public double increase(double time) {
-        time += increment;
-        return time;
+    public TimeSupplier.Runner createRunner() {
+        return new Runner();
     }
 
-    @Override
-    public boolean shouldStop(double time) {
-        if (increment > 0) {
-            return time > getStopValue();
+    private class Runner extends TimeSupplier.Runner {
+
+        @Override
+        public double increase() {
+            time += increment;
+            return time;
         }
-        return time < getStopValue();
+
+        @Override
+        public boolean shouldStop() {
+            if (increment > 0) {
+                return time > getStopValue();
+            }
+            return time < getStopValue();
+        }
     }
 }

@@ -203,27 +203,23 @@ public class ParticleEffect implements Keyed {
 
         private final Player player;
         private final Location origin;
-        private double time;
+        private final TimeSupplier.Runner runner = timeSupplier.createRunner();
 
         public Task(Location origin) {
-            this.player = null;
-            this.origin = origin;
-            this.time = timeSupplier.getStartValue();
+            this(origin, null);
         }
 
         public Task(Location origin, Player player) {
             this.player = player;
             this.origin = origin;
-            this.time = timeSupplier.getStartValue();
         }
 
         @Override
         public void run() {
             Bukkit.getScheduler().runTaskTimer(WolfyUtilities.getWUPlugin(), task -> {
                 if (!task.isCancelled()) {
-                    this.time = timeSupplier.increase(this.time);
-                    animator.draw(time, ParticleEffect.this, origin, player);
-                    if (timeSupplier.shouldStop(this.time)) {
+                    animator.draw(runner.increase(), ParticleEffect.this, origin, player);
+                    if (runner.shouldStop()) {
                         task.cancel();
                     }
                 }

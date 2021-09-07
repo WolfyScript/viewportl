@@ -53,9 +53,7 @@ public abstract class TimeSupplier implements Keyed {
         this.stopValue = stopValue;
     }
 
-    public abstract double increase(double time);
-
-    public abstract boolean shouldStop(double time);
+    public abstract Runner createRunner();
 
     @JsonIgnore
     @Override
@@ -63,5 +61,20 @@ public abstract class TimeSupplier implements Keyed {
         return key;
     }
 
+    public abstract class Runner {
+
+        protected double time;
+
+        protected Runner() {
+            this.time = getStartValue();
+        }
+
+        public abstract double increase();
+
+        public boolean shouldStop() {
+            return time > getStopValue();
+        }
+
+    }
 
 }
