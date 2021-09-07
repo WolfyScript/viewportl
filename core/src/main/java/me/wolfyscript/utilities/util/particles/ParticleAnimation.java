@@ -2,7 +2,6 @@ package me.wolfyscript.utilities.util.particles;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
@@ -164,6 +163,7 @@ public class ParticleAnimation implements Keyed {
      */
     public class Scheduler implements Runnable {
 
+
         private BukkitTask task = null;
         private UUID uuid = null;
         private final Location location;
@@ -172,6 +172,9 @@ public class ParticleAnimation implements Keyed {
         private final Entity entity;
         private int tick = 0;
         private int looped = 0;
+
+        private int tickSinceLastCheck = 0;
+        private boolean spawnEffects = true;
 
         public Scheduler(Location location) {
             this(location, null);
@@ -218,6 +221,7 @@ public class ParticleAnimation implements Keyed {
         public UUID start() {
             this.task = Bukkit.getScheduler().runTaskTimer(WolfyUtilities.getWUPlugin(), this, delay, 1);
             this.uuid = ParticleUtils.addScheduler(this);
+
             return uuid;
         }
 
@@ -236,18 +240,35 @@ public class ParticleAnimation implements Keyed {
             return task != null && !task.isCancelled();
         }
 
+        /**
+         * This checks if the location is valid to spawn the effects and make more resource intensive calculations.
+         * The spawn location is valid if it still exists and there are players nearby (64 block range).
+         *
+         * The delay between checks is currently 40 ticks (2 seconds).
+         */
+        public void checkSpawnConditions() {
+            if (tickSinceLastCheck > 40) {
+                if (location != null && location.getWorld() != null) {
+                    Collection<Entity> entities = location.getWorld().getNearbyEntities(location, 64, 64, 64, entity1 -> entity1 instanceof Player);
+                    this.spawnEffects = !entities.isEmpty();
+                } else {
+                    this.spawnEffects = false;
+                }
+                tickSinceLastCheck = 0;
+            }
+        }
+
         public void run() {
             if (loop == -1 || looped < loop) {
+                checkSpawnConditions();
                 if (tick < interval) {
                     //Spawn tick specific ParticleEffects
-                    List<ParticleEffectSettings> settings = effectsPerTick.get(tick);
-                    if (settings != null && !settings.isEmpty()) {
-                        for (ParticleEffectSettings setting : settings) {
-                            if(location != null && location.getWorld() != null) {
-                                setting.getEffect().spawn(location.clone().add(setting.offset), player);
-                            }
+                    if(spawnEffects) {
+                        for (ParticleEffectSettings setting : effectsPerTick.computeIfAbsent(tick, i -> new ArrayList<>())) {
+                            setting.getEffect().spawn(location.clone().add(setting.offset), player);
                         }
                     }
+                    tickSinceLastCheck++;
                     tick++;
                 } else {
                     tick = 0;
