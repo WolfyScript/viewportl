@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,19 +39,19 @@ public class ParticleAnimation implements Keyed {
 
     private final int delay;
     private final int interval;
-    private final int loop;
+    private final int repetitions;
     private final List<ParticleEffectSettings> particleEffects;
     private final Map<Integer, List<ParticleEffectSettings>> effectsPerTick;
 
     /**
-     * @param icon            The Material as the icon.
-     * @param name            The name of this animation.
-     * @param description     The description of this animation.
-     * @param delay           The delay before the particles are spawned.
-     * @param interval        The interval in which the ParticleEffects are spawned. In ticks.
+     * @param icon           The Material as the icon.
+     * @param name           The name of this animation.
+     * @param description    The description of this animation.
+     * @param delay          The delay before the particles are spawned.
+     * @param interval       The interval in which the ParticleEffects are spawned. In ticks.
      * @param effectSettings The ParticleEffects that will be spawned by this animation.
      */
-    public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, int loop, ParticleEffectSettings... effectSettings) {
+    public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, int repetitions, ParticleEffectSettings... effectSettings) {
         this.icon = icon;
         this.particleEffects = Arrays.asList(effectSettings);
         this.effectsPerTick = particleEffects.stream().collect(Collectors.toMap(settings -> settings.tick, settings -> {
@@ -65,7 +66,7 @@ public class ParticleAnimation implements Keyed {
         this.description = Objects.requireNonNullElse(description, new ArrayList<>());
         this.delay = delay;
         this.interval = interval;
-        this.loop = loop;
+        this.repetitions = repetitions;
     }
 
     /**
@@ -159,19 +160,15 @@ public class ParticleAnimation implements Keyed {
      * This scheduler runs the ParticleAnimations with the specified delay and interval.
      * If it is started it is saved in cache and is assigned a UUID (See ParticleUtils).
      * Using these UUIDs you can stop specific animations.
-     *
      */
     public class Scheduler implements Runnable {
 
-
         private BukkitTask task = null;
         private UUID uuid = null;
-        private final Location location;
-        private final Player player;
-        private final Block block;
-        private final Entity entity;
+        private final Player receiver;
+        private final ParticlePos pos;
         private int tick = 0;
-        private int looped = 0;
+        private int loop = 0;
 
         private int tickSinceLastCheck = 0;
         private boolean spawnEffects = true;
@@ -189,27 +186,26 @@ public class ParticleAnimation implements Keyed {
         }
 
         /**
-         *
          * @param location The location to spawn the animation at.
-         * @param player The player to send the particles to. If null particles are sent to all surrounding players.
+         * @param receiver   The player to send the particles to. If null particles are sent to all surrounding players.
          */
-        public Scheduler(Location location, Player player) {
-            this(location, null, null, player);
+        public Scheduler(Location location, @Nullable Player receiver) {
+            this.pos = new ParticlePosLocation(location);
+            this.receiver = receiver;
         }
 
-        public Scheduler(Block block, Player player) {
-            this(null, block, null, player);
+        public Scheduler(Block block, @Nullable Player receiver) {
+            this.pos = new ParticlePosBlock(block);
+            this.receiver = receiver;
         }
 
-        public Scheduler(Entity entity, Player player) {
-            this(null, null, entity, player);
-        }
-
-        private Scheduler(Location location, Block block, Entity entity, Player player) {
-            this.location = location;
-            this.block = block;
-            this.entity = entity;
-            this.player = player;
+        public Scheduler(Entity entity, @Nullable Player receiver) {
+            if (entity instanceof Player player) {
+                this.pos = new ParticlePosPlayer(player);
+            } else {
+                this.pos = new ParticlePosEntity(entity);
+            }
+            this.receiver = receiver;
         }
 
         /**
@@ -227,7 +223,6 @@ public class ParticleAnimation implements Keyed {
 
         /**
          * Stops the current running animation.
-         *
          */
         public void stop() {
             Objects.requireNonNull(task).cancel();
@@ -243,38 +238,43 @@ public class ParticleAnimation implements Keyed {
         /**
          * This checks if the location is valid to spawn the effects and make more resource intensive calculations.
          * The spawn location is valid if it still exists and there are players nearby (64 block range).
-         *
-         * The delay between checks is currently 40 ticks (2 seconds).
+         * <p>
+         * The delay between checks is currently 80 ticks (4 seconds).
          */
-        public void checkSpawnConditions() {
-            if (tickSinceLastCheck > 40) {
-                if (location != null && location.getWorld() != null) {
-                    Collection<Entity> entities = location.getWorld().getNearbyEntities(location, 64, 64, 64, entity1 -> entity1 instanceof Player);
+        public boolean checkSpawnConditions() {
+            if (tickSinceLastCheck > 80) {
+                Location loc = pos.getLocation();
+                if (loc != null && loc.getWorld() != null) {
+                    Collection<Entity> entities = loc.getWorld().getNearbyEntities(loc, 64, 64, 64, entity1 -> entity1 instanceof Player);
                     this.spawnEffects = !entities.isEmpty();
                 } else {
                     this.spawnEffects = false;
                 }
                 tickSinceLastCheck = 0;
+            } else {
+                tickSinceLastCheck++;
             }
+            return spawnEffects;
+        }
+
+        protected void execute() {
+            if (tick >= interval) {
+                tick = 0;
+                return;
+            }
+            if (checkSpawnConditions()) { //Spawn tick specific ParticleEffects
+                for (ParticleEffectSettings setting : effectsPerTick.computeIfAbsent(tick, i -> new ArrayList<>())) {
+                    setting.getEffect().spawn(pos.getLocation().add(setting.offset), receiver);
+                }
+            }
+            tick++;
         }
 
         public void run() {
-            if (loop == -1 || looped < loop) {
-                checkSpawnConditions();
-                if (tick < interval) {
-                    //Spawn tick specific ParticleEffects
-                    if(spawnEffects) {
-                        for (ParticleEffectSettings setting : effectsPerTick.computeIfAbsent(tick, i -> new ArrayList<>())) {
-                            setting.getEffect().spawn(location.clone().add(setting.offset), player);
-                        }
-                    }
-                    tickSinceLastCheck++;
-                    tick++;
-                } else {
-                    tick = 0;
-                    if (loop != -1) {
-                        looped++;
-                    }
+            if (repetitions <= -1 || loop < repetitions) {
+                execute();
+                if (tick == 0 && repetitions >= 0) {
+                    loop++;
                 }
             } else {
                 stop();
