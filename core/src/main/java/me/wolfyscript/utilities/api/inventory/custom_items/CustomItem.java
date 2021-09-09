@@ -3,6 +3,7 @@ package me.wolfyscript.utilities.api.inventory.custom_items;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
@@ -15,6 +16,8 @@ import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.inventory.item_builder.AbstractItemBuilder;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
+import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import me.wolfyscript.utilities.util.particles.ParticleLocation;
 import me.wolfyscript.utilities.util.version.MinecraftVersions;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.Bukkit;
@@ -998,12 +1001,26 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         this.customDataMap.put(namespacedKey, customData);
     }
 
+    @JsonGetter
     public ParticleContent getParticleContent() {
         return particleContent;
     }
 
-    public void setParticleContent(ParticleContent particleContent) {
-        this.particleContent = Objects.requireNonNullElseGet(particleContent, ParticleContent::new);
+    @JsonAlias("particles")
+    @JsonSetter
+    public void setParticleContent(ObjectNode particlesNode) {
+        if (particlesNode == null) {
+            this.particleContent = new ParticleContent();
+            return;
+        }
+        if (particlesNode.has("animations")) {
+            //New version
+            this.particleContent = JacksonUtil.getObjectMapper().convertValue(particlesNode, ParticleContent.class);
+        } else {
+            //Old version. Conversion required.
+            this.particleContent = new ParticleContent();
+            particlesNode.fields().forEachRemaining(entry -> particleContent.addParticleEffect(ParticleLocation.valueOf(entry.getKey()), JacksonUtil.getObjectMapper().convertValue(entry.getValue(), NamespacedKey.class)));
+        }
     }
 
     /**
