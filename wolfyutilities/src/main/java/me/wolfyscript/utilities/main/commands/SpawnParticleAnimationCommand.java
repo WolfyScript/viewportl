@@ -12,10 +12,8 @@ import me.wolfyscript.utilities.util.particles.animators.AnimatorCircle;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorSphere;
 import me.wolfyscript.utilities.util.particles.timer.TimeSupplierLinear;
 import me.wolfyscript.utilities.util.particles.timer.TimeSupplierPi;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -63,7 +61,7 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
                                 new ParticleAnimation.ParticleEffectSettings(second, new Vector(0,0,0), 5),
                                 new ParticleAnimation.ParticleEffectSettings(particleEffect, new Vector(0,0,0), 20)
                         );
-                        animation.spawnOnLocation(location);
+                        animation.spawn(location);
                     }
                 } else if (args[0].equalsIgnoreCase("stop")) {
                     if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_effect.spawn")) {

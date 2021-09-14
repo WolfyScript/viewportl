@@ -23,10 +23,7 @@ public class CustomParticleListener implements Listener {
             PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.HAND);
         }
         if (item != null) {
-            var particleContent = item.getParticleContent();
-            if (particleContent != null) {
-                particleContent.spawn(player, EquipmentSlot.HAND);
-            }
+            item.getParticleContent().spawn(player, EquipmentSlot.HAND);
         }
     }
 
@@ -41,17 +38,11 @@ public class CustomParticleListener implements Listener {
         }
         var mainHand = CustomItem.getByItemStack(event.getMainHandItem());
         if (mainHand != null) {
-            var particleContent = mainHand.getParticleContent();
-            if (particleContent != null) {
-                particleContent.spawn(player, EquipmentSlot.HAND);
-            }
+            mainHand.getParticleContent().spawn(player, EquipmentSlot.HAND);
         }
         var offHand = CustomItem.getByItemStack(event.getOffHandItem());
         if (offHand != null) {
-            var particleContent = offHand.getParticleContent();
-            if (particleContent != null) {
-                particleContent.spawn(player, EquipmentSlot.OFF_HAND);
-            }
+            offHand.getParticleContent().spawn(player, EquipmentSlot.OFF_HAND);
         }
     }
 
