@@ -1,4 +1,4 @@
-package me.wolfyscript.utilities.util.particles;
+package me.wolfyscript.utilities.util.particles.pos;
 
 import org.bukkit.Location;
 
@@ -12,6 +12,6 @@ public class ParticlePosLocation extends ParticlePos {
 
     @Override
     public Location getLocation() {
-        return location;
+        return location.clone();
     }
 }

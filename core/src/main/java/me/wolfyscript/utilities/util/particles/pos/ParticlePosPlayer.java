@@ -1,4 +1,4 @@
-package me.wolfyscript.utilities.util.particles;
+package me.wolfyscript.utilities.util.particles.pos;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
