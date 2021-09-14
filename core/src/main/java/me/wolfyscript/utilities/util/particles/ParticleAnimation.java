@@ -63,7 +63,7 @@ public class ParticleAnimation implements Keyed {
     public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, int repetitions, ParticleEffectSettings... effectSettings) {
         this.icon = icon;
         this.particleEffects = Arrays.asList(effectSettings);
-        this.effectsPerTick = particleEffects.stream().collect(Collectors.toMap(settings -> settings.tick, settings -> {
+        this.effectsPerTick = particleEffects.stream().collect(Collectors.toMap(ParticleEffectSettings::tick, settings -> {
             List<ParticleEffectSettings> values = new ArrayList<>();
             values.add(settings);
             return values;
@@ -83,8 +83,8 @@ public class ParticleAnimation implements Keyed {
      *
      * @param location The location to spawn the animation at.
      */
-    public void spawnOnLocation(Location location) {
-        runScheduler(location);
+    public void spawn(Location location) {
+        new Scheduler(location).start();
     }
 
     /**
@@ -92,10 +92,10 @@ public class ParticleAnimation implements Keyed {
      *
      * @param block The block to spawn the animation on.
      */
-    public void spawnOnBlock(Block block) {
+    public void spawn(Block block) {
         BlockCustomItemStore blockStore = WorldUtils.getWorldCustomItemStore().get(block.getLocation());
         if (blockStore != null) {
-            blockStore.setParticleUUID(runScheduler(block.getLocation()));
+            blockStore.setParticleUUID(new Scheduler(block).start());
         }
     }
 
@@ -104,8 +104,8 @@ public class ParticleAnimation implements Keyed {
      *
      * @param entity The entity to spawn the animation on.
      */
-    public void spawnOnEntity(Entity entity) {
-        runScheduler(entity.getLocation());
+    public void spawn(Entity entity) {
+        new Scheduler(entity).start();
     }
 
     /**
@@ -114,12 +114,8 @@ public class ParticleAnimation implements Keyed {
      * @param player The {@link Player} to spawn the animation on.
      * @param slot   The {@link EquipmentSlot} this animation is spawned on.
      */
-    public void spawnOnPlayer(Player player, EquipmentSlot slot) {
-        PlayerUtils.setActiveParticleEffect(player, slot, runScheduler(player.getLocation()));
-    }
-
-    private UUID runScheduler(Location location) {
-        return new Scheduler(location).start();
+    public void spawn(Player player, EquipmentSlot slot) {
+        PlayerUtils.setActiveParticleEffect(player, slot, new Scheduler(player).start());
     }
 
     @Override
@@ -144,26 +140,7 @@ public class ParticleAnimation implements Keyed {
                 '}';
     }
 
-    public static class ParticleEffectSettings {
-
-        private final ParticleEffect effect;
-        private final Vector offset;
-        private final int tick;
-
-        public ParticleEffectSettings(ParticleEffect effect, Vector offset, int tick) {
-            this.effect = effect;
-            this.offset = offset;
-            this.tick = tick;
-        }
-
-        public ParticleEffect getEffect() {
-            return effect;
-        }
-
-        public Vector getOffset() {
-            return offset;
-        }
-    }
+    public record ParticleEffectSettings(ParticleEffect effect, Vector offset, int tick) { }
 
     /**
      * This scheduler runs the ParticleAnimations with the specified delay and interval.
@@ -199,21 +176,19 @@ public class ParticleAnimation implements Keyed {
          * @param receiver   The player to send the particles to. If null particles are sent to all surrounding players.
          */
         public Scheduler(Location location, @Nullable Player receiver) {
-            this.pos = new ParticlePosLocation(location);
-            this.receiver = receiver;
+            this(new ParticlePosLocation(location), receiver);
         }
 
         public Scheduler(Block block, @Nullable Player receiver) {
-            this.pos = new ParticlePosBlock(block);
-            this.receiver = receiver;
+            this(new ParticlePosBlock(block), receiver);
         }
 
         public Scheduler(Entity entity, @Nullable Player receiver) {
-            if (entity instanceof Player player) {
-                this.pos = new ParticlePosPlayer(player);
-            } else {
-                this.pos = new ParticlePosEntity(entity);
-            }
+            this(entity instanceof Player player ? new ParticlePosPlayer(player) : new ParticlePosEntity(entity), receiver);
+        }
+
+        public Scheduler(ParticlePos pos, @Nullable Player receiver) {
+            this.pos = pos;
             this.receiver = receiver;
         }
 
@@ -226,7 +201,6 @@ public class ParticleAnimation implements Keyed {
         public UUID start() {
             this.task = Bukkit.getScheduler().runTaskTimer(WolfyUtilities.getWUPlugin(), this, delay, 1);
             this.uuid = ParticleUtils.addScheduler(this);
-
             return uuid;
         }
 
@@ -273,7 +247,7 @@ public class ParticleAnimation implements Keyed {
             }
             if (checkSpawnConditions()) { //Spawn tick specific ParticleEffects
                 for (ParticleEffectSettings setting : effectsPerTick.computeIfAbsent(tick, i -> new ArrayList<>())) {
-                    setting.getEffect().spawn(pos.getLocation().add(setting.offset), receiver);
+                    setting.effect().spawn(pos.getLocation().add(setting.offset), receiver);
                 }
             }
             tick++;
