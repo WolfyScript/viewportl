@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.inventory.custom_items;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -29,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -1002,6 +1004,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     @JsonGetter
+    @NotNull
     public ParticleContent getParticleContent() {
         return particleContent;
     }
@@ -1015,11 +1018,27 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         }
         if (particlesNode.has("animations")) {
             //New version
-            this.particleContent = JacksonUtil.getObjectMapper().convertValue(particlesNode, ParticleContent.class);
+            this.particleContent = Objects.requireNonNullElse(JacksonUtil.getObjectMapper().convertValue(particlesNode, ParticleContent.class), new ParticleContent());
         } else {
             //Old version. Conversion required.
             this.particleContent = new ParticleContent();
-            particlesNode.fields().forEachRemaining(entry -> particleContent.addParticleEffect(ParticleLocation.valueOf(entry.getKey()), JacksonUtil.getObjectMapper().convertValue(entry.getValue(), NamespacedKey.class)));
+            particlesNode.fields().forEachRemaining(entry -> {
+                try {
+                    ParticleLocation location = ParticleLocation.valueOf(entry.getKey().toUpperCase(Locale.ROOT));
+                    JsonNode value = entry.getValue();
+                    if(value.isObject() && value.has("effect")) {
+                        NamespacedKey key = JacksonUtil.getObjectMapper().convertValue(value.get("effect"), NamespacedKey.class);
+                        switch (location) {
+                            case BLOCK -> particleContent.setBlock(new ParticleContent.Settings(key));
+                            case ENTITY -> particleContent.setEntity(new ParticleContent.Settings(key));
+                            case LOCATION -> particleContent.setLocation(new ParticleContent.Settings(key));
+                            case PLAYER -> particleContent.setPlayer(new ParticleContent.PlayerSettings(key));
+                        }
+                    }
+                } catch (IllegalArgumentException ex) {
+                    //TODO: Hand, etc. conversion?
+                }
+            });
         }
     }
 
