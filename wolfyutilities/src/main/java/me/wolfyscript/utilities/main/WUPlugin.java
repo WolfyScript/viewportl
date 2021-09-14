@@ -95,7 +95,7 @@ public class WUPlugin extends JavaPlugin {
         ColorSerialization.create(module);
         DustOptionsSerialization.create(module);
         LocationSerialization.create(module);
-        ParticleContentSerialization.create(module);
+        //ParticleContentSerialization.create(module);
         PotionEffectTypeSerialization.create(module);
         PotionEffectSerialization.create(module);
         VectorSerialization.create(module);
