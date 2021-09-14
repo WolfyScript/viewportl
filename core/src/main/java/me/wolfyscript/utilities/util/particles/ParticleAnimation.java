@@ -2,9 +2,14 @@ package me.wolfyscript.utilities.util.particles;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.util.StdConverter;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.particles.pos.*;
@@ -30,6 +35,8 @@ import java.util.stream.Collectors;
  * If you want to just spawn a one time ParticleEffect use the methods of the {@link ParticleEffect} class instead.
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonSerialize(converter = ParticleAnimation.ConverterToJson.class)
+@JsonDeserialize(converter = ParticleAnimation.ConverterFromJson.class)
 public class ParticleAnimation implements Keyed {
 
     @JsonIgnore
@@ -283,5 +290,26 @@ public class ParticleAnimation implements Keyed {
             }
         }
 
+    }
+
+    public static class ConverterToJson extends StdConverter<ParticleAnimation, JsonNode> {
+
+        @Override
+        public JsonNode convert(ParticleAnimation animation) {
+            return JacksonUtil.getObjectMapper().convertValue(animation.getNamespacedKey() != null ? animation.getNamespacedKey() : animation, JsonNode.class);
+        }
+
+    }
+
+    public static class ConverterFromJson extends StdConverter<JsonNode, ParticleAnimation> {
+
+        @Override
+        public ParticleAnimation convert(JsonNode jsonNode) {
+            if (jsonNode.isTextual()) {
+                var key = NamespacedKey.of(jsonNode.asText());
+                return Objects.requireNonNull(Registry.PARTICLE_ANIMATIONS.get(key), "Animation \"" + key + "\" not found!");
+            }
+            return JacksonUtil.getObjectMapper().convertValue(jsonNode, ParticleAnimation.class);
+        }
     }
 }
