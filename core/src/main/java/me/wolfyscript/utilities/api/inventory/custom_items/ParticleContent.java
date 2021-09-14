@@ -1,80 +1,212 @@
 package me.wolfyscript.utilities.api.inventory.custom_items;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.annotation.*;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
-import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
-import me.wolfyscript.utilities.util.particles.ParticleUtils;
-import org.bukkit.block.data.type.Bed;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
+/**
+ * This class contains settings of particle animations for different locations they can be spawned at. <br>
+ * It is used for the CustomItem, and spawns/stops the animations according to their active location.<br>
+ */
 public class ParticleContent {
 
-    private final Map<ParticleLocation, Value> animations = new HashMap<>();
+    private Settings location = null;
+    private Settings block = null;
+    private Settings entity = null;
+    private PlayerSettings player = null;
 
-    @Deprecated
-    public NamespacedKey getParticleEffect(ParticleLocation action) {
-        return animations.get(action).animation.getNamespacedKey();
+    public Settings getLocation() {
+        return location;
     }
 
-    @Deprecated
-    public void addParticleEffect(ParticleLocation action, NamespacedKey namespacedKey) {
-        animations.put(action, new Value(namespacedKey));
+    /**
+     * Gets the animation of the {@link PlayerSettings} of the specified {@link EquipmentSlot}.<br>
+     * If the equipment slot is null, it will get the parent animation of the {@link PlayerSettings}.
+     *
+     * @param equipmentSlot The equipment slot to get the animation for, or null for the parent animation.
+     * @return The animation for the players' equipment slot, or the parent animation if equipment slot is null.
+     */
+    public ParticleAnimation getPlayerAnimation(@Nullable EquipmentSlot equipmentSlot) {
+        if(equipmentSlot == null) {
+            return getAnimation(ParticleLocation.PLAYER);
+        }
+        return getPlayer() != null ? getPlayer().getByEquipmentSlot(equipmentSlot) : null;
     }
 
-    public void setAnimation(ParticleLocation location, NamespacedKey key) {
-        animations.put(location, new Value(key));
+    /**
+     * Gets the animation set for the specified {@link ParticleLocation}.<br>
+     *
+     * <br><b>Note:</b><br>
+     * If using the {@link ParticleLocation#PLAYER} it will always return the parent animation of the {@link PlayerSettings}!<br>
+     * Use {@link #getPlayerAnimation(EquipmentSlot)} instead if you want to get equipment slot specific animations!
+     *
+     * @param location The location to get the animation for.
+     * @return The animation set for the specified {@link ParticleLocation}
+     */
+    public ParticleAnimation getAnimation(ParticleLocation location) {
+        var setting = switch (location) {
+            case BLOCK -> getBlock();
+            case PLAYER -> getPlayer();
+            case ENTITY -> getEntity();
+            case LOCATION -> getLocation();
+        };
+        return setting != null ? setting.getAnimation() : null;
     }
 
-    public void setAnimation(ParticleLocation location, @NotNull ParticleAnimation animation) {
-        animations.put(location, new Value(animation));
+    /**
+     * Spawns the animation for the specified equipment slot if it is available.
+     *
+     * @param player The player to spawn the animation on.
+     * @param slot The {@link EquipmentSlot} of the animation.
+     */
+    public void spawn(Player player, @Nullable EquipmentSlot slot) {
+        var animation = getPlayerAnimation(slot);
+        if (animation != null) {
+            animation.spawn(player, slot);
+        }
     }
 
-    public void spawn(Player player, EquipmentSlot equipmentSlot) {
-        ParticleUtils.spawnAnimationOnPlayer(getParticleEffect(ParticleLocation.valueOf(equipmentSlot.name())), player, equipmentSlot);
+    public void setLocation(Settings location) {
+        this.location = location;
     }
 
-    public static class Value {
+    public Settings getBlock() {
+        return block;
+    }
 
-        private final ParticleAnimation animation;
+    public void setBlock(Settings block) {
+        this.block = block;
+    }
 
-        @JsonCreator
-        private Value(@JsonProperty JsonNode animation) {
-            if (animation.isTextual()) {
-                var key = NamespacedKey.of(animation.asText());
-                this.animation = Objects.requireNonNull(Registry.PARTICLE_ANIMATIONS.get(key), "Animation \"" + key + "\" not found!");
-            } else {
-                this.animation = JacksonUtil.getObjectMapper().convertValue(animation, ParticleAnimation.class);
-            }
+    public Settings getEntity() {
+        return entity;
+    }
+
+    public void setEntity(Settings entity) {
+        this.entity = entity;
+    }
+
+    public PlayerSettings getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(PlayerSettings player) {
+        this.player = player;
+    }
+
+    public static class Settings {
+
+        private ParticleAnimation animation;
+
+        public Settings(NamespacedKey key) {
+            setAnimation(key);
         }
 
-        private Value(NamespacedKey key) {
-            this.animation = Objects.requireNonNull(Registry.PARTICLE_ANIMATIONS.get(key), "Animation \"" + key + "\" not found!");
-        }
-
-        private Value(@NotNull ParticleAnimation animation) {
-            this.animation = Objects.requireNonNull(animation, "Animation cannot be null!");
+        public Settings(@NotNull ParticleAnimation animation) {
+            setAnimation(animation);
         }
 
         @JsonGetter
-        public Object getAnimation() {
-            if(animation.getNamespacedKey() != null) {
-                return animation.getNamespacedKey();
-            }
+        public ParticleAnimation getAnimation() {
             return animation;
+        }
+
+        @JsonSetter
+        public void setAnimation(ParticleAnimation animation) {
+            this.animation = Objects.requireNonNull(animation, "Animation cannot be null!");
+        }
+
+        public void setAnimation(NamespacedKey animation) {
+            this.animation = Objects.requireNonNull(Registry.PARTICLE_ANIMATIONS.get(animation), "Animation \"" + animation + "\" not found!");
+        }
+    }
+
+    /**
+     * Contains player specific animations per EquipmentSlot.<br>
+     * The animation from the parent value ({@link #getAnimation()}, {@link #setAnimation(ParticleAnimation)}, and {@link #setAnimation(NamespacedKey)}) is used if no equipment slot is selected (see {@link #getPlayerAnimation(EquipmentSlot)}).
+     */
+    public static class PlayerSettings extends Settings {
+
+        private ParticleAnimation head;
+        private ParticleAnimation chest;
+        private ParticleAnimation legs;
+        private ParticleAnimation feet;
+        private ParticleAnimation mainHand;
+        private ParticleAnimation offHand;
+
+        public PlayerSettings(NamespacedKey key) {
+            super(key);
+        }
+
+        public PlayerSettings(@NotNull ParticleAnimation animation) {
+            super(animation);
+        }
+
+        public ParticleAnimation getByEquipmentSlot(EquipmentSlot equipmentSlot) {
+            return switch (equipmentSlot) {
+                case HEAD -> getHead();
+                case CHEST -> getChest();
+                case LEGS -> getLegs();
+                case FEET -> getFeet();
+                case HAND -> getMainHand();
+                case OFF_HAND -> getOffHand();
+            };
+        }
+
+        public void setHead(ParticleAnimation head) {
+            this.head = head;
+        }
+
+        public void setChest(ParticleAnimation chest) {
+            this.chest = chest;
+        }
+
+        public void setFeet(ParticleAnimation feet) {
+            this.feet = feet;
+        }
+
+        public ParticleAnimation getHead() {
+            return head;
+        }
+
+        public ParticleAnimation getChest() {
+            return chest;
+        }
+
+        public ParticleAnimation getLegs() {
+            return legs;
+        }
+
+        public void setLegs(ParticleAnimation legs) {
+            this.legs = legs;
+        }
+
+        public ParticleAnimation getFeet() {
+            return feet;
+        }
+
+        public ParticleAnimation getMainHand() {
+            return mainHand;
+        }
+
+        public void setMainHand(ParticleAnimation mainHand) {
+            this.mainHand = mainHand;
+        }
+
+        public ParticleAnimation getOffHand() {
+            return offHand;
+        }
+
+        public void setOffHand(ParticleAnimation offHand) {
+            this.offHand = offHand;
         }
     }
 }
