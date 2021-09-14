@@ -254,7 +254,7 @@ public class ParticleAnimation implements Keyed {
             if (tickSinceLastCheck > 80) {
                 Location loc = pos.getLocation();
                 if (loc != null && loc.getWorld() != null) {
-                    Collection<Entity> entities = loc.getWorld().getNearbyEntities(loc, 64, 64, 64, entity1 -> entity1 instanceof Player);
+                    Collection<Entity> entities = loc.getWorld().getNearbyEntities(loc, 32, 32, 32, entity1 -> entity1 instanceof Player);
                     this.spawnEffects = !entities.isEmpty();
                 } else {
                     this.spawnEffects = false;
