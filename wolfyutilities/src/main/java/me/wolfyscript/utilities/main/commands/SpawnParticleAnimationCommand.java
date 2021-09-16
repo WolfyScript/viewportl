@@ -44,15 +44,15 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
                 if (args[0].equalsIgnoreCase("spawn")) {
                     if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_animation.spawn")) {
                         var location = player.getLocation();
-                        var particleEffect = new ParticleEffect(Particle.FLAME, "", List.of(), Material.FIREWORK_STAR);
+                        var particleEffect = new ParticleEffect(Particle.FLAME);
                         particleEffect.setTimeSupplier(new TimeSupplierPi(40, 2*Math.PI));
                         particleEffect.setAnimator(new AnimatorSphere(2));
 
-                        var first = new ParticleEffect(Particle.SMOKE_NORMAL, "", List.of(), Material.STONE);
+                        var first = new ParticleEffect(Particle.SMOKE_NORMAL);
                         first.setTimeSupplier(new TimeSupplierLinear(1, 20));
                         first.setAnimator(new AnimatorBasic());
 
-                        var second = new ParticleEffect(Particle.SMOKE_NORMAL, "", List.of(), Material.STONE);
+                        var second = new ParticleEffect(Particle.SMOKE_NORMAL);
                         second.setTimeSupplier(new TimeSupplierPi(20, 2*Math.PI));
                         second.setAnimator(new AnimatorCircle(1));
 

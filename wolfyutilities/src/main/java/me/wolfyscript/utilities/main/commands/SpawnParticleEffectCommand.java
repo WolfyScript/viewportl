@@ -42,7 +42,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                     if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_effect.spawn")) {
                         var block = player.getTargetBlockExact(10);
                         if (block != null) {
-                            var particleEffect = new ParticleEffect(Particle.FLAME, "", List.of(), Material.FIREWORK_STAR);
+                            var particleEffect = new ParticleEffect(Particle.FLAME);
                             particleEffect.setKey(NamespacedKey.wolfyutilties("test"));
                             particleEffect.setTimeSupplier(new TimeSupplierLinear(0.1, 40));
                             particleEffect.setAnimator(new AnimatorSphere(2));
@@ -59,8 +59,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
     public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         List<String> results = new ArrayList<>();
         if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_effect.complete")) {
-            if (commandSender instanceof Player) {
-                Player player = (Player) commandSender;
+            if (commandSender instanceof Player player) {
                 if (args.length > 1) {
                     if (args[0].equalsIgnoreCase("spawn")) {
                         switch (args.length) {

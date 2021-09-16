@@ -13,7 +13,7 @@ import java.util.List;
 public class ParticleEffects {
 
     public static void load() {
-        var testParticleEffect = new ParticleEffect(Particle.FLAME, "", List.of(), Material.IRON_SWORD);
+        var testParticleEffect = new ParticleEffect(Particle.FLAME);
         testParticleEffect.setKey(NamespacedKey.wolfyutilties("flame_sphere"));
         testParticleEffect.setTimeSupplier(new TimeSupplierLinear(0.5, 70));
         testParticleEffect.setAnimator(new AnimatorBasic());

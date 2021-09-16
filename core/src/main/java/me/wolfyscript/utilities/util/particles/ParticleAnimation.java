@@ -45,16 +45,17 @@ public class ParticleAnimation implements Keyed {
     private final int delay;
     private final int interval;
     private final int repetitions;
-    private final Map<Integer, List<ParticleEffectSettings>> effectsPerTick;
+    private final Map<Integer, List<ParticleEffectSettings>> effects;
 
-    public ParticleAnimation() {
-        this.name = "name";
+    @JsonCreator
+    public ParticleAnimation(@JsonProperty("effects") Map<Integer, List<ParticleEffectSettings>> effects) {
+        this.name = "";
         this.description = new ArrayList<>();
         this.icon = Material.FIREWORK_ROCKET;
         this.delay = 0;
         this.interval = 1;
         this.repetitions = 1;
-        this.effectsPerTick = new HashMap<>();
+        this.effects = effects;
     }
 
     /**
@@ -67,7 +68,7 @@ public class ParticleAnimation implements Keyed {
      */
     public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, int repetitions, ParticleEffectSettings... effectSettings) {
         this.icon = icon;
-        this.effectsPerTick = Arrays.asList(effectSettings).stream().collect(Collectors.toMap(ParticleEffectSettings::tick, settings -> {
+        this.effects = Arrays.asList(effectSettings).stream().collect(Collectors.toMap(ParticleEffectSettings::tick, settings -> {
             List<ParticleEffectSettings> values = new ArrayList<>();
             values.add(settings);
             return values;
@@ -249,7 +250,7 @@ public class ParticleAnimation implements Keyed {
                 return;
             }
             if (checkSpawnConditions()) { //Spawn tick specific ParticleEffects
-                for (ParticleEffectSettings setting : effectsPerTick.computeIfAbsent(tick, i -> new ArrayList<>())) {
+                for (ParticleEffectSettings setting : effects.computeIfAbsent(tick, i -> new ArrayList<>())) {
                     setting.effect().spawn(pos.getLocation().add(setting.offset), receiver);
                 }
             }

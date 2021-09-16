@@ -22,6 +22,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,12 +50,12 @@ public class ParticleEffect implements Keyed {
     private Animator animator;
 
     @JsonCreator
-    public ParticleEffect(@JsonProperty("particle") Particle particle, @JsonProperty("name") String name, @JsonProperty("description") List<String> description, @JsonProperty("icon") Material icon) {
+    public ParticleEffect(@JsonProperty("particle") Particle particle) {
+        this.name = "";
+        this.description = List.of();
+        this.icon = Material.FIREWORK_STAR;
         this.particle = particle;
         this.dataType = particle.getDataType();
-        this.name = name;
-        this.description = description;
-        this.icon = icon;
     }
 
     public ParticleEffect(Particle particle, int count, Vector offset, double speed, Object data, TimeSupplier timeSupplier, Animator animator) {
