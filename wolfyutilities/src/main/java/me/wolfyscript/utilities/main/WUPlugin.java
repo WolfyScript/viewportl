@@ -31,7 +31,9 @@ import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
+import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
+import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.timer.TimeSupplier;
 import me.wolfyscript.utilities.util.version.ServerVersion;
@@ -103,6 +105,11 @@ public class WUPlugin extends JavaPlugin {
         //Reference Deserializer
         APIReferenceSerialization.create(module);
         JacksonUtil.registerModule(module);
+
+        var beanModifiers = new SimpleModule();
+        beanModifiers.setSerializerModifier(new OptionalKeyReference.SerializerModifier());
+        beanModifiers.setDeserializerModifier(new OptionalKeyReference.DeserializerModifier());
+        JacksonUtil.registerModule(beanModifiers);
 
         //Register custom item data
 
