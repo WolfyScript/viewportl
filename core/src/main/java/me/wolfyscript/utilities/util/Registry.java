@@ -1,5 +1,7 @@
 package me.wolfyscript.utilities.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomData;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
@@ -11,11 +13,27 @@ import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.TypeVariable;
+import java.security.Key;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public interface Registry<V extends Keyed> extends Iterable<V> {
+
+    /**
+     * Gets a Registry by the type it contains.
+     * The Registry has to be created with the class of the type (See: {@link SimpleRegistry#SimpleRegistry(Class)}).
+     *
+     * @param type The class of the type the registry contains.
+     * @param <V> The type the registry contains.
+     * @return The registry of the specific type; or null if not available.
+     */
+    @SuppressWarnings("unchecked")
+    static <V extends Keyed> Registry<V> getByType(Class<V> type) {
+        return (Registry<V>) SimpleRegistry.REGISTRIES_BY_TYPE.get(type);
+    }
 
     /**
      * The Registry for all of the {@link CustomItem} instances.
@@ -35,14 +53,14 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA = new SimpleRegistry<>();
     MetaRegistry META_PROVIDER = new MetaRegistry();
 
-    SimpleRegistry<ParticleEffect> PARTICLE_EFFECTS = new SimpleRegistry<>() {
+    SimpleRegistry<ParticleEffect> PARTICLE_EFFECTS = new SimpleRegistry<>(ParticleEffect.class) {
         @Override
         public void register(NamespacedKey namespacedKey, ParticleEffect value) {
             super.register(namespacedKey, value);
             value.setKey(namespacedKey);
         }
     };
-    ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry() {
+    SimpleRegistry<ParticleAnimation> PARTICLE_ANIMATIONS = new SimpleRegistry<>(ParticleAnimation.class) {
         @Override
         public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
             super.register(namespacedKey, value);
@@ -86,10 +104,26 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
      */
     class SimpleRegistry<V extends Keyed> implements Registry<V> {
 
-        protected final Map<NamespacedKey, V> map;
+        private static final Map<Class<? extends Keyed>, Registry<?>> REGISTRIES_BY_TYPE = new HashMap<>();
 
+        protected final Map<NamespacedKey, V> map;
+        private final Class<V> type;
+
+        @SuppressWarnings("unchecked")
         public SimpleRegistry() {
             this.map = new HashMap<>();
+            //TypeReference<V> reference = new TypeReference<>() {};
+            this.type = null;
+        }
+
+        public SimpleRegistry(Class<V> type) {
+            this.map = new HashMap<>();
+            this.type = type;
+            REGISTRIES_BY_TYPE.put(type, this);
+        }
+
+        private boolean isTypeOf(Class<?> type) {
+            return this.type != null && this.type.equals(type);
         }
 
         @Override
@@ -188,17 +222,6 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
             }
             this.map.put(namespacedKey, item);
             item.setNamespacedKey(namespacedKey);
-        }
-    }
-
-    class ParticleAnimationRegistry extends SimpleRegistry<ParticleAnimation> {
-
-        @Override
-        public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
-            if (value != null) {
-                super.register(namespacedKey, value);
-                value.setKey(namespacedKey);
-            }
         }
     }
 
