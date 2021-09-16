@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.timer.TimeSupplier;
 import me.wolfyscript.utilities.util.particles.timer.TimeSupplierLinear;
@@ -27,6 +28,7 @@ import java.util.List;
  * Contains the location, offset, ParticleEffects, etc.
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@OptionalKeyReference(field = "key")
 public class ParticleEffect implements Keyed {
 
     @JsonIgnore
@@ -47,7 +49,7 @@ public class ParticleEffect implements Keyed {
     private Animator animator;
 
     @JsonCreator
-    public ParticleEffect(@JsonProperty Particle particle, @JsonProperty String name, @JsonProperty List<String> description, @JsonProperty Material icon) {
+    public ParticleEffect(@JsonProperty("particle") Particle particle, @JsonProperty("name") String name, @JsonProperty("description") List<String> description, @JsonProperty("icon") Material icon) {
         this.particle = particle;
         this.dataType = particle.getDataType();
         this.name = name;

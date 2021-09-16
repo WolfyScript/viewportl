@@ -1,17 +1,14 @@
 package me.wolfyscript.utilities.util.particles;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.util.StdConverter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
-import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.particles.pos.*;
 import me.wolfyscript.utilities.util.world.BlockCustomItemStore;
 import me.wolfyscript.utilities.util.world.WorldUtils;
@@ -35,8 +32,7 @@ import java.util.stream.Collectors;
  * If you want to just spawn a one time ParticleEffect use the methods of the {@link ParticleEffect} class instead.
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@JsonSerialize(converter = ParticleAnimation.ConverterToJson.class)
-@JsonDeserialize(converter = ParticleAnimation.ConverterFromJson.class)
+@OptionalKeyReference(field = "key")
 public class ParticleAnimation implements Keyed {
 
     @JsonIgnore
@@ -49,8 +45,17 @@ public class ParticleAnimation implements Keyed {
     private final int delay;
     private final int interval;
     private final int repetitions;
-    private final List<ParticleEffectSettings> particleEffects;
     private final Map<Integer, List<ParticleEffectSettings>> effectsPerTick;
+
+    public ParticleAnimation() {
+        this.name = "name";
+        this.description = new ArrayList<>();
+        this.icon = Material.FIREWORK_ROCKET;
+        this.delay = 0;
+        this.interval = 1;
+        this.repetitions = 1;
+        this.effectsPerTick = new HashMap<>();
+    }
 
     /**
      * @param icon           The Material as the icon.
@@ -62,8 +67,7 @@ public class ParticleAnimation implements Keyed {
      */
     public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, int repetitions, ParticleEffectSettings... effectSettings) {
         this.icon = icon;
-        this.particleEffects = Arrays.asList(effectSettings);
-        this.effectsPerTick = particleEffects.stream().collect(Collectors.toMap(ParticleEffectSettings::tick, settings -> {
+        this.effectsPerTick = Arrays.asList(effectSettings).stream().collect(Collectors.toMap(ParticleEffectSettings::tick, settings -> {
             List<ParticleEffectSettings> values = new ArrayList<>();
             values.add(settings);
             return values;
@@ -135,7 +139,6 @@ public class ParticleAnimation implements Keyed {
                 ", icon=" + icon +
                 ", delay=" + delay +
                 ", interval=" + interval +
-                ", particleEffects=" + particleEffects +
                 ", namespacedKey=" + key +
                 '}';
     }
@@ -266,24 +269,4 @@ public class ParticleAnimation implements Keyed {
 
     }
 
-    public static class ConverterToJson extends StdConverter<ParticleAnimation, JsonNode> {
-
-        @Override
-        public JsonNode convert(ParticleAnimation animation) {
-            return JacksonUtil.getObjectMapper().convertValue(animation.getNamespacedKey() != null ? animation.getNamespacedKey() : animation, JsonNode.class);
-        }
-
-    }
-
-    public static class ConverterFromJson extends StdConverter<JsonNode, ParticleAnimation> {
-
-        @Override
-        public ParticleAnimation convert(JsonNode jsonNode) {
-            if (jsonNode.isTextual()) {
-                var key = NamespacedKey.of(jsonNode.asText());
-                return Objects.requireNonNull(Registry.PARTICLE_ANIMATIONS.get(key), "Animation \"" + key + "\" not found!");
-            }
-            return JacksonUtil.getObjectMapper().convertValue(jsonNode, ParticleAnimation.class);
-        }
-    }
 }
