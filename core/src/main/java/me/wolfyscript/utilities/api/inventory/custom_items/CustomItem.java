@@ -18,6 +18,7 @@ import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.inventory.item_builder.AbstractItemBuilder;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
 import me.wolfyscript.utilities.util.version.MinecraftVersions;
 import me.wolfyscript.utilities.util.version.ServerVersion;
@@ -34,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -1016,27 +1018,27 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
             this.particleContent = new ParticleContent();
             return;
         }
-        if (particlesNode.has("animations")) {
-            //New version
-            this.particleContent = Objects.requireNonNullElse(JacksonUtil.getObjectMapper().convertValue(particlesNode, ParticleContent.class), new ParticleContent());
-        } else {
-            //Old version. Conversion required.
-            this.particleContent = new ParticleContent();
+        this.particleContent = Objects.requireNonNullElse(JacksonUtil.getObjectMapper().convertValue(particlesNode, ParticleContent.class), new ParticleContent());
+
+        var oldPlayerSettings = List.of("hand", "off_hand", "head", "chest", "legs", "feet");
+        if(oldPlayerSettings.stream().anyMatch(particlesNode::has)) {//Old version. Conversion required.
+            var playerSettings = Objects.requireNonNullElse(this.particleContent.getPlayer(), new ParticleContent.PlayerSettings()); //Create or get player settings
             particlesNode.fields().forEachRemaining(entry -> {
-                try {
-                    ParticleLocation location = ParticleLocation.valueOf(entry.getKey().toUpperCase(Locale.ROOT));
+                if (oldPlayerSettings.contains(entry.getKey())) {
                     JsonNode value = entry.getValue();
                     if(value.isObject() && value.has("effect")) {
-                        NamespacedKey key = JacksonUtil.getObjectMapper().convertValue(value.get("effect"), NamespacedKey.class);
-                        switch (location) {
-                            case BLOCK -> particleContent.setBlock(new ParticleContent.Settings(key));
-                            case ENTITY -> particleContent.setEntity(new ParticleContent.Settings(key));
-                            case LOCATION -> particleContent.setLocation(new ParticleContent.Settings(key));
-                            case PLAYER -> particleContent.setPlayer(new ParticleContent.PlayerSettings(key));
+                        var animation = Registry.PARTICLE_ANIMATIONS.get(JacksonUtil.getObjectMapper().convertValue(value.get("effect"), NamespacedKey.class));
+                        if (animation != null) {
+                            switch (entry.getKey()) {
+                                case "hand" -> playerSettings.setMainHand(animation);
+                                case "off_hand" -> playerSettings.setOffHand(animation);
+                                case "head" -> playerSettings.setHead(animation);
+                                case "chest" -> playerSettings.setChest(animation);
+                                case "legs" -> playerSettings.setLegs(animation);
+                                case "feet" -> playerSettings.setFeet(animation);
+                            }
                         }
                     }
-                } catch (IllegalArgumentException ex) {
-                    //TODO: Hand, etc. conversion?
                 }
             });
         }
