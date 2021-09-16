@@ -34,7 +34,10 @@ public class WorldCustomItemStore {
         ParticleUtils.stopAnimation(getStoredEffect(location));
         if (customItem.hasNamespacedKey()) {
             setStore(location, new BlockCustomItemStore(customItem, null));
-            ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), location.getBlock());
+            var animation = customItem.getParticleContent().getAnimation(ParticleLocation.BLOCK);
+            if(animation != null) {
+                animation.spawn(location.getBlock());
+            }
         }
     }
 
@@ -87,7 +90,10 @@ public class WorldCustomItemStore {
             var customItem = entry.getValue().getCustomItem();
             if (customItem != null && entry.getKey() != null) {
                 setStore(entry.getKey(), new BlockCustomItemStore(customItem, null));
-                ParticleUtils.spawnAnimationOnBlock(customItem.getParticleContent().getParticleEffect(ParticleLocation.BLOCK), entry.getKey().getBlock());
+                var animation = customItem.getParticleContent().getAnimation(ParticleLocation.BLOCK);
+                if(animation != null) {
+                    animation.spawn(entry.getKey().getBlock());
+                }
             }
         });
     }

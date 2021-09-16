@@ -1,6 +1,7 @@
 package me.wolfyscript.utilities.api.inventory.custom_items;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
@@ -16,6 +17,8 @@ import java.util.Objects;
  * This class contains settings of particle animations for different locations they can be spawned at. <br>
  * It is used for the CustomItem, and spawns/stops the animations according to their active location.<br>
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize
 public class ParticleContent {
 
     private Settings location = null;
@@ -62,6 +65,25 @@ public class ParticleContent {
     }
 
     /**
+     * Sets the animation for the specified {@link ParticleLocation}.<br>
+     *
+     * <br<<b>Note:</b><br>
+     * When using {@link ParticleLocation#PLAYER} it will only set the parent animation.<br>
+     * To edit equipment specific animations use {@link #setPlayer(PlayerSettings)}.
+     *
+     * @param location The {@link ParticleLocation} to set the animation for.
+     * @param animation The new animation to set.
+     */
+    public void setAnimation(ParticleLocation location, ParticleAnimation animation) {
+        switch (location) {
+            case BLOCK -> setBlock(new Settings(animation));
+            case PLAYER -> setPlayer(new PlayerSettings(animation));
+            case ENTITY -> setEntity(new Settings(animation));
+            case LOCATION -> setLocation(new Settings(animation));
+        }
+    }
+
+    /**
      * Spawns the animation for the specified equipment slot if it is available.
      *
      * @param player The player to spawn the animation on.
@@ -102,9 +124,21 @@ public class ParticleContent {
         this.player = player;
     }
 
+    @Override
+    public String toString() {
+        return "ParticleContent{" +
+                "location=" + location +
+                ", block=" + block +
+                ", entity=" + entity +
+                ", player=" + player +
+                '}';
+    }
+
     public static class Settings {
 
         private ParticleAnimation animation;
+
+        protected Settings() { }
 
         public Settings(NamespacedKey key) {
             setAnimation(key);
@@ -119,6 +153,7 @@ public class ParticleContent {
             return animation;
         }
 
+        @JsonAlias("effect")
         @JsonSetter
         public void setAnimation(ParticleAnimation animation) {
             this.animation = Objects.requireNonNull(animation, "Animation cannot be null!");
@@ -126,6 +161,13 @@ public class ParticleContent {
 
         public void setAnimation(NamespacedKey animation) {
             this.animation = Objects.requireNonNull(Registry.PARTICLE_ANIMATIONS.get(animation), "Animation \"" + animation + "\" not found!");
+        }
+
+        @Override
+        public String toString() {
+            return "Settings{" +
+                    "animation=" + animation +
+                    '}';
         }
     }
 
@@ -141,6 +183,10 @@ public class ParticleContent {
         private ParticleAnimation feet;
         private ParticleAnimation mainHand;
         private ParticleAnimation offHand;
+
+        public PlayerSettings() {
+            super();
+        }
 
         public PlayerSettings(NamespacedKey key) {
             super(key);
@@ -207,6 +253,19 @@ public class ParticleContent {
 
         public void setOffHand(ParticleAnimation offHand) {
             this.offHand = offHand;
+        }
+
+        @Override
+        public String toString() {
+            return "PlayerSettings{" +
+                    "animation=" + getAnimation() +
+                    ", head=" + head +
+                    ", chest=" + chest +
+                    ", legs=" + legs +
+                    ", feet=" + feet +
+                    ", mainHand=" + mainHand +
+                    ", offHand=" + offHand +
+                    '}';
         }
     }
 }
