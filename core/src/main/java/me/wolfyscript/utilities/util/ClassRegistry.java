@@ -20,7 +20,7 @@ import java.util.Map.Entry;
  *
  * @param <V> The type of the values.
  */
-public interface ClassRegistry<V extends Keyed> extends Iterable<Class<V>> {
+public interface ClassRegistry<V extends Keyed> extends Iterable<Class<? extends V>> {
 
     SimpleClassRegistry<Animator> PARTICLE_ANIMATORS = new SimpleClassRegistry<>();
     SimpleClassRegistry<TimeSupplier> PARTICLE_TIMER = new SimpleClassRegistry<>();
@@ -32,7 +32,7 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<V>> {
      * @return The value of the {@link NamespacedKey}.
      */
     @Nullable
-    Class<V> get(@Nullable NamespacedKey key);
+    Class<? extends V> get(@Nullable NamespacedKey key);
 
     /**
      * This method creates a new instance of the specific class, if it is available. <br>
@@ -61,7 +61,7 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<V>> {
      * @param key   The {@link NamespacedKey} to register it to.
      * @param value The value to register.
      */
-    void register(NamespacedKey key, Class<V> value);
+    void register(NamespacedKey key, Class<? extends V> value);
 
     /**
      * Registers the class of the object to the {@link NamespacedKey} of the object. <br>
@@ -73,9 +73,9 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<V>> {
 
     Set<NamespacedKey> keySet();
 
-    Collection<Class<V>> values();
+    Collection<Class<? extends V>> values();
 
-    Set<Entry<NamespacedKey, Class<V>>> entrySet();
+    Set<Entry<NamespacedKey, Class<? extends V>>> entrySet();
 
     /**
      * A simple registry, used for basic use cases.
@@ -84,20 +84,20 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<V>> {
      */
     class SimpleClassRegistry<V extends Keyed> implements ClassRegistry<V> {
 
-        protected final Map<NamespacedKey, Class<V>> map;
+        protected final Map<NamespacedKey, Class<? extends V>> map;
 
         public SimpleClassRegistry() {
             this.map = new HashMap<>();
         }
 
         @Override
-        public @Nullable Class<V> get(@Nullable NamespacedKey key) {
+        public @Nullable Class<? extends V> get(@Nullable NamespacedKey key) {
             return map.get(key);
         }
 
         @Override
         public @Nullable V create(NamespacedKey key) {
-            Class<V> clazz = get(key);
+            Class<? extends V> clazz = get(key);
             if (clazz != null) {
                 try {
                     return clazz.getDeclaredConstructor().newInstance();
@@ -114,7 +114,7 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<V>> {
         }
 
         @Override
-        public void register(NamespacedKey key, Class<V> value) {
+        public void register(NamespacedKey key, Class<? extends V> value) {
             if (value != null) {
                 Objects.requireNonNull(key, "Can't register value " + value.getName() + " because key is null!");
                 Preconditions.checkState(!this.map.containsKey(key), "namespaced key '%s' already has an associated value!", key);
@@ -124,12 +124,12 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<V>> {
 
         @Override
         public void register(V value) {
-            register(value.getNamespacedKey(), (Class<V>) value.getClass());
+            register(value.getNamespacedKey(), (Class<? extends V>) value.getClass());
         }
 
         @NotNull
         @Override
-        public Iterator<Class<V>> iterator() {
+        public Iterator<Class<? extends V>> iterator() {
             return map.values().iterator();
         }
 
@@ -139,12 +139,12 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<V>> {
         }
 
         @Override
-        public Collection<Class<V>> values() {
+        public Collection<Class<? extends V>> values() {
             return Collections.unmodifiableCollection(this.map.values());
         }
 
         @Override
-        public Set<Entry<NamespacedKey, Class<V>>> entrySet() {
+        public Set<Entry<NamespacedKey, Class<? extends V>>> entrySet() {
             return Collections.unmodifiableSet(this.map.entrySet());
         }
     }
