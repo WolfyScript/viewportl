@@ -11,6 +11,7 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
+import me.wolfyscript.utilities.util.particles.timer.Timer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +43,7 @@ public abstract class Animator implements Keyed {
         }
     }
 
-    public abstract void draw(double time, ParticleEffect effect, Location origin, @Nullable Player player);
+    public abstract void draw(Timer.Runner timer, ParticleEffect effect, Location origin, @Nullable Player player);
 
     @JsonIgnore
     @Override

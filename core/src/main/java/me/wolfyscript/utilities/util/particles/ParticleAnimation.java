@@ -68,7 +68,7 @@ public class ParticleAnimation implements Keyed {
      */
     public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, int repetitions, ParticleEffectSettings... effectSettings) {
         this.icon = icon;
-        this.effects = Arrays.asList(effectSettings).stream().collect(Collectors.toMap(ParticleEffectSettings::tick, settings -> {
+        this.effects = Arrays.stream(effectSettings).collect(Collectors.toMap(ParticleEffectSettings::tick, settings -> {
             List<ParticleEffectSettings> values = new ArrayList<>();
             values.add(settings);
             return values;

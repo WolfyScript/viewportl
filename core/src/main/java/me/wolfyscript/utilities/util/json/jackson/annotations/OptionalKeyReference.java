@@ -3,7 +3,6 @@ package me.wolfyscript.utilities.util.json.jackson.annotations;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.deser.ResolvableDeserializer;
@@ -57,7 +56,7 @@ public @interface OptionalKeyReference {
             return serializer;
         }
 
-        private class Serializer<T extends Keyed> extends StdSerializer<T> {
+        private static class Serializer<T extends Keyed> extends StdSerializer<T> {
 
             private final String property;
             private final JsonSerializer<T> defaultSerializer;
@@ -102,7 +101,7 @@ public @interface OptionalKeyReference {
             return deserializer;
         }
 
-        private class Deserializer<T extends Keyed> extends StdDeserializer<T> implements ResolvableDeserializer {
+        private static class Deserializer<T extends Keyed> extends StdDeserializer<T> implements ResolvableDeserializer {
 
             private final Class<T> genericType;
             private final JsonDeserializer<T> defaultDeserializer;

@@ -223,7 +223,7 @@ public class ParticleEffect implements Keyed {
         public void run() {
             Bukkit.getScheduler().runTaskTimer(WolfyUtilities.getWUPlugin(), task -> {
                 if (!task.isCancelled()) {
-                    animator.draw(runner.increase(), ParticleEffect.this, origin, player);
+                    animator.draw(runner, ParticleEffect.this, origin, player);
                     if (runner.shouldStop()) {
                         task.cancel();
                     }
