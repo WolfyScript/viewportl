@@ -8,8 +8,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class AnimatorBasic extends Animator {
 
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("basic");
+
     public AnimatorBasic() {
-        super(NamespacedKey.wolfyutilties("basic"));
+        super(KEY);
     }
 
     @Override

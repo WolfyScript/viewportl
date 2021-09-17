@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class AnimatorCircle extends Animator {
 
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("circle");
+
     private final int radius;
 
     public AnimatorCircle() {
@@ -15,7 +17,7 @@ public class AnimatorCircle extends Animator {
     }
 
     public AnimatorCircle(int radius) {
-        super(NamespacedKey.wolfyutilties("circle"));
+        super(KEY);
         this.radius = radius;
     }
 

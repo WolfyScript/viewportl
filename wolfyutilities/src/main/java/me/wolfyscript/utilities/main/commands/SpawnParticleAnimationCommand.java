@@ -10,8 +10,8 @@ import me.wolfyscript.utilities.util.particles.ParticleUtils;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorCircle;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorSphere;
-import me.wolfyscript.utilities.util.particles.timer.TimeSupplierLinear;
-import me.wolfyscript.utilities.util.particles.timer.TimeSupplierPi;
+import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
+import me.wolfyscript.utilities.util.particles.timer.TimerPi;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.command.Command;
@@ -45,15 +45,15 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
                     if (wolfyUtilities.getPermissions().hasPermission(commandSender, "wolfyutilities.command.particle_animation.spawn")) {
                         var location = player.getLocation();
                         var particleEffect = new ParticleEffect(Particle.FLAME);
-                        particleEffect.setTimeSupplier(new TimeSupplierPi(40, 2*Math.PI));
+                        particleEffect.setTimeSupplier(new TimerPi(40, 2*Math.PI));
                         particleEffect.setAnimator(new AnimatorSphere(2));
 
                         var first = new ParticleEffect(Particle.SMOKE_NORMAL);
-                        first.setTimeSupplier(new TimeSupplierLinear(1, 20));
+                        first.setTimeSupplier(new TimerLinear(1, 20));
                         first.setAnimator(new AnimatorBasic());
 
                         var second = new ParticleEffect(Particle.SMOKE_NORMAL);
-                        second.setTimeSupplier(new TimeSupplierPi(20, 2*Math.PI));
+                        second.setTimeSupplier(new TimerPi(20, 2*Math.PI));
                         second.setAnimator(new AnimatorCircle(1));
 
                         var animation = new ParticleAnimation(Material.DIAMOND, "", null, 0, 40, 1,

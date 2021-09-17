@@ -9,8 +9,8 @@ import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
-import me.wolfyscript.utilities.util.particles.timer.TimeSupplier;
-import me.wolfyscript.utilities.util.particles.timer.TimeSupplierLinear;
+import me.wolfyscript.utilities.util.particles.timer.Timer;
+import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,7 +22,6 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +45,7 @@ public class ParticleEffect implements Keyed {
     private Vector offset = new Vector(0, 0, 0);
     private int count = 1;
     private double speed = 0d;
-    private TimeSupplier timeSupplier = new TimeSupplierLinear();
+    private Timer timer = new TimerLinear();
     private Animator animator;
 
     @JsonCreator
@@ -58,7 +57,7 @@ public class ParticleEffect implements Keyed {
         this.dataType = particle.getDataType();
     }
 
-    public ParticleEffect(Particle particle, int count, Vector offset, double speed, Object data, TimeSupplier timeSupplier, Animator animator) {
+    public ParticleEffect(Particle particle, int count, Vector offset, double speed, Object data, Timer timer, Animator animator) {
         this.name = "";
         this.description = List.of();
         this.icon = Material.FIREWORK_ROCKET;
@@ -69,7 +68,7 @@ public class ParticleEffect implements Keyed {
         this.offset = offset;
         this.speed = speed;
         this.data = data;
-        this.timeSupplier = timeSupplier;
+        this.timer = timer;
         this.animator = animator;
     }
 
@@ -139,12 +138,12 @@ public class ParticleEffect implements Keyed {
         this.speed = speed;
     }
 
-    public TimeSupplier getTimeSupplier() {
-        return timeSupplier;
+    public Timer getTimeSupplier() {
+        return timer;
     }
 
-    public void setTimeSupplier(TimeSupplier timeSupplier) {
-        this.timeSupplier = timeSupplier;
+    public void setTimeSupplier(Timer timer) {
+        this.timer = timer;
     }
 
     public Animator getAnimator() {
@@ -158,15 +157,17 @@ public class ParticleEffect implements Keyed {
     @Override
     public String toString() {
         return "ParticleEffect{" +
-                ", particle=" + particle +
+                "key=" + key +
                 ", name='" + name + '\'' +
                 ", description=" + description +
                 ", icon=" + icon +
-                ", dataClass=" + dataType +
+                ", dataType=" + dataType +
+                ", particle=" + particle +
                 ", data=" + data +
                 ", offset=" + offset +
                 ", count=" + count +
                 ", speed=" + speed +
+                ", timer=" + timer +
                 ", animator=" + animator +
                 '}';
     }
@@ -207,7 +208,7 @@ public class ParticleEffect implements Keyed {
 
         private final Player player;
         private final Location origin;
-        private final TimeSupplier.Runner runner = timeSupplier.createRunner();
+        private final Timer.Runner runner = timer.createRunner();
 
         public Task(Location origin) {
             this(origin, null);

@@ -16,13 +16,13 @@ import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "key")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonPropertyOrder(value = {"key", "startValue", "stopValue"})
-public abstract class TimeSupplier implements Keyed {
+public abstract class Timer implements Keyed {
 
     private final NamespacedKey key;
     protected double startValue;
     protected double stopValue;
 
-    protected TimeSupplier(NamespacedKey namespacedKey) {
+    protected Timer(NamespacedKey namespacedKey) {
         this.key = namespacedKey;
     }
 

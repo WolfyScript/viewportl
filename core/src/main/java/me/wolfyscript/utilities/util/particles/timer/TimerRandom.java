@@ -4,22 +4,23 @@ import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.NamespacedKey;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Provides a linear increasing value by a specified increment.<br>
  */
-public class TimeSupplierRandom extends TimeSupplier {
+public class TimerRandom extends Timer {
+
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("random");
 
     private final long seed;
     private final double multiplier;
 
-    public TimeSupplierRandom() {
+    public TimerRandom() {
         this(1, 1, 1);
     }
 
-    public TimeSupplierRandom(long seed, double multiplier, double stopValue) {
-        super(NamespacedKey.wolfyutilties("linear"));
+    public TimerRandom(long seed, double multiplier, double stopValue) {
+        super(KEY);
         this.seed = seed;
         this.multiplier = multiplier;
         setStopValue(stopValue);
@@ -36,11 +37,11 @@ public class TimeSupplierRandom extends TimeSupplier {
     }
 
     @Override
-    public TimeSupplier.Runner createRunner() {
+    public Timer.Runner createRunner() {
         return new Runner();
     }
 
-    private class Runner extends TimeSupplier.Runner {
+    private class Runner extends Timer.Runner {
 
         private final Random random;
         private int counter = 0;

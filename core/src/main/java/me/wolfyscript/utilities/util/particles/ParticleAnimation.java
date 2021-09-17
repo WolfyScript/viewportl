@@ -135,12 +135,14 @@ public class ParticleAnimation implements Keyed {
     @Override
     public String toString() {
         return "ParticleAnimation{" +
-                "name='" + name + '\'' +
+                "key=" + key +
+                ", name='" + name + '\'' +
                 ", description=" + description +
                 ", icon=" + icon +
                 ", delay=" + delay +
                 ", interval=" + interval +
-                ", namespacedKey=" + key +
+                ", repetitions=" + repetitions +
+                ", effects=" + effects +
                 '}';
     }
 

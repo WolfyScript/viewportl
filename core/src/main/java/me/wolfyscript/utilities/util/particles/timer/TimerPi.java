@@ -8,16 +8,18 @@ import me.wolfyscript.utilities.util.NamespacedKey;
  * Formula: <br>
  * <code>t += Math.PI / fraction</code>
  */
-public class TimeSupplierPi extends TimeSupplier {
+public class TimerPi extends Timer {
+
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("pi_fraction");
 
     private double fraction;
 
-    public TimeSupplierPi() {
+    public TimerPi() {
         this(1, Math.PI);
     }
 
-    public TimeSupplierPi(double fraction, double stopValue) {
-        super(NamespacedKey.wolfyutilties("pi_fraction"));
+    public TimerPi(double fraction, double stopValue) {
+        super(KEY);
         this.fraction = fraction;
         this.stopValue = stopValue;
     }
@@ -39,11 +41,11 @@ public class TimeSupplierPi extends TimeSupplier {
     }
 
     @Override
-    public TimeSupplier.Runner createRunner() {
+    public Timer.Runner createRunner() {
         return new Runner();
     }
 
-    private class Runner extends TimeSupplier.Runner {
+    private class Runner extends Timer.Runner {
 
         @Override
         public double increase() {

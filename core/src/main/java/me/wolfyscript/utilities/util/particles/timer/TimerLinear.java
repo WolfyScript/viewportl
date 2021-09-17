@@ -6,16 +6,18 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 /**
  * Provides a linear increasing value by a specified increment.<br>
  */
-public class TimeSupplierLinear extends TimeSupplier {
+public class TimerLinear extends Timer {
+
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("linear");
 
     private double increment;
 
-    public TimeSupplierLinear() {
+    public TimerLinear() {
         this(1, 1);
     }
 
-    public TimeSupplierLinear(double increment, double stopValue) {
-        super(NamespacedKey.wolfyutilties("linear"));
+    public TimerLinear(double increment, double stopValue) {
+        super(KEY);
         setIncrement(increment);
         setStopValue(stopValue);
     }
@@ -30,11 +32,11 @@ public class TimeSupplierLinear extends TimeSupplier {
     }
 
     @Override
-    public TimeSupplier.Runner createRunner() {
+    public Timer.Runner createRunner() {
         return new Runner();
     }
 
-    private class Runner extends TimeSupplier.Runner {
+    private class Runner extends Timer.Runner {
 
         @Override
         public double increase() {

@@ -6,8 +6,7 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorSphere;
-import me.wolfyscript.utilities.util.particles.timer.TimeSupplierLinear;
-import org.bukkit.Material;
+import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import org.bukkit.Particle;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -44,7 +43,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                         if (block != null) {
                             var particleEffect = new ParticleEffect(Particle.FLAME);
                             particleEffect.setKey(NamespacedKey.wolfyutilties("test"));
-                            particleEffect.setTimeSupplier(new TimeSupplierLinear(0.1, 40));
+                            particleEffect.setTimeSupplier(new TimerLinear(0.1, 40));
                             particleEffect.setAnimator(new AnimatorSphere(2));
                             particleEffect.spawn(block);
                         }
