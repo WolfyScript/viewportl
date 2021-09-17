@@ -44,7 +44,7 @@ public class ParticleEffect implements Keyed {
     private Object data = null;
     private Vector offset = new Vector(0, 0, 0);
     private int count = 1;
-    private double speed = 0d;
+    private double extra = 0d;
     private Timer timer = new TimerLinear();
     private Animator animator;
 
@@ -57,7 +57,7 @@ public class ParticleEffect implements Keyed {
         this.dataType = particle.getDataType();
     }
 
-    public ParticleEffect(Particle particle, int count, Vector offset, double speed, Object data, Timer timer, Animator animator) {
+    public ParticleEffect(Particle particle, int count, Vector offset, double extra, Object data, Timer timer, Animator animator) {
         this.name = "";
         this.description = List.of();
         this.icon = Material.FIREWORK_ROCKET;
@@ -66,7 +66,7 @@ public class ParticleEffect implements Keyed {
         this.dataType = particle.getDataType();
         this.count = count;
         this.offset = offset;
-        this.speed = speed;
+        this.extra = extra;
         this.data = data;
         this.timer = timer;
         this.animator = animator;
@@ -130,12 +130,12 @@ public class ParticleEffect implements Keyed {
         this.count = count;
     }
 
-    public double getSpeed() {
-        return speed;
+    public double getExtra() {
+        return extra;
     }
 
-    public void setSpeed(double speed) {
-        this.speed = speed;
+    public void setExtra(double extra) {
+        this.extra = extra;
     }
 
     public Timer getTimeSupplier() {
@@ -166,7 +166,7 @@ public class ParticleEffect implements Keyed {
                 ", data=" + data +
                 ", offset=" + offset +
                 ", count=" + count +
-                ", speed=" + speed +
+                ", extra=" + extra +
                 ", timer=" + timer +
                 ", animator=" + animator +
                 '}';

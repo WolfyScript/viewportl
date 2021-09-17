@@ -30,13 +30,13 @@ public abstract class Animator implements Keyed {
 
     protected void spawnParticle(ParticleEffect effect, Location location) {
         if(location.getWorld() != null) {
-            location.getWorld().spawnParticle(effect.getParticle(), location, effect.getCount(), effect.getOffset().getX(), effect.getOffset().getY(), effect.getOffset().getZ(), effect.getSpeed(), effect.getData());
+            location.getWorld().spawnParticle(effect.getParticle(), location, effect.getCount(), effect.getOffset().getX(), effect.getOffset().getY(), effect.getOffset().getZ(), effect.getExtra(), effect.getData());
         }
     }
 
     protected void spawnParticle(ParticleEffect effect, Location location, @Nullable Player player) {
         if (player != null) {
-            player.spawnParticle(effect.getParticle(), location, effect.getCount(), effect.getOffset().getX(), effect.getOffset().getY(), effect.getOffset().getZ(), effect.getSpeed(), effect.getData());
+            player.spawnParticle(effect.getParticle(), location, effect.getCount(), effect.getOffset().getX(), effect.getOffset().getY(), effect.getOffset().getZ(), effect.getExtra(), effect.getData());
         } else {
             spawnParticle(effect, location);
         }
