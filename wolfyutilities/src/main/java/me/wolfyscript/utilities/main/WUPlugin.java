@@ -33,9 +33,14 @@ import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
-import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
-import me.wolfyscript.utilities.util.particles.timer.TimeSupplier;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorCircle;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorSphere;
+import me.wolfyscript.utilities.util.particles.timer.Timer;
+import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
+import me.wolfyscript.utilities.util.particles.timer.TimerPi;
+import me.wolfyscript.utilities.util.particles.timer.TimerRandom;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import me.wolfyscript.utilities.util.world.WorldUtils;
 import org.bstats.bukkit.Metrics;
@@ -131,8 +136,16 @@ public class WUPlugin extends JavaPlugin {
         meta.register(NamespacedKey.wolfyutilties("repair_cost"), RepairCostMeta.class);
         meta.register(NamespacedKey.wolfyutilties("unbreakable"), UnbreakableMeta.class);
 
+        ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorBasic.KEY, AnimatorBasic.class);
+        ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorSphere.KEY, AnimatorSphere.class);
+        ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorCircle.KEY, AnimatorCircle.class);
+
+        ClassRegistry.PARTICLE_TIMER.register(TimerLinear.KEY, TimerLinear.class);
+        ClassRegistry.PARTICLE_TIMER.register(TimerRandom.KEY, TimerRandom.class);
+        ClassRegistry.PARTICLE_TIMER.register(TimerPi.KEY, TimerPi.class);
+
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, ClassRegistry.PARTICLE_ANIMATORS);
-        KeyedTypeIdResolver.registerTypeRegistry(TimeSupplier.class, ClassRegistry.PARTICLE_TIMER);
+        KeyedTypeIdResolver.registerTypeRegistry(Timer.class, ClassRegistry.PARTICLE_TIMER);
     }
 
     @Override
