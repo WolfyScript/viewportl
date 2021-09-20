@@ -135,6 +135,12 @@
             <artifactId>MythicMobs</artifactId>
             <version>4.12.0</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.comphenix.protocol</groupId>
+                    <artifactId>ProtocolLib</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
