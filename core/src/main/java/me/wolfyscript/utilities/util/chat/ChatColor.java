@@ -12,6 +12,7 @@ public class ChatColor {
     }
 
     private static final Pattern HEX_PATTERN = Pattern.compile("&#\\([A-Fa-f0-9]{6}\\)");
+    private static final Pattern HEX_PATTERN_OTHER = Pattern.compile("&#[A-Fa-f0-9]{6}");
 
     public static String convert(@Nullable String msg) {
         if (msg == null) return null;
@@ -39,9 +40,15 @@ public class ChatColor {
                     string = string.replace(group, net.md_5.bungee.api.ChatColor.of(group.replace("(", "").replace(")", "").replace("&", "")).toString());
                 }
             }
+            matcher = HEX_PATTERN_OTHER.matcher(string);
+            while (matcher.find()) {
+                String group = matcher.group(0);
+                if (string.contains(group)) {
+                    string = string.replace(group, net.md_5.bungee.api.ChatColor.of(group.replace("&", "")).toString());
+                }
+            }
         }
         return string;
     }
-
 
 }
