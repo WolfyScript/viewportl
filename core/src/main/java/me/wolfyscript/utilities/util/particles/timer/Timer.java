@@ -61,6 +61,11 @@ public abstract class Timer implements Keyed {
         return key;
     }
 
+    /**
+     * This object contains the actual state of the particle effect.
+     * Each time an effect is spawned a new Runner is created with the specified start time.
+     *
+     */
     public abstract class Runner {
 
         protected double time;
@@ -69,6 +74,11 @@ public abstract class Timer implements Keyed {
             this.time = getStartValue();
         }
 
+        /**
+         * Increases the time of the runner by the specified increment.
+         *
+         * @return The increased time of the runner.
+         */
         public abstract double increase();
 
         public boolean shouldStop() {
