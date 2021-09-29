@@ -188,7 +188,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         if (guiWindow == null) return;
         HashMap<Integer, Button<C>> buttons = new HashMap<>();
         if (inventory.equals(event.getClickedInventory())) {
-            if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+            if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR) || event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                 for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
                     if (event.getSlot() != buttonEntry.getKey()) {
                         Button<C> button = guiWindow.getButton(buttonEntry.getValue());
