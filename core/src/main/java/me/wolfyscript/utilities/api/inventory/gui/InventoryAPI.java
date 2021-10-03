@@ -188,6 +188,11 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         if (guiWindow == null) return;
         HashMap<Integer, Button<C>> buttons = new HashMap<>();
         if (inventory.equals(event.getClickedInventory())) {
+            Button<C> clickedBtn = guiHandler.getButton(guiWindow, event.getSlot());
+            if (clickedBtn != null) {
+                buttons.put(event.getSlot(), clickedBtn);
+                event.setCancelled(executeButton(clickedBtn, guiHandler, (Player) event.getWhoClicked(), inventory, event.getSlot(), event));
+            }
             if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR) || event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                 for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
                     if (event.getSlot() != buttonEntry.getKey()) {
@@ -198,11 +203,6 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
                         }
                     }
                 }
-            }
-            Button<C> button = guiHandler.getButton(guiWindow, event.getSlot());
-            if (button != null) {
-                buttons.put(event.getSlot(), button);
-                event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), inventory, event.getSlot(), event));
             }
         } else if (!event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
             event.setCancelled(false);
