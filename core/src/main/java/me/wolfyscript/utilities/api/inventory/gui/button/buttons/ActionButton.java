@@ -100,7 +100,7 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
     @Override
     public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
         if (!type.equals(ButtonType.DUMMY) && state.getAction() != null) {
-            return state.getAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot, event);
+            return state.getAction().execute(guiHandler.getCustomCache(), guiHandler, player, inventory, this, slot, event);
         }
         return true;
     }

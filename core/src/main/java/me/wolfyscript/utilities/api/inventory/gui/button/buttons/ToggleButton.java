@@ -107,7 +107,7 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
 
     @Override
     public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
-        boolean result = getState(guiHandler).getAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot, event);
+        boolean result = getState(guiHandler).getAction().execute(guiHandler.getCustomCache(), guiHandler, player, inventory, this, slot, event);
         settings.put(guiHandler, !settings.getOrDefault(guiHandler, defaultState));
         return result;
     }

@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * @param <C> The type of the {@link CustomCache}
  */
-public interface ButtonAction<C extends CustomCache> {
+public interface ButtonActionExtended<C extends CustomCache> extends ButtonAction<C> {
 
     /**
      * @param cache      The current cache of the GuiHandler.
@@ -23,17 +23,10 @@ public interface ButtonAction<C extends CustomCache> {
      * @return a boolean indicating whether the interaction should be cancelled. If true the interaction is cancelled.
      * @throws IOException if an error occurs on the execution.
      */
-    boolean run(C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException;
+    boolean run(C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, Button<C> button, int slot, InventoryInteractEvent event) throws IOException;
 
-    default boolean execute(C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, Button<C> button, int slot, InventoryInteractEvent event) {
-        try {
-            if (this instanceof ButtonActionExtended<C> extendedAction) {
-                return extendedAction.run(cache, guiHandler, player, inventory, button, slot, event);
-            }
-            return run(cache, guiHandler, player, inventory, slot, event);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return true;
+    @Override
+    default boolean run(C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
+        return run(cache, guiHandler, player, inventory, null, slot, event);
     }
 }

@@ -79,7 +79,7 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
             } else {
                 settings.put(guiHandler, setting);
             }
-            return btnState.getAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot, event);
+            return btnState.getAction().execute(guiHandler.getCustomCache(), guiHandler, player, inventory, this, slot, event);
         }
         return true;
     }

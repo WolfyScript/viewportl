@@ -67,7 +67,7 @@ public class ItemInputButton<C extends CustomCache> extends ActionButton<C> {
     @Override
     public boolean execute(GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot, InventoryInteractEvent event) throws IOException {
         if (!getType().equals(ButtonType.DUMMY) && getState().getAction() != null) {
-            return getState().getAction().run(guiHandler.getCustomCache(), guiHandler, player, inventory, slot, event);
+            return getState().getAction().execute(guiHandler.getCustomCache(), guiHandler, player, inventory, this, slot, event);
         }
         return false;
     }
