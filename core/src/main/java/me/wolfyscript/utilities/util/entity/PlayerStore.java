@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 
@@ -40,6 +42,8 @@ public class PlayerStore {
         if (file.exists()) {
             try (var gzip = new GZIPInputStream(new FileInputStream(file))) {
                 data = JacksonUtil.getObjectMapper().readValue(gzip, PlayerStore.class);
+            } catch (MismatchedInputException ex) {
+                WolfyUtilities.getWUCore().getConsole().severe("Error loading player store for " + uuid+" -> Reset store!");
             } catch (IOException e) {
                 e.printStackTrace();
             }
