@@ -29,6 +29,7 @@ import java.util.function.IntFunction;
 /**
  * This Class acts as a Wrapper for the Minecraft ByteBuf to make it able to correctly encode ItemStacks and more.
  * This wrapper makes sure the data is correctly encoded and can be decoded on the client.<br>
+ * Additionally <br>
  * <p>
  * It can be created via the {@link me.wolfyscript.utilities.api.nms.NetworkUtil}:<br>
  * {@link NetworkUtil#buffer()}<br>
@@ -146,8 +147,21 @@ public interface MCByteBuf {
     //@Nullable
     //NBTCompound a(NBTReadLimiter nbtreadlimiter);
 
-    MCByteBuf writeItemStack(ItemStack itemstack);
+    /**
+     * Writes a Bukkit {@link ItemStack} into the buffer.<br>
+     * This will first convert the Bukkit ItemStack to the Vanilla ItemStack and encode it, so that it can be decoded on the client side.
+     *
+     * @param itemStack The ItemStack to write to the buffer.
+     * @return The instance of this {@link MCByteBuf} for chaining.
+     */
+    MCByteBuf writeItemStack(ItemStack itemStack);
 
+    /**
+     * Reads a Bukkit {@link ItemStack} from the buffer.<br>
+     * In more detail, it will read the vanilla ItemStack from the buffer and convert it to a bukkit ItemStack.
+     *
+     * @return The Bukkit {@link ItemStack}.
+     */
     ItemStack readItemStack();
 
     String readUtf(int i);
@@ -156,8 +170,21 @@ public interface MCByteBuf {
 
     MCByteBuf writeUtf(String s, int i);
 
+    /**
+     * Reads the {@link NamespacedKey} from the buffer.<br>
+     * This method is compatible with the <strong>ResourceLocation</strong> on the client-side.
+     *
+     * @return The {@link NamespacedKey} instance, read from the buffer.
+     */
     NamespacedKey readNamespacedKey();
 
+    /**
+     * Writes the {@link NamespacedKey} instance to the buffer.<br>
+     * This method is compatible with the <strong>ResourceLocation</strong> on the client-side.
+     *
+     * @param namespacedKey The {@link NamespacedKey} to write to the buffer.
+     * @return The instance of this {@link MCByteBuf} for chaining.
+     */
     MCByteBuf writeNamespacedKey(NamespacedKey namespacedKey);
 
     Date readDate();

@@ -36,6 +36,13 @@ public class Message implements PluginMessageListener {
         return Optional.ofNullable(decoder);
     }
 
+    /**
+     * Decodes the incoming packet using the defined {@link MessageConsumer}.<br>
+     * If no decoder is specified it will ignore the incoming data.
+     *
+     * @param in The {@link MCByteBuf} of the incoming the data.
+     * @param player
+     */
     void decode(MCByteBuf in, Player player) {
         getDecoder().ifPresent(d -> d.accept(player, wolfyUtils, in));
     }
