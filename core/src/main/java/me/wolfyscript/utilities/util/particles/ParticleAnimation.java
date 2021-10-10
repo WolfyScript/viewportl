@@ -164,12 +164,18 @@ public class ParticleAnimation implements Keyed {
                 '}';
     }
 
+    /**
+     * This object contains the settings for a "keyframe" of the {@link ParticleAnimation}.
+     * It contains the {@link ParticleEffect} to spawn, the fixed offset from the origin, and the tick at which these settings are used.
+     */
     public record ParticleEffectSettings(ParticleEffect effect, Vector offset, int tick) { }
 
     /**
-     * This scheduler runs the ParticleAnimations with the specified delay and interval.
-     * If it is started it is saved in cache and is assigned a UUID (See ParticleUtils).
-     * Using these UUIDs you can stop specific animations.
+     * This scheduler runs the {@link ParticleAnimation}s with the specified delay and interval.<br>
+     * If it is started it is saved in cache and is assigned a {@link UUID} (See {@link ParticleUtils}).<br>
+     * <br>
+     * You can stop the scheduler at any time using its corresponding {@link UUID} and the {@link ParticleUtils#stopAnimation(UUID)}.<br>
+     * If a continues animation is spawned, it is required to stop it manually if no longer needed, as it... well would continue forever.
      */
     public class Scheduler implements Runnable {
 
@@ -264,12 +270,17 @@ public class ParticleAnimation implements Keyed {
             return spawnEffects;
         }
 
+        /**
+         * This method contains the actual logic to spawn the particle effects.
+         * It increases the counter and makes sure to only spawn effects if required.
+         */
         protected void execute() {
             if (tick >= interval) {
                 tick = 0;
                 return;
             }
-            if (checkSpawnConditions()) { //Spawn tick specific ParticleEffects
+            if (checkSpawnConditions()) {
+                //Spawn tick specific ParticleEffects
                 for (ParticleEffectSettings setting : effects.computeIfAbsent(tick, i -> new ArrayList<>())) {
                     setting.effect().spawn(pos.getLocation().add(setting.offset), receiver);
                 }
@@ -277,6 +288,9 @@ public class ParticleAnimation implements Keyed {
             tick++;
         }
 
+        /**
+         * The core of the scheduler. This is actually executed each tick by the thread handling it.
+         */
         public void run() {
             if (repetitions <= -1 || loop < repetitions) {
                 execute();

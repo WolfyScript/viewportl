@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-/*
-Contains the ParticleEffects
- */
 public class ParticleUtils {
 
     private static final Map<UUID, ParticleAnimation.Scheduler> activeAnimations = new LinkedHashMap<>();
@@ -52,7 +49,7 @@ public class ParticleUtils {
      * Stops the Effect that is currently active.
      * If the uuid is null or the list doesn't contain it this method does nothing.
      *
-     * @param uuid
+     * @param uuid The {@link UUID} of the animation.
      */
     public static void stopAnimation(UUID uuid) {
         if (uuid != null) {
@@ -64,7 +61,7 @@ public class ParticleUtils {
         }
     }
 
-    public static void removeScheduler(UUID uuid) {
+    static void removeScheduler(UUID uuid) {
         if (uuid != null) {
             ParticleAnimation.Scheduler scheduler = activeAnimations.get(uuid);
             if (scheduler != null) {
@@ -73,7 +70,7 @@ public class ParticleUtils {
         }
     }
 
-    public static UUID addScheduler(ParticleAnimation.Scheduler scheduler) {
+    static UUID addScheduler(ParticleAnimation.Scheduler scheduler) {
         UUID id = UUID.randomUUID();
         while (activeAnimations.containsKey(id)) {
             id = UUID.randomUUID();
@@ -82,7 +79,10 @@ public class ParticleUtils {
         return id;
     }
 
+    /**
+     * @return A set containing the {@link UUID}s of the active animations. This Set is unmodifiable!
+     */
     public static Set<UUID> getActiveAnimations() {
-        return activeAnimations.keySet();
+        return Set.copyOf(activeAnimations.keySet());
     }
 }

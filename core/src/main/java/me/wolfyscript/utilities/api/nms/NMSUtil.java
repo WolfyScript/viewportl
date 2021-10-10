@@ -59,9 +59,9 @@ public abstract class NMSUtil {
                 version = adapter.getPackageName();
             }
             String className = NMSUtil.class.getPackage().getName() + '.' + version + ".NMSEntry";
-            Class<?> numUtilsType = Class.forName(className);
-            if (NMSUtil.class.isAssignableFrom(numUtilsType)) {
-                Constructor<?> constructor = numUtilsType.getDeclaredConstructor(WolfyUtilities.class);
+            Class<?> nmsUtilsType = Class.forName(className);
+            if (NMSUtil.class.isAssignableFrom(nmsUtilsType)) {
+                Constructor<?> constructor = nmsUtilsType.getDeclaredConstructor(WolfyUtilities.class);
                 constructor.setAccessible(true);
                 return ((NMSUtil) constructor.newInstance(wolfyUtilities));
             }
@@ -100,6 +100,9 @@ public abstract class NMSUtil {
         return networkUtil;
     }
 
+    /**
+     * Used to handle new types of NMS versions introduced with spigot 1.17 thanks to the use of Mojang mappings.
+     */
     private static class VersionAdapter {
 
         protected final String version;

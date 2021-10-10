@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 public interface NBTTagType<T extends NBTBase> {
 
     static NBTTagType<NBTTagEnd> invalidType(int typeId) {
-        return new NBTTagType<NBTTagEnd>() {
+        return new NBTTagType<>() {
             @Override
             public NBTTagEnd get(Object nbtBase) {
                 throw new IllegalArgumentException("Invalid tag id: " + typeId);

@@ -9,7 +9,7 @@ public abstract class NBTItem {
 
     protected final ItemStack bukkitItemStack;
 
-    protected NBTItem(ItemStack bukkitItemStack, boolean directAccess) {
+    protected NBTItem(ItemStack bukkitItemStack, boolean directAccess) { //It looks like that directAccess isn't used, but it is used in implementations of this class!
         this.bukkitItemStack = bukkitItemStack;
     }
 
