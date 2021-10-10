@@ -83,6 +83,24 @@ public class ParticleAnimation implements Keyed {
         this.repetitions = repetitions;
     }
 
+    @Deprecated
+    public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, ParticleEffect... effects) {
+        this.icon = icon;
+        this.effects = Arrays.stream(effects).map(effect -> new ParticleEffectSettings(effect, new Vector(), 0)).collect(Collectors.toMap(ParticleEffectSettings::tick, settings -> {
+            List<ParticleEffectSettings> values = new ArrayList<>();
+            values.add(settings);
+            return values;
+        }, (list, list2) -> {
+            list.addAll(list2);
+            return list;
+        }));
+        this.name = name;
+        this.description = Objects.requireNonNullElse(description, new ArrayList<>());
+        this.delay = delay;
+        this.interval = interval;
+        this.repetitions = -1;
+    }
+
     /**
      * Spawn the animation at the specified location in the world.
      *

@@ -9,6 +9,7 @@ import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import org.bukkit.Bukkit;
@@ -70,6 +71,21 @@ public class ParticleEffect implements Keyed {
         this.data = data;
         this.timer = timer;
         this.animator = animator;
+    }
+
+    @Deprecated
+    public ParticleEffect(Particle particle, int count, double extra, Object data, Vector offset) {
+        this.name = "";
+        this.description = List.of();
+        this.icon = Material.FIREWORK_ROCKET;
+
+        this.particle = particle;
+        this.dataType = particle.getDataType();
+        this.count = count;
+        this.offset = offset;
+        this.extra = extra;
+        this.data = data;
+        this.animator = new AnimatorBasic();
     }
 
     @JsonIgnore
