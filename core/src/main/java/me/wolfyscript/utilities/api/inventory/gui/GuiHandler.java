@@ -21,17 +21,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * This object is used to store all relevant data for the Player using the GUI.
+ * This object is used to store all relevant data for the Player using the GUI.<br>
+ * The object persists across player disconnecting/rejoining, so that the state of the GUIs and cache are persistent as long as the server is running.
  * <br>
- * It stores the:
- * - cache,
- * - the current {@link GuiCluster},
- * - the GUI history,
- * - possible active {@link ChatInputAction} and {@link ChatTabComplete},
- * - and other necessary data.
+ * <br>
+ * <strong>Data it stores per player:</strong>
+ * <ul>
+ *     <li>{@link CustomCache}</li>
+ *     <li>Active {@link GuiCluster}</li>
+ *     <li>The GUI history</li>
+ *     <li>Possible active {@link ChatInputAction} and {@link ChatTabComplete}</li>
+ *     <li>Other necessary data.</li>
+ * </ul>
  * <br>
  *
- * @param <C>
+ * @param <C> The type of the {@link CustomCache}
  */
 public class GuiHandler<C extends CustomCache> implements Listener {
 
@@ -96,13 +100,18 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     }
 
     /**
-     *
      * @return The active {@link GuiCluster}
      */
     public GuiCluster<C> getCluster() {
         return cluster;
     }
 
+    /**
+     * Changes the current active {@link GuiCluster}
+     * @param currentGuiCluster The new active cluster.
+     * @deprecated This method should not be used, as it causes issues with the active {@link GuiWindow}s, etc.! Instead, make use of {@link #openCluster(String)} or {@link #openCluster(GuiCluster)}!
+     */
+    @Deprecated(forRemoval = true)
     public void setCluster(GuiCluster<C> currentGuiCluster) {
         this.cluster = currentGuiCluster;
     }
@@ -114,21 +123,29 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         return isWindowOpen;
     }
 
-    /*
-    Reloads the GuiWindow of the GuiCluster.
+    /**
+     * Reloads the specified {@link GuiWindow}<br>
+     * This will remove the latest window in history and reopen the specified {@link GuiWindow}.<br>
+     *
+     * @param windowKey The {@link NamespacedKey} of the window, to reload and replace the active window with.
      */
-    public void reloadWindow(NamespacedKey namespacedKey) {
-        List<GuiWindow<C>> history = getHistory(invAPI.getGuiCluster(namespacedKey.getNamespace()));
+    public void reloadWindow(NamespacedKey windowKey) {
+        List<GuiWindow<C>> history = getHistory(invAPI.getGuiCluster(windowKey.getNamespace()));
         history.remove(history.get(0));
-        openWindow(namespacedKey);
+        openWindow(windowKey);
     }
 
-    public GuiWindow<C> getWindow(String clusterID) {
-        return getWindow(invAPI.getGuiCluster(clusterID));
+    /**
+     * @param clusterId The id of the cluster to get the active window for.
+     * @return The active {@link GuiWindow} of this handler for the specified {@link GuiCluster}; Null if there isn't any active window.
+     */
+    public GuiWindow<C> getWindow(String clusterId) {
+        return getWindow(invAPI.getGuiCluster(clusterId));
     }
 
-    /*
-    Gets the current GuiWindow. If the Gui isn't opened then the latest GuiWindow is returned.
+    /**
+     * @param cluster The cluster to get the active window for.
+     * @return The active {@link GuiWindow} of this handler for the specified {@link GuiCluster}; Null if there isn't any active window.
      */
     @Nullable
     public GuiWindow<C> getWindow(GuiCluster<C> cluster) {
@@ -137,19 +154,20 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     }
 
     /**
-     * @return The active {@link GuiWindow} of this handler.
+     * @return The active {@link GuiWindow} of this handler; Null if there isn't any active window.
      */
     @Nullable
     public GuiWindow<C> getWindow() {
         return getWindow(getCluster());
     }
 
-    /*
-    Gets the previous GuiWindow that was open. If there is non-null is returned!
+    /**
+     * @param clusterId The id of the {@link GuiCluster}. (See {@linkplain GuiCluster#getId()})
+     * @return The previous {@link GuiWindow} in history that was opened, or null if there isn't one.
      */
     @Nullable
-    public GuiWindow<C> getPreviousWindow(String clusterID) {
-        return getPreviousWindow(invAPI.getGuiCluster(clusterID));
+    public GuiWindow<C> getPreviousWindow(String clusterId) {
+        return getPreviousWindow(invAPI.getGuiCluster(clusterId));
     }
 
     /**
@@ -163,7 +181,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
 
     /**
      * @param clusterID The id of the cluster.
-     * @param stepsBack How many windows to go back in history.
+     * @param stepsBack The amount of steps to go back in history.
      * @return The previous {@link GuiWindow} in history that was opened, or null if there isn't one.
      */
     @Nullable
@@ -171,6 +189,12 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         return getPreviousWindow(invAPI.getGuiCluster(clusterID), stepsBack);
     }
 
+    /**
+     * @param cluster The {@link GuiCluster}
+     * @param stepsBack The amount of steps to go back in history.
+     * @return The previous {@link GuiWindow} in history that was opened, or null if there isn't one.
+     */
+    @Nullable
     public GuiWindow<C> getPreviousWindow(GuiCluster<C> cluster, int stepsBack) {
         List<GuiWindow<C>> history = getHistory(cluster);
         if (stepsBack < history.size()) {
@@ -179,10 +203,19 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         return null;
     }
 
+    /**
+     * @return The previous {@link GuiWindow} in history that was opened, or null if there isn't one.
+     */
+    @Nullable
     public GuiWindow<C> getPreviousWindow() {
         return getPreviousWindow(getCluster());
     }
 
+    /**
+     * @param stepsBack The amount of steps to go back in history.
+     * @return The previous {@link GuiWindow} in history that was opened, or null if there isn't one.
+     */
+    @Nullable
     public GuiWindow<C> getPreviousWindow(int stepsBack) {
         return getPreviousWindow(getCluster(), stepsBack);
     }
@@ -276,10 +309,9 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         final GuiCluster<C> cluster = window.getCluster();
         Player player1 = getPlayer();
         if (api.getPermissions().hasPermission(player1, (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")))) {
-            List<GuiWindow<C>> history = getHistory(cluster);
             var currentWindow = getWindow(cluster);
             if (currentWindow == null || !currentWindow.getNamespacedKey().equals(window.getNamespacedKey())) {
-                history.add(0, window);
+                getHistory(cluster).add(0, window);
             }
             this.cluster = cluster;
             isWindowOpen = true;
@@ -312,12 +344,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
      */
     public void openCluster(GuiCluster<C> cluster) {
         if (cluster == null) return;
-        NamespacedKey guiWindowID = cluster.getEntry();
-        GuiWindow<C> window = getWindow(cluster);
-        if (window != null) {
-            guiWindowID = window.getNamespacedKey();
-        }
-        openWindow(guiWindowID);
+        openWindow(cluster.getEntry());
     }
 
     /**
