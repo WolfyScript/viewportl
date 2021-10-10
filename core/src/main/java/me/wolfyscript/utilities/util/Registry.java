@@ -109,10 +109,8 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
         protected final Map<NamespacedKey, V> map;
         private final Class<V> type;
 
-        @SuppressWarnings("unchecked")
         public SimpleRegistry() {
             this.map = new HashMap<>();
-            //TypeReference<V> reference = new TypeReference<>() {};
             this.type = null;
         }
 

@@ -73,6 +73,7 @@ public class ItemUtils {
         return itemBuilder.create();
     }
 
+    @Deprecated(forRemoval = true)
     public ItemStack translateItemStack(ItemStack itemStack) {
         if (itemStack != null && itemStack.hasItemMeta()) {
             var itemMeta = itemStack.getItemMeta();

@@ -10,6 +10,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ButtonState represents the state of a Button.
  * <br>
@@ -266,24 +269,31 @@ public class ButtonState<C extends CustomCache> {
         if (this.clusterID == null) {
             this.clusterID = cluster.getId();
         }
-        createIcon("");
+        createIcon(null);
     }
 
     public void init(GuiWindow<C> window) {
         this.wolfyUtilities = window.wolfyUtilities;
-        createIcon("inventories." + window.getCluster().getId() + "." + window.getNamespacedKey().getKey() + ".items." + key);
+        createIcon(window);
     }
 
     public ItemStack getIcon() {
         return icon.clone();
     }
 
-    private void createIcon(String path) {
+    private void createIcon(GuiWindow<C> window) {
         if (key != null && !key.isEmpty()) {
+            var langAPI = wolfyUtilities.getLanguageAPI();
+            String name = null;
+            List<String> lore = new ArrayList<>();
             if (clusterID != null) {
-                path = "inventories." + clusterID + ".global_items." + key;
+                name = langAPI.getButtonName(clusterID, key);
+                lore = langAPI.getButtonLore(clusterID, key);
+            } else if(window != null){
+                name = langAPI.getButtonName(window.getNamespacedKey(), key);
+                lore = langAPI.getButtonLore(window.getNamespacedKey(), key);
             }
-            this.icon = ItemUtils.createItem(presetIcon, wolfyUtilities.getLanguageAPI().replaceKeys("$" + path + ".name" + "$"), wolfyUtilities.getLanguageAPI().replaceKey(path + ".lore").toArray(new String[0]));
+            this.icon = ItemUtils.createItem(presetIcon, name, lore.toArray(new String[0]));
         }
     }
 

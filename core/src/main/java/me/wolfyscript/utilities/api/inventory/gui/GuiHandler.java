@@ -280,7 +280,6 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         openWindow(new NamespacedKey(getCluster().getId(), windowKey));
     }
 
-
     /**
      * Opens the specified {@link GuiWindow} of the specified key.<br>
      * This key must be the same or similar to the one from {@link GuiWindow#getNamespacedKey()}.

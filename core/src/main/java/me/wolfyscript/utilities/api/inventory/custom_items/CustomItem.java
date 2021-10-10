@@ -232,7 +232,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * </p>
      * <p>
      * <b>
-     * !Warning: If you want to create a CustomItem that is linked to another CustomItem and overrides it use {@link #with(APIReference)} instead!
+     * !Warning: If you want to create a CustomItem that is linked to another CustomItem and overrides it, use {@link #with(APIReference)} instead!
      * </b>
      * </p>
      *
@@ -628,6 +628,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @return ItemStack that visually represents the namespacekey
      * @see #getIDItem(int)
      */
+    @Deprecated
     public ItemStack getIDItem() {
         return getIDItem(getAmount());
     }
@@ -639,6 +640,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @param amount The stacksize of the item
      * @return ItemStack that visually represents the namespacekey
      */
+    @Deprecated
     public ItemStack getIDItem(int amount) {
         var itemStack = apiReference.getIdItem();
         if (amount > 0) {

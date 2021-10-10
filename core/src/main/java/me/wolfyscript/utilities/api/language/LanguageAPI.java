@@ -2,16 +2,24 @@ package me.wolfyscript.utilities.api.language;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class LanguageAPI {
+
+
+    private static final String NAME_KEY = ".name";
+    private static final String LORE_KEY = ".lore";
+    private static final String BUTTON_WINDOW_KEY = "inventories.%s.%s.items.%s";
+    private static final String BUTTON_CLUSTER_KEY = "inventories.%s.global_items.%s";
 
     private final WolfyUtilities api;
 
@@ -152,18 +160,39 @@ public class LanguageAPI {
         return replaceKeys(msg).stream().map(ChatColor::convert).collect(Collectors.toList());
     }
 
-    /*
-        Get's the List<String> from the language file for this key!
-     */
     public List<String> replaceKey(String key) {
-        List<String> message = new ArrayList<>();
+        return readKey(key, JsonNode::asText);
+    }
+
+    public List<String> replaceColoredKey(String key) {
+        return readKey(key, node -> ChatColor.convert(node.asText()));
+    }
+
+    public <T> List<T> readKey(String key, Function<JsonNode, T> nodeMapper) {
+        List<T> results = new ArrayList<>();
         if (key != null) {
             JsonNode node = getNodeAt(key.replace("$", ""));
             if (node.isArray()) {
-                node.elements().forEachRemaining(n -> message.add(n.asText()));
+                node.elements().forEachRemaining(n -> results.add(nodeMapper.apply(n)));
             }
         }
-        return message;
+        return results;
+    }
+
+    public String getButtonName(NamespacedKey window, String buttonKey) {
+        return replaceColoredKeys("$" + String.format(BUTTON_WINDOW_KEY + NAME_KEY, window.getNamespace(), window.getKey(), buttonKey) + "$");
+    }
+
+    public String getButtonName(String clusterId, String buttonKey) {
+        return replaceColoredKeys("$" + String.format(BUTTON_CLUSTER_KEY + NAME_KEY, clusterId, buttonKey) + "$");
+    }
+
+    public List<String> getButtonLore(NamespacedKey window, String buttonKey) {
+        return replaceColoredKey(String.format(BUTTON_WINDOW_KEY + LORE_KEY, window.getNamespace(), window.getKey(), buttonKey));
+    }
+
+    public List<String> getButtonLore(String clusterId, String buttonKey) {
+        return replaceColoredKey(String.format(BUTTON_CLUSTER_KEY + LORE_KEY, clusterId, buttonKey));
     }
 
     //TODO: Feature idea to let players choose their own language.
