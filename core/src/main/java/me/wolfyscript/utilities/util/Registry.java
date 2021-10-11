@@ -53,20 +53,8 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA = new SimpleRegistry<>();
     MetaRegistry META_PROVIDER = new MetaRegistry();
 
-    SimpleRegistry<ParticleEffect> PARTICLE_EFFECTS = new SimpleRegistry<>(ParticleEffect.class) {
-        @Override
-        public void register(NamespacedKey namespacedKey, ParticleEffect value) {
-            super.register(namespacedKey, value);
-            value.setKey(namespacedKey);
-        }
-    };
-    SimpleRegistry<ParticleAnimation> PARTICLE_ANIMATIONS = new SimpleRegistry<>(ParticleAnimation.class) {
-        @Override
-        public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
-            super.register(namespacedKey, value);
-            value.setKey(namespacedKey);
-        }
-    };
+    ParticleEffectRegistry PARTICLE_EFFECTS = new ParticleEffectRegistry();
+    ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry();
 
     //Tags
     Tags<CustomItem> ITEM_TAGS = new Tags<>();
@@ -227,6 +215,26 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
 
         public void register(NamespacedKey key, Class<? extends Meta> metaType) {
             register(new Meta.Provider<>(key, metaType));
+        }
+
+    }
+
+    class ParticleAnimationRegistry extends SimpleRegistry<ParticleAnimation> {
+
+        @Override
+        public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
+            super.register(namespacedKey, value);
+            value.setKey(namespacedKey);
+        }
+
+    }
+
+    class ParticleEffectRegistry extends SimpleRegistry<ParticleEffect> {
+
+        @Override
+        public void register(NamespacedKey namespacedKey, ParticleEffect value) {
+            super.register(namespacedKey, value);
+            value.setKey(namespacedKey);
         }
 
     }
