@@ -7,6 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * This basic animator doesn't actually animate anything. It spawns the effect at the specified location (origin).
+ */
 public class AnimatorBasic extends Animator {
 
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("basic");

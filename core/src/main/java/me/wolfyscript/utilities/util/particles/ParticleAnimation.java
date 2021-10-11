@@ -27,9 +27,29 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * This class is for combining multiple ParticleEffects and spawn them simultaneously.
- * They are required to spawn continues ParticleEffects.
- * If you want to just spawn a one time ParticleEffect use the methods of the {@link ParticleEffect} class instead.
+ * ParticleAnimations are used to combine {@link ParticleEffect}s and schedule them to create animations.<br>
+ * If you want to just spawn a one time ParticleEffect use the methods of the {@link ParticleEffect} class instead.<br>
+ * <br>
+ * <b>Runtime settings</b>
+ * <p>
+ *     The animation contains some settings that control it's runtime.<br>
+ *     The whole runtime is handled in ticks and has a fixed duration.<br>
+ *     <p>
+ *        <strong>{@link #delay}</strong> is the initial delay (in ticks) it waits for until it starts.<br>
+ *        <strong>{@link #interval}</strong> is the duration (in ticks) one interval takes. After that duration is hit the counter resets to 0.<br>
+ *        <strong>{@link #repetitions}</strong> describe how often the interval is repeated. A value lower than 0 means that it loops indefinitely until stopped.
+ *     </p>
+ * </p>
+ * <br>
+ * <b>The "keyframe" settings</b>
+ * <p>
+ *     The way it works is that the counter counts up each tick until it reaches the specified {@link #interval}, that's when it goes back to 0. (And loops depending on the repetitions)<br><br>
+ *     For example, an interval of 10 means the total interval takes 10 ticks and the counter counts from 0 to 9.<br>
+ *     For each of these ticks you can specify a list of {@link ParticleEffectSettings}.<br>
+ *     These settings contain the {@link ParticleEffect} they will spawn, the offset ({@link Vector}) from it's origin, and the tick ({@link Integer}) to spawn it at.
+ * </p>
+ *
+ *
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @OptionalKeyReference(field = "key")

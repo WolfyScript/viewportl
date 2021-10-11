@@ -26,7 +26,22 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Contains the location, offset, ParticleEffects, etc.
+ * ParticleEffects contain the data to draw particles using a specified animation and timer.<br>
+ * They only run once, with a limited runtime, after being called. <strong>They do not loop! They are just one-time effects.</strong><br>
+ * For loops they must be wrapped in a {@link ParticleAnimation}.<br>
+ *
+ * <p>
+ *     The {@link Timer} handles the actual runtime of the effect.<br>
+ *     Each type of Timer has a start and stop value, that specifies the duration.<br>
+ *     The increments can further stretch/shorten the duration, by increasing/decreasing the steps.
+ * </p>
+ *
+ * <p>
+ *     The {@link Animator} is linked to the timer and uses it's state to draw the particles (like a shape) dependent on it.<br>
+ *     It is what actually spawns the particles and makes use of the set data.
+ * </p>
+ *
+ *
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @OptionalKeyReference(field = "key")

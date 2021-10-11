@@ -7,6 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * This animator draws a particle in a circle around the origin.
+ */
 public class AnimatorCircle extends Animator {
 
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("circle");
