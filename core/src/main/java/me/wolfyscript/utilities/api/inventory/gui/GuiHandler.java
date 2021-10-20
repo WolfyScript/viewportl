@@ -343,7 +343,12 @@ public class GuiHandler<C extends CustomCache> implements Listener {
      */
     public void openCluster(GuiCluster<C> cluster) {
         if (cluster == null) return;
-        openWindow(cluster.getEntry());
+        GuiWindow<C> window = getWindow(cluster);
+        if (window != null) {
+            openWindow(window.getNamespacedKey());
+        } else {
+            openWindow(cluster.getEntry());
+        }
     }
 
     /**
