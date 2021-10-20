@@ -1,9 +1,6 @@
 package me.wolfyscript.utilities.util.particles;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
@@ -165,6 +162,7 @@ public class ParticleEffect implements Keyed {
         return extra;
     }
 
+    @JsonAlias("speed")
     public void setExtra(double extra) {
         this.extra = extra;
     }
