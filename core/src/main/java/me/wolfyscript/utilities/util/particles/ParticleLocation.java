@@ -18,12 +18,43 @@
 
 package me.wolfyscript.utilities.util.particles;
 
+import me.wolfyscript.utilities.api.inventory.custom_items.ParticleContent;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 /**
  * Represents the location at which an Animation/Effect can be spawned at.
  */
 public enum ParticleLocation {
-    LOCATION,
-    ENTITY,
-    BLOCK,
-    PLAYER
+
+    LOCATION(null),
+    ENTITY(null),
+    BLOCK(null),
+    PLAYER(null),
+    @Deprecated HAND(ParticleContent.PlayerSettings::setMainHand),
+    @Deprecated OFF_HAND(ParticleContent.PlayerSettings::setOffHand),
+    @Deprecated FEET(ParticleContent.PlayerSettings::setFeet),
+    @Deprecated LEGS(ParticleContent.PlayerSettings::setLegs),
+    @Deprecated CHEST(ParticleContent.PlayerSettings::setChest),
+    @Deprecated HEAD(ParticleContent.PlayerSettings::setHead);
+
+    final BiConsumer<ParticleContent.PlayerSettings, ParticleAnimation> applyOldPlayerAnimation;
+
+    ParticleLocation(@Nullable BiConsumer<ParticleContent.PlayerSettings, ParticleAnimation> applyOldPlayerAnimation) {
+        this.applyOldPlayerAnimation = applyOldPlayerAnimation;
+    }
+
+    public void applyOldPlayerAnimation(ParticleContent.PlayerSettings playerSettings, ParticleAnimation animation) {
+        if (applyOldPlayerAnimation != null) {
+           applyOldPlayerAnimation.accept(playerSettings, animation);
+        }
+    }
+
+    public boolean isDeprecated() {
+        return applyOldPlayerAnimation != null;
+    }
 }

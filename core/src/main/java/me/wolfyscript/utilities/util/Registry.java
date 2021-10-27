@@ -18,8 +18,6 @@
 
 package me.wolfyscript.utilities.util;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomData;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
@@ -31,9 +29,6 @@ import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.TypeVariable;
-import java.security.Key;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -71,20 +66,8 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA = new SimpleRegistry<>();
     MetaRegistry META_PROVIDER = new MetaRegistry();
 
-    SimpleRegistry<ParticleEffect> PARTICLE_EFFECTS = new SimpleRegistry<>(ParticleEffect.class) {
-        @Override
-        public void register(NamespacedKey namespacedKey, ParticleEffect value) {
-            super.register(namespacedKey, value);
-            value.setKey(namespacedKey);
-        }
-    };
-    SimpleRegistry<ParticleAnimation> PARTICLE_ANIMATIONS = new SimpleRegistry<>(ParticleAnimation.class) {
-        @Override
-        public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
-            super.register(namespacedKey, value);
-            value.setKey(namespacedKey);
-        }
-    };
+    ParticleRegistry PARTICLE_EFFECTS = new ParticleRegistry();
+    ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry();
 
     //Tags
     Tags<CustomItem> ITEM_TAGS = new Tags<>();
@@ -245,6 +228,26 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
 
         public void register(NamespacedKey key, Class<? extends Meta> metaType) {
             register(new Meta.Provider<>(key, metaType));
+        }
+
+    }
+
+    class ParticleAnimationRegistry extends SimpleRegistry<ParticleAnimation> {
+
+        @Override
+        public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
+            super.register(namespacedKey, value);
+            value.setKey(namespacedKey);
+        }
+
+    }
+
+    class ParticleRegistry extends SimpleRegistry<ParticleEffect> {
+
+        @Override
+        public void register(NamespacedKey namespacedKey, ParticleEffect value) {
+            super.register(namespacedKey, value);
+            value.setKey(namespacedKey);
         }
 
     }

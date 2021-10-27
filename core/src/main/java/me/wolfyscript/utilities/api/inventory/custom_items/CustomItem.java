@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Streams;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
@@ -1040,24 +1041,15 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         }
         this.particleContent = Objects.requireNonNullElse(JacksonUtil.getObjectMapper().convertValue(particlesNode, ParticleContent.class), new ParticleContent());
 
-        var oldPlayerSettings = List.of("hand", "off_hand", "head", "chest", "legs", "feet");
-        if(oldPlayerSettings.stream().anyMatch(particlesNode::has)) {//Old version. Conversion required.
+        if (Streams.stream(particlesNode.fieldNames()).anyMatch(s -> ParticleLocation.valueOf(s.toUpperCase(Locale.ROOT)).isDeprecated())) { //Old version. Conversion required.
             var playerSettings = Objects.requireNonNullElse(this.particleContent.getPlayer(), new ParticleContent.PlayerSettings()); //Create or get player settings
             particlesNode.fields().forEachRemaining(entry -> {
-                if (oldPlayerSettings.contains(entry.getKey())) {
-                    JsonNode value = entry.getValue();
-                    if(value.isObject() && value.has("effect")) {
-                        var animation = Registry.PARTICLE_ANIMATIONS.get(JacksonUtil.getObjectMapper().convertValue(value.get("effect"), NamespacedKey.class));
-                        if (animation != null) {
-                            switch (entry.getKey()) {
-                                case "hand" -> playerSettings.setMainHand(animation);
-                                case "off_hand" -> playerSettings.setOffHand(animation);
-                                case "head" -> playerSettings.setHead(animation);
-                                case "chest" -> playerSettings.setChest(animation);
-                                case "legs" -> playerSettings.setLegs(animation);
-                                case "feet" -> playerSettings.setFeet(animation);
-                            }
-                        }
+                ParticleLocation loc = ParticleLocation.valueOf(entry.getKey());
+                JsonNode value = entry.getValue();
+                if (value.isObject() && value.has("effect")) {
+                    var animation = Registry.PARTICLE_ANIMATIONS.get(JacksonUtil.getObjectMapper().convertValue(value.get("effect"), NamespacedKey.class));
+                    if (animation != null) {
+                        loc.applyOldPlayerAnimation(playerSettings, animation);
                     }
                 }
             });

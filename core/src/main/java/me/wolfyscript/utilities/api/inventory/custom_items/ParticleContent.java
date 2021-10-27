@@ -78,6 +78,7 @@ public class ParticleContent {
             case PLAYER -> getPlayer();
             case ENTITY -> getEntity();
             case LOCATION -> getLocation();
+            default -> null;
         };
         return setting != null ? setting.getAnimation() : null;
     }
