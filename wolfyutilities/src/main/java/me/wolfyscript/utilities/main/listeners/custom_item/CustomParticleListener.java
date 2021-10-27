@@ -37,9 +37,7 @@ public class CustomParticleListener implements Listener {
         var playerInventory = player.getInventory();
         var newItem = playerInventory.getItem(event.getNewSlot());
         var item = CustomItem.getByItemStack(newItem);
-        if (PlayerUtils.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
-            PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.HAND);
-        }
+        PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.HAND);
         if (item != null) {
             item.getParticleContent().spawn(player, EquipmentSlot.HAND);
         }
@@ -48,12 +46,8 @@ public class CustomParticleListener implements Listener {
     @EventHandler
     public void onSwitch(PlayerSwapHandItemsEvent event) {
         var player = event.getPlayer();
-        if (PlayerUtils.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
-            PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.HAND);
-        }
-        if (PlayerUtils.hasActiveItemEffects(player, EquipmentSlot.OFF_HAND)) {
-            PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.OFF_HAND);
-        }
+        PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.HAND);
+        PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.OFF_HAND);
         var mainHand = CustomItem.getByItemStack(event.getMainHandItem());
         if (mainHand != null) {
             mainHand.getParticleContent().spawn(player, EquipmentSlot.HAND);
@@ -71,9 +65,7 @@ public class CustomParticleListener implements Listener {
         var currentItem = player.getInventory().getItemInMainHand();
 
         if (currentItem.getType().equals(Material.AIR) || currentItem.getAmount() <= 0) {
-            if (PlayerUtils.hasActiveItemEffects(player, EquipmentSlot.HAND)) {
-                PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.HAND);
-            }
+            PlayerUtils.stopActiveParticleEffect(player, EquipmentSlot.HAND);
         }
     }
 

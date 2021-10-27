@@ -46,7 +46,7 @@ public class PlayerUtils {
     }
 
     public static boolean hasActiveItemEffects(Player player, EquipmentSlot equipmentSlot) {
-        return playerItemParticles.getOrDefault(player.getUniqueId(), new EnumMap<>(EquipmentSlot.class)).containsKey(equipmentSlot);
+        return getActiveItemEffects(player).containsKey(equipmentSlot);
     }
 
     /**
@@ -56,8 +56,7 @@ public class PlayerUtils {
      * @return The active particle effects on the player
      */
     public static Map<EquipmentSlot, UUID> getActiveItemEffects(Player player) {
-        playerItemParticles.putIfAbsent(player.getUniqueId(), new EnumMap<>(EquipmentSlot.class));
-        return playerItemParticles.get(player.getUniqueId());
+        return playerItemParticles.computeIfAbsent(player.getUniqueId(), uuid -> new EnumMap<>(EquipmentSlot.class));
     }
 
     public static UUID getActiveItemEffects(Player player, EquipmentSlot equipmentSlot) {
@@ -65,9 +64,7 @@ public class PlayerUtils {
     }
 
     public static void setActiveParticleEffect(Player player, EquipmentSlot equipmentSlot, UUID uuid) {
-        if (hasActiveItemEffects(player, equipmentSlot)) {
-            stopActiveParticleEffect(player, equipmentSlot);
-        }
+        stopActiveParticleEffect(player, equipmentSlot);
         getActiveItemEffects(player).put(equipmentSlot, uuid);
     }
 
