@@ -60,7 +60,7 @@ public class PlayerUtils {
     }
 
     public static UUID getActiveItemEffects(Player player, EquipmentSlot equipmentSlot) {
-        return playerItemParticles.getOrDefault(player.getUniqueId(), new EnumMap<>(EquipmentSlot.class)).get(equipmentSlot);
+        return getActiveItemEffects(player).get(equipmentSlot);
     }
 
     public static void setActiveParticleEffect(Player player, EquipmentSlot equipmentSlot, UUID uuid) {

@@ -40,7 +40,6 @@ import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListe
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
 import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
-import me.wolfyscript.utilities.main.particles.ParticleEffects;
 import me.wolfyscript.utilities.util.ClassRegistry;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
@@ -220,15 +219,7 @@ public class WUPlugin extends JavaPlugin {
     }
 
     public void loadParticleEffects() {
-        console.info("Loading Particles");
-        ParticleEffects.load();
-        try {
-            File file = new File(getDataFolder(), "test_animation.json");
-            JacksonUtil.getObjectWriter(true).writeValue(file, Registry.PARTICLE_EFFECTS.get(NamespacedKey.wolfyutilties("flame_sphere")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        console.info("Initiating Particles");
         WorldUtils.getWorldCustomItemStore().initiateMissingBlockEffects();
     }
 

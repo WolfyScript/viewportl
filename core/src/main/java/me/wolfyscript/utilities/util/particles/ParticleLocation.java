@@ -21,10 +21,7 @@ package me.wolfyscript.utilities.util.particles;
 import me.wolfyscript.utilities.api.inventory.custom_items.ParticleContent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  * Represents the location at which an Animation/Effect can be spawned at.
