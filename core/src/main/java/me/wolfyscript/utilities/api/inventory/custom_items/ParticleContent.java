@@ -103,6 +103,29 @@ public class ParticleContent {
     }
 
     /**
+     * Old method for backwards compatibility.
+     *
+     * @param location The {@link ParticleLocation} of the animation.
+     * @param animation The key of the animation.
+     * @deprecated Use {@link #setAnimation(ParticleLocation, ParticleAnimation)} instead!
+     */
+    @Deprecated(forRemoval = true, since = "1.7.6.0")
+    public void addParticleEffect(ParticleLocation location, NamespacedKey animation) {
+        setAnimation(location, Registry.PARTICLE_ANIMATIONS.get(animation));
+    }
+    /**
+     * Old method for backwards compatibility.
+     *
+     * @param location The {@link ParticleLocation} of the animation.
+     * @deprecated Use {@link #getAnimation(ParticleLocation)} instead!
+     */
+    @Deprecated(forRemoval = true, since = "1.7.6.0")
+    public NamespacedKey getParticleEffect(ParticleLocation location) {
+        ParticleAnimation animation = getAnimation(location);
+        return animation == null ? null : animation.getNamespacedKey();
+    }
+
+    /**
      * Spawns the animation for the specified equipment slot if it is available.
      *
      * @param player The player to spawn the animation on.
