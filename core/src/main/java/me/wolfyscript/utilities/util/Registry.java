@@ -234,6 +234,10 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
 
     class ParticleAnimationRegistry extends SimpleRegistry<ParticleAnimation> {
 
+        public ParticleAnimationRegistry() {
+            super(ParticleAnimation.class);
+        }
+
         @Override
         public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
             super.register(namespacedKey, value);
@@ -243,6 +247,10 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     }
 
     class ParticleRegistry extends SimpleRegistry<ParticleEffect> {
+
+        public ParticleRegistry() {
+            super(ParticleEffect.class);
+        }
 
         @Override
         public void register(NamespacedKey namespacedKey, ParticleEffect value) {
