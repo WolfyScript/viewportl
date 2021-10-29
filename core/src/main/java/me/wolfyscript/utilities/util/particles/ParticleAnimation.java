@@ -121,10 +121,18 @@ public class ParticleAnimation implements Keyed {
         this.repetitions = repetitions;
     }
 
+    /**
+     * This constructor is used for backwards compatibility.<br>
+     * Each {@link ParticleEffect} is mapped to a new {@link ParticleEffectSettings} instance.<br>
+     * To keep the old behaviour of the effects offset it moves the {@link ParticleEffect} to the {@link ParticleEffectSettings}.
+     *
+     * @deprecated This method is just backwards compatibility. Use {@link #ParticleAnimation(Material, String, List, int, int, int, ParticleEffectSettings...)} instead!
+     */
     @Deprecated
     public ParticleAnimation(Material icon, String name, List<String> description, int delay, int interval, ParticleEffect... effects) {
         this.icon = icon;
-        this.effects = Arrays.stream(effects).map(effect -> new ParticleEffectSettings(effect, new Vector(), 0)).collect(Collectors.toMap(ParticleEffectSettings::tick, settings -> {
+        this.effects = Arrays.stream(effects).map(effect -> new ParticleEffectSettings(effect, effect.getOffset(), 0)).collect(Collectors.toMap(ParticleEffectSettings::tick, settings -> {
+            settings.effect().setOffset(new Vector());
             List<ParticleEffectSettings> values = new ArrayList<>();
             values.add(settings);
             return values;
