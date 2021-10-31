@@ -19,6 +19,7 @@ softdepend:
   - mcMMO
   - Oraxen
   - ItemsAdder
+  - ExecutableItems
 
 main: me.wolfyscript.utilities.main.WUPlugin
 
