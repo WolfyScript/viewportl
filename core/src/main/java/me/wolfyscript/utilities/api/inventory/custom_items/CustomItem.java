@@ -562,9 +562,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                     var customItemOther = new ItemBuilder(otherItem);
                     return getMetaSettings().check(customItemOther, customItem);
                 }
-            } else if(getApiReference() instanceof VanillaRef) {
-                return (exactMeta || hasItemMeta()) && getApiReference().isValidItem(otherItem);
-            } else return getApiReference().isValidItem(otherItem);
+            } else return (!(getApiReference() instanceof VanillaRef) || (exactMeta || hasItemMeta())) && getApiReference().isValidItem(otherItem);
             return true;
         }
         return false;
