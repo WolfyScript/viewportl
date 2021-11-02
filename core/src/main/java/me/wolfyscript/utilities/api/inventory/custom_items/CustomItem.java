@@ -554,17 +554,17 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         if (otherItem != null && otherItem.getType().equals(this.type) && (ignoreAmount || otherItem.getAmount() >= getAmount())) {
             if (hasNamespacedKey()) {
                 var other = CustomItem.getByItemStack(otherItem);
-                if (ItemUtils.isAirOrNull(other) || !other.hasNamespacedKey() || !getNamespacedKey().equals(other.getNamespacedKey())) {
+                if (ItemUtils.isAirOrNull(other) || !Objects.equals(getNamespacedKey(), other.getNamespacedKey())) {
                     return false;
                 }
-            } else if (!getApiReference().isValidItem(otherItem)) {
-                return false;
-            }
-            if ((exactMeta || hasItemMeta()) && (isAdvanced() || (getApiReference() instanceof VanillaRef && !hasNamespacedKey()))) {
-                var customItem = new ItemBuilder(getItemStack().clone());
-                var customItemOther = new ItemBuilder(otherItem.clone());
-                return getMetaSettings().check(customItemOther, customItem) && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
-            }
+                if (isAdvanced()) {
+                    var customItem = new ItemBuilder(getItemStack());
+                    var customItemOther = new ItemBuilder(otherItem);
+                    return getMetaSettings().check(customItemOther, customItem);
+                }
+            } else if(getApiReference() instanceof VanillaRef) {
+                return (exactMeta || hasItemMeta()) && getApiReference().isValidItem(otherItem);
+            } else return getApiReference().isValidItem(otherItem);
             return true;
         }
         return false;
