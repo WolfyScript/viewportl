@@ -33,19 +33,10 @@ public class CustomModelDataMeta extends Meta {
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
         ItemMeta meta1 = itemOther.getItemMeta();
         ItemMeta meta2 = item.getItemMeta();
-        switch (option) {
-            case IGNORE:
-                meta1.setCustomModelData(0);
-                meta2.setCustomModelData(0);
-                itemOther.setItemMeta(meta1);
-                item.setItemMeta(meta2);
-                return true;
-            case LOWER:
-                return meta1.getCustomModelData() < meta2.getCustomModelData();
-            case HIGHER:
-                return meta1.getCustomModelData() > meta2.getCustomModelData();
-            default:
-                return true;
-        }
+        return switch (option) {
+            case LOWER -> meta1.getCustomModelData() < meta2.getCustomModelData();
+            case HIGHER -> meta1.getCustomModelData() > meta2.getCustomModelData();
+            default -> false;
+        };
     }
 }

@@ -34,21 +34,11 @@ public class DamageMeta extends Meta {
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
         ItemMeta metaOther = itemOther.getItemMeta();
         ItemMeta meta = item.getItemMeta();
-        switch (option) {
-            case EXACT:
-                return ((Damageable)metaOther).getDamage() == ((Damageable)meta).getDamage();
-            case IGNORE:
-                ((Damageable) metaOther).setDamage(0);
-                ((Damageable) meta).setDamage(0);
-                itemOther.setItemMeta(metaOther);
-                item.setItemMeta(meta);
-                return true;
-            case LOWER:
-                return ((Damageable) metaOther).getDamage() < ((Damageable) meta).getDamage();
-            case HIGHER:
-                return ((Damageable) metaOther).getDamage() > ((Damageable) meta).getDamage();
-            default:
-                return false;
-        }
+        return switch (option) {
+            case EXACT -> ((Damageable) metaOther).getDamage() == ((Damageable) meta).getDamage();
+            case LOWER -> ((Damageable) metaOther).getDamage() < ((Damageable) meta).getDamage();
+            case HIGHER -> ((Damageable) metaOther).getDamage() > ((Damageable) meta).getDamage();
+            default -> false;
+        };
     }
 }

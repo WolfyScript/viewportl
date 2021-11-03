@@ -20,6 +20,7 @@ package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class PlayerHeadMeta extends Meta {
 
@@ -30,15 +31,8 @@ public class PlayerHeadMeta extends Meta {
 
     @Override
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
-        if(option.equals(MetaSettings.Option.EXACT)){
-            String valueOther = itemOther.getPlayerHeadValue();
-            String value = item.getPlayerHeadValue();
-            if(!valueOther.equals(value)){
-                return false;
-            }
-        }
-        itemOther.removePlayerHeadValue();
-        item.removePlayerHeadValue();
-        return true;
+        String valueOther = itemOther.getPlayerHeadValue();
+        String value = item.getPlayerHeadValue();
+        return valueOther.equals(value);
     }
 }

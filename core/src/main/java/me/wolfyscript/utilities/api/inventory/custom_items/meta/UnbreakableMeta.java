@@ -31,14 +31,6 @@ public class UnbreakableMeta extends Meta {
 
     @Override
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
-        ItemMeta meta1 = itemOther.getItemMeta();
-        ItemMeta meta2 = item.getItemMeta();
-        if (option.equals(MetaSettings.Option.IGNORE)) {
-            meta1.setUnbreakable(false);
-            meta2.setUnbreakable(false);
-            itemOther.setItemMeta(meta1);
-            item.setItemMeta(meta2);
-        }
-        return true;
+        return item.getItemMeta().isUnbreakable() == itemOther.getItemMeta().isUnbreakable();
     }
 }

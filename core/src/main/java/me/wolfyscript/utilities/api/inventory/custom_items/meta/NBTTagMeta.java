@@ -29,6 +29,7 @@ public class NBTTagMeta extends Meta {
 
     @Override
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
-        return false;
+        //TODO
+        return true;
     }
 }

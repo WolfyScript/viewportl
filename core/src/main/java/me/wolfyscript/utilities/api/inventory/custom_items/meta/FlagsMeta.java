@@ -18,7 +18,6 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
-
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 
 public class FlagsMeta extends Meta {
@@ -30,10 +29,6 @@ public class FlagsMeta extends Meta {
 
     @Override
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
-        if (option.equals(MetaSettings.Option.IGNORE)) {
-            itemOther.getItemMeta().getItemFlags().forEach(itemOther::removeItemFlags);
-            item.getItemMeta().getItemFlags().forEach(item::removeItemFlags);
-        }
-        return true;
+        return itemOther.getItemMeta().getItemFlags().containsAll(item.getItemMeta().getItemFlags());
     }
 }

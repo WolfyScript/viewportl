@@ -33,27 +33,13 @@ public class CustomDamageMeta extends Meta {
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
         boolean meta0 = item.hasCustomDurability();
         boolean meta1 = itemOther.hasCustomDurability();
-        ItemMeta metaOther = itemOther.getItemMeta();
-        ItemMeta meta = item.getItemMeta();
         if (meta0 && meta1) {
-            switch (option) {
-                case EXACT:
-                    return itemOther.getCustomDamage() == item.getCustomDamage();
-                case IGNORE:
-                    itemOther.setCustomDamage(0);
-                    item.setCustomDamage(0);
-                    ((Damageable) metaOther).setDamage(0);
-                    ((Damageable) meta).setDamage(0);
-                    itemOther.setItemMeta(metaOther);
-                    item.setItemMeta(meta);
-                    return true;
-                case LOWER:
-                    return itemOther.getCustomDamage() < item.getCustomDamage();
-                case HIGHER:
-                    return itemOther.getCustomDamage() > item.getCustomDamage();
-                default:
-                    return true;
-            }
+            return switch (option) {
+                case EXACT -> itemOther.getCustomDamage() == item.getCustomDamage();
+                case LOWER -> itemOther.getCustomDamage() < item.getCustomDamage();
+                case HIGHER -> itemOther.getCustomDamage() > item.getCustomDamage();
+                default -> false;
+            };
         } else return !meta0 && !meta1;
     }
 }
