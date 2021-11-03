@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.util;
 
 import com.google.common.base.Preconditions;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +43,7 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<? extends
 
     SimpleClassRegistry<Animator> PARTICLE_ANIMATORS = new SimpleClassRegistry<>();
     SimpleClassRegistry<Timer> PARTICLE_TIMER = new SimpleClassRegistry<>();
+    SimpleClassRegistry<Meta> META_CHECKS = new SimpleClassRegistry<>();
 
     /**
      * Get the value of the registry by it's {@link NamespacedKey}

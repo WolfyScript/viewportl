@@ -137,21 +137,20 @@ public class WUPlugin extends JavaPlugin {
 
         //Register meta settings providers
         getLogger().info("Register Meta Setting providers");
-        Registry.MetaRegistry meta = Registry.META_PROVIDER;
-        meta.register(NamespacedKey.wolfyutilties("attributes_modifiers"), AttributesModifiersMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("custom_damage"), CustomDamageMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("custom_durability"), CustomDurabilityMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("customitem_tag"), CustomItemTagMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("custom_model_data"), CustomModelDataMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("damage"), DamageMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("enchant"), EnchantMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("flags"), FlagsMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("lore"), LoreMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("name"), NameMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("player_head"), PlayerHeadMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("potion"), PotionMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("repair_cost"), RepairCostMeta.class);
-        meta.register(NamespacedKey.wolfyutilties("unbreakable"), UnbreakableMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("attributes_modifiers"), AttributesModifiersMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("custom_damage"), CustomDamageMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("custom_durability"), CustomDurabilityMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("customitem_tag"), CustomItemTagMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("custom_model_data"), CustomModelDataMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("damage"), DamageMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("enchant"), EnchantMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("flags"), FlagsMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("lore"), LoreMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("name"), NameMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("player_head"), PlayerHeadMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("potion"), PotionMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("repair_cost"), RepairCostMeta.class);
+        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("unbreakable"), UnbreakableMeta.class);
 
         ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorBasic.KEY, AnimatorBasic.class);
         ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorSphere.KEY, AnimatorSphere.class);
@@ -161,6 +160,7 @@ public class WUPlugin extends JavaPlugin {
         ClassRegistry.PARTICLE_TIMER.register(TimerRandom.KEY, TimerRandom.class);
         ClassRegistry.PARTICLE_TIMER.register(TimerPi.KEY, TimerPi.class);
 
+        KeyedTypeIdResolver.registerTypeRegistry(Meta.class, ClassRegistry.META_CHECKS);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, ClassRegistry.PARTICLE_ANIMATORS);
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, ClassRegistry.PARTICLE_TIMER);
     }

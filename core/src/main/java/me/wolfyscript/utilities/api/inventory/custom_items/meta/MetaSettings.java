@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
@@ -29,33 +30,43 @@ import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 @JsonDeserialize(using = MetaSettings.Deserializer.class)
 public class MetaSettings extends HashMap<NamespacedKey, Meta> {
+
+    private final Set<Meta> checks = new HashSet<>();
 
     public MetaSettings() {
         Registry.META_PROVIDER.entrySet().forEach(entry -> put(entry.getKey(), entry.getValue().provide()));
     }
 
-    public MetaSettings(JsonNode node) {
+    public MetaSettings(JsonNode jsonNode) {
         this();
-        if (node != null) {
-            node.fields().forEachRemaining(entry -> {
-                String key = entry.getKey().toLowerCase(Locale.ROOT);
-                NamespacedKey namespacedKey = key.contains(":") ? NamespacedKey.of(key) : NamespacedKey.wolfyutilties(key);
-                Meta.Provider<?> provider = Registry.META_PROVIDER.get(namespacedKey);
-                if (provider != null) {
-                    Meta meta;
-                    if (entry.getValue().isTextual()) {
-                        meta = provider.provide();
-                        meta.setOption(JacksonUtil.getObjectMapper().convertValue(entry.getValue(), MetaSettings.Option.class));
-                    } else {
-                        meta = provider.parse(entry.getValue());
+        if (jsonNode instanceof ObjectNode node) {
+            //TODO: Replace Meta.Provider with the new KeyedTypeIdResolver
+            if (!node.has("checks")) {
+                node.fields().forEachRemaining(entry -> {
+                    String key = entry.getKey().toLowerCase(Locale.ROOT);
+                    NamespacedKey namespacedKey = key.contains(":") ? NamespacedKey.of(key) : NamespacedKey.wolfyutilties(key);
+                    Meta.Provider<?> provider = Registry.META_PROVIDER.get(namespacedKey);
+                    if (provider != null) {
+                        Meta meta;
+                        if (entry.getValue().isTextual()) {
+                            meta = provider.provide();
+                            meta.setOption(JacksonUtil.getObjectMapper().convertValue(entry.getValue(), MetaSettings.Option.class));
+                        } else {
+                            meta = provider.parse(entry.getValue());
+                        }
+                        put(namespacedKey, meta);
                     }
-                    put(namespacedKey, meta);
-                }
-            });
+                });
+            } else {
+
+
+            }
         }
     }
 
@@ -64,7 +75,7 @@ public class MetaSettings extends HashMap<NamespacedKey, Meta> {
     }
 
     public enum Option {
-        EXACT, IGNORE, HIGHER, HIGHER_EXACT, LOWER, LOWER_EXACT, HIGHER_LOWER
+        EXACT, @Deprecated(forRemoval = true) IGNORE, HIGHER, HIGHER_EXACT, LOWER, LOWER_EXACT, HIGHER_LOWER
     }
 
     public static class Deserializer extends StdDeserializer<MetaSettings> {

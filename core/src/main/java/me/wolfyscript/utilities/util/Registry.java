@@ -64,6 +64,8 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
      * And also the Recipe Book uses a CustomData object to store some data.
      */
     Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA = new SimpleRegistry<>();
+
+    @Deprecated(forRemoval = true)
     MetaRegistry META_PROVIDER = new MetaRegistry();
 
     ParticleRegistry PARTICLE_EFFECTS = new ParticleRegistry();
@@ -224,6 +226,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
         }
     }
 
+    @Deprecated(forRemoval = true)
     class MetaRegistry extends SimpleRegistry<Meta.Provider<?>> {
 
         public void register(NamespacedKey key, Class<? extends Meta> metaType) {

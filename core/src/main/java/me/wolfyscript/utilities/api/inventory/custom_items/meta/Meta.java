@@ -36,7 +36,7 @@ public abstract class Meta implements Keyed {
     protected MetaSettings.Option option;
 
     @JsonIgnore
-    private NamespacedKey namespacedKey;
+    private NamespacedKey key;
     @JsonIgnore
     private List<MetaSettings.Option> availableOptions;
 
@@ -70,23 +70,24 @@ public abstract class Meta implements Keyed {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Meta meta = (Meta) o;
-        return Objects.equals(namespacedKey, meta.namespacedKey) && option == meta.option && Objects.equals(availableOptions, meta.availableOptions);
+        return Objects.equals(key, meta.key) && option == meta.option && Objects.equals(availableOptions, meta.availableOptions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(namespacedKey, option, availableOptions);
+        return Objects.hash(key, option, availableOptions);
     }
 
     @Override
     public final NamespacedKey getNamespacedKey() {
-        return namespacedKey;
+        return key;
     }
 
     final void setNamespacedKey(NamespacedKey namespacedKey) {
-        this.namespacedKey = namespacedKey;
+        this.key = namespacedKey;
     }
 
+    @Deprecated
     public static class Provider<M extends Meta> implements Keyed {
 
         private final NamespacedKey namespacedKey;
