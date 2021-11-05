@@ -26,7 +26,7 @@ public class PlayerHeadMeta extends Meta {
 
     public PlayerHeadMeta() {
         setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
+        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     @Override

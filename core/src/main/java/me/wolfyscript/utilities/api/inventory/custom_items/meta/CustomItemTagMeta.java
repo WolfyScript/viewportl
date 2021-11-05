@@ -31,8 +31,8 @@ public class CustomItemTagMeta extends Meta {
     public static final NamespacedKey namespacedKey = new NamespacedKey("wolfyutilities", "custom_item");
 
     public CustomItemTagMeta() {
-        setOption(MetaSettings.Option.IGNORE);
-        setAvailableOptions(MetaSettings.Option.IGNORE, MetaSettings.Option.EXACT);
+        setOption(MetaSettings.Option.EXACT);
+        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     @Override

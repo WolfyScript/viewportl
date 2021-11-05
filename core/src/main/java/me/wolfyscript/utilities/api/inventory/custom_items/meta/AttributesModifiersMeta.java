@@ -29,7 +29,7 @@ public class AttributesModifiersMeta extends Meta {
 
     public AttributesModifiersMeta() {
         setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
+        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     private static boolean compareModifiers(Multimap<Attribute, AttributeModifier> first, Multimap<Attribute, AttributeModifier> second) {

@@ -26,7 +26,7 @@ public class UnbreakableMeta extends Meta {
 
     public UnbreakableMeta() {
         setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
+        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     @Override

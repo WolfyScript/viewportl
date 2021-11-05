@@ -26,7 +26,7 @@ public class CustomDurabilityMeta extends Meta {
 
     public CustomDurabilityMeta() {
         setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
+        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
     }
 
     @Override

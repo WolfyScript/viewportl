@@ -25,7 +25,7 @@ public class NameMeta extends Meta {
 
     public NameMeta() {
         setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
+        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     @Override

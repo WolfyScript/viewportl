@@ -24,7 +24,7 @@ public class NBTTagMeta extends Meta {
 
     public NBTTagMeta() {
         setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
+        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     @Override

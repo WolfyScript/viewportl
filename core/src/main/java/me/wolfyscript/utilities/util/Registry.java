@@ -229,6 +229,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     @Deprecated(forRemoval = true)
     class MetaRegistry extends SimpleRegistry<Meta.Provider<?>> {
 
+        @Deprecated
         public void register(NamespacedKey key, Class<? extends Meta> metaType) {
             register(new Meta.Provider<>(key, metaType));
         }

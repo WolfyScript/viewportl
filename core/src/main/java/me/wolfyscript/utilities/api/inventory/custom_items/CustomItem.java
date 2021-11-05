@@ -381,7 +381,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
 
     public void setMetaSettings(MetaSettings metaSettings) {
         this.metaSettings = metaSettings;
-        this.advanced = metaSettings.values().parallelStream().anyMatch(meta -> !meta.getOption().equals(MetaSettings.Option.EXACT) && !meta.getOption().equals(MetaSettings.Option.IGNORE));
+        this.advanced = !metaSettings.getChecks().isEmpty();
     }
 
     /**
