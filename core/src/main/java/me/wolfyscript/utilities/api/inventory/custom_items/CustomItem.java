@@ -301,12 +301,20 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         if (itemStack != null) {
             var itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                var container = itemMeta.getPersistentDataContainer();
-                var namespacedKey = new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
-                if (container.has(namespacedKey, PersistentDataType.STRING)) {
-                    return Registry.CUSTOM_ITEMS.get(NamespacedKey.of(container.get(namespacedKey, PersistentDataType.STRING)));
-                }
+                return Registry.CUSTOM_ITEMS.get(getKeyOfItemMeta(itemMeta));
             }
+        }
+        return null;
+    }
+
+    /**
+     * @param itemMeta The ItemMeta to get the key from.
+     * @return The CustomItems {@link NamespacedKey} from the ItemMeta; or null if the ItemMeta doesn't contain a key.
+     */
+    public static NamespacedKey getKeyOfItemMeta(ItemMeta itemMeta) {
+        var container = itemMeta.getPersistentDataContainer();
+        if (container.has(PERSISTENT_KEY_TAG, PersistentDataType.STRING)) {
+            return NamespacedKey.of(container.get(PERSISTENT_KEY_TAG, PersistentDataType.STRING));
         }
         return null;
     }
