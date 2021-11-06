@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,7 +46,6 @@ public abstract class Meta implements Keyed {
 
     protected MetaSettings.Option option;
 
-    @JsonIgnore
     private NamespacedKey key;
     @JsonIgnore
     private List<MetaSettings.Option> availableOptions;
@@ -88,13 +88,10 @@ public abstract class Meta implements Keyed {
         return Objects.hash(key, option, availableOptions);
     }
 
+    @JsonIgnore
     @Override
     public final NamespacedKey getNamespacedKey() {
         return key;
-    }
-
-    final void setNamespacedKey(NamespacedKey namespacedKey) {
-        this.key = namespacedKey;
     }
 
     @Deprecated
@@ -116,7 +113,6 @@ public abstract class Meta implements Keyed {
         public M provide() {
             try {
                 M meta = type.getDeclaredConstructor().newInstance();
-                meta.setNamespacedKey(namespacedKey);
                 return meta;
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
@@ -124,13 +120,9 @@ public abstract class Meta implements Keyed {
             return null;
         }
 
+        @Deprecated
         public M parse(JsonNode node) {
-            M meta = JacksonUtil.getObjectMapper().convertValue(node, type);
-            if (meta != null) {
-                meta.setNamespacedKey(namespacedKey);
-                return meta;
-            }
-            return null;
+            return JacksonUtil.getObjectMapper().convertValue(node, type);
         }
 
     }

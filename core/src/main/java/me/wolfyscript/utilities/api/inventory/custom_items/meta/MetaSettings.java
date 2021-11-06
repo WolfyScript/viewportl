@@ -90,6 +90,10 @@ public class MetaSettings extends HashMap<NamespacedKey, Meta> {
         checks.add(meta);
     }
 
+    public void clearChecks() {
+        checks.clear();
+    }
+
     public List<Meta> getChecks() {
         return List.copyOf(checks);
     }
