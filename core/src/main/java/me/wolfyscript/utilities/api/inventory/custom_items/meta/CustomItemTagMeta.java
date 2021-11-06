@@ -19,6 +19,8 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 
+import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,7 +30,7 @@ import java.util.Objects;
 
 public class CustomItemTagMeta extends Meta {
 
-    public static final NamespacedKey namespacedKey = new NamespacedKey("wolfyutilities", "custom_item");
+    public static final NamespacedKey namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
 
     public CustomItemTagMeta() {
         setOption(MetaSettings.Option.EXACT);
@@ -37,19 +39,12 @@ public class CustomItemTagMeta extends Meta {
 
     @Override
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
-        ItemMeta meta1 = item.getItemMeta();
-        ItemMeta meta2 = itemOther.getItemMeta();
-        if (hasKey(meta1)) {
-            return hasKey(meta2) && Objects.equals(getKey(meta1), getKey(meta2));
+        var key = CustomItem.getKeyOfItemMeta(item.getItemMeta());
+        var keyOther = CustomItem.getKeyOfItemMeta(itemOther.getItemMeta());
+        if (key != null) {
+            return keyOther != null && Objects.equals(key, keyOther);
         }
-        return !hasKey(meta2);
+        return keyOther == null;
     }
 
-    private boolean hasKey(ItemMeta meta) {
-        return meta.getPersistentDataContainer().has(namespacedKey, PersistentDataType.STRING);
-    }
-
-    private me.wolfyscript.utilities.util.NamespacedKey getKey(ItemMeta meta) {
-        return me.wolfyscript.utilities.util.NamespacedKey.of(meta.getPersistentDataContainer().get(namespacedKey, PersistentDataType.STRING));
-    }
 }
