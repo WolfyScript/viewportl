@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Streams;
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomItemTagMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef;
@@ -48,6 +49,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -72,6 +74,8 @@ import java.util.stream.Stream;
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed {
+
+    public static final org.bukkit.NamespacedKey PERSISTENT_KEY_TAG = new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
 
     private static final Map<String, APIReference.Parser<?>> API_REFERENCE_PARSER = new HashMap<>();
 
@@ -568,17 +572,11 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta, boolean ignoreAmount) {
         if (otherItem != null && otherItem.getType().equals(this.type) && (ignoreAmount || otherItem.getAmount() >= getAmount())) {
             if (hasNamespacedKey()) {
-                var other = CustomItem.getByItemStack(otherItem);
-                if (ItemUtils.isAirOrNull(other) || !Objects.equals(getNamespacedKey(), other.getNamespacedKey())) {
-                    return false;
-                }
-                if (isAdvanced()) {
-                    var customItem = new ItemBuilder(getItemStack());
-                    var customItemOther = new ItemBuilder(otherItem);
-                    return getMetaSettings().check(customItemOther, customItem);
-                }
-            } else return (!(getApiReference() instanceof VanillaRef) || (exactMeta || hasItemMeta())) && getApiReference().isValidItem(otherItem);
-            return true;
+                var customItem = new ItemBuilder(getItemStack());
+                var customItemOther = new ItemBuilder(otherItem);
+                return getMetaSettings().check(customItemOther, customItem);
+            }
+            return (!(getApiReference() instanceof VanillaRef) || (exactMeta || hasItemMeta())) && getApiReference().isValidItem(otherItem);
         }
         return false;
     }
