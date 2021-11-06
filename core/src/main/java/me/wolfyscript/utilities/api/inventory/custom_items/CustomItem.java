@@ -389,7 +389,14 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
 
     public void setMetaSettings(MetaSettings metaSettings) {
         this.metaSettings = metaSettings;
-        this.advanced = !metaSettings.getChecks().isEmpty();
+        if (!advanced) { //If advanced is disabled the MetaSettings are not used, so we clear them!
+            advanced = true;
+            metaSettings.clearChecks();
+        }
+        if (metaSettings.isEmpty()) {
+            //Add the CustomItemTag check, so the item will be checked correctly, but only if the item hasn't got any other checks already.
+            metaSettings.addCheck(new CustomItemTagMeta());
+        }
     }
 
     /**
