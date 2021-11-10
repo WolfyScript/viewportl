@@ -41,8 +41,6 @@ import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListene
 import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
 import me.wolfyscript.utilities.util.ClassRegistry;
-import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
@@ -71,8 +69,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 
 public class WUPlugin extends JavaPlugin {
@@ -136,21 +132,21 @@ public class WUPlugin extends JavaPlugin {
         //Register custom item data
 
         //Register meta settings providers
-        getLogger().info("Register Meta Setting providers");
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("attributes_modifiers"), AttributesModifiersMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("custom_damage"), CustomDamageMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("custom_durability"), CustomDurabilityMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("customitem_tag"), CustomItemTagMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("custom_model_data"), CustomModelDataMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("damage"), DamageMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("enchant"), EnchantMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("flags"), FlagsMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("lore"), LoreMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("name"), NameMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("player_head"), PlayerHeadMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("potion"), PotionMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("repair_cost"), RepairCostMeta.class);
-        ClassRegistry.META_CHECKS.register(NamespacedKey.wolfyutilties("unbreakable"), UnbreakableMeta.class);
+        getLogger().info("Register CustomItem meta checks");
+        ClassRegistry.META_CHECKS.register(AttributesModifiersMeta.KEY, AttributesModifiersMeta.class);
+        ClassRegistry.META_CHECKS.register(CustomDamageMeta.KEY, CustomDamageMeta.class);
+        ClassRegistry.META_CHECKS.register(CustomDurabilityMeta.KEY, CustomDurabilityMeta.class);
+        ClassRegistry.META_CHECKS.register(CustomItemTagMeta.KEY, CustomItemTagMeta.class);
+        ClassRegistry.META_CHECKS.register(CustomModelDataMeta.KEY, CustomModelDataMeta.class);
+        ClassRegistry.META_CHECKS.register(DamageMeta.KEY, DamageMeta.class);
+        ClassRegistry.META_CHECKS.register(EnchantMeta.KEY, EnchantMeta.class);
+        ClassRegistry.META_CHECKS.register(FlagsMeta.KEY, FlagsMeta.class);
+        ClassRegistry.META_CHECKS.register(LoreMeta.KEY, LoreMeta.class);
+        ClassRegistry.META_CHECKS.register(NameMeta.KEY, NameMeta.class);
+        ClassRegistry.META_CHECKS.register(PlayerHeadMeta.KEY, PlayerHeadMeta.class);
+        ClassRegistry.META_CHECKS.register(PotionMeta.KEY, PotionMeta.class);
+        ClassRegistry.META_CHECKS.register(RepairCostMeta.KEY, RepairCostMeta.class);
+        ClassRegistry.META_CHECKS.register(UnbreakableMeta.KEY, UnbreakableMeta.class);
 
         ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorBasic.KEY, AnimatorBasic.class);
         ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorSphere.KEY, AnimatorSphere.class);

@@ -19,12 +19,15 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Objects;
 
 public class PotionMeta extends Meta {
+
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("potion");
 
     public PotionMeta() {
         setOption(MetaSettings.Option.EXACT);

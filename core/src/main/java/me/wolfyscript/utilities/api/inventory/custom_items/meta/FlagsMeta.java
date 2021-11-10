@@ -18,9 +18,12 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 
 public class FlagsMeta extends Meta {
+
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("flags");
 
     public FlagsMeta() {
         setOption(MetaSettings.Option.EXACT);

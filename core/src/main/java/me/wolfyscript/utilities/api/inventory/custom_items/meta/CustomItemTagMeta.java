@@ -18,19 +18,15 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
-
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
-import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Objects;
 
 public class CustomItemTagMeta extends Meta {
 
-    public static final NamespacedKey namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("customitem_tag");
 
     public CustomItemTagMeta() {
         setOption(MetaSettings.Option.EXACT);
