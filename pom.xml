@@ -163,7 +163,7 @@
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>MythicLib</artifactId>
-            <version>1.0.6</version>
+            <version>1.1.5</version>
             <scope>provided</scope>
         </dependency>
         <!--Dependencies from private repo! They require credentials to access!-->
@@ -184,7 +184,7 @@
         <dependency>
             <groupId>net.Indyuce</groupId>
             <artifactId>mmoitems</artifactId>
-            <version>6.5.4</version>
+            <version>6.6.2</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
