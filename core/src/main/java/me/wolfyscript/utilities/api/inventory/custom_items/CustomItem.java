@@ -114,6 +114,10 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     @JsonIgnore
     private final Material craftRemain;
 
+    @JsonIgnore
+    @Deprecated
+    private boolean advanced;
+
     @JsonAlias("api_reference")
     private final APIReference apiReference;
     @JsonAlias("custom_data")
@@ -123,7 +127,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     @JsonAlias("equipment_slots")
     private final List<EquipmentSlot> equipmentSlots;
     private boolean consumed;
-    private boolean advanced;
     private boolean blockVanillaEquip;
     private boolean blockPlacement;
     private boolean blockVanillaRecipes;
