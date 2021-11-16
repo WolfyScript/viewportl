@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -203,6 +204,14 @@ public abstract class APIReference {
             super(id, aliases);
             this.pluginName = pluginName;
         }
+
+        /**
+         * Can be used to initialize some values or API.
+         * It is run when the parser is registered and the plugin that this parser requires is available.
+         *
+         * @param plugin The plugin of the specified {@link #pluginName} of this parser.
+         */
+        public void init(Plugin plugin) {}
 
         public String getPluginName() {
             return pluginName;
