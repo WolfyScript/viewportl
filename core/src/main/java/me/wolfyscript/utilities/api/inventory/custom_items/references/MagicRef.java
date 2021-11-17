@@ -22,7 +22,6 @@ import com.elmakers.mine.bukkit.api.magic.MagicAPI;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import dev.lone.itemsadder.api.CustomStack;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -53,7 +52,7 @@ public class MagicRef extends APIReference {
      */
     @Override
     public ItemStack getLinkedItem() {
-        return Objects.requireNonNullElse(Parser.magicAPI.createItem(itemKey), ItemUtils.AIR);
+        return Objects.requireNonNullElse(Parser.magicAPI.getController().createItem(itemKey), ItemUtils.AIR);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class MagicRef extends APIReference {
 
     @Override
     public boolean isValidItem(ItemStack itemStack) {
-        return Objects.equals(Parser.magicAPI.getItemKey(itemStack), itemKey);
+        return Objects.equals(Parser.magicAPI.getController().getItemKey(itemStack), itemKey);
     }
 
     @Override
@@ -88,14 +87,14 @@ public class MagicRef extends APIReference {
         public void init(Plugin plugin) {
             if(plugin instanceof MagicAPI api) {
                 magicAPI = api;
+                //TODO: Use the Magic LoadEvent to detect when to load data. (Perhaps in CustomCrafting? or via a custom event?)
             }
         }
 
         @Override
         public @Nullable MagicRef construct(ItemStack itemStack) {
-            String key = magicAPI.getItemKey(itemStack);
-            if(key != null && !key.isBlank()) {
-                return new MagicRef(key);
+            if(magicAPI.isBrush(itemStack) || magicAPI.isSpell(itemStack) || magicAPI.isUpgrade(itemStack) || magicAPI.isWand(itemStack)) {
+                return new MagicRef(magicAPI.getItemKey(itemStack));
             }
             return null;
         }
