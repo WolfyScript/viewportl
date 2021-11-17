@@ -23,7 +23,6 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class LoreMeta extends Meta {
