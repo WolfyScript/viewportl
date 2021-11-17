@@ -145,7 +145,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
 
         this.namespacedKey = null;
         this.fuelSettings = new FuelSettings();
-        this.nbtChecks = new MetaSettings();
+        setMetaSettings(new MetaSettings());
         this.permission = "";
         this.rarityPercentage = apiReference.getWeight() > 0 ? apiReference.getWeight() : 1.0d;
         for (CustomData.Provider<?> customData : Registry.CUSTOM_ITEM_DATA.values()) {
