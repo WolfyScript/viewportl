@@ -18,27 +18,20 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
-import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
-import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.*;
 
-@JsonDeserialize(using = MetaSettings.Deserializer.class)
-public class MetaSettings extends HashMap<NamespacedKey, Meta> {
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+public class MetaSettings {
 
-    private static final String CHECKS_KEY = "checks";
+    public static final String CHECKS_KEY = "checks";
 
+    @JsonProperty
     private final List<Meta> checks;
 
     /**
@@ -46,39 +39,6 @@ public class MetaSettings extends HashMap<NamespacedKey, Meta> {
      */
     public MetaSettings() {
         checks = new ArrayList<>();
-    }
-
-    /**
-     * This constructor is only used for serializing the object from a JsonNode.
-     * It will convert the old data to the new system if necessary.
-     *
-     * @param jsonNode The {@link JsonNode} to load the data from.
-     */
-    private MetaSettings(JsonNode jsonNode) {
-        if (jsonNode instanceof ObjectNode node) {
-            if (!node.has(CHECKS_KEY)) {
-                checks = new ArrayList<>();
-                //Convert old meta to new format.
-                node.fields().forEachRemaining(entry -> {
-                    if(entry.getValue() instanceof ObjectNode value) {
-                        String key = entry.getKey().toLowerCase(Locale.ROOT);
-                        NamespacedKey namespacedKey = key.contains(":") ? NamespacedKey.of(key) : NamespacedKey.wolfyutilties(key);
-                        if (namespacedKey != null) {
-                            value.put("key", String.valueOf(namespacedKey));
-                            Meta meta = JacksonUtil.getObjectMapper().convertValue(value, Meta.class);
-                            if (meta != null && !meta.getOption().equals(Option.IGNORE)) {
-                                checks.add(meta);
-                            }
-                        }
-                    }
-                });
-            } else {
-                JsonNode checksNode = node.get(CHECKS_KEY);
-                checks = JacksonUtil.getObjectMapper().convertValue(checksNode, new TypeReference<>() {});
-            }
-        } else {
-            checks = new ArrayList<>();
-        }
     }
 
     /**
@@ -98,8 +58,12 @@ public class MetaSettings extends HashMap<NamespacedKey, Meta> {
         return List.copyOf(checks);
     }
 
+    public boolean isEmpty() {
+        return checks.isEmpty();
+    }
+
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
-        return values().stream().allMatch(meta -> meta.check(itemOther, item));
+        return checks.stream().allMatch(meta -> meta.check(itemOther, item));
     }
 
     public enum Option {
@@ -116,25 +80,4 @@ public class MetaSettings extends HashMap<NamespacedKey, Meta> {
         HIGHER_LOWER
     }
 
-    public static class Deserializer extends StdDeserializer<MetaSettings> {
-
-        public Deserializer() {
-            super(MetaSettings.class);
-        }
-
-        @Override
-        public MetaSettings deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
-            JsonNode node = p.readValueAsTree();
-            if (node.isTextual()) {
-                //Old String style meta
-                node = JacksonUtil.getObjectMapper().readTree(node.asText());
-            }
-            //New Json style meta
-            return new MetaSettings(node);
-        }
-
-        protected Deserializer(Class<MetaSettings> t) {
-            super(t);
-        }
-    }
 }
