@@ -76,16 +76,12 @@ import java.util.stream.Stream;
 public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed {
 
     public static final org.bukkit.NamespacedKey PERSISTENT_KEY_TAG = new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
-
     private static final Map<String, APIReference.Parser<?>> API_REFERENCE_PARSER = new HashMap<>();
 
     @Nullable
     public static APIReference.Parser<?> getApiReferenceParser(String id) {
         return API_REFERENCE_PARSER.get(id);
     }
-
-    @JsonIgnore
-    private final Material type;
 
     /**
      * Register a new {@link APIReference.Parser} that can parse ItemStacks and keys from another plugin to a usable {@link APIReference}
@@ -100,6 +96,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
             }
         }
     }
+
+    @JsonIgnore
+    private final Material type;
 
     /**
      * This namespacedKey can either be null or non-null.
