@@ -596,8 +596,10 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         if (otherItem != null && otherItem.getType().equals(this.type) && (ignoreAmount || otherItem.getAmount() >= getAmount())) {
             if (hasNamespacedKey()) {
                 return getMetaSettings().check(this, new ItemBuilder(otherItem));
+            } else if (getApiReference() instanceof VanillaRef && (!hasItemMeta() && !exactMeta)) {
+                return true;
             }
-            return (!(getApiReference() instanceof VanillaRef) || (exactMeta || hasItemMeta())) && getApiReference().isValidItem(otherItem);
+            return getApiReference().isValidItem(otherItem);
         }
         return false;
     }
