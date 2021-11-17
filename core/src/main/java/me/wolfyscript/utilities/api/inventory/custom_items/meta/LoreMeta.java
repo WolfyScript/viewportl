@@ -19,23 +19,22 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 
-import java.util.ArrayList;
+import java.util.Objects;
 
 public class LoreMeta extends Meta {
 
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("lore");
+
     public LoreMeta() {
-        setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
+        super(KEY);
     }
 
     @Override
-    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
-        if (option.equals(MetaSettings.Option.IGNORE)) {
-            itemOther.setLore(new ArrayList<>());
-            item.setLore(new ArrayList<>());
-        }
-        return true;
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
+        return Objects.equals(item.getItemMeta().getLore(), itemOther.getItemMeta().getLore());
     }
 }

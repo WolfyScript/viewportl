@@ -18,12 +18,20 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
+import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -31,14 +39,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@JsonTypeResolver(KeyedTypeResolver.class)
+@JsonTypeIdResolver(KeyedTypeIdResolver.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "key")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonPropertyOrder("key")
 public abstract class Meta implements Keyed {
 
-    protected MetaSettings.Option option;
+    private final NamespacedKey key;
 
+    protected MetaSettings.Option option = MetaSettings.Option.EXACT;
     @JsonIgnore
-    private NamespacedKey namespacedKey;
-    @JsonIgnore
-    private List<MetaSettings.Option> availableOptions;
+    private List<MetaSettings.Option> availableOptions = List.of(MetaSettings.Option.EXACT);
+
+    protected Meta(NamespacedKey key) {
+        this.key = key;
+    }
 
     public MetaSettings.Option getOption() {
         return option;
@@ -63,30 +79,33 @@ public abstract class Meta implements Keyed {
         }
     }
 
-    public abstract boolean check(ItemBuilder itemOther, ItemBuilder item);
+    @Deprecated
+    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+        return true;
+    }
+
+    public abstract boolean check(CustomItem item, ItemBuilder itemOther);
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Meta meta = (Meta) o;
-        return Objects.equals(namespacedKey, meta.namespacedKey) && option == meta.option && Objects.equals(availableOptions, meta.availableOptions);
+        return Objects.equals(key, meta.key) && option == meta.option && Objects.equals(availableOptions, meta.availableOptions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(namespacedKey, option, availableOptions);
+        return Objects.hash(key, option, availableOptions);
     }
 
+    @JsonIgnore
     @Override
     public final NamespacedKey getNamespacedKey() {
-        return namespacedKey;
+        return key;
     }
 
-    final void setNamespacedKey(NamespacedKey namespacedKey) {
-        this.namespacedKey = namespacedKey;
-    }
-
+    @Deprecated
     public static class Provider<M extends Meta> implements Keyed {
 
         private final NamespacedKey namespacedKey;
@@ -104,22 +123,16 @@ public abstract class Meta implements Keyed {
 
         public M provide() {
             try {
-                M meta = type.getDeclaredConstructor().newInstance();
-                meta.setNamespacedKey(namespacedKey);
-                return meta;
+                return type.getDeclaredConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
             return null;
         }
 
+        @Deprecated
         public M parse(JsonNode node) {
-            M meta = JacksonUtil.getObjectMapper().convertValue(node, type);
-            if (meta != null) {
-                meta.setNamespacedKey(namespacedKey);
-                return meta;
-            }
-            return null;
+            return JacksonUtil.getObjectMapper().convertValue(node, type);
         }
 
     }

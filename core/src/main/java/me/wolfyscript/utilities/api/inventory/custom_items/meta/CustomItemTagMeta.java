@@ -18,35 +18,41 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
-
-import me.wolfyscript.utilities.api.WolfyUtilities;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
-import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
+
+import java.util.Objects;
 
 public class CustomItemTagMeta extends Meta {
 
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("customitem_tag");
+
     public CustomItemTagMeta() {
-        setOption(MetaSettings.Option.IGNORE);
-        setAvailableOptions(MetaSettings.Option.IGNORE, MetaSettings.Option.EXACT);
+        super(KEY);
+    }
+
+    @JsonIgnore
+    @Override
+    public MetaSettings.Option getOption() {
+        return super.getOption();
+    }
+
+    @JsonIgnore
+    @Override
+    public void setOption(MetaSettings.Option option) {
+        super.setOption(MetaSettings.Option.EXACT);
     }
 
     @Override
-    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
-        ItemMeta meta1 = itemOther.getItemMeta();
-        ItemMeta meta2 = item.getItemMeta();
-        if (option.equals(MetaSettings.Option.IGNORE)) {
-            NamespacedKey namespacedKey = new NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
-            if (meta1.getPersistentDataContainer().has(namespacedKey, PersistentDataType.STRING)) {
-                meta1.getPersistentDataContainer().remove(namespacedKey);
-            }
-            if (meta2.getPersistentDataContainer().has(namespacedKey, PersistentDataType.STRING)) {
-                meta2.getPersistentDataContainer().remove(namespacedKey);
-            }
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
+        var key = CustomItem.getKeyOfItemMeta(item.getItemMeta());
+        var keyOther = CustomItem.getKeyOfItemMeta(itemOther.getItemMeta());
+        if (key != null) {
+            return keyOther != null && Objects.equals(key, keyOther);
         }
-        itemOther.setItemMeta(meta1);
-        item.setItemMeta(meta2);
-        return true;
+        return keyOther == null;
     }
+
 }

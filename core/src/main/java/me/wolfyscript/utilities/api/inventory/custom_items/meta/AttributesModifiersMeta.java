@@ -20,6 +20,8 @@ package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 
 import com.google.common.collect.Multimap;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -27,27 +29,27 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class AttributesModifiersMeta extends Meta {
 
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("attributes_modifiers");
+
     public AttributesModifiersMeta() {
-        setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE);
+        super(KEY);
+    }
+
+    private static boolean compareModifiers(Multimap<Attribute, AttributeModifier> first, Multimap<Attribute, AttributeModifier> second) {
+        if (first != null && second != null) {
+            return first.entries().stream().allMatch(entry -> second.containsEntry(entry.getKey(), entry.getValue())) && second.entries().stream().allMatch(entry -> first.containsEntry(entry.getKey(), entry.getValue()));
+        } else {
+            return false;
+        }
     }
 
     @Override
-    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
         ItemMeta metaOther = itemOther.getItemMeta();
         ItemMeta meta = item.getItemMeta();
-        if (option.equals(MetaSettings.Option.IGNORE)) {
-            if (metaOther.hasAttributeModifiers()) {
-                Multimap<Attribute, AttributeModifier> modifiers = metaOther.getAttributeModifiers();
-                modifiers.keySet().forEach(metaOther::removeAttributeModifier);
-            }
-            if (meta.hasAttributeModifiers()) {
-                Multimap<Attribute, AttributeModifier> modifiers = metaOther.getAttributeModifiers();
-                modifiers.keySet().forEach(metaOther::removeAttributeModifier);
-            }
+        if (meta.hasAttributeModifiers()) {
+            return metaOther.hasAttributeModifiers() && compareModifiers(meta.getAttributeModifiers(), metaOther.getAttributeModifiers());
         }
-        itemOther.setItemMeta(metaOther);
-        item.setItemMeta(meta);
-        return true;
+        return !metaOther.hasAttributeModifiers();
     }
 }

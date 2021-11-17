@@ -19,12 +19,16 @@
 package me.wolfyscript.utilities.api.inventory.custom_items;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Streams;
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomItemTagMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef;
@@ -37,7 +41,6 @@ import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.inventory.item_builder.AbstractItemBuilder;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
-import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
 import me.wolfyscript.utilities.util.version.MinecraftVersions;
 import me.wolfyscript.utilities.util.version.ServerVersion;
@@ -48,13 +51,13 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * <p>
@@ -73,15 +76,13 @@ import java.util.stream.Stream;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed {
 
+    public static final org.bukkit.NamespacedKey PERSISTENT_KEY_TAG = new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
     private static final Map<String, APIReference.Parser<?>> API_REFERENCE_PARSER = new HashMap<>();
 
     @Nullable
     public static APIReference.Parser<?> getApiReferenceParser(String id) {
         return API_REFERENCE_PARSER.get(id);
     }
-
-    @JsonIgnore
-    private final Material type;
 
     /**
      * Register a new {@link APIReference.Parser} that can parse ItemStacks and keys from another plugin to a usable {@link APIReference}
@@ -100,6 +101,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
             parser.getAliases().forEach(s -> API_REFERENCE_PARSER.putIfAbsent(s, parser));
         }
     }
+
+    @JsonIgnore
+    private final Material type;
 
     /**
      * This namespacedKey can either be null or non-null.
@@ -123,15 +127,13 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     @JsonAlias("equipment_slots")
     private final List<EquipmentSlot> equipmentSlots;
     private boolean consumed;
-    private boolean advanced;
     private boolean blockVanillaEquip;
     private boolean blockPlacement;
     private boolean blockVanillaRecipes;
     @JsonAlias("rarity_percentage")
     private double rarityPercentage;
     private String permission;
-    @JsonAlias("meta")
-    private MetaSettings metaSettings;
+    private MetaSettings nbtChecks;
     private APIReference replacement;
     @JsonAlias("fuel")
     private FuelSettings fuelSettings;
@@ -147,7 +149,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
 
         this.namespacedKey = null;
         this.fuelSettings = new FuelSettings();
-        this.metaSettings = new MetaSettings();
+        setMetaSettings(new MetaSettings());
         this.permission = "";
         this.rarityPercentage = apiReference.getWeight() > 0 ? apiReference.getWeight() : 1.0d;
         for (CustomData.Provider<?> customData : Registry.CUSTOM_ITEM_DATA.values()) {
@@ -158,13 +160,43 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         this.blockPlacement = false;
         this.blockVanillaEquip = false;
         this.blockVanillaRecipes = false;
-        this.advanced = false;
 
         this.consumed = true;
         this.replacement = null;
         this.durabilityCost = 0;
         this.type = getItemStack() != null ? getItemStack().getType() : Material.AIR;
         this.craftRemain = getCraftRemain();
+    }
+
+    @JsonAnySetter
+    protected void setOldProperties(String fieldKey, JsonNode value) throws JsonProcessingException {
+        if (fieldKey.equals("metaSettings") || fieldKey.equals("meta")) {
+            //Since the new system has its new field we need to update old appearances to the new system.
+            JsonNode node = value.isTextual() ? JacksonUtil.getObjectMapper().readTree(value.asText()) : value;
+            final List<Meta> checks;
+            if (!node.has(MetaSettings.CHECKS_KEY)) {
+                checks = new ArrayList<>();
+                //Convert old meta to new format.
+                node.fields().forEachRemaining(entry -> {
+                    if (entry.getValue() instanceof ObjectNode entryVal) {
+                        String key = entry.getKey().toLowerCase(Locale.ROOT);
+                        NamespacedKey namespacedKey = key.contains(":") ? NamespacedKey.of(key) : NamespacedKey.wolfyutilties(key);
+                        if (namespacedKey != null) {
+                            entryVal.put("key", String.valueOf(namespacedKey));
+                            Meta meta = JacksonUtil.getObjectMapper().convertValue(entryVal, Meta.class);
+                            if (meta != null && !meta.getOption().equals(MetaSettings.Option.IGNORE)) {
+                                checks.add(meta);
+                            }
+                        }
+                    }
+                });
+            } else {
+                checks = JacksonUtil.getObjectMapper().convertValue(node.get(MetaSettings.CHECKS_KEY), new TypeReference<>() {});
+            }
+            var nbtChecks = new MetaSettings();
+            checks.forEach(nbtChecks::addCheck);
+            this.nbtChecks = nbtChecks;
+        }
     }
 
     /**
@@ -194,7 +226,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
 
         this.namespacedKey = customItem.getNamespacedKey();
         this.fuelSettings = customItem.fuelSettings.clone();
-        this.metaSettings = customItem.metaSettings;
+        this.nbtChecks = customItem.nbtChecks;
         this.permission = customItem.permission;
         this.rarityPercentage = customItem.rarityPercentage;
         this.customDataMap.clear();
@@ -206,7 +238,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         this.blockPlacement = customItem.blockPlacement;
         this.blockVanillaEquip = customItem.blockVanillaEquip;
         this.blockVanillaRecipes = customItem.blockVanillaRecipes;
-        this.advanced = customItem.advanced;
 
         this.consumed = customItem.consumed;
         this.replacement = customItem.replacement;
@@ -218,7 +249,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     /**
      * Clones the CustomItem and all the containing data.
      *
-     * @return A exact deep copy of this CustomItem instance.
+     * @return An exact deep copy of this CustomItem instance.
      */
     @Override
     public CustomItem clone() {
@@ -305,12 +336,20 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         if (itemStack != null) {
             var itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                var container = itemMeta.getPersistentDataContainer();
-                var namespacedKey = new org.bukkit.NamespacedKey(WolfyUtilities.getWUPlugin(), "custom_item");
-                if (container.has(namespacedKey, PersistentDataType.STRING)) {
-                    return Registry.CUSTOM_ITEMS.get(NamespacedKey.of(container.get(namespacedKey, PersistentDataType.STRING)));
-                }
+                return Registry.CUSTOM_ITEMS.get(getKeyOfItemMeta(itemMeta));
             }
+        }
+        return null;
+    }
+
+    /**
+     * @param itemMeta The ItemMeta to get the key from.
+     * @return The CustomItems {@link NamespacedKey} from the ItemMeta; or null if the ItemMeta doesn't contain a key.
+     */
+    public static NamespacedKey getKeyOfItemMeta(ItemMeta itemMeta) {
+        var container = itemMeta.getPersistentDataContainer();
+        if (container.has(PERSISTENT_KEY_TAG, PersistentDataType.STRING)) {
+            return NamespacedKey.of(container.get(PERSISTENT_KEY_TAG, PersistentDataType.STRING));
         }
         return null;
     }
@@ -380,12 +419,15 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     public MetaSettings getMetaSettings() {
-        return metaSettings;
+        return nbtChecks;
     }
 
-    public void setMetaSettings(MetaSettings metaSettings) {
-        this.metaSettings = metaSettings;
-        this.advanced = metaSettings.values().parallelStream().anyMatch(meta -> !meta.getOption().equals(MetaSettings.Option.EXACT) && !meta.getOption().equals(MetaSettings.Option.IGNORE));
+    public void setMetaSettings(MetaSettings nbtChecks) {
+        if (nbtChecks.isEmpty()) {
+            //Add the CustomItemTag check, so the item will be checked correctly, but only if the item hasn't got any other checks already.
+            nbtChecks.addCheck(new CustomItemTagMeta());
+        }
+        this.nbtChecks = nbtChecks;
     }
 
     /**
@@ -557,19 +599,11 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta, boolean ignoreAmount) {
         if (otherItem != null && otherItem.getType().equals(this.type) && (ignoreAmount || otherItem.getAmount() >= getAmount())) {
             if (hasNamespacedKey()) {
-                var other = CustomItem.getByItemStack(otherItem);
-                if (ItemUtils.isAirOrNull(other) || !other.hasNamespacedKey() || !getNamespacedKey().equals(other.getNamespacedKey())) {
-                    return false;
-                }
-            } else if (!getApiReference().isValidItem(otherItem)) {
-                return false;
+                return getMetaSettings().check(this, new ItemBuilder(otherItem));
+            } else if (getApiReference() instanceof VanillaRef && (!hasItemMeta() && !exactMeta)) {
+                return true;
             }
-            if ((exactMeta || hasItemMeta()) && (isAdvanced() || (getApiReference() instanceof VanillaRef && !hasNamespacedKey()))) {
-                var customItem = new ItemBuilder(getItemStack().clone());
-                var customItemOther = new ItemBuilder(otherItem.clone());
-                return getMetaSettings().check(customItemOther, customItem) && Bukkit.getItemFactory().equals(customItem.getItemMeta(), customItemOther.getItemMeta());
-            }
-            return true;
+            return getApiReference().isValidItem(otherItem);
         }
         return false;
     }
@@ -584,7 +618,6 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 blockPlacement == that.blockPlacement &&
                 blockVanillaEquip == that.blockVanillaEquip &&
                 blockVanillaRecipes == that.blockVanillaRecipes &&
-                advanced == that.advanced &&
                 Objects.equals(customDataMap, that.customDataMap) &&
                 Objects.equals(namespacedKey, that.namespacedKey) &&
                 Objects.equals(replacement, that.replacement) &&
@@ -593,12 +626,12 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 Objects.equals(equipmentSlots, that.equipmentSlots) &&
                 Objects.equals(apiReference, that.apiReference) &&
                 Objects.equals(particleContent, that.particleContent) &&
-                Objects.equals(metaSettings, that.metaSettings);
+                Objects.equals(nbtChecks, that.nbtChecks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCustomDataMap(), getNamespacedKey(), getReplacement(), getAllowedBlocks(), getPermission(), getRarityPercentage(), getBurnTime(), getDurabilityCost(), isConsumed(), blockPlacement, isAdvanced(), isBlockVanillaEquip(), isBlockVanillaRecipes(), getEquipmentSlots(), getApiReference(), getParticleContent(), getMetaSettings());
+        return Objects.hash(getCustomDataMap(), getNamespacedKey(), getReplacement(), getAllowedBlocks(), getPermission(), getRarityPercentage(), getBurnTime(), getDurabilityCost(), isConsumed(), blockPlacement, isBlockVanillaEquip(), isBlockVanillaRecipes(), getEquipmentSlots(), getApiReference(), getParticleContent(), getMetaSettings());
     }
 
     /**
@@ -1061,29 +1094,19 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     * This value is used for simple check in recipes.
-     * Default is true.
-     * If this value is false CustomCrafting will ignore every single meta and NBT data and will only compare the NamespacedKeys.
-     *
-     * @return If this CustomItem is in advanced mode.
-     * @deprecated This feature is still under development and might change.
+     * @return Always true due to system changes!
+     * @deprecated This feature was removed. This method is still here in case anyone used it.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public boolean isAdvanced() {
-        return advanced;
+        return true;
     }
 
     /**
-     * Set the advanced value. Default is true.
-     * If this value is false CustomCrafting will ignore every single meta and NBT data and will only compare the NamespacedKeys.
-     *
-     * @param advanced The new advanced value.
-     * @deprecated This feature is still under development and might change.
+     * @deprecated This feature was removed. This method is still here in case anyone used it.
      */
-    @Deprecated
-    public void setAdvanced(boolean advanced) {
-        this.advanced = advanced;
-    }
+    @Deprecated(forRemoval = true)
+    public void setAdvanced(boolean advanced) {}
 
     /**
      * Gets the amount of the linked ItemStack or if the custom amount
@@ -1120,10 +1143,9 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 ", blockVanillaEquip=" + blockVanillaEquip +
                 ", blockVanillaRecipes=" + blockVanillaRecipes +
                 ", equipmentSlots=" + equipmentSlots +
-                ", advanced=" + advanced +
                 ", apiReference=" + apiReference +
                 ", particleContent=" + particleContent +
-                ", metaSettings=" + metaSettings +
+                ", metaSettings=" + nbtChecks +
                 "} " + super.toString();
     }
 }

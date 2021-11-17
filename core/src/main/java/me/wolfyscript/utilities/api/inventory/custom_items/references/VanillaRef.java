@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,8 +58,8 @@ public class VanillaRef extends APIReference {
     }
 
     @Override
-    public boolean isValidItem(ItemStack itemStack) {
-        return true;
+    public boolean isValidItem(ItemStack other) {
+        return itemStack.isSimilar(other);
     }
 
     @Override

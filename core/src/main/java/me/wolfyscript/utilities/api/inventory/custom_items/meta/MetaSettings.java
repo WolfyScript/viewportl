@@ -18,74 +18,73 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Preconditions;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
-import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-@JsonDeserialize(using = MetaSettings.Deserializer.class)
-public class MetaSettings extends HashMap<NamespacedKey, Meta> {
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+public class MetaSettings {
 
+    public static final String CHECKS_KEY = "checks";
+
+    private final List<Meta> checks;
+
+    /**
+     * Creates a new settings object with an empty list of checks.
+     */
     public MetaSettings() {
-        Registry.META_PROVIDER.entrySet().forEach(entry -> put(entry.getKey(), entry.getValue().provide()));
+        checks = new ArrayList<>();
     }
 
-    public MetaSettings(JsonNode node) {
-        this();
-        if (node != null) {
-            node.fields().forEachRemaining(entry -> {
-                String key = entry.getKey().toLowerCase(Locale.ROOT);
-                NamespacedKey namespacedKey = key.contains(":") ? NamespacedKey.of(key) : NamespacedKey.wolfyutilties(key);
-                Meta.Provider<?> provider = Registry.META_PROVIDER.get(namespacedKey);
-                if (provider != null) {
-                    Meta meta;
-                    if (entry.getValue().isTextual()) {
-                        meta = provider.provide();
-                        meta.setOption(JacksonUtil.getObjectMapper().convertValue(entry.getValue(), MetaSettings.Option.class));
-                    } else {
-                        meta = provider.parse(entry.getValue());
-                    }
-                    put(namespacedKey, meta);
-                }
-            });
-        }
+    /**
+     * @param meta The {@link Meta} to add to the list of checks. Cannot be null, and must not have the {@link Option#IGNORE}, or it will throw an exception!
+     */
+    public void addCheck(@NotNull Meta meta) {
+        Objects.requireNonNull(meta, "Meta check cannot be null!");
+        Preconditions.checkArgument(!meta.getOption().equals(Option.IGNORE), "Deprecated option! Ignored check cannot be added!");
+        checks.add(meta);
+    }
+
+    public void clearChecks() {
+        checks.clear();
+    }
+
+    public List<Meta> getChecks() {
+        return List.copyOf(checks);
+    }
+
+    @JsonIgnore
+    public boolean isEmpty() {
+        return checks.isEmpty();
     }
 
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
-        return values().stream().allMatch(meta -> meta.check(itemOther, item));
+        return true;
+    }
+
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
+        return checks.stream().allMatch(meta -> meta.check(item, itemOther));
     }
 
     public enum Option {
-        EXACT, IGNORE, HIGHER, HIGHER_EXACT, LOWER, LOWER_EXACT, HIGHER_LOWER
+        EXACT,
+        /**
+         * This option was originally used to indicate if the meta check should be active.
+         * Now it is no longer used (Only to convert old data), because checks that are not added to the settings are well... not checked anyway.
+         */
+        @Deprecated IGNORE,
+        HIGHER,
+        HIGHER_EXACT,
+        LOWER,
+        LOWER_EXACT,
+        HIGHER_LOWER
     }
 
-    public static class Deserializer extends StdDeserializer<MetaSettings> {
-
-        public Deserializer() {
-            super(MetaSettings.class);
-        }
-
-        @Override
-        public MetaSettings deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt) throws IOException {
-            JsonNode node = p.readValueAsTree();
-            if (node.isTextual()) {
-                //Old String style meta
-                node = JacksonUtil.getObjectMapper().readTree(node.asText());
-            }
-            //New Json style meta
-            return new MetaSettings(node);
-        }
-
-        protected Deserializer(Class<MetaSettings> t) {
-            super(t);
-        }
-    }
 }

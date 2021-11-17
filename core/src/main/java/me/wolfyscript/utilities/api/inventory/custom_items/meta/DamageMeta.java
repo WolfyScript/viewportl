@@ -18,37 +18,30 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
-
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class DamageMeta extends Meta {
 
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("damage");
+
     public DamageMeta() {
-        setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.IGNORE, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
+        super(KEY);
+        setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
     }
 
     @Override
-    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
         ItemMeta metaOther = itemOther.getItemMeta();
         ItemMeta meta = item.getItemMeta();
-        switch (option) {
-            case EXACT:
-                return ((Damageable)metaOther).getDamage() == ((Damageable)meta).getDamage();
-            case IGNORE:
-                ((Damageable) metaOther).setDamage(0);
-                ((Damageable) meta).setDamage(0);
-                itemOther.setItemMeta(metaOther);
-                item.setItemMeta(meta);
-                return true;
-            case LOWER:
-                return ((Damageable) metaOther).getDamage() < ((Damageable) meta).getDamage();
-            case HIGHER:
-                return ((Damageable) metaOther).getDamage() > ((Damageable) meta).getDamage();
-            default:
-                return false;
-        }
+        return switch (option) {
+            case EXACT -> ((Damageable) metaOther).getDamage() == ((Damageable) meta).getDamage();
+            case LOWER -> ((Damageable) metaOther).getDamage() < ((Damageable) meta).getDamage();
+            case HIGHER -> ((Damageable) metaOther).getDamage() > ((Damageable) meta).getDamage();
+            default -> false;
+        };
     }
 }

@@ -185,10 +185,12 @@ public class ParticleEffect implements Keyed {
         this.extra = extra;
     }
 
+    @JsonGetter("timer")
     public Timer getTimeSupplier() {
         return timer;
     }
 
+    @JsonSetter("timer")
     public void setTimeSupplier(Timer timer) {
         this.timer = timer;
     }
