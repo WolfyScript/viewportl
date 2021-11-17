@@ -183,6 +183,7 @@ public class WUPlugin extends JavaPlugin {
         registerAPIReference(new ItemsAdderRef.Parser());
         registerAPIReference(new MythicMobsRef.Parser());
         registerAPIReference(new MMOItemsRef.Parser());
+        registerAPIReference(new MagicRef.Parser());
 
         var languageAPI = wolfyUtilities.getLanguageAPI();
 

@@ -2,6 +2,7 @@ name: WolfyUtilities
 api-version: 1.14
 version: ${project.version}
 author: WolfyScript
+main: me.wolfyscript.utilities.main.WUPlugin
 
 loadbefore:
   - CustomCrafting
@@ -10,6 +11,7 @@ loadbefore:
   - StackableItems
 
 softdepend:
+  - Magic
   - LWC
   - PlotSquared
   - WorldGuard
@@ -20,8 +22,6 @@ softdepend:
   - Oraxen
   - ItemsAdder
   - ExecutableItems
-
-main: me.wolfyscript.utilities.main.WUPlugin
 
 commands:
   wolfyutils:
