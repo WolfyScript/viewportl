@@ -93,6 +93,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
             if(!WolfyUtilities.hasPlugin(pluginParser.getPluginName())) {
                 return;
             }
+            pluginParser.init(Bukkit.getPluginManager().getPlugin(pluginParser.getPluginName()));
         }
         API_REFERENCE_PARSER.put(parser.getId(), parser);
         if (!parser.getAliases().isEmpty()) {
