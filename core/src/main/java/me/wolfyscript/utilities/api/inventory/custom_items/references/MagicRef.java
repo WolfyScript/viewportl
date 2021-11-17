@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import dev.lone.itemsadder.api.CustomStack;
+import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +31,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Links to an item from Magic.
+ */
 public class MagicRef extends APIReference {
 
     private final String itemKey;
@@ -44,9 +48,12 @@ public class MagicRef extends APIReference {
         this.itemKey = ref.itemKey;
     }
 
+    /**
+     * @return The item from Magic with the specified itemKey; or null if not available.
+     */
     @Override
     public ItemStack getLinkedItem() {
-        return Parser.magicAPI.createItem(itemKey);
+        return Objects.requireNonNullElse(Parser.magicAPI.createItem(itemKey), ItemUtils.AIR);
     }
 
     @Override
