@@ -19,7 +19,7 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +31,6 @@ public class MetaSettings {
 
     public static final String CHECKS_KEY = "checks";
 
-    @JsonProperty
     private final List<Meta> checks;
 
     /**
@@ -58,6 +57,7 @@ public class MetaSettings {
         return List.copyOf(checks);
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return checks.isEmpty();
     }
