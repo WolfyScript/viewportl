@@ -87,9 +87,9 @@ public class MagicRef extends APIReference {
 
         @Override
         public @Nullable MagicRef construct(ItemStack itemStack) {
-            var customStack = CustomStack.byItemStack(itemStack);
-            if (customStack != null) {
-                return new MagicRef(customStack.getNamespacedID());
+            String key = magicAPI.getItemKey(itemStack);
+            if(key != null && !key.isBlank()) {
+                return new MagicRef(key);
             }
             return null;
         }
