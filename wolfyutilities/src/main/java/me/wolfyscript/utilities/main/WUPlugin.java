@@ -133,20 +133,20 @@ public class WUPlugin extends JavaPlugin {
 
         //Register meta settings providers
         getLogger().info("Register CustomItem meta checks");
-        ClassRegistry.META_CHECKS.register(AttributesModifiersMeta.KEY, AttributesModifiersMeta.class);
-        ClassRegistry.META_CHECKS.register(CustomDamageMeta.KEY, CustomDamageMeta.class);
-        ClassRegistry.META_CHECKS.register(CustomDurabilityMeta.KEY, CustomDurabilityMeta.class);
-        ClassRegistry.META_CHECKS.register(CustomItemTagMeta.KEY, CustomItemTagMeta.class);
-        ClassRegistry.META_CHECKS.register(CustomModelDataMeta.KEY, CustomModelDataMeta.class);
-        ClassRegistry.META_CHECKS.register(DamageMeta.KEY, DamageMeta.class);
-        ClassRegistry.META_CHECKS.register(EnchantMeta.KEY, EnchantMeta.class);
-        ClassRegistry.META_CHECKS.register(FlagsMeta.KEY, FlagsMeta.class);
-        ClassRegistry.META_CHECKS.register(LoreMeta.KEY, LoreMeta.class);
-        ClassRegistry.META_CHECKS.register(NameMeta.KEY, NameMeta.class);
-        ClassRegistry.META_CHECKS.register(PlayerHeadMeta.KEY, PlayerHeadMeta.class);
-        ClassRegistry.META_CHECKS.register(PotionMeta.KEY, PotionMeta.class);
-        ClassRegistry.META_CHECKS.register(RepairCostMeta.KEY, RepairCostMeta.class);
-        ClassRegistry.META_CHECKS.register(UnbreakableMeta.KEY, UnbreakableMeta.class);
+        ClassRegistry.NBT_CHECKS.register(AttributesModifiersMeta.KEY, AttributesModifiersMeta.class);
+        ClassRegistry.NBT_CHECKS.register(CustomDamageMeta.KEY, CustomDamageMeta.class);
+        ClassRegistry.NBT_CHECKS.register(CustomDurabilityMeta.KEY, CustomDurabilityMeta.class);
+        ClassRegistry.NBT_CHECKS.register(CustomItemTagMeta.KEY, CustomItemTagMeta.class);
+        ClassRegistry.NBT_CHECKS.register(CustomModelDataMeta.KEY, CustomModelDataMeta.class);
+        ClassRegistry.NBT_CHECKS.register(DamageMeta.KEY, DamageMeta.class);
+        ClassRegistry.NBT_CHECKS.register(EnchantMeta.KEY, EnchantMeta.class);
+        ClassRegistry.NBT_CHECKS.register(FlagsMeta.KEY, FlagsMeta.class);
+        ClassRegistry.NBT_CHECKS.register(LoreMeta.KEY, LoreMeta.class);
+        ClassRegistry.NBT_CHECKS.register(NameMeta.KEY, NameMeta.class);
+        ClassRegistry.NBT_CHECKS.register(PlayerHeadMeta.KEY, PlayerHeadMeta.class);
+        ClassRegistry.NBT_CHECKS.register(PotionMeta.KEY, PotionMeta.class);
+        ClassRegistry.NBT_CHECKS.register(RepairCostMeta.KEY, RepairCostMeta.class);
+        ClassRegistry.NBT_CHECKS.register(UnbreakableMeta.KEY, UnbreakableMeta.class);
 
         ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorBasic.KEY, AnimatorBasic.class);
         ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorSphere.KEY, AnimatorSphere.class);
@@ -156,7 +156,7 @@ public class WUPlugin extends JavaPlugin {
         ClassRegistry.PARTICLE_TIMER.register(TimerRandom.KEY, TimerRandom.class);
         ClassRegistry.PARTICLE_TIMER.register(TimerPi.KEY, TimerPi.class);
 
-        KeyedTypeIdResolver.registerTypeRegistry(Meta.class, ClassRegistry.META_CHECKS);
+        KeyedTypeIdResolver.registerTypeRegistry(Meta.class, ClassRegistry.NBT_CHECKS);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, ClassRegistry.PARTICLE_ANIMATORS);
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, ClassRegistry.PARTICLE_TIMER);
     }

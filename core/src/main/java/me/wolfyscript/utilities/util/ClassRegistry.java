@@ -43,7 +43,7 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<? extends
 
     SimpleClassRegistry<Animator> PARTICLE_ANIMATORS = new SimpleClassRegistry<>();
     SimpleClassRegistry<Timer> PARTICLE_TIMER = new SimpleClassRegistry<>();
-    SimpleClassRegistry<Meta> META_CHECKS = new SimpleClassRegistry<>();
+    SimpleClassRegistry<Meta> NBT_CHECKS = new SimpleClassRegistry<>();
 
     /**
      * Get the value of the registry by it's {@link NamespacedKey}
