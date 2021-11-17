@@ -28,6 +28,7 @@ public class CustomDamageMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("custom_damage");
 
     public CustomDamageMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
     }

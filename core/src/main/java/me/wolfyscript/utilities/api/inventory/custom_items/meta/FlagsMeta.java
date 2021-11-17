@@ -26,6 +26,7 @@ public class FlagsMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("flags");
 
     public FlagsMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT);
     }

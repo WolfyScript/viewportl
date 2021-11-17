@@ -18,10 +18,7 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
@@ -41,14 +38,19 @@ import java.util.Objects;
 @JsonTypeResolver(KeyedTypeResolver.class)
 @JsonTypeIdResolver(KeyedTypeIdResolver.class)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "key")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonPropertyOrder("key")
 public abstract class Meta implements Keyed {
 
-    protected MetaSettings.Option option;
+    protected MetaSettings.Option option = MetaSettings.Option.EXACT;
 
-    private NamespacedKey key;
+    private final NamespacedKey key;
     @JsonIgnore
-    private List<MetaSettings.Option> availableOptions;
+    private List<MetaSettings.Option> availableOptions = List.of(MetaSettings.Option.EXACT);
+
+    protected Meta(NamespacedKey key) {
+        this.key = key;
+    }
 
     public MetaSettings.Option getOption() {
         return option;
@@ -112,8 +114,7 @@ public abstract class Meta implements Keyed {
 
         public M provide() {
             try {
-                M meta = type.getDeclaredConstructor().newInstance();
-                return meta;
+                return type.getDeclaredConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }

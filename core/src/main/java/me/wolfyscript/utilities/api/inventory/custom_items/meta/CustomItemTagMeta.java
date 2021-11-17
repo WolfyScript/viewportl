@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
@@ -29,8 +30,20 @@ public class CustomItemTagMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("customitem_tag");
 
     public CustomItemTagMeta() {
-        setOption(MetaSettings.Option.EXACT);
+        super(KEY);
         setAvailableOptions(MetaSettings.Option.EXACT);
+    }
+
+    @JsonIgnore
+    @Override
+    public MetaSettings.Option getOption() {
+        return super.getOption();
+    }
+
+    @JsonIgnore
+    @Override
+    public void setOption(MetaSettings.Option option) {
+        super.setOption(MetaSettings.Option.EXACT);
     }
 
     @Override

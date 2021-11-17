@@ -28,6 +28,7 @@ public class PlayerHeadMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("player_head");
 
     public PlayerHeadMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT);
     }

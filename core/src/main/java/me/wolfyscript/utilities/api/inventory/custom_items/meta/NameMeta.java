@@ -27,6 +27,7 @@ public class NameMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("name");
 
     public NameMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT);
     }

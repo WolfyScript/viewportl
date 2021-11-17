@@ -30,6 +30,7 @@ public class LoreMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("lore");
 
     public LoreMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT);
     }

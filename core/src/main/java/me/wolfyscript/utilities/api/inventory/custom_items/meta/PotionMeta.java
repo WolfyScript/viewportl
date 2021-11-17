@@ -30,6 +30,7 @@ public class PotionMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("potion");
 
     public PotionMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT);
     }

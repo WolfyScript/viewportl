@@ -29,6 +29,7 @@ public class RepairCostMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("repair_cost");
 
     public RepairCostMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
     }

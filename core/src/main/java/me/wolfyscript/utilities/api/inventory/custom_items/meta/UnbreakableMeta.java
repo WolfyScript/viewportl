@@ -28,6 +28,7 @@ public class UnbreakableMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("unbreakable");
 
     public UnbreakableMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT);
     }

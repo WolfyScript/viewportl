@@ -31,6 +31,7 @@ public class AttributesModifiersMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("attributes_modifiers");
 
     public AttributesModifiersMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT);
     }

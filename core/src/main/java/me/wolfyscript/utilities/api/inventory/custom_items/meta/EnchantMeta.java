@@ -28,6 +28,7 @@ public class EnchantMeta extends Meta {
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("enchant");
 
     public EnchantMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT);
     }

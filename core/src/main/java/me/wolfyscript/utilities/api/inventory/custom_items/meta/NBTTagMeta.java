@@ -18,11 +18,15 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 
 public class NBTTagMeta extends Meta {
 
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("player_head");
+
     public NBTTagMeta() {
+        super(KEY);
         setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT);
     }
