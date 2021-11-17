@@ -75,7 +75,6 @@ public class MagicRef extends APIReference {
 
         public Parser() {
             super("Magic", "magic");
-
         }
 
         @Override
