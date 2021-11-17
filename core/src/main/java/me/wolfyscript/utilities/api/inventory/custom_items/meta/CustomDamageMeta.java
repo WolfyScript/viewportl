@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.inventory.meta.Damageable;
@@ -29,12 +30,11 @@ public class CustomDamageMeta extends Meta {
 
     public CustomDamageMeta() {
         super(KEY);
-        setOption(MetaSettings.Option.EXACT);
         setAvailableOptions(MetaSettings.Option.EXACT, MetaSettings.Option.HIGHER, MetaSettings.Option.LOWER);
     }
 
     @Override
-    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
         boolean meta0 = item.hasCustomDurability();
         boolean meta1 = itemOther.hasCustomDurability();
         if (meta0 && meta1) {

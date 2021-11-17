@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -31,12 +32,10 @@ public class PotionMeta extends Meta {
 
     public PotionMeta() {
         super(KEY);
-        setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     @Override
-    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
         ItemMeta meta1 = itemOther.getItemMeta();
         ItemMeta meta2 = item.getItemMeta();
         if (meta2 instanceof org.bukkit.inventory.meta.PotionMeta) {

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
@@ -42,9 +43,9 @@ import java.util.Objects;
 @JsonPropertyOrder("key")
 public abstract class Meta implements Keyed {
 
-    protected MetaSettings.Option option = MetaSettings.Option.EXACT;
-
     private final NamespacedKey key;
+
+    protected MetaSettings.Option option = MetaSettings.Option.EXACT;
     @JsonIgnore
     private List<MetaSettings.Option> availableOptions = List.of(MetaSettings.Option.EXACT);
 
@@ -75,7 +76,12 @@ public abstract class Meta implements Keyed {
         }
     }
 
-    public abstract boolean check(ItemBuilder itemOther, ItemBuilder item);
+    @Deprecated
+    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+        return true;
+    }
+
+    public abstract boolean check(CustomItem item, ItemBuilder itemOther);
 
     @Override
     public boolean equals(Object o) {

@@ -31,7 +31,6 @@ public class CustomItemTagMeta extends Meta {
 
     public CustomItemTagMeta() {
         super(KEY);
-        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     @JsonIgnore
@@ -47,7 +46,7 @@ public class CustomItemTagMeta extends Meta {
     }
 
     @Override
-    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
         var key = CustomItem.getKeyOfItemMeta(item.getItemMeta());
         var keyOther = CustomItem.getKeyOfItemMeta(itemOther.getItemMeta());
         if (key != null) {

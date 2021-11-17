@@ -595,9 +595,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     public boolean isSimilar(ItemStack otherItem, boolean exactMeta, boolean ignoreAmount) {
         if (otherItem != null && otherItem.getType().equals(this.type) && (ignoreAmount || otherItem.getAmount() >= getAmount())) {
             if (hasNamespacedKey()) {
-                var customItem = new ItemBuilder(getItemStack());
-                var customItemOther = new ItemBuilder(otherItem);
-                return getMetaSettings().check(customItemOther, customItem);
+                return getMetaSettings().check(this, new ItemBuilder(otherItem));
             }
             return (!(getApiReference() instanceof VanillaRef) || (exactMeta || hasItemMeta())) && getApiReference().isValidItem(otherItem);
         }

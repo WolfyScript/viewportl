@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 
@@ -27,12 +28,10 @@ public class NBTTagMeta extends Meta {
 
     public NBTTagMeta() {
         super(KEY);
-        setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     @Override
-    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
         //TODO
         return true;
     }

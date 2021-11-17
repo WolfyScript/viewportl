@@ -21,6 +21,7 @@ package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,7 +64,11 @@ public class MetaSettings {
     }
 
     public boolean check(ItemBuilder itemOther, ItemBuilder item) {
-        return checks.stream().allMatch(meta -> meta.check(itemOther, item));
+        return true;
+    }
+
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
+        return checks.stream().allMatch(meta -> meta.check(item, itemOther));
     }
 
     public enum Option {
@@ -72,7 +77,7 @@ public class MetaSettings {
          * This option was originally used to indicate if the meta check should be active.
          * Now it is no longer used (Only to convert old data), because checks that are not added to the settings are well... not checked anyway.
          */
-        @Deprecated(forRemoval = true) IGNORE,
+        @Deprecated IGNORE,
         HIGHER,
         HIGHER_EXACT,
         LOWER,

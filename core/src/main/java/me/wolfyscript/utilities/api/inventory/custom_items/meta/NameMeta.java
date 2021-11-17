@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,12 +29,10 @@ public class NameMeta extends Meta {
 
     public NameMeta() {
         super(KEY);
-        setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     @Override
-    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
         ItemMeta metaOther = itemOther.getItemMeta();
         ItemMeta meta = item.getItemMeta();
         if (meta.hasDisplayName()) {

@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.meta;
 
 
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 
@@ -31,12 +32,10 @@ public class LoreMeta extends Meta {
 
     public LoreMeta() {
         super(KEY);
-        setOption(MetaSettings.Option.EXACT);
-        setAvailableOptions(MetaSettings.Option.EXACT);
     }
 
     @Override
-    public boolean check(ItemBuilder itemOther, ItemBuilder item) {
+    public boolean check(CustomItem item, ItemBuilder itemOther) {
         return Objects.equals(item.getItemMeta().getLore(), itemOther.getItemMeta().getLore());
     }
 }
