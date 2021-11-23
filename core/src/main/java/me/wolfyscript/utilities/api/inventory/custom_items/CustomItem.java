@@ -142,6 +142,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     @JsonAlias("particles")
     private ParticleContent particleContent;
 
+    private boolean clearOldMetaSettings = false;
+
     @JsonCreator
     public CustomItem(@JsonProperty("apiReference") @JsonAlias({"item", "api_reference"}) APIReference apiReference) {
         super(CustomItem.class);
@@ -170,32 +172,36 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
 
     @JsonAnySetter
     protected void setOldProperties(String fieldKey, JsonNode value) throws JsonProcessingException {
-        if (fieldKey.equals("metaSettings") || fieldKey.equals("meta")) {
+        if (fieldKey.equals("advanced")) {
+            clearOldMetaSettings = !value.asBoolean();
+        } else if (fieldKey.equals("metaSettings") || fieldKey.equals("meta")) {
             //Since the new system has its new field we need to update old appearances to the new system.
             JsonNode node = value.isTextual() ? JacksonUtil.getObjectMapper().readTree(value.asText()) : value;
             final List<Meta> checks;
             if (!node.has(MetaSettings.CHECKS_KEY)) {
                 checks = new ArrayList<>();
-                //Convert old meta to new format.
-                node.fields().forEachRemaining(entry -> {
-                    if (entry.getValue() instanceof ObjectNode entryVal) {
-                        String key = entry.getKey().toLowerCase(Locale.ROOT);
-                        NamespacedKey namespacedKey = key.contains(":") ? NamespacedKey.of(key) : NamespacedKey.wolfyutilties(key);
-                        if (namespacedKey != null) {
-                            entryVal.put("key", String.valueOf(namespacedKey));
-                            Meta meta = JacksonUtil.getObjectMapper().convertValue(entryVal, Meta.class);
-                            if (meta != null && !meta.getOption().equals(MetaSettings.Option.IGNORE)) {
-                                checks.add(meta);
+                if (!clearOldMetaSettings) {
+                    //Convert old meta to new format.
+                    node.fields().forEachRemaining(entry -> {
+                        if (entry.getValue() instanceof ObjectNode entryVal) {
+                            String key = entry.getKey().toLowerCase(Locale.ROOT);
+                            NamespacedKey namespacedKey = key.contains(":") ? NamespacedKey.of(key) : NamespacedKey.wolfyutilties(key);
+                            if (namespacedKey != null) {
+                                entryVal.put("key", String.valueOf(namespacedKey));
+                                Meta meta = JacksonUtil.getObjectMapper().convertValue(entryVal, Meta.class);
+                                if (meta != null && !meta.getOption().equals(MetaSettings.Option.IGNORE)) {
+                                    checks.add(meta);
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             } else {
                 checks = JacksonUtil.getObjectMapper().convertValue(node.get(MetaSettings.CHECKS_KEY), new TypeReference<>() {});
             }
             var nbtChecks = new MetaSettings();
             checks.forEach(nbtChecks::addCheck);
-            this.nbtChecks = nbtChecks;
+            setMetaSettings(nbtChecks);
         }
     }
 
