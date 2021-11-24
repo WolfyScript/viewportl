@@ -47,6 +47,7 @@ import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -780,14 +781,27 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @param replaceWithRemains If the Item should be replaced by the default craft remains (Only for un-stackable items).
      */
     public void remove(ItemStack input, int totalAmount, Inventory inventory, Location location, boolean replaceWithRemains) {
-        if (this.type.getMaxStackSize() > 1) {
+        remove(input, totalAmount, inventory, null, location, replaceWithRemains);
+    }
+
+    /**
+     *
+     * @param input
+     * @param totalAmount
+     * @param inventory
+     * @param player The player that caused this interaction. If the players' inventory has space the craft remains are put there.
+     * @param location
+     * @param replaceWithRemains
+     */
+    public void remove(ItemStack input, int totalAmount, Inventory inventory, Player player, Location location, boolean replaceWithRemains) {
+        if (this.type.getMaxStackSize() == 1 && input.getAmount() == 1) {
+            removeUnStackableItem(input, replaceWithRemains);
+        } else {
             int amount = input.getAmount() - getAmount() * totalAmount;
             if (this.isConsumed()) {
                 input.setAmount(amount);
             }
-            applyStackableReplacement(totalAmount, inventory, location);
-        } else {
-            removeUnStackableItem(input, replaceWithRemains);
+            applyStackableReplacement(totalAmount, replaceWithRemains, player, inventory, location);
         }
     }
 
@@ -891,10 +905,20 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         return input;
     }
 
-    private void applyStackableReplacement(int totalAmount, Inventory inventory, Location location) {
+    private void applyStackableReplacement(int totalAmount, boolean replaceWithRemains, @Nullable Player player, @Nullable Inventory inventory, @Nullable Location location) {
+        ItemStack replacement = isConsumed() && replaceWithRemains && craftRemain != null ? new ItemStack(craftRemain) : null;
         if (this.hasReplacement()) {
-            var replacement = new CustomItem(getReplacement()).create();
+            replacement = new CustomItem(getReplacement()).create();
+        }
+        if(replacement != null) {
             replacement.setAmount(replacement.getAmount() * totalAmount);
+            if (player != null) {
+                var playerInv = player.getInventory();
+                if (InventoryUtils.hasInventorySpace(playerInv, replacement)) {
+                    playerInv.addItem(replacement);
+                    return;
+                }
+            }
             if (location == null) {
                 if (inventory == null) return;
                 if (InventoryUtils.hasInventorySpace(inventory, replacement)) {
