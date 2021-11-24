@@ -47,7 +47,7 @@ public class CustomItemTagMeta extends Meta {
 
     @Override
     public boolean check(CustomItem item, ItemBuilder itemOther) {
-        var key = CustomItem.getKeyOfItemMeta(item.getItemMeta());
+        var key = item.getNamespacedKey();
         var keyOther = CustomItem.getKeyOfItemMeta(itemOther.getItemMeta());
         if (key != null) {
             return keyOther != null && Objects.equals(key, keyOther);
