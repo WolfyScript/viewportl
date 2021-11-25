@@ -92,7 +92,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      */
     public static void registerAPIReferenceParser(APIReference.Parser<?> parser) {
         if (parser instanceof APIReference.PluginParser pluginParser) {
-            if(!WolfyUtilities.hasPlugin(pluginParser.getPluginName())) {
+            if (!WolfyUtilities.hasPlugin(pluginParser.getPluginName())) {
                 return;
             }
             pluginParser.init(Bukkit.getPluginManager().getPlugin(pluginParser.getPluginName()));
@@ -198,7 +198,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                     });
                 }
             } else {
-                checks = JacksonUtil.getObjectMapper().convertValue(node.get(MetaSettings.CHECKS_KEY), new TypeReference<>() {});
+                checks = JacksonUtil.getObjectMapper().convertValue(node.get(MetaSettings.CHECKS_KEY), new TypeReference<>() {
+                });
             }
             var nbtChecks = new MetaSettings();
             checks.forEach(nbtChecks::addCheck);
@@ -751,24 +752,80 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     * Removes the specified amount from the input ItemStack inside a inventory!
+     * Removes the specified amount from the input ItemStack inside an inventory!
      * <p>
-     * This method will directly edit the input ItemStack and won't return a result value.
+     * This method will directly edit the input ItemStack (Change it's type, amount, etc.) and won't return a result value!
      *
      * <p>
-     * <strong>Stackable:</strong><br>
+     * <b>Stackable</b>  ({@linkplain Material#getMaxStackSize()} > 1 or input ItemStack amount > 1)<b>:</b><br>
      * The amount removed from the input ItemStack is equals to <strong><code>{@link #getAmount()} * totalAmount</code></strong>
      * <p>
-     * If the custom item has a replacement:
+     * If the custom item has a replacement/craft remain:
      * <ul>
-     *     <li><b>If location is null and inventory is not null,</b> then it will try to add the item to the inventory. When inventory is full it will try to get the location from the inventory and if valid drops the items at that location instead.</li>
-     *     <li><b>If location is not null,</b> then it will drop the items at that location.</li>
-     *     <li><b>If location and inventory are null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
+     *     <li><b>Player is not null: </b>Tries to add the item/s to the players inventory. If there is no space it will drop the item at the position of the player.</li>
+     *     <li><b>Player is null:</b>
+     *          <ul>
+     *              <li>
+     *                  <b>Location is null, Inventory is not null:</b> Tries to add the item/s to the inventory.<br>
+     *                  If there is no space, it tries to get the location of the inventory to drop the item/s there instead.<br>
+     *                  In case the inventory has no location, the item/s are not dropped and will be lost! Be careful with this!
+     *              </li>
+     *              <li><b>Location is not null: </b>Drops the items at that location.</li>
+     *              <li><b>Location and Inventory is null: </b>Item/s are neither added to an inventory or dropped.</li>
+     *          </ul>
+     *     </li>
      * </ul>
      * </p>
      * </p>
      *     <p>
-     *         <strong>Un-stackable:</strong><br>
+     *         <b>Un-stackable</b>  ({@linkplain Material#getMaxStackSize()} == 1 and input ItemStack amount == 1)<b>:</b><br>
+     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack, boolean)} method.<br>
+     *     </p>
+     * </p>
+     * <br>
+     *
+     * @param input              The input ItemStack, that is also going to be edited.
+     * @param totalAmount        The amount of this custom item that should be removed from the input.
+     * @param inventory          The optional inventory to add the replacements to. (Only for stackable items)
+     * @param player             The player to give the items to. If the players' inventory has space the craft remains are added. (Only for stackable items)
+     * @param location           The location where the replacements should be dropped. (Only for stackable items)
+     * @param replaceWithRemains If the Item should be replaced by the default craft remains (Only for un-stackable items).
+     */
+    public void remove(ItemStack input, int totalAmount, @Nullable Inventory inventory, @Nullable Player player, @Nullable Location location, boolean replaceWithRemains) {
+        if (this.type.getMaxStackSize() == 1 && input.getAmount() == 1) {
+            removeUnStackableItem(input, replaceWithRemains);
+        } else {
+            int amount = input.getAmount() - getAmount() * totalAmount;
+            if (this.isConsumed()) {
+                input.setAmount(amount);
+            }
+            applyStackableReplacement(totalAmount, replaceWithRemains, player, inventory, location);
+        }
+    }
+
+    /**
+     * Removes the specified amount from the input ItemStack inside an inventory!
+     * <p>
+     * This method will directly edit the input ItemStack (Change it's type, amount, etc.) and won't return a result value!
+     *
+     * <p>
+     * <b>Stackable</b>  ({@linkplain Material#getMaxStackSize()} > 1 or input ItemStack amount > 1)<b>:</b><br>
+     * The amount removed from the input ItemStack is equals to <strong><code>{@link #getAmount()} * totalAmount</code></strong>
+     * <p>
+     * If the custom item has a replacement/craft remain:
+     * <ul>
+     *      <li>
+     *          <b>Location is null, Inventory is not null:</b> Tries to add the item/s to the inventory.<br>
+     *          If there is no space, it tries to get the location of the inventory to drop the item/s there instead.<br>
+     *          In case the inventory has no location, the item/s are not dropped and will be lost! Be careful with this!
+     *      </li>
+     *      <li><b>Location is not null: </b>Drops the items at that location.</li>
+     *      <li><b>Location and Inventory is null: </b>Item/s are neither added to an inventory or dropped.</li>
+     * </ul>
+     * </p>
+     * </p>
+     *     <p>
+     *         <b>Un-stackable</b>  ({@linkplain Material#getMaxStackSize()} == 1 and input ItemStack amount == 1)<b>:</b><br>
      *         This method will redirect to the {@link #removeUnStackableItem(ItemStack, boolean)} method.<br>
      *     </p>
      * </p>
@@ -785,54 +842,37 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     *
-     * @param input
-     * @param totalAmount
-     * @param inventory
-     * @param player The player that caused this interaction. If the players' inventory has space the craft remains are put there.
-     * @param location
-     * @param replaceWithRemains
-     */
-    public void remove(ItemStack input, int totalAmount, Inventory inventory, Player player, Location location, boolean replaceWithRemains) {
-        if (this.type.getMaxStackSize() == 1 && input.getAmount() == 1) {
-            removeUnStackableItem(input, replaceWithRemains);
-        } else {
-            int amount = input.getAmount() - getAmount() * totalAmount;
-            if (this.isConsumed()) {
-                input.setAmount(amount);
-            }
-            applyStackableReplacement(totalAmount, replaceWithRemains, player, inventory, location);
-        }
-    }
-
-    /**
-     * Removes the specified amount from the input ItemStack inside a inventory!
+     * Removes the specified amount from the input ItemStack inside an inventory!
      * <p>
-     * This method will directly edit the input ItemStack and won't return a result value.
+     * This method will directly edit the input ItemStack (Change it's type, amount, etc.) and won't return a result value!
      *
      * <p>
-     * <strong>Stackable:</strong><br>
+     * <b>Stackable</b>  ({@linkplain Material#getMaxStackSize()} > 1 or input ItemStack amount > 1)<b>:</b><br>
      * The amount removed from the input ItemStack is equals to <strong><code>{@link #getAmount()} * totalAmount</code></strong>
      * <p>
-     * If the custom item has a replacement:
+     * If the custom item has a replacement/craft remain:
      * <ul>
-     *     <li><b>If location is null and inventory is not null,</b> then it will try to add the item to the inventory. When inventory is full it will try to get the location from the inventory and if valid drops the items at that location instead.</li>
-     *     <li><b>If location is not null,</b> then it will drop the items at that location.</li>
-     *     <li><b>If location and inventory are null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
+     *      <li>
+     *          <b>Location is null, Inventory is not null:</b> Tries to add the item/s to the inventory.<br>
+     *          If there is no space, it tries to get the location of the inventory to drop the item/s there instead.<br>
+     *          In case the inventory has no location, the item/s are not dropped and will be lost! Be careful with this!
+     *      </li>
+     *      <li><b>Location is not null: </b>Drops the items at that location.</li>
+     *      <li><b>Location and Inventory is null: </b>Item/s are neither added to an inventory or dropped.</li>
      * </ul>
      * </p>
      * </p>
      *     <p>
-     *         <strong>Un-stackable:</strong><br>
-     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack)} method and replaces the item with it's craft remains if available.
+     *         <b>Un-stackable</b>  ({@linkplain Material#getMaxStackSize()} == 1 and input ItemStack amount == 1)<b>:</b><br>
+     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack, boolean)} method.<br>
      *     </p>
      * </p>
      * <br>
      *
-     * @param input       The input ItemStack, that is also going to be edited.
-     * @param totalAmount The amount of this custom item that should be removed from the input.
-     * @param inventory   The optional inventory to add the replacements to. (Only for stackable items)
-     * @param location    The location where the replacements should be dropped. (Only for stackable items)
+     * @param input              The input ItemStack, that is also going to be edited.
+     * @param totalAmount        The amount of this custom item that should be removed from the input.
+     * @param inventory          The optional inventory to add the replacements to. (Only for stackable items)
+     * @param location           The location where the replacements should be dropped. (Only for stackable items)
      * @see #remove(ItemStack, int, Inventory, Location, boolean)
      */
     public void remove(ItemStack input, int totalAmount, Inventory inventory, Location location) {
@@ -840,24 +880,28 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     * Removes the specified amount from the input ItemStack inside a inventory!
+     * Removes the specified amount from the input ItemStack inside an inventory!
      * <p>
-     * This method will directly edit the input ItemStack and won't return a result value.
+     * This method will directly edit the input ItemStack (Change it's type, amount, etc.) and won't return a result value!
      *
      * <p>
-     * <strong>Stackable:</strong><br>
+     * <b>Stackable</b>  ({@linkplain Material#getMaxStackSize()} > 1 or input ItemStack amount > 1)<b>:</b><br>
      * The amount removed from the input ItemStack is equals to <strong><code>{@link #getAmount()} * totalAmount</code></strong>
      * <p>
-     * If the custom item has a replacement:
+     * If the custom item has a replacement/craft remain:
      * <ul>
-     *     <li><b>If the inventory is not null,</b> then it will try to add the item to the inventory. When inventory is full it will try to get the location from the inventory and if valid drops the items at that location instead.</li>
-     *     <li><b>If the inventory is null,</b> then the replacement items are neither dropped nor added to the inventory!</li>
+     *      <li>
+     *          <b>Inventory is not null:</b> Tries to add the item/s to the inventory.<br>
+     *          If there is no space, it tries to get the location of the inventory to drop the item/s there instead.<br>
+     *          In case the inventory has no location, the item/s are not dropped and will be lost! Be careful with this!
+     *      </li>
+     *      <li><b>Inventory is null: </b>Item/s are neither added to an inventory or dropped.</li>
      * </ul>
      * </p>
      * </p>
      *     <p>
-     *         <strong>Un-stackable:</strong><br>
-     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack)} method and replaces the item with it's craft remains if available.
+     *         <b>Un-stackable</b>  ({@linkplain Material#getMaxStackSize()} == 1 and input ItemStack amount == 1)<b>:</b><br>
+     *         This method will redirect to the {@link #removeUnStackableItem(ItemStack, boolean)} method.<br>
      *     </p>
      * </p>
      * <br>
@@ -908,9 +952,10 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     private void applyStackableReplacement(int totalAmount, boolean replaceWithRemains, @Nullable Player player, @Nullable Inventory inventory, @Nullable Location location) {
         ItemStack replacement = isConsumed() && replaceWithRemains && craftRemain != null ? new ItemStack(craftRemain) : null;
         if (this.hasReplacement()) {
+            assert getReplacement() != null;
             replacement = new CustomItem(getReplacement()).create();
         }
-        if(replacement != null) {
+        if (replacement != null) {
             replacement.setAmount(replacement.getAmount() * totalAmount);
             if (player != null) {
                 var playerInv = player.getInventory();
@@ -918,6 +963,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                     playerInv.addItem(replacement);
                     return;
                 }
+                location = player.getLocation();
             }
             if (location == null) {
                 if (inventory == null) return;
@@ -1136,7 +1182,8 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @deprecated This feature was removed. This method is still here in case anyone used it.
      */
     @Deprecated(forRemoval = true)
-    public void setAdvanced(boolean advanced) {}
+    public void setAdvanced(boolean advanced) {
+    }
 
     /**
      * Gets the amount of the linked ItemStack or if the custom amount
