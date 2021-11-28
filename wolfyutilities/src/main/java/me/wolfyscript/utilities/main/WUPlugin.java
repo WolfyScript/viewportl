@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.main;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.console.Console;
@@ -67,15 +68,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 
-public class WUPlugin extends JavaPlugin {
+public class WUPlugin extends WolfyUtilCore {
 
+    @Deprecated
     private static WUPlugin instance;
-
-    private final WolfyUtilities wolfyUtilities;
 
     private final Chat chat;
     private final Console console;
@@ -88,22 +87,20 @@ public class WUPlugin extends JavaPlugin {
     public WUPlugin() {
         super();
         instance = this;
-        this.wolfyUtilities = WolfyUtilities.get(this);
-        ServerVersion.setWUVersion(getDescription().getVersion());
-        this.chat = wolfyUtilities.getChat();
-        this.console = wolfyUtilities.getConsole();
+        this.chat = api.getChat();
+        this.console = api.getConsole();
         chat.setInGamePrefix("§8[§3WU§8] §7");
-
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
     }
 
+    @Deprecated
     public static WUPlugin getInstance() {
         return instance;
     }
 
     public WolfyUtilities getWolfyUtilities() {
-        return wolfyUtilities;
+        return api;
     }
 
     @Override
@@ -163,11 +160,11 @@ public class WUPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.wolfyUtilities.initialize();
+        this.api.initialize();
         console.info("Minecraft version: " + ServerVersion.getVersion().getVersion());
         console.info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
         console.info("Environment: " + WolfyUtilities.getENVIRONMENT());
-        this.config = new WUConfig(wolfyUtilities.getConfigAPI(), this);
+        this.config = new WUConfig(api.getConfigAPI(), this);
 
         this.metrics = new Metrics(this, 5114);
 
@@ -181,7 +178,7 @@ public class WUPlugin extends JavaPlugin {
         registerAPIReference(new MMOItemsRef.Parser());
         registerAPIReference(new MagicRef.Parser());
 
-        var languageAPI = wolfyUtilities.getLanguageAPI();
+        var languageAPI = api.getLanguageAPI();
 
         saveResource("lang/en_US.json", true);
         languageAPI.setActiveLanguage(new Language(this, "en_US"));
@@ -209,7 +206,7 @@ public class WUPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        wolfyUtilities.getConfigAPI().saveConfigs();
+        api.getConfigAPI().saveConfigs();
         PlayerUtils.saveStores();
         console.info("Save stored Custom Items");
         WorldUtils.save();
@@ -222,7 +219,7 @@ public class WUPlugin extends JavaPlugin {
 
     private void registerListeners() {
         Bukkit.getPluginManager().registerEvents(new Chat.ChatListener(), this);
-        Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(), this);
+        Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(this), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new EquipListener(), this);
@@ -231,10 +228,10 @@ public class WUPlugin extends JavaPlugin {
     }
 
     private void registerCommands() {
-        Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand(wolfyUtilities));
-        Bukkit.getServer().getPluginCommand("particle_animation").setExecutor(new SpawnParticleAnimationCommand(wolfyUtilities));
-        Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand());
-        Bukkit.getServer().getPluginCommand("wui").setTabCompleter(new InputCommand());
+        Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand(api));
+        Bukkit.getServer().getPluginCommand("particle_animation").setExecutor(new SpawnParticleAnimationCommand(api));
+        Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand(this));
+        Bukkit.getServer().getPluginCommand("wui").setTabCompleter(new InputCommand(this));
         Bukkit.getServer().getPluginCommand("wua").setExecutor(new ChatActionCommand());
     }
 
@@ -269,7 +266,7 @@ public class WUPlugin extends JavaPlugin {
 
         var itemStack = itemBuilder.create();
 
-        var nbt = wolfyUtilities.getNmsUtil().getNBTUtil();
+        var nbt = api.getNmsUtil().getNBTUtil();
         var nbtItem = nbt.getItem(itemStack);
 
         nbtItem.setTag("test_string", nbt.getTag().ofString("Test String!"));
