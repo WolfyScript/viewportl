@@ -29,6 +29,12 @@ import org.bukkit.event.player.PlayerItemMendEvent;
 
 public class CustomDurabilityListener implements Listener {
 
+    private final WUPlugin plugin;
+
+    public CustomDurabilityListener(WUPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     @EventHandler
     public void onDamage(PlayerItemDamageEvent event) {
         var customItem = new CustomItem(event.getItem());
@@ -51,7 +57,7 @@ public class CustomDurabilityListener implements Listener {
         if (customItem.hasCustomDurability()) {
             int repairAmount = Math.min(event.getExperienceOrb().getExperience() * 2, customItem.getCustomDamage());
             int finalTotalDmg = Math.max(0, customItem.getCustomDamage() - repairAmount);
-            Bukkit.getScheduler().runTask(WUPlugin.getInstance(), () -> customItem.setCustomDamage(finalTotalDmg));
+            Bukkit.getScheduler().runTask(plugin, () -> customItem.setCustomDamage(finalTotalDmg));
         }
     }
 }
