@@ -28,22 +28,21 @@ import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.api.network.messages.MessageAPI;
 import me.wolfyscript.utilities.api.nms.NMSUtil;
+import me.wolfyscript.utilities.registry.Registries;
 import me.wolfyscript.utilities.util.exceptions.InvalidCacheTypeException;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class WolfyUtilities {
 
     private static final String ENVIRONMENT = System.getProperties().getProperty("com.wolfyscript.env", "PROD");
 
-    private static final HashMap<Plugin, WolfyUtilities> wolfyUtilitiesList = new HashMap<>();
-    private static final HashMap<String, Boolean> classes = new HashMap<>();
+    private static final Map<String, Boolean> classes = new HashMap<>();
 
     public static String getENVIRONMENT() {
         return ENVIRONMENT;
@@ -89,20 +88,8 @@ public class WolfyUtilities {
         return hasPlugin("mcMMO");
     }
 
-    /**
-     * @param plugin The plugin to check for WolfyUtilities
-     * @return If the plugin has a registered WolfyUtilities instance associated with it
-     */
-    public static boolean has(Plugin plugin) {
-        return wolfyUtilitiesList.containsKey(plugin);
-    }
-
-    public static List<WolfyUtilities> getAPIList() {
-        return new ArrayList<>(wolfyUtilitiesList.values());
-    }
-
+    private final WolfyUtilCore core;
     private final Plugin plugin;
-
     private String dataBasePrefix;
     private final ConfigAPI configAPI;
     private InventoryAPI<?> inventoryAPI;
@@ -116,11 +103,9 @@ public class WolfyUtilities {
     private final NMSUtil nmsUtil;
     private final boolean initialize;
 
-    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> cacheType, boolean initialize) {
+    WolfyUtilities(WolfyUtilCore core, Plugin plugin, Class<? extends CustomCache> cacheType, boolean initialize) {
         this.plugin = plugin;
-        if (!has(plugin)) {
-            wolfyUtilitiesList.put(plugin, this);
-        }
+        this.core = core;
         this.dataBasePrefix = plugin.getName().toLowerCase(Locale.ROOT) + "_";
         this.configAPI = new ConfigAPI(this);
         this.languageAPI = new LanguageAPI(this);
@@ -138,16 +123,20 @@ public class WolfyUtilities {
         }
     }
 
-    private WolfyUtilities(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
-        this(plugin, customCacheClass, false);
+    WolfyUtilities(WolfyUtilCore core, Plugin plugin, Class<? extends CustomCache> customCacheClass) {
+        this(core, plugin, customCacheClass, false);
     }
 
-    private WolfyUtilities(Plugin plugin, boolean init) {
-        this(plugin, CustomCache.class, init);
+    WolfyUtilities(WolfyUtilCore core, Plugin plugin, boolean init) {
+        this(core, plugin, CustomCache.class, init);
     }
 
     public final void initialize() {
         Bukkit.getPluginManager().registerEvents(this.inventoryAPI, plugin);
+    }
+
+    public Registries getRegistries() {
+        return core.getRegistries();
     }
 
     /**
@@ -156,15 +145,14 @@ public class WolfyUtilities {
      * @param plugin The plugin to get the instance from.
      * @return The WolfyUtilities instance for the plugin.
      */
+    @Deprecated
     public static WolfyUtilities get(Plugin plugin) {
-        return get(plugin, false);
+        return WolfyUtilCore.getInstance().get(plugin);
     }
 
+    @Deprecated
     public static WolfyUtilities get(Plugin plugin, boolean init) {
-        if (!has(plugin)) {
-            new WolfyUtilities(plugin, init);
-        }
-        return wolfyUtilitiesList.get(plugin);
+        return WolfyUtilCore.getInstance().get(plugin, init);
     }
 
     /**
@@ -175,11 +163,9 @@ public class WolfyUtilities {
      * @param customCacheClass The class of the custom cache you created. Must extend {@link CustomCache}
      * @return The WolfyUtilities instance for the plugin.
      */
+    @Deprecated
     public static WolfyUtilities get(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
-        if (!has(plugin)) {
-            new WolfyUtilities(plugin, customCacheClass);
-        }
-        return wolfyUtilitiesList.get(plugin);
+        return WolfyUtilCore.getInstance().get(plugin, customCacheClass);
     }
 
     /**
@@ -214,7 +200,7 @@ public class WolfyUtilities {
      * @return The internal WolfyUtilities plugin.
      */
     public static Plugin getWUPlugin() {
-        return Bukkit.getPluginManager().getPlugin("WolfyUtilities");
+        return WolfyUtilCore.getInstance();
     }
 
     /**
