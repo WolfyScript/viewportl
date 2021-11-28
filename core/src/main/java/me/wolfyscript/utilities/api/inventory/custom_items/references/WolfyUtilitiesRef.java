@@ -21,9 +21,9 @@ package me.wolfyscript.utilities.api.inventory.custom_items.references;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -56,7 +56,7 @@ public class WolfyUtilitiesRef extends APIReference {
 
     @Override
     public ItemStack getLinkedItem() {
-        var customItem = Registry.CUSTOM_ITEMS.get(namespacedKey);
+        var customItem = WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEMS.get(namespacedKey);
         if (customItem != null) {
             return customItem.create();
         }

@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Streams;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomItemTagMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
@@ -35,7 +36,6 @@ import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import me.wolfyscript.utilities.util.inventory.item_builder.AbstractItemBuilder;
@@ -67,7 +67,7 @@ import java.util.*;
  * The {@link APIReference} can be any kind of reference, a simple {@link ItemStack} ({@link VanillaRef}) or an item from another API.
  * </p>
  * <p>
- * For most additional features the CustomItem has to be registered into the {@link Registry#CUSTOM_ITEMS}.
+ * For most additional features the CustomItem has to be registered into the {@link me.wolfyscript.utilities.registry.Registries#CUSTOM_ITEMS}.
  * <br>
  * To make sure the CustomItem can be detected later on, it must be created via any of the {@link #create()} methods.
  * <br>
@@ -155,7 +155,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         setMetaSettings(new MetaSettings());
         this.permission = "";
         this.rarityPercentage = apiReference.getWeight() > 0 ? apiReference.getWeight() : 1.0d;
-        for (CustomData.Provider<?> customData : Registry.CUSTOM_ITEM_DATA.values()) {
+        for (CustomData.Provider<?> customData : WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEM_DATA.values()) {
             addCustomData(customData.getNamespacedKey(), customData.createData());
         }
         this.equipmentSlots = new ArrayList<>();
@@ -304,7 +304,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     @Nullable
     public static CustomItem of(APIReference reference) {
         if (reference == null) return null;
-        return reference instanceof WolfyUtilitiesRef ? Registry.CUSTOM_ITEMS.get(((WolfyUtilitiesRef) reference).getNamespacedKey()) : with(reference);
+        return reference instanceof WolfyUtilitiesRef ? WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEMS.get(((WolfyUtilitiesRef) reference).getNamespacedKey()) : with(reference);
     }
 
     /**
@@ -344,7 +344,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         if (itemStack != null) {
             var itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                return Registry.CUSTOM_ITEMS.get(getKeyOfItemMeta(itemMeta));
+                return WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEMS.get(getKeyOfItemMeta(itemMeta));
             }
         }
         return null;
@@ -1160,7 +1160,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 ParticleLocation loc = ParticleLocation.valueOf(entry.getKey());
                 JsonNode value = entry.getValue();
                 if (value.isObject() && value.has("effect")) {
-                    var animation = Registry.PARTICLE_ANIMATIONS.get(JacksonUtil.getObjectMapper().convertValue(value.get("effect"), NamespacedKey.class));
+                    var animation = WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS.get(JacksonUtil.getObjectMapper().convertValue(value.get("effect"), NamespacedKey.class));
                     if (animation != null) {
                         loc.applyOldPlayerAnimation(playerSettings, animation);
                     }

@@ -20,8 +20,8 @@ package me.wolfyscript.utilities.api.inventory.custom_items;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
 import org.bukkit.entity.Player;
@@ -111,7 +111,7 @@ public class ParticleContent {
      */
     @Deprecated(forRemoval = true, since = "1.7.6.0")
     public void addParticleEffect(ParticleLocation location, NamespacedKey animation) {
-        setAnimation(location, Registry.PARTICLE_ANIMATIONS.get(animation));
+        setAnimation(location, WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS.get(animation));
     }
     /**
      * Old method for backwards compatibility.
@@ -202,7 +202,7 @@ public class ParticleContent {
         }
 
         public void setAnimation(NamespacedKey animation) {
-            this.animation = Objects.requireNonNull(Registry.PARTICLE_ANIMATIONS.get(animation), "Animation \"" + animation + "\" not found!");
+            this.animation = Objects.requireNonNull(WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS.get(animation), "Animation \"" + animation + "\" not found!");
         }
 
         @Override

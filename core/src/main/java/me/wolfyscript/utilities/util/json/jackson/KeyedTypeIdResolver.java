@@ -23,10 +23,8 @@ import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import me.wolfyscript.utilities.util.ClassRegistry;
-import me.wolfyscript.utilities.util.Keyed;
-import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
+import me.wolfyscript.utilities.registry.IRegistry;
+import me.wolfyscript.utilities.util.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -34,11 +32,11 @@ import java.util.Map;
 
 public class KeyedTypeIdResolver extends TypeIdResolverBase {
 
-    private static final Map<Class<?>, Registry<?>> TYPE_REGISTRIES = new HashMap<>();
+    private static final Map<Class<?>, IRegistry<?>> TYPE_REGISTRIES = new HashMap<>();
     private static final Map<Class<?>, ClassRegistry<?>> TYPE_CLASS_REGISTRIES = new HashMap<>();
     private JavaType superType;
 
-    public static <T extends Keyed> void registerTypeRegistry(Class<T> type, Registry<T> registry) {
+    public static <T extends Keyed> void registerTypeRegistry(Class<T> type, IRegistry<T> registry) {
         TYPE_REGISTRIES.putIfAbsent(type, registry);
     }
 
@@ -81,7 +79,7 @@ public class KeyedTypeIdResolver extends TypeIdResolverBase {
             if (classRegistry != null) {
                 return classRegistry.get(key);
             }
-            Registry<?> registry = TYPE_REGISTRIES.get(superType.getRawClass());
+            IRegistry<?> registry = TYPE_REGISTRIES.get(superType.getRawClass());
             if (registry != null) {
                 var object = registry.get(key);
                 if (object != null) {

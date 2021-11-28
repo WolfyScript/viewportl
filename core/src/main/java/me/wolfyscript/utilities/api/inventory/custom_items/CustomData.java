@@ -26,9 +26,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 
 import java.io.IOException;
@@ -189,9 +190,9 @@ public abstract class CustomData implements Keyed {
                 Iterator<Map.Entry<String, JsonNode>> itr = node.fields();
                 while (itr.hasNext()) {
                     Map.Entry<String, JsonNode> entry = itr.next();
-                    var namespacedKey = entry.getKey().contains(":") ? NamespacedKey.of(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ Registry.CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
+                    var namespacedKey = entry.getKey().contains(":") ? NamespacedKey.of(entry.getKey()) : /* This is only for backwards compatibility! Might be removed in the future */ WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEM_DATA.keySet().parallelStream().filter(namespacedKey1 -> namespacedKey1.getKey().equals(entry.getKey())).findFirst().orElse(null);
                     if (namespacedKey != null) {
-                        CustomData.Provider<?> provider = Registry.CUSTOM_ITEM_DATA.get(namespacedKey);
+                        CustomData.Provider<?> provider = WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEM_DATA.get(namespacedKey);
                         if (provider != null) {
                             CustomData data = provider.createData();
                             data.readFromJson(customItem, entry.getValue(), context);

@@ -27,9 +27,11 @@ import com.fasterxml.jackson.databind.deser.ResolvableDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.registry.IRegistry;
+import me.wolfyscript.utilities.registry.Registries;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 
 import java.io.IOException;
 import java.lang.annotation.ElementType;
@@ -39,14 +41,14 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation allows serializing/deserializing an instance of {@link Keyed} by its key or value.
- * The annotated type <b>must</b> have a {@link Registry}, that contains the class of the type (For example using: {@link me.wolfyscript.utilities.util.Registry.SimpleRegistry#SimpleRegistry(Class)}).<br>
+ * The annotated type <b>must</b> have a {@link IRegistry}, that contains the class of the type (For example using: {@link me.wolfyscript.utilities.registry.RegistrySimple#RegistrySimple(Registries, Class)}).<br>
  * The specified key must exist and be type of {@link NamespacedKey}.<br>
  *
  * <br>Serialization:<br>
  * Serializes the key if available, else if key is null uses default serializer.<br>
  *
  * <br>Deserialization:<br>
- * If the {@link JsonNode} is text it will convert it to {@link NamespacedKey} and look for the value in the {@link Registry} of the objects type.
+ * If the {@link JsonNode} is text it will convert it to {@link NamespacedKey} and look for the value in the {@link IRegistry} of the objects type.
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -135,7 +137,7 @@ public @interface OptionalKeyReference {
                 if(p.isExpectedStartObjectToken()) {
                     return defaultDeserializer.deserialize(p, ctxt);
                 }
-                Registry<T> registry = Registry.getByType(genericType);
+                IRegistry<T> registry = WolfyUtilCore.getInstance().getRegistries().getByType(genericType);
                 if(registry != null) {
                     String value = p.readValueAs(String.class);
                     return registry.get(NamespacedKey.of(value));
