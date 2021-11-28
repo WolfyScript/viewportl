@@ -20,6 +20,7 @@ package me.wolfyscript.utilities.main.commands;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
+import me.wolfyscript.utilities.main.WUPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -33,10 +34,16 @@ import java.util.Objects;
 
 public class InputCommand implements TabExecutor {
 
+    private final WUPlugin plugin;
+
+    public InputCommand(WUPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player player) {
-            WolfyUtilities.getAPIList().parallelStream()
+            plugin.getAPIList().parallelStream()
                     .filter(WolfyUtilities::hasInventoryAPI)
                     .map(wolfyUtilities -> wolfyUtilities.getInventoryAPI().getGuiHandler(player))
                     .filter(GuiHandler::isChatEventActive)
@@ -57,7 +64,7 @@ public class InputCommand implements TabExecutor {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (sender instanceof Player player) {
-            return WolfyUtilities.getAPIList().stream()
+            return plugin.getAPIList().stream()
                     .filter(WolfyUtilities::hasInventoryAPI)
                     .map(wolfyUtilities -> wolfyUtilities.getInventoryAPI().getGuiHandler(player))
                     .filter(guiHandler -> guiHandler.isChatEventActive() && guiHandler.hasChatTabComplete())
