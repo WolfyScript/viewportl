@@ -81,6 +81,12 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.wolfyscript.wolfyutilities</groupId>
+            <artifactId>nmsutil-v1_18_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -147,7 +153,7 @@
                     <dependency>
                         <groupId>org.ow2.asm</groupId>
                         <artifactId>asm</artifactId>
-                        <version>9.1</version>
+                        <version>9.2</version>
                     </dependency>
                     <dependency>
                         <groupId>org.ow2.asm</groupId>
