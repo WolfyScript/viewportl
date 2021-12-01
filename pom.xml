@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolfyscript.wolfyutilities</groupId>
     <artifactId>wolfyutilities-parent</artifactId>
-    <version>1.7.8.1</version>
+    <version>1.8.0.0</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -32,7 +32,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <spigot.version>1.17-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.18-R0.1-SNAPSHOT</spigot.version>
         <spigot.groupId>org.spigotmc</spigot.groupId>
         <spigot.artifactId>spigot-api</spigot.artifactId>
     </properties>
@@ -45,6 +45,7 @@
         <module>nmsutil-v1_16_R3</module>
         <module>nmsutil-v1_17_R1_P0</module>
         <module>nmsutil-v1_17_R1_P1</module>
+        <module>nmsutil-v1_18_R1</module>
         <module>wolfyutilities</module>
     </modules>
 
