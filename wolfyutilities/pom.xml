@@ -25,7 +25,7 @@
     <parent>
         <artifactId>wolfyutilities-parent</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <version>1.7-SNAPSHOT</version>
+        <version>1.8.0.0</version>
     </parent>
     <dependencies>
         <dependency>
@@ -78,6 +78,12 @@
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
             <artifactId>nmsutil-v1_17_R1_P1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.wolfyscript.wolfyutilities</groupId>
+            <artifactId>nmsutil-v1_18_R1</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -147,7 +153,7 @@
                     <dependency>
                         <groupId>org.ow2.asm</groupId>
                         <artifactId>asm</artifactId>
-                        <version>9.1</version>
+                        <version>9.2</version>
                     </dependency>
                     <dependency>
                         <groupId>org.ow2.asm</groupId>
