@@ -26,12 +26,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class WolfyUtilCore extends JavaPlugin {
 
     private static WolfyUtilCore instance;
-
-    protected final HashMap<String, WolfyUtilities> wolfyUtilsInstances = new HashMap<>();
+    protected final Map<String, WolfyUtilities> wolfyUtilsInstances = new HashMap<>();
     protected final WolfyUtilities api;
     protected final Registries registries;
 
@@ -58,13 +58,21 @@ public abstract class WolfyUtilCore extends JavaPlugin {
     /**
      * Gets or create the {@link WolfyUtilities} instance for the specified plugin.
      *
-     * @param plugin The plugin to get the instance from.
+     * @param plugin The plugin to get the instance for.
      * @return The WolfyUtilities instance for the plugin.
      */
     public WolfyUtilities get(Plugin plugin) {
         return get(plugin, false);
     }
 
+    /**
+     * Gets or create the {@link WolfyUtilities} instance for the specified plugin.<br>
+     * In case init is enabled it will directly initialize the event listeners and possibly other things.
+     *
+     * @param plugin The plugin to get the instance for.
+     * @param init If it should directly initialize the APIs' events, etc. (They can be initialized later via {@link WolfyUtilities#initialize()})
+     * @return The WolfyUtilities instance for the plugin.
+     */
     public WolfyUtilities get(Plugin plugin, boolean init) {
         return wolfyUtilsInstances.computeIfAbsent(plugin.getName(), s -> new WolfyUtilities(this, plugin, init));
     }
@@ -81,10 +89,21 @@ public abstract class WolfyUtilCore extends JavaPlugin {
         return wolfyUtilsInstances.computeIfAbsent(plugin.getName(), s -> new WolfyUtilities(this, plugin, customCacheClass));
     }
 
+    /**
+     * Checks if the specified plugin has an API instance associated with it.
+     *
+     * @param plugin The plugin to check.
+     * @return True in case the API is available; false otherwise.
+     */
     public boolean has(Plugin plugin) {
         return wolfyUtilsInstances.containsKey(plugin.getName());
     }
 
+    /**
+     * Returns an unmodifiable List of all available {@link WolfyUtilities} instances.
+     *
+     * @return A list containing all the created API instances.
+     */
     public List<WolfyUtilities> getAPIList() {
         return List.copyOf(wolfyUtilsInstances.values());
     }
