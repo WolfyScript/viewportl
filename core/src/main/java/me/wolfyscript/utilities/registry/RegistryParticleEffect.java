@@ -23,7 +23,7 @@ import me.wolfyscript.utilities.util.particles.ParticleEffect;
 
 public class RegistryParticleEffect extends RegistrySimple<ParticleEffect> {
 
-    public RegistryParticleEffect(Registries registries) {
+    RegistryParticleEffect(Registries registries) {
         super(registries, ParticleEffect.class);
     }
 

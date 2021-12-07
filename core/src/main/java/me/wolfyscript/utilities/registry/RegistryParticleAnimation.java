@@ -23,7 +23,7 @@ import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 
 public class RegistryParticleAnimation extends RegistrySimple<ParticleAnimation> {
 
-    public RegistryParticleAnimation(Registries registries) {
+    RegistryParticleAnimation(Registries registries) {
         super(registries, ParticleAnimation.class);
     }
 

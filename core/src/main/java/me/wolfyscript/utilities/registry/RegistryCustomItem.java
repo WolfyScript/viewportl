@@ -28,6 +28,13 @@ import java.util.stream.Collectors;
 
 public class RegistryCustomItem extends RegistrySimple<CustomItem> {
 
+    RegistryCustomItem() {
+    }
+
+    RegistryCustomItem(Registries registries, Class<CustomItem> type) {
+        super(registries, type);
+    }
+
     public List<String> getNamespaces() {
         return this.map.keySet().stream().map(NamespacedKey::getNamespace).distinct().collect(Collectors.toList());
     }
