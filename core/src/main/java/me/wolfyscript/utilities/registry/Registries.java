@@ -18,6 +18,8 @@
 
 package me.wolfyscript.utilities.registry;
 
+import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomData;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
@@ -30,6 +32,20 @@ import me.wolfyscript.utilities.util.particles.timer.Timer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Includes all the Registries inside WolfyUtilities.<br>
+ * <br>
+ * To use the registries you need to get an instance of this class.<br>
+ * You should always try to not use the static method, as it can make the code less maintainable.<br>
+ * If it is possible to access the instance of your WU API, then that should be used instead!<br>
+ * <br>
+ *
+ * <strong>Get an instance:</strong>
+ * <ul>
+ *     <li>(<b>Recommended</b>) via your API instance {@link WolfyUtilities#getRegistries()}</li>
+ *     <li>via static method {@link WolfyUtilCore#getInstance()} & {@link WolfyUtilCore#getRegistries()} (This should only be used in cases where you have no access to your API instance!)</li>
+ * </ul>
+ */
 public class Registries {
 
     private final Map<Class<? extends Keyed>, IRegistry<?>> REGISTRIES_BY_TYPE = new HashMap<>();
@@ -54,7 +70,8 @@ public class Registries {
     }
 
     /**
-     * The Registry for all of the {@link CustomItem} instances.
+     * This Registry contains all the {@link CustomItem} instances.
+     * If you install your own item make sure to use your plugins name as the namespace.
      */
     public final RegistryCustomItem CUSTOM_ITEMS;
 
