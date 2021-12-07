@@ -195,10 +195,20 @@ public class ParticleContent {
             return animation;
         }
 
-        @JsonAlias("effect")
         @JsonSetter
         public void setAnimation(ParticleAnimation animation) {
             this.animation = Objects.requireNonNull(animation, "Animation cannot be null!");
+        }
+
+        /**
+         * Used to convert old config "effect" setting to the new version.
+         */
+        @Deprecated(since = "1.8.0.0")
+        @JsonSetter("effect")
+        private void setEffect(ParticleAnimation animation) {
+            if(animation != null) {
+                setAnimation(animation);
+            }
         }
 
         public void setAnimation(NamespacedKey animation) {
