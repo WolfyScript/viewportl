@@ -41,7 +41,6 @@ import java.util.Map;
 public class WolfyUtilities {
 
     private static final String ENVIRONMENT = System.getProperties().getProperty("com.wolfyscript.env", "PROD");
-
     private static final Map<String, Boolean> classes = new HashMap<>();
 
     public static String getENVIRONMENT() {
