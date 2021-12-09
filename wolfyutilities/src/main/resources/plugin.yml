@@ -23,6 +23,10 @@ softdepend:
   - ItemsAdder
   - ExecutableItems
 
+libraries:
+  - org.reflections:reflections:0.10.2
+  - com.fasterxml.jackson.core:jackson-databind:2.13.0
+
 commands:
   wolfyutils:
     description: displays version of this plugin

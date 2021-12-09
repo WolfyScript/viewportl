@@ -27,9 +27,6 @@
         <groupId>com.wolfyscript.wolfyutilities</groupId>
         <version>1.8-SNAPSHOT</version>
     </parent>
-    <dependencies>
-        
-    </dependencies>
     <build>
         <plugins>
             <plugin>
