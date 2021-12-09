@@ -20,21 +20,21 @@ package me.wolfyscript.utilities.compatibility.plugins;
 
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
-import me.wolfyscript.utilities.compatibility.plugins.mmoitems.MMOItemsRef;
+import me.wolfyscript.utilities.compatibility.plugins.magic.MagicRef;
 import me.wolfyscript.utilities.compatibility.PluginIntegration;
 
-@WUPluginIntegration(pluginName = MMOItemsImpl.PLUGIN_NAME)
-public class MMOItemsImpl extends PluginIntegration {
+@WUPluginIntegration(pluginName = MagicImpl.PLUGIN_NAME)
+public class MagicImpl extends PluginIntegration {
 
-    static final String PLUGIN_NAME = "MMOItems";
+    static final String PLUGIN_NAME = "Magic";
 
-    protected MMOItemsImpl(WolfyUtilCore core) {
+    protected MagicImpl(WolfyUtilCore core) {
         super(core, PLUGIN_NAME);
     }
 
     @Override
     public void init() {
-        core.registerAPIReference(new MMOItemsRef.Parser());
+        core.registerAPIReference(new MagicRef.Parser());
 
     }
 

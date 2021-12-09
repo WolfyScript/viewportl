@@ -35,7 +35,6 @@ public class ItemsAdderImpl extends PluginIntegration {
     @Override
     public void init() {
         core.registerAPIReference(new ItemsAdderRef.Parser());
-
     }
 
     @Override

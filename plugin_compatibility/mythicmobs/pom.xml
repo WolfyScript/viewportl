@@ -21,29 +21,32 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>wolfyutilities-parent</artifactId>
+        <artifactId>plugin_compatibility</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
         <version>1.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <modules>
-        <module>itemsadder</module>
-        <module>mmoitems</module>
-        <module>oraxen</module>
-        <module>plugin-comp-artifact</module>
-        <module>magic</module>
-        <module>mythicmobs</module>
-    </modules>
 
-    <artifactId>plugin_compatibility</artifactId>
+    <artifactId>mythicmobs</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
+            <groupId>io.lumine</groupId>
+            <artifactId>MythicLib</artifactId>
+            <version>1.1.5</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.lumine.xikage</groupId>
+            <artifactId>MythicMobs</artifactId>
+            <version>4.12.0</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.comphenix.protocol</groupId>
+                    <artifactId>ProtocolLib</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

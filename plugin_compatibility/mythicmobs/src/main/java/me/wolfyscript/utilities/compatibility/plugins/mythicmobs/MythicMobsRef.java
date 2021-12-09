@@ -16,13 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.api.inventory.custom_items.references;
+package me.wolfyscript.utilities.compatibility.plugins.mythicmobs;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import me.wolfyscript.utilities.api.nms.nbt.NBTItem;
 import me.wolfyscript.utilities.api.nms.nbt.NBTTagString;
 import org.bukkit.inventory.ItemStack;

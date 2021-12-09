@@ -21,28 +21,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>wolfyutilities-parent</artifactId>
+        <artifactId>plugin_compatibility</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
         <version>1.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <modules>
-        <module>itemsadder</module>
-        <module>mmoitems</module>
-        <module>oraxen</module>
-        <module>plugin-comp-artifact</module>
-        <module>magic</module>
-        <module>mythicmobs</module>
-    </modules>
 
-    <artifactId>plugin_compatibility</artifactId>
+    <artifactId>magic</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.elmakers.mine.bukkit</groupId>
+            <artifactId>MagicAPI</artifactId>
+            <version>9.3</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

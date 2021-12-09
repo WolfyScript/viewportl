@@ -22,7 +22,11 @@ import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ConfigurationBuilder;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -71,9 +75,9 @@ public class Plugins {
 
     public void init() {
         core.getLogger().info("Registering Plugin integrations: ");
-        for (Class<?> integrationClass : PluginIntegration.class.getClasses()) {
+        for (Class<?> integrationClass : core.getReflections().getTypesAnnotatedWith(WUPluginIntegration.class)) {
             WUPluginIntegration annotation = integrationClass.getAnnotation(WUPluginIntegration.class);
-            if (annotation != null && integrationClass.isAssignableFrom(PluginIntegration.class)) {
+            if (annotation != null && PluginIntegration.class.isAssignableFrom(integrationClass)) {
                 try {
                     registerIntegration((Class<? extends PluginIntegration>) integrationClass, annotation);
                 } catch (IllegalArgumentException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
@@ -88,8 +92,8 @@ public class Plugins {
         if (!pluginIntegrations.containsKey(pluginName)) {
             core.getLogger().info("     - " + pluginName);
             Constructor<? extends PluginIntegration> integrationConstructor = integrationClass.getDeclaredConstructor(WolfyUtilCore.class);
-            PluginIntegration integration = integrationConstructor.newInstance(core);
-            pluginIntegrations.put(pluginName, integration);
+            integrationConstructor.setAccessible(true);
+            pluginIntegrations.put(pluginName, integrationConstructor.newInstance(core));
             return;
         }
         throw new IllegalArgumentException("Failed to add Integration! A Plugin Integration for \"" + pluginName + "\" already exists!");

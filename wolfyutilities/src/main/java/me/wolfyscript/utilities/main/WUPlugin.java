@@ -173,8 +173,6 @@ public class WUPlugin extends WolfyUtilCore {
         console.info("Register API references");
         registerAPIReference(new VanillaRef.Parser());
         registerAPIReference(new WolfyUtilitiesRef.Parser());
-        registerAPIReference(new MythicMobsRef.Parser());
-        registerAPIReference(new MagicRef.Parser());
 
         var languageAPI = api.getLanguageAPI();
 
@@ -196,6 +194,7 @@ public class WUPlugin extends WolfyUtilCore {
         testNBTAPI(false);
     }
 
+    @Override
     public void registerAPIReference(APIReference.Parser<?> parser) {
         if (parser instanceof VanillaRef.Parser || parser instanceof WolfyUtilitiesRef.Parser || config.isAPIReferenceEnabled(parser)) {
             CustomItem.registerAPIReferenceParser(parser);
