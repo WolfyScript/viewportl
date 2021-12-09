@@ -44,6 +44,12 @@
             <version>2.13.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+            <scope>compile</scope>
+        </dependency>
         <!-- NMS module -->
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
@@ -99,6 +105,14 @@
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>me.wolfyscript.utilities.main.metrics</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.reflections</pattern>
+                                    <shadedPattern>me.wolfyscript.lib.org.reflections</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javassist</pattern>
+                                    <shadedPattern>me.wolfyscript.lib.javassist</shadedPattern>
+                                </relocation>
                             </relocations>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
@@ -106,6 +120,8 @@
                                 <includes>
                                     <include>com.wolfyscript.wolfyutilities</include>
                                     <include>org.bstats</include>
+                                    <include>org.reflections</include>
+                                    <include>org.javassist</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

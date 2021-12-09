@@ -23,9 +23,13 @@ import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.registry.Registries;
 import me.wolfyscript.utilities.util.version.ServerVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +55,12 @@ public abstract class WolfyUtilCore extends JavaPlugin {
         this.api = get(this);
         ServerVersion.setWUVersion(getDescription().getVersion());
         this.registries = new Registries();
+        this.reflections = new Reflections(new ConfigurationBuilder()
+                .forPackages("me.wolfyscript")
+                .addClassLoaders(Bukkit.class.getClassLoader())
+                .addClassLoaders(getClassLoader())
+                .addClassLoaders(WolfyUtilCore.class.getClassLoader())
+                .addScanners(Scanners.TypesAnnotated, Scanners.SubTypes, Scanners.Resources));
         this.compatibilityManager = new CompatibilityManager(this);
     }
 
@@ -64,6 +74,10 @@ public abstract class WolfyUtilCore extends JavaPlugin {
 
     public CompatibilityManager getCompatibilityManager() {
         return compatibilityManager;
+    }
+
+    public Reflections getReflections() {
+        return reflections;
     }
 
     /**
