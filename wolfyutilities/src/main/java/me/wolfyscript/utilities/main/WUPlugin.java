@@ -160,6 +160,7 @@ public class WUPlugin extends WolfyUtilCore {
 
     @Override
     public void onEnable() {
+        compatibilityManager.init();
         this.api.initialize();
         console.info("Minecraft version: " + ServerVersion.getVersion().getVersion());
         console.info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
@@ -172,10 +173,7 @@ public class WUPlugin extends WolfyUtilCore {
         console.info("Register API references");
         registerAPIReference(new VanillaRef.Parser());
         registerAPIReference(new WolfyUtilitiesRef.Parser());
-        registerAPIReference(new OraxenRef.Parser());
-        registerAPIReference(new ItemsAdderRef.Parser());
         registerAPIReference(new MythicMobsRef.Parser());
-        registerAPIReference(new MMOItemsRef.Parser());
         registerAPIReference(new MagicRef.Parser());
 
         var languageAPI = api.getLanguageAPI();
@@ -198,7 +196,7 @@ public class WUPlugin extends WolfyUtilCore {
         testNBTAPI(false);
     }
 
-    private void registerAPIReference(APIReference.Parser<?> parser) {
+    public void registerAPIReference(APIReference.Parser<?> parser) {
         if (parser instanceof VanillaRef.Parser || parser instanceof WolfyUtilitiesRef.Parser || config.isAPIReferenceEnabled(parser)) {
             CustomItem.registerAPIReferenceParser(parser);
         }

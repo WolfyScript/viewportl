@@ -21,34 +21,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>nmsutil</artifactId>
+        <artifactId>plugin_compatibility</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
         <version>1.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>nmsutil-v1_16_R3</artifactId>
+    <artifactId>plugin-comp-artifact</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
+            <groupId>com.wolfyscript.wolfyutilities</groupId>
+            <artifactId>itemsadder</artifactId>
+            <version>1.8-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wolfyscript.wolfyutilities</groupId>
+            <artifactId>oraxen</artifactId>
+            <version>1.8-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wolfyscript.wolfyutilities</groupId>
+            <artifactId>mmoitems</artifactId>
+            <version>1.8-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>${java.version}</release>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

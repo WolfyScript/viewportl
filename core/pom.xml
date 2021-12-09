@@ -25,15 +25,10 @@
     <parent>
         <artifactId>wolfyutilities-parent</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <version>1.8.0.0</version>
+        <version>1.8-SNAPSHOT</version>
     </parent>
     <dependencies>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.13.0</version>
-            <scope>provided</scope>
-        </dependency>
+        
     </dependencies>
     <build>
         <plugins>

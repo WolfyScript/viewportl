@@ -25,7 +25,7 @@
     <parent>
         <artifactId>wolfyutilities-parent</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <version>1.8.0.0</version>
+        <version>1.8-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -47,45 +47,13 @@
         <!-- NMS module -->
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
-            <artifactId>nmsutil-v1_15_R1</artifactId>
+            <artifactId>nmsutil-artifact</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.wolfyscript.wolfyutilities</groupId>
-            <artifactId>nmsutil-v1_16_R1</artifactId>
+            <artifactId>plugin-comp-artifact</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.wolfyscript.wolfyutilities</groupId>
-            <artifactId>nmsutil-v1_16_R2</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.wolfyscript.wolfyutilities</groupId>
-            <artifactId>nmsutil-v1_16_R3</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.wolfyscript.wolfyutilities</groupId>
-            <artifactId>nmsutil-v1_17_R1_P0</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.wolfyscript.wolfyutilities</groupId>
-            <artifactId>nmsutil-v1_17_R1_P1</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.wolfyscript.wolfyutilities</groupId>
-            <artifactId>nmsutil-v1_18_R1</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -133,8 +101,11 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>com.fasterxml.jackson</pattern>
-                                    <shadedPattern>me.wolfyscript.utilities.libraries.com.fasterxml.jackson
-                                    </shadedPattern>
+                                    <shadedPattern>me.wolfyscript.utilities.libraries.com.fasterxml.jackson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.reflections</pattern>
+                                    <shadedPattern>me.wolfyscript.utilities.libraries.org.reflections</shadedPattern>
                                 </relocation>
                             </relocations>
                             <shadeSourcesContent>true</shadeSourcesContent>
@@ -144,6 +115,7 @@
                                     <include>com.wolfyscript.wolfyutilities</include>
                                     <include>org.bstats</include>
                                     <include>com.fasterxml.jackson.core</include>
+                                    <include>org.reflections</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

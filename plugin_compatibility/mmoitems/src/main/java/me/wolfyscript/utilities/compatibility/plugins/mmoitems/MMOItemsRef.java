@@ -16,14 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.api.inventory.custom_items.references;
+package me.wolfyscript.utilities.compatibility.plugins.mmoitems;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import io.lumine.mythic.lib.api.item.NBTItem;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import net.Indyuce.mmoitems.MMOItems;
-import net.Indyuce.mmoitems.api.MMOItemsAPI;
 import net.Indyuce.mmoitems.api.Type;
 import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
 import org.bukkit.inventory.ItemStack;

@@ -18,11 +18,14 @@
 
 package me.wolfyscript.utilities.api;
 
+import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
+import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.registry.Registries;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.reflections.Reflections;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +34,12 @@ import java.util.Map;
 public abstract class WolfyUtilCore extends JavaPlugin {
 
     private static WolfyUtilCore instance;
+
+    protected Reflections reflections;
     protected final Map<String, WolfyUtilities> wolfyUtilsInstances = new HashMap<>();
     protected final WolfyUtilities api;
     protected final Registries registries;
+    protected final CompatibilityManager compatibilityManager;
 
     protected WolfyUtilCore() {
         super();
@@ -45,6 +51,7 @@ public abstract class WolfyUtilCore extends JavaPlugin {
         this.api = get(this);
         ServerVersion.setWUVersion(getDescription().getVersion());
         this.registries = new Registries();
+        this.compatibilityManager = new CompatibilityManager(this);
     }
 
     public static WolfyUtilCore getInstance() {
@@ -53,6 +60,10 @@ public abstract class WolfyUtilCore extends JavaPlugin {
 
     public Registries getRegistries() {
         return registries;
+    }
+
+    public CompatibilityManager getCompatibilityManager() {
+        return compatibilityManager;
     }
 
     /**
@@ -107,6 +118,8 @@ public abstract class WolfyUtilCore extends JavaPlugin {
     public List<WolfyUtilities> getAPIList() {
         return List.copyOf(wolfyUtilsInstances.values());
     }
+
+    public abstract void registerAPIReference(APIReference.Parser<?> parser);
 
 
 }
