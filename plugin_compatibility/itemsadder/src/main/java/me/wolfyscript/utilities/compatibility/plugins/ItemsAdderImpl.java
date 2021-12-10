@@ -22,6 +22,7 @@ import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.compatibility.plugins.itemsadder.ItemsAdderRef;
 import me.wolfyscript.utilities.compatibility.PluginIntegration;
+import org.bukkit.plugin.Plugin;
 
 @WUPluginIntegration(pluginName = ItemsAdderImpl.PLUGIN_NAME)
 public class ItemsAdderImpl extends PluginIntegration {
@@ -33,7 +34,7 @@ public class ItemsAdderImpl extends PluginIntegration {
     }
 
     @Override
-    public void init() {
+    public void init(Plugin plugin) {
         core.registerAPIReference(new ItemsAdderRef.Parser());
     }
 
