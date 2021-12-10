@@ -28,7 +28,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
-import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import java.util.HashMap;
@@ -59,7 +58,6 @@ public abstract class WolfyUtilCore extends JavaPlugin {
                 .forPackages("me.wolfyscript")
                 .addClassLoaders(Bukkit.class.getClassLoader())
                 .addClassLoaders(getClassLoader())
-                .addClassLoaders(WolfyUtilCore.class.getClassLoader())
                 .addScanners(Scanners.TypesAnnotated, Scanners.SubTypes, Scanners.Resources));
         this.compatibilityManager = new CompatibilityManager(this);
     }

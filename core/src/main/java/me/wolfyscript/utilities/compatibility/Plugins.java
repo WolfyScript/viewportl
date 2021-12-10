@@ -21,12 +21,7 @@ package me.wolfyscript.utilities.compatibility;
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
-import org.reflections.util.ConfigurationBuilder;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -81,10 +76,17 @@ public class Plugins {
                 try {
                     registerIntegration((Class<? extends PluginIntegration>) integrationClass, annotation);
                 } catch (IllegalArgumentException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
-                    ex.printStackTrace();
+                    core.getLogger().info("         ERROR -> " + ex.getMessage());
                 }
             }
         }
+        
+        //Initialize the plugin integrations for that the plugin is already enabled.
+        pluginIntegrations.forEach((pluginName, pluginIntegration) -> {
+            if (isPluginEnabled(pluginName)) {
+               pluginIntegration.init(Bukkit.getPluginManager().getPlugin(pluginName));
+            }
+        });
     }
 
     private void registerIntegration(Class<? extends PluginIntegration> integrationClass, WUPluginIntegration annotation) throws IllegalArgumentException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {

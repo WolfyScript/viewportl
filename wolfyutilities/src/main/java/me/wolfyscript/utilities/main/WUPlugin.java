@@ -168,30 +168,22 @@ public class WUPlugin extends WolfyUtilCore {
         this.config = new WUConfig(api.getConfigAPI(), this);
 
         this.metrics = new Metrics(this, 5114);
-
-        // Register plugin CustomItem API ReferenceParser
+        // Register ReferenceParser
         console.info("Register API references");
         registerAPIReference(new VanillaRef.Parser());
         registerAPIReference(new WolfyUtilitiesRef.Parser());
 
         var languageAPI = api.getLanguageAPI();
-
         saveResource("lang/en_US.json", true);
         languageAPI.setActiveLanguage(new Language(this, "en_US"));
 
         WorldUtils.load();
         PlayerUtils.loadStores();
-
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::save, 6000, 6000);
-
         registerListeners();
         registerCommands();
-
         CreativeModeTab.init();
-
         loadParticleEffects();
-        //Used to test the NBT Tag API!
-        testNBTAPI(false);
     }
 
     @Override
@@ -254,6 +246,8 @@ public class WUPlugin extends WolfyUtilCore {
         return messageFactory;
     }
 
+    //TODO: Create tests & add this as a test
+    @Deprecated
     private void testNBTAPI(boolean test) {
         if (!test) return;
         var itemBuilder = new ItemBuilder(Material.DIAMOND_SWORD);
