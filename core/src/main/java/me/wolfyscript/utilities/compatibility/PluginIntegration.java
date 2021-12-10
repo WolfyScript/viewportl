@@ -19,75 +19,32 @@
 package me.wolfyscript.utilities.compatibility;
 
 import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * To add a PluginIntegration you need to extend this class and add the annotation {@link me.wolfyscript.utilities.annotations.WUPluginIntegration} to that class.<br>
- * <br>
- * The constructor must have only one parameter of type {@link WolfyUtilCore}, that is passed to the super class.<br>
- * The constructor must not include any plugin dependent objects, etc.<br>
- * <br>
- * To effectively pass the plugin name to the annotation and PluginIntegration it is recommended to create a constant.
- * <br>
- * For example:
- * <pre>
- * <code>
- *
- * {@literal @WUPluginInteration(pluginName = MyIntegration.PLUGIN_NAME)}
- *  public class MyIntegration extends PluginIntegration {
- *
- *      static final String PLUGIN_NAME = "YOUR_PLUGIN_NAME";
- *
- *      protected MyIntegration(WolfyUtilCore core) {
- *          super(core, PLUGIN_NAME);
- *      }
- *
- *      ...
- *
- *  }
- * </code>
- * </pre>
- */
-public abstract class PluginIntegration {
+public interface PluginIntegration {
 
-    private final String pluginName;
-    protected final WolfyUtilCore core;
-
-    /**
-     * The main constructor that is called whenever the integration is created.<br>
-     * <strong>At this point, it didn't check if the packages of the depending plugin are available yet! So do not use any plugin specific Objects, etc.</strong>
-     *
-     * @param core The WolfyUtilCore.
-     * @param pluginName The name of the associated plugin.
-     */
-    protected PluginIntegration(WolfyUtilCore core, String pluginName) {
-        this.core = core;
-        this.pluginName = pluginName;
-    }
-
-    /**
-     * This method is called if the plugin is enabled.
-     * @param plugin The plugin, that was enabled.
-     */
-    public abstract void init(Plugin plugin);
+    void init(Plugin plugin);
 
     /**
      * Checks if the integrated plugin loads data async.
-     * 
+     *
      * @return True if the integration has an async loader; false otherwise.
      */
-    public abstract boolean hasAsyncLoading();
+    boolean hasAsyncLoading();
 
     /**
      * Gets the plugin name of this integration.
-     * 
+     *
      * @return The name of the plugin associated with this integration.
      */
-    public String getAssociatedPlugin() {
-        return pluginName;
-    }
+    String getAssociatedPlugin();
 
-    public WolfyUtilCore getCore() {
-        return core;
-    }
+    @Nullable
+    default APIReference getAPIReference() { return null; };
+
+    default boolean isAPIReferenceIncluded(APIReference reference) { return false; }
+
+    WolfyUtilCore getCore();
 }
