@@ -35,21 +35,21 @@ import java.util.Objects;
 /**
  * Links to MMOItems and saves the specified {@link Type} and Name of the item.
  */
-public class MMOItemsRef extends APIReference {
+public class MMOItemsRefImpl extends APIReference implements MMOItemsRef {
 
     private final Type itemType;
     private final String itemName;
 
-    public MMOItemsRef(Type itemType, String itemName) {
+    public MMOItemsRefImpl(Type itemType, String itemName) {
         super();
         this.itemType = itemType;
         this.itemName = itemName;
     }
 
-    public MMOItemsRef(MMOItemsRef mmoItemsRef) {
-        super(mmoItemsRef);
-        this.itemName = mmoItemsRef.itemName;
-        this.itemType = mmoItemsRef.itemType;
+    public MMOItemsRefImpl(MMOItemsRefImpl mmoItemsRefImpl) {
+        super(mmoItemsRefImpl);
+        this.itemName = mmoItemsRefImpl.itemName;
+        this.itemType = mmoItemsRefImpl.itemType;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class MMOItemsRef extends APIReference {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MMOItemsRef that)) return false;
+        if (!(o instanceof MMOItemsRefImpl that)) return false;
         if (!super.equals(o)) return false;
         return Objects.equals(itemType, that.itemType) && Objects.equals(itemName, that.itemName);
     }
@@ -94,33 +94,35 @@ public class MMOItemsRef extends APIReference {
     }
 
     @Override
-    public MMOItemsRef clone() {
-        return new MMOItemsRef(this);
+    public MMOItemsRefImpl clone() {
+        return new MMOItemsRefImpl(this);
     }
 
-    public static class Parser extends PluginParser<MMOItemsRef> {
+    public static class Parser extends PluginParser<MMOItemsRefImpl> {
 
         public Parser() {
             super("MMOItems", "mmoitems");
         }
 
         @Override
-        public @Nullable MMOItemsRef construct(ItemStack itemStack) {
+        public @Nullable
+        MMOItemsRefImpl construct(ItemStack itemStack) {
             NBTItem nbtItem = NBTItem.get(itemStack);
             if (nbtItem.hasType()) {
                 Type type = MMOItems.plugin.getTypes().get(nbtItem.getType());
                 String itemId = nbtItem.getString("MMOITEMS_ITEM_ID");
-                return new MMOItemsRef(type, itemId);
+                return new MMOItemsRefImpl(type, itemId);
             }
             return null;
         }
 
         @Override
-        public @Nullable MMOItemsRef parse(JsonNode element) {
+        public @Nullable
+        MMOItemsRefImpl parse(JsonNode element) {
             if (element.has("type") && element.has("name")) {
                 String typeID = element.get("type").asText();
                 if (MMOItems.plugin.getTypes().has(typeID)) {
-                    return new MMOItemsRef(MMOItems.plugin.getTypes().get(typeID), element.get("name").asText());
+                    return new MMOItemsRefImpl(MMOItems.plugin.getTypes().get(typeID), element.get("name").asText());
                 }
             }
             return null;

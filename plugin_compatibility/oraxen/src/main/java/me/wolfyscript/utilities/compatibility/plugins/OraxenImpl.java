@@ -20,12 +20,13 @@ package me.wolfyscript.utilities.compatibility.plugins;
 
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
-import me.wolfyscript.utilities.compatibility.plugins.oraxen.OraxenRef;
-import me.wolfyscript.utilities.compatibility.PluginIntegration;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
+import me.wolfyscript.utilities.compatibility.plugins.oraxen.OraxenRefImpl;
+import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
 import org.bukkit.plugin.Plugin;
 
 @WUPluginIntegration(pluginName = OraxenImpl.PLUGIN_NAME)
-public class OraxenImpl extends PluginIntegration {
+public class OraxenImpl extends PluginIntegrationAbstract implements OraxenIntegration {
 
     static final String PLUGIN_NAME = "Oraxen";
 
@@ -35,12 +36,16 @@ public class OraxenImpl extends PluginIntegration {
 
     @Override
     public void init(Plugin plugin) {
-        core.registerAPIReference(new OraxenRef.Parser());
-
+        core.registerAPIReference(new OraxenRefImpl.Parser());
     }
 
     @Override
     public boolean hasAsyncLoading() {
         return true;
+    }
+
+    @Override
+    public boolean isAPIReferenceIncluded(APIReference reference) {
+        return reference instanceof OraxenRefImpl;
     }
 }

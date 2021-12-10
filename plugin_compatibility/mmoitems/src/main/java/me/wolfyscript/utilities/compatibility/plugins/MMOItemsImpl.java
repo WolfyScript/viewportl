@@ -20,12 +20,13 @@ package me.wolfyscript.utilities.compatibility.plugins;
 
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
-import me.wolfyscript.utilities.compatibility.plugins.mmoitems.MMOItemsRef;
-import me.wolfyscript.utilities.compatibility.PluginIntegration;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
+import me.wolfyscript.utilities.compatibility.plugins.mmoitems.MMOItemsRefImpl;
+import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
 import org.bukkit.plugin.Plugin;
 
 @WUPluginIntegration(pluginName = MMOItemsImpl.PLUGIN_NAME)
-public class MMOItemsImpl extends PluginIntegration {
+public class MMOItemsImpl extends PluginIntegrationAbstract {
 
     static final String PLUGIN_NAME = "MMOItems";
 
@@ -35,12 +36,17 @@ public class MMOItemsImpl extends PluginIntegration {
 
     @Override
     public void init(Plugin plugin) {
-        core.registerAPIReference(new MMOItemsRef.Parser());
+        core.registerAPIReference(new MMOItemsRefImpl.Parser());
 
     }
 
     @Override
     public boolean hasAsyncLoading() {
         return true;
+    }
+
+    @Override
+    public boolean isAPIReferenceIncluded(APIReference reference) {
+        return reference instanceof MMOItemsRefImpl;
     }
 }

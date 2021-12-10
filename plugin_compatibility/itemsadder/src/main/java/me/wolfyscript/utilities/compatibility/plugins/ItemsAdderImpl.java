@@ -20,12 +20,13 @@ package me.wolfyscript.utilities.compatibility.plugins;
 
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
-import me.wolfyscript.utilities.compatibility.plugins.itemsadder.ItemsAdderRef;
-import me.wolfyscript.utilities.compatibility.PluginIntegration;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
+import me.wolfyscript.utilities.compatibility.plugins.itemsadder.ItemsAdderRefImpl;
+import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
 import org.bukkit.plugin.Plugin;
 
 @WUPluginIntegration(pluginName = ItemsAdderImpl.PLUGIN_NAME)
-public class ItemsAdderImpl extends PluginIntegration {
+public class ItemsAdderImpl extends PluginIntegrationAbstract implements ItemsAdderIntegration {
 
     static final String PLUGIN_NAME = "ItemsAdder";
 
@@ -35,11 +36,16 @@ public class ItemsAdderImpl extends PluginIntegration {
 
     @Override
     public void init(Plugin plugin) {
-        core.registerAPIReference(new ItemsAdderRef.Parser());
+        core.registerAPIReference(new ItemsAdderRefImpl.Parser());
     }
 
     @Override
     public boolean hasAsyncLoading() {
         return true;
+    }
+
+    @Override
+    public boolean isAPIReferenceIncluded(APIReference reference) {
+        return reference instanceof ItemsAdderRefImpl;
     }
 }

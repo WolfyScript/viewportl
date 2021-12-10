@@ -33,18 +33,18 @@ import java.util.Objects;
 /**
  * Links to Oraxen and saves the specified id of the item.
  */
-public class OraxenRef extends APIReference {
+public class OraxenRefImpl extends APIReference implements OraxenRef {
 
     private final String itemID;
 
-    public OraxenRef(String itemID) {
+    public OraxenRefImpl(String itemID) {
         super();
         this.itemID = itemID;
     }
 
-    public OraxenRef(OraxenRef oraxenRef) {
-        super(oraxenRef);
-        this.itemID = oraxenRef.itemID;
+    public OraxenRefImpl(OraxenRefImpl oraxenRefImpl) {
+        super(oraxenRefImpl);
+        this.itemID = oraxenRefImpl.itemID;
     }
 
     @Override
@@ -74,6 +74,7 @@ public class OraxenRef extends APIReference {
         gen.writeStringField("oraxen", itemID);
     }
 
+    @Override
     public String getItemID() {
         return itemID;
     }
@@ -81,9 +82,9 @@ public class OraxenRef extends APIReference {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof OraxenRef oraxenRef)) return false;
+        if (!(o instanceof OraxenRefImpl oraxenRefImpl)) return false;
         if (!super.equals(o)) return false;
-        return Objects.equals(itemID, oraxenRef.itemID);
+        return Objects.equals(itemID, oraxenRefImpl.itemID);
     }
 
     @Override
@@ -92,28 +93,28 @@ public class OraxenRef extends APIReference {
     }
 
     @Override
-    public OraxenRef clone() {
-        return new OraxenRef(this);
+    public OraxenRefImpl clone() {
+        return new OraxenRefImpl(this);
     }
 
-    public static class Parser extends APIReference.PluginParser<OraxenRef> {
+    public static class Parser extends APIReference.PluginParser<OraxenRefImpl> {
 
         public Parser() {
             super("Oraxen", "oraxen");
         }
 
         @Override
-        public @Nullable OraxenRef construct(ItemStack itemStack) {
+        public @Nullable OraxenRefImpl construct(ItemStack itemStack) {
             String itemId = OraxenItems.getIdByItem(itemStack);
             if (itemId != null && !itemId.isEmpty()) {
-                return new OraxenRef(itemId);
+                return new OraxenRefImpl(itemId);
             }
             return null;
         }
 
         @Override
-        public @Nullable OraxenRef parse(JsonNode element) {
-            return new OraxenRef(element.asText());
+        public @Nullable OraxenRefImpl parse(JsonNode element) {
+            return new OraxenRefImpl(element.asText());
         }
     }
 }

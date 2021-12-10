@@ -35,18 +35,18 @@ import java.util.Objects;
  * <br>
  * It will always get the latest item version available in ItemsAdder or AIR if not available.
  */
-public class ItemsAdderRef extends APIReference {
+public class ItemsAdderRefImpl extends APIReference implements ItemsAdderRef {
 
     private final String itemID;
 
-    public ItemsAdderRef(String itemID) {
+    public ItemsAdderRefImpl(String itemID) {
         super();
         this.itemID = itemID;
     }
 
-    public ItemsAdderRef(ItemsAdderRef itemsAdderRef) {
-        super(itemsAdderRef);
-        this.itemID = itemsAdderRef.itemID;
+    public ItemsAdderRefImpl(ItemsAdderRefImpl itemsAdderRefImpl) {
+        super(itemsAdderRefImpl);
+        this.itemID = itemsAdderRefImpl.itemID;
     }
 
     /**
@@ -77,6 +77,7 @@ public class ItemsAdderRef extends APIReference {
         gen.writeStringField("itemsadder", itemID);
     }
 
+    @Override
     public String getItemID() {
         return itemID;
     }
@@ -84,9 +85,9 @@ public class ItemsAdderRef extends APIReference {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ItemsAdderRef itemsAdderRef)) return false;
+        if (!(o instanceof ItemsAdderRefImpl itemsAdderRefImpl)) return false;
         if (!super.equals(o)) return false;
-        return Objects.equals(itemID, itemsAdderRef.itemID);
+        return Objects.equals(itemID, itemsAdderRefImpl.itemID);
     }
 
     @Override
@@ -95,28 +96,28 @@ public class ItemsAdderRef extends APIReference {
     }
 
     @Override
-    public ItemsAdderRef clone() {
-        return new ItemsAdderRef(this);
+    public ItemsAdderRefImpl clone() {
+        return new ItemsAdderRefImpl(this);
     }
 
-    public static class Parser extends PluginParser<ItemsAdderRef> {
+    public static class Parser extends PluginParser<ItemsAdderRefImpl> {
 
         public Parser() {
             super("ItemsAdder", "itemsadder");
         }
 
         @Override
-        public @Nullable ItemsAdderRef construct(ItemStack itemStack) {
+        public @Nullable ItemsAdderRefImpl construct(ItemStack itemStack) {
             var customStack = CustomStack.byItemStack(itemStack);
             if (customStack != null) {
-                return new ItemsAdderRef(customStack.getNamespacedID());
+                return new ItemsAdderRefImpl(customStack.getNamespacedID());
             }
             return null;
         }
 
         @Override
-        public @Nullable ItemsAdderRef parse(JsonNode element) {
-            return new ItemsAdderRef(element.asText());
+        public @Nullable ItemsAdderRefImpl parse(JsonNode element) {
+            return new ItemsAdderRefImpl(element.asText());
         }
     }
 }

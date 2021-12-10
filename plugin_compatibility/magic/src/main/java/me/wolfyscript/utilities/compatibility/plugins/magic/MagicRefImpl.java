@@ -34,16 +34,16 @@ import java.util.Objects;
 /**
  * Links to an item from Magic.
  */
-public class MagicRef extends APIReference {
+public class MagicRefImpl extends APIReference implements MagicRef {
 
     private final String itemKey;
 
-    public MagicRef(String itemKey) {
+    public MagicRefImpl(String itemKey) {
         super();
         this.itemKey = itemKey;
     }
 
-    public MagicRef(MagicRef ref) {
+    public MagicRefImpl(MagicRefImpl ref) {
         super(ref);
         this.itemKey = ref.itemKey;
     }
@@ -72,11 +72,11 @@ public class MagicRef extends APIReference {
     }
 
     @Override
-    public MagicRef clone() {
-        return new MagicRef(this);
+    public MagicRefImpl clone() {
+        return new MagicRefImpl(this);
     }
 
-    public static class Parser extends PluginParser<MagicRef> {
+    public static class Parser extends PluginParser<MagicRefImpl> {
 
         private static MagicAPI magicAPI = null;
 
@@ -93,16 +93,16 @@ public class MagicRef extends APIReference {
         }
 
         @Override
-        public @Nullable MagicRef construct(ItemStack itemStack) {
+        public @Nullable MagicRefImpl construct(ItemStack itemStack) {
             if(magicAPI.isBrush(itemStack) || magicAPI.isSpell(itemStack) || magicAPI.isUpgrade(itemStack) || magicAPI.isWand(itemStack)) {
-                return new MagicRef(magicAPI.getItemKey(itemStack));
+                return new MagicRefImpl(magicAPI.getItemKey(itemStack));
             }
             return null;
         }
 
         @Override
-        public @Nullable MagicRef parse(JsonNode element) {
-            return new MagicRef(element.asText());
+        public @Nullable MagicRefImpl parse(JsonNode element) {
+            return new MagicRefImpl(element.asText());
         }
     }
 }

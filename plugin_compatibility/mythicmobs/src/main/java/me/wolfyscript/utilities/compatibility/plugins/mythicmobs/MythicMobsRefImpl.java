@@ -41,20 +41,20 @@ import java.util.Objects;
  *     AppendType: true
  * </pre>
  */
-public class MythicMobsRef extends APIReference {
+public class MythicMobsRefImpl extends APIReference implements MythicMobsRef {
 
     private static final String ITEM_KEY = "MYTHIC_TYPE";
 
     private final String itemName;
 
-    public MythicMobsRef(String itemName) {
+    public MythicMobsRefImpl(String itemName) {
         super();
         this.itemName = itemName;
     }
 
-    public MythicMobsRef(MythicMobsRef mythicMobsRef) {
-        super(mythicMobsRef);
-        this.itemName = mythicMobsRef.itemName;
+    public MythicMobsRefImpl(MythicMobsRefImpl mythicMobsRefImpl) {
+        super(mythicMobsRefImpl);
+        this.itemName = mythicMobsRefImpl.itemName;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class MythicMobsRef extends APIReference {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        MythicMobsRef that = (MythicMobsRef) o;
+        MythicMobsRefImpl that = (MythicMobsRefImpl) o;
         return Objects.equals(itemName, that.itemName);
     }
 
@@ -91,8 +91,8 @@ public class MythicMobsRef extends APIReference {
     }
 
     @Override
-    public MythicMobsRef clone() {
-        return new MythicMobsRef(this);
+    public MythicMobsRefImpl clone() {
+        return new MythicMobsRefImpl(this);
     }
 
     @Override
@@ -100,27 +100,29 @@ public class MythicMobsRef extends APIReference {
         gen.writeStringField("mythicmobs", itemName);
     }
 
-    public static class Parser extends APIReference.PluginParser<MythicMobsRef> {
+    public static class Parser extends APIReference.PluginParser<MythicMobsRefImpl> {
 
         public Parser() {
             super("MythicMobs", "mythicmobs");
         }
 
         @Override
-        public @Nullable MythicMobsRef construct(ItemStack itemStack) {
+        public @Nullable
+        MythicMobsRefImpl construct(ItemStack itemStack) {
             NBTItem nbtItem = WolfyUtilities.getWUCore().getNmsUtil().getNBTUtil().getItem(itemStack);
             if (nbtItem != null && nbtItem.hasKey(ITEM_KEY) && nbtItem.getTag(ITEM_KEY) instanceof NBTTagString nbtTagString) {
                 String name = nbtTagString.asString();
                 if (MythicMobs.inst().getItemManager().getItem(name).isPresent()) {
-                    return new MythicMobsRef(name);
+                    return new MythicMobsRefImpl(name);
                 }
             }
             return null;
         }
 
         @Override
-        public @Nullable MythicMobsRef parse(JsonNode element) {
-            return new MythicMobsRef(element.asText());
+        public @Nullable
+        MythicMobsRefImpl parse(JsonNode element) {
+            return new MythicMobsRefImpl(element.asText());
         }
     }
 }
