@@ -21,20 +21,27 @@ package me.wolfyscript.utilities.compatibility;
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.Nullable;
 
+import javax.security.auth.callback.Callback;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Plugins {
 
     private WolfyUtilCore core;
-    private final Map<String, PluginIntegration> pluginIntegrations = new HashMap<>();
+    private final Map<String, PluginIntegrationAbstract> pluginIntegrations = new HashMap<>();
+    private final Map<String, Class<? extends PluginIntegrationAbstract>> pluginIntegrationClasses = new HashMap<>();
 
     Plugins(WolfyUtilCore core) {
         this.core = core;
     }
-
 
     /**
      * @param pluginName The name of the plugin to check for
@@ -69,42 +76,42 @@ public class Plugins {
     }
 
     public void init() {
-        core.getLogger().info("Registering Plugin integrations: ");
+        core.getLogger().info("Loading Plugin integrations: ");
         for (Class<?> integrationClass : core.getReflections().getTypesAnnotatedWith(WUPluginIntegration.class)) {
             WUPluginIntegration annotation = integrationClass.getAnnotation(WUPluginIntegration.class);
-            if (annotation != null && PluginIntegration.class.isAssignableFrom(integrationClass)) {
-                try {
-                    registerIntegration((Class<? extends PluginIntegration>) integrationClass, annotation);
-                } catch (IllegalArgumentException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
-                    core.getLogger().info("         ERROR -> " + ex.getMessage());
+            if (annotation != null && PluginIntegrationAbstract.class.isAssignableFrom(integrationClass)) {
+                String pluginName = annotation.pluginName();
+                core.getLogger().info("     - " + pluginName);
+                if (!pluginIntegrationClasses.containsKey(pluginName)) {
+                    pluginIntegrationClasses.put(pluginName, (Class<? extends PluginIntegrationAbstract>) integrationClass);
+                } else {
+                    core.getLogger().info("         ERROR -> Failed to add Integration! A Plugin Integration for \"" + pluginName + "\" already exists!");
                 }
             }
         }
-        
+        core.getLogger().info("Create & Init Plugin integrations: ");
         //Initialize the plugin integrations for that the plugin is already enabled.
-        pluginIntegrations.forEach((pluginName, pluginIntegration) -> {
+        pluginIntegrationClasses.forEach((pluginName, pluginIntegrationClass) -> {
             if (isPluginEnabled(pluginName)) {
-               pluginIntegration.init(Bukkit.getPluginManager().getPlugin(pluginName));
+                try {
+                    core.getLogger().info("     - " + pluginName);
+                    Constructor<? extends PluginIntegrationAbstract> integrationConstructor = pluginIntegrationClass.getDeclaredConstructor(WolfyUtilCore.class);
+                    integrationConstructor.setAccessible(true);
+                    pluginIntegrations.put(pluginName, integrationConstructor.newInstance(core));
+                } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                    core.getLogger().info("         ERROR -> " + e.getMessage());
+                }
             }
         });
-    }
-
-    private void registerIntegration(Class<? extends PluginIntegration> integrationClass, WUPluginIntegration annotation) throws IllegalArgumentException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        String pluginName = annotation.pluginName();
-        if (!pluginIntegrations.containsKey(pluginName)) {
-            core.getLogger().info("     - " + pluginName);
-            Constructor<? extends PluginIntegration> integrationConstructor = integrationClass.getDeclaredConstructor(WolfyUtilCore.class);
-            integrationConstructor.setAccessible(true);
-            pluginIntegrations.put(pluginName, integrationConstructor.newInstance(core));
-            return;
+        if (pluginIntegrations.isEmpty()) {
+            core.getLogger().info("     - No integrations created.");
         }
-        throw new IllegalArgumentException("Failed to add Integration! A Plugin Integration for \"" + pluginName + "\" already exists!");
+        core.getLogger().info("Created Plugin integrations of already enabled plugins. Creating other integrations when their associated plugin is enabled.");
     }
 
-    public Collection<PluginIntegration> getPluginIntegrations() {
+    public Collection<PluginIntegrationAbstract> getPluginIntegrations() {
         return Collections.unmodifiableCollection(pluginIntegrations.values());
     }
-
 
 
 }
