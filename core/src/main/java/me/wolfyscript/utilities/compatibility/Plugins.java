@@ -75,6 +75,57 @@ public class Plugins {
         return isPluginEnabled("mcMMO");
     }
 
+    public boolean hasIntegration(String pluginName) {
+        return pluginIntegrations.containsKey(pluginName);
+    }
+
+    @Nullable
+    public PluginIntegration getIntegration(String pluginName) {
+        return pluginIntegrations.get(pluginName);
+    }
+
+    @Nullable
+    public <T extends PluginIntegration> T getIntegration(String pluginName, Class<T> type) {
+        var integration = getIntegration(pluginName);
+        if (type.isInstance(integration)) {
+            return type.cast(integration);
+        }
+        if (integration != null) {
+            throw new IllegalArgumentException("The integration of plugin \"" + pluginName + "\" is of type " + type.getName());
+        }
+        return null;
+    }
+
+    public void runIfAvailable(String pluginName, Consumer<PluginIntegration> callback) {
+        var integration = getIntegration(pluginName);
+        if (integration != null) {
+            callback.accept(integration);
+        }
+    }
+
+    public <T extends PluginIntegration> void runIfAvailable(String pluginName, Class<T> type, Consumer<T> callback) {
+        var integration = getIntegration(pluginName, type);
+        if (integration != null) {
+            callback.accept(integration);
+        }
+    }
+
+    public boolean evaluateIfAvailable(String pluginName, Function<PluginIntegration, Boolean> callback) {
+        var integration = getIntegration(pluginName);
+        if (integration != null) {
+            return callback.apply(integration);
+        }
+        return false;
+    }
+
+    public <T extends PluginIntegration> boolean evaluateIfAvailable(String pluginName, Class<T> type, Function<T, Boolean> callback) {
+        var integration = getIntegration(pluginName, type);
+        if (integration != null) {
+            return callback.apply(integration);
+        }
+        return false;
+    }
+
     public void init() {
         core.getLogger().info("Loading Plugin integrations: ");
         for (Class<?> integrationClass : core.getReflections().getTypesAnnotatedWith(WUPluginIntegration.class)) {
