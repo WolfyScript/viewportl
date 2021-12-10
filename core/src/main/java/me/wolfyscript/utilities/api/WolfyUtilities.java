@@ -221,6 +221,15 @@ public class WolfyUtilities {
     }
 
     /**
+     * Gets the {@link WolfyUtilCore}. This should be used instead of {@link WolfyUtilCore#getInstance()}} whenever possible!
+     *
+     * @return The core of the plugin.
+     */
+    public WolfyUtilCore getCore() {
+        return core;
+    }
+
+    /**
      * @return The {@link LanguageAPI} instance.
      * @see LanguageAPI More information about the Language API
      */
