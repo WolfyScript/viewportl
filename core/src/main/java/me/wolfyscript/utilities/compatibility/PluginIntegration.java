@@ -47,4 +47,6 @@ public interface PluginIntegration {
     default boolean isAPIReferenceIncluded(APIReference reference) { return false; }
 
     WolfyUtilCore getCore();
+
+    boolean isEnabled();
 }

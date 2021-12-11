@@ -52,6 +52,7 @@ public abstract class PluginIntegrationAbstract implements PluginIntegration {
 
     private final String pluginName;
     protected final WolfyUtilCore core;
+    private boolean enabled = false;
 
     /**
      * The main constructor that is called whenever the integration is created.<br>
@@ -90,4 +91,24 @@ public abstract class PluginIntegrationAbstract implements PluginIntegration {
     public WolfyUtilCore getCore() {
         return core;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    protected void setEnabled() {
+        markAsEnabled();
+    }
+
+    /**
+     * Used to mark this plugin data loading as complete.<br>
+     * This is necessary if the plugin is loading data async.
+     */
+    void markAsEnabled() {
+        enabled = true;
+
+
+    }
+
 }
