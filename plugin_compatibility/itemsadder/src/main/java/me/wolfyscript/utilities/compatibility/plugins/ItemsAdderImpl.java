@@ -18,15 +18,19 @@
 
 package me.wolfyscript.utilities.compatibility.plugins;
 
+import dev.lone.itemsadder.api.Events.ItemsAdderLoadDataEvent;
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import me.wolfyscript.utilities.compatibility.plugins.itemsadder.ItemsAdderRefImpl;
 import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 @WUPluginIntegration(pluginName = ItemsAdderImpl.PLUGIN_NAME)
-public class ItemsAdderImpl extends PluginIntegrationAbstract implements ItemsAdderIntegration {
+public class ItemsAdderImpl extends PluginIntegrationAbstract implements ItemsAdderIntegration, Listener {
 
     static final String PLUGIN_NAME = "ItemsAdder";
 
@@ -37,6 +41,7 @@ public class ItemsAdderImpl extends PluginIntegrationAbstract implements ItemsAd
     @Override
     public void init(Plugin plugin) {
         core.registerAPIReference(new ItemsAdderRefImpl.Parser());
+        Bukkit.getPluginManager().registerEvents(this, core);
     }
 
     @Override
@@ -48,4 +53,12 @@ public class ItemsAdderImpl extends PluginIntegrationAbstract implements ItemsAd
     public boolean isAPIReferenceIncluded(APIReference reference) {
         return reference instanceof ItemsAdderRefImpl;
     }
+
+    @EventHandler
+    public void onLoaded(ItemsAdderLoadDataEvent event) {
+        if (event.getCause().equals(ItemsAdderLoadDataEvent.Cause.FIRST_LOAD)) {
+            setEnabled();
+        }
+    }
+
 }
