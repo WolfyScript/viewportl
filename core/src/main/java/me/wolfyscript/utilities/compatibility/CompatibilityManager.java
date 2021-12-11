@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.compatibility;
 
 import me.wolfyscript.utilities.api.WolfyUtilCore;
+import org.bukkit.Bukkit;
 
 public class CompatibilityManager {
 
@@ -31,6 +32,7 @@ public class CompatibilityManager {
     }
 
     public void init() {
+        Bukkit.getPluginManager().registerEvents(plugins, core);
         plugins.init();
 
     }

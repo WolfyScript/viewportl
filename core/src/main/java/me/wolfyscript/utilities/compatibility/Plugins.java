@@ -44,7 +44,6 @@ public class Plugins implements Listener {
 
     Plugins(WolfyUtilCore core) {
         this.core = core;
-        Bukkit.getPluginManager().registerEvents(this, core);
     }
 
     /**
