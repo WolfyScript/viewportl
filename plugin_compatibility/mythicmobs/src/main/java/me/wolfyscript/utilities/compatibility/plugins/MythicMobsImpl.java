@@ -42,7 +42,7 @@ public class MythicMobsImpl extends PluginIntegrationAbstract {
 
     @Override
     public boolean hasAsyncLoading() {
-        return true;
+        return false;
     }
 
     @Override

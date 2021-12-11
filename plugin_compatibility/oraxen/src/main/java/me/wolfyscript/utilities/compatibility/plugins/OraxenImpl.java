@@ -41,7 +41,7 @@ public class OraxenImpl extends PluginIntegrationAbstract implements OraxenInteg
 
     @Override
     public boolean hasAsyncLoading() {
-        return true;
+        return false;
     }
 
     @Override
