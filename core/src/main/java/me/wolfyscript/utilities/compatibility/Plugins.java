@@ -37,6 +37,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Manages compatibility with other plugins. <br>
+ * It will load plugin specific integrations that are initialised if the corresponding plugins are enabled.
+ */
 public class Plugins implements Listener {
 
     private final WolfyUtilCore core;
@@ -202,6 +206,14 @@ public class Plugins implements Listener {
         }
     }
 
+    /**
+     * Runs the specified callback if there is an active PluginIntegration available for that plugin and the if the integration is of the type specified.
+     *
+     * @param pluginName The plugin name to check for the integration.
+     * @param type The class that extends {@link PluginIntegration}.
+     * @param callback The callback to run.
+     * @param <T> The type of {@link PluginIntegration} to check for and use in the callback.
+     */
     public <T extends PluginIntegration> void runIfAvailable(String pluginName, Class<T> type, Consumer<T> callback) {
         var integration = getIntegration(pluginName, type);
         if (integration != null) {
