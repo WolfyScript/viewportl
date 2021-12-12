@@ -18,15 +18,19 @@
 
 package me.wolfyscript.utilities.compatibility.plugins;
 
+import com.elmakers.mine.bukkit.api.event.LoadEvent;
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import me.wolfyscript.utilities.compatibility.plugins.magic.MagicRefImpl;
 import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 @WUPluginIntegration(pluginName = MagicImpl.PLUGIN_NAME)
-public class MagicImpl extends PluginIntegrationAbstract {
+public class MagicImpl extends PluginIntegrationAbstract implements Listener {
 
     static final String PLUGIN_NAME = "Magic";
 
@@ -37,7 +41,7 @@ public class MagicImpl extends PluginIntegrationAbstract {
     @Override
     public void init(Plugin plugin) {
         core.registerAPIReference(new MagicRefImpl.Parser());
-
+        Bukkit.getPluginManager().registerEvents(this, core);
     }
 
     @Override
@@ -48,5 +52,10 @@ public class MagicImpl extends PluginIntegrationAbstract {
     @Override
     public boolean isAPIReferenceIncluded(APIReference reference) {
         return reference instanceof MagicRefImpl;
+    }
+
+    @EventHandler
+    public void onComplete(LoadEvent event) {
+        setEnabled();
     }
 }
