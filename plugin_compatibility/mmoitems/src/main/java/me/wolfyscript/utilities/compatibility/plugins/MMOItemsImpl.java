@@ -37,12 +37,11 @@ public class MMOItemsImpl extends PluginIntegrationAbstract {
     @Override
     public void init(Plugin plugin) {
         core.registerAPIReference(new MMOItemsRefImpl.Parser());
-
     }
 
     @Override
     public boolean hasAsyncLoading() {
-        return true;
+        return false;
     }
 
     @Override
