@@ -18,9 +18,10 @@
 
 package me.wolfyscript.utilities.compatibility.plugins;
 
+import me.wolfyscript.utilities.compatibility.PluginIntegration;
 import org.bukkit.Location;
 
-public interface MythicMobsIntegration {
+public interface MythicMobsIntegration extends PluginIntegration {
 
     void spawnMob(String mobName, Location location, int mobLevel);
 }
