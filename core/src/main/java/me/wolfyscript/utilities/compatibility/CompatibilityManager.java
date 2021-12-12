@@ -32,9 +32,7 @@ public class CompatibilityManager {
     }
 
     public void init() {
-        Bukkit.getPluginManager().registerEvents(plugins, core);
         plugins.init();
-
     }
 
     public Plugins getPlugins() {

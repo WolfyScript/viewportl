@@ -20,6 +20,7 @@ package me.wolfyscript.utilities.compatibility;
 
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.events.DependenciesLoadedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -60,16 +61,17 @@ public class Plugins implements Listener {
      */
     public void init() {
         core.getLogger().info("Loading Plugin integrations: ");
+        Bukkit.getPluginManager().registerEvents(this, core);
         for (Class<?> integrationClass : core.getReflections().getTypesAnnotatedWith(WUPluginIntegration.class)) {
             WUPluginIntegration annotation = integrationClass.getAnnotation(WUPluginIntegration.class);
             if (annotation != null && PluginIntegrationAbstract.class.isAssignableFrom(integrationClass)) {
                 String pluginName = annotation.pluginName();
                 if (Bukkit.getPluginManager().getPlugin(pluginName) != null) { //Only load for plugins that are loaded.
-                    core.getLogger().info("     - " + pluginName);
+                    core.getLogger().info(" - " + pluginName);
                     if (!pluginIntegrationClasses.containsKey(pluginName)) {
                         pluginIntegrationClasses.put(pluginName, (Class<? extends PluginIntegrationAbstract>) integrationClass);
                     } else {
-                        core.getLogger().info("         ERROR -> Failed to add Integration! A Plugin Integration for \"" + pluginName + "\" already exists!");
+                        core.getLogger().info("     ERROR -> Failed to add Integration! A Plugin Integration for \"" + pluginName + "\" already exists!");
                     }
                 }
             }
@@ -79,29 +81,44 @@ public class Plugins implements Listener {
             //Initialize the plugin integrations for that the plugin is already enabled.
             pluginIntegrationClasses.forEach(this::createPluginIntegration);
             if (pluginIntegrations.isEmpty()) {
-                core.getLogger().info("     - No integrations created.");
+                core.getLogger().info(" - No integrations created.");
             }
-            core.getLogger().info("Created Plugin integrations of already enabled plugins. Creating other integrations when their associated plugin is enabled.");
         } else {
-            core.getLogger().info("     - No integrations found for available plugins");
+            core.getLogger().info(" - No integrations found for available plugins");
         }
     }
 
     private void createPluginIntegration(String pluginName, Class<? extends PluginIntegrationAbstract> integrationClass) {
-        if (integrationClass != null) {
+        if (integrationClass != null && !pluginIntegrations.containsKey(pluginName)) {
             try {
-                core.getLogger().info("     - " + pluginName);
                 Constructor<? extends PluginIntegrationAbstract> integrationConstructor = integrationClass.getDeclaredConstructor(WolfyUtilCore.class);
                 integrationConstructor.setAccessible(true);
-                pluginIntegrations.put(pluginName, integrationConstructor.newInstance(core));
+                var integration = integrationConstructor.newInstance(core);
+                pluginIntegrations.put(pluginName, integration);
+                if(isPluginEnabled(pluginName)) { //Only init the integration if the plugin has already been enabled!
+                    integration.init(Bukkit.getPluginManager().getPlugin(pluginName));
+                    if (!integration.hasAsyncLoading()) {
+                        core.getLogger().info(" - " + pluginName);
+                        integration.setEnabled();
+                    } else {
+                        core.getLogger().info(" - " + pluginName + " : Integration is async. Enabled once done loading!");
+                    }
+                } else {
+                    core.getLogger().info(" - " + pluginName);
+                }
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-                core.getLogger().info("         ERROR -> " + e.getMessage());
+                core.getLogger().info("     ERROR -> " + e.getMessage());
             }
         }
     }
 
-    public Collection<PluginIntegrationAbstract> getPluginIntegrations() {
-        return Collections.unmodifiableCollection(pluginIntegrations.values());
+    void checkDependencies() {
+        int availableIntegrations = pluginIntegrationClasses.size();
+        long enabledIntegrations = pluginIntegrations.values().stream().filter(PluginIntegrationAbstract::isEnabled).count();
+        if (availableIntegrations == enabledIntegrations) {
+            core.getLogger().info("All dependencies are loaded. Calling the DependenciesLoadedEvent to notify other plugins!");
+            Bukkit.getPluginManager().callEvent(new DependenciesLoadedEvent(core));
+        }
     }
 
     @EventHandler
@@ -117,21 +134,11 @@ public class Plugins implements Listener {
         Class<? extends PluginIntegrationAbstract> integrationClass = pluginIntegrationClasses.get(pluginName);
         if(integrationClass != null) {
             createPluginIntegration(pluginName, integrationClass);
-            if (!evaluateIfAvailable(event.getPlugin().getName(), pluginIntegration -> {
-                core.getLogger().info("Initiated PluginIntegration for " + pluginIntegration.getAssociatedPlugin());
-                if (!pluginIntegration.hasAsyncLoading()) {
-                    ((PluginIntegrationAbstract) pluginIntegration).markAsEnabled();
-                    return true;
-                }
-                core.getLogger().info("Integration is async. Enabled once done loading!");
-                return true;
-            })) {
+            if (!hasIntegration(event.getPlugin().getName())) {
                 core.getLogger().warning("Failed to initiate PluginIntegration for " + pluginName);
             }
         }
     }
-
-
 
     /**
      * @param pluginName The name of the plugin to check for
@@ -216,6 +223,10 @@ public class Plugins implements Listener {
             return callback.apply(integration);
         }
         return false;
+    }
+
+    public Collection<PluginIntegrationAbstract> getPluginIntegrations() {
+        return Collections.unmodifiableCollection(pluginIntegrations.values());
     }
 
 }

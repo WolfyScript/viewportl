@@ -107,8 +107,7 @@ public abstract class PluginIntegrationAbstract implements PluginIntegration {
      */
     void markAsEnabled() {
         enabled = true;
-
-
+        core.getCompatibilityManager().getPlugins().checkDependencies();
     }
 
 }
