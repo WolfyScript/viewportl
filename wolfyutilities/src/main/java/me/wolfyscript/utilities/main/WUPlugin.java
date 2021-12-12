@@ -160,12 +160,12 @@ public class WUPlugin extends WolfyUtilCore {
 
     @Override
     public void onEnable() {
-        compatibilityManager.init();
         this.api.initialize();
         console.info("Minecraft version: " + ServerVersion.getVersion().getVersion());
         console.info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
         console.info("Environment: " + WolfyUtilities.getENVIRONMENT());
         this.config = new WUConfig(api.getConfigAPI(), this);
+        compatibilityManager.init();
 
         this.metrics = new Metrics(this, 5114);
         // Register ReferenceParser
