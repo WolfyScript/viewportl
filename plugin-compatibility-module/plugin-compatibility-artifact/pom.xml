@@ -21,53 +21,38 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>nmsutil</artifactId>
+        <artifactId>plugin-compatibility-module</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
         <version>1.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>nmsutil-artifact</artifactId>
+    <artifactId>plugin-compatibility-artifact</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nmsutil-v1_15_R1</artifactId>
+            <artifactId>itemsadder</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nmsutil-v1_16_R1</artifactId>
+            <artifactId>oraxen</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nmsutil-v1_16_R2</artifactId>
+            <artifactId>magic</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nmsutil-v1_16_R3</artifactId>
+            <artifactId>mythicmobs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nmsutil-v1_17_R1_P0</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>nmsutil-v1_17_R1_P1</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>nmsutil-v1_18_R1_P0</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>nmsutil-v1_18_R1_P1</artifactId>
+            <artifactId>mmoitems</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

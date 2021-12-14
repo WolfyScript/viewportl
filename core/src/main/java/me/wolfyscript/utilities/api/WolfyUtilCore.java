@@ -42,7 +42,6 @@ public abstract class WolfyUtilCore extends JavaPlugin {
     protected final Map<String, WolfyUtilities> wolfyUtilsInstances = new HashMap<>();
     protected final WolfyUtilities api;
     protected final Registries registries;
-    protected final CompatibilityManager compatibilityManager;
 
     protected WolfyUtilCore() {
         super();
@@ -56,10 +55,8 @@ public abstract class WolfyUtilCore extends JavaPlugin {
         this.registries = new Registries();
         this.reflections = new Reflections(new ConfigurationBuilder()
                 .forPackages("me.wolfyscript")
-                .addClassLoaders(Bukkit.class.getClassLoader())
                 .addClassLoaders(getClassLoader())
                 .addScanners(Scanners.TypesAnnotated, Scanners.SubTypes, Scanners.Resources));
-        this.compatibilityManager = new CompatibilityManager(this);
     }
 
     public static WolfyUtilCore getInstance() {
@@ -70,9 +67,7 @@ public abstract class WolfyUtilCore extends JavaPlugin {
         return registries;
     }
 
-    public CompatibilityManager getCompatibilityManager() {
-        return compatibilityManager;
-    }
+    public abstract CompatibilityManager getCompatibilityManager();
 
     public Reflections getReflections() {
         return reflections;

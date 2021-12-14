@@ -18,22 +18,9 @@
 
 package me.wolfyscript.utilities.compatibility;
 
-import me.wolfyscript.utilities.annotations.WUPluginIntegration;
-import me.wolfyscript.utilities.api.WolfyUtilCore;
-import me.wolfyscript.utilities.events.DependenciesLoadedEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -41,157 +28,47 @@ import java.util.function.Function;
  * Manages compatibility with other plugins. <br>
  * It will load plugin specific integrations that are initialised if the corresponding plugins are enabled.
  */
-public class Plugins implements Listener {
-
-    private final WolfyUtilCore core;
-    private final Map<String, PluginIntegrationAbstract> pluginIntegrations = new HashMap<>();
-    private final Map<String, Class<? extends PluginIntegrationAbstract>> pluginIntegrationClasses = new HashMap<>();
-
-    Plugins(WolfyUtilCore core) {
-        this.core = core;
-    }
-
-    /**
-     * Looks for available PluginIntegrations and loads them.<br>
-     * <br>
-     * The PluginIntegrations, for that the corresponding plugins are already enabled at this point, will be initiated.<br>
-     * In case a corresponding plugin is disabled, the loaded class will be removed and the integration won't be initiated!
-     * This applies to plugins that are disabled afterwards too!
-     * <br>
-     * <br>
-     * Other PluginIntegrations will be initiated when the corresponding plugins are enabled, or if they are loading data async, when they completely loaded that data.<br>
-     * <br>
-     * To check if a PluginIntegration is enabled you need to use the {@link PluginIntegration#isEnabled()}.<br>
-     */
-    public void init() {
-        core.getLogger().info("Loading Plugin integrations: ");
-        Bukkit.getPluginManager().registerEvents(this, core);
-        for (Class<?> integrationClass : core.getReflections().getTypesAnnotatedWith(WUPluginIntegration.class)) {
-            WUPluginIntegration annotation = integrationClass.getAnnotation(WUPluginIntegration.class);
-            if (annotation != null && PluginIntegrationAbstract.class.isAssignableFrom(integrationClass)) {
-                String pluginName = annotation.pluginName();
-                if (Bukkit.getPluginManager().getPlugin(pluginName) != null) { //Only load for plugins that are loaded.
-                    core.getLogger().info(" - " + pluginName);
-                    if (!pluginIntegrationClasses.containsKey(pluginName)) {
-                        pluginIntegrationClasses.put(pluginName, (Class<? extends PluginIntegrationAbstract>) integrationClass);
-                    } else {
-                        core.getLogger().info("     ERROR -> Failed to add Integration! A Plugin Integration for \"" + pluginName + "\" already exists!");
-                    }
-                }
-            }
-        }
-        if (!pluginIntegrationClasses.isEmpty()) {
-            core.getLogger().info("Create & Init Plugin integrations: ");
-            //Initialize the plugin integrations for that the plugin is already enabled.
-            pluginIntegrationClasses.forEach(this::createPluginIntegration);
-            if (pluginIntegrations.isEmpty()) {
-                core.getLogger().info(" - No integrations created.");
-            }
-        } else {
-            core.getLogger().info(" - No integrations found for available plugins");
-        }
-    }
-
-    private void createPluginIntegration(String pluginName, Class<? extends PluginIntegrationAbstract> integrationClass) {
-        if (integrationClass != null && !pluginIntegrations.containsKey(pluginName)) {
-            try {
-                Constructor<? extends PluginIntegrationAbstract> integrationConstructor = integrationClass.getDeclaredConstructor(WolfyUtilCore.class);
-                integrationConstructor.setAccessible(true);
-                var integration = integrationConstructor.newInstance(core);
-                pluginIntegrations.put(pluginName, integration);
-                if(isPluginEnabled(pluginName)) { //Only init the integration if the plugin has already been enabled!
-                    integration.init(Bukkit.getPluginManager().getPlugin(pluginName));
-                    if (!integration.hasAsyncLoading()) {
-                        core.getLogger().info(" - " + pluginName);
-                        integration.setEnabled();
-                    } else {
-                        core.getLogger().info(" - " + pluginName + " : Integration is async. Enabled once done loading!");
-                    }
-                } else {
-                    core.getLogger().info(" - " + pluginName);
-                }
-            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-                core.getLogger().info("     ERROR -> " + e.getMessage());
-            }
-        }
-    }
-
-    void checkDependencies() {
-        int availableIntegrations = pluginIntegrationClasses.size();
-        long enabledIntegrations = pluginIntegrations.values().stream().filter(PluginIntegrationAbstract::isEnabled).count();
-        if (availableIntegrations == enabledIntegrations) {
-            core.getLogger().info("All dependencies are loaded. Calling the DependenciesLoadedEvent to notify other plugins!");
-            Bukkit.getPluginManager().callEvent(new DependenciesLoadedEvent(core));
-        }
-    }
-
-    @EventHandler
-    private void onPluginDisable(PluginDisableEvent event) {
-        String pluginName = event.getPlugin().getName();
-        pluginIntegrationClasses.remove(pluginName);
-        pluginIntegrations.remove(pluginName);
-    }
-
-    @EventHandler
-    private void onPluginEnable(PluginEnableEvent event) {
-        String pluginName = event.getPlugin().getName();
-        Class<? extends PluginIntegrationAbstract> integrationClass = pluginIntegrationClasses.get(pluginName);
-        if(integrationClass != null) {
-            createPluginIntegration(pluginName, integrationClass);
-            if (!hasIntegration(event.getPlugin().getName())) {
-                core.getLogger().warning("Failed to initiate PluginIntegration for " + pluginName);
-            }
-        }
-    }
+public interface Plugins {
 
     /**
      * @param pluginName The name of the plugin to check for
      * @return If the plugin is loaded
      */
-    public boolean isPluginEnabled(String pluginName) {
-        return Bukkit.getPluginManager().isPluginEnabled(pluginName);
-    }
+    boolean isPluginEnabled(String pluginName);
 
-    public boolean hasWorldGuard() {
-        return isPluginEnabled("WorldGuard");
-    }
+    boolean hasWorldGuard();
 
-    public boolean hasPlotSquared() {
-        return isPluginEnabled("PlotSquared");
-    }
+    boolean hasPlotSquared();
 
-    public boolean hasLWC() {
-        return isPluginEnabled("LWC");
-    }
+    boolean hasLWC();
 
-    public boolean hasPlaceHolderAPI() {
-        return isPluginEnabled("PlaceholderAPI");
-    }
+    boolean hasPlaceHolderAPI();
 
-    public boolean hasMcMMO() {
-        return isPluginEnabled("mcMMO");
-    }
+    boolean hasMcMMO();
 
-    public boolean hasIntegration(String pluginName) {
-        return pluginIntegrations.containsKey(pluginName);
-    }
+    boolean hasIntegration(String pluginName);
 
-    @Nullable
-    public PluginIntegration getIntegration(String pluginName) {
-        return pluginIntegrations.get(pluginName);
-    }
+    /**
+     * Gets the integration of the specified plugin and type.<br>
+     * In case there is no integration available, it returns null.<br>
+     *
+     * @param pluginName The plugin name to get the integration for.
+     * @return The integration from the plugin; null if not available.
+     */
+    @Nullable PluginIntegration getIntegration(String pluginName);
 
-    @Nullable
-    public <T extends PluginIntegration> T getIntegration(String pluginName, Class<T> type) {
-        var integration = getIntegration(pluginName);
-        if (type.isInstance(integration)) {
-            return type.cast(integration);
-        }
-        if (integration != null) {
-            throw new IllegalArgumentException("The integration of plugin \"" + pluginName + "\" is of type " + type.getName());
-        }
-        return null;
-    }
+    /**
+     * Gets the integration of the specified plugin and type.<br>
+     * In case there is no integration available, it returns null.<br>
+     * If it does exist it will try to cast the integration to the specified type; if that fails throws an {@link ClassCastException}.
+     *
+     * @param pluginName The plugin name to get the integration for.
+     * @param type The class of the plugins' integration that extends {@link PluginIntegration}.
+     * @param <T> The specified type of the {@link PluginIntegration}
+     * @throws ClassCastException if the found {@link PluginIntegration} cannot be cast to {@link T}
+     * @return The integration from the plugin of type {@link T}; null if not available.
+     */
+    @Nullable <T extends PluginIntegration> T getIntegration(String pluginName, Class<T> type);
 
     /**
      * Runs the specified callback if there is an active PluginIntegration available for that plugin.
@@ -199,12 +76,7 @@ public class Plugins implements Listener {
      * @param pluginName The plugin name to check for the integration.
      * @param callback The callback to run.
      */
-    public void runIfAvailable(String pluginName, Consumer<PluginIntegration> callback) {
-        var integration = getIntegration(pluginName);
-        if (integration != null) {
-            callback.accept(integration);
-        }
-    }
+    void runIfAvailable(String pluginName, Consumer<PluginIntegration> callback);
 
     /**
      * Runs the specified callback if there is an active PluginIntegration available for that plugin and the if the integration is of the type specified.
@@ -214,31 +86,12 @@ public class Plugins implements Listener {
      * @param callback The callback to run.
      * @param <T> The type of {@link PluginIntegration} to check for and use in the callback.
      */
-    public <T extends PluginIntegration> void runIfAvailable(String pluginName, Class<T> type, Consumer<T> callback) {
-        var integration = getIntegration(pluginName, type);
-        if (integration != null) {
-            callback.accept(integration);
-        }
-    }
+    <T extends PluginIntegration> void runIfAvailable(String pluginName, Class<T> type, Consumer<T> callback);
 
-    public boolean evaluateIfAvailable(String pluginName, Function<PluginIntegration, Boolean> callback) {
-        var integration = getIntegration(pluginName);
-        if (integration != null) {
-            return callback.apply(integration);
-        }
-        return false;
-    }
+    boolean evaluateIfAvailable(String pluginName, Function<PluginIntegration, Boolean> callback);
 
-    public <T extends PluginIntegration> boolean evaluateIfAvailable(String pluginName, Class<T> type, Function<T, Boolean> callback) {
-        var integration = getIntegration(pluginName, type);
-        if (integration != null) {
-            return callback.apply(integration);
-        }
-        return false;
-    }
+    <T extends PluginIntegration> boolean evaluateIfAvailable(String pluginName, Class<T> type, Function<T, Boolean> callback);
 
-    public Collection<PluginIntegrationAbstract> getPluginIntegrations() {
-        return Collections.unmodifiableCollection(pluginIntegrations.values());
-    }
+    Collection<PluginIntegration> getPluginIntegrations();
 
 }

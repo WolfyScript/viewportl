@@ -18,7 +18,24 @@
 
 package me.wolfyscript.utilities.compatibility;
 
-public interface CompatibilityManager {
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 
-    Plugins getPlugins();
+public final class CompatibilityManagerImpl implements CompatibilityManager {
+
+    private final WolfyUtilCore core;
+    private final PluginsImpl pluginsImpl;
+
+    public CompatibilityManagerImpl(WolfyUtilCore core) {
+        this.core = core;
+        this.pluginsImpl = new PluginsImpl(core);
+    }
+
+    public void init() {
+        pluginsImpl.init();
+    }
+
+    @Override
+    public Plugins getPlugins() {
+        return pluginsImpl;
+    }
 }

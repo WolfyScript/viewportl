@@ -39,7 +39,7 @@
 
     <modules>
         <module>core</module>
-        <module>plugin_compatibility</module>
+        <module>plugin-compatibility-module</module>
         <module>nmsutil</module>
         <module>wolfyutilities</module>
     </modules>

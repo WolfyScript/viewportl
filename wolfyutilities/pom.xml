@@ -52,12 +52,12 @@
         </dependency>
         <!-- NMS module -->
         <dependency>
-            <groupId>com.wolfyscript.wolfyutilities</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>nmsutil-artifact</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.wolfyscript.wolfyutilities</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>plugin-comp-artifact</artifactId>
             <version>${project.version}</version>
         </dependency>

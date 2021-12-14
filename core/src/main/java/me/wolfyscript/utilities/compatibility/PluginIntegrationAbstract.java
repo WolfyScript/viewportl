@@ -25,7 +25,6 @@ import org.bukkit.plugin.Plugin;
  * To add a PluginIntegration you need to extend this class and add the annotation {@link me.wolfyscript.utilities.annotations.WUPluginIntegration} to that class.<br>
  * <br>
  * The constructor must have only one parameter of type {@link WolfyUtilCore}, that is passed to the super class.<br>
- * The constructor must not include any plugin dependent objects, etc.<br>
  * <br>
  * To effectively pass the plugin name to the annotation and PluginIntegration it is recommended to create a constant.
  * <br>
@@ -56,7 +55,6 @@ public abstract class PluginIntegrationAbstract implements PluginIntegration {
 
     /**
      * The main constructor that is called whenever the integration is created.<br>
-     * <strong>At this point, it didn't check if the packages of the depending plugin are available yet! So do not use any plugin specific Objects, etc.</strong>
      *
      * @param core The WolfyUtilCore.
      * @param pluginName The name of the associated plugin.
@@ -84,30 +82,26 @@ public abstract class PluginIntegrationAbstract implements PluginIntegration {
      * 
      * @return The name of the plugin associated with this integration.
      */
-    public String getAssociatedPlugin() {
+    public final String getAssociatedPlugin() {
         return pluginName;
     }
 
-    public WolfyUtilCore getCore() {
+    public final WolfyUtilCore getCore() {
         return core;
     }
 
     @Override
-    public boolean isEnabled() {
+    public final boolean isDoneLoading() {
         return enabled;
     }
 
-    protected void setEnabled() {
-        markAsEnabled();
+    final void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
-    /**
-     * Used to mark this plugin data loading as complete.<br>
-     * This is necessary if the plugin is loading data async.
-     */
-    void markAsEnabled() {
-        enabled = true;
-        core.getCompatibilityManager().getPlugins().checkDependencies();
+    protected final void markAsDoneLoading() {
+        setEnabled(true);
+        ((PluginsImpl) core.getCompatibilityManager().getPlugins()).checkDependencies();
     }
 
 }

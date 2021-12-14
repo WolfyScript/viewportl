@@ -48,5 +48,5 @@ public interface PluginIntegration {
 
     WolfyUtilCore getCore();
 
-    boolean isEnabled();
+    boolean isDoneLoading();
 }

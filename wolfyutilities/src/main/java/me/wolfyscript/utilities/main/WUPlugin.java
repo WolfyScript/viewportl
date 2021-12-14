@@ -28,6 +28,8 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.nms.nbt.NBTTagList;
+import me.wolfyscript.utilities.compatibility.CompatibilityManager;
+import me.wolfyscript.utilities.compatibility.CompatibilityManagerImpl;
 import me.wolfyscript.utilities.main.commands.ChatActionCommand;
 import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
@@ -71,7 +73,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-public class WUPlugin extends WolfyUtilCore {
+public final class WUPlugin extends WolfyUtilCore {
 
     @Deprecated
     private static WUPlugin instance;
@@ -84,6 +86,8 @@ public class WUPlugin extends WolfyUtilCore {
     private final MessageHandler messageHandler;
     private final MessageFactory messageFactory;
 
+    private final CompatibilityManagerImpl compatibilityManager;
+
     public WUPlugin() {
         super();
         instance = this;
@@ -92,11 +96,17 @@ public class WUPlugin extends WolfyUtilCore {
         chat.setInGamePrefix("§8[§3WU§8] §7");
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
+        this.compatibilityManager = new CompatibilityManagerImpl(this);
     }
 
     @Deprecated
     public static WUPlugin getInstance() {
         return instance;
+    }
+
+    @Override
+    public CompatibilityManager getCompatibilityManager() {
+        return compatibilityManager;
     }
 
     public WolfyUtilities getWolfyUtilities() {
