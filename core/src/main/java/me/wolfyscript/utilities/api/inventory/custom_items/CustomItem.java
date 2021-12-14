@@ -143,6 +143,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     @JsonAlias("particles")
     private ParticleContent particleContent;
 
+    @JsonIgnore
     private boolean checkOldMetaSettings = true;
 
     @JsonCreator
@@ -328,7 +329,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     }
 
     /**
-     * This method return the original CustomItem from the ItemStack.
+     * This method returns the original CustomItem from the ItemStack.
      * This only works if the itemStack contains a NamespacedKey corresponding to a CustomItem
      * that is saved!
      * <p>
