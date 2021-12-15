@@ -61,7 +61,7 @@ public class KeyedTypeIdResolver extends TypeIdResolverBase {
      * @param <T> The type of the object.
      */
     public static <T extends Keyed> void registerTypeRegistry(Class<T> type, Registry<T> registry) {
-        registerTypeRegistry(type, registry);
+        TYPE_REGISTRIES.putIfAbsent(type, registry);
     }
 
     /**
@@ -73,10 +73,6 @@ public class KeyedTypeIdResolver extends TypeIdResolverBase {
      * @param <T> The type of the object.
      */
     public static <T extends Keyed> void registerTypeRegistry(Class<T> type, TypeRegistry<T> registry) {
-        registerTypeRegistry(type, registry);
-    }
-
-    private static <T> void registerTypeRegistry(Class<T> type, IRegistry<T> registry) {
         TYPE_REGISTRIES.putIfAbsent(type, registry);
     }
 
