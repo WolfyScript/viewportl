@@ -47,7 +47,7 @@ public class RandomCollection<E> extends TreeMap<Double, E> {
     }
 
     public static Collector<CustomItem, RandomCollection<CustomItem>, RandomCollection<CustomItem>> getCustomItemCollector() {
-        return Collector.of(RandomCollection::new, (rdmCollection, customItem) -> rdmCollection.add(customItem.getRarityPercentage(), customItem.clone()), RandomCollection::addAll);
+        return Collector.of(RandomCollection::new, (rdmCollection, customItem) -> rdmCollection.add(customItem.getWeight(), customItem.clone()), RandomCollection::addAll);
     }
 
     public static <T> Collector<T, RandomCollection<T>, RandomCollection<T>> getCollector(BiConsumer<RandomCollection<T>, T> accumulator) {

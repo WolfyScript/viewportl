@@ -43,7 +43,6 @@ import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListe
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
 import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
-import me.wolfyscript.utilities.util.ClassRegistry;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;

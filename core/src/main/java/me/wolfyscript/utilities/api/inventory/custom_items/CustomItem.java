@@ -1101,7 +1101,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      * @return The weight of the item. Can be changed by the {@link APIReference} of the item.
      */
     public double getWeight() {
-        return getRarityPercentage();
+        return rarityPercentage;
     }
 
     /**
@@ -1117,7 +1117,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      */
     @Deprecated
     public double getRarityPercentage() {
-        return rarityPercentage;
+        return getWeight();
     }
 
     /**
