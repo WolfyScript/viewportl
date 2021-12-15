@@ -25,8 +25,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface PluginIntegration {
 
-    void init(Plugin plugin);
-
     /**
      * Checks if the integrated plugin loads data async.
      *
@@ -41,12 +39,26 @@ public interface PluginIntegration {
      */
     String getAssociatedPlugin();
 
-    @Nullable
-    default APIReference getAPIReference() { return null; };
-
+    /**
+     * Checks if the APIReference is part of this integration.
+     *
+     * @param reference The {@link APIReference} to check.
+     * @return True if the reference is part of this integration; else false.
+     */
     default boolean isAPIReferenceIncluded(APIReference reference) { return false; }
 
+    /**
+     * Gets the plugin core.
+     *
+     * @return The plugin core.
+     */
     WolfyUtilCore getCore();
 
+    /**
+     * Checks if the integration is done loading.<br>
+     * For sync integrations this is usually always true.<br>
+     *
+     * @return True if the integration is done loading; else false.
+     */
     boolean isDoneLoading();
 }
