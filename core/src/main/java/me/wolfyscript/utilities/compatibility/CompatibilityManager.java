@@ -20,5 +20,10 @@ package me.wolfyscript.utilities.compatibility;
 
 public interface CompatibilityManager {
 
+    /**
+     * Gets the {@link Plugins} instance that manages the compatibility with other plugins.
+     *
+     * @return The {@link Plugins} instance.
+     */
     Plugins getPlugins();
 }
