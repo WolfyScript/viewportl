@@ -140,32 +140,35 @@ public final class WUPlugin extends WolfyUtilCore {
 
         //Register meta settings providers
         getLogger().info("Register CustomItem meta checks");
-        ClassRegistry.NBT_CHECKS.register(AttributesModifiersMeta.KEY, AttributesModifiersMeta.class);
-        ClassRegistry.NBT_CHECKS.register(CustomDamageMeta.KEY, CustomDamageMeta.class);
-        ClassRegistry.NBT_CHECKS.register(CustomDurabilityMeta.KEY, CustomDurabilityMeta.class);
-        ClassRegistry.NBT_CHECKS.register(CustomItemTagMeta.KEY, CustomItemTagMeta.class);
-        ClassRegistry.NBT_CHECKS.register(CustomModelDataMeta.KEY, CustomModelDataMeta.class);
-        ClassRegistry.NBT_CHECKS.register(DamageMeta.KEY, DamageMeta.class);
-        ClassRegistry.NBT_CHECKS.register(EnchantMeta.KEY, EnchantMeta.class);
-        ClassRegistry.NBT_CHECKS.register(FlagsMeta.KEY, FlagsMeta.class);
-        ClassRegistry.NBT_CHECKS.register(LoreMeta.KEY, LoreMeta.class);
-        ClassRegistry.NBT_CHECKS.register(NameMeta.KEY, NameMeta.class);
-        ClassRegistry.NBT_CHECKS.register(PlayerHeadMeta.KEY, PlayerHeadMeta.class);
-        ClassRegistry.NBT_CHECKS.register(PotionMeta.KEY, PotionMeta.class);
-        ClassRegistry.NBT_CHECKS.register(RepairCostMeta.KEY, RepairCostMeta.class);
-        ClassRegistry.NBT_CHECKS.register(UnbreakableMeta.KEY, UnbreakableMeta.class);
+        var nbtChecks = getRegistries().getCustomItemNbtChecks();
+        nbtChecks.register(AttributesModifiersMeta.KEY, AttributesModifiersMeta.class);
+        nbtChecks.register(CustomDamageMeta.KEY, CustomDamageMeta.class);
+        nbtChecks.register(CustomDurabilityMeta.KEY, CustomDurabilityMeta.class);
+        nbtChecks.register(CustomItemTagMeta.KEY, CustomItemTagMeta.class);
+        nbtChecks.register(CustomModelDataMeta.KEY, CustomModelDataMeta.class);
+        nbtChecks.register(DamageMeta.KEY, DamageMeta.class);
+        nbtChecks.register(EnchantMeta.KEY, EnchantMeta.class);
+        nbtChecks.register(FlagsMeta.KEY, FlagsMeta.class);
+        nbtChecks.register(LoreMeta.KEY, LoreMeta.class);
+        nbtChecks.register(NameMeta.KEY, NameMeta.class);
+        nbtChecks.register(PlayerHeadMeta.KEY, PlayerHeadMeta.class);
+        nbtChecks.register(PotionMeta.KEY, PotionMeta.class);
+        nbtChecks.register(RepairCostMeta.KEY, RepairCostMeta.class);
+        nbtChecks.register(UnbreakableMeta.KEY, UnbreakableMeta.class);
 
-        ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorBasic.KEY, AnimatorBasic.class);
-        ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorSphere.KEY, AnimatorSphere.class);
-        ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorCircle.KEY, AnimatorCircle.class);
+        var particleAnimators = getRegistries().getParticleAnimators();
+        particleAnimators.register(AnimatorBasic.KEY, AnimatorBasic.class);
+        particleAnimators.register(AnimatorSphere.KEY, AnimatorSphere.class);
+        particleAnimators.register(AnimatorCircle.KEY, AnimatorCircle.class);
 
-        ClassRegistry.PARTICLE_TIMER.register(TimerLinear.KEY, TimerLinear.class);
-        ClassRegistry.PARTICLE_TIMER.register(TimerRandom.KEY, TimerRandom.class);
-        ClassRegistry.PARTICLE_TIMER.register(TimerPi.KEY, TimerPi.class);
+        var particleTimers = getRegistries().getParticleTimer();
+        particleTimers.register(TimerLinear.KEY, TimerLinear.class);
+        particleTimers.register(TimerRandom.KEY, TimerRandom.class);
+        particleTimers.register(TimerPi.KEY, TimerPi.class);
 
-        KeyedTypeIdResolver.registerTypeRegistry(Meta.class, ClassRegistry.NBT_CHECKS);
-        KeyedTypeIdResolver.registerTypeRegistry(Animator.class, ClassRegistry.PARTICLE_ANIMATORS);
-        KeyedTypeIdResolver.registerTypeRegistry(Timer.class, ClassRegistry.PARTICLE_TIMER);
+        KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
+        KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
+        KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
     }
 
     @Override
