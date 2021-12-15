@@ -19,10 +19,15 @@
 package me.wolfyscript.utilities.events;
 
 import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.compatibility.PluginIntegration;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * This event is called once the {@link PluginIntegration}s of all plugins that WolfyUtilities depends on are done.
+ * That includes plugins that load data asynchronously.
+ */
 public class DependenciesLoadedEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
@@ -33,6 +38,10 @@ public class DependenciesLoadedEvent extends Event {
         this.core = core;
     }
 
+    /**
+     * Gets the core {@link WolfyUtilCore}
+     * @return The core of the plugin.
+     */
     public WolfyUtilCore getCore() {
         return core;
     }
