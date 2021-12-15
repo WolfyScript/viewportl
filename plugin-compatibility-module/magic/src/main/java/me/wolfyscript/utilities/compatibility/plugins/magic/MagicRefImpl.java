@@ -88,7 +88,6 @@ public class MagicRefImpl extends APIReference implements MagicRef {
         public void init(Plugin plugin) {
             if(plugin instanceof MagicAPI api) {
                 magicAPI = api;
-                //TODO: Use the Magic LoadEvent to detect when to load data. (Perhaps in CustomCrafting? or via a custom event?)
             }
         }
 
