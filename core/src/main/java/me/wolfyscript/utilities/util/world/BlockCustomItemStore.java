@@ -56,7 +56,7 @@ public class BlockCustomItemStore {
     }
 
     public CustomItem getCustomItem() {
-        return WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEMS.get(customItemKey);
+        return WolfyUtilCore.getInstance().getRegistries().getCustomItems().get(customItemKey);
     }
 
     public UUID getParticleUUID() {

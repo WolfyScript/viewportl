@@ -87,11 +87,43 @@ public class Registries {
         return registryType.cast(registry);
     }
 
+    private final RegistryCustomItem customItems;
+    private final Registry<CustomData.Provider<?>> customItemData;
+    private final RegistryParticleEffect particleEffects;
+    private final RegistryParticleAnimation particleAnimations;
+    //Tags
+    private final Tags<CustomItem> itemTags;
+    //Class Registries
+    private final TypeRegistry<Animator> particleAnimators;
+    private final TypeRegistry<Timer> particleTimer;
+    private final TypeRegistry<Meta> customItemNbtChecks;
+
+    public Registries(WolfyUtilCore core) {
+        this.core = core;
+
+        customItems = new RegistryCustomItem(this);
+        customItemData = new RegistrySimple<>(new NamespacedKey(core, "custom_item_data"), this);
+        particleEffects = new RegistryParticleEffect(this);
+        particleAnimations = new RegistryParticleAnimation(this);
+
+        itemTags = new Tags<>(this);
+
+        particleAnimators = new TypeRegistrySimple<>(new NamespacedKey(core, "particle_animators"), this);
+        particleTimer = new TypeRegistrySimple<>(new NamespacedKey(core, "particle_timers"), this);
+        customItemNbtChecks = new TypeRegistrySimple<>(new NamespacedKey(core, "custom_item_nbt_checks"), this);
+    }
+
+    public WolfyUtilCore getCore() {
+        return core;
+    }
+
     /**
      * This Registry contains all the {@link CustomItem} instances.
      * If you install your own item make sure to use your plugins name as the namespace.
      */
-    public final RegistryCustomItem CUSTOM_ITEMS;
+    public RegistryCustomItem getCustomItems() {
+        return customItems;
+    }
 
     /**
      * Contains {@link CustomData.Provider} that can be used in any Custom Item from the point of registration.
@@ -103,32 +135,31 @@ public class Registries {
      * For example CustomCrafting registers its own CustomData, that isn't in this core API, for its Elite Workbenches that open up custom GUIs dependent on their CustomData.
      * And also the Recipe Book uses a CustomData object to store some data.
      */
-    public final Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA;
-    public final RegistryParticleEffect PARTICLE_EFFECTS;
-    public final RegistryParticleAnimation PARTICLE_ANIMATIONS;
-    //Tags
-    public final Tags<CustomItem> ITEM_TAGS;
-    //Class Registries
-    public final TypeRegistry<Animator> PARTICLE_ANIMATORS;
-    public final TypeRegistry<Timer> PARTICLE_TIMER;
-    public final TypeRegistry<Meta> CUSTOM_ITEM_NBT_CHECKS;
-
-    public Registries(WolfyUtilCore core) {
-        this.core = core;
-
-        CUSTOM_ITEMS = new RegistryCustomItem(this);
-        CUSTOM_ITEM_DATA = new RegistrySimple<>(new NamespacedKey(core, "custom_item_data"), this);
-        PARTICLE_EFFECTS = new RegistryParticleEffect(this);
-        PARTICLE_ANIMATIONS = new RegistryParticleAnimation(this);
-
-        ITEM_TAGS = new Tags<>(this);
-
-        PARTICLE_ANIMATORS = new TypeRegistrySimple<>(new NamespacedKey(core, "particle_animators"), this);
-        PARTICLE_TIMER = new TypeRegistrySimple<>(new NamespacedKey(core, "particle_timers"), this);
-        CUSTOM_ITEM_NBT_CHECKS = new TypeRegistrySimple<>(new NamespacedKey(core, "custom_item_nbt_checks"), this);
+    public Registry<CustomData.Provider<?>> getCustomItemData() {
+        return customItemData;
     }
 
-    public WolfyUtilCore getCore() {
-        return core;
+    public TypeRegistry<Meta> getCustomItemNbtChecks() {
+        return customItemNbtChecks;
+    }
+
+    public RegistryParticleAnimation getParticleAnimations() {
+        return particleAnimations;
+    }
+
+    public RegistryParticleEffect getParticleEffects() {
+        return particleEffects;
+    }
+
+    public Tags<CustomItem> getItemTags() {
+        return itemTags;
+    }
+
+    public TypeRegistry<Animator> getParticleAnimators() {
+        return particleAnimators;
+    }
+
+    public TypeRegistry<Timer> getParticleTimer() {
+        return particleTimer;
     }
 }

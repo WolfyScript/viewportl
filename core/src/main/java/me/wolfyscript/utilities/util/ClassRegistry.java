@@ -50,9 +50,9 @@ import java.util.function.Supplier;
 @Deprecated
 public interface ClassRegistry<V extends Keyed> extends Iterable<Class<? extends V>> {
 
-    SimpleClassRegistry<Animator> PARTICLE_ANIMATORS = new ClassRegistry.WrapperClassRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATORS);
-    SimpleClassRegistry<Timer> PARTICLE_TIMER = new ClassRegistry.WrapperClassRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().PARTICLE_TIMER);
-    SimpleClassRegistry<Meta> NBT_CHECKS = new ClassRegistry.WrapperClassRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEM_NBT_CHECKS);
+    SimpleClassRegistry<Animator> PARTICLE_ANIMATORS = new ClassRegistry.WrapperClassRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().getParticleAnimators());
+    SimpleClassRegistry<Timer> PARTICLE_TIMER = new ClassRegistry.WrapperClassRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().getParticleTimer());
+    SimpleClassRegistry<Meta> NBT_CHECKS = new ClassRegistry.WrapperClassRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().getCustomItemNbtChecks());
 
     /**
      * Get the value of the registry by it's {@link NamespacedKey}

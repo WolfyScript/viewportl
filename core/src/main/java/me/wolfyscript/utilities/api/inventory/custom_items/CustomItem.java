@@ -34,6 +34,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
+import me.wolfyscript.utilities.registry.Registries;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
@@ -67,7 +68,7 @@ import java.util.*;
  * The {@link APIReference} can be any kind of reference, a simple {@link ItemStack} ({@link VanillaRef}) or an item from another API.
  * </p>
  * <p>
- * For most additional features the CustomItem has to be registered into the {@link me.wolfyscript.utilities.registry.Registries#CUSTOM_ITEMS}.
+ * For most additional features the CustomItem has to be registered into the {@link Registries#getCustomItems()}.
  * <br>
  * To make sure the CustomItem can be detected later on, it must be created via any of the {@link #create()} methods.
  * <br>
@@ -156,7 +157,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         setMetaSettings(new MetaSettings());
         this.permission = "";
         this.rarityPercentage = apiReference.getWeight() > 0 ? apiReference.getWeight() : 1.0d;
-        for (CustomData.Provider<?> customData : WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEM_DATA.values()) {
+        for (CustomData.Provider<?> customData : WolfyUtilCore.getInstance().getRegistries().getCustomItemData().values()) {
             addCustomData(customData.getNamespacedKey(), customData.createData());
         }
         this.equipmentSlots = new ArrayList<>();
@@ -305,7 +306,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     @Nullable
     public static CustomItem of(APIReference reference) {
         if (reference == null) return null;
-        return reference instanceof WolfyUtilitiesRef ? WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEMS.get(((WolfyUtilitiesRef) reference).getNamespacedKey()) : with(reference);
+        return reference instanceof WolfyUtilitiesRef ? WolfyUtilCore.getInstance().getRegistries().getCustomItems().get(((WolfyUtilitiesRef) reference).getNamespacedKey()) : with(reference);
     }
 
     /**
@@ -345,7 +346,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         if (itemStack != null) {
             var itemMeta = itemStack.getItemMeta();
             if (itemMeta != null) {
-                return WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEMS.get(getKeyOfItemMeta(itemMeta));
+                return WolfyUtilCore.getInstance().getRegistries().getCustomItems().get(getKeyOfItemMeta(itemMeta));
             }
         }
         return null;
@@ -1161,7 +1162,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 ParticleLocation loc = ParticleLocation.valueOf(entry.getKey());
                 JsonNode value = entry.getValue();
                 if (value.isObject() && value.has("effect")) {
-                    var animation = WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS.get(JacksonUtil.getObjectMapper().convertValue(value.get("effect"), NamespacedKey.class));
+                    var animation = WolfyUtilCore.getInstance().getRegistries().getParticleAnimations().get(JacksonUtil.getObjectMapper().convertValue(value.get("effect"), NamespacedKey.class));
                     if (animation != null) {
                         loc.applyOldPlayerAnimation(playerSettings, animation);
                     }

@@ -26,6 +26,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.api.inventory.tags.Tags;
+import me.wolfyscript.utilities.registry.Registries;
 import me.wolfyscript.utilities.registry.RegistryCustomItem;
 import me.wolfyscript.utilities.registry.RegistrySimple;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
@@ -76,9 +77,9 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
      * For example CustomCrafting registers it's own CustomData, that isn't in this core API, for it's Elite Workbenches that open up custom GUIs dependent on their CustomData.
      * And also the Recipe Book uses a CustomData object to store some data.
      */
-    Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA = new WrapperRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEM_DATA);
+    Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA = new WrapperRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().getCustomItemData());
     /**
-     * @deprecated This registry has no longer any functionality. It was replaced by {@link me.wolfyscript.utilities.registry.Registries#CUSTOM_ITEM_NBT_CHECKS}
+     * @deprecated This registry has no longer any functionality. It was replaced by {@link Registries#getCustomItemNbtChecks()}
      */
     @Deprecated(forRemoval = true)
     MetaRegistry META_PROVIDER = new MetaRegistry();
@@ -86,7 +87,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry();
 
     //Tags
-    Tags<CustomItem> ITEM_TAGS = WolfyUtilCore.getInstance().getRegistries().ITEM_TAGS;
+    Tags<CustomItem> ITEM_TAGS = WolfyUtilCore.getInstance().getRegistries().getItemTags();
 
     /**
      * Get the value of the registry by it's {@link NamespacedKey}
@@ -257,7 +258,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     class CustomItemRegistry extends WrapperRegistry<CustomItem> {
 
         public CustomItemRegistry() {
-            super(() -> WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEMS, CustomItem.class);
+            super(() -> WolfyUtilCore.getInstance().getRegistries().getCustomItems(), CustomItem.class);
         }
 
         @Deprecated
@@ -361,7 +362,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     class ParticleAnimationRegistry extends WrapperRegistry<ParticleAnimation> {
 
         public ParticleAnimationRegistry() {
-            super(() -> WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS, ParticleAnimation.class);
+            super(() -> WolfyUtilCore.getInstance().getRegistries().getParticleAnimations(), ParticleAnimation.class);
         }
 
     }
@@ -370,7 +371,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     class ParticleRegistry extends WrapperRegistry<ParticleEffect> {
 
         public ParticleRegistry() {
-            super(() -> WolfyUtilCore.getInstance().getRegistries().PARTICLE_EFFECTS, ParticleEffect.class);
+            super(() -> WolfyUtilCore.getInstance().getRegistries().getParticleEffects(), ParticleEffect.class);
         }
 
     }

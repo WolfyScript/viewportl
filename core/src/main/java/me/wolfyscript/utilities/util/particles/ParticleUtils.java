@@ -36,28 +36,28 @@ public class ParticleUtils {
     private static final Map<UUID, ParticleAnimation.Scheduler> activeAnimations = new LinkedHashMap<>();
 
     public static void spawnAnimationOnBlock(NamespacedKey nameSpacedKey, Block block) {
-        ParticleAnimation animation = WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS.get(nameSpacedKey);
+        ParticleAnimation animation = WolfyUtilCore.getInstance().getRegistries().getParticleAnimations().get(nameSpacedKey);
         if (animation != null) {
             animation.spawn(block);
         }
     }
 
     public static void spawnAnimationOnLocation(NamespacedKey nameSpacedKey, Location location) {
-        ParticleAnimation animation = WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS.get(nameSpacedKey);
+        ParticleAnimation animation = WolfyUtilCore.getInstance().getRegistries().getParticleAnimations().get(nameSpacedKey);
         if (animation != null) {
             animation.spawn(location);
         }
     }
 
     public static void spawnAnimationOnEntity(NamespacedKey nameSpacedKey, Entity entity) {
-        ParticleAnimation animation = WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS.get(nameSpacedKey);
+        ParticleAnimation animation = WolfyUtilCore.getInstance().getRegistries().getParticleAnimations().get(nameSpacedKey);
         if (animation != null) {
             animation.spawn(entity);
         }
     }
 
     public static void spawnAnimationOnPlayer(NamespacedKey nameSpacedKey, Player player, EquipmentSlot equipmentSlot) {
-        ParticleAnimation animation = WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS.get(nameSpacedKey);
+        ParticleAnimation animation = WolfyUtilCore.getInstance().getRegistries().getParticleAnimations().get(nameSpacedKey);
         if (animation != null) {
             animation.spawn(player, equipmentSlot);
         }

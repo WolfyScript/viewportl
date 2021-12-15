@@ -21,6 +21,7 @@ package me.wolfyscript.utilities.registry;
 import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

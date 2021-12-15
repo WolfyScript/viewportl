@@ -18,7 +18,6 @@
 
 package me.wolfyscript.utilities.main.commands;
 
-import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.util.NamespacedKey;
@@ -82,7 +81,7 @@ public class SpawnParticleEffectCommand implements CommandExecutor, TabCompleter
                         switch (args.length) {
                             case 2:
                                 List<String> effects = new ArrayList<>();
-                                for (NamespacedKey namespacedKey : wolfyUtilities.getRegistries().PARTICLE_EFFECTS.keySet()) {
+                                for (NamespacedKey namespacedKey : wolfyUtilities.getRegistries().getParticleEffects().keySet()) {
                                     effects.add(namespacedKey.toString());
                                 }
                                 StringUtil.copyPartialMatches(args[1], effects, results);

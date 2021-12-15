@@ -56,7 +56,7 @@ public class WolfyUtilitiesRef extends APIReference {
 
     @Override
     public ItemStack getLinkedItem() {
-        var customItem = WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEMS.get(namespacedKey);
+        var customItem = WolfyUtilCore.getInstance().getRegistries().getCustomItems().get(namespacedKey);
         if (customItem != null) {
             return customItem.create();
         }

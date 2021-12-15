@@ -111,7 +111,7 @@ public class ParticleContent {
      */
     @Deprecated(forRemoval = true, since = "1.7.6.0")
     public void addParticleEffect(ParticleLocation location, NamespacedKey animation) {
-        setAnimation(location, WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS.get(animation));
+        setAnimation(location, WolfyUtilCore.getInstance().getRegistries().getParticleAnimations().get(animation));
     }
     /**
      * Old method for backwards compatibility.
@@ -202,7 +202,7 @@ public class ParticleContent {
         }
 
         public void setAnimation(NamespacedKey animation) {
-            this.animation = Objects.requireNonNull(WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS.get(animation), "Animation \"" + animation + "\" not found!");
+            this.animation = Objects.requireNonNull(WolfyUtilCore.getInstance().getRegistries().getParticleAnimations().get(animation), "Animation \"" + animation + "\" not found!");
         }
 
         @Override
