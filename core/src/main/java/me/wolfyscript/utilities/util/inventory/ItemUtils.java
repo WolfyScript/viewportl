@@ -24,6 +24,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
@@ -57,12 +58,30 @@ public class ItemUtils {
     }
 
     public static boolean isTool(Material material) {
-        return material.name().endsWith("AXE") || material.name().endsWith("HOE") || material.name().endsWith("SWORD") || material.name().endsWith("SHOVEL") || material.name().endsWith("PICKAXE");
+        return switch (material) {
+            case
+                    WOODEN_HOE, WOODEN_AXE, WOODEN_PICKAXE, WOODEN_SHOVEL, WOODEN_SWORD, //WOODEN
+                    STONE_HOE, STONE_AXE, STONE_PICKAXE, STONE_SHOVEL, STONE_SWORD, //STONE
+                    IRON_HOE, IRON_AXE, IRON_PICKAXE, IRON_SHOVEL, IRON_SWORD,  //IRON
+                    GOLDEN_HOE, GOLDEN_AXE, GOLDEN_PICKAXE, GOLDEN_SHOVEL, GOLDEN_SWORD, //GOLDEN
+                    DIAMOND_HOE, DIAMOND_AXE, DIAMOND_PICKAXE, DIAMOND_SHOVEL, DIAMOND_SWORD, //DIAMOND
+                    NETHERITE_HOE, NETHERITE_AXE, NETHERITE_PICKAXE, NETHERITE_SHOVEL, NETHERITE_SWORD //NETHERITE
+                    -> true;
+            default
+                    -> false;
+        };
     }
 
     public static boolean isAllowedInGrindStone(Material material) {
-        //TODO
-        return true;
+        var equipmentSlot = material.getEquipmentSlot();
+        if (!equipmentSlot.equals(EquipmentSlot.HAND) && !equipmentSlot.equals(EquipmentSlot.OFF_HAND)) {
+            return true;
+        }
+        if (isTool(material)) return true;
+        return switch (material) {
+            case BOW, CROSSBOW, TRIDENT, SHIELD, TURTLE_HELMET, ELYTRA, CARROT_ON_A_STICK, WARPED_FUNGUS_ON_A_STICK, FISHING_ROD, SHEARS, FLINT_AND_STEEL, ENCHANTED_BOOK -> true;
+            default -> false;
+        };
     }
 
     public static boolean isAirOrNull(ItemStack item) {

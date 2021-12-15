@@ -41,7 +41,7 @@ public class LanguageAPI {
 
     private final WolfyUtilities api;
 
-    private final ArrayList<Language> languages;
+    private final List<Language> languages;
 
     private Language activeLanguage;
     private Language fallbackLanguage;

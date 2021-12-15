@@ -26,10 +26,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Language extends JsonConfig<JsonNode> {
 
-    private final HashMap<String, JsonNode> cachedNodes = new HashMap<>();
+    private final Map<String, JsonNode> cachedNodes = new HashMap<>();
     private final String lang;
 
     public Language(Plugin plugin, String lang) {
