@@ -27,6 +27,8 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.tags.Tags;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.particles.ParticleAnimation;
+import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 
@@ -134,19 +136,26 @@ public class Registries {
      * <br>
      * For example CustomCrafting registers its own CustomData, that isn't in this core API, for its Elite Workbenches that open up custom GUIs dependent on their CustomData.
      * And also the Recipe Book uses a CustomData object to store some data.
+     * @return The registry of {@link CustomData.Provider}
      */
     public Registry<CustomData.Provider<?>> getCustomItemData() {
         return customItemData;
     }
 
-    public TypeRegistry<Meta> getCustomItemNbtChecks() {
-        return customItemNbtChecks;
-    }
-
+    /**
+     * Gets the registry containing all the available {@link ParticleAnimation}s.
+     *
+     * @return The type registry of {@link ParticleAnimation}s
+     */
     public RegistryParticleAnimation getParticleAnimations() {
         return particleAnimations;
     }
 
+    /**
+     * Gets the registry containing all the available {@link ParticleEffect}s.
+     *
+     * @return The type registry of {@link ParticleEffect}s
+     */
     public RegistryParticleEffect getParticleEffects() {
         return particleEffects;
     }
@@ -155,10 +164,29 @@ public class Registries {
         return itemTags;
     }
 
+    /**
+     * Gets the registry containing all the available NBTChecks for CustomItems.
+     *
+     * @return The type registry of {@link Meta}
+     */
+    public TypeRegistry<Meta> getCustomItemNbtChecks() {
+        return customItemNbtChecks;
+    }
+
+    /**
+     * Gets the registry containing all the available Animators, that can be used in {@link ParticleAnimation}s.
+     *
+     * @return The type registry of {@link Animator}
+     */
     public TypeRegistry<Animator> getParticleAnimators() {
         return particleAnimators;
     }
 
+    /**
+     * Gets the registry containing all the available Timers, that can be used in {@link ParticleAnimation}s.
+     *
+     * @return The type registry of {@link Timer}
+     */
     public TypeRegistry<Timer> getParticleTimer() {
         return particleTimer;
     }
