@@ -61,17 +61,17 @@ public class Chat {
         this.inGamePrefix = inGamePrefix;
     }
 
-    public void sendMessage(Player player, String message) {
-        if (player != null) {
-            player.sendMessage(ChatColor.convert(inGamePrefix + languageAPI.replaceKeys(message)));
-        }
-    }
-
     public void sendMessages(Player player, String... messages) {
         if (player != null) {
             for (String message : messages) {
                 player.sendMessage(ChatColor.convert(inGamePrefix + languageAPI.replaceKeys(message)));
             }
+        }
+    }
+
+    public void sendMessage(Player player, String message) {
+        if (player != null) {
+            player.sendMessage(ChatColor.convert(inGamePrefix + languageAPI.replaceKeys(message)));
         }
     }
 

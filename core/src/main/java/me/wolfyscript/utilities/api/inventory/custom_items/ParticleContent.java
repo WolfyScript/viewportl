@@ -99,6 +99,7 @@ public class ParticleContent {
             case PLAYER -> setPlayer(new PlayerSettings(animation));
             case ENTITY -> setEntity(new Settings(animation));
             case LOCATION -> setLocation(new Settings(animation));
+            default -> {/* Not a valid location */}
         }
     }
 

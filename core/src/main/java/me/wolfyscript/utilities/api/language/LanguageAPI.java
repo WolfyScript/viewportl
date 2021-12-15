@@ -213,7 +213,7 @@ public class LanguageAPI {
         return replaceColoredKey(String.format(BUTTON_CLUSTER_KEY + LORE_KEY, clusterId, buttonKey));
     }
 
-    //TODO: Feature idea to let players choose their own language.
+    //Feature idea to let players choose their own language.
     /*
     public void setPlayerLanguage(Player player, Language language){
         playerLanguage.put(player.getUniqueId().toString(), language);
