@@ -122,8 +122,10 @@ final class PluginsImpl implements Plugins, Listener {
         int availableIntegrations = pluginIntegrationClasses.size();
         long enabledIntegrations = pluginIntegrations.values().stream().filter(PluginIntegrationAbstract::isDoneLoading).count();
         if (availableIntegrations == enabledIntegrations) {
-            core.getLogger().info("All dependencies are loaded. Calling the DependenciesLoadedEvent to notify other plugins!");
-            Bukkit.getPluginManager().callEvent(new DependenciesLoadedEvent(core));
+            Bukkit.getScheduler().runTaskLater(core, () -> {
+                core.getLogger().info("All dependencies are loaded. Calling the DependenciesLoadedEvent to notify other plugins!");
+                Bukkit.getPluginManager().callEvent(new DependenciesLoadedEvent(core));
+            }, 10);
         }
     }
 
