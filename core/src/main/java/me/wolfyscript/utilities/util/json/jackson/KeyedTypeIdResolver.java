@@ -23,8 +23,12 @@ import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import me.wolfyscript.utilities.registry.IRegistry;
 import me.wolfyscript.utilities.registry.Registry;
-import me.wolfyscript.utilities.util.*;
+import me.wolfyscript.utilities.registry.TypeRegistry;
+import me.wolfyscript.utilities.util.ClassRegistry;
+import me.wolfyscript.utilities.util.Keyed;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -32,16 +36,48 @@ import java.util.Map;
 
 public class KeyedTypeIdResolver extends TypeIdResolverBase {
 
-    private static final Map<Class<?>, Registry<?>> TYPE_REGISTRIES = new HashMap<>();
-    private static final Map<Class<?>, ClassRegistry<?>> TYPE_CLASS_REGISTRIES = new HashMap<>();
+    private static final Map<Class<?>, IRegistry<?>> TYPE_REGISTRIES = new HashMap<>();
+
+    private static final Map<Class<?>, me.wolfyscript.utilities.util.Registry<?>> TYPE_REGISTRIES_OLD = new HashMap<>();
+    private static final Map<Class<?>, ClassRegistry<?>> TYPE_CLASS_REGISTRIES_OLD = new HashMap<>();
     private JavaType superType;
 
-    public static <T extends Keyed> void registerTypeRegistry(Class<T> type, Registry<T> registry) {
-        TYPE_REGISTRIES.putIfAbsent(type, registry);
+    @Deprecated
+    public static <T extends Keyed> void registerTypeRegistry(Class<T> type, me.wolfyscript.utilities.util.Registry<T> registry) {
+        TYPE_REGISTRIES_OLD.putIfAbsent(type, registry);
     }
 
+    @Deprecated
     public static <T extends Keyed> void registerTypeRegistry(Class<T> type, ClassRegistry<T> registry) {
-        TYPE_CLASS_REGISTRIES.putIfAbsent(type, registry);
+        TYPE_CLASS_REGISTRIES_OLD.putIfAbsent(type, registry);
+    }
+
+    /**
+     * Registers a registry to be used for Json serialization and deserialization. <br>
+     * To use that the class of the specified type must be annotated with {@link me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference}.
+     *
+     * @param type The type to register.
+     * @param registry The registry of the specified type.
+     * @param <T> The type of the object.
+     */
+    public static <T extends Keyed> void registerTypeRegistry(Class<T> type, Registry<T> registry) {
+        registerTypeRegistry(type, registry);
+    }
+
+    /**
+     * Registers a registry to be used for Json serialization and deserialization. <br>
+     * To use that the class of the specified type must be annotated with {@link me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference}.
+     *
+     * @param type The type to register.
+     * @param registry The registry of the specified type.
+     * @param <T> The type of the object.
+     */
+    public static <T extends Keyed> void registerTypeRegistry(Class<T> type, TypeRegistry<T> registry) {
+        registerTypeRegistry(type, registry);
+    }
+
+    private static <T> void registerTypeRegistry(Class<T> type, IRegistry<T> registry) {
+        TYPE_REGISTRIES.putIfAbsent(type, registry);
     }
 
     @Override
@@ -75,15 +111,26 @@ public class KeyedTypeIdResolver extends TypeIdResolverBase {
     @Nullable
     protected Class<?> getTypeClass(NamespacedKey key) {
         if (key != null) {
-            ClassRegistry<?> classRegistry = TYPE_CLASS_REGISTRIES.get(superType.getRawClass());
-            if (classRegistry != null) {
-                return classRegistry.get(key);
-            }
-            Registry<?> registry = TYPE_REGISTRIES.get(superType.getRawClass());
+            Class<?> rawClass = superType.getRawClass();
+            var registry = TYPE_REGISTRIES.get(rawClass);
             if (registry != null) {
                 var object = registry.get(key);
-                if (object != null) {
+                if (object instanceof Class<?> classObj) {
+                    return classObj;
+                } else if(object instanceof Keyed) {
                     return object.getClass();
+                }
+            } else if(!TYPE_CLASS_REGISTRIES_OLD.isEmpty() || !TYPE_REGISTRIES_OLD.isEmpty()) { //Only try to get data from the old registries if required.
+                var classRegistry = TYPE_CLASS_REGISTRIES_OLD.get(superType.getRawClass());
+                if (classRegistry != null) {
+                    return classRegistry.get(key);
+                }
+                var registryOld = TYPE_REGISTRIES_OLD.get(superType.getRawClass());
+                if (registryOld != null) {
+                    var object = registryOld.get(key);
+                    if (object != null) {
+                        return object.getClass();
+                    }
                 }
             }
         }
