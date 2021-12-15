@@ -47,7 +47,7 @@ public abstract class WolfyUtilCore extends JavaPlugin {
 
     protected WolfyUtilCore() {
         super();
-        if(instance == null && this.getName().equals("WolfyUtilities")) {
+        if(instance == null && this.getName().equals("WolfyUtilities") && getClass().getPackageName().equals("me.wolfyscript.utilities.main")) {
             instance = this;
         } else {
             throw new IllegalArgumentException("This constructor can only be called by WolfyUtilities itself!");
