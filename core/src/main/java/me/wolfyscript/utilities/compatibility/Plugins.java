@@ -46,6 +46,12 @@ public interface Plugins {
 
     boolean hasMcMMO();
 
+    /**
+     * Checks if the integration for the specified plugin is available.
+     *
+     * @param pluginName The name of plugin to look for.
+     * @return True if the integration for the plugin is available.
+     */
     boolean hasIntegration(String pluginName);
 
     /**
@@ -88,10 +94,32 @@ public interface Plugins {
      */
     <T extends PluginIntegration> void runIfAvailable(String pluginName, Class<T> type, Consumer<T> callback);
 
+    /**
+     * Evaluates the specified callback if there is an active PluginIntegration available for that plugin and the if the integration is of the type specified.
+     *
+     * @param pluginName The plugin name to check for the integration.
+     * @param callback The callback to run.
+     * @return The value of the evaluated callback; or false if the integration doesn't exist.
+     */
     boolean evaluateIfAvailable(String pluginName, Function<PluginIntegration, Boolean> callback);
 
+    /**
+     * Evaluates the specified callback if there is an active PluginIntegration available for that plugin and the if the integration is of the type specified.
+     *
+     * @param pluginName The plugin name to check for the integration.
+     * @param type The class that extends {@link PluginIntegration}.
+     * @param callback The callback to run.
+     * @param <T> The type of {@link PluginIntegration} to check for and use in the callback.
+     * @throws ClassCastException if the found {@link PluginIntegration} cannot be cast to {@link T}
+     * @return The value of the evaluated callback; or false if the integration doesn't exist.
+     */
     <T extends PluginIntegration> boolean evaluateIfAvailable(String pluginName, Class<T> type, Function<T, Boolean> callback);
 
+    /**
+     * An unmodifiable list of all available PluginIntegrations.
+     *
+     * @return A list of available PluginIntegrations.
+     */
     Collection<PluginIntegration> getPluginIntegrations();
 
 }
