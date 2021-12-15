@@ -146,12 +146,12 @@ public class WolfyUtilities {
      */
     @Deprecated
     public static WolfyUtilities get(Plugin plugin) {
-        return WolfyUtilCore.getInstance().get(plugin);
+        return WolfyUtilCore.getInstance().getAPI(plugin);
     }
 
     @Deprecated
     public static WolfyUtilities get(Plugin plugin, boolean init) {
-        return WolfyUtilCore.getInstance().get(plugin, init);
+        return WolfyUtilCore.getInstance().getAPI(plugin, init);
     }
 
     /**
@@ -164,7 +164,7 @@ public class WolfyUtilities {
      */
     @Deprecated
     public static WolfyUtilities get(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
-        return WolfyUtilCore.getInstance().get(plugin, customCacheClass);
+        return WolfyUtilCore.getInstance().getAPI(plugin, customCacheClass);
     }
 
     /**

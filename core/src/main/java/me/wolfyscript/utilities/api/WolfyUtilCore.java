@@ -40,9 +40,9 @@ import java.util.Map;
  * <p>
  * To get an instance of the API ({@link WolfyUtilities}) for your plugin you need one of the following methods. <br>
  * <ul>
- *     <li>{@link #get(Plugin)} - Simple method to get your instance. Only use this in your <strong>onEnable()</strong></li>
- *     <li>{@link #get(Plugin, boolean)} - Specify if it should init Event Listeners. Can be used inside the onLoad(), or plugin constructor, if set to false; Else only use this in your <strong>onEnable()</strong></li>
- *     <li>{@link #get(Plugin, Class)} - Specify the type of your {@link CustomCache}. Can be used inside the onLoad(), or plugin constructor.</li>
+ *     <li>{@link #getAPI(Plugin)} - Simple method to get your instance. Only use this in your <strong>onEnable()</strong></li>
+ *     <li>{@link #getAPI(Plugin, boolean)} - Specify if it should init Event Listeners. Can be used inside the onLoad(), or plugin constructor, if set to false; Else only use this in your <strong>onEnable()</strong></li>
+ *     <li>{@link #getAPI(Plugin, Class)} - Specify the type of your {@link CustomCache}. Can be used inside the onLoad(), or plugin constructor.</li>
  * </ul>
  * </p>
  */
@@ -63,7 +63,7 @@ public abstract class WolfyUtilCore extends JavaPlugin {
         } else {
             throw new IllegalArgumentException("This constructor can only be called by WolfyUtilities itself!");
         }
-        this.api = get(this);
+        this.api = getAPI(this);
         ServerVersion.setWUVersion(getDescription().getVersion());
         this.registries = new Registries(this);
         this.reflections = new Reflections(new ConfigurationBuilder()
@@ -113,8 +113,8 @@ public abstract class WolfyUtilCore extends JavaPlugin {
      * @param plugin The plugin to get the instance for.
      * @return The WolfyUtilities instance for the plugin.
      */
-    public WolfyUtilities get(Plugin plugin) {
-        return get(plugin, false);
+    public WolfyUtilities getAPI(Plugin plugin) {
+        return getAPI(plugin, false);
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class WolfyUtilCore extends JavaPlugin {
      * @param init   If it should directly initialize the APIs' events, etc. (They must be initialized later via {@link WolfyUtilities#initialize()})
      * @return The WolfyUtilities instance for the plugin.
      */
-    public WolfyUtilities get(Plugin plugin, boolean init) {
+    public WolfyUtilities getAPI(Plugin plugin, boolean init) {
         return wolfyUtilsInstances.computeIfAbsent(plugin.getName(), s -> new WolfyUtilities(this, plugin, init));
     }
 
@@ -139,7 +139,7 @@ public abstract class WolfyUtilCore extends JavaPlugin {
      * @param customCacheClass The class of the custom cache you created. Must extend {@link CustomCache}
      * @return The WolfyUtilities instance for the plugin.
      */
-    public WolfyUtilities get(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
+    public WolfyUtilities getAPI(Plugin plugin, Class<? extends CustomCache> customCacheClass) {
         return wolfyUtilsInstances.computeIfAbsent(plugin.getName(), s -> new WolfyUtilities(this, plugin, customCacheClass));
     }
 
