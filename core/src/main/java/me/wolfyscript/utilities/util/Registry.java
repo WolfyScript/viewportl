@@ -26,7 +26,6 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.api.inventory.tags.Tags;
-import me.wolfyscript.utilities.registry.IRegistry;
 import me.wolfyscript.utilities.registry.RegistryCustomItem;
 import me.wolfyscript.utilities.registry.RegistrySimple;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
@@ -36,10 +35,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 /**
  *
- * @deprecated This interface has been replaced by {@link IRegistry}.<br> Instances of Registries can be accessed using {@link me.wolfyscript.utilities.registry.Registries}.<br> You can get that instance via {@link WolfyUtilities#getRegistries()}.
+ * @deprecated This interface has been replaced by {@link me.wolfyscript.utilities.registry.Registry}.<br>
+ *             Instances of Registries can be accessed using {@link me.wolfyscript.utilities.registry.Registries}.<br>
+ *             You can get that instance via {@link WolfyUtilities#getRegistries()}.
  * @param <V>
  */
 @Deprecated
@@ -47,7 +49,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
 
     /**
      * Gets a Registry by the type it contains.
-     * The Registry has to be created with the class of the type (See: {@link WrapperRegistry#WrapperRegistry(RegistrySimple, Class)}).
+     * The Registry has to be created with the class of the type (See: {@link WrapperRegistry#WrapperRegistry(Supplier, Class)}).
      *
      * @param type The class of the type the registry contains.
      * @param <V> The type the registry contains.
@@ -74,14 +76,17 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
      * For example CustomCrafting registers it's own CustomData, that isn't in this core API, for it's Elite Workbenches that open up custom GUIs dependent on their CustomData.
      * And also the Recipe Book uses a CustomData object to store some data.
      */
-    Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA = new WrapperRegistry<>(WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEM_DATA);
+    Registry<CustomData.Provider<?>> CUSTOM_ITEM_DATA = new WrapperRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEM_DATA);
+    /**
+     * @deprecated This registry has no longer any functionality. It was replaced by {@link me.wolfyscript.utilities.registry.Registries#CUSTOM_ITEM_NBT_CHECKS}
+     */
     @Deprecated(forRemoval = true)
     MetaRegistry META_PROVIDER = new MetaRegistry();
     ParticleRegistry PARTICLE_EFFECTS = new ParticleRegistry();
     ParticleAnimationRegistry PARTICLE_ANIMATIONS = new ParticleAnimationRegistry();
 
     //Tags
-    Tags<CustomItem> ITEM_TAGS = new Tags<>();
+    Tags<CustomItem> ITEM_TAGS = WolfyUtilCore.getInstance().getRegistries().ITEM_TAGS;
 
     /**
      * Get the value of the registry by it's {@link NamespacedKey}
@@ -114,6 +119,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
      *
      * @param <V> The type of the value.
      */
+    @Deprecated
     class SimpleRegistry<V extends Keyed> implements Registry<V> {
 
         private static final Map<Class<? extends Keyed>, Registry<?>> REGISTRIES_BY_TYPE = new HashMap<>();
@@ -178,67 +184,72 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     }
 
     /**
-     * A simple registry, used for basic use cases.
+     * Used for backwards compatibility. It wraps around the new registries and acts as a layer in between.
      *
      * @param <V> The type of the value.
      */
     @Deprecated
     class WrapperRegistry<V extends Keyed> implements Registry<V> {
 
-        protected final Map<NamespacedKey, V> map;
+        protected final Supplier<me.wolfyscript.utilities.registry.Registry<V>> wrappedRegistrySupplier;
+        private me.wolfyscript.utilities.registry.Registry<V> wrappedRegistry;
 
-        protected final IRegistry<V> wrappedRegistry;
-
-        public WrapperRegistry(IRegistry<V> wrappedRegistry) {
-            this.wrappedRegistry = wrappedRegistry;
-            this.map = new HashMap<>();
+        public WrapperRegistry(Supplier<me.wolfyscript.utilities.registry.Registry<V>> registrySupplier) {
+            this.wrappedRegistrySupplier = registrySupplier;
+            this.wrappedRegistry = registrySupplier.get();
         }
 
-        public WrapperRegistry(RegistrySimple<V> wrappedRegistry, Class<V> type) {
-            this.wrappedRegistry = wrappedRegistry;
-            this.map = new HashMap<>();
+        public WrapperRegistry(Supplier<me.wolfyscript.utilities.registry.Registry<V>> registrySupplier, Class<V> type) {
+            this.wrappedRegistrySupplier = registrySupplier;
+            this.wrappedRegistry = registrySupplier.get();
             SimpleRegistry.REGISTRIES_BY_TYPE.put(type, this);
         }
 
+        protected me.wolfyscript.utilities.registry.Registry<V> getWrappedRegistry() {
+            if (wrappedRegistry == null) {
+                this.wrappedRegistry = wrappedRegistrySupplier.get();
+            }
+            return wrappedRegistry;
+        }
+
         public Class<V> getType() {
-            return wrappedRegistry instanceof RegistrySimple<V> wrappedRegistrySimple ? wrappedRegistrySimple.getType() : null;
+            return getWrappedRegistry() instanceof RegistrySimple<V> wrappedRegistrySimple ? wrappedRegistrySimple.getType() : null;
         }
 
         @Override
         public @Nullable V get(@Nullable NamespacedKey key) {
-            return wrappedRegistry.get(key);
+            return getWrappedRegistry().get(key);
         }
 
         @Override
         public void register(NamespacedKey namespacedKey, V value) {
-            wrappedRegistry.register(namespacedKey, value);
+            getWrappedRegistry().register(namespacedKey, value);
         }
 
         @Override
         public void register(V value) {
-            wrappedRegistry.register(value);
+            getWrappedRegistry().register(value);
         }
 
         @NotNull
         @Override
         public Iterator<V> iterator() {
-            return wrappedRegistry.iterator();
+            return getWrappedRegistry().iterator();
         }
 
         @Override
         public Set<NamespacedKey> keySet() {
-            return wrappedRegistry.keySet();
+            return getWrappedRegistry().keySet();
         }
 
         @Override
         public Collection<V> values() {
-            System.out.println("Get values from: " + wrappedRegistry);
-            return wrappedRegistry.values();
+            return getWrappedRegistry().values();
         }
 
         @Override
         public Set<Entry<NamespacedKey, V>> entrySet() {
-            return wrappedRegistry.entrySet();
+            return getWrappedRegistry().entrySet();
         }
     }
 
@@ -246,12 +257,12 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     class CustomItemRegistry extends WrapperRegistry<CustomItem> {
 
         public CustomItemRegistry() {
-            super(WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEMS, CustomItem.class);
+            super(() -> WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEMS, CustomItem.class);
         }
 
         @Deprecated
         public List<String> getNamespaces() {
-            return ((RegistryCustomItem) wrappedRegistry).getNamespaces();
+            return ((RegistryCustomItem) getWrappedRegistry()).getNamespaces();
         }
 
         /**
@@ -262,7 +273,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
          */
         @Deprecated
         public List<CustomItem> get(String namespace) {
-            return ((RegistryCustomItem) wrappedRegistry).get(namespace);
+            return ((RegistryCustomItem) getWrappedRegistry()).get(namespace);
         }
 
         /**
@@ -271,7 +282,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
          */
         @Deprecated
         public boolean has(NamespacedKey namespacedKey) {
-            return ((RegistryCustomItem) wrappedRegistry).has(namespacedKey);
+            return ((RegistryCustomItem) getWrappedRegistry()).has(namespacedKey);
         }
 
         /**
@@ -283,7 +294,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
          */
         @Deprecated
         public void remove(NamespacedKey namespacedKey) {
-            ((RegistryCustomItem) wrappedRegistry).remove(namespacedKey);
+            ((RegistryCustomItem) getWrappedRegistry()).remove(namespacedKey);
         }
 
         /**
@@ -303,7 +314,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
         @Deprecated
         @Override
         public void register(NamespacedKey namespacedKey, CustomItem item) {
-            wrappedRegistry.register(namespacedKey, item);
+            getWrappedRegistry().register(namespacedKey, item);
         }
     }
 
@@ -350,12 +361,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     class ParticleAnimationRegistry extends WrapperRegistry<ParticleAnimation> {
 
         public ParticleAnimationRegistry() {
-            super(WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS, ParticleAnimation.class);
-        }
-
-        @Override
-        public void register(NamespacedKey namespacedKey, ParticleAnimation value) {
-            wrappedRegistry.register(namespacedKey, value);
+            super(() -> WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATIONS, ParticleAnimation.class);
         }
 
     }
@@ -364,12 +370,7 @@ public interface Registry<V extends Keyed> extends Iterable<V> {
     class ParticleRegistry extends WrapperRegistry<ParticleEffect> {
 
         public ParticleRegistry() {
-            super(WolfyUtilCore.getInstance().getRegistries().PARTICLE_EFFECTS, ParticleEffect.class);
-        }
-
-        @Override
-        public void register(NamespacedKey namespacedKey, ParticleEffect value) {
-            wrappedRegistry.register(namespacedKey, value);
+            super(() -> WolfyUtilCore.getInstance().getRegistries().PARTICLE_EFFECTS, ParticleEffect.class);
         }
 
     }

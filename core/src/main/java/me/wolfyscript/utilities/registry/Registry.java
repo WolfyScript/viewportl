@@ -18,19 +18,19 @@
 
 package me.wolfyscript.utilities.registry;
 
+import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.particles.ParticleEffect;
+import org.jetbrains.annotations.Nullable;
 
-public class RegistryParticleEffect extends RegistrySimple<ParticleEffect> {
+import java.util.*;
+import java.util.Map.Entry;
 
-    RegistryParticleEffect(Registries registries) {
-        super(new NamespacedKey(registries.getCore(), "particle_effects"), registries, ParticleEffect.class);
-    }
+public interface Registry<V extends Keyed> extends IRegistry<V> {
 
-    @Override
-    public void register(NamespacedKey namespacedKey, ParticleEffect value) {
-        super.register(namespacedKey, value);
-        value.setKey(namespacedKey);
-    }
+    /**
+     * Registers a value with its contained {@link NamespacedKey} it gets via the {@link V#getNamespacedKey()} method.
+     * @param value The value to register.
+     */
+    void register(V value);
 
 }

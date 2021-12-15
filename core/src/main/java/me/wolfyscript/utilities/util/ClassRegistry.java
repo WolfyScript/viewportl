@@ -19,7 +19,10 @@
 package me.wolfyscript.utilities.util;
 
 import com.google.common.base.Preconditions;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
+import me.wolfyscript.utilities.registry.TypeRegistry;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 /**
  * This registry allows you to register classes under NamespacedKeys. <br>
@@ -37,13 +41,18 @@ import java.util.Map.Entry;
  * Main use case of this registry would be to prevent using the {@link Registry} with default objects <br>
  * and prevents unwanted usage of those values, as this registry enforces to create new instances.
  *
+ * @deprecated This interface has been replaced by {@link TypeRegistry}.<br>
+ *             Instances of Registries can be accessed using {@link me.wolfyscript.utilities.registry.Registries}.<br>
+ *             You can get that instance via {@link WolfyUtilities#getRegistries()}.
+ *
  * @param <V> The type of the values.
  */
+@Deprecated
 public interface ClassRegistry<V extends Keyed> extends Iterable<Class<? extends V>> {
 
-    SimpleClassRegistry<Animator> PARTICLE_ANIMATORS = new SimpleClassRegistry<>();
-    SimpleClassRegistry<Timer> PARTICLE_TIMER = new SimpleClassRegistry<>();
-    SimpleClassRegistry<Meta> NBT_CHECKS = new SimpleClassRegistry<>();
+    SimpleClassRegistry<Animator> PARTICLE_ANIMATORS = new ClassRegistry.WrapperClassRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().PARTICLE_ANIMATORS);
+    SimpleClassRegistry<Timer> PARTICLE_TIMER = new ClassRegistry.WrapperClassRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().PARTICLE_TIMER);
+    SimpleClassRegistry<Meta> NBT_CHECKS = new ClassRegistry.WrapperClassRegistry<>(() -> WolfyUtilCore.getInstance().getRegistries().CUSTOM_ITEM_NBT_CHECKS);
 
     /**
      * Get the value of the registry by it's {@link NamespacedKey}
@@ -102,6 +111,7 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<? extends
      *
      * @param <V> The type of the value.
      */
+    @Deprecated
     class SimpleClassRegistry<V extends Keyed> implements ClassRegistry<V> {
 
         protected final Map<NamespacedKey, Class<? extends V>> map;
@@ -166,6 +176,71 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<? extends
         @Override
         public Set<Entry<NamespacedKey, Class<? extends V>>> entrySet() {
             return Collections.unmodifiableSet(this.map.entrySet());
+        }
+    }
+
+    @Deprecated
+    class WrapperClassRegistry<V extends Keyed> extends SimpleClassRegistry<V> {
+
+        protected final Supplier<TypeRegistry<V>> wrappedRegistrySupplier;
+        private TypeRegistry<V> wrappedRegistry;
+
+        WrapperClassRegistry(Supplier<TypeRegistry<V>> wrappedRegistry) {
+            this.wrappedRegistrySupplier = wrappedRegistry;
+            this.wrappedRegistry = wrappedRegistry.get();
+        }
+
+        protected TypeRegistry<V> getWrappedRegistry() {
+            if (wrappedRegistry == null) {
+                this.wrappedRegistry = wrappedRegistrySupplier.get();
+            }
+            return wrappedRegistry;
+        }
+
+        @Override
+        public @Nullable Class<? extends V> get(@Nullable NamespacedKey key) {
+            return getWrappedRegistry().get(key);
+        }
+
+        @Override
+        public @Nullable V create(NamespacedKey key) {
+            return getWrappedRegistry().create(key);
+        }
+
+        @Override
+        public void register(NamespacedKey key, V value) {
+            getWrappedRegistry().register(key, value);
+        }
+
+        @Override
+        public void register(NamespacedKey key, Class<? extends V> value) {
+            getWrappedRegistry().register(key, value);
+        }
+
+        @Override
+        public void register(V value) {
+            getWrappedRegistry().register(value);
+        }
+
+        @NotNull
+        @Override
+        public Iterator<Class<? extends V>> iterator() {
+            return getWrappedRegistry().iterator();
+        }
+
+        @Override
+        public Set<NamespacedKey> keySet() {
+            return getWrappedRegistry().keySet();
+        }
+
+        @Override
+        public Collection<Class<? extends V>> values() {
+            return getWrappedRegistry().values();
+        }
+
+        @Override
+        public Set<Entry<NamespacedKey, Class<? extends V>>> entrySet() {
+            return getWrappedRegistry().entrySet();
         }
     }
 

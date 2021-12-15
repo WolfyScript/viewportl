@@ -18,6 +18,8 @@
 
 package me.wolfyscript.utilities.api.inventory.tags;
 
+import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.registry.Registries;
 import me.wolfyscript.utilities.registry.RegistrySimple;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
@@ -27,11 +29,18 @@ import java.util.Map;
 
 public class Tags<T extends Keyed> extends RegistrySimple<CustomTag<T>> {
 
-    Map<NamespacedKey, CustomTag<T>> tags;
+    @Deprecated
+    public Tags() {
+        super(new NamespacedKey(WolfyUtilCore.getInstance(), "custom_tags"), WolfyUtilCore.getInstance().getRegistries());
+    }
+
+    public Tags(Registries registries) {
+        super(new NamespacedKey(registries.getCore(), "custom_tags"), registries);
+    }
 
     @Nullable
     public CustomTag<T> getTag(NamespacedKey namespacedKey) {
-        return tags.get(namespacedKey);
+        return get(namespacedKey);
     }
 
 }

@@ -22,6 +22,8 @@ import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReferen
 import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.registry.Registries;
+import me.wolfyscript.utilities.util.ClassRegistry;
+import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -52,7 +54,7 @@ public abstract class WolfyUtilCore extends JavaPlugin {
         }
         this.api = get(this);
         ServerVersion.setWUVersion(getDescription().getVersion());
-        this.registries = new Registries();
+        this.registries = new Registries(this);
         this.reflections = new Reflections(new ConfigurationBuilder()
                 .forPackages("me.wolfyscript")
                 .addClassLoaders(getClassLoader())

@@ -28,11 +28,8 @@ import java.util.stream.Collectors;
 
 public class RegistryCustomItem extends RegistrySimple<CustomItem> {
 
-    RegistryCustomItem() {
-    }
-
-    RegistryCustomItem(Registries registries, Class<CustomItem> type) {
-        super(registries, type);
+    RegistryCustomItem(Registries registries) {
+        super(new NamespacedKey(registries.getCore(), "custom_items"), registries);
     }
 
     public List<String> getNamespaces() {

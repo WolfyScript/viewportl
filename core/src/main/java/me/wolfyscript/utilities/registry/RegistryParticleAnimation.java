@@ -24,7 +24,7 @@ import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 public class RegistryParticleAnimation extends RegistrySimple<ParticleAnimation> {
 
     RegistryParticleAnimation(Registries registries) {
-        super(registries, ParticleAnimation.class);
+        super(new NamespacedKey(registries.getCore(), "particle_animations"), registries, ParticleAnimation.class);
     }
 
     @Override

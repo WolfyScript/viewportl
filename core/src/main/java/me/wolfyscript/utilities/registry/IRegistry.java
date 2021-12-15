@@ -18,17 +18,23 @@
 
 package me.wolfyscript.utilities.registry;
 
-import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
-public interface IRegistry<V extends Keyed> extends Iterable<V> {
+/**
+ * A registry to register objects under specified namespaced keys.
+ * This allows for easier management of custom content etc.
+ *
+ * @param <V>
+ */
+public interface IRegistry<V> extends Iterable<V> {
 
     /**
-     * Get the value of the registry by it's {@link NamespacedKey}
+     * Get the value of the registry by its {@link NamespacedKey}
      *
      * @param key The {@link NamespacedKey} of the value.
      * @return The value of the {@link NamespacedKey}.
@@ -45,12 +51,13 @@ public interface IRegistry<V extends Keyed> extends Iterable<V> {
      */
     void register(NamespacedKey key, V value);
 
-    void register(V value);
-
     Set<NamespacedKey> keySet();
 
     Collection<V> values();
 
-    Set<Entry<NamespacedKey, V>> entrySet();
+    Set<Map.Entry<NamespacedKey, V>> entrySet();
+
+    NamespacedKey getKey();
+
 
 }
