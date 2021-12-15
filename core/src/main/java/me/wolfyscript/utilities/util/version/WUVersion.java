@@ -37,6 +37,9 @@ public class WUVersion implements Comparable<WUVersion> {
     }
 
     public static WUVersion parse(String version) {
+        if(version.contains("-")) {
+            version = version.split("-")[0];
+        }
         String[] versionParts = version.split("\\.");
         int[] numbers = new int[4];
         if (versionParts.length > 0) {

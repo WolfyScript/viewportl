@@ -76,9 +76,18 @@ public class PlayerUtils {
     public static void loadStores() {
         WolfyUtilities.getWUPlugin().getLogger().info("Loading Player Data");
         if (STORE_FOLDER.exists() || STORE_FOLDER.mkdirs()) {
-            for (String s : STORE_FOLDER.list()) {
-                var uuid = UUID.fromString(s.replace(".store", ""));
-                indexedStores.put(uuid, PlayerStore.load(uuid));
+            String[] files = STORE_FOLDER.list();
+            if (files != null) {
+                for (String s : files) {
+                    if (s.endsWith(".store")) {
+                        try {
+                            var uuid = UUID.fromString(s.replace(".store", ""));
+                            indexedStores.put(uuid, PlayerStore.load(uuid));
+                        } catch (IllegalArgumentException e) {
+                            WolfyUtilities.getWUPlugin().getLogger().info("Failed to load file " + s + ": " + e.getMessage());
+                        }
+                    }
+                }
             }
         }
     }

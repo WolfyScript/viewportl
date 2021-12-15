@@ -27,9 +27,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.Registry;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -56,7 +56,7 @@ public class BlockCustomItemStore {
     }
 
     public CustomItem getCustomItem() {
-        return Registry.CUSTOM_ITEMS.get(customItemKey);
+        return WolfyUtilCore.getInstance().getRegistries().getCustomItems().get(customItemKey);
     }
 
     public UUID getParticleUUID() {

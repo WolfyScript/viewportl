@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.main;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.console.Console;
@@ -27,6 +28,8 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.api.nms.nbt.NBTTagList;
+import me.wolfyscript.utilities.compatibility.CompatibilityManager;
+import me.wolfyscript.utilities.compatibility.CompatibilityManagerImpl;
 import me.wolfyscript.utilities.main.commands.ChatActionCommand;
 import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
@@ -40,7 +43,6 @@ import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListe
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
 import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
-import me.wolfyscript.utilities.util.ClassRegistry;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
@@ -67,15 +69,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 
-public class WUPlugin extends JavaPlugin {
+public final class WUPlugin extends WolfyUtilCore {
 
+    @Deprecated
     private static WUPlugin instance;
-
-    private final WolfyUtilities wolfyUtilities;
 
     private final Chat chat;
     private final Console console;
@@ -85,25 +85,31 @@ public class WUPlugin extends JavaPlugin {
     private final MessageHandler messageHandler;
     private final MessageFactory messageFactory;
 
+    private final CompatibilityManagerImpl compatibilityManager;
+
     public WUPlugin() {
         super();
         instance = this;
-        this.wolfyUtilities = WolfyUtilities.get(this);
-        ServerVersion.setWUVersion(getDescription().getVersion());
-        this.chat = wolfyUtilities.getChat();
-        this.console = wolfyUtilities.getConsole();
+        this.chat = api.getChat();
+        this.console = api.getConsole();
         chat.setInGamePrefix("§8[§3WU§8] §7");
-
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
+        this.compatibilityManager = new CompatibilityManagerImpl(this);
     }
 
+    @Deprecated
     public static WUPlugin getInstance() {
         return instance;
     }
 
+    @Override
+    public CompatibilityManager getCompatibilityManager() {
+        return compatibilityManager;
+    }
+
     public WolfyUtilities getWolfyUtilities() {
-        return wolfyUtilities;
+        return api;
     }
 
     @Override
@@ -133,75 +139,67 @@ public class WUPlugin extends JavaPlugin {
 
         //Register meta settings providers
         getLogger().info("Register CustomItem meta checks");
-        ClassRegistry.NBT_CHECKS.register(AttributesModifiersMeta.KEY, AttributesModifiersMeta.class);
-        ClassRegistry.NBT_CHECKS.register(CustomDamageMeta.KEY, CustomDamageMeta.class);
-        ClassRegistry.NBT_CHECKS.register(CustomDurabilityMeta.KEY, CustomDurabilityMeta.class);
-        ClassRegistry.NBT_CHECKS.register(CustomItemTagMeta.KEY, CustomItemTagMeta.class);
-        ClassRegistry.NBT_CHECKS.register(CustomModelDataMeta.KEY, CustomModelDataMeta.class);
-        ClassRegistry.NBT_CHECKS.register(DamageMeta.KEY, DamageMeta.class);
-        ClassRegistry.NBT_CHECKS.register(EnchantMeta.KEY, EnchantMeta.class);
-        ClassRegistry.NBT_CHECKS.register(FlagsMeta.KEY, FlagsMeta.class);
-        ClassRegistry.NBT_CHECKS.register(LoreMeta.KEY, LoreMeta.class);
-        ClassRegistry.NBT_CHECKS.register(NameMeta.KEY, NameMeta.class);
-        ClassRegistry.NBT_CHECKS.register(PlayerHeadMeta.KEY, PlayerHeadMeta.class);
-        ClassRegistry.NBT_CHECKS.register(PotionMeta.KEY, PotionMeta.class);
-        ClassRegistry.NBT_CHECKS.register(RepairCostMeta.KEY, RepairCostMeta.class);
-        ClassRegistry.NBT_CHECKS.register(UnbreakableMeta.KEY, UnbreakableMeta.class);
+        var nbtChecks = getRegistries().getCustomItemNbtChecks();
+        nbtChecks.register(AttributesModifiersMeta.KEY, AttributesModifiersMeta.class);
+        nbtChecks.register(CustomDamageMeta.KEY, CustomDamageMeta.class);
+        nbtChecks.register(CustomDurabilityMeta.KEY, CustomDurabilityMeta.class);
+        nbtChecks.register(CustomItemTagMeta.KEY, CustomItemTagMeta.class);
+        nbtChecks.register(CustomModelDataMeta.KEY, CustomModelDataMeta.class);
+        nbtChecks.register(DamageMeta.KEY, DamageMeta.class);
+        nbtChecks.register(EnchantMeta.KEY, EnchantMeta.class);
+        nbtChecks.register(FlagsMeta.KEY, FlagsMeta.class);
+        nbtChecks.register(LoreMeta.KEY, LoreMeta.class);
+        nbtChecks.register(NameMeta.KEY, NameMeta.class);
+        nbtChecks.register(PlayerHeadMeta.KEY, PlayerHeadMeta.class);
+        nbtChecks.register(PotionMeta.KEY, PotionMeta.class);
+        nbtChecks.register(RepairCostMeta.KEY, RepairCostMeta.class);
+        nbtChecks.register(UnbreakableMeta.KEY, UnbreakableMeta.class);
 
-        ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorBasic.KEY, AnimatorBasic.class);
-        ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorSphere.KEY, AnimatorSphere.class);
-        ClassRegistry.PARTICLE_ANIMATORS.register(AnimatorCircle.KEY, AnimatorCircle.class);
+        var particleAnimators = getRegistries().getParticleAnimators();
+        particleAnimators.register(AnimatorBasic.KEY, AnimatorBasic.class);
+        particleAnimators.register(AnimatorSphere.KEY, AnimatorSphere.class);
+        particleAnimators.register(AnimatorCircle.KEY, AnimatorCircle.class);
 
-        ClassRegistry.PARTICLE_TIMER.register(TimerLinear.KEY, TimerLinear.class);
-        ClassRegistry.PARTICLE_TIMER.register(TimerRandom.KEY, TimerRandom.class);
-        ClassRegistry.PARTICLE_TIMER.register(TimerPi.KEY, TimerPi.class);
+        var particleTimers = getRegistries().getParticleTimer();
+        particleTimers.register(TimerLinear.KEY, TimerLinear.class);
+        particleTimers.register(TimerRandom.KEY, TimerRandom.class);
+        particleTimers.register(TimerPi.KEY, TimerPi.class);
 
-        KeyedTypeIdResolver.registerTypeRegistry(Meta.class, ClassRegistry.NBT_CHECKS);
-        KeyedTypeIdResolver.registerTypeRegistry(Animator.class, ClassRegistry.PARTICLE_ANIMATORS);
-        KeyedTypeIdResolver.registerTypeRegistry(Timer.class, ClassRegistry.PARTICLE_TIMER);
+        KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
+        KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
+        KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
     }
 
     @Override
     public void onEnable() {
-        this.wolfyUtilities.initialize();
+        this.api.initialize();
         console.info("Minecraft version: " + ServerVersion.getVersion().getVersion());
         console.info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
         console.info("Environment: " + WolfyUtilities.getENVIRONMENT());
-        this.config = new WUConfig(wolfyUtilities.getConfigAPI(), this);
+        this.config = new WUConfig(api.getConfigAPI(), this);
+        compatibilityManager.init();
 
         this.metrics = new Metrics(this, 5114);
-
-        // Register plugin CustomItem API ReferenceParser
+        // Register ReferenceParser
         console.info("Register API references");
         registerAPIReference(new VanillaRef.Parser());
         registerAPIReference(new WolfyUtilitiesRef.Parser());
-        registerAPIReference(new OraxenRef.Parser());
-        registerAPIReference(new ItemsAdderRef.Parser());
-        registerAPIReference(new MythicMobsRef.Parser());
-        registerAPIReference(new MMOItemsRef.Parser());
-        registerAPIReference(new MagicRef.Parser());
 
-        var languageAPI = wolfyUtilities.getLanguageAPI();
-
+        var languageAPI = api.getLanguageAPI();
         saveResource("lang/en_US.json", true);
         languageAPI.setActiveLanguage(new Language(this, "en_US"));
 
         WorldUtils.load();
         PlayerUtils.loadStores();
-
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::save, 6000, 6000);
-
         registerListeners();
         registerCommands();
-
         CreativeModeTab.init();
-
         loadParticleEffects();
-        //Used to test the NBT Tag API!
-        testNBTAPI(false);
     }
 
-    private void registerAPIReference(APIReference.Parser<?> parser) {
+    @Override
+    public void registerAPIReference(APIReference.Parser<?> parser) {
         if (parser instanceof VanillaRef.Parser || parser instanceof WolfyUtilitiesRef.Parser || config.isAPIReferenceEnabled(parser)) {
             CustomItem.registerAPIReferenceParser(parser);
         }
@@ -209,7 +207,7 @@ public class WUPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        wolfyUtilities.getConfigAPI().saveConfigs();
+        api.getConfigAPI().saveConfigs();
         PlayerUtils.saveStores();
         console.info("Save stored Custom Items");
         WorldUtils.save();
@@ -222,7 +220,7 @@ public class WUPlugin extends JavaPlugin {
 
     private void registerListeners() {
         Bukkit.getPluginManager().registerEvents(new Chat.ChatListener(), this);
-        Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(), this);
+        Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(this), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new EquipListener(), this);
@@ -231,10 +229,10 @@ public class WUPlugin extends JavaPlugin {
     }
 
     private void registerCommands() {
-        Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand(wolfyUtilities));
-        Bukkit.getServer().getPluginCommand("particle_animation").setExecutor(new SpawnParticleAnimationCommand(wolfyUtilities));
-        Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand());
-        Bukkit.getServer().getPluginCommand("wui").setTabCompleter(new InputCommand());
+        Bukkit.getServer().getPluginCommand("particle_effect").setExecutor(new SpawnParticleEffectCommand(api));
+        Bukkit.getServer().getPluginCommand("particle_animation").setExecutor(new SpawnParticleAnimationCommand(api));
+        Bukkit.getServer().getPluginCommand("wui").setExecutor(new InputCommand(this));
+        Bukkit.getServer().getPluginCommand("wui").setTabCompleter(new InputCommand(this));
         Bukkit.getServer().getPluginCommand("wua").setExecutor(new ChatActionCommand());
     }
 
@@ -260,86 +258,4 @@ public class WUPlugin extends JavaPlugin {
         return messageFactory;
     }
 
-    private void testNBTAPI(boolean test) {
-        if (!test) return;
-        var itemBuilder = new ItemBuilder(Material.DIAMOND_SWORD);
-        itemBuilder.addLoreLine("Test");
-        itemBuilder.addEnchantment(Enchantment.DAMAGE_ALL, 5);
-        itemBuilder.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-
-        var itemStack = itemBuilder.create();
-
-        var nbt = wolfyUtilities.getNmsUtil().getNBTUtil();
-        var nbtItem = nbt.getItem(itemStack);
-
-        nbtItem.setTag("test_string", nbt.getTag().ofString("Test String!"));
-
-        var compound = nbtItem.getCompound();
-        compound.setInt("Test_Int", 10);
-
-        var wolfyCompound = nbt.getTag().compound();
-        wolfyCompound.setByte("Byte", (byte) 4);
-        wolfyCompound.setBoolean("Boolean", true);
-        wolfyCompound.setDouble("Double", 2d);
-        wolfyCompound.setFloat("Float", 7f);
-        wolfyCompound.setInt("Int", 9);
-        wolfyCompound.setLong("Long", 9999);
-        wolfyCompound.setShort("Short", (short) 200);
-        wolfyCompound.setString("String", "TestString");
-        wolfyCompound.setByteArray("ByteArray", new byte[]{9, 9, 5, 2, 3});
-        wolfyCompound.setIntArray("IntArray", new int[]{9, 3543, 2134, 123});
-        wolfyCompound.setLongArray("LongArray", new long[]{54, 65, 23244343, 1000000000000000000L});
-
-        /*
-        var customList = nbt.getTag().list();
-        customList.add(0, nbt.getTag().ofIntArray(new int[]{4, 543654, 235, 223, 423, 32}));
-        customList.add(0, nbt.getTag().ofIntArray(new int[]{543, 345, 76, 21, 8, 65, 456, 4}));
-        customList.add(0, nbt.getTag().ofIntArray(new int[]{897, 567, 98, 899, 878712, 12}));
-        wolfyCompound.set("IntArrayList", customList);
-        //*/
-        var nestedComp = nbt.getTag().compound();
-        nestedComp.setString("LUL", "xD this is a nested Text!");
-        nestedComp.setBoolean("Funny", false);
-        wolfyCompound.set("Nested", nestedComp);
-
-        compound.set("wolfy", wolfyCompound);
-
-        console.info("Item: ");
-        console.info("Tag: " + nbtItem.getCompound().toString());
-        console.info("Keys: ");
-        console.info("    - " + String.join("\n    - ", nbtItem.getKeys()));
-
-        ItemStack newItem = nbtItem.create();
-        var newNBTItem = nbt.getItem(newItem);
-        console.info("New Item: ");
-        console.info("Tag: " + nbtItem.getCompound().toString());
-        console.info("Item Keys: ");
-        for (String key : newNBTItem.getKeys()) {
-            console.info(" - " + key + " = " + newNBTItem.getTag(key));
-        }
-
-        var wolfyComp = newNBTItem.getCompound("wolfy");
-        if (wolfyComp != null) {
-            console.info("Wolfy Values: ");
-            console.info("    Byte = " + wolfyComp.getByte("Byte"));
-            console.info("    Boolean = " + wolfyComp.getBoolean("Boolean"));
-            console.info("    Double = " + wolfyComp.getDouble("Double"));
-            console.info("    Float = " + wolfyComp.getFloat("Float"));
-            console.info("    Int = " + wolfyComp.getInt("Int"));
-            console.info("    Long = " + wolfyComp.getLong("Long"));
-            console.info("    Short = " + wolfyComp.getShort("Short"));
-            console.info("    String = " + wolfyComp.getString("String"));
-            console.info("    ByteArray = " + Arrays.toString(wolfyComp.getByteArray("ByteArray")));
-            console.info("    IntArray = " + Arrays.toString(wolfyComp.getIntArray("IntArray")));
-            console.info("    LongArray = " + Arrays.toString(wolfyComp.getLongArray("LongArray")));
-            console.info("    Nested = " + wolfyComp.get("Nested"));
-            var nbtTagList = (NBTTagList) wolfyComp.get("IntArrayList");
-            console.info("    IntArrayList = " + nbtTagList);
-            if (nbtTagList != null) {
-                for (int i = 0; i < nbtTagList.size(); i++) {
-                    console.info("       - " + nbtTagList.getTag(i));
-                }
-            }
-        }
-    }
 }

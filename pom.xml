@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolfyscript.wolfyutilities</groupId>
     <artifactId>wolfyutilities-parent</artifactId>
-    <version>1.8.0.0</version>
+    <version>2.16.0.0</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -39,13 +39,8 @@
 
     <modules>
         <module>core</module>
-        <module>nmsutil-v1_15_R1</module>
-        <module>nmsutil-v1_16_R1</module>
-        <module>nmsutil-v1_16_R2</module>
-        <module>nmsutil-v1_16_R3</module>
-        <module>nmsutil-v1_17_R1_P0</module>
-        <module>nmsutil-v1_17_R1_P1</module>
-        <module>nmsutil-v1_18_R1</module>
+        <module>plugin-compatibility-module</module>
+        <module>nmsutil</module>
         <module>wolfyutilities</module>
     </modules>
 
@@ -64,6 +59,25 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
+        </dependency>
         <!--Spigot API-->
         <dependency>
             <groupId>${spigot.groupId}</groupId>
@@ -146,52 +160,6 @@
             <groupId>com.gmail.nossr50.mcMMO</groupId>
             <artifactId>mcMMO</artifactId>
             <version>2.1.139-SNAPSHOT</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>io.lumine.xikage</groupId>
-            <artifactId>MythicMobs</artifactId>
-            <version>4.12.0</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.comphenix.protocol</groupId>
-                    <artifactId>ProtocolLib</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.lumine</groupId>
-            <artifactId>MythicLib</artifactId>
-            <version>1.1.5</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.elmakers.mine.bukkit</groupId>
-            <artifactId>MagicAPI</artifactId>
-            <version>9.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <!--Dependencies from private repo! They require credentials to access!-->
-        <dependency>
-            <groupId>io.th0rgal</groupId>
-            <artifactId>oraxen</artifactId>
-            <version>1.66.2</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>dev.lone</groupId>
-            <artifactId>itemsadder</artifactId>
-            <version>2.2.10</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>net.Indyuce</groupId>
-            <artifactId>mmoitems</artifactId>
-            <version>6.6.2</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>

@@ -32,6 +32,7 @@ public abstract class NMSUtil {
 
     static {
         registerAdapter(new VersionAdapter("v1_17_R1"));
+        registerAdapter(new VersionAdapter("v1_18_R1"));
     }
 
     public static void registerAdapter(VersionAdapter adapter) {
@@ -76,6 +77,7 @@ public abstract class NMSUtil {
             if (adapter != null) {
                 version = adapter.getPackageName();
             }
+            wolfyUtilities.getConsole().getLogger().info("NMS Version: " + version);
             String className = NMSUtil.class.getPackage().getName() + '.' + version + ".NMSEntry";
             Class<?> nmsUtilsType = Class.forName(className);
             if (NMSUtil.class.isAssignableFrom(nmsUtilsType)) {

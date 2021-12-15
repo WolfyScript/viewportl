@@ -44,10 +44,18 @@ public enum CreativeModeTab {
 
     private static boolean register = true;
     @JsonIgnore
-    protected Set<Material> materials;
+    private final Set<Material> materials;
+
+    CreativeModeTab() {
+        this.materials = new HashSet<>();
+    }
 
     public static boolean isValid(Material material, CreativeModeTab creativeModeTab) {
         return creativeModeTab.isValid(material);
+    }
+
+    public boolean isValid(Material material) {
+        return materials.contains(material);
     }
 
     public static CreativeModeTab getCategory(Material material) {
@@ -57,18 +65,10 @@ public enum CreativeModeTab {
         return SEARCH;
     }
 
-    CreativeModeTab() {
-        this.materials = new HashSet<>();
-    }
-
     public static void init() {
         WolfyUtilities.getWUPlugin().getLogger().info("Loading Creative Mode Tabs");
         WolfyUtilities.getWUCore().getNmsUtil().getInventoryUtil().initItemCategories();
         register = false;
-    }
-
-    public boolean isValid(Material material) {
-        return materials.contains(material);
     }
 
     public Set<Material> getMaterials() {
