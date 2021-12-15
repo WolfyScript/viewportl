@@ -19,13 +19,10 @@
 package me.wolfyscript.utilities.api;
 
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
-import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
+import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.registry.Registries;
-import me.wolfyscript.utilities.util.ClassRegistry;
-import me.wolfyscript.utilities.util.Registry;
 import me.wolfyscript.utilities.util.version.ServerVersion;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
@@ -36,8 +33,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This abstract class is the actual core of the plugin (This class is being extended by the plugin instance).<br>
+ * <p>
+ * It provides access to internal functionality like {@link Registries}, {@link CompatibilityManager}, and of course the creation of the API instance.<br>
+ * <p>
+ * To get an instance of the API ({@link WolfyUtilities}) for your plugin you need one of the following methods. <br>
+ * <ul>
+ *     <li>{@link #get(Plugin)} - Simple method to get your instance. Only use this in your <strong>onEnable()</strong></li>
+ *     <li>{@link #get(Plugin, boolean)} - Specify if it should init Event Listeners. Can be used inside the onLoad(), or plugin constructor, if set to false; Else only use this in your <strong>onEnable()</strong></li>
+ *     <li>{@link #get(Plugin, Class)} - Specify the type of your {@link CustomCache}. Can be used inside the onLoad(), or plugin constructor.</li>
+ * </ul>
+ * </p>
+ */
 public abstract class WolfyUtilCore extends JavaPlugin {
 
+    //Static reference to the instance of this class.
     private static WolfyUtilCore instance;
 
     protected Reflections reflections;
@@ -47,7 +58,7 @@ public abstract class WolfyUtilCore extends JavaPlugin {
 
     protected WolfyUtilCore() {
         super();
-        if(instance == null && this.getName().equals("WolfyUtilities") && getClass().getPackageName().equals("me.wolfyscript.utilities.main")) {
+        if (instance == null && this.getName().equals("WolfyUtilities") && getClass().getPackageName().equals("me.wolfyscript.utilities.main")) {
             instance = this;
         } else {
             throw new IllegalArgumentException("This constructor can only be called by WolfyUtilities itself!");
@@ -61,16 +72,37 @@ public abstract class WolfyUtilCore extends JavaPlugin {
                 .addScanners(Scanners.TypesAnnotated, Scanners.SubTypes, Scanners.Resources));
     }
 
+    /**
+     * Gets an instance of the core plugin.
+     * <strong>Only use this if necessary! First try to get the instance via your {@link WolfyUtilities} instance!</strong>
+     *
+     * @return The instance of the core.
+     */
     public static WolfyUtilCore getInstance() {
         return instance;
     }
 
+    /**
+     * Gets the {@link Registries} object, that contains all info about available registries.
+     *
+     * @return The {@link Registries} object, to access registries.
+     */
     public Registries getRegistries() {
         return registries;
     }
 
+    /**
+     * Gets the {@link CompatibilityManager}, that manages the plugins compatibility features.
+     *
+     * @return The {@link CompatibilityManager}.
+     */
     public abstract CompatibilityManager getCompatibilityManager();
 
+    /**
+     * Gets the {@link Reflections} instance of the plugins' package.
+     *
+     * @return The Reflection of the plugins' package.
+     */
     public Reflections getReflections() {
         return reflections;
     }
@@ -87,10 +119,11 @@ public abstract class WolfyUtilCore extends JavaPlugin {
 
     /**
      * Gets or create the {@link WolfyUtilities} instance for the specified plugin.<br>
-     * In case init is enabled it will directly initialize the event listeners and possibly other things.
+     * In case init is enabled it will directly initialize the event listeners and possibly other things.<br>
+     * <b>In case you disable init you need to run {@link WolfyUtilities#initialize()} inside your onEnable()!</b>
      *
      * @param plugin The plugin to get the instance for.
-     * @param init If it should directly initialize the APIs' events, etc. (They can be initialized later via {@link WolfyUtilities#initialize()})
+     * @param init   If it should directly initialize the APIs' events, etc. (They must be initialized later via {@link WolfyUtilities#initialize()})
      * @return The WolfyUtilities instance for the plugin.
      */
     public WolfyUtilities get(Plugin plugin, boolean init) {
@@ -99,7 +132,8 @@ public abstract class WolfyUtilCore extends JavaPlugin {
 
     /**
      * Gets or create the {@link WolfyUtilities} instance for the specified plugin.
-     * This method also creates the InventoryAPI with the specified custom class of the {@link CustomCache}.
+     * This method also creates the InventoryAPI with the specified custom class of the {@link CustomCache}.<br>
+     * <b>You need to run {@link WolfyUtilities#initialize()} inside your onEnable() </b> to register required events!
      *
      * @param plugin           The plugin to get the instance from.
      * @param customCacheClass The class of the custom cache you created. Must extend {@link CustomCache}
@@ -128,6 +162,12 @@ public abstract class WolfyUtilCore extends JavaPlugin {
         return List.copyOf(wolfyUtilsInstances.values());
     }
 
+    /**
+     * Register a new {@link APIReference.Parser} that can parse ItemStacks and keys from another plugin to a usable {@link APIReference}
+     *
+     * @param parser an {@link APIReference.Parser} instance.
+     * @see me.wolfyscript.utilities.api.inventory.custom_items.CustomItem#registerAPIReferenceParser(APIReference.Parser)
+     */
     public abstract void registerAPIReference(APIReference.Parser<?> parser);
 
 
