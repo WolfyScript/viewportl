@@ -99,6 +99,11 @@ public abstract class PluginIntegrationAbstract implements PluginIntegration {
         this.enabled = enabled;
     }
 
+    /**
+     * Marks this integration as done. That tells the system that, the integrations' plugin is done with loading all its data.<br>
+     * For example, usually plugins with async data loading will provide a listener that will be called once done. <br>
+     * This method can then be used inside that event to mark it as done.
+     */
     protected final void markAsDoneLoading() {
         setEnabled(true);
         ((PluginsImpl) core.getCompatibilityManager().getPlugins()).checkDependencies();
