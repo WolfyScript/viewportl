@@ -46,6 +46,7 @@ final class PluginsImpl implements Plugins, Listener {
     private final WolfyUtilCore core;
     private final Map<String, PluginIntegrationAbstract> pluginIntegrations = new HashMap<>();
     private final Map<String, Class<? extends PluginIntegrationAbstract>> pluginIntegrationClasses = new HashMap<>();
+    private boolean doneLoading = false;
 
     PluginsImpl(WolfyUtilCore core) {
         this.core = core;
@@ -86,9 +87,11 @@ final class PluginsImpl implements Plugins, Listener {
             pluginIntegrationClasses.forEach(this::createPluginIntegration);
             if (pluginIntegrations.isEmpty()) {
                 core.getLogger().info(" - No integrations created.");
+
             }
         } else {
             core.getLogger().info(" - No integrations found for available plugins");
+            doneLoading = true;
         }
     }
 
@@ -122,6 +125,7 @@ final class PluginsImpl implements Plugins, Listener {
         int availableIntegrations = pluginIntegrationClasses.size();
         long enabledIntegrations = pluginIntegrations.values().stream().filter(PluginIntegrationAbstract::isDoneLoading).count();
         if (availableIntegrations == enabledIntegrations) {
+            doneLoading = true;
             Bukkit.getScheduler().runTaskLater(core, () -> {
                 core.getLogger().info("All dependencies are loaded. Calling the DependenciesLoadedEvent to notify other plugins!");
                 Bukkit.getPluginManager().callEvent(new DependenciesLoadedEvent(core));
@@ -261,4 +265,8 @@ final class PluginsImpl implements Plugins, Listener {
         return Collections.unmodifiableCollection(pluginIntegrations.values());
     }
 
+    @Override
+    public boolean isDoneLoading() {
+        return doneLoading;
+    }
 }
