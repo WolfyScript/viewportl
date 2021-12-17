@@ -122,4 +122,11 @@ public interface Plugins {
      */
     Collection<PluginIntegration> getPluginIntegrations();
 
+    /**
+     * Gets if all PluginIntegrations are loaded.
+     *
+     * @return True if all integrations are done loading or there is nothing to load; else false.
+     */
+    boolean isDoneLoading();
+
 }
