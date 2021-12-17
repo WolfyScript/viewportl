@@ -70,7 +70,7 @@ public class PlayerHeadUtils {
         if (value != null && !value.isEmpty()) {
             String texture = value;
             if (value.startsWith("https://") || value.startsWith("http://")) {
-                texture = getBase64EncodedString(String.format("{textures:{SKIN:{url:\"%s\"}}}", value));
+                texture = getBase64EncodedString(String.format("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}", value));
             }
             GameProfile profile = new GameProfile(UUID.randomUUID(), null);
             profile.getProperties().put("textures", new Property("textures", texture));

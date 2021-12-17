@@ -20,9 +20,10 @@ package me.wolfyscript.utilities.util;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.base64.Base64;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Random;
 
 public class EncryptionUtils {
@@ -34,22 +35,7 @@ public class EncryptionUtils {
      * @return the Base64 encoded String
      */
     public static String getBase64EncodedString(String str) {
-        ByteBuf byteBuf = null;
-        ByteBuf encodedByteBuf = null;
-        String var3;
-        try {
-            byteBuf = Unpooled.wrappedBuffer(str.getBytes(StandardCharsets.UTF_8));
-            encodedByteBuf = Base64.encode(byteBuf);
-            var3 = encodedByteBuf.toString(StandardCharsets.UTF_8);
-        } finally {
-            if (byteBuf != null) {
-                byteBuf.release();
-                if (encodedByteBuf != null) {
-                    encodedByteBuf.release();
-                }
-            }
-        }
-        return var3;
+        return Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String getCode() {
