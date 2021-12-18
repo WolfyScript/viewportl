@@ -185,7 +185,7 @@ public interface ClassRegistry<V extends Keyed> extends Iterable<Class<? extends
         protected final Supplier<TypeRegistry<V>> wrappedRegistrySupplier;
         private TypeRegistry<V> wrappedRegistry;
 
-        WrapperClassRegistry(Supplier<TypeRegistry<V>> wrappedRegistry) {
+        public WrapperClassRegistry(Supplier<TypeRegistry<V>> wrappedRegistry) {
             this.wrappedRegistrySupplier = wrappedRegistry;
             this.wrappedRegistry = wrappedRegistry.get();
         }
