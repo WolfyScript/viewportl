@@ -2,12 +2,14 @@ package me.wolfyscript.utilities.api.nms.v1_17_R1_P1.block;
 
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import org.bukkit.block.BrewingStand;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.block.CraftBlock;
 import org.bukkit.craftbukkit.v1_17_R1.block.CraftBrewingStand;
 
 public class NMSBrewingStand extends CraftBrewingStand implements me.wolfyscript.utilities.api.nms.block.NMSBrewingStand {
 
     public NMSBrewingStand(BrewingStand brewingStand) {
-        super(brewingStand.getWorld(), (BrewingStandBlockEntity) brewingStand);
+        super(brewingStand.getWorld(), (BrewingStandBlockEntity) ((CraftWorld)brewingStand.getWorld()).getHandle().getBlockEntity(((CraftBlock) brewingStand.getBlock()).getPosition()));
     }
 
     @Override
