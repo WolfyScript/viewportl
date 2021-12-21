@@ -9,6 +9,8 @@ loadbefore:
   - ChatColor
   - ChatColor2
   - StackableItems
+  - DiSky
+  - EpicWorldGenerator
 
 softdepend:
   - Magic
