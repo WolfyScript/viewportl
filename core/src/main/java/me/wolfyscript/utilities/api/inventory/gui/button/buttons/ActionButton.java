@@ -30,18 +30,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
 /**
  * Button that executes the action method and renders the item manipulated via the render method of the ButtonState.
- *
+ * <p>
  * action - these methods are executed when the button is clicked.
- *
+ * <p>
  * render - these methods are executed when the button is rendered in one of
  * the possible render methods: {@link GuiWindow#onUpdateAsync(GuiUpdate)}, {@link GuiWindow#onUpdateSync(GuiUpdate)}
- *
+ * <p>
  * You can set them directly using the constructor and the id of the button is passed into the ButtonState.
  * If the ButtonState requires another key (e.g. when using global item names from lang file) you need to create an ButtonState instance and use
  * {@link ActionButton#ActionButton(String, ButtonState)}
@@ -143,7 +144,7 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
     }
 
     @Override
-    public ButtonType getType() {
+    public @NotNull ButtonType getType() {
         return type;
     }
 
@@ -152,7 +153,7 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return id;
     }
 }
