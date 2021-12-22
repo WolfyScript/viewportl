@@ -32,6 +32,7 @@ import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -98,5 +99,23 @@ public abstract class Animator implements Keyed {
     @Override
     public NamespacedKey getNamespacedKey() {
         return key;
+    }
+
+    protected Vector rotateAroundAxisX(Vector v, double cos, double sin) {
+        double y = v.getY() * cos - v.getZ() * sin;
+        double z = v.getY() * sin + v.getZ() * cos;
+        return v.setY(y).setZ(z);
+    }
+
+    protected Vector rotateAroundAxisY(Vector v, double cos, double sin) {
+        double x = v.getX() * cos + v.getZ() * sin;
+        double z = v.getX() * -sin + v.getZ() * cos;
+        return v.setX(x).setZ(z);
+    }
+
+    protected Vector rotateAroundAxisZ(Vector v, double cos, double sin) {
+        double x = v.getX() * cos - v.getY() * sin;
+        double y = v.getX() * sin + v.getY() * cos;
+        return v.setX(x).setY(y);
     }
 }
