@@ -50,8 +50,9 @@ You can get the API from the public maven repo:
 <dependencies>
     <dependency>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <artifactId>wolfyutilities</artifactId>
-        <version>1.6.3.22</version>
+        <artifactId>core</artifactId>
+        <version>2.16.2.0</version>
+        <scope>provided</scope>
     </dependency>
 </dependencies>
 ```
@@ -63,6 +64,7 @@ It's best to initiate it in your constructor, so you don't mistakenly change the
 ```java
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 
 public class YourPlugin extends JavaPlugin {
     
@@ -71,7 +73,7 @@ public class YourPlugin extends JavaPlugin {
     public YourPlugin() {
         super();
         //Create the instance for your plugin. We don't want to initialize the events yet (so set it to false)!
-        api = WolfyUtilities.get(this, false);
+        api = WolfyUtilCore.getInstance().getAPI(this, false);
         this.chat = api.getChat();
         //We should set our prefixes for the chat and console.
         this.chat.setInGamePrefix("§7[§3CC§7] ");
