@@ -20,6 +20,7 @@ package me.wolfyscript.utilities.api.inventory.gui;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
+import me.wolfyscript.utilities.api.inventory.gui.button.ButtonType;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
@@ -191,9 +192,11 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
         return null;
     }
 
-    /*
-    Get an globally registered Button.
-    This returns an Button out of the specific namespace.
+    /**
+     * Gets a globally registered Button.
+     *
+     * @param namespacedKey The namespaced key of the Button.
+     * @return Button of the corresponding namespaced key
      */
     public Button<C> getButton(NamespacedKey namespacedKey) {
         if (namespacedKey == null) return null;
@@ -210,14 +213,17 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             if (clickedBtn != null) {
                 buttons.put(event.getSlot(), clickedBtn);
                 event.setCancelled(executeButton(clickedBtn, guiHandler, (Player) event.getWhoClicked(), inventory, event.getSlot(), event));
-            }
-            if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR) || event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
-                for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
-                    if (event.getSlot() != buttonEntry.getKey()) {
-                        Button<C> button = guiWindow.getButton(buttonEntry.getValue());
-                        if (button instanceof ItemInputButton) {
-                            buttons.put(buttonEntry.getKey(), button);
-                            event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), inventory, buttonEntry.getKey(), event));
+                if (clickedBtn.getType().equals(ButtonType.ITEM_SLOT)) { //If the button is marked as an Item slot it may affect other buttons too!
+                    if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR) || event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+                        var clickedBtnClass = clickedBtn.getClass();
+                        for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
+                            if (event.getSlot() != buttonEntry.getKey()) {
+                                Button<C> button = guiWindow.getButton(buttonEntry.getValue());
+                                if (clickedBtnClass.isInstance(button)) { //Make sure to only execute the buttons that are of the same type as the clicked one.
+                                    buttons.put(buttonEntry.getKey(), button);
+                                    event.setCancelled(executeButton(button, guiHandler, (Player) event.getWhoClicked(), inventory, buttonEntry.getKey(), event));
+                                }
+                            }
                         }
                     }
                 }
