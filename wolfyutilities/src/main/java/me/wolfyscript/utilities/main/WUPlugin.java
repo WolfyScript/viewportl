@@ -149,6 +149,7 @@ public final class WUPlugin extends WolfyUtilCore {
         particleAnimators.register(AnimatorSphere.KEY, AnimatorSphere.class);
         particleAnimators.register(AnimatorCircle.KEY, AnimatorCircle.class);
         particleAnimators.register(AnimatorCircleComplex.KEY, AnimatorCircleComplex.class);
+        particleAnimators.register(AnimatorSquare.KEY, AnimatorSquare.class);
 
         var particleTimers = getRegistries().getParticleTimer();
         particleTimers.register(TimerLinear.KEY, TimerLinear.class);
