@@ -25,6 +25,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+@Deprecated
 public class AnimatorSphere extends Animator {
 
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("sphere");
