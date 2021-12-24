@@ -30,6 +30,7 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
+import me.wolfyscript.utilities.util.particles.animators.Shape;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 
 import java.util.HashMap;
@@ -97,6 +98,7 @@ public class Registries {
     private final Tags<CustomItem> itemTags;
     //Class Registries
     private final TypeRegistry<Animator> particleAnimators;
+    private final TypeRegistry<Shape> particleShapes;
     private final TypeRegistry<Timer> particleTimer;
     private final TypeRegistry<Meta> customItemNbtChecks;
 
@@ -111,6 +113,7 @@ public class Registries {
         itemTags = new Tags<>(this);
 
         particleAnimators = new TypeRegistrySimple<>(new NamespacedKey(core, "particle_animators"), this);
+        particleShapes = new TypeRegistrySimple<>(new NamespacedKey(core, "particles/shapes"), this);
         particleTimer = new TypeRegistrySimple<>(new NamespacedKey(core, "particle_timers"), this);
         customItemNbtChecks = new TypeRegistrySimple<>(new NamespacedKey(core, "custom_item_nbt_checks"), this);
     }
@@ -149,6 +152,10 @@ public class Registries {
      */
     public RegistryParticleAnimation getParticleAnimations() {
         return particleAnimations;
+    }
+
+    public TypeRegistry<Shape> getParticleShapes() {
+        return particleShapes;
     }
 
     /**
