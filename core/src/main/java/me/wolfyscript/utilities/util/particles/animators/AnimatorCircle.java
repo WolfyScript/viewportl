@@ -21,6 +21,7 @@ package me.wolfyscript.utilities.util.particles.animators;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import me.wolfyscript.utilities.util.math.MathUtil;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
@@ -75,9 +76,9 @@ public class AnimatorCircle extends Animator {
         double z = radius * Math.sin(time);
 
         Vector vec = new Vector(x, 0, z);
-        rotateAroundAxisX(vec, xAxisCos, xAxisSin);
-        rotateAroundAxisY(vec, yAxisCos, yAxisSin);
-        rotateAroundAxisZ(vec, zAxisCos, zAxisSin);
+        MathUtil.rotateAroundAxisX(vec, xAxisCos, xAxisSin);
+        MathUtil.rotateAroundAxisY(vec, yAxisCos, yAxisSin);
+        MathUtil.rotateAroundAxisZ(vec, zAxisCos, zAxisSin);
 
         origin.add(vec);
         spawnParticle(effect, origin, player);
