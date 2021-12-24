@@ -148,8 +148,14 @@ public final class WUPlugin extends WolfyUtilCore {
         particleAnimators.register(AnimatorBasic.KEY, AnimatorBasic.class);
         particleAnimators.register(AnimatorSphere.KEY, AnimatorSphere.class);
         particleAnimators.register(AnimatorCircle.KEY, AnimatorCircle.class);
-        particleAnimators.register(AnimatorCircleComplex.KEY, AnimatorCircleComplex.class);
-        particleAnimators.register(AnimatorSquare.KEY, AnimatorSquare.class);
+        particleAnimators.register(AnimatorVectorPath.KEY, AnimatorVectorPath.class);
+        particleAnimators.register(AnimatorShape.KEY, AnimatorShape.class);
+
+        var particleShapes = getRegistries().getParticleShapes();
+        particleShapes.register(ShapeSquare.KEY, ShapeSquare.class);
+        particleShapes.register(ShapeCircle.KEY, ShapeCircle.class);
+        particleShapes.register(ShapeRotation.KEY, ShapeRotation.class);
+        particleShapes.register(ShapeCompound.KEY, ShapeCompound.class);
 
         var particleTimers = getRegistries().getParticleTimer();
         particleTimers.register(TimerLinear.KEY, TimerLinear.class);
@@ -158,6 +164,7 @@ public final class WUPlugin extends WolfyUtilCore {
 
         KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
+        KeyedTypeIdResolver.registerTypeRegistry(Shape.class, particleShapes);
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
     }
 
