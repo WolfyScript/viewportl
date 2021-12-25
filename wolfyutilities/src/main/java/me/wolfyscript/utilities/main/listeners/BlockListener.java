@@ -122,7 +122,7 @@ public class BlockListener implements Listener {
     }
 
     /*
-    Called when liquid flows or when an Dragon Egg teleports.
+    Called when liquid flows or when a Dragon Egg teleports.
     This Listener only listens for the Dragon Egg
     */
     @EventHandler(ignoreCancelled = true)
@@ -135,11 +135,10 @@ public class BlockListener implements Listener {
         }
     }
 
-    /*
+    /**
      * Piston Events to make sure the position of CustomItems is updated correctly.
      *
      */
-
     @EventHandler(ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
         updatePistonBlocks(event.getBlocks(), event.getDirection());
@@ -206,8 +205,19 @@ public class BlockListener implements Listener {
 
     }
 
+    @EventHandler
+    public void onBlockPhysics(BlockPhysicsEvent event) {
+        var block = event.getBlock();
+        if (event.getChangedType().equals(Material.AIR)) {
+            var storedItem = WorldUtils.getWorldCustomItemStore().getCustomItem(block.getLocation());
+            if (storedItem != null) {
+                WorldUtils.getWorldCustomItemStore().remove(block.getLocation());
+            }
+        }
+    }
+
     /**
-     * Update the CustomItem when it is placed by an Player
+     * Update the CustomItem when it is placed by a Player
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
