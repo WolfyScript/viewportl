@@ -32,7 +32,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * This animator draws a particle in a circle around the origin.
+ *
+ * @deprecated Replaced by the {@link ShapeCircle}.
  */
+@Deprecated
 public class AnimatorCircle extends Animator {
 
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("circle");
