@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.util.particles.animators;
 
+import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -26,19 +27,28 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ShapeCompound extends Shape {
+/**
+ * A complex shape that combines multiple shapes together.<br>
+ * There is no longer limit of how many shapes it can contain.<br>
+ * However, there is a lower limit of at least 2 shapes, to discourage the use of this shape for single shapes! Single shapes should be used separately!
+ */
+public class ShapeComplexCompound extends Shape {
 
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("complex/compound");
 
     private final List<Shape> shapes;
 
-    public ShapeCompound() {
-        this(new Shape[0]);
+    /**
+     * Only used for Jackson deserialization.
+     */
+    ShapeComplexCompound() {
+        this(new ShapeCircle(), new ShapeCircle());
     }
 
-    public ShapeCompound(@NotNull Shape... shapes) {
+    public ShapeComplexCompound(@NotNull Shape... shapes) {
         super(KEY);
-        this.shapes = Arrays.asList(shapes != null ? shapes : new Shape[0]);
+        Preconditions.checkArgument(shapes != null && shapes.length > 1, "Shapes array cannot be null and must contain at least 2 shapes! (For single shapes use the shape directly!)");
+        this.shapes = Arrays.asList(shapes);
     }
 
     @Override

@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.util.particles;
 
 import com.fasterxml.jackson.annotation.*;
+import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
@@ -39,6 +40,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * ParticleEffects contain the data to draw particles using a specified animation and timer.<br>
@@ -98,9 +100,12 @@ public class ParticleEffect implements Keyed {
         this.count = count;
         this.offset = offset;
         this.extra = extra;
+        if (data != null) {
+            Preconditions.checkArgument(dataType != Void.TYPE && dataType.isInstance(data), "Invalid type of data! Expected " + dataType.getName() + " but got " + data.getClass().getName());
+        }
         this.data = data;
-        this.timer = timer;
-        this.animator = animator;
+        this.timer = Objects.requireNonNullElse(timer, new TimerLinear());
+        this.animator = Objects.requireNonNullElse(animator, new AnimatorBasic());
     }
 
     @Deprecated
@@ -115,6 +120,7 @@ public class ParticleEffect implements Keyed {
         this.offset = offset;
         this.extra = extra;
         this.data = data;
+        this.timer = new TimerLinear();
         this.animator = new AnimatorBasic();
     }
 

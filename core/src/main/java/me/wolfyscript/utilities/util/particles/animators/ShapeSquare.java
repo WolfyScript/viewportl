@@ -38,7 +38,10 @@ public class ShapeSquare extends Shape {
     @JsonIgnore
     private Function<Double, Vector[]> createVector;
 
-    public ShapeSquare() {
+    /**
+     * Only used for Jackson deserialization.
+     */
+    ShapeSquare() {
         this(1, 3, Direction.Y_AXIS);
     }
 

@@ -37,7 +37,10 @@ public class ShapeSphere extends Shape {
     @JsonIgnore
     private BiFunction<Double, Double, Vector> createVector;
 
-    public ShapeSphere() {
+    /**
+     * Only used for Jackson deserialization.
+     */
+    ShapeSphere() {
         this(1, 3, Direction.Y_AXIS);
     }
 

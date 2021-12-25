@@ -34,7 +34,10 @@ public class AnimatorShape extends Animator {
 
     private final Shape shape;
 
-    public AnimatorShape() {
+    /**
+     * Only used for Jackson deserialization.
+     */
+    AnimatorShape() {
         this(new ShapeCircle());
     }
 

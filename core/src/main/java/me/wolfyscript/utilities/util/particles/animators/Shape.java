@@ -24,11 +24,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
+import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
+import me.wolfyscript.utilities.util.particles.timer.Timer;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
@@ -41,10 +44,20 @@ public abstract class Shape implements Keyed {
 
     private final NamespacedKey key;
 
-    protected Shape(NamespacedKey key) {
+    protected Shape(@NotNull NamespacedKey key) {
+        Preconditions.checkArgument(key != null && !key.getKey().isEmpty() && !key.getNamespace().isEmpty(), "Invalid NamespacedKey! Namespaced cannot be null or empty!");
         this.key = key;
     }
 
+    /**
+     * Applies the {@link Consumer<Vector>} for all vertices of the shape.<br>
+     * Resource intensive tasks should be done beforehand, as this method might be called each tick.<br>
+     * The consumer might be nested like in {@link ShapeComplexRotation} to rotate all vertices.<br>
+     * Because of that the vertices should be copied, so changes won't get reflected to this shape vertices (If they were cached)!
+     *
+     * @param time The current time value from the timer. See {@link Timer.Runner#increase()}.
+     * @param drawVector The consumer that calculates the vector and spawns the particles.
+     */
     public abstract void drawVectors(double time, Consumer<Vector> drawVector);
 
     @JsonIgnore

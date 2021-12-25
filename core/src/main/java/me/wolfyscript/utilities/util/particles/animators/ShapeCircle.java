@@ -37,7 +37,10 @@ public class ShapeCircle extends Shape {
     @JsonIgnore
     private Function<Double, Vector> createVector;
 
-    public ShapeCircle() {
+    /**
+     * Only used for Jackson deserialization.
+     */
+    ShapeCircle() {
         this(1, 3, Direction.Y_AXIS);
     }
 

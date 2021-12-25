@@ -39,7 +39,10 @@ public class ShapeCube extends Shape {
     private final double radius;
     private int pointsPerSide;
 
-    public ShapeCube() {
+    /**
+     * Only used for Jackson deserialization.
+     */
+    ShapeCube() {
         this(1, 3);
     }
 

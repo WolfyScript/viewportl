@@ -18,15 +18,20 @@
 
 package me.wolfyscript.utilities.util.particles.animators;
 
-import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.math.MathUtil;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
-public class ShapeRotation extends Shape {
+/**
+ * A complex shape that rotates the contained shape with the given settings.<br>
+ *
+ * There is no limit at what the sub shape must be. Any kind of {@link Shape} can be used, including complex shapes like {@link ShapeComplexRotation}, {@link ShapeComplexCompound}, etc.
+ */
+public class ShapeComplexRotation extends Shape {
 
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("complex/rotation");
 
@@ -34,26 +39,26 @@ public class ShapeRotation extends Shape {
     private final Vector angle;
     private final Shape shape;
 
-    public ShapeRotation() {
+    /**
+     * Only used for Jackson deserialization.
+     */
+    ShapeComplexRotation() {
         this(new Vector(), new ShapeCircle());
     }
 
-    public ShapeRotation(@NotNull Shape shape) {
+    public ShapeComplexRotation(@NotNull Shape shape) {
         this(new Vector(), shape);
     }
 
-    public ShapeRotation(Vector angle, @NotNull Shape shape) {
-        this(new Vector(), angle, shape);
+    public ShapeComplexRotation(@NotNull Vector angle, @NotNull Shape shape) {
+        this(angle, shape, new Vector());
     }
 
-    public ShapeRotation(Vector angleMultiplier, Vector angle, @NotNull Shape shape) {
+    public ShapeComplexRotation(@NotNull Vector angle, @NotNull Shape shape, @NotNull Vector angleMultiplier) {
         super(KEY);
-        Preconditions.checkArgument(shape != null, "Shape cannot be null!");
-        Preconditions.checkArgument(angle != null, "Angle cannot be null!");
-        Preconditions.checkArgument(angleMultiplier != null, "Angle modifier cannot be null!");
-        this.shape = shape;
-        this.angleMultiplier = angleMultiplier;
-        this.angle = angle;
+        this.shape = Objects.requireNonNull(shape, "Shape cannot be null!");
+        this.angleMultiplier = Objects.requireNonNull(angleMultiplier, "Angle multiplier cannot be null!");
+        this.angle = Objects.requireNonNull(angle, "Angle cannot be null!");
     }
 
     @Override

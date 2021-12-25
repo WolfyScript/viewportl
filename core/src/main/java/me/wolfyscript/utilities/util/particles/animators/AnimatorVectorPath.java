@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.util.particles.animators;
 
+import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.math.MathUtil;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
@@ -25,9 +26,11 @@ import me.wolfyscript.utilities.util.particles.timer.Timer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This animator draws a particle shape with the given direction and rotation.
@@ -40,21 +43,25 @@ public class AnimatorVectorPath extends Animator {
     private final Map<Double, Vector> path;
     private final boolean rotateToDirection;
 
-    public AnimatorVectorPath() {
+    /**
+     * Only used for Jackson deserialization.
+     */
+    AnimatorVectorPath() {
         this(new ShapeSquare());
     }
 
-    public AnimatorVectorPath(Shape shape) {
-        this(shape, Map.of(0d, new Vector(0, 0, 0)));
+    public AnimatorVectorPath(@NotNull Shape shape) {
+        this(shape, Map.of(0d, new Vector()));
     }
 
-    public AnimatorVectorPath(Shape shape, Map<Double, Vector> path) {
+    public AnimatorVectorPath(@NotNull Shape shape, @NotNull Map<Double, Vector> path) {
         this(shape, path, true);
     }
 
-    public AnimatorVectorPath(Shape shape, Map<Double, Vector> path, boolean rotateToDirection) {
+    public AnimatorVectorPath(@NotNull Shape shape, @NotNull Map<Double, Vector> path, boolean rotateToDirection) {
         super(KEY);
-        this.shape = shape;
+        Preconditions.checkArgument(path != null && !path.isEmpty(), "Path cannot be null and must contain at least one vector!");
+        this.shape = Objects.requireNonNull(shape, "Shape cannot be null!");
         this.path = path;
         this.rotateToDirection = rotateToDirection;
     }

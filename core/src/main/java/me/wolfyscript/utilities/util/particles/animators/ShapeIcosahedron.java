@@ -53,10 +53,25 @@ public class ShapeIcosahedron extends Shape {
     @JsonIgnore
     private final List<Vector> vectors = new ArrayList<>();
 
-    public ShapeIcosahedron() {
+    /**
+     * Only used for Jackson deserialization.
+     */
+    ShapeIcosahedron() {
         this(1, 0, 6);
     }
 
+    /**
+     * Creates a new icosahedron with the specified radius, depth and particleIncrease.<br>
+     * The depth specifies the amount of times each triangle will be subdivided into smaller triangles.<br>
+     * The subdivision occurs recursively, so the amount of triangles will increase by the factor of 3 each depth.<br>
+     * <pre>1 triangle -> 3 triangles -> 9 triangles -> ...</pre>
+     * The vertices are calculated once on creation and cached, so they are not recalculated at runtime.
+     *
+     *
+     * @param radius The radius of the icosahedron.
+     * @param depth The amount of times the triangles are subdivided into smaller triangles.
+     * @param particleIncrease The distance between the particle effects.
+     */
     @JsonCreator
     public ShapeIcosahedron(@JsonProperty("radius") double radius, @JsonProperty("depth") int depth, @JsonProperty("particleIncrease") double particleIncrease) {
         super(KEY);

@@ -157,8 +157,8 @@ public final class WUPlugin extends WolfyUtilCore {
         particleShapes.register(ShapeSphere.KEY, ShapeSphere.class);
         particleShapes.register(ShapeCube.KEY, ShapeCube.class);
         particleShapes.register(ShapeIcosahedron.KEY, ShapeIcosahedron.class);
-        particleShapes.register(ShapeRotation.KEY, ShapeRotation.class);
-        particleShapes.register(ShapeCompound.KEY, ShapeCompound.class);
+        particleShapes.register(ShapeComplexRotation.KEY, ShapeComplexRotation.class);
+        particleShapes.register(ShapeComplexCompound.KEY, ShapeComplexCompound.class);
 
         var particleTimers = getRegistries().getParticleTimer();
         particleTimers.register(TimerLinear.KEY, TimerLinear.class);
