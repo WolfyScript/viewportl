@@ -24,6 +24,7 @@ import me.wolfyscript.utilities.util.events.ArmorEquipEvent;
 import me.wolfyscript.utilities.util.events.EventFactory;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -31,8 +32,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
@@ -126,7 +129,7 @@ public class EquipListener implements Listener {
             if (!e.useInteractedBlock().equals(Event.Result.DENY)) {
                 // Having both of these checks is useless, might as well do it though.
                 if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null && !player.isSneaking() && e.getClickedBlock().getType().isInteractable()) {
-                    // Some blocks have actions when you right click them which stops the client from equipping the armor in hand.
+                    // Some blocks have actions when you right-click them which stops the client from equipping the armor in hand.
                     return;
                 }
             }
@@ -150,6 +153,45 @@ public class EquipListener implements Listener {
                         e.setCancelled(true);
                     }
                     player.updateInventory();
+                }
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        if (!event.getKeepInventory()) {
+            var armorContents = player.getInventory().getArmorContents();
+            for (int i = 0; i < armorContents.length; i++) {
+                ItemStack stack = armorContents[i];
+                if (!ItemUtils.isAirOrNull(stack)) {
+                    var customItem = CustomItem.getByItemStack(stack);
+                    ArmorType type = ArmorType.values()[i];
+                    EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.DEATH, type, stack, null, customItem, null);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onItemBreak(PlayerItemBreakEvent e){
+        ArmorType type = ArmorType.matchType(e.getBrokenItem());
+        if(type != null){
+            var player = e.getPlayer();
+            var customItem = CustomItem.getByItemStack(e.getBrokenItem());
+            var armorEquipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.BROKE, type, e.getBrokenItem(), null, customItem, null);
+            if (armorEquipEvent.isCancelled()) {
+                //TODO: Apply new armor piece if available
+                ItemStack i = e.getBrokenItem().clone();
+                if(type.equals(ArmorType.HELMET)){
+                    player.getInventory().setHelmet(i);
+                }else if(type.equals(ArmorType.CHESTPLATE)){
+                    player.getInventory().setChestplate(i);
+                }else if(type.equals(ArmorType.LEGGINGS)){
+                    player.getInventory().setLeggings(i);
+                }else if(type.equals(ArmorType.BOOTS)){
+                    player.getInventory().setBoots(i);
                 }
             }
         }

@@ -197,11 +197,11 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
          */
         DISPENSER,
         /**
-         * TODO: When an armor piece is removed due to it losing all durability.
+         * When an armor piece is removed due to it losing all durability.
          */
         BROKE,
         /**
-         * TODO: When you die causing all armor to unequip
+         * When you die causing all armor to unequip
          */
         DEATH,
         /**
