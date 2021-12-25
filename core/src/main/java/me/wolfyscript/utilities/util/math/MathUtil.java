@@ -20,6 +20,9 @@ package me.wolfyscript.utilities.util.math;
 
 import org.bukkit.util.Vector;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class MathUtil {
 
     private MathUtil() {
@@ -68,6 +71,21 @@ public class MathUtil {
                 { Math.cos(-rotationVec.getY()), Math.sin(-rotationVec.getY()) },
                 { Math.cos(rotationVec.getZ()), Math.sin(rotationVec.getZ()) }
         };
+    }
+
+    public static List<Vector> getLineVectors(Vector start, Vector end, double increments) {
+        List<Vector> vectors = new LinkedList<>();
+        var dirVec = end.clone().subtract(start).normalize();
+        var distance = end.distance(start);
+        for (double i = increments; i <= distance; i += increments) {
+            if (i == 0) break;
+            dirVec.multiply(i); // multiply
+            start.add(dirVec); // add
+            vectors.add(start.clone());
+            start.subtract(dirVec); // subtract
+            dirVec.normalize(); // normalize
+        }
+        return vectors;
     }
 
 }
