@@ -56,7 +56,10 @@ public class MathUtil {
     }
 
     public static Vector rotate(Vector vec, double[][] angles) {
-        return rotateAroundAxisZ(rotateAroundAxisY(rotateAroundAxisX(vec, angles[0][1], angles[0][1]), angles[1][0], angles[1][1]), angles[2][0], angles[2][1]);
+        rotateAroundAxisX(vec, angles[0][0], angles[0][1]);
+        rotateAroundAxisY(vec, angles[1][0], angles[1][1]);
+        rotateAroundAxisZ(vec, angles[2][0], angles[2][1]);
+        return vec;
     }
 
     public static double[][] getRotationAngles(Vector rotationVec) {
