@@ -25,6 +25,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @deprecated Replaced by the {@link ShapeSphere}.
+ */
 @Deprecated
 public class AnimatorSphere extends Animator {
 
