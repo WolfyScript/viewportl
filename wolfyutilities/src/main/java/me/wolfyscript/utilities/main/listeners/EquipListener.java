@@ -49,7 +49,8 @@ public class EquipListener implements Listener {
                 || event.getAction().equals(InventoryAction.NOTHING)
                 || !(event.getWhoClicked() instanceof Player player)
                 || event.getClickedInventory() == null
-                || !event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+                || !event.getClickedInventory().getType().equals(InventoryType.PLAYER)
+                || !event.getView().getTopInventory().getType().equals(InventoryType.PLAYER)) {
             return;
         }
         var inv = event.getClickedInventory();
