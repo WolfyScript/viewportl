@@ -61,14 +61,10 @@ public class EquipListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onClickInventory(InventoryClickEvent event) {
-        if (event.getClick().isCreativeAction()
-                || event.getAction().equals(InventoryAction.NOTHING)
-                || !(event.getWhoClicked() instanceof Player player)
-                || event.getClickedInventory() == null
-                || !event.getClickedInventory().getType().equals(InventoryType.PLAYER)
-                || !event.getView().getTopInventory().getType().equals(InventoryType.PLAYER)) {
+        if (event.getClick().isCreativeAction() || event.getAction().equals(InventoryAction.NOTHING) || !(event.getWhoClicked() instanceof Player player) || event.getClickedInventory() == null) {
             return;
         }
+        if (!event.getInventory().getType().equals(InventoryType.CRAFTING) && !event.getInventory().getType().equals(InventoryType.PLAYER)) return;
         var inv = event.getClickedInventory();
         ItemStack currentItem = event.getCurrentItem();
 
