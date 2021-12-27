@@ -18,37 +18,53 @@
 
 package me.wolfyscript.utilities.main.listeners;
 
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.inventory.custom_items.ArmorType;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.main.WUPlugin;
 import me.wolfyscript.utilities.util.events.ArmorEquipEvent;
 import me.wolfyscript.utilities.util.events.EventFactory;
 import me.wolfyscript.utilities.util.inventory.InventoryUtils;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Dispenser;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockDispenseArmorEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BoundingBox;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public class EquipListener implements Listener {
 
+    private final WolfyUtilCore core;
+
+    public EquipListener(WUPlugin core) {
+        this.core = core;
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onClickInventory(InventoryClickEvent event) {
-        if (event.getClick().isCreativeAction()
-                || event.getAction().equals(InventoryAction.NOTHING)
-                || !(event.getWhoClicked() instanceof Player player)
-                || event.getClickedInventory() == null
-                || !event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+        if (event.getClick().isCreativeAction() || event.getAction().equals(InventoryAction.NOTHING) || !(event.getWhoClicked() instanceof Player player) || event.getClickedInventory() == null) {
             return;
         }
+        if (!event.getInventory().getType().equals(InventoryType.CRAFTING) && !event.getInventory().getType().equals(InventoryType.PLAYER)) return;
         var inv = event.getClickedInventory();
         ItemStack currentItem = event.getCurrentItem();
 
@@ -126,7 +142,7 @@ public class EquipListener implements Listener {
             if (!e.useInteractedBlock().equals(Event.Result.DENY)) {
                 // Having both of these checks is useless, might as well do it though.
                 if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null && !player.isSneaking() && e.getClickedBlock().getType().isInteractable()) {
-                    // Some blocks have actions when you right click them which stops the client from equipping the armor in hand.
+                    // Some blocks have actions when you right-click them which stops the client from equipping the armor in hand.
                     return;
                 }
             }
@@ -139,7 +155,7 @@ public class EquipListener implements Listener {
                     player.updateInventory();
                     return;
                 }
-                if (customItem != null && customItem.hasEquipmentSlot()) {
+                if (customItem != null) {
                     if (customItem.hasEquipmentSlot()) {
                         e.setCancelled(true);
                         ItemStack newArmor = equipEvent.getNewArmorPiece().clone();
@@ -155,59 +171,105 @@ public class EquipListener implements Listener {
         }
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        if (!event.getKeepInventory()) {
+            var armorContents = player.getInventory().getArmorContents();
+            var armorTypes = ArmorType.values();
+            for (int i = 0; i < armorContents.length; i++) {
+                ItemStack stack = armorContents[i];
+                if (!ItemUtils.isAirOrNull(stack)) {
+                    var customItem = CustomItem.getByItemStack(stack);
+                    ArmorType type = armorTypes[armorContents.length - 1 - i];
+                    EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.DEATH, type, stack, null, customItem, null);
+                }
+            }
+        }
+    }
+
     @EventHandler
-    public void dispenseArmorEvent(BlockDispenseEvent event) {
-        /*
+    public void onItemBreak(PlayerItemBreakEvent e) {
+        ArmorType type = ArmorType.matchType(e.getBrokenItem());
+        if (type != null) {
+            var player = e.getPlayer();
+            var customItem = CustomItem.getByItemStack(e.getBrokenItem());
+            var armorEquipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.BROKE, type, e.getBrokenItem(), null, customItem, null);
+            if (armorEquipEvent.isCancelled()) {
+                ItemStack stack = armorEquipEvent.getOldArmorPiece().clone();
+                switch (type) {
+                    case HELMET -> player.getInventory().setHelmet(stack);
+                    case CHESTPLATE -> player.getInventory().setChestplate(stack);
+                    case LEGGINGS -> player.getInventory().setLeggings(stack);
+                    case BOOTS -> player.getInventory().setBoots(stack);
+                }
+            }
+        }
+    }
+
+    /**
+     * Manages the vanilla armor and blocks it in case a custom item exists that disallows the vanilla equipment behaviour, or the event is cancelled.
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onDispenseVanillaArmor(BlockDispenseArmorEvent event) {
+        ArmorType armorType = ArmorType.matchType(event.getItem());
+        if (armorType != null) {
+            if (event.getTargetEntity() instanceof Player player) {
+                var customItem = CustomItem.getByItemStack(event.getItem());
+                var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.DISPENSER, armorType, null, event.getItem(), null, customItem);
+                if (equipEvent.isCancelled()) {
+                    event.setCancelled(true);
+                    return;
+                }
+                if (customItem != null) {
+                    if (customItem.hasEquipmentSlot()) {
+                        event.setCancelled(true);
+                        player.getInventory().setItem(equipEvent.getType().getSlot(), equipEvent.getNewArmorPiece());
+                        player.updateInventory();
+                    } else if (customItem.isBlockVanillaEquip()) {
+                        event.setCancelled(true);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * This event manages custom items that are not actually armor, but have custom equipment settings.
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onDispenseCustomArmor(BlockDispenseEvent event) {
         ItemStack item = event.getItem();
         CustomItem customItem = CustomItem.getByItemStack(item);
         if (customItem != null) {
             Block block = event.getBlock();
-            Dispenser dispenser = (Dispenser) block.getBlockData();
-            BlockFace face = dispenser.getFacing();
-            int x = block.getX() + face.getModX();
-            int y = block.getY() + face.getModY();
-            int z = block.getZ() + face.getModZ();
-            BoundingBox boundingBox = new BoundingBox(x, y, z, x+1, y+1, z+1);
-            List<Entity> entities = block.getWorld().getNearbyEntities(boundingBox, entity -> entity instanceof Player).stream().collect(Collectors.toList());
-
-            if(entities.size() > 0){
-                Entity entity = entities.get(0);
-                if(entity instanceof Player){
-                    Player player = (Player) entity;
-                    ArmorType armorType = ArmorType.matchType(customItem, player.getInventory());
-                    if(armorType != null){
-                        ArmorEquipEvent equipEvent = new ArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.DISPENSER, armorType, null, item, null, customItem);
-                        if(equipEvent.isCancelled()){
-                            event.setCancelled(true);
-                            return;
-                        }
-                        player.getInventory().setItem(armorType.getSlot(), equipEvent.getNewArmorPiece());
-                        if(customItem != null && customItem.hasEquipmentSlot()){
-                            if(customItem.hasEquipmentSlot()){
-
-                                ItemStack newArmor = equipEvent.getNewArmorPiece().clone();
-                                newArmor.setAmount(1);
-                                player.getInventory().setItem(equipEvent.getType().getSlot(), newArmor);
-                                equipEvent.getNewArmorPiece().setAmount(equipEvent.getNewArmorPiece().getAmount() - 1);
-
-                            }else if(customItem.isBlockVanillaEquip()){
+            if (block.getBlockData() instanceof Dispenser dispenser) {
+                BlockFace face = dispenser.getFacing();
+                Location location = block.getLocation().clone().add(face.getDirection());
+                List<Entity> entities = block.getWorld().getNearbyEntities(BoundingBox.of(location.getBlock()), entity -> entity instanceof Player).stream().toList();
+                if (!entities.isEmpty()) {
+                    Entity entity = entities.get(0);
+                    if (entity instanceof Player player) {
+                        var armorType = ArmorType.matchType(customItem, player.getInventory());
+                        if (armorType != null) {
+                            var equipEvent = EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.BROKE, armorType, null, item, null, customItem);
+                            if (equipEvent.isCancelled()) {
+                                event.setCancelled(true);
+                                return;
+                            }
+                            if (customItem.hasEquipmentSlot()) {
+                                event.setCancelled(true);
+                                player.getInventory().setItem(equipEvent.getType().getSlot(), equipEvent.getNewArmorPiece().clone());
+                                Bukkit.getScheduler().runTask(core, () -> ((org.bukkit.block.Dispenser) block.getState()).getInventory().removeItem(item));
+                                player.updateInventory();
+                            } else if (customItem.isBlockVanillaEquip()) {
                                 event.setCancelled(true);
                             }
-                            player.updateInventory();
                         }
                     }
                 }
             }
         }
-        //*/
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void inventoryDrag(InventoryDragEvent event) {
-        // getType() seems to always be even.
-        // Old Cursor gives the item you are equipping
-        // Raw slot is the ArmorType slot
-        // Can't replace armor using this method making getCursor() useless.
     }
 
     @EventHandler

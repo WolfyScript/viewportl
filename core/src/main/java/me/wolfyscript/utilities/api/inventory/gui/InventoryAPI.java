@@ -51,8 +51,8 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
 
     private final Plugin plugin;
     private final WolfyUtilities wolfyUtilities;
-    private final HashMap<UUID, GuiHandler<C>> guiHandlers = new HashMap<>();
-    private final HashMap<String, GuiCluster<C>> guiClusters = new HashMap<>();
+    private final Map<UUID, GuiHandler<C>> guiHandlers = new HashMap<>();
+    private final Map<String, GuiCluster<C>> guiClusters = new HashMap<>();
 
     private final Class<C> customCacheClass;
 
@@ -90,7 +90,8 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
     }
 
     public GuiWindow<C> getGuiWindow(NamespacedKey namespacedKey) {
-        return getGuiCluster(namespacedKey.getNamespace()).getGuiWindow(namespacedKey.getKey());
+        GuiCluster<C> cluster = getGuiCluster(namespacedKey.getNamespace());
+        return cluster != null ? cluster.getGuiWindow(namespacedKey.getKey()) : null;
     }
 
     public WolfyUtilities getWolfyUtilities() {
@@ -200,7 +201,8 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
      */
     public Button<C> getButton(NamespacedKey namespacedKey) {
         if (namespacedKey == null) return null;
-        return getGuiCluster(namespacedKey.getNamespace()).getButton(namespacedKey.getKey());
+        GuiCluster<C> cluster = getGuiCluster(namespacedKey.getNamespace());
+        return cluster != null ? cluster.getButton(namespacedKey.getKey()) : null;
     }
 
     public void onClick(GuiHandler<C> guiHandler, GUIInventory<C> inventory, InventoryClickEvent event) {
@@ -213,7 +215,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
             if (clickedBtn != null) {
                 buttons.put(event.getSlot(), clickedBtn);
                 event.setCancelled(executeButton(clickedBtn, guiHandler, (Player) event.getWhoClicked(), inventory, event.getSlot(), event));
-                if (clickedBtn.getType().equals(ButtonType.ITEM_SLOT)) { //If the button is marked as an Item slot it may affect other buttons too!
+                if (Objects.equals(clickedBtn.getType(), ButtonType.ITEM_SLOT)) { //If the button is marked as an Item slot it may affect other buttons too!
                     if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR) || event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                         var clickedBtnClass = clickedBtn.getClass();
                         for (Map.Entry<Integer, String> buttonEntry : guiHandler.getCustomCache().getButtons(guiWindow).entrySet()) {
@@ -289,7 +291,7 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
     /**
      * Checks if the player sending the message has active chat events. If he has, it's executed!
      * It cancels the event and passes the message into the /wui command.
-     * <strong>It is recommended to use the /wui command instead of typing directly into the chat.</ strong>
+     * <strong>It is recommended to use the /wui command instead of typing directly into the chat.</strong>
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPreChat(AsyncPlayerChatEvent event) {

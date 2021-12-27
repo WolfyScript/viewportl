@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.api.inventory.gui.button;
 
+import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
@@ -29,6 +30,7 @@ import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -44,11 +46,23 @@ public abstract class Button<C extends CustomCache> {
     private final String id;
     private final ButtonType type;
 
+    /**
+     * Creates a Button with the specified id and type.
+     *
+     * @param id   The id of the button. Must be unique in the window or cluster.
+     * @param type The type of the button. Default: {@link ButtonType#NORMAL}
+     */
     protected Button(String id, ButtonType type) {
+        Preconditions.checkArgument(id != null && !id.isBlank(), "Button id cannot be null or empty!");
         this.id = id;
-        this.type = type;
+        this.type = type == null ? ButtonType.NORMAL : type;
     }
 
+    /**
+     * Creates a Button with the specified id.
+     *
+     * @param id The id of the button. Must be unique in the window or cluster.
+     */
     protected Button(String id) {
         this(id, ButtonType.NORMAL);
     }
@@ -75,10 +89,12 @@ public abstract class Button<C extends CustomCache> {
 
     public abstract void render(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ItemStack itemStack, int slot, boolean help) throws IOException;
 
+    @NotNull
     public ButtonType getType() {
         return type;
     }
 
+    @NotNull
     public String getId() {
         return id;
     }
