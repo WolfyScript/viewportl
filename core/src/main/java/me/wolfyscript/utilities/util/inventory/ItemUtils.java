@@ -42,8 +42,8 @@ public class ItemUtils {
     }
 
     public static boolean isEquipable(Material material) {
-        return switch (material) {
-            case ELYTRA, CARVED_PUMPKIN -> true;
+        return switch (material.name()) {
+            case "ELYTRA", "CARVED_PUMPKIN" -> true;
             default -> material.name().endsWith("_CHESTPLATE") || material.name().endsWith("_LEGGINGS") || material.name().endsWith("_HELMET") || material.name().endsWith("_BOOTS") || material.name().endsWith("_HEAD") || material.name().endsWith("SKULL");
         };
     }
@@ -58,14 +58,14 @@ public class ItemUtils {
     }
 
     public static boolean isTool(Material material) {
-        return switch (material) {
+        return switch (material.name()) {
             case
-                    WOODEN_HOE, WOODEN_AXE, WOODEN_PICKAXE, WOODEN_SHOVEL, WOODEN_SWORD, //WOODEN
-                    STONE_HOE, STONE_AXE, STONE_PICKAXE, STONE_SHOVEL, STONE_SWORD, //STONE
-                    IRON_HOE, IRON_AXE, IRON_PICKAXE, IRON_SHOVEL, IRON_SWORD,  //IRON
-                    GOLDEN_HOE, GOLDEN_AXE, GOLDEN_PICKAXE, GOLDEN_SHOVEL, GOLDEN_SWORD, //GOLDEN
-                    DIAMOND_HOE, DIAMOND_AXE, DIAMOND_PICKAXE, DIAMOND_SHOVEL, DIAMOND_SWORD, //DIAMOND
-                    NETHERITE_HOE, NETHERITE_AXE, NETHERITE_PICKAXE, NETHERITE_SHOVEL, NETHERITE_SWORD //NETHERITE
+                    "WOODEN_HOE", "WOODEN_AXE", "WOODEN_PICKAXE", "WOODEN_SHOVEL", "WOODEN_SWORD", //WOODEN
+                    "STONE_HOE", "STONE_AXE", "STONE_PICKAXE", "STONE_SHOVEL", "STONE_SWORD", //STONE
+                    "IRON_HOE", "IRON_AXE", "IRON_PICKAXE", "IRON_SHOVEL", "IRON_SWORD",  //IRON
+                    "GOLDEN_HOE", "GOLDEN_AXE", "GOLDEN_PICKAXE", "GOLDEN_SHOVEL", "GOLDEN_SWORD", //GOLDEN
+                    "DIAMOND_HOE", "DIAMOND_AXE", "DIAMOND_PICKAXE", "DIAMOND_SHOVEL", "DIAMOND_SWORD", //DIAMOND
+                    "NETHERITE_HOE", "NETHERITE_AXE", "NETHERITE_PICKAXE", "NETHERITE_SHOVEL", "NETHERITE_SWORD" //NETHERITE
                     -> true;
             default
                     -> false;
@@ -78,8 +78,8 @@ public class ItemUtils {
             return true;
         }
         if (isTool(material)) return true;
-        return switch (material) {
-            case BOW, CROSSBOW, TRIDENT, SHIELD, TURTLE_HELMET, ELYTRA, CARROT_ON_A_STICK, WARPED_FUNGUS_ON_A_STICK, FISHING_ROD, SHEARS, FLINT_AND_STEEL, ENCHANTED_BOOK -> true;
+        return switch (material.name()) {
+            case "BOW", "CROSSBOW", "TRIDENT", "SHIELD", "TURTLE_HELMET", "ELYTRA", "CARROT_ON_A_STICK", "WARPED_FUNGUS_ON_A_STICK", "FISHING_ROD", "SHEARS", "FLINT_AND_STEEL", "ENCHANTED_BOOK" -> true;
             default -> false;
         };
     }
