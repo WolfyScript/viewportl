@@ -28,6 +28,13 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * This event is called whenever armor is equipped or unequipped.<br>
+ *
+ * The {@link EquipMethod} shows how the item was equipped/unequipped.<br>
+ * Cancelling the event will prevent the current action.<br>
+ * Cancelling an event with the {@link EquipMethod#DEATH} method has no affect!<br>
+ */
 public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
@@ -193,15 +200,15 @@ public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
          */
         HOTBAR_SWAP,
         /**
-         * TODO: When in range of a dispenser that shoots an armor piece to equip.
+         * When in range of a dispenser that shoots an armor piece to equip.
          */
         DISPENSER,
         /**
-         * TODO: When an armor piece is removed due to it losing all durability.
+         * When an armor piece is removed due to it losing all durability.
          */
         BROKE,
         /**
-         * TODO: When you die causing all armor to unequip
+         * When you die causing all armor to unequip
          */
         DEATH,
         /**

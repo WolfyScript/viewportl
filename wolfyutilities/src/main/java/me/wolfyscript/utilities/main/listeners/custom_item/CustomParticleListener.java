@@ -61,7 +61,6 @@ public class CustomParticleListener implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
         var player = event.getPlayer();
-        var droppedItem = event.getItemDrop().getItemStack();
         var currentItem = player.getInventory().getItemInMainHand();
 
         if (currentItem.getType().equals(Material.AIR) || currentItem.getAmount() <= 0) {
