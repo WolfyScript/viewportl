@@ -207,6 +207,9 @@ public class EquipListener implements Listener {
         }
     }
 
+    /**
+     * Manages the vanilla armor and blocks it in case a custom item exists that disallows the vanilla equipment behaviour, or the event is cancelled.
+     */
     @EventHandler(ignoreCancelled = true)
     public void onDispenseVanillaArmor(BlockDispenseArmorEvent event) {
         ArmorType armorType = ArmorType.matchType(event.getItem());
@@ -231,6 +234,9 @@ public class EquipListener implements Listener {
         }
     }
 
+    /**
+     * This event manages custom items that are not actually armor, but have custom equipment settings.
+     */
     @EventHandler(ignoreCancelled = true)
     public void onDispenseCustomArmor(BlockDispenseEvent event) {
         ItemStack item = event.getItem();
@@ -264,14 +270,6 @@ public class EquipListener implements Listener {
                 }
             }
         }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void inventoryDrag(InventoryDragEvent event) {
-        // getType() seems to always be even.
-        // Old Cursor gives the item you are equipping
-        // Raw slot is the ArmorType slot
-        // Can't replace armor using this method making getCursor() useless.
     }
 
     @EventHandler

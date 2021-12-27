@@ -81,10 +81,8 @@ public final class WUPlugin extends WolfyUtilCore {
     private final Console console;
     private Metrics metrics;
     private WUConfig config;
-
     private final MessageHandler messageHandler;
     private final MessageFactory messageFactory;
-
     private final CompatibilityManagerImpl compatibilityManager;
 
     public WUPlugin() {
