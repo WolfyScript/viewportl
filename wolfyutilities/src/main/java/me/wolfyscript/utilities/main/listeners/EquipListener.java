@@ -176,11 +176,12 @@ public class EquipListener implements Listener {
         Player player = event.getEntity();
         if (!event.getKeepInventory()) {
             var armorContents = player.getInventory().getArmorContents();
+            var armorTypes = ArmorType.values();
             for (int i = 0; i < armorContents.length; i++) {
                 ItemStack stack = armorContents[i];
                 if (!ItemUtils.isAirOrNull(stack)) {
                     var customItem = CustomItem.getByItemStack(stack);
-                    ArmorType type = ArmorType.values()[i];
+                    ArmorType type = armorTypes[armorContents.length - 1 - i];
                     EventFactory.createArmorEquipEvent(player, ArmorEquipEvent.EquipMethod.DEATH, type, stack, null, customItem, null);
                 }
             }
@@ -206,7 +207,7 @@ public class EquipListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDispenseVanillaArmor(BlockDispenseArmorEvent event) {
         ArmorType armorType = ArmorType.matchType(event.getItem());
         if (armorType != null) {
@@ -230,7 +231,7 @@ public class EquipListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDispenseCustomArmor(BlockDispenseEvent event) {
         ItemStack item = event.getItem();
         CustomItem customItem = CustomItem.getByItemStack(item);
