@@ -19,10 +19,12 @@
 package me.wolfyscript.utilities.util.particles;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
@@ -154,12 +156,21 @@ public class ParticleEffect implements Keyed {
         return particle;
     }
 
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    @JsonGetter("data")
     public Object getData() {
         return data;
     }
 
-    public void setData(Object data) {
-        this.data = data;
+    @JsonSetter("data")
+    private void setDataFromJson(JsonNode data) {
+        if (!dataType.equals(Void.TYPE)) {
+            this.data = JacksonUtil.getObjectMapper().convertValue(data, dataType);
+            Preconditions.checkArgument(this.data != null, "ParticleEffect requires data! Expected instance of " + dataType.getName() + " but got null!");
+        }
     }
 
     public Class<?> getDataType() {
