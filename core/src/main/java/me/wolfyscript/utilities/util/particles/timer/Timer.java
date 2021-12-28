@@ -99,6 +99,10 @@ public abstract class Timer implements Keyed {
          */
         public abstract double increase();
 
+        public double getTime() {
+            return time;
+        }
+
         public boolean shouldStop() {
             return time > getStopValue();
         }
