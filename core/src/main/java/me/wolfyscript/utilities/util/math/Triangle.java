@@ -16,32 +16,31 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.particles.pos;
+package me.wolfyscript.utilities.util.math;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
+import org.bukkit.util.Vector;
 
-public class ParticlePosEntity extends ParticlePos {
+public class Triangle {
 
-    private final Entity entity;
+    private final Vector point1;
+    private final Vector point2;
+    private final Vector point3;
 
-    public ParticlePosEntity(Entity entity) {
-        super();
-        this.entity = entity;
+    public Triangle(Vector point1, Vector point2, Vector point3) {
+        this.point1 = point1;
+        this.point2 = point2;
+        this.point3 = point3;
     }
 
-    public ParticlePosEntity(ParticlePosEntity pos) {
-        super(pos);
-        this.entity = pos.entity;
+    public Vector getPoint1() {
+        return point1;
     }
 
-    @Override
-    public Location getLocation() {
-        return entity.getLocation().add(getOffset());
+    public Vector getPoint2() {
+        return point2;
     }
 
-    @Override
-    public ParticlePosEntity shallowCopy() {
-        return new ParticlePosEntity(this);
+    public Vector getPoint3() {
+        return point3;
     }
 }

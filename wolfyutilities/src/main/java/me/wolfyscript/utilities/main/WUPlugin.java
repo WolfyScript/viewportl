@@ -27,7 +27,6 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
 import me.wolfyscript.utilities.api.language.Language;
-import me.wolfyscript.utilities.api.nms.nbt.NBTTagList;
 import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.compatibility.CompatibilityManagerImpl;
 import me.wolfyscript.utilities.main.commands.ChatActionCommand;
@@ -45,15 +44,12 @@ import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
-import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
-import me.wolfyscript.utilities.util.particles.animators.Animator;
-import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
-import me.wolfyscript.utilities.util.particles.animators.AnimatorCircle;
-import me.wolfyscript.utilities.util.particles.animators.AnimatorSphere;
+import me.wolfyscript.utilities.util.particles.animators.*;
+import me.wolfyscript.utilities.util.particles.shapes.*;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import me.wolfyscript.utilities.util.particles.timer.TimerPi;
@@ -62,15 +58,9 @@ import me.wolfyscript.utilities.util.version.ServerVersion;
 import me.wolfyscript.utilities.util.world.WorldUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.Arrays;
 
 public final class WUPlugin extends WolfyUtilCore {
 
@@ -157,6 +147,17 @@ public final class WUPlugin extends WolfyUtilCore {
         particleAnimators.register(AnimatorBasic.KEY, AnimatorBasic.class);
         particleAnimators.register(AnimatorSphere.KEY, AnimatorSphere.class);
         particleAnimators.register(AnimatorCircle.KEY, AnimatorCircle.class);
+        particleAnimators.register(AnimatorVectorPath.KEY, AnimatorVectorPath.class);
+        particleAnimators.register(AnimatorShape.KEY, AnimatorShape.class);
+
+        var particleShapes = getRegistries().getParticleShapes();
+        particleShapes.register(ShapeSquare.KEY, ShapeSquare.class);
+        particleShapes.register(ShapeCircle.KEY, ShapeCircle.class);
+        particleShapes.register(ShapeSphere.KEY, ShapeSphere.class);
+        particleShapes.register(ShapeCube.KEY, ShapeCube.class);
+        particleShapes.register(ShapeIcosahedron.KEY, ShapeIcosahedron.class);
+        particleShapes.register(ShapeComplexRotation.KEY, ShapeComplexRotation.class);
+        particleShapes.register(ShapeComplexCompound.KEY, ShapeComplexCompound.class);
 
         var particleTimers = getRegistries().getParticleTimer();
         particleTimers.register(TimerLinear.KEY, TimerLinear.class);
@@ -165,6 +166,7 @@ public final class WUPlugin extends WolfyUtilCore {
 
         KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
+        KeyedTypeIdResolver.registerTypeRegistry(Shape.class, particleShapes);
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
     }
 

@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.particles.timer;
+package me.wolfyscript.utilities.util.particles.shapes;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,54 +24,41 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
+import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
+import me.wolfyscript.utilities.util.particles.timer.Timer;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 @JsonTypeResolver(KeyedTypeResolver.class)
 @JsonTypeIdResolver(KeyedTypeIdResolver.class)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "key")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@JsonPropertyOrder(value = {"key", "startValue", "stopValue"})
-public abstract class Timer implements Keyed {
+@JsonPropertyOrder(value = {"key"})
+public abstract class Shape implements Keyed {
 
     private final NamespacedKey key;
-    protected double startValue;
-    protected double stopValue;
 
-    protected Timer(NamespacedKey namespacedKey) {
-        this.key = namespacedKey;
+    protected Shape(@NotNull NamespacedKey key) {
+        Preconditions.checkArgument(key != null && !key.getKey().isEmpty() && !key.getNamespace().isEmpty(), "Invalid NamespacedKey! Namespaced cannot be null or empty!");
+        this.key = key;
     }
 
     /**
-     * The start value is the initial time value of the supplier.
-     * Default value is 0.0.
+     * Applies the {@link Consumer<Vector>} for all vertices of the shape.<br>
+     * Resource intensive tasks should be done beforehand, as this method might be called each tick.<br>
+     * The consumer might be nested like in {@link ShapeComplexRotation} to rotate all vertices.<br>
+     * Because of that the vertices should be copied, so changes won't get reflected to this shape vertices (If they were cached)!
      *
-     * @return The initial time.
+     * @param time The current time value from the timer. See {@link Timer.Runner#increase()}.
+     * @param drawVector The consumer that calculates the vector and spawns the particles.
      */
-    public double getStartValue() {
-        return startValue;
-    }
-
-    public void setStartValue(double startValue) {
-        this.startValue = startValue;
-    }
-
-    /**
-     * The value at which point the supplier will stop increasing.
-     *
-     * @return The value at which the supplier stops.
-     */
-    public double getStopValue() {
-        return stopValue;
-    }
-
-    public void setStopValue(double stopValue) {
-        this.stopValue = stopValue;
-    }
-
-    public abstract Runner createRunner();
+    public abstract void drawVectors(double time, Consumer<Vector> drawVector);
 
     @JsonIgnore
     @Override
@@ -79,34 +66,7 @@ public abstract class Timer implements Keyed {
         return key;
     }
 
-    /**
-     * This object contains the actual state of the particle effect.
-     * Each time an effect is spawned a new Runner is created with the specified start time.
-     *
-     */
-    public abstract class Runner {
-
-        protected double time;
-
-        protected Runner() {
-            this.time = getStartValue();
-        }
-
-        /**
-         * Increases the time of the runner by the specified increment.
-         *
-         * @return The increased time of the runner.
-         */
-        public abstract double increase();
-
-        public double getTime() {
-            return time;
-        }
-
-        public boolean shouldStop() {
-            return time > getStopValue();
-        }
-
+    public enum Direction {
+        X_AXIS, Y_AXIS, Z_AXIS
     }
-
 }

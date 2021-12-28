@@ -18,50 +18,46 @@
 
 package me.wolfyscript.utilities.util.particles.animators;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
-import me.wolfyscript.utilities.util.particles.shapes.ShapeSphere;
+import me.wolfyscript.utilities.util.particles.shapes.Shape;
+import me.wolfyscript.utilities.util.particles.shapes.ShapeCircle;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @deprecated Replaced by the {@link ShapeSphere}.
+ * This animator draws a particle shape with the given direction and rotation.
  */
-@Deprecated
-public class AnimatorSphere extends Animator {
+public class AnimatorShape extends Animator {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("sphere");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("shape");
 
-    private final int radius;
+    private final Shape shape;
 
-    public AnimatorSphere() {
-        this(1);
-    }
-
-    public AnimatorSphere(int radius) {
+    @JsonCreator
+    public AnimatorShape(@JsonProperty("shape") Shape shape) {
         super(KEY);
-        this.radius = radius;
+        this.shape = shape;
     }
 
     @Override
     public void draw(Timer.Runner timer, ParticleEffect effect, Location origin, @Nullable Player player) {
         double time = timer.increase();
-        for (double i = 0; i <= 2 * Math.PI; i += Math.PI / 40) {
-            double x = radius * Math.cos(i) * Math.sin(time);
-            double y = radius * Math.cos(time);
-            double z = radius * Math.sin(i) * Math.sin(time);
-            origin.add(x, y, z);
+        shape.drawVectors(time, vec -> {
+            origin.add(vec);
             spawnParticle(effect, origin, player);
-            origin.subtract(x, y, z);
-        }
+            origin.subtract(vec);
+        });
     }
 
     @Override
     public String toString() {
-        return "SphereAnimator{" +
-                "radius=" + radius +
-                "} " + super.toString();
+        return "AnimatorVectorPath{" +
+                "shape=" + shape +
+                '}';
     }
 }

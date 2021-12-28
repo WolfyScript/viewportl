@@ -19,12 +19,17 @@
 package me.wolfyscript.utilities.util.particles;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
+import me.wolfyscript.utilities.util.particles.pos.ParticlePos;
+import me.wolfyscript.utilities.util.particles.pos.ParticlePosLocation;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import org.bukkit.Bukkit;
@@ -39,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * ParticleEffects contain the data to draw particles using a specified animation and timer.<br>
@@ -98,9 +104,12 @@ public class ParticleEffect implements Keyed {
         this.count = count;
         this.offset = offset;
         this.extra = extra;
+        if (data != null) {
+            Preconditions.checkArgument(dataType != Void.TYPE && dataType.isInstance(data), "Invalid type of data! Expected " + dataType.getName() + " but got " + data.getClass().getName());
+        }
         this.data = data;
-        this.timer = timer;
-        this.animator = animator;
+        this.timer = Objects.requireNonNullElse(timer, new TimerLinear());
+        this.animator = Objects.requireNonNullElse(animator, new AnimatorBasic());
     }
 
     @Deprecated
@@ -115,6 +124,7 @@ public class ParticleEffect implements Keyed {
         this.offset = offset;
         this.extra = extra;
         this.data = data;
+        this.timer = new TimerLinear();
         this.animator = new AnimatorBasic();
     }
 
@@ -148,12 +158,21 @@ public class ParticleEffect implements Keyed {
         return particle;
     }
 
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    @JsonGetter("data")
     public Object getData() {
         return data;
     }
 
-    public void setData(Object data) {
-        this.data = data;
+    @JsonSetter("data")
+    private void setDataFromJson(JsonNode data) {
+        if (!dataType.equals(Void.TYPE)) {
+            this.data = JacksonUtil.getObjectMapper().convertValue(data, dataType);
+            Preconditions.checkArgument(this.data != null, "ParticleEffect requires data! Expected instance of " + dataType.getName() + " but got null!");
+        }
     }
 
     public Class<?> getDataType() {
@@ -232,6 +251,16 @@ public class ParticleEffect implements Keyed {
     }
 
     /**
+     * Spawns the effect at the specified location. Particles are sent to all players in range.<br>
+     * The {@link ParticlePos} allows for a variable location target.
+     *
+     * @param location The location to spawn the effect at. Might be a variable target.
+     */
+    public void spawn(ParticlePos location) {
+        new Task(location).run();
+    }
+
+    /**
      * Spawns the effect at the specified location.
      * If the player is specified, the particles are only send to that player.
      *
@@ -239,6 +268,10 @@ public class ParticleEffect implements Keyed {
      * @param player   The optional player to send the particles to.
      */
     public void spawn(Location location, @Nullable Player player) {
+        new Task(location, player).run();
+    }
+
+    public void spawn(ParticlePos location, @Nullable Player player) {
         new Task(location, player).run();
     }
 
@@ -256,14 +289,23 @@ public class ParticleEffect implements Keyed {
     public class Task implements Runnable {
 
         private final Player player;
-        private final Location origin;
+        private final ParticlePos origin;
         private final Timer.Runner runner = timer.createRunner();
 
         public Task(Location origin) {
             this(origin, null);
         }
 
+        public Task(ParticlePos origin) {
+            this(origin, null);
+        }
+
         public Task(Location origin, Player player) {
+            this.player = player;
+            this.origin = new ParticlePosLocation(origin);
+        }
+
+        public Task(ParticlePos origin, Player player) {
             this.player = player;
             this.origin = origin;
         }
@@ -272,7 +314,7 @@ public class ParticleEffect implements Keyed {
         public void run() {
             Bukkit.getScheduler().runTaskTimer(WolfyUtilities.getWUPlugin(), task -> {
                 if (!task.isCancelled()) {
-                    animator.draw(runner, ParticleEffect.this, origin, player);
+                    animator.draw(runner, ParticleEffect.this, origin.getLocation(), player);
                     if (runner.shouldStop()) {
                         task.cancel();
                     }

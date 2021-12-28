@@ -25,11 +25,22 @@ public class ParticlePosLocation extends ParticlePos {
     private final Location location;
 
     public ParticlePosLocation(Location location) {
+        super();
         this.location = location;
+    }
+
+    public ParticlePosLocation(ParticlePosLocation pos) {
+        super(pos);
+        this.location = pos.location;
     }
 
     @Override
     public Location getLocation() {
-        return location.clone();
+        return location.clone().add(getOffset());
+    }
+
+    @Override
+    public ParticlePosLocation shallowCopy() {
+        return new ParticlePosLocation(this);
     }
 }
