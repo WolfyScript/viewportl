@@ -28,6 +28,8 @@ import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
+import me.wolfyscript.utilities.util.particles.pos.ParticlePos;
+import me.wolfyscript.utilities.util.particles.pos.ParticlePosLocation;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import org.bukkit.Bukkit;
@@ -249,6 +251,16 @@ public class ParticleEffect implements Keyed {
     }
 
     /**
+     * Spawns the effect at the specified location. Particles are sent to all players in range.<br>
+     * The {@link ParticlePos} allows for a variable location target.
+     *
+     * @param location The location to spawn the effect at. Might be a variable target.
+     */
+    public void spawn(ParticlePos location) {
+        new Task(location).run();
+    }
+
+    /**
      * Spawns the effect at the specified location.
      * If the player is specified, the particles are only send to that player.
      *
@@ -256,6 +268,10 @@ public class ParticleEffect implements Keyed {
      * @param player   The optional player to send the particles to.
      */
     public void spawn(Location location, @Nullable Player player) {
+        new Task(location, player).run();
+    }
+
+    public void spawn(ParticlePos location, @Nullable Player player) {
         new Task(location, player).run();
     }
 
@@ -273,14 +289,23 @@ public class ParticleEffect implements Keyed {
     public class Task implements Runnable {
 
         private final Player player;
-        private final Location origin;
+        private final ParticlePos origin;
         private final Timer.Runner runner = timer.createRunner();
 
         public Task(Location origin) {
             this(origin, null);
         }
 
+        public Task(ParticlePos origin) {
+            this(origin, null);
+        }
+
         public Task(Location origin, Player player) {
+            this.player = player;
+            this.origin = new ParticlePosLocation(origin);
+        }
+
+        public Task(ParticlePos origin, Player player) {
             this.player = player;
             this.origin = origin;
         }
@@ -289,7 +314,7 @@ public class ParticleEffect implements Keyed {
         public void run() {
             Bukkit.getScheduler().runTaskTimer(WolfyUtilities.getWUPlugin(), task -> {
                 if (!task.isCancelled()) {
-                    animator.draw(runner, ParticleEffect.this, origin, player);
+                    animator.draw(runner, ParticleEffect.this, origin.getLocation(), player);
                     if (runner.shouldStop()) {
                         task.cancel();
                     }

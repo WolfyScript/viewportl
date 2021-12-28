@@ -26,7 +26,13 @@ public class ParticlePosBlock extends ParticlePos {
     private final Block block;
 
     public ParticlePosBlock(Block block) {
+        super();
         this.block = block;
+    }
+
+    public ParticlePosBlock(ParticlePosBlock pos) {
+        super(pos);
+        this.block = pos.block;
     }
 
     public Block getBlock() {
@@ -35,6 +41,11 @@ public class ParticlePosBlock extends ParticlePos {
 
     @Override
     public Location getLocation() {
-        return block.getLocation();
+        return block.getLocation().add(getOffset());
+    }
+
+    @Override
+    public ParticlePosBlock shallowCopy() {
+        return new ParticlePosBlock(this);
     }
 }

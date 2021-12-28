@@ -19,9 +19,29 @@
 package me.wolfyscript.utilities.util.particles.pos;
 
 import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
 public abstract class ParticlePos {
 
+    private Vector offset;
+
+    protected ParticlePos() {
+        this.offset = new Vector();
+    }
+
+    protected ParticlePos(ParticlePos pos) {
+        this.offset = new Vector().copy(pos.offset);
+    }
+
     public abstract Location getLocation();
 
+    public Vector getOffset() {
+        return offset;
+    }
+
+    public void setOffset(Vector offset) {
+        this.offset = offset;
+    }
+
+    public abstract ParticlePos shallowCopy();
 }

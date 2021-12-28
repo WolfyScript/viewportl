@@ -26,11 +26,22 @@ public class ParticlePosEntity extends ParticlePos {
     private final Entity entity;
 
     public ParticlePosEntity(Entity entity) {
+        super();
         this.entity = entity;
+    }
+
+    public ParticlePosEntity(ParticlePosEntity pos) {
+        super(pos);
+        this.entity = pos.entity;
     }
 
     @Override
     public Location getLocation() {
-        return entity.getLocation();
+        return entity.getLocation().add(getOffset());
+    }
+
+    @Override
+    public ParticlePosEntity shallowCopy() {
+        return new ParticlePosEntity(this);
     }
 }

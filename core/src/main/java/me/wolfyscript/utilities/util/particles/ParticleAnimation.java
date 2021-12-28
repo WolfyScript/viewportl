@@ -235,6 +235,8 @@ public class ParticleAnimation implements Keyed {
         private int tickSinceLastCheck = 0;
         private boolean spawnEffects = true;
 
+        private final Map<ParticleEffectSettings, ParticlePos> cachedOffsetPos = new HashMap<>();
+
         public Scheduler(Location location) {
             this(location, null);
         }
@@ -328,7 +330,11 @@ public class ParticleAnimation implements Keyed {
             if (checkSpawnConditions()) {
                 //Spawn tick specific ParticleEffects
                 for (ParticleEffectSettings setting : effects.computeIfAbsent(tick, i -> new ArrayList<>())) {
-                    setting.effect().spawn(pos.getLocation().add(setting.offset), receiver);
+                    setting.effect().spawn(cachedOffsetPos.computeIfAbsent(setting, settings -> {
+                        ParticlePos particlePos = pos.shallowCopy();
+                        particlePos.setOffset(settings.offset);
+                        return particlePos;
+                    }), receiver);
                 }
             }
             tick++;

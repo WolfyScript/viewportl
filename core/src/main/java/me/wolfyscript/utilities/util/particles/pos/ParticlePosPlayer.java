@@ -26,12 +26,23 @@ public class ParticlePosPlayer extends ParticlePos {
     private final Player player;
 
     public ParticlePosPlayer(Player player) {
+        super();
         this.player = player;
+    }
+
+    public ParticlePosPlayer(ParticlePosPlayer pos) {
+        super(pos);
+        this.player = pos.player;
     }
 
     @Override
     public Location getLocation() {
-        return player.getLocation();
+        return player.getLocation().add(getOffset());
+    }
+
+    @Override
+    public ParticlePos shallowCopy() {
+        return new ParticlePosPlayer(this);
     }
 
     public Player getPlayer() {
