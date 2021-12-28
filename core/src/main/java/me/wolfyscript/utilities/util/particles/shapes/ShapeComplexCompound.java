@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.particles.animators;
+package me.wolfyscript.utilities.util.particles.shapes;
 
 import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.NamespacedKey;

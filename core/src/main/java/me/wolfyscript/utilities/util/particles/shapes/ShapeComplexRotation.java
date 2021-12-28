@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.particles.animators;
+package me.wolfyscript.utilities.util.particles.shapes;
 
 import me.wolfyscript.utilities.util.math.MathUtil;
 import me.wolfyscript.utilities.util.NamespacedKey;

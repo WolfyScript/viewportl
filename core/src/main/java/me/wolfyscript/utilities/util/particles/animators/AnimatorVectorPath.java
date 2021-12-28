@@ -22,6 +22,8 @@ import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.math.MathUtil;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
+import me.wolfyscript.utilities.util.particles.shapes.Shape;
+import me.wolfyscript.utilities.util.particles.shapes.ShapeSquare;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

@@ -16,50 +16,45 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.particles.animators;
+package me.wolfyscript.utilities.util.particles.shapes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.util.Vector;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ShapeSquare extends Shape {
+public class ShapeCircle extends Shape {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("square");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("circle");
 
     private final double radius;
-    private int pointsPerSide;
+    private int resolution;
     private Direction direction;
     @JsonIgnore
-    private Function<Double, Vector[]> createVector;
+    private Function<Double, Vector> createVector;
 
     /**
      * Only used for Jackson deserialization.
      */
-    ShapeSquare() {
+    ShapeCircle() {
         this(1, 3, Direction.Y_AXIS);
     }
 
-    public ShapeSquare(double radius, int pointsPerSide, Direction direction) {
+    public ShapeCircle(double radius, int resolution, Direction direction) {
         super(KEY);
         this.radius = radius;
-        this.pointsPerSide = pointsPerSide;
+        this.resolution = resolution;
         this.setDirection(direction);
     }
 
     @Override
     public void drawVectors(double time, Consumer<Vector> drawVector) {
-        double pointIncrease = radius * 2 / (pointsPerSide - 1);
-        for(double i = 0; i <= radius * 2; i += pointIncrease) {
-            Vector[] sides = createVector.apply(i);
-            for (Vector side : sides) {
-                drawVector.accept(side);
-            }
+        for (double i = 0; i <= Math.PI * 2; i += Math.PI / resolution) {
+            drawVector.accept(createVector.apply(i));
         }
     }
 
@@ -69,14 +64,13 @@ public class ShapeSquare extends Shape {
     }
 
     @JsonSetter
-    private void setPointsPerSide(int pointsPerSide) {
-        Preconditions.checkArgument(pointsPerSide > 1, "Points per side must be at least 2!");
-        this.pointsPerSide = pointsPerSide;
+    private void setResolution(int resolution) {
+        this.resolution = resolution;
     }
 
     @JsonGetter
-    public int getPointsPerSide() {
-        return pointsPerSide;
+    public int getResolution() {
+        return resolution;
     }
 
     @JsonGetter
@@ -85,26 +79,23 @@ public class ShapeSquare extends Shape {
     }
 
     @JsonSetter
-    private void setDirection(Direction direction) {
+    private void setDirection(Shape.Direction direction) {
         this.direction = direction;
         createVector = switch (direction) {
-            case X_AXIS -> (t) -> new Vector[] {
-                    new Vector(0, radius - t, radius),
-                    new Vector(0, radius - t,  -radius),
-                    new Vector(0, radius, radius - t),
-                    new Vector(0, -radius, radius - t)
+            case X_AXIS -> (t) -> {
+                double y = radius * Math.sin(t);
+                double z = radius * Math.cos(t);
+                return new Vector(0, y, z);
             };
-            case Y_AXIS -> (t) -> new Vector[] {
-                    new Vector(radius - t, 0, radius),
-                    new Vector(radius - t, 0, -radius),
-                    new Vector(radius, 0, radius - t),
-                    new Vector(-radius, 0, radius - t)
+            case Y_AXIS -> (t) -> {
+                double x = radius * Math.cos(t);
+                double z = radius * Math.sin(t);
+                return new Vector(x, 0, z);
             };
-            case Z_AXIS -> (t) -> new Vector[] {
-                    new Vector(radius - t, radius, 0),
-                    new Vector(radius - t, -radius, 0),
-                    new Vector(radius, radius - t, 0),
-                    new Vector(-radius, radius - t, 0)
+            case Z_AXIS -> (t) -> {
+                double x = radius * Math.cos(t);
+                double y = radius * Math.sin(t);
+                return new Vector(x, y, 0);
             };
         };
     }

@@ -16,66 +16,49 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.particles.animators;
+package me.wolfyscript.utilities.util.particles.shapes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ShapeCube extends Shape {
+public class ShapeSquare extends Shape {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("cube");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("square");
 
     private final double radius;
     private int pointsPerSide;
+    private Direction direction;
+    @JsonIgnore
+    private Function<Double, Vector[]> createVector;
 
     /**
      * Only used for Jackson deserialization.
      */
-    ShapeCube() {
-        this(1, 3);
+    ShapeSquare() {
+        this(1, 3, Direction.Y_AXIS);
     }
 
-    public ShapeCube(double radius, int pointsPerSide) {
+    public ShapeSquare(double radius, int pointsPerSide, Direction direction) {
         super(KEY);
         this.radius = radius;
         this.pointsPerSide = pointsPerSide;
+        this.setDirection(direction);
     }
 
     @Override
     public void drawVectors(double time, Consumer<Vector> drawVector) {
         double pointIncrease = radius * 2 / (pointsPerSide - 1);
-        var corner1 = new Vector(radius, radius, radius);
-        var corner2 = new Vector(-radius, -radius, -radius);
-
-        double minX = Math.min(corner1.getX(), corner2.getX());
-        double minY = Math.min(corner1.getY(), corner2.getY());
-        double minZ = Math.min(corner1.getZ(), corner2.getZ());
-        double maxX = Math.max(corner1.getX(), corner2.getX());
-        double maxY = Math.max(corner1.getY(), corner2.getY());
-        double maxZ = Math.max(corner1.getZ(), corner2.getZ());
-
-        for (double x = minX; x <= maxX; x+=pointIncrease) {
-            for (double y = minY; y <= maxY; y+=pointIncrease) {
-                for (double z = minZ; z <= maxZ; z+=pointIncrease) {
-                    int components = 0;
-                    if (x == minX || x == maxX) components++;
-                    if (y == minY || y == maxY) components++;
-                    if (z == minZ || z == maxZ) components++;
-                    if (components >= 2) {
-                        drawVector.accept(new Vector(x, y, z));
-                    }
-                }
+        for(double i = 0; i <= radius * 2; i += pointIncrease) {
+            Vector[] sides = createVector.apply(i);
+            for (Vector side : sides) {
+                drawVector.accept(side);
             }
         }
     }
@@ -96,4 +79,33 @@ public class ShapeCube extends Shape {
         return pointsPerSide;
     }
 
+    @JsonGetter
+    public Direction getDirection() {
+        return direction;
+    }
+
+    @JsonSetter
+    private void setDirection(Direction direction) {
+        this.direction = direction;
+        createVector = switch (direction) {
+            case X_AXIS -> (t) -> new Vector[] {
+                    new Vector(0, radius - t, radius),
+                    new Vector(0, radius - t,  -radius),
+                    new Vector(0, radius, radius - t),
+                    new Vector(0, -radius, radius - t)
+            };
+            case Y_AXIS -> (t) -> new Vector[] {
+                    new Vector(radius - t, 0, radius),
+                    new Vector(radius - t, 0, -radius),
+                    new Vector(radius, 0, radius - t),
+                    new Vector(-radius, 0, radius - t)
+            };
+            case Z_AXIS -> (t) -> new Vector[] {
+                    new Vector(radius - t, radius, 0),
+                    new Vector(radius - t, -radius, 0),
+                    new Vector(radius, radius - t, 0),
+                    new Vector(-radius, radius - t, 0)
+            };
+        };
+    }
 }

@@ -49,6 +49,7 @@ import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 import me.wolfyscript.utilities.util.json.jackson.serialization.*;
 import me.wolfyscript.utilities.util.particles.animators.*;
+import me.wolfyscript.utilities.util.particles.shapes.*;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import me.wolfyscript.utilities.util.particles.timer.TimerPi;
