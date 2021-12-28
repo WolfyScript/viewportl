@@ -29,6 +29,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
@@ -68,44 +69,56 @@ public class AnimatorVectorPath extends Animator {
 
     @Override
     public void draw(Timer.Runner timer, ParticleEffect effect, Location origin, @Nullable Player player) {
+        double previousTime = timer.getTime();
         double time = timer.increase();
-        Vector vector = null;
-        for (Double activationTime : path.keySet()) {
-            if (time < activationTime) {
-                break;
-            }
-            vector = path.get(activationTime);
-        }
-        if (rotateToDirection && vector != null) {
+        Vector vector = getVector(time);
+        if (rotateToDirection) {
             //Calculate the direction vector
-            Vector nextVec = origin.toVector().add(vector); //The next vector to draw
-            Vector direction = origin.toVector().subtract(nextVec).normalize(); //get the direction vector of the current vector to the next vector.
-            Location dir = new Location(origin.getWorld(), 0, 0, 0).setDirection(direction); //Create a location, so it calculates the angles for us :)
+            Vector prevVec = origin.toVector().add(getVector(previousTime));
+            Vector direction = prevVec.subtract(origin.toVector().add(vector)).normalize(); //get the direction vector of the previous vector to the current vector.
+            if (!Double.isNaN(direction.getX()) && !Double.isNaN(direction.getY()) && !Double.isNaN(direction.getZ())) {
+                Location dir = new Location(origin.getWorld(), 0, 0, 0).setDirection(direction); //Create a location, so it calculates the angles for us :)
+                //Calculate the rotation cos & sin
+                var angleRad = new Vector(Math.toRadians(dir.getPitch()), Math.toRadians(dir.getYaw()), 0);
+                double xAxisCos = Math.cos(angleRad.getX()); // getting the cos value for the pitch.
+                double xAxisSin = Math.sin(angleRad.getX()); // getting the sin value for the pitch.
+                double yAxisCos = Math.cos(-angleRad.getY()); // getting the cos value for the yaw.
+                double yAxisSin = Math.sin(-angleRad.getY()); // getting the sin value for the yaw.
 
-            //Calculate the rotation cos & sin
-            var angleRad = new Vector(Math.toRadians(dir.getPitch()), Math.toRadians(dir.getYaw()), 0);
-            double xAxisCos = Math.cos(angleRad.getX()); // getting the cos value for the pitch.
-            double xAxisSin = Math.sin(angleRad.getX()); // getting the sin value for the pitch.
-            double yAxisCos = Math.cos(-angleRad.getY()); // getting the cos value for the yaw.
-            double yAxisSin = Math.sin(-angleRad.getY()); // getting the sin value for the yaw.
+                origin.add(vector);
+                shape.drawVectors(time, vec -> {
+                    MathUtil.rotateAroundAxisX(vec, xAxisCos, xAxisSin);
+                    MathUtil.rotateAroundAxisY(vec, yAxisCos, yAxisSin);
+                    origin.add(vec);
+                    spawnParticle(effect, origin, player);
+                    origin.subtract(vec);
+                });
+                origin.subtract(vector);
+                return;
+            }
+        }
+        origin.add(vector); //Add vector to origin
+        shape.drawVectors(time, vec -> {
+            origin.add(vec);
+            spawnParticle(effect, origin, player);
+            origin.subtract(vec);
+        });
+        origin.subtract(vector);
+    }
 
-            shape.drawVectors(time, vec -> {
-                MathUtil.rotateAroundAxisX(vec, xAxisCos, xAxisSin);
-                MathUtil.rotateAroundAxisY(vec, yAxisCos, yAxisSin);
-                origin.add(vec);
-                spawnParticle(effect, origin, player);
-                origin.subtract(vec);
-            });
-        } else {
-            shape.drawVectors(time, vec -> {
-                origin.add(vec);
-                spawnParticle(effect, origin, player);
-                origin.subtract(vec);
-            });
+    @NotNull
+    private Vector getVector(double time) {
+        Iterator<Map.Entry<Double, Vector>> iterator = path.entrySet().iterator();
+        Vector vector = new Vector();
+        while(iterator.hasNext()) {
+            Map.Entry<Double, Vector> entry = iterator.next();
+            double activationTime = entry.getKey();
+            if (activationTime > time) {
+                continue;
+            }
+            vector = entry.getValue();
         }
-        if (vector != null) {
-            origin.add(vector); //Add vector to origin
-        }
+        return vector;
     }
 
     @Override
