@@ -1058,14 +1058,12 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     private Material getCraftRemain() {
         var item = getItemStack();
         if (!ItemUtils.isAirOrNull(item) && item.getType().isItem()) {
-            if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_15)) {
-                Material replaceType = item.getType().getCraftingRemainingItem();
-                if (replaceType != null) return replaceType;
-            }
-            return switch (item.getType()) {
-                case LAVA_BUCKET, MILK_BUCKET, WATER_BUCKET, COD_BUCKET, SALMON_BUCKET, PUFFERFISH_BUCKET, TROPICAL_FISH_BUCKET -> Material.BUCKET;
-                case POTION -> Material.GLASS_BOTTLE;
-                case BEETROOT_SOUP, MUSHROOM_STEW, RABBIT_STEW -> Material.BOWL;
+            Material replaceType = item.getType().getCraftingRemainingItem();
+            if (replaceType != null) return replaceType;
+            return switch (item.getType().name()) {
+                case "LAVA_BUCKET", "MILK_BUCKET", "WATER_BUCKET", "COD_BUCKET", "SALMON_BUCKET", "PUFFERFISH_BUCKET", "TROPICAL_FISH_BUCKET" -> Material.BUCKET;
+                case "POTION" -> Material.GLASS_BOTTLE;
+                case "BEETROOT_SOUP", "MUSHROOM_STEW", "RABBIT_STEW" -> Material.BOWL;
                 default -> null;
             };
         }
