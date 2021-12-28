@@ -18,6 +18,8 @@
 
 package me.wolfyscript.utilities.util.particles.animators;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.util.math.MathUtil;
 import me.wolfyscript.utilities.util.NamespacedKey;
@@ -46,14 +48,8 @@ public class AnimatorVectorPath extends Animator {
     private final Map<Double, Vector> path;
     private final boolean rotateToDirection;
 
-    /**
-     * Only used for Jackson deserialization.
-     */
-    AnimatorVectorPath() {
-        this(new ShapeSquare());
-    }
-
-    public AnimatorVectorPath(@NotNull Shape shape) {
+    @JsonCreator
+    public AnimatorVectorPath(@JsonProperty("shape") @NotNull Shape shape) {
         this(shape, Map.of(0d, new Vector()));
     }
 

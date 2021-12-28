@@ -18,6 +18,8 @@
 
 package me.wolfyscript.utilities.util.particles.animators;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.shapes.Shape;
@@ -36,14 +38,8 @@ public class AnimatorShape extends Animator {
 
     private final Shape shape;
 
-    /**
-     * Only used for Jackson deserialization.
-     */
-    AnimatorShape() {
-        this(new ShapeCircle());
-    }
-
-    public AnimatorShape(Shape shape) {
+    @JsonCreator
+    public AnimatorShape(@JsonProperty("shape") Shape shape) {
         super(KEY);
         this.shape = shape;
     }
