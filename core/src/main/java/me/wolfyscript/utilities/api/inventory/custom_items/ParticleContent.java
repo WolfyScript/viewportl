@@ -37,6 +37,7 @@ import java.util.Objects;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ParticleContent {
 
     private Settings location = null;
@@ -196,7 +197,7 @@ public class ParticleContent {
             return animation;
         }
 
-        @JsonSetter
+        @JsonSetter(nulls = Nulls.SKIP)
         public void setAnimation(ParticleAnimation animation) {
             this.animation = Objects.requireNonNull(animation, "Animation cannot be null!");
         }
