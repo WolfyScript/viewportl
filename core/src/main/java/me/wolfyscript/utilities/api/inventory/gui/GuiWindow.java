@@ -148,6 +148,10 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      */
     public abstract void onUpdateSync(GuiUpdate<C> update);
 
+    public String onUpdateTitle(String originalTitle, GUIInventory<C> inventory, GuiHandler<C> guiHandler, GuiWindow<C> guiWindow) {
+        return originalTitle;
+    }
+
     /**
      * This method is called after the {@link #onUpdateSync(GuiUpdate)} is done.
      * It will be run by the scheduler Async, so be careful with using Bukkit methods!
