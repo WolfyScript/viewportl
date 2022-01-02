@@ -23,6 +23,7 @@ import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.chat.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryInteractEvent;
@@ -61,8 +62,11 @@ public class GuiUpdate<C extends CustomCache> {
         if (inventory != null) {
             this.inventory = inventory;
         } else {
-            String guiName = guiWindow.getInventoryName();
-            guiName = guiName.replace("%plugin.version%", wolfyUtilities.getPlugin().getDescription().getVersion()).replace("%plugin.author%", wolfyUtilities.getPlugin().getDescription().getAuthors().toString()).replace("%plugin.name%", wolfyUtilities.getPlugin().getDescription().getName());
+            String guiName = guiWindow.onUpdateTitle(guiWindow.getInventoryName(), inventory, guiHandler, guiWindow);
+            var desc = wolfyUtilities.getCore().getDescription();
+            guiName = guiName.replace("%plugin.version%", desc.getVersion()).replace("%plugin.author%", desc.getAuthors().toString()).replace("%plugin.name%", desc.getName());
+            //TODO: PlaceHolderAPI integration
+            guiName = ChatColor.convert(guiName);
             if (guiWindow.getInventoryType() == null) {
                 this.inventory = wolfyUtilities.getNmsUtil().getInventoryUtil().createGUIInventory(guiHandler, guiWindow, guiWindow.getSize(), guiName);
             } else {
