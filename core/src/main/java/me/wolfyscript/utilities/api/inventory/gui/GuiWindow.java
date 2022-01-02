@@ -27,6 +27,7 @@ import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
+import me.wolfyscript.utilities.util.reflection.InventoryUpdate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -61,6 +62,8 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     private final GuiCluster<C> cluster;
     private final NamespacedKey namespacedKey;
     private boolean forceSyncUpdate;
+    private int titleUpdatePeriod = -1;
+    private int titleUpdateDelay = 20;
 
     //Inventory
     private final InventoryType inventoryType;
@@ -208,9 +211,20 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         guiUpdate.applyChanges();
         if (openInventory) {
             Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> {
+                var inv = guiUpdate.getInventory();
                 guiHandler.setSwitchWindow(true);
-                guiHandler.getPlayer().openInventory(guiUpdate.getInventory());
+                guiHandler.getPlayer().openInventory(inv);
                 guiHandler.setSwitchWindow(false);
+                if (titleUpdatePeriod > -1) {
+                    guiHandler.setWindowUpdateTask(Bukkit.getScheduler().runTaskTimer(wolfyUtilities.getPlugin(), () -> {
+                        var player = guiHandler.getPlayer();
+                        if (player != null) {
+                            String title = ChatColor.convert(onUpdateTitle(getInventoryName(), inv, guiHandler, this));
+                            //TODO: PlaceHolderAPI integration
+                            InventoryUpdate.updateInventory(wolfyUtilities.getCore(), player, title);
+                        }
+                    }, titleUpdateDelay, titleUpdatePeriod));
+                }
             });
         }
     }
@@ -236,7 +250,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     /**
-     * Register an Button to this window.
+     * Register a Button to this window.
      * If the id is already in use it will replace the existing button with the new one.
      *
      * @param button The button to register.
@@ -257,7 +271,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
 
     /**
      * @param id The id of the button.
-     * @return If the the button exists. True if it exists, else false.
+     * @return If the button exists. True if it exists, else false.
      */
     public final boolean hasButton(String id) {
         return buttons.containsKey(id);
@@ -402,5 +416,21 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      */
     public void setForceSyncUpdate(boolean forceSyncUpdate) {
         this.forceSyncUpdate = forceSyncUpdate;
+    }
+
+    public void setTitleUpdateDelay(int titleUpdateDelay) {
+        this.titleUpdateDelay = titleUpdateDelay;
+    }
+
+    public int getTitleUpdateDelay() {
+        return titleUpdateDelay;
+    }
+
+    public void setTitleUpdatePeriod(int titleUpdatePeriod) {
+        this.titleUpdatePeriod = titleUpdatePeriod;
+    }
+
+    public int getTitleUpdatePeriod() {
+        return titleUpdatePeriod;
     }
 }
