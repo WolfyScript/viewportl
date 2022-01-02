@@ -5,7 +5,6 @@ author: WolfyScript
 main: me.wolfyscript.utilities.main.WUPlugin
 
 loadbefore:
-  - CustomCrafting
   - ChatColor
   - ChatColor2
   - StackableItems
@@ -24,9 +23,6 @@ softdepend:
   - Oraxen
   - ItemsAdder
   - ExecutableItems
-
-libraries:
-  - com.fasterxml.jackson.core:jackson-databind:2.13.0
 
 commands:
   wolfyutils:
