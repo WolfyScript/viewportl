@@ -221,7 +221,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
                         var player = guiHandler.getPlayer();
                         if (player != null) {
                             String title = onUpdateTitle(getInventoryName(), inv, guiHandler, this);
-                            PlaceholderAPIIntegration integration = wolfyUtilities.getCore().getCompatibilityManager().getPlugins().getIntegration("PlaceHolderAPI", PlaceholderAPIIntegration.class);
+                            PlaceholderAPIIntegration integration = wolfyUtilities.getCore().getCompatibilityManager().getPlugins().getIntegration("PlaceholderAPI", PlaceholderAPIIntegration.class);
                             if (integration != null) {
                                 title = integration.setPlaceholders(player, integration.setBracketPlaceholders(player, title));
                             }

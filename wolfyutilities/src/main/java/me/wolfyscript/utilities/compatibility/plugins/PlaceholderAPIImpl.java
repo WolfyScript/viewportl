@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 @WUPluginIntegration(pluginName = PlaceholderAPIImpl.PLUGIN_NAME)
 public class PlaceholderAPIImpl extends PluginIntegrationAbstract implements PlaceholderAPIIntegration {
 
-    static final String PLUGIN_NAME = "PlaceHolderAPI";
+    static final String PLUGIN_NAME = "PlaceholderAPI";
 
     /**
      * The main constructor that is called whenever the integration is created.<br>

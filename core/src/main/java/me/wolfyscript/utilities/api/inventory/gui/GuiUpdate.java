@@ -66,7 +66,7 @@ public class GuiUpdate<C extends CustomCache> {
             String title = guiWindow.onUpdateTitle(guiWindow.getInventoryName(), inventory, guiHandler, guiWindow);
             var desc = wolfyUtilities.getCore().getDescription();
             title = title.replace("%plugin.version%", desc.getVersion()).replace("%plugin.author%", desc.getAuthors().toString()).replace("%plugin.name%", desc.getName());
-            PlaceholderAPIIntegration integration = wolfyUtilities.getCore().getCompatibilityManager().getPlugins().getIntegration("PlaceHolderAPI", PlaceholderAPIIntegration.class);
+            PlaceholderAPIIntegration integration = wolfyUtilities.getCore().getCompatibilityManager().getPlugins().getIntegration("PlaceholderAPI", PlaceholderAPIIntegration.class);
             if (integration != null) {
                 title = integration.setPlaceholders(player, integration.setBracketPlaceholders(player, title));
             }
