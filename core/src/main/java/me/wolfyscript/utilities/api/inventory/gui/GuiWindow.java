@@ -24,15 +24,18 @@ import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
+import me.wolfyscript.utilities.compatibility.plugins.PlaceholderAPIIntegration;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
+import me.wolfyscript.utilities.util.reflection.InventoryUpdate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -61,6 +64,8 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     private final GuiCluster<C> cluster;
     private final NamespacedKey namespacedKey;
     private boolean forceSyncUpdate;
+    private int titleUpdatePeriod = -1;
+    private int titleUpdateDelay = 20;
 
     //Inventory
     private final InventoryType inventoryType;
@@ -149,6 +154,21 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public abstract void onUpdateSync(GuiUpdate<C> update);
 
     /**
+     * Called each time the title of the window is updated.<br>
+     * By default, that only happens once, when the player opens the inventory.<br>
+     * Using {@link #setTitleUpdateDelay(int)} and {@link #setTitleUpdatePeriod(int)} you can set the frequency at which the title is updated.<br>
+     * When enabled this will be called every specified period.
+     *
+     * @param originalTitle The original title from the language file.
+     * @param inventory The inventory instance, which title is updated. Null when the inventory is opened for the first time!
+     * @param guiHandler The handler that the inventory belongs to.
+     * @return The new modified title. Color codes using & will be converted.
+     */
+    public String onUpdateTitle(String originalTitle, @Nullable GUIInventory<C> inventory, GuiHandler<C> guiHandler) {
+        return originalTitle;
+    }
+
+    /**
      * This method is called after the {@link #onUpdateSync(GuiUpdate)} is done.
      * It will be run by the scheduler Async, so be careful with using Bukkit methods!
      * Bukkit methods are not Thread safe!
@@ -204,9 +224,23 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         guiUpdate.applyChanges();
         if (openInventory) {
             Bukkit.getScheduler().runTask(wolfyUtilities.getPlugin(), () -> {
+                var inv = guiUpdate.getInventory();
                 guiHandler.setSwitchWindow(true);
-                guiHandler.getPlayer().openInventory(guiUpdate.getInventory());
+                guiHandler.getPlayer().openInventory(inv);
                 guiHandler.setSwitchWindow(false);
+                if (titleUpdatePeriod > -1) {
+                    guiHandler.setWindowUpdateTask(Bukkit.getScheduler().runTaskTimer(wolfyUtilities.getPlugin(), () -> {
+                        var player = guiHandler.getPlayer();
+                        if (player != null) {
+                            String title = onUpdateTitle(getInventoryName(), inv, guiHandler);
+                            PlaceholderAPIIntegration integration = wolfyUtilities.getCore().getCompatibilityManager().getPlugins().getIntegration("PlaceholderAPI", PlaceholderAPIIntegration.class);
+                            if (integration != null) {
+                                title = integration.setPlaceholders(player, integration.setBracketPlaceholders(player, title));
+                            }
+                            InventoryUpdate.updateInventory(wolfyUtilities.getCore(), player, ChatColor.convert(title));
+                        }
+                    }, titleUpdateDelay, titleUpdatePeriod));
+                }
             });
         }
     }
@@ -232,7 +266,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     /**
-     * Register an Button to this window.
+     * Register a Button to this window.
      * If the id is already in use it will replace the existing button with the new one.
      *
      * @param button The button to register.
@@ -253,7 +287,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
 
     /**
      * @param id The id of the button.
-     * @return If the the button exists. True if it exists, else false.
+     * @return If the button exists. True if it exists, else false.
      */
     public final boolean hasButton(String id) {
         return buttons.containsKey(id);
@@ -398,5 +432,44 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      */
     public void setForceSyncUpdate(boolean forceSyncUpdate) {
         this.forceSyncUpdate = forceSyncUpdate;
+    }
+
+    /**
+     * Sets the initial delay (in ticks), after which the title is updated.
+     *
+     * @param titleUpdateDelay The initial delay in ticks.
+     */
+    public void setTitleUpdateDelay(int titleUpdateDelay) {
+        this.titleUpdateDelay = titleUpdateDelay;
+    }
+
+    /**
+     * Gets the initial delay the update task waits after the inventory was opened.
+     *
+     * @return The initial delay in ticks.
+     */
+    public int getTitleUpdateDelay() {
+        return titleUpdateDelay;
+    }
+
+    /**
+     * Sets the period delay (in ticks). The title is updated each period.<br>
+     * <b>This can cause flickering of the inventory! The shorter the period, the more noticeable!</b><br>
+     * A period delay of -1 will completely disable the update task.
+     *
+     * @param titleUpdatePeriod The delay between each title update in ticks. Default: -1 = disabled.
+     */
+    public void setTitleUpdatePeriod(int titleUpdatePeriod) {
+        this.titleUpdatePeriod = titleUpdatePeriod;
+    }
+
+    /**
+     * Gets the current period delay between each title update.<br>
+     * A period delay of -1 means that the update task is disabled.
+     *
+     * @return The delay between each title update. Default: -1
+     */
+    public int getTitleUpdatePeriod() {
+        return titleUpdatePeriod;
     }
 }
