@@ -23,6 +23,7 @@ softdepend:
   - Oraxen
   - ItemsAdder
   - ExecutableItems
+  - PlaceholderAPI
 
 commands:
   wolfyutils:
