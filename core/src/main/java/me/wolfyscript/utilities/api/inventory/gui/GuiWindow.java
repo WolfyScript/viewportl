@@ -35,6 +35,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -433,18 +434,41 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         this.forceSyncUpdate = forceSyncUpdate;
     }
 
+    /**
+     * Sets the initial delay (in ticks), after which the title is updated.
+     *
+     * @param titleUpdateDelay The initial delay in ticks.
+     */
     public void setTitleUpdateDelay(int titleUpdateDelay) {
         this.titleUpdateDelay = titleUpdateDelay;
     }
 
+    /**
+     * Gets the initial delay the update task waits after the inventory was opened.
+     *
+     * @return The initial delay in ticks.
+     */
     public int getTitleUpdateDelay() {
         return titleUpdateDelay;
     }
 
+    /**
+     * Sets the period delay (in ticks). The title is updated each period.<br>
+     * <b>This can cause flickering of the inventory! The shorter the period, the more noticeable!</b><br>
+     * A period delay of -1 will completely disable the update task.
+     *
+     * @param titleUpdatePeriod The delay between each title update in ticks. Default: -1 = disabled.
+     */
     public void setTitleUpdatePeriod(int titleUpdatePeriod) {
         this.titleUpdatePeriod = titleUpdatePeriod;
     }
 
+    /**
+     * Gets the current period delay between each title update.<br>
+     * A period delay of -1 means that the update task is disabled.
+     *
+     * @return The delay between each title update. Default: -1
+     */
     public int getTitleUpdatePeriod() {
         return titleUpdatePeriod;
     }
