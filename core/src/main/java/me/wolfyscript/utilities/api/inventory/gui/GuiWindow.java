@@ -152,7 +152,18 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      */
     public abstract void onUpdateSync(GuiUpdate<C> update);
 
-    public String onUpdateTitle(String originalTitle, GUIInventory<C> inventory, GuiHandler<C> guiHandler, GuiWindow<C> guiWindow) {
+    /**
+     * Called each time the title of the window is updated.<br>
+     * By default, that only happens once, when the player opens the inventory.<br>
+     * Using {@link #setTitleUpdateDelay(int)} and {@link #setTitleUpdatePeriod(int)} you can set the frequency at which the title is updated.<br>
+     * When enabled this will be called every specified period.
+     *
+     * @param originalTitle The original title from the language file.
+     * @param inventory The inventory instance, which title is updated. Null when the inventory is opened for the first time!
+     * @param guiHandler The handler that the inventory belongs to.
+     * @return The new modified title. Color codes using & will be converted.
+     */
+    public String onUpdateTitle(String originalTitle, @Nullable GUIInventory<C> inventory, GuiHandler<C> guiHandler) {
         return originalTitle;
     }
 
@@ -220,7 +231,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
                     guiHandler.setWindowUpdateTask(Bukkit.getScheduler().runTaskTimer(wolfyUtilities.getPlugin(), () -> {
                         var player = guiHandler.getPlayer();
                         if (player != null) {
-                            String title = onUpdateTitle(getInventoryName(), inv, guiHandler, this);
+                            String title = onUpdateTitle(getInventoryName(), inv, guiHandler);
                             PlaceholderAPIIntegration integration = wolfyUtilities.getCore().getCompatibilityManager().getPlugins().getIntegration("PlaceholderAPI", PlaceholderAPIIntegration.class);
                             if (integration != null) {
                                 title = integration.setPlaceholders(player, integration.setBracketPlaceholders(player, title));

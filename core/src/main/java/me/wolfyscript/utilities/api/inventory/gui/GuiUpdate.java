@@ -63,7 +63,7 @@ public class GuiUpdate<C extends CustomCache> {
         if (inventory != null) {
             this.inventory = inventory;
         } else {
-            String title = guiWindow.onUpdateTitle(guiWindow.getInventoryName(), inventory, guiHandler, guiWindow);
+            String title = guiWindow.onUpdateTitle(guiWindow.getInventoryName(), null, guiHandler);
             var desc = wolfyUtilities.getCore().getDescription();
             title = title.replace("%plugin.version%", desc.getVersion()).replace("%plugin.author%", desc.getAuthors().toString()).replace("%plugin.name%", desc.getName());
             PlaceholderAPIIntegration integration = wolfyUtilities.getCore().getCompatibilityManager().getPlugins().getIntegration("PlaceholderAPI", PlaceholderAPIIntegration.class);
