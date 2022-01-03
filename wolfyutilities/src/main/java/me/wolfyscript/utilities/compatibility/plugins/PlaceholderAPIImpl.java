@@ -19,11 +19,15 @@
 package me.wolfyscript.utilities.compatibility.plugins;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.events.ExpansionsLoadedEvent;
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +36,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 @WUPluginIntegration(pluginName = PlaceholderAPIImpl.PLUGIN_NAME)
-public class PlaceholderAPIImpl extends PluginIntegrationAbstract implements PlaceholderAPIIntegration {
+public class PlaceholderAPIImpl extends PluginIntegrationAbstract implements PlaceholderAPIIntegration, Listener {
 
     static final String PLUGIN_NAME = "PlaceholderAPI";
 
@@ -47,12 +51,12 @@ public class PlaceholderAPIImpl extends PluginIntegrationAbstract implements Pla
 
     @Override
     public void init(Plugin plugin) {
-
+        Bukkit.getPluginManager().registerEvents(this, core);
     }
 
     @Override
     public boolean hasAsyncLoading() {
-        return false;
+        return true;
     }
 
     @Override
@@ -139,4 +143,12 @@ public class PlaceholderAPIImpl extends PluginIntegrationAbstract implements Pla
     public boolean containsBracketPlaceholders(String text) {
         return PlaceholderAPI.containsBracketPlaceholders(text);
     }
+
+    @EventHandler
+    public void onEnabled(ExpansionsLoadedEvent event) {
+        if (!this.isDoneLoading()) {
+            this.markAsDoneLoading();
+        }
+    }
+
 }
