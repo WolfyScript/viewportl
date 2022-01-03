@@ -24,6 +24,7 @@ import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
+import me.wolfyscript.utilities.compatibility.plugins.PlaceholderAPIIntegration;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
@@ -219,9 +220,12 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
                     guiHandler.setWindowUpdateTask(Bukkit.getScheduler().runTaskTimer(wolfyUtilities.getPlugin(), () -> {
                         var player = guiHandler.getPlayer();
                         if (player != null) {
-                            String title = ChatColor.convert(onUpdateTitle(getInventoryName(), inv, guiHandler, this));
-                            //TODO: PlaceHolderAPI integration
-                            InventoryUpdate.updateInventory(wolfyUtilities.getCore(), player, title);
+                            String title = onUpdateTitle(getInventoryName(), inv, guiHandler, this);
+                            PlaceholderAPIIntegration integration = wolfyUtilities.getCore().getCompatibilityManager().getPlugins().getIntegration("PlaceHolderAPI", PlaceholderAPIIntegration.class);
+                            if (integration != null) {
+                                title = integration.setPlaceholders(player, integration.setBracketPlaceholders(player, title));
+                            }
+                            InventoryUpdate.updateInventory(wolfyUtilities.getCore(), player, ChatColor.convert(title));
                         }
                     }, titleUpdateDelay, titleUpdatePeriod));
                 }

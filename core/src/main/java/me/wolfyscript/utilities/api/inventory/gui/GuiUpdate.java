@@ -22,6 +22,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
+import me.wolfyscript.utilities.compatibility.plugins.PlaceholderAPIIntegration;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import org.bukkit.Bukkit;
@@ -62,15 +63,18 @@ public class GuiUpdate<C extends CustomCache> {
         if (inventory != null) {
             this.inventory = inventory;
         } else {
-            String guiName = guiWindow.onUpdateTitle(guiWindow.getInventoryName(), inventory, guiHandler, guiWindow);
+            String title = guiWindow.onUpdateTitle(guiWindow.getInventoryName(), inventory, guiHandler, guiWindow);
             var desc = wolfyUtilities.getCore().getDescription();
-            guiName = guiName.replace("%plugin.version%", desc.getVersion()).replace("%plugin.author%", desc.getAuthors().toString()).replace("%plugin.name%", desc.getName());
-            //TODO: PlaceHolderAPI integration
-            guiName = ChatColor.convert(guiName);
+            title = title.replace("%plugin.version%", desc.getVersion()).replace("%plugin.author%", desc.getAuthors().toString()).replace("%plugin.name%", desc.getName());
+            PlaceholderAPIIntegration integration = wolfyUtilities.getCore().getCompatibilityManager().getPlugins().getIntegration("PlaceHolderAPI", PlaceholderAPIIntegration.class);
+            if (integration != null) {
+                title = integration.setPlaceholders(player, integration.setBracketPlaceholders(player, title));
+            }
+            title = ChatColor.convert(title);
             if (guiWindow.getInventoryType() == null) {
-                this.inventory = wolfyUtilities.getNmsUtil().getInventoryUtil().createGUIInventory(guiHandler, guiWindow, guiWindow.getSize(), guiName);
+                this.inventory = wolfyUtilities.getNmsUtil().getInventoryUtil().createGUIInventory(guiHandler, guiWindow, guiWindow.getSize(), title);
             } else {
-                this.inventory = wolfyUtilities.getNmsUtil().getInventoryUtil().createGUIInventory(guiHandler, guiWindow, guiWindow.getInventoryType(), guiName);
+                this.inventory = wolfyUtilities.getNmsUtil().getInventoryUtil().createGUIInventory(guiHandler, guiWindow, guiWindow.getInventoryType(), title);
             }
         }
     }
