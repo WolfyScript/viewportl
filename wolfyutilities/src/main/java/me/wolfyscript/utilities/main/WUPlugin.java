@@ -24,8 +24,24 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.console.Console;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import me.wolfyscript.utilities.api.inventory.custom_items.meta.*;
-import me.wolfyscript.utilities.api.inventory.custom_items.references.*;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.AttributesModifiersMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomDamageMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomDurabilityMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomItemTagMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomModelDataMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.DamageMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.EnchantMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.FlagsMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.LoreMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.NameMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.PlayerHeadMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.PotionMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.RepairCostMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.meta.UnbreakableMeta;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef;
+import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.compatibility.CompatibilityManagerImpl;
@@ -47,9 +63,28 @@ import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
-import me.wolfyscript.utilities.util.json.jackson.serialization.*;
-import me.wolfyscript.utilities.util.particles.animators.*;
-import me.wolfyscript.utilities.util.particles.shapes.*;
+import me.wolfyscript.utilities.util.json.jackson.serialization.APIReferenceSerialization;
+import me.wolfyscript.utilities.util.json.jackson.serialization.ColorSerialization;
+import me.wolfyscript.utilities.util.json.jackson.serialization.DustOptionsSerialization;
+import me.wolfyscript.utilities.util.json.jackson.serialization.ItemStackSerialization;
+import me.wolfyscript.utilities.util.json.jackson.serialization.LocationSerialization;
+import me.wolfyscript.utilities.util.json.jackson.serialization.PotionEffectSerialization;
+import me.wolfyscript.utilities.util.json.jackson.serialization.PotionEffectTypeSerialization;
+import me.wolfyscript.utilities.util.json.jackson.serialization.VectorSerialization;
+import me.wolfyscript.utilities.util.particles.animators.Animator;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorCircle;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorShape;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorSphere;
+import me.wolfyscript.utilities.util.particles.animators.AnimatorVectorPath;
+import me.wolfyscript.utilities.util.particles.shapes.Shape;
+import me.wolfyscript.utilities.util.particles.shapes.ShapeCircle;
+import me.wolfyscript.utilities.util.particles.shapes.ShapeComplexCompound;
+import me.wolfyscript.utilities.util.particles.shapes.ShapeComplexRotation;
+import me.wolfyscript.utilities.util.particles.shapes.ShapeCube;
+import me.wolfyscript.utilities.util.particles.shapes.ShapeIcosahedron;
+import me.wolfyscript.utilities.util.particles.shapes.ShapeSphere;
+import me.wolfyscript.utilities.util.particles.shapes.ShapeSquare;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import me.wolfyscript.utilities.util.particles.timer.TimerPi;
@@ -61,6 +96,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPluginLoader;
+
+import java.io.File;
 
 public final class WUPlugin extends WolfyUtilCore {
 
@@ -77,6 +116,17 @@ public final class WUPlugin extends WolfyUtilCore {
 
     public WUPlugin() {
         super();
+        instance = this;
+        this.chat = api.getChat();
+        this.console = api.getConsole();
+        chat.setInGamePrefix("§8[§3WU§8] §7");
+        this.messageHandler = new MessageHandler(this);
+        this.messageFactory = new MessageFactory(this);
+        this.compatibilityManager = new CompatibilityManagerImpl(this);
+    }
+
+    private WUPlugin(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
         instance = this;
         this.chat = api.getChat();
         this.console = api.getConsole();
@@ -178,8 +228,6 @@ public final class WUPlugin extends WolfyUtilCore {
         console.info("Environment: " + WolfyUtilities.getENVIRONMENT());
         this.config = new WUConfig(api.getConfigAPI(), this);
         compatibilityManager.init();
-
-        this.metrics = new Metrics(this, 5114);
         // Register ReferenceParser
         console.info("Register API references");
         registerAPIReference(new VanillaRef.Parser());
@@ -189,13 +237,30 @@ public final class WUPlugin extends WolfyUtilCore {
         saveResource("lang/en_US.json", true);
         languageAPI.setActiveLanguage(new Language(this, "en_US"));
 
+        if (!ServerVersion.isIsJUnitTest()) {
+            this.metrics = new Metrics(this, 5114);
+
+            WorldUtils.load();
+            PlayerUtils.loadStores();
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::save, 6000, 6000);
+            registerListeners();
+            registerCommands();
+
+            CreativeModeTab.init();
+            loadParticleEffects();
+        } else {
+            onJUnitTests();
+        }
+    }
+
+    /**
+     * Handles JUnit test startup
+     */
+    private void onJUnitTests() {
         WorldUtils.load();
         PlayerUtils.loadStores();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, WorldUtils::save, 6000, 6000);
-        registerListeners();
+
         registerCommands();
-        CreativeModeTab.init();
-        loadParticleEffects();
     }
 
     @Override

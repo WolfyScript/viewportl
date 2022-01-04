@@ -21,6 +21,7 @@ package me.wolfyscript.utilities.util.version;
 public class ServerVersion {
 
     private static WUVersion wolfyUtilitiesVersion;
+    private static boolean isJUnitTest = false;
 
     public static MinecraftVersion getVersion() {
         return MinecraftVersions.RUNTIME_VERSION;
@@ -37,6 +38,14 @@ public class ServerVersion {
         if (wolfyUtilitiesVersion == null) {
             wolfyUtilitiesVersion = WUVersion.parse(version);
         }
+    }
+
+    public static void setIsJUnitTest(boolean isJUnitTest) {
+        ServerVersion.isJUnitTest = isJUnitTest;
+    }
+
+    public static boolean isIsJUnitTest() {
+        return isJUnitTest;
     }
 
     public static boolean isAfter(MinecraftVersion other) {

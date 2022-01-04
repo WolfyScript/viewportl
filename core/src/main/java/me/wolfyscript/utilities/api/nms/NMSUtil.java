@@ -71,6 +71,9 @@ public abstract class NMSUtil {
      * @return
      */
     public static NMSUtil create(WolfyUtilities wolfyUtilities) {
+        if(ServerVersion.isIsJUnitTest()) {
+            return null;
+        }
         String version = Reflection.getVersion();
         try {
             var adapter = versionAdapters.get(version);
