@@ -20,7 +20,6 @@ package com.wolfyscript.utilities.util;
 
 import me.wolfyscript.utilities.util.NamespacedKey;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.AssertionsKt;
 import org.junit.jupiter.api.Test;
 
 public class TestNamespacedKey {

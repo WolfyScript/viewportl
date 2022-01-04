@@ -28,10 +28,10 @@ public class TestRecipeUtil {
 
     @Test
     public void checkShapeFormat() {
-        Assertions.assertLinesMatch(
-                RecipeUtil.formatShape(" A ","  A", "  A"),
-                List.of("A ", " A", " A")
-        );
+        Assertions.assertIterableEquals(List.of("A ", " A", " A"), RecipeUtil.formatShape(" A ","  A", "  A"));
+        Assertions.assertIterableEquals(List.of(" A ", "A A", "  A"), RecipeUtil.formatShape(" A ","A A", "  A"));
+        Assertions.assertIterableEquals(List.of(" A ", "A A"), RecipeUtil.formatShape(" A ","A A", "   "));
+        Assertions.assertIterableEquals(List.of("A ", " A"), RecipeUtil.formatShape(" A ","  A", "   "));
 
 
     }

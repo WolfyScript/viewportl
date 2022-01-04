@@ -22,6 +22,7 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.main.WUPlugin;
+import me.wolfyscript.utilities.registry.Registries;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -51,6 +52,29 @@ public class TestWUPlugin {
         Assertions.assertNotNull(plugin.getRegistries());
         Assertions.assertNotNull(plugin.getCompatibilityManager());
         Assertions.assertNotNull(plugin.getWolfyUtilities());
+    }
+
+    @Test
+    public void checkRegistries() {
+        Registries registries = plugin.getRegistries();
+        var customItems = registries.getCustomItems();
+        Assertions.assertNotNull(customItems);
+        var customItemData = registries.getCustomItemData();
+        Assertions.assertNotNull(customItemData);
+        var customItemNBTChecks = registries.getCustomItemNbtChecks();
+        Assertions.assertNotNull(customItemNBTChecks);
+        var particleTimers = registries.getParticleTimer();
+        Assertions.assertNotNull(particleTimers);
+        var particleAnimators = registries.getParticleAnimators();
+        Assertions.assertNotNull(particleAnimators);
+        var particleShapes = registries.getParticleShapes();
+        Assertions.assertNotNull(particleShapes);
+        var particleEffects = registries.getParticleEffects();
+        Assertions.assertNotNull(particleEffects);
+        var particleAnimations = registries.getParticleAnimations();
+        Assertions.assertNotNull(particleAnimations);
+
+
     }
 
 }
