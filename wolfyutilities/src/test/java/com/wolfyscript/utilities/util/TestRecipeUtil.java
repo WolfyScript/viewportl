@@ -27,7 +27,7 @@ import java.util.List;
 public class TestRecipeUtil {
 
     @Test
-    private void checkShapeFormat() {
+    public void checkShapeFormat() {
         Assertions.assertLinesMatch(
                 RecipeUtil.formatShape(" A ","  A", "  A"),
                 List.of("A ", " A", " A")

@@ -26,14 +26,14 @@ import org.junit.jupiter.api.Test;
 public class TestNamespacedKey {
 
     @Test
-    private void checkNamespaceAndKey() {
+    public void checkNamespaceAndKey() {
         NamespacedKey namespacedKey = new NamespacedKey("test_namespace", "test_key");
         Assertions.assertEquals(namespacedKey.getNamespace(), "test_namespace");
         Assertions.assertEquals(namespacedKey.getKey(), "test_key");
     }
 
     @Test
-    private void checkInvalidNamespacedKey() {
+    public void checkInvalidNamespacedKey() {
 
     }
 
