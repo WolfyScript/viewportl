@@ -18,10 +18,16 @@
 
 package me.wolfyscript.utilities.util;
 
+import me.wolfyscript.utilities.util.version.MinecraftVersion;
+import me.wolfyscript.utilities.util.version.MinecraftVersions;
+import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -29,42 +35,56 @@ import java.util.*;
 
 public class Reflection {
 
-    /*
+    /**
      * The server version string to location NMS & OBC classes
      */
-    private static String versionString;
-
-    /*
+    private static final String VERSION = getVersion();
+    private static final String NMS;
+    private static final String CRAFTBUKKIT = "org.bukkit.craftbukkit." + VERSION + ".";
+    /**
      * Cache of NMS classes that we've searched for
      */
     private static final Map<String, Class<?>> loadedNMSClasses = new HashMap<>();
-
-    /*
+    /**
      * Cache of OBS classes that we've searched for
      */
     private static final Map<String, Class<?>> loadedOBCClasses = new HashMap<>();
-
-    /*
+    /**
      * Cache of methods that we've found in particular classes
      */
     private static final Map<Class<?>, Map<String, Method>> loadedMethods = new HashMap<>();
     private static final Map<Class<?>, Map<String, Method>> loadedDeclaredMethods = new HashMap<>();
-
-    /*
+    /**
      * Cache of fields that we've found in particular classes
      */
     private static final Map<Class<?>, Map<String, Field>> loadedFields = new HashMap<>();
     private static final Map<Class<?>, Map<String, Field>> loadedDeclaredFields = new HashMap<>();
     private static final Map<Class<?>, Map<Class<?>, Field>> foundFields = new HashMap<>();
 
+    static {
+        if (ServerVersion.isAfterOrEq(MinecraftVersions.v1_17)) {
+            NMS = "net.minecraft.";
+        } else {
+            NMS = "net.minecraft.server." + VERSION + ".";
+        }
+    }
+
+    private Reflection() {}
+
+    /**
+     * Gets the version from the version dependent CraftBukkit package. e.g. v1_17_R1
+     *
+     * @return The CraftBukkit version.
+     */
     public static String getVersion() {
-        if(versionString != null){
-            return versionString;
+        if(VERSION != null){
+            return VERSION;
         }
         return Bukkit.getServer().getClass().getPackage().getName().substring(23);
     }
 
-    public static int getVersionNumber(){
+    @Deprecated
+    public static int getVersionNumber() {
         return Integer.parseInt(getVersion().replace("_", "").replace("v", "").replaceAll("R[0-9]", ""));
     }
 
@@ -78,10 +98,8 @@ public class Reflection {
         if (loadedOBCClasses.containsKey(obcClassName)) {
             return loadedOBCClasses.get(obcClassName);
         }
-
-        String clazzName = "org.bukkit.craftbukkit." + getVersion() + "." + obcClassName;
+        String clazzName = CRAFTBUKKIT + obcClassName;
         Class<?> clazz;
-
         try {
             clazz = Class.forName(clazzName);
         } catch (ClassNotFoundException e) {
@@ -89,7 +107,6 @@ public class Reflection {
             loadedOBCClasses.put(obcClassName, null);
             return null;
         }
-
         loadedOBCClasses.put(obcClassName, clazz);
         return clazz;
     }
@@ -104,7 +121,7 @@ public class Reflection {
         if (loadedNMSClasses.containsKey(nmsClassName)) {
             return loadedNMSClasses.get(nmsClassName);
         }
-        String clazzName = "net.minecraft.server." + getVersion() + "." + nmsClassName;
+        String clazzName = NMS + nmsClassName;
         Class<?> clazz;
         try {
             clazz = Class.forName(clazzName);
@@ -116,6 +133,14 @@ public class Reflection {
         return clazz;
     }
 
+    public static Class<?> getNMS(String mojangPkg, String className) {
+        return getNMS((ServerVersion.isAfterOrEq(MinecraftVersions.v1_17) ? mojangPkg + "." : "") + className);
+    }
+
+    public static Class<?> getNMS(String mojangPkg, NMSMapping mapping) {
+        return getNMS(mojangPkg, mapping.get());
+    }
+
     /**
      * Get a Bukkit {@link Player} players NMS playerConnection object
      *
@@ -123,18 +148,33 @@ public class Reflection {
      * @return The players connection
      */
     public static Object getConnection(Player player) {
-        var getHandleMethod = getMethod(player.getClass(), "getHandle");
+        var getHandleMethod = getMethod(getOBC("entity.CraftPlayer"), "getHandle");
         if (getHandleMethod != null) {
             try {
                 Object nmsPlayer = getHandleMethod.invoke(player);
-                Field playerConField = getField(nmsPlayer.getClass(), "playerConnection");
+                Field playerConField = getField(nmsPlayer.getClass(), NMSMapping.of(MinecraftVersions.v1_17, "b").orElse("playerConnection"));
                 return playerConField.get(nmsPlayer);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
         return null;
+    }
+
+    public static void sendPacket(@NotNull Player player, @NotNull Object packet) {
+        try {
+            Object connection = getConnection(player);
+            var sendPacketMethod = getMethod(
+                    getNMS("server.network", "PlayerConnection"), NMSMapping.of(MinecraftVersions.v1_18, "a").orElse("sendPacket"),
+                    getNMS("network.protocol", "Packet")
+            );
+            // Checking if the connection is not null is enough. There is no need to check if the player is online.
+            if (connection != null) {
+                sendPacketMethod.invoke(connection, packet);
+            }
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
     }
 
     /**
@@ -319,4 +359,33 @@ public class Reflection {
         }
         return null;
     }
+
+    public static final class NMSMapping {
+
+        private final MinecraftVersion version;
+        private final String mapping;
+
+        private NMSMapping(MinecraftVersion version, String mapping) {
+            this.version = version;
+            this.mapping = mapping;
+        }
+
+        public static NMSMapping of(MinecraftVersion version, String mapping) {
+            return new NMSMapping(version, mapping);
+        }
+
+        public NMSMapping or(NMSMapping nmsMapping) {
+            return ServerVersion.getVersion().isAfterOrEq(nmsMapping.version) ? nmsMapping : this;
+        }
+
+        public String orElse(String mapping) {
+            return ServerVersion.getVersion().isAfterOrEq(version) ? this.mapping : mapping;
+        }
+
+        public String get() {
+            return mapping;
+        }
+
+    }
+
 }

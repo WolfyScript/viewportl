@@ -31,6 +31,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +67,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
     private boolean helpEnabled = false;
     private boolean switchWindow = false;
     boolean openedPreviousWindow = false;
+    private BukkitTask windowUpdateTask = null;
 
     private final C customCache;
 
@@ -447,6 +449,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
      * Closes the current open window.
      */
     public void close() {
+        getWindowUpdateTask().ifPresent(BukkitTask::cancel);
         var player = getPlayer();
         if (player != null) player.closeInventory();
     }
@@ -493,6 +496,14 @@ public class GuiHandler<C extends CustomCache> implements Listener {
         return guiWindow.getButton(id);
     }
 
+    void setWindowUpdateTask(BukkitTask windowUpdateTask) {
+        this.windowUpdateTask = windowUpdateTask;
+    }
+
+    public Optional<BukkitTask> getWindowUpdateTask() {
+        return Optional.ofNullable(windowUpdateTask);
+    }
+
     /**
      * Called when the inventory is closed.
      *
@@ -500,6 +511,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
      * @param event        The {@link InventoryCloseEvent} that caused this action.
      */
     public void onClose(GUIInventory<C> guiInventory, InventoryCloseEvent event) {
+        getWindowUpdateTask().ifPresent(BukkitTask::cancel);
         if (!clusterHistory.isEmpty() && !switchWindow) {
             if (guiInventory.getWindow().onClose(this, guiInventory, event.getView())) {
                 this.openCluster();

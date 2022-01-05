@@ -24,11 +24,14 @@ import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.registry.Registries;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,10 +69,26 @@ public abstract class WolfyUtilCore extends JavaPlugin {
         this.api = getAPI(this);
         ServerVersion.setWUVersion(getDescription().getVersion());
         this.registries = new Registries(this);
-        this.reflections = new Reflections(new ConfigurationBuilder()
-                .forPackages("me.wolfyscript")
-                .addClassLoaders(getClassLoader())
-                .addScanners(Scanners.TypesAnnotated, Scanners.SubTypes, Scanners.Resources));
+        this.reflections = initReflections();
+    }
+
+    protected WolfyUtilCore(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
+        if (instance == null && this.getName().equals("WolfyUtilities") && getClass().getPackageName().equals("me.wolfyscript.utilities.main")) {
+            instance = this;
+        } else {
+            throw new IllegalArgumentException("This constructor can only be called by WolfyUtilities itself!");
+        }
+        ServerVersion.setWUVersion(getDescription().getVersion());
+        ServerVersion.setIsJUnitTest(true);
+        System.setProperty("bstats.relocatecheck", "false");
+        this.api = getAPI(this);
+        this.registries = new Registries(this);
+        this.reflections = initReflections();
+    }
+
+    private Reflections initReflections() {
+        return new Reflections(new ConfigurationBuilder().forPackages("me.wolfyscript").addClassLoaders(getClassLoader()).addScanners(Scanners.TypesAnnotated, Scanners.SubTypes, Scanners.Resources));
     }
 
     /**
