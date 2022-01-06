@@ -51,6 +51,7 @@ import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
 import me.wolfyscript.utilities.main.configs.WUConfig;
+import me.wolfyscript.utilities.main.resource_loader.ResourceLoaderCustomItems;
 import me.wolfyscript.utilities.main.resource_loader.ResourceLoaderParticleAnimations;
 import me.wolfyscript.utilities.main.resource_loader.ResourceLoaderParticleEffects;
 import me.wolfyscript.utilities.main.listeners.BlockListener;
@@ -228,6 +229,7 @@ public final class WUPlugin extends WolfyUtilCore {
         var expansionLoaders = getRegistries().getExpansionResourceLoaders();
         expansionLoaders.register(new ResourceLoaderParticleEffects(this));
         expansionLoaders.register(new ResourceLoaderParticleAnimations(this));
+        expansionLoaders.register(new ResourceLoaderCustomItems(this));
     }
 
     @Override
