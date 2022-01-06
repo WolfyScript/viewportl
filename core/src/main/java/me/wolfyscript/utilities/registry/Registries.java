@@ -102,6 +102,9 @@ public class Registries {
     private final TypeRegistry<Timer> particleTimer;
     private final TypeRegistry<Meta> customItemNbtChecks;
 
+    //Expansions
+    private final RegistryResourceLoader expansionLoaders;
+
     public Registries(WolfyUtilCore core) {
         this.core = core;
 
@@ -116,6 +119,8 @@ public class Registries {
         particleShapes = new TypeRegistrySimple<>(new NamespacedKey(core, "particles/shapes"), this);
         particleTimer = new TypeRegistrySimple<>(new NamespacedKey(core, "particle_timers"), this);
         customItemNbtChecks = new TypeRegistrySimple<>(new NamespacedKey(core, "custom_item_nbt_checks"), this);
+
+        expansionLoaders = new RegistryResourceLoader(this);
     }
 
     public WolfyUtilCore getCore() {
@@ -196,5 +201,9 @@ public class Registries {
      */
     public TypeRegistry<Timer> getParticleTimer() {
         return particleTimer;
+    }
+
+    public RegistryResourceLoader getExpansionResourceLoaders() {
+        return expansionLoaders;
     }
 }
