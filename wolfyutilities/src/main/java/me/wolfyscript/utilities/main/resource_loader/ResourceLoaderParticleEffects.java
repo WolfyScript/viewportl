@@ -16,15 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.main.expansions;
+package me.wolfyscript.utilities.main.resource_loader;
 
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.expansions.ExpansionPack;
 import me.wolfyscript.utilities.expansions.ResourceLoader;
+import me.wolfyscript.utilities.expansions.ResourceLoaderJson;
 import me.wolfyscript.utilities.main.WUPlugin;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
-import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
 
 import java.io.BufferedInputStream;
@@ -32,27 +32,14 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class ResourceLoaderParticleAnimations extends ResourceLoader {
+public class ResourceLoaderParticleEffects extends ResourceLoaderJson<ParticleEffect> {
 
-    public ResourceLoaderParticleAnimations(WUPlugin plugin) {
-        super(plugin, new NamespacedKey(plugin, "particles/animations"));
+    public ResourceLoaderParticleEffects(WUPlugin plugin) {
+        super(plugin, new NamespacedKey(plugin, "particles/effects"), ParticleEffect.class);
     }
 
     @Override
-    public void load(ExpansionPack pack, ZipFile zipFile, String root, ZipEntry entry, WolfyUtilCore core) {
-        if (entry.isDirectory()) {
-            //We can't read from a directory!
-            return;
-        }
-        String path = entry.getName().replace(root + folderPath, "");
-        path = path.substring(0, path.lastIndexOf(".")); // This the key of the effect.
-        try (var stream = new BufferedInputStream(zipFile.getInputStream(entry))){
-            var effect = JacksonUtil.getObjectMapper().readValue(stream, ParticleAnimation.class);
-            if (effect != null) {
-                core.getRegistries().getParticleAnimations().register(new NamespacedKey(pack.getMeta().getPack().getNamespace(), path), effect);
-            }
-        } catch (IOException e) {
-            core.getLogger().info("Failed to load animation \"" + path + "\"! Cause:" + e.getMessage());
-        }
+    public void register(NamespacedKey namespacedKey, ParticleEffect value, WolfyUtilCore core) {
+        core.getRegistries().getParticleEffects().register(namespacedKey, value);
     }
 }
