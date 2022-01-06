@@ -86,6 +86,9 @@ public class Registries {
     private final TypeRegistry<ValueProvider<?>> valueProviders;
     private final TypeRegistry<Operator> operators;
 
+    //Expansions
+    private final RegistryResourceLoader expansionLoaders;
+
     public Registries(WolfyUtilCore core) {
         this.core = core;
 
@@ -102,6 +105,8 @@ public class Registries {
         particleShapes = new TypeRegistrySimple<>(new NamespacedKey(core, "particles/shapes"), this);
         particleTimer = new TypeRegistrySimple<>(new NamespacedKey(core, "particle_timers"), this);
         customItemNbtChecks = new TypeRegistrySimple<>(new NamespacedKey(core, "custom_item_nbt_checks"), this);
+
+        expansionLoaders = new RegistryResourceLoader(this);
         customItemActions = new TypeRegistrySimple<>(ITEM_ACTION_TYPES, this);
         customItemEvents = new TypeRegistrySimple<>(ITEM_EVENT_TYPES, this);
         valueProviders = new TypeRegistrySimple<>(new NamespacedKey(core, "value_providers"), this);
@@ -227,6 +232,10 @@ public class Registries {
      */
     public TypeRegistry<Timer> getParticleTimer() {
         return particleTimer;
+    }
+
+    public RegistryResourceLoader getExpansionResourceLoaders() {
+        return expansionLoaders;
     }
 
     public TypeRegistry<Action<?>> getCustomItemActions() {
