@@ -154,6 +154,7 @@ public final class WUPlugin extends WolfyUtilCore {
     private final MessageFactory messageFactory;
     private final CompatibilityManagerImpl compatibilityManager;
     private BukkitAudiences adventure;
+    private final ExpansionManager expansionManager;
 
     /**
      * Constructor invoked by Spigot when the plugin is loaded.
@@ -167,6 +168,7 @@ public final class WUPlugin extends WolfyUtilCore {
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
+        this.expansionManager = new ExpansionManager(this);
     }
 
     /**
@@ -181,6 +183,7 @@ public final class WUPlugin extends WolfyUtilCore {
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
+        this.expansionManager = new ExpansionManager(this);
     }
 
     @Deprecated
@@ -335,6 +338,9 @@ public final class WUPlugin extends WolfyUtilCore {
         console.info("Register API references");
         registerAPIReference(new VanillaRef.Parser());
         registerAPIReference(new WolfyUtilitiesRef.Parser());
+
+        expansionManager.initPacks();
+        expansionManager.loadPacks();
 
         //Load Language
         api.getLanguageAPI().loadLangFile("en_US");
