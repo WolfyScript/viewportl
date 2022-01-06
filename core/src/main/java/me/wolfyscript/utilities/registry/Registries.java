@@ -101,7 +101,6 @@ public class Registries {
     private final TypeRegistry<Shape> particleShapes;
     private final TypeRegistry<Timer> particleTimer;
     private final TypeRegistry<Meta> customItemNbtChecks;
-
     //Expansions
     private final RegistryResourceLoader expansionLoaders;
 
