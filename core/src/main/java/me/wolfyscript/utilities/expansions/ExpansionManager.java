@@ -24,15 +24,14 @@ import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ExpansionManager {
+
+    private final String LOG_PREFIX = "[Expansions] ";
 
     private final WolfyUtilCore core;
     private final File packsFolder;
@@ -46,7 +45,7 @@ public class ExpansionManager {
     }
 
     public void initPacks() {
-        core.getLogger().info("Initiating expansion packs...");
+        core.getLogger().info(LOG_PREFIX + "Initializing packs...");
         File[] files = packsFolder.listFiles((dir, name) -> name.endsWith(".zip"));
         if (files != null) {
             this.packs = new LinkedList<>();
@@ -57,21 +56,21 @@ public class ExpansionManager {
                         packs.add(pack);
                     }
                 } catch (IOException e) {
-                    core.getLogger().warning("Failed to read expansion zip file " + file.getName() + ": " + e.getMessage());
+                    core.getLogger().warning(LOG_PREFIX + "Failed to read expansion zip file " + file.getName() + ": " + e.getMessage());
                 }
             }
         }
     }
 
     public void loadPacks() {
-        core.getLogger().info("Loading expansion packs...");
+        core.getLogger().info(LOG_PREFIX + "Loading packs...");
         var registry = core.getRegistries().getExpansionResourceLoaders();
         List<NamespacedKey> order = registry.getRegisterOrder();
         for (ExpansionPack pack : packs) {
             try {
                 pack.load(registry, order);
             } catch (IOException e) {
-                core.getLogger().warning("Failed to read expansion zip file " + pack.getFile().getName() + ": " + e.getMessage());
+                core.getLogger().warning(LOG_PREFIX + "Failed to read expansion zip file " + pack.getFile().getName() + ": " + e.getMessage());
             }
         }
     }
@@ -90,10 +89,9 @@ public class ExpansionManager {
                     }
                     ExpansionPack pack = new ExpansionPack(metaFile, file, entryNames, core);
                     if (packs.contains(pack)) {
-                        core.getLogger().warning("Expansion Pack already initialised: \"" + metaFile.getPack().getNamespace() +" \" in file " + file.getName());
+                        core.getLogger().warning(LOG_PREFIX + "Pack already initialised: \"" + metaFile.getPack().getNamespace() +"\" in file " + file.getName());
                         return null;
                     }
-                    core.getLogger().info("Initiated expansion pack " + file.getName());
                     return pack;
                 }
             }
