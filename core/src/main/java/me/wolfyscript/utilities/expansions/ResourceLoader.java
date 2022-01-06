@@ -26,24 +26,27 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Locale;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public abstract class ResourceLoader implements Keyed {
 
     private final Plugin plugin;
     private final NamespacedKey key;
+    protected final String folderPath;
 
     protected ResourceLoader(Plugin plugin, NamespacedKey namespacedKey) {
         this.plugin = plugin;
         String namespace = plugin.getName().toLowerCase(Locale.ROOT);
         Preconditions.checkArgument(namespacedKey.getNamespace().equals(namespace), "The namespace must be equal to your plugin name! Expected " + namespace + " but got " + namespace);
         this.key = namespacedKey;
+        this.folderPath = key.toString("/") + "/";
     }
 
     public Plugin getPlugin() {
         return plugin;
     }
 
-    public abstract void load(ZipEntry entry, WolfyUtilCore core);
+    public abstract void load(ExpansionPack pack, ZipFile zipFile, String root, ZipEntry entry, WolfyUtilCore core);
 
     @Override
     public NamespacedKey getNamespacedKey() {
