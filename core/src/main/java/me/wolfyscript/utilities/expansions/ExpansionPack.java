@@ -18,41 +18,59 @@
 
 package me.wolfyscript.utilities.expansions;
 
-import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.registry.RegistryResourceLoader;
+import me.wolfyscript.utilities.util.NamespacedKey;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.zip.ZipEntry;
+import java.util.List;
 import java.util.zip.ZipFile;
 
 public class ExpansionPack {
 
-    private static final int VERSION = 1;
+    static final int VERSION = 1;
 
-    private final ZipFile file;
+    private final WolfyUtilCore core;
+    private final File file;
+    private final List<String> zipEntryNames;
+    private final String rootDir;
 
-    ExtensionPack (ZipFile file) {
+    ExpansionPack(File file, List<String> entryNames, WolfyUtilCore core) {
         this.file = file;
+        this.core = core;
+        this.zipEntryNames = entryNames;
+        this.rootDir = entryNames.get(0);
     }
 
-    public static ExtensionPack readPack(String path) throws IOException {
-        File file = new File(path);
-        if (file.getName().endsWith(".zip")) {
-            ZipFile zipFile = new ZipFile(path);
-            ZipEntry packInfoEntry = zipFile.getEntry("pack.json");
-            if(packInfoEntry != null && !packInfoEntry.isDirectory()) {
-                PackMetaFile metaFile = JacksonUtil.getObjectMapper().readValue(zipFile.getInputStream(packInfoEntry), PackMetaFile.class);
-                if (metaFile.getPack().getVersion() != VERSION) {
-                   //Invalid version!
-                   return null;
+    public void load(RegistryResourceLoader registry, List<NamespacedKey> loaderOrder) throws IOException {
+        var zipFile = new ZipFile(file);
+        try (zipFile) {
+            for (NamespacedKey namespacedKey : loaderOrder) {
+                var loader = registry.get(namespacedKey);
+                if (loader != null) {
+                    String loaderRoot = rootDir + namespacedKey.getNamespace() + "/" + namespacedKey.getKey() + "/"; //Get the root of the loader
+                    int rootIndex = zipEntryNames.indexOf(loaderRoot); // Get the index of that root in the zip file.
+                    if (rootIndex == -1) {
+                        continue; // The loader root is not in the zip file.
+                    }
+                    for (int i = rootIndex; i < zipEntryNames.size(); i++) {
+                        String entryName = zipEntryNames.get(i);
+                        if (!entryName.startsWith(loaderRoot)) {
+                            break;
+                        }
+                        var entry = zipFile.getEntry(entryName);
+                        if (entry != null) {
+                            // Call the loader specific load method
+                            loader.load(entry, core);
+                        }
+                    }
                 }
-
-
-
-                return new ExtensionPack(zipFile);
             }
         }
-        return null;
     }
 
+    public File getFile() {
+        return file;
+    }
 }
