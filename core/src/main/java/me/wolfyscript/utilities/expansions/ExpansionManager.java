@@ -49,14 +49,17 @@ public class ExpansionManager {
         core.getLogger().info("Initiating expansion packs...");
         File[] files = packsFolder.listFiles((dir, name) -> name.endsWith(".zip"));
         if (files != null) {
-            this.packs = Arrays.stream(files).map(file -> {
+            this.packs = new LinkedList<>();
+            for (File file : files) {
                 try {
-                    return initPack(file);
+                    var pack = initPack(file);
+                    if (pack != null) {
+                        packs.add(pack);
+                    }
                 } catch (IOException e) {
                     core.getLogger().warning("Failed to read expansion zip file " + file.getName() + ": " + e.getMessage());
                 }
-                return null;
-            }).filter(Objects::nonNull).collect(Collectors.toCollection(LinkedList::new));
+            }
         }
     }
 
@@ -85,8 +88,13 @@ public class ExpansionManager {
                         //Invalid version!
                         return null;
                     }
+                    ExpansionPack pack = new ExpansionPack(metaFile, file, entryNames, core);
+                    if (packs.contains(pack)) {
+                        core.getLogger().warning("Expansion Pack already initialised: \"" + metaFile.getPack().getNamespace() +" \" in file " + file.getName());
+                        return null;
+                    }
                     core.getLogger().info("Initiated expansion pack " + file.getName());
-                    return new ExpansionPack(file, entryNames, core);
+                    return pack;
                 }
             }
         }
