@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.extensions;
+package me.wolfyscript.utilities.expansions;
 
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 
@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class ExtensionPack {
+public class ExpansionPack {
 
     private static final int VERSION = 1;
 
