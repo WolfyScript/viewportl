@@ -45,6 +45,7 @@ import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtili
 import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.compatibility.CompatibilityManagerImpl;
+import me.wolfyscript.utilities.expansions.ExpansionManager;
 import me.wolfyscript.utilities.main.commands.ChatActionCommand;
 import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
@@ -218,6 +219,9 @@ public final class WUPlugin extends WolfyUtilCore {
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
         KeyedTypeIdResolver.registerTypeRegistry(Shape.class, particleShapes);
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
+
+        var expansionLoaders = getRegistries().getExpansionResourceLoaders();
+        expansionLoaders.register(new ResourceLoaderParticleEffects(this));
     }
 
     @Override
