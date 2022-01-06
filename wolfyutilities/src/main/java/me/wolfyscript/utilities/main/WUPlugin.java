@@ -114,6 +114,7 @@ public final class WUPlugin extends WolfyUtilCore {
     private final MessageHandler messageHandler;
     private final MessageFactory messageFactory;
     private final CompatibilityManagerImpl compatibilityManager;
+    private final ExpansionManager expansionManager;
 
     public WUPlugin() {
         super();
@@ -124,6 +125,7 @@ public final class WUPlugin extends WolfyUtilCore {
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
+        this.expansionManager = new ExpansionManager(this);
     }
 
     private WUPlugin(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
@@ -135,6 +137,7 @@ public final class WUPlugin extends WolfyUtilCore {
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
+        this.expansionManager = new ExpansionManager(this);
     }
 
     @Deprecated
@@ -236,6 +239,9 @@ public final class WUPlugin extends WolfyUtilCore {
         console.info("Register API references");
         registerAPIReference(new VanillaRef.Parser());
         registerAPIReference(new WolfyUtilitiesRef.Parser());
+
+        expansionManager.initPacks();
+        expansionManager.loadPacks();
 
         var languageAPI = api.getLanguageAPI();
         saveResource("lang/en_US.json", true);
