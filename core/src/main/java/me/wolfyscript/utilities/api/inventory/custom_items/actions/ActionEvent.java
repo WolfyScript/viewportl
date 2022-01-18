@@ -30,7 +30,6 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,7 +43,7 @@ public abstract class ActionEvent<T extends ActionData> implements Keyed {
     private final NamespacedKey key;
     @JsonIgnore
     protected final Class<T> dataType;
-    private List<Action<T>> actions;
+    private List<Action<? super T>> actions;
 
     protected ActionEvent(NamespacedKey key, Class<T> dataType) {
         this.key = key;
@@ -52,7 +51,7 @@ public abstract class ActionEvent<T extends ActionData> implements Keyed {
     }
 
     public void call(WolfyUtilCore core, T data) {
-        for (Action<T> action : actions) {
+        for (Action<? super T> action : actions) {
             action.execute(core, data);
         }
     }
@@ -61,11 +60,11 @@ public abstract class ActionEvent<T extends ActionData> implements Keyed {
         return action.dataType.isAssignableFrom(dataType);
     }
 
-    public void setActions(List<Action<T>> actions) {
+    public void setActions(List<Action<? super T>> actions) {
         this.actions = actions.stream().filter(this::isApplicable).toList();
     }
 
-    public List<Action<T>> getActions() {
+    public List<Action<? super T>> getActions() {
         return actions;
     }
 
