@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Streams;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionContainer;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomItemTagMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
@@ -43,8 +44,6 @@ import me.wolfyscript.utilities.util.inventory.item_builder.AbstractItemBuilder;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
-import me.wolfyscript.utilities.util.version.MinecraftVersions;
-import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -143,6 +142,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     private int durabilityCost;
     @JsonAlias("particles")
     private ParticleContent particleContent;
+    private ActionContainer actions;
 
     @JsonIgnore
     private boolean checkOldMetaSettings = true;
@@ -343,13 +343,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      */
     @Nullable
     public static CustomItem getByItemStack(ItemStack itemStack) {
-        if (itemStack != null) {
-            var itemMeta = itemStack.getItemMeta();
-            if (itemMeta != null) {
-                return WolfyUtilCore.getInstance().getRegistries().getCustomItems().get(getKeyOfItemMeta(itemMeta));
-            }
-        }
-        return null;
+        return WolfyUtilCore.getInstance().getRegistries().getCustomItems().getByItemStack(itemStack).orElse(null);
     }
 
     /**
@@ -1167,6 +1161,15 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 }
             });
         }
+    }
+
+    public ActionContainer getActions() {
+        return actions;
+    }
+
+    @JsonSetter("actions")
+    public void setActions(ActionContainer actions) {
+        this.actions = actions == null ? new ActionContainer() : actions;
     }
 
     /**
