@@ -23,6 +23,8 @@ import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomData;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.Action;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionEvent;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.tags.Tags;
 import me.wolfyscript.utilities.util.Keyed;
@@ -101,6 +103,8 @@ public class Registries {
     private final TypeRegistry<Shape> particleShapes;
     private final TypeRegistry<Timer> particleTimer;
     private final TypeRegistry<Meta> customItemNbtChecks;
+    private final TypeRegistry<Action<?>> customItemActions;
+    private final TypeRegistry<ActionEvent<?>> customItemActionEvents;
 
     public Registries(WolfyUtilCore core) {
         this.core = core;
@@ -116,6 +120,8 @@ public class Registries {
         particleShapes = new TypeRegistrySimple<>(new NamespacedKey(core, "particles/shapes"), this);
         particleTimer = new TypeRegistrySimple<>(new NamespacedKey(core, "particle_timers"), this);
         customItemNbtChecks = new TypeRegistrySimple<>(new NamespacedKey(core, "custom_item_nbt_checks"), this);
+        customItemActions = new TypeRegistrySimple<>(NamespacedKey.wolfyutilties("custom_item/actions"), this);
+        customItemActionEvents = new TypeRegistrySimple<>(NamespacedKey.wolfyutilties("custom_item/action_events"), this);
     }
 
     public WolfyUtilCore getCore() {
@@ -196,5 +202,13 @@ public class Registries {
      */
     public TypeRegistry<Timer> getParticleTimer() {
         return particleTimer;
+    }
+
+    public TypeRegistry<Action<?>> getCustomItemActions() {
+        return customItemActions;
+    }
+
+    public TypeRegistry<ActionEvent<?>> getCustomItemActionEvents() {
+        return customItemActionEvents;
     }
 }
