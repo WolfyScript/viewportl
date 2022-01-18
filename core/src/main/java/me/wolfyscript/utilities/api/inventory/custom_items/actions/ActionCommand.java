@@ -19,26 +19,52 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
 import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.compatibility.plugins.PlaceholderAPIIntegration;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class ActionCommand extends Action<ActionDataPlayer> {
 
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("command");
 
-    private String command;
+    private final PlaceholderAPIIntegration papi;
+    private List<String> playerCommands;
+    private List<String> consoleCommands;
 
-    protected ActionCommand() {
+    public ActionCommand() {
         super(KEY, ActionDataPlayer.class);
+        papi = WolfyUtilCore.getInstance().getCompatibilityManager().getPlugins().getIntegration(PlaceholderAPIIntegration.NAME, PlaceholderAPIIntegration.class);
     }
 
     @Override
     public void execute(WolfyUtilCore core, ActionDataPlayer data) {
-        if (data.getPlayer() != null) {
-            data.getPlayer().performCommand(command);
+        final Player player = data.getPlayer();
+        List<String> resultPlayerCmds = playerCommands;
+        List<String> resultConsoleCmds = consoleCommands;
+        if (papi != null) {
+            resultPlayerCmds = papi.setPlaceholders(player, papi.setBracketPlaceholders(player, playerCommands));
+            resultConsoleCmds = papi.setPlaceholders(player, papi.setBracketPlaceholders(player, consoleCommands));
         }
+        resultPlayerCmds.forEach(player::performCommand);
+        resultConsoleCmds.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
     }
 
-    public void setCommand(String command) {
-        this.command = command;
+    public List<String> getConsoleCommands() {
+        return List.copyOf(consoleCommands);
+    }
+
+    public void setConsoleCommands(List<String> consoleCommands) {
+        this.consoleCommands = consoleCommands;
+    }
+
+    public List<String> getPlayerCommands() {
+        return List.copyOf(playerCommands);
+    }
+
+    public void setPlayerCommands(List<String> playerCommands) {
+        this.playerCommands = playerCommands;
     }
 }
