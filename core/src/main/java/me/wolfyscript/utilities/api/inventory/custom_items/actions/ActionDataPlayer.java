@@ -21,12 +21,12 @@ package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import org.bukkit.entity.Player;
 
-public class ActionDataPlayer extends ActionData {
+public class ActionDataPlayer extends ActionDataEntity {
 
     private final Player player;
 
     public ActionDataPlayer(Player player, CustomItem customItem) {
-        super(customItem);
+        super(player, customItem);
         this.player = player;
     }
 

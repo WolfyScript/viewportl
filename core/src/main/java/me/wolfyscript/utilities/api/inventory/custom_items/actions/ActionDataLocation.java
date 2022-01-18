@@ -18,12 +18,20 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
-import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import org.bukkit.Location;
 
-public abstract class ActionEventPlayer<T extends ActionDataPlayer> extends ActionEvent<T> {
+public class ActionDataLocation extends ActionData {
 
-    protected ActionEventPlayer(NamespacedKey key, Class<T> dataType) {
-        super(key, dataType);
+    private final Location location;
+
+    public ActionDataLocation(Location location, CustomItem customItem) {
+        super(customItem);
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
 }

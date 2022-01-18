@@ -18,12 +18,19 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
-import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import org.bukkit.entity.Entity;
 
-public abstract class ActionEventPlayer<T extends ActionDataPlayer> extends ActionEvent<T> {
+public class ActionDataEntity extends ActionDataLocation {
 
-    protected ActionEventPlayer(NamespacedKey key, Class<T> dataType) {
-        super(key, dataType);
+    private final Entity entity;
+
+    public ActionDataEntity(Entity entity, CustomItem customItem) {
+        super(entity.getLocation(), customItem);
+        this.entity = entity;
     }
 
+    public Entity getEntity() {
+        return entity;
+    }
 }

@@ -19,13 +19,14 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
 import me.wolfyscript.utilities.util.NamespacedKey;
+import org.bukkit.event.player.PlayerInteractEvent;
 
-public class ActionEventPlayerInteract extends ActionEventPlayer {
+public class ActionEventPlayerInteract extends ActionEventPlayer<ActionDataPlayerEvent<PlayerInteractEvent>> {
 
     public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("player_interact");
 
     protected ActionEventPlayerInteract() {
-        super(KEY);
+        super(KEY, (Class<ActionDataPlayerEvent<PlayerInteractEvent>>)(Object) ActionDataPlayerEvent.class);
     }
 
 }
