@@ -24,6 +24,10 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.console.Console;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.Action;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionCommand;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionEvent;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionEventPlayerInteract;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.AttributesModifiersMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomDamageMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomDurabilityMeta;
@@ -214,10 +218,18 @@ public final class WUPlugin extends WolfyUtilCore {
         particleTimers.register(TimerRandom.KEY, TimerRandom.class);
         particleTimers.register(TimerPi.KEY, TimerPi.class);
 
+        var customItemActions = getRegistries().getCustomItemActions();
+        customItemActions.register(ActionCommand.KEY, ActionCommand.class);
+
+        var customItemActionsEvents = getRegistries().getCustomItemActionEvents();
+        customItemActionsEvents.register(ActionEventPlayerInteract.KEY, ActionEventPlayerInteract.class);
+
         KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
         KeyedTypeIdResolver.registerTypeRegistry(Shape.class, particleShapes);
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
+        KeyedTypeIdResolver.registerTypeRegistry((Class<Action<?>>)(Object) Action.class, customItemActions);
+        KeyedTypeIdResolver.registerTypeRegistry((Class<ActionEvent<?>>)(Object) ActionEvent.class, customItemActionsEvents);
     }
 
     @Override
