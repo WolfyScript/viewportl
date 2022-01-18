@@ -20,6 +20,7 @@ package me.wolfyscript.utilities.compatibility;
 
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,4 +62,14 @@ public interface PluginIntegration {
      * @return True if the integration is done loading; else false.
      */
     boolean isDoneLoading();
+
+    /**
+     * Gets the registered adapter of this plugin and specified key.<br>
+     *
+     * @param type The type of the adapter.
+     * @param key The key of the adapter.
+     * @param <T> The PluginAdapter type.
+     * @return The adapter of the specified key; or null if it doesn't exist or doesn't match the type.
+     */
+    <T extends PluginAdapter> T getAdapter(Class<T> type, NamespacedKey key);
 }

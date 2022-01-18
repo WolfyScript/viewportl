@@ -18,9 +18,11 @@
 
 package me.wolfyscript.utilities.compatibility;
 
+import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.events.DependenciesLoadedEvent;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,8 +36,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Manages compatibility with other plugins. <br>
@@ -44,6 +48,7 @@ import java.util.function.Function;
 final class PluginsImpl implements Plugins, Listener {
 
     private final WolfyUtilCore core;
+    private final Map<String, Map<NamespacedKey, PluginAdapter>> pluginAdapters = new HashMap<>();
     private final Map<String, PluginIntegrationAbstract> pluginIntegrations = new HashMap<>();
     private final Map<String, Class<? extends PluginIntegrationAbstract>> pluginIntegrationClasses = new HashMap<>();
     private boolean doneLoading = false;
@@ -87,7 +92,6 @@ final class PluginsImpl implements Plugins, Listener {
             pluginIntegrationClasses.forEach(this::createPluginIntegration);
             if (pluginIntegrations.isEmpty()) {
                 core.getLogger().info(" - No integrations created.");
-
             }
         } else {
             core.getLogger().info(" - No integrations found for available plugins");
@@ -102,12 +106,11 @@ final class PluginsImpl implements Plugins, Listener {
                 integrationConstructor.setAccessible(true);
                 var integration = integrationConstructor.newInstance(core);
                 pluginIntegrations.put(pluginName, integration);
-                if(isPluginEnabled(pluginName)) { //Only init the integration if the plugin has already been enabled!
+                if (isPluginEnabled(pluginName)) { //Only init the integration if the plugin has already been enabled!
                     integration.init(Bukkit.getPluginManager().getPlugin(pluginName));
                     if (!integration.hasAsyncLoading()) {
                         core.getLogger().info(" - " + pluginName);
                         integration.setEnabled(true);
-
                     } else {
                         core.getLogger().info(" - " + pluginName + " : Integration is async. Enabled once done loading!");
                     }
@@ -115,8 +118,9 @@ final class PluginsImpl implements Plugins, Listener {
                     core.getLogger().info(" - " + pluginName);
                 }
                 checkDependencies();
-            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-                core.getLogger().info("     ERROR -> " + e.getMessage());
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException | RuntimeException e) {
+                core.getLogger().info("     Failed to initialise integration for " + pluginName + "! Cause: " + e.getMessage());
+                pluginIntegrations.remove(pluginName);
             }
         }
     }
@@ -144,7 +148,7 @@ final class PluginsImpl implements Plugins, Listener {
     private void onPluginEnable(PluginEnableEvent event) {
         String pluginName = event.getPlugin().getName();
         Class<? extends PluginIntegrationAbstract> integrationClass = pluginIntegrationClasses.get(pluginName);
-        if(integrationClass != null) {
+        if (integrationClass != null) {
             createPluginIntegration(pluginName, integrationClass);
             if (!hasIntegration(event.getPlugin().getName())) {
                 core.getLogger().warning("Failed to initiate PluginIntegration for " + pluginName);
@@ -202,10 +206,10 @@ final class PluginsImpl implements Plugins, Listener {
      * If it does exist it will try to cast the integration to the specified type; if that fails throws an {@link ClassCastException}.
      *
      * @param pluginName The plugin name to get the integration for.
-     * @param type The class of the plugins' integration that extends {@link PluginIntegration}.
-     * @param <T> The specified type of the {@link PluginIntegration}
-     * @throws ClassCastException if the found {@link PluginIntegration} cannot be cast to {@link T}
+     * @param type       The class of the plugins' integration that extends {@link PluginIntegration}.
+     * @param <T>        The specified type of the {@link PluginIntegration}
      * @return The integration from the plugin of type {@link T}; null if not available.
+     * @throws ClassCastException if the found {@link PluginIntegration} cannot be cast to {@link T}
      */
     @Nullable
     public <T extends PluginIntegration> T getIntegration(String pluginName, Class<T> type) {
@@ -221,7 +225,7 @@ final class PluginsImpl implements Plugins, Listener {
      * Runs the specified callback if there is an active PluginIntegration available for that plugin.
      *
      * @param pluginName The plugin name to check for the integration.
-     * @param callback The callback to run.
+     * @param callback   The callback to run.
      */
     public void runIfAvailable(String pluginName, Consumer<PluginIntegration> callback) {
         var integration = getIntegration(pluginName);
@@ -234,9 +238,9 @@ final class PluginsImpl implements Plugins, Listener {
      * Runs the specified callback if there is an active PluginIntegration available for that plugin and the if the integration is of the type specified.
      *
      * @param pluginName The plugin name to check for the integration.
-     * @param type The class that extends {@link PluginIntegration}.
-     * @param callback The callback to run.
-     * @param <T> The type of {@link PluginIntegration} to check for and use in the callback.
+     * @param type       The class that extends {@link PluginIntegration}.
+     * @param callback   The callback to run.
+     * @param <T>        The type of {@link PluginIntegration} to check for and use in the callback.
      */
     public <T extends PluginIntegration> void runIfAvailable(String pluginName, Class<T> type, Consumer<T> callback) {
         var integration = getIntegration(pluginName, type);
@@ -268,5 +272,28 @@ final class PluginsImpl implements Plugins, Listener {
     @Override
     public boolean isDoneLoading() {
         return doneLoading;
+    }
+
+    @Override
+    public void registerAdapter(String pluginName, Supplier<PluginAdapter> pluginAdapter) {
+        Optional.ofNullable(Bukkit.getPluginManager().getPlugin(pluginName)).ifPresent(plugin -> registerAdapter(pluginAdapter.get(), pluginAdapters.computeIfAbsent(pluginName, s -> new HashMap<>())));
+    }
+
+    private <T extends PluginAdapter> void registerAdapter(T adapter, Map<NamespacedKey, T> adapters) {
+        Preconditions.checkArgument(adapter != null, "The plugin adapter cannot be null!");
+        Preconditions.checkArgument(!adapters.containsKey(adapter.getNamespacedKey()), "A plugin adapter with that key was already registered!");
+        adapters.putIfAbsent(adapter.getNamespacedKey(), adapter);
+    }
+
+    @Override
+    public <T extends PluginAdapter> T getAdapter(String pluginName, Class<T> type, NamespacedKey key) {
+        Map<NamespacedKey, PluginAdapter> adapters = pluginAdapters.get(pluginName);
+        if (adapters != null) {
+            var adapter = adapters.get(key);
+            if (type.isInstance(adapter)) {
+                return type.cast(adapter);
+            }
+        }
+        return null;
     }
 }

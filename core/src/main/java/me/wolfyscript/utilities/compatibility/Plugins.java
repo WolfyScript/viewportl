@@ -18,11 +18,13 @@
 
 package me.wolfyscript.utilities.compatibility;
 
+import me.wolfyscript.utilities.util.NamespacedKey;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Manages compatibility with other plugins. <br>
@@ -128,5 +130,26 @@ public interface Plugins {
      * @return True if all integrations are done loading or there is nothing to load; else false.
      */
     boolean isDoneLoading();
+
+    /**
+     * Registers a new PluginAdapter if the specified plugin is available.<br>
+     * The plugin should be specified in your plugins <code>softdepend</code>.<br>
+     * If the plugin is not available when this method is called, then it'll do nothing.
+     *
+     * @param pluginName The plugin name, to register the adapter for.
+     * @param pluginAdapter The adapter supplier.
+     */
+    void registerAdapter(String pluginName, Supplier<PluginAdapter> pluginAdapter);
+
+    /**
+     * Gets the registered adapter for the specified plugin and key.<br>
+     *
+     * @param pluginName The plugin name.
+     * @param type The type of the adapter.
+     * @param key The key of the adapter.
+     * @param <T> The PluginAdapter type.
+     * @return The adapter of the specified key; or null if it doesn't exist or doesn't match the type.
+     */
+    <T extends PluginAdapter> T getAdapter(String pluginName, Class<T> type, NamespacedKey key);
 
 }
