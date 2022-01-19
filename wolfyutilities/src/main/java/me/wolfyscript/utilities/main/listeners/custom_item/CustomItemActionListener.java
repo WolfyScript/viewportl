@@ -19,8 +19,8 @@
 package me.wolfyscript.utilities.main.listeners.custom_item;
 
 import me.wolfyscript.utilities.api.WolfyUtilCore;
-import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionDataPlayer;
-import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionEventPlayerInteract;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.DataPlayerEvent;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerInteract;
 import me.wolfyscript.utilities.registry.RegistryCustomItem;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,7 +40,7 @@ public class CustomItemActionListener implements Listener {
     private void onClick(PlayerInteractEvent event) {
         var item = customItems.getByItemStack(event.getItem());
         item.ifPresent(customItem -> {
-            customItem.getActions().callActionEvent(ActionEventPlayerInteract.KEY, new ActionDataPlayer(event.getPlayer(), customItem));
+            customItem.getActionSettings().callEvent(EventPlayerInteract.KEY, new DataPlayerEvent<>(event, event.getPlayer(), customItem));
         });
     }
 

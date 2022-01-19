@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Streams;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionContainer;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomItemTagMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.MetaSettings;
@@ -142,7 +141,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     private int durabilityCost;
     @JsonAlias("particles")
     private ParticleContent particleContent;
-    private ActionContainer actions;
+    private ActionSettings actionSettings = new ActionSettings();
 
     @JsonIgnore
     private boolean checkOldMetaSettings = true;
@@ -1163,13 +1162,14 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
         }
     }
 
-    public ActionContainer getActions() {
-        return actions;
+    @JsonGetter
+    public ActionSettings getActionSettings() {
+        return actionSettings;
     }
 
-    @JsonSetter("actions")
-    public void setActions(ActionContainer actions) {
-        this.actions = actions == null ? new ActionContainer() : actions;
+    @JsonSetter
+    public void setActionSettings(ActionSettings actionSettings) {
+        this.actionSettings = actionSettings == null ? new ActionSettings() : actionSettings;
     }
 
     /**

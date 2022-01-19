@@ -19,18 +19,18 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import org.bukkit.entity.Player;
+import org.bukkit.block.Block;
 
-public class ActionDataPlayer extends ActionDataEntity {
+public class DataBlock extends DataLocation {
 
-    private final Player player;
+    private final Block block;
 
-    public ActionDataPlayer(Player player, CustomItem customItem) {
-        super(player, customItem);
-        this.player = player;
+    public DataBlock(Block block, CustomItem customItem) {
+        super(block.getLocation(), customItem);
+        this.block = block;
     }
 
-    public Player getPlayer() {
-        return player;
+    public Block getBlock() {
+        return block;
     }
 }

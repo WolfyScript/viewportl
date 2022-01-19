@@ -18,12 +18,30 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 
-public abstract class ActionEventPlayer<T extends ActionDataPlayer> extends ActionEvent<T> {
+public class ActionParticleAnimation extends Action<DataLocation> {
 
-    protected ActionEventPlayer(NamespacedKey key, Class<T> dataType) {
-        super(key, dataType);
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("location/particle_animation");
+
+    private ParticleAnimation animation;
+
+    protected ActionParticleAnimation() {
+        super(KEY, DataLocation.class);
     }
 
+    @Override
+    public void execute(WolfyUtilCore core, DataLocation data) {
+        if (data instanceof DataPlayer dataPlayer) {
+            animation.spawn(dataPlayer.getPlayer());
+            return;
+        }
+        animation.spawn(data.getLocation());
+    }
+
+    public void setAnimation(ParticleAnimation animation) {
+        this.animation = animation;
+    }
 }

@@ -16,52 +16,50 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.api.inventory.custom_items.actions;
+package me.wolfyscript.utilities.api.inventory.custom_items;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.Event;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.Data;
 import me.wolfyscript.utilities.util.NamespacedKey;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class ActionContainer {
+public class ActionSettings {
 
     @JsonIgnore
-    private Map<NamespacedKey, ActionEvent<?>> indexedEvents;
+    private Multimap<NamespacedKey, Event<?>> indexedEvents;
 
-    public ActionContainer() {
-        this.indexedEvents = new HashMap<>();
+    public ActionSettings() {
+        this.indexedEvents = HashMultimap.create();
     }
 
     @JsonSetter("events")
-    public void setActionEvents(Set<ActionEvent<?>> actionEvents) {
-        indexedEvents = actionEvents.stream().collect(Collectors.toMap(ActionEvent::getNamespacedKey, actionEvent -> actionEvent));
+    public void setEvents(List<Event<?>> events) {
+        indexedEvents = HashMultimap.create();
+        for (Event<?> event : events) {
+            indexedEvents.put(event.getNamespacedKey(), event);
+        }
     }
 
     @JsonGetter("events")
-    public Collection<ActionEvent<?>> getActionEvents() {
+    public Collection<Event<?>> getEvents() {
         return Collections.unmodifiableCollection(indexedEvents.values());
     }
 
-    public <T extends ActionData> ActionEvent<T> getActionEvent(NamespacedKey key, Class<T> dataType) {
-        var event = indexedEvents.get(key);
-        if (event != null && event.dataType.equals(dataType)) {
-            return (ActionEvent<T>) event;
-        }
-        return null;
+    public <T extends Data> List<Event<T>> getEvents(NamespacedKey key, Class<T> dataType) {
+        return indexedEvents.get(key).stream().filter(actionEvent -> dataType.equals(actionEvent.getDataType())).map(actionEvent -> (Event<T>) actionEvent).collect(Collectors.toList());
     }
 
-    public <T extends ActionData> void callActionEvent(NamespacedKey key, T data) {
-        ActionEvent<T> event = getActionEvent(key, (Class<T>) data.getClass());
-        if (event != null) {
-            event.call(WolfyUtilCore.getInstance(), data);
-        }
+    public <T extends Data> void callEvent(NamespacedKey key, T data) {
+        getEvents(key, (Class<T>) data.getClass()).forEach(event -> event.call(WolfyUtilCore.getInstance(), data));
     }
 }

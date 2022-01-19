@@ -38,14 +38,14 @@ import java.util.Objects;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "key")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonPropertyOrder(value = {"key"})
-public abstract class ActionEvent<T extends ActionData> implements Keyed {
+public abstract class Event<T extends Data> implements Keyed {
 
     private final NamespacedKey key;
     @JsonIgnore
     protected final Class<T> dataType;
     private List<Action<? super T>> actions;
 
-    protected ActionEvent(NamespacedKey key, Class<T> dataType) {
+    protected Event(NamespacedKey key, Class<T> dataType) {
         this.key = key;
         this.dataType = dataType;
     }
@@ -56,6 +56,7 @@ public abstract class ActionEvent<T extends ActionData> implements Keyed {
         }
     }
 
+    @JsonIgnore
     public boolean isApplicable(Action<?> action) {
         return action.dataType.isAssignableFrom(dataType);
     }
@@ -69,6 +70,11 @@ public abstract class ActionEvent<T extends ActionData> implements Keyed {
     }
 
     @JsonIgnore
+    public Class<T> getDataType() {
+        return dataType;
+    }
+
+    @JsonIgnore
     @Override
     public NamespacedKey getNamespacedKey() {
         return key;
@@ -78,7 +84,7 @@ public abstract class ActionEvent<T extends ActionData> implements Keyed {
     public final boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ActionEvent<?> that = (ActionEvent<?>) o;
+        Event<?> that = (Event<?>) o;
         return Objects.equals(key, that.key);
     }
 

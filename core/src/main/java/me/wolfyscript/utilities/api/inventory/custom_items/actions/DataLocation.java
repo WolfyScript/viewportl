@@ -18,10 +18,20 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
-import org.bukkit.event.Event;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import org.bukkit.Location;
 
-public interface ActionDataEvent<T extends Event> {
+public class DataLocation extends Data {
 
-    T getEvent();
+    private final Location location;
+
+    public DataLocation(Location location, CustomItem customItem) {
+        super(customItem);
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
 
 }

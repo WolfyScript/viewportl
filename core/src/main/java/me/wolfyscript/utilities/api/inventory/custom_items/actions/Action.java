@@ -35,7 +35,7 @@ import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "key")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonPropertyOrder(value = {"key"})
-public abstract class Action<T extends ActionData> implements Keyed {
+public abstract class Action<T extends Data> implements Keyed {
 
     private final NamespacedKey key;
     @JsonIgnore

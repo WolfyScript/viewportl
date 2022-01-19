@@ -18,29 +18,32 @@
 
 package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.compatibility.plugins.PlaceholderAPIIntegration;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ActionCommand extends Action<ActionDataPlayer> {
+public class ActionCommand extends Action<DataPlayer> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("command");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("player/command");
 
+    @JsonIgnore
     private final PlaceholderAPIIntegration papi;
-    private List<String> playerCommands;
-    private List<String> consoleCommands;
+    private List<String> playerCommands = new ArrayList<>();
+    private List<String> consoleCommands = new ArrayList<>();
 
     public ActionCommand() {
-        super(KEY, ActionDataPlayer.class);
+        super(KEY, DataPlayer.class);
         papi = WolfyUtilCore.getInstance().getCompatibilityManager().getPlugins().getIntegration(PlaceholderAPIIntegration.NAME, PlaceholderAPIIntegration.class);
     }
 
     @Override
-    public void execute(WolfyUtilCore core, ActionDataPlayer data) {
+    public void execute(WolfyUtilCore core, DataPlayer data) {
         final Player player = data.getPlayer();
         List<String> resultPlayerCmds = playerCommands;
         List<String> resultConsoleCmds = consoleCommands;

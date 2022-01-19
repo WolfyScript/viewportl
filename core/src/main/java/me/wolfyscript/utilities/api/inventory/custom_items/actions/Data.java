@@ -19,19 +19,16 @@
 package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
-import org.bukkit.Location;
 
-public class ActionDataLocation extends ActionData {
+public abstract class Data {
 
-    private final Location location;
+    private final CustomItem customItem;
 
-    public ActionDataLocation(Location location, CustomItem customItem) {
-        super(customItem);
-        this.location = location;
+    protected Data(CustomItem customItem) {
+        this.customItem = customItem;
     }
 
-    public Location getLocation() {
-        return location;
+    public CustomItem getCustomItem() {
+        return customItem;
     }
-
 }

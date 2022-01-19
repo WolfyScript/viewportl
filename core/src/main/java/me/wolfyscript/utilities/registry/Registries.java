@@ -24,7 +24,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomData;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.Action;
-import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionEvent;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.Event;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.tags.Tags;
 import me.wolfyscript.utilities.util.Keyed;
@@ -104,7 +104,7 @@ public class Registries {
     private final TypeRegistry<Timer> particleTimer;
     private final TypeRegistry<Meta> customItemNbtChecks;
     private final TypeRegistry<Action<?>> customItemActions;
-    private final TypeRegistry<ActionEvent<?>> customItemActionEvents;
+    private final TypeRegistry<Event<?>> customItemActionEvents;
 
     public Registries(WolfyUtilCore core) {
         this.core = core;
@@ -208,7 +208,7 @@ public class Registries {
         return customItemActions;
     }
 
-    public TypeRegistry<ActionEvent<?>> getCustomItemActionEvents() {
+    public TypeRegistry<Event<?>> getCustomItemActionEvents() {
         return customItemActionEvents;
     }
 }
