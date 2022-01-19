@@ -27,8 +27,16 @@ import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.Action;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionCommand;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.Event;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerConsumeItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerInteract;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionParticleAnimation;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerInteractAtEntity;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerInteractEntity;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerItemBreak;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerItemDamage;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerItemDrop;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerItemHandSwap;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerItemHeld;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.AttributesModifiersMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomDamageMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomDurabilityMeta;
@@ -226,6 +234,14 @@ public final class WUPlugin extends WolfyUtilCore {
 
         var customItemActionsEvents = getRegistries().getCustomItemActionEvents();
         customItemActionsEvents.register(EventPlayerInteract.KEY, EventPlayerInteract.class);
+        customItemActionsEvents.register(EventPlayerConsumeItem.KEY, EventPlayerConsumeItem.class);
+        customItemActionsEvents.register(EventPlayerInteractEntity.KEY, EventPlayerInteractEntity.class);
+        customItemActionsEvents.register(EventPlayerInteractAtEntity.KEY, EventPlayerInteractAtEntity.class);
+        customItemActionsEvents.register(EventPlayerItemBreak.KEY, EventPlayerItemBreak.class);
+        customItemActionsEvents.register(EventPlayerItemDamage.KEY, EventPlayerItemDamage.class);
+        customItemActionsEvents.register(EventPlayerItemDrop.KEY, EventPlayerItemDrop.class);
+        customItemActionsEvents.register(EventPlayerItemHandSwap.KEY, EventPlayerItemHandSwap.class);
+        customItemActionsEvents.register(EventPlayerItemHeld.KEY, EventPlayerItemHeld.class);
 
         KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
