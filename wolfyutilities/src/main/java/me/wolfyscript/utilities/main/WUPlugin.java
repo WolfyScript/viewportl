@@ -68,7 +68,7 @@ import me.wolfyscript.utilities.main.listeners.EquipListener;
 import me.wolfyscript.utilities.main.listeners.GUIInventoryListener;
 import me.wolfyscript.utilities.main.listeners.PlayerListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListener;
-import me.wolfyscript.utilities.main.listeners.custom_item.CustomItemActionListener;
+import me.wolfyscript.utilities.main.listeners.custom_item.CustomItemPlayerListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
 import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
@@ -318,7 +318,7 @@ public final class WUPlugin extends WolfyUtilCore {
         Bukkit.getPluginManager().registerEvents(new Chat.ChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(this), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
-        Bukkit.getPluginManager().registerEvents(new CustomItemActionListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new CustomItemPlayerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new EquipListener(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
