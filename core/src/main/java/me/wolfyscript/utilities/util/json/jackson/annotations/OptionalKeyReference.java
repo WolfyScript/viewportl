@@ -155,7 +155,31 @@ public @interface OptionalKeyReference {
                 if(p.isExpectedStartObjectToken()) {
                     return defaultDeserializer.deserialize(p, ctxt);
                 }
-                Registry<T> registry = WolfyUtilCore.getInstance().getRegistries().getByType(genericType);
+                return getKeyedObject(p);
+            }
+
+            @Override
+            public void resolve(DeserializationContext ctxt) throws JsonMappingException {
+                if (defaultDeserializer instanceof ResolvableDeserializer resolvableDeserializer) {
+                    resolvableDeserializer.resolve(ctxt);
+                }
+            }
+
+            @Override
+            public Object deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer) throws IOException {
+                if (p.isExpectedStartObjectToken()) {
+                    return defaultDeserializer.deserializeWithType(p, ctxt, typeDeserializer);
+                }
+                return getKeyedObject(p);
+            }
+
+            private T getKeyedObject(JsonParser p) throws IOException {
+                Registry<T> registry;
+                if (registryKey != null) {
+                    registry = (Registry<T>) WolfyUtilCore.getInstance().getRegistries().getByKey(registryKey);
+                } else {
+                    registry = WolfyUtilCore.getInstance().getRegistries().getByType(genericType);
+                }
                 if(registry != null) {
                     String value = p.readValueAs(String.class);
                     return registry.get(NamespacedKey.of(value));
@@ -163,10 +187,6 @@ public @interface OptionalKeyReference {
                 return null;
             }
 
-            @Override
-            public void resolve(DeserializationContext ctxt) throws JsonMappingException {
-                ((ResolvableDeserializer) defaultDeserializer).resolve(ctxt);
-            }
         }
 
     }
