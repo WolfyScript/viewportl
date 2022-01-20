@@ -96,6 +96,7 @@ public class Registries {
     private final Registry<CustomData.Provider<?>> customItemData;
     private final RegistryParticleEffect particleEffects;
     private final RegistryParticleAnimation particleAnimations;
+    private final Registry<Action<?>> customItemActionsValues;
     //Tags
     private final Tags<CustomItem> itemTags;
     //Class Registries
@@ -113,6 +114,7 @@ public class Registries {
         customItemData = new RegistrySimple<>(new NamespacedKey(core, "custom_item_data"), this);
         particleEffects = new RegistryParticleEffect(this);
         particleAnimations = new RegistryParticleAnimation(this);
+        customItemActionsValues = new RegistrySimple<>(NamespacedKey.wolfyutilties("custom_item/actions/values"), this, (Class<Action<?>>)(Object) Action.class);
 
         itemTags = new Tags<>(this);
 
@@ -120,8 +122,8 @@ public class Registries {
         particleShapes = new TypeRegistrySimple<>(new NamespacedKey(core, "particles/shapes"), this);
         particleTimer = new TypeRegistrySimple<>(new NamespacedKey(core, "particle_timers"), this);
         customItemNbtChecks = new TypeRegistrySimple<>(new NamespacedKey(core, "custom_item_nbt_checks"), this);
-        customItemActions = new TypeRegistrySimple<>(NamespacedKey.wolfyutilties("custom_item/actions"), this);
-        customItemActionEvents = new TypeRegistrySimple<>(NamespacedKey.wolfyutilties("custom_item/action_events"), this);
+        customItemActions = new TypeRegistrySimple<>(NamespacedKey.wolfyutilties("custom_item/actions/types"), this);
+        customItemActionEvents = new TypeRegistrySimple<>(NamespacedKey.wolfyutilties("custom_item/events"), this);
     }
 
     public WolfyUtilCore getCore() {
@@ -210,5 +212,9 @@ public class Registries {
 
     public TypeRegistry<Event<?>> getCustomItemActionEvents() {
         return customItemActionEvents;
+    }
+
+    public Registry<Action<?>> getCustomItemActionsValues() {
+        return customItemActionsValues;
     }
 }
