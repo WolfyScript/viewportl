@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.util.json.jackson.annotations;
 
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,11 +26,11 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.deser.ResolvableDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.registry.Registry;
-import me.wolfyscript.utilities.registry.Registries;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 
@@ -41,7 +42,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation allows serializing/deserializing an instance of {@link Keyed} by its key or value.
- * The annotated type <b>must</b> have a {@link Registry}, that contains the class of the type (For example using: {@link me.wolfyscript.utilities.registry.RegistrySimple#RegistrySimple(Registries, Class)}).<br>
+ * The annotated type <b>must</b> have a {@link Registry}, that contains the class of the type.<br>
  * The specified key must exist and be type of {@link NamespacedKey}.<br>
  *
  * <br>Serialization:<br>
@@ -60,7 +61,18 @@ public @interface OptionalKeyReference {
      *
      * @return the field name of the objects' key
      */
-    String field();
+    String field() default "key";
+
+    /**
+     * Tells the serializer if it should serialize any object of this type as a key reference.<br>
+     * On by default, will always serialize as a key reference. This uses the field specified in {@link #field()}!<br>
+     * If disabled the value of {@link #field()} is ignored and the object is always serialized using the default serializer.
+     *
+     * @return If it should be serialized as a key reference.
+     */
+    boolean serializeAsKey() default true;
+
+    String registryKey() default "";
 
     final class SerializerModifier extends BeanSerializerModifier {
 
@@ -78,27 +90,31 @@ public @interface OptionalKeyReference {
 
         private static class Serializer<T extends Keyed> extends StdSerializer<T> {
 
+            private final OptionalKeyReference reference;
             private final String property;
             private final JsonSerializer<T> defaultSerializer;
 
             protected Serializer(OptionalKeyReference reference, JsonSerializer<T> defaultSerializer) {
                 super(defaultSerializer.handledType());
+                this.reference = reference;
                 this.property = reference.field();
                 this.defaultSerializer = defaultSerializer;
             }
 
             @Override
             public void serialize(T targetObject, JsonGenerator generator, SerializerProvider provider) throws IOException {
-                try {
-                    var propertyField = targetObject.getClass().getDeclaredField(property);
-                    propertyField.setAccessible(true);
-                    var propertyObject = propertyField.get(targetObject);
-                    if(propertyObject instanceof NamespacedKey) {
-                        generator.writeObject(propertyObject);
-                        return;
+                if (reference.serializeAsKey()) {
+                    try {
+                        var propertyField = targetObject.getClass().getDeclaredField(property);
+                        propertyField.setAccessible(true);
+                        var propertyObject = propertyField.get(targetObject);
+                        if(propertyObject instanceof NamespacedKey) {
+                            generator.writeObject(propertyObject);
+                            return;
+                        }
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        e.printStackTrace();
                     }
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    e.printStackTrace();
                 }
                 defaultSerializer.serialize(targetObject, generator, provider);
             }
@@ -125,9 +141,11 @@ public @interface OptionalKeyReference {
 
             private final Class<T> genericType;
             private final JsonDeserializer<T> defaultDeserializer;
+            private final NamespacedKey registryKey;
 
             protected Deserializer(OptionalKeyReference reference, JsonDeserializer<T> defaultSerializer) {
                 super(defaultSerializer.handledType());
+                this.registryKey = NamespacedKey.of(reference.registryKey());
                 this.genericType = (Class<T>) defaultSerializer.handledType();
                 this.defaultDeserializer = defaultSerializer;
             }
