@@ -72,6 +72,7 @@ import me.wolfyscript.utilities.main.listeners.custom_item.CustomItemPlayerListe
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
 import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
@@ -114,6 +115,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
+import java.util.List;
 
 public final class WUPlugin extends WolfyUtilCore {
 
@@ -242,6 +244,11 @@ public final class WUPlugin extends WolfyUtilCore {
         customItemActionsEvents.register(EventPlayerItemDrop.KEY, EventPlayerItemDrop.class);
         customItemActionsEvents.register(EventPlayerItemHandSwap.KEY, EventPlayerItemHandSwap.class);
         customItemActionsEvents.register(EventPlayerItemHeld.KEY, EventPlayerItemHeld.class);
+
+        var customItemActionValues = getRegistries().getCustomItemActionsValues();
+        var actionCommand = new ActionCommand();
+        actionCommand.setPlayerCommands(List.of("recipes"));
+        customItemActionValues.register(NamespacedKey.wolfyutilties("recipes_command"), actionCommand);
 
         KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
