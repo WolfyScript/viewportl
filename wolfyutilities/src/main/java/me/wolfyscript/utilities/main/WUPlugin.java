@@ -26,6 +26,7 @@ import me.wolfyscript.utilities.api.console.Console;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.Action;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionCommand;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionSound;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.Event;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerConsumeItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerInteract;
@@ -233,29 +234,25 @@ public final class WUPlugin extends WolfyUtilCore {
         var customItemActions = getRegistries().getCustomItemActions();
         customItemActions.register(ActionCommand.KEY, ActionCommand.class);
         customItemActions.register(ActionParticleAnimation.KEY, ActionParticleAnimation.class);
+        customItemActions.register(ActionSound.KEY, ActionSound.class);
 
-        var customItemActionsEvents = getRegistries().getCustomItemActionEvents();
-        customItemActionsEvents.register(EventPlayerInteract.KEY, EventPlayerInteract.class);
-        customItemActionsEvents.register(EventPlayerConsumeItem.KEY, EventPlayerConsumeItem.class);
-        customItemActionsEvents.register(EventPlayerInteractEntity.KEY, EventPlayerInteractEntity.class);
-        customItemActionsEvents.register(EventPlayerInteractAtEntity.KEY, EventPlayerInteractAtEntity.class);
-        customItemActionsEvents.register(EventPlayerItemBreak.KEY, EventPlayerItemBreak.class);
-        customItemActionsEvents.register(EventPlayerItemDamage.KEY, EventPlayerItemDamage.class);
-        customItemActionsEvents.register(EventPlayerItemDrop.KEY, EventPlayerItemDrop.class);
-        customItemActionsEvents.register(EventPlayerItemHandSwap.KEY, EventPlayerItemHandSwap.class);
-        customItemActionsEvents.register(EventPlayerItemHeld.KEY, EventPlayerItemHeld.class);
-
-        var customItemActionValues = getRegistries().getCustomItemActionsValues();
-        var actionCommand = new ActionCommand();
-        actionCommand.setPlayerCommands(List.of("recipes"));
-        customItemActionValues.register(NamespacedKey.wolfyutilties("recipes_command"), actionCommand);
+        var customItemEvents = getRegistries().getCustomItemEvents();
+        customItemEvents.register(EventPlayerInteract.KEY, EventPlayerInteract.class);
+        customItemEvents.register(EventPlayerConsumeItem.KEY, EventPlayerConsumeItem.class);
+        customItemEvents.register(EventPlayerInteractEntity.KEY, EventPlayerInteractEntity.class);
+        customItemEvents.register(EventPlayerInteractAtEntity.KEY, EventPlayerInteractAtEntity.class);
+        customItemEvents.register(EventPlayerItemBreak.KEY, EventPlayerItemBreak.class);
+        customItemEvents.register(EventPlayerItemDamage.KEY, EventPlayerItemDamage.class);
+        customItemEvents.register(EventPlayerItemDrop.KEY, EventPlayerItemDrop.class);
+        customItemEvents.register(EventPlayerItemHandSwap.KEY, EventPlayerItemHandSwap.class);
+        customItemEvents.register(EventPlayerItemHeld.KEY, EventPlayerItemHeld.class);
 
         KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
         KeyedTypeIdResolver.registerTypeRegistry(Shape.class, particleShapes);
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
         KeyedTypeIdResolver.registerTypeRegistry((Class<Action<?>>)(Object) Action.class, customItemActions);
-        KeyedTypeIdResolver.registerTypeRegistry((Class<Event<?>>)(Object) Event.class, customItemActionsEvents);
+        KeyedTypeIdResolver.registerTypeRegistry((Class<Event<?>>)(Object) Event.class, customItemEvents);
     }
 
     @Override
