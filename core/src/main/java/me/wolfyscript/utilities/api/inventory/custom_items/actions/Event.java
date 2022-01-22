@@ -29,6 +29,7 @@ import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
+import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
 
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +39,7 @@ import java.util.Objects;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "key")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonPropertyOrder(value = {"key"})
+@OptionalKeyReference(serializeAsKey = false, registryKey = "wolfyutilities:custom_item/events/values")
 public abstract class Event<T extends Data> implements Keyed {
 
     private final NamespacedKey key;
