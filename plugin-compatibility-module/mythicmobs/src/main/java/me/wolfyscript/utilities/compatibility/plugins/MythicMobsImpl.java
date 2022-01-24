@@ -29,13 +29,11 @@ import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
-@WUPluginIntegration(pluginName = MythicMobsImpl.PLUGIN_NAME)
+@WUPluginIntegration(pluginName = MythicMobsIntegration.KEY)
 public class MythicMobsImpl extends PluginIntegrationAbstract implements MythicMobsIntegration {
 
-    static final String PLUGIN_NAME = "MythicMobs";
-
     protected MythicMobsImpl(WolfyUtilCore core) {
-        super(core, PLUGIN_NAME);
+        super(core, MythicMobsIntegration.KEY);
     }
 
     @Override

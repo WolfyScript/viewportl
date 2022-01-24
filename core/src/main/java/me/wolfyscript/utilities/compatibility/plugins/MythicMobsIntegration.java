@@ -23,5 +23,7 @@ import org.bukkit.Location;
 
 public interface MythicMobsIntegration extends PluginIntegration {
 
+    String KEY = "MythicMobs";
+
     void spawnMob(String mobName, Location location, int mobLevel);
 }
