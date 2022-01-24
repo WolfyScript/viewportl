@@ -27,8 +27,8 @@ public class TestNamespacedKey {
     @Test
     public void checkNamespaceAndKey() {
         NamespacedKey namespacedKey = new NamespacedKey("test_namespace", "test_key");
-        Assertions.assertEquals(namespacedKey.getNamespace(), "test_namespace");
-        Assertions.assertEquals(namespacedKey.getKey(), "test_key");
+        Assertions.assertEquals("test_namespace", namespacedKey.getNamespace());
+        Assertions.assertEquals("test_key", namespacedKey.getKey());
     }
 
     @Test
