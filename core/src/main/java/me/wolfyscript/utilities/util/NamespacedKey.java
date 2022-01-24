@@ -48,7 +48,7 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     @JsonIgnore
     private static final Pattern VALID_KEY = Pattern.compile("[a-z0-9/._-]+");
     private final String namespace;
-    private final String key;
+    private final Key key;
 
     /**
      * <b>Only for internal use. Must be converted to a namespaced key with your plugins name as the namespaced key, if you register data in WolfyUtilities!</b>
@@ -59,9 +59,8 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     @Deprecated
     public NamespacedKey(String namespace, String key) {
         Preconditions.checkArgument(namespace != null && VALID_NAMESPACE.matcher(namespace).matches(), "Invalid namespace. Must be [a-z0-9._-]: %s", namespace);
-        Preconditions.checkArgument(key != null && VALID_KEY.matcher(key).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", key);
+        this.key = new Key(key.toLowerCase(Locale.ROOT));
         this.namespace = namespace;
-        this.key = key;
         var string = this.toString();
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters", string);
     }
@@ -74,9 +73,8 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         Preconditions.checkArgument(plugin != null, "Plugin cannot be null");
         Preconditions.checkArgument(key != null, "Key cannot be null");
         this.namespace = plugin.getName().toLowerCase(Locale.ROOT);
-        this.key = key.toLowerCase(Locale.ROOT);
         Preconditions.checkArgument(VALID_NAMESPACE.matcher(this.namespace).matches(), "Invalid namespace. Must be [a-z0-9._-]: %s", this.namespace);
-        Preconditions.checkArgument(VALID_KEY.matcher(this.key).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", this.key);
+        this.key = new Key(key.toLowerCase(Locale.ROOT));
         String string = this.toString();
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters (%s)", string);
     }
@@ -145,7 +143,7 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         if (split == null || split.isEmpty()) {
             split = ":";
         }
-        return this.namespace + split + this.key;
+        return getNamespace() + split + getKey();
     }
 
     @Override
