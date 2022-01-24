@@ -28,6 +28,7 @@ import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,6 +88,11 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
 
     @NotNull
     public String getKey() {
+        return this.key.toString();
+    }
+
+    @ApiStatus.AvailableSince(value = "3.16.1.0")
+    public Key getKeyComponent() {
         return this.key;
     }
 
@@ -146,6 +152,80 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     public int compareTo(@NotNull NamespacedKey namespacedKey) {
         int namespaceDifference = getNamespace().compareTo(namespacedKey.getNamespace());
         return namespaceDifference == 0 ? getKey().compareTo(namespacedKey.getKey()) : namespaceDifference;
+    }
+
+    /**
+     * Represents the key part of the NamespacedKey.
+     * The idea behind this component is to make it easier to manage folders specified in the key and provide util methods for it.<br>
+     * Such as
+     * <pre>
+     *     "folder/sub_folder/another/file"</pre>
+     * is converted into
+     * <pre>
+     *     folder:  "folder/sub_folder/another"
+     *     key:     "file"
+     * </pre>
+     */
+    @ApiStatus.AvailableSince(value = "3.16.1.0")
+    public static final class Key {
+
+        private final String folder;
+        private final String key;
+
+        private Key(String keyString) {
+            Preconditions.checkArgument(VALID_KEY.matcher(keyString).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", keyString);
+            if (keyString.contains("/")) {
+                String[] args = keyString.split("/(?!.*/)");
+                if (args.length > 1) {
+                    this.folder = args[0];
+                    this.key = args[1];
+                    return;
+                } else if (args.length == 1) {
+                    this.folder = "";
+                    this.key = args[0];
+                    return;
+                }
+            }
+            this.key = keyString;
+            this.folder = "";
+        }
+
+        public String getFolder() {
+            return folder;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String toString() {
+            return toString("/");
+        }
+
+        public String toString(String separator) {
+            return toString(separator, false);
+        }
+
+        public String toString(String separator, boolean forceSeparator) {
+            if (separator == null || separator.isEmpty()) {
+                separator = "/";
+            }
+            return folder.isBlank() ? ((forceSeparator ? separator : "") + key) : (folder + separator + key);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Key that = (Key) o;
+            return Objects.equals(folder, that.folder) && Objects.equals(key, that.key);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(folder, key);
+        }
     }
 
     static class Deserializer extends JsonDeserializer<NamespacedKey> {
