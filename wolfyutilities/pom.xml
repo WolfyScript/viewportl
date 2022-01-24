@@ -115,6 +115,10 @@
                                     <pattern>com.fasterxml.jackson</pattern>
                                     <shadedPattern>me.wolfyscript.lib.com.fasterxml.jackson</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>net.kyori</pattern>
+                                    <shadePattern>me.wolfyscript.lib.net.kyori</shadePattern>
+                                </relocation>
                             </relocations>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
@@ -126,6 +130,7 @@
                                     <include>com.fasterxml.jackson.core</include>
                                     <include>org.reflections</include>
                                     <include>org.javassist</include>
+                                    <include>net.kyori</include>
                                 </includes>
                             </artifactSet>
                             <filters>

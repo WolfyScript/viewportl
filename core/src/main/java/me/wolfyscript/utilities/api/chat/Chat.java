@@ -24,6 +24,9 @@ import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -64,14 +67,28 @@ public class Chat {
     public void sendMessages(Player player, String... messages) {
         if (player != null) {
             for (String message : messages) {
-                player.sendMessage(ChatColor.convert(inGamePrefix + languageAPI.replaceKeys(message)));
+                player.spigot().sendMessage(new ComponentBuilder().appendLegacy(inGamePrefix).appendLegacy(ChatColor.convert(languageAPI.replaceKeys(message))).create());
             }
         }
     }
 
     public void sendMessage(Player player, String message) {
         if (player != null) {
-            player.sendMessage(ChatColor.convert(inGamePrefix + languageAPI.replaceKeys(message)));
+            player.spigot().sendMessage(new ComponentBuilder().appendLegacy(inGamePrefix).appendLegacy(ChatColor.convert(languageAPI.replaceKeys(message))).create());
+        }
+    }
+
+    public void sendMessage(Player player, Component component) {
+        if (player != null) {
+            player.spigot().sendMessage(BungeeComponentSerializer.get().serialize(component));
+        }
+    }
+
+    public void sendMessage(Player player, Component... components) {
+        if (player != null) {
+            for (Component component : components) {
+                player.spigot().sendMessage(BungeeComponentSerializer.get().serialize(component));
+            }
         }
     }
 

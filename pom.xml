@@ -130,12 +130,21 @@
             <version>4.1.63.Final</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Adventure ChatComponent API -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- LWC by Brokkonaut for entity locking -->
         <dependency>
             <groupId>de.iani.cubeside</groupId>
             <artifactId>LWC</artifactId>
             <version>5.0.16-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <!-- WorldEdit / WorldGuard -->
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
