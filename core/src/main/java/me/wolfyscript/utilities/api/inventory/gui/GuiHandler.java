@@ -25,6 +25,8 @@ import me.wolfyscript.utilities.api.inventory.gui.button.ButtonRender;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -335,7 +337,7 @@ public class GuiHandler<C extends CustomCache> implements Listener {
             window.create(this);
             return;
         }
-        api.getChat().sendMessage(player1, "§4You don't have the permission §c" + (api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString(".")));
+        api.getChat().sendMessage(player1, Component.text("You don't have the permission ", NamedTextColor.RED).append(Component.text(api.getPlugin().getName() + ".inv." + window.getNamespacedKey().toString("."), NamedTextColor.DARK_RED)));
     }
 
     /**

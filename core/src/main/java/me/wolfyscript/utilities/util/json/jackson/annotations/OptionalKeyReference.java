@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation allows serializing/deserializing an instance of {@link Keyed} by its key or value.
- * The annotated type <b>must</b> have a {@link Registry}, that contains the class of the type (For example using: {@link me.wolfyscript.utilities.registry.RegistrySimple#RegistrySimple(Registries, Class)}).<br>
+ * The annotated type <b>must</b> have a {@link Registry}, that contains the class of the type.<br>
  * The specified key must exist and be type of {@link NamespacedKey}.<br>
  *
  * <br>Serialization:<br>

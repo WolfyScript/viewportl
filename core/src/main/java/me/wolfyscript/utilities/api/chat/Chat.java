@@ -18,251 +18,202 @@
 
 package me.wolfyscript.utilities.api.chat;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
-import me.wolfyscript.utilities.api.language.LanguageAPI;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
-import me.wolfyscript.utilities.util.chat.ChatColor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.Template;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class Chat {
-
-    protected static final Map<UUID, PlayerAction> CLICK_DATA_MAP = new HashMap<>();
-
-    private String inGamePrefix;
-
-    private final WolfyUtilities wolfyUtilities;
-    private final LanguageAPI languageAPI;
-    private final Plugin plugin;
-
-    public Chat(WolfyUtilities wolfyUtilities) {
-        this.wolfyUtilities = wolfyUtilities;
-        this.languageAPI = wolfyUtilities.getLanguageAPI();
-        this.plugin = wolfyUtilities.getPlugin();
-        this.inGamePrefix = "[" + plugin.getName() + "]";
+public abstract class Chat {
+    
+    protected Chat() {
+        
     }
 
-    public String getInGamePrefix() {
-        return inGamePrefix;
-    }
+    public abstract void setChatPrefix(Component chatPrefix);
 
-    public void setInGamePrefix(String inGamePrefix) {
-        this.inGamePrefix = inGamePrefix;
-    }
+    public abstract Component getChatPrefix();
 
-    public void sendMessages(Player player, String... messages) {
-        if (player != null) {
-            for (String message : messages) {
-                player.spigot().sendMessage(new ComponentBuilder().appendLegacy(inGamePrefix).appendLegacy(ChatColor.convert(languageAPI.replaceKeys(message))).create());
-            }
-        }
-    }
+    public abstract MiniMessage getMiniMessage();
 
-    public void sendMessage(Player player, String message) {
-        if (player != null) {
-            player.spigot().sendMessage(new ComponentBuilder().appendLegacy(inGamePrefix).appendLegacy(ChatColor.convert(languageAPI.replaceKeys(message))).create());
-        }
-    }
-
-    public void sendMessage(Player player, Component component) {
-        if (player != null) {
-            player.spigot().sendMessage(BungeeComponentSerializer.get().serialize(component));
-        }
-    }
-
-    public void sendMessage(Player player, Component... components) {
-        if (player != null) {
-            for (Component component : components) {
-                player.spigot().sendMessage(BungeeComponentSerializer.get().serialize(component));
-            }
-        }
-    }
-
-    @SafeVarargs
-    public final void sendMessage(Player player, String message, Pair<String, String>... replacements) {
-        if (player == null) return;
-        if (replacements != null) {
-            message = inGamePrefix + languageAPI.replaceColoredKeys(message);
-            for (Pair<String, String> pair : replacements) {
-                message = message.replaceAll(pair.getKey(), pair.getValue());
-            }
-        }
-        player.sendMessage(ChatColor.convert(message));
-    }
-    /*
-    Sends a global message from an GuiCluster to the player!
+    /**
+     * Sends a message to the player with legacy chat format.
+     *
+     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
+     * @param player The player to send the message to.
+     * @param message The message to send.
      */
+    @Deprecated
+    public abstract void sendMessage(Player player, String message);
 
-    public void sendKey(Player player, String clusterID, String msgKey) {
-        sendMessage(player, "$inventories." + clusterID + ".global_messages." + msgKey + "$");
+    public abstract void sendMessage(Player player, Component component);
+
+    public abstract void sendMessage(Player player, boolean prefix, Component component);
+
+    @Deprecated
+    public abstract void sendMessages(Player player, String... messages);
+
+    public abstract void sendMessages(Player player, Component... components);
+
+    public abstract void sendMessages(Player player, boolean prefix, Component... components);
+
+    public abstract void sendMessage(Player player, String message, Pair<String, String>... replacements);
+
+    /**
+     * Sends a global message of the Cluster to the player.
+     *
+     * @param player
+     * @param clusterID
+     * @param msgKey
+     */
+    @Deprecated
+    public abstract void sendKey(Player player, String clusterID, String msgKey);
+
+    /**
+     * Sends a global message of the Cluster to the player.
+     *
+     * @param player
+     * @param guiCluster
+     * @param msgKey
+     */
+    public abstract void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey);
+
+    public abstract void sendKey(Player player, NamespacedKey windowKey, String msgKey);
+
+    public abstract void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey, List<Template> templates);
+
+    public abstract void sendKey(Player player, NamespacedKey windowKey, String msgKey, List<Template> templates);
+
+    @Deprecated
+    public abstract void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey, Pair<String, String>... replacements);
+
+    @Deprecated
+    public abstract void sendKey(Player player, NamespacedKey namespacedKey, String msgKey, Pair<String, String>... replacements);
+
+    public abstract Component translated(String key);
+
+    public abstract Component translated(String key, List<Template> templates);
+
+    /**
+     * Creates a ClickEvent, that executes code when clicked.<br>
+     * It will internally link a command with an id to the code to execute.
+     * That internal command can only be executed by the player, which the message was sent to.
+     *
+     * @param player The player the event belongs to.
+     * @param discard If it should be discarded after clicked. (Any action is removed, when the player disconnects!)
+     * @param action The action to execute on click.
+     * @return The ClickEvent with the generated command.
+     */
+    public abstract ClickEvent executable(Player player, boolean discard, ClickAction action);
+
+    /**
+     * Sends the clickable chat messages to the player.<br>
+     * It allows you to also include ClickData with executable code.
+     *
+     * @deprecated This was mostly used to run code, when a player clicks on a text in chat. That is now replaced by {@link #executable(Player, boolean, ClickAction)}, which can be used in combination of any {@link Component} and is way more flexible!
+     *
+     * @param player The player to send the message to.
+     * @param clickData The click data of the message.
+     */
+    @Deprecated
+    public abstract void sendActionMessage(Player player, ClickData... clickData);
+
+    @Deprecated
+    public abstract TextComponent[] getActionMessage(String prefix, Player player, ClickData... clickData);
+
+    static void removeClickData(UUID uuid) {
+        ChatImpl.removeClickData(uuid);
     }
 
-    public void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey) {
-        sendMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
+    static PlayerAction getClickData(UUID uuid) {
+        return ChatImpl.getClickData(uuid);
     }
 
-    public void sendKey(Player player, NamespacedKey namespacedKey, String msgKey) {
-        sendMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$");
-    }
+    /**
+     * @deprecated Replaced by {@link #getChatPrefix()}
+     * @return The chat prefix as a String.
+     */
+    @Deprecated
+    public abstract String getInGamePrefix();
 
-    @SafeVarargs
-    public final void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey, Pair<String, String>... replacements) {
-        sendMessage(player, "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$", replacements);
-    }
-
-    @SafeVarargs
-    public final void sendKey(Player player, NamespacedKey namespacedKey, String msgKey, Pair<String, String>... replacements) {
-        sendMessage(player, "$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey + "$", replacements);
-    }
-
-    public void sendActionMessage(Player player, ClickData... clickData) {
-        TextComponent[] textComponents = getActionMessage(inGamePrefix, player, clickData);
-        player.spigot().sendMessage(textComponents);
-    }
-
-    public TextComponent[] getActionMessage(String prefix, Player player, ClickData... clickData) {
-        TextComponent[] textComponents = new TextComponent[clickData.length + 1];
-        textComponents[0] = new TextComponent(prefix);
-        for (int i = 1; i < textComponents.length; i++) {
-            ClickData data = clickData[i - 1];
-            TextComponent component = new TextComponent(languageAPI.replaceColoredKeys(data.getMessage()));
-            if (data.getClickAction() != null) {
-                UUID id = UUID.randomUUID();
-                while (CLICK_DATA_MAP.containsKey(id)) {
-                    id = UUID.randomUUID();
-                }
-                PlayerAction playerAction = new PlayerAction(wolfyUtilities, player, data);
-                CLICK_DATA_MAP.put(id, playerAction);
-                component.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/wua " + id));
-            }
-            for (ChatEvent<?, ?> chatEvent : data.getChatEvents()) {
-                if (chatEvent instanceof HoverEvent) {
-                    component.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(((HoverEvent) chatEvent).getAction(), ((HoverEvent) chatEvent).getValue()));
-                } else if (chatEvent instanceof me.wolfyscript.utilities.api.chat.ClickEvent) {
-                    component.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(((me.wolfyscript.utilities.api.chat.ClickEvent) chatEvent).getAction(), ((me.wolfyscript.utilities.api.chat.ClickEvent) chatEvent).getValue()));
-                }
-            }
-            textComponents[i] = component;
-        }
-        return textComponents;
-    }
-
-    public static void removeClickData(UUID uuid) {
-        CLICK_DATA_MAP.remove(uuid);
-    }
-
-    public static PlayerAction getClickData(UUID uuid) {
-        return CLICK_DATA_MAP.get(uuid);
-    }
-
-    public static class ChatListener implements Listener {
-
-        @EventHandler
-        public void actionRemoval(PlayerQuitEvent event) {
-            CLICK_DATA_MAP.keySet().removeIf(uuid -> CLICK_DATA_MAP.get(uuid).getUuid().equals(event.getPlayer().getUniqueId()));
-        }
-    }
+    /**
+     * @deprecated Replaced by {@link #setChatPrefix(Component)}
+     * @param inGamePrefix The chat prefix.
+     */
+    @Deprecated
+    public abstract void setInGamePrefix(String inGamePrefix);
 
     /**
      * @deprecated Replaced by {@link #getInGamePrefix()}
      */
-    @Deprecated
-    public String getIN_GAME_PREFIX() {
-        return inGamePrefix;
-    }
+    @Deprecated(forRemoval = true)
+    public String getIN_GAME_PREFIX() { return getInGamePrefix(); }
 
     /**
      * @deprecated Replaced by {@link #setInGamePrefix(String)}
      */
-    @Deprecated
-    public void setIN_GAME_PREFIX(String inGamePrefix) {
-        this.inGamePrefix = inGamePrefix;
-    }
+    @Deprecated(forRemoval = true)
+    public void setIN_GAME_PREFIX(String inGamePrefix) { setInGamePrefix(inGamePrefix); }
 
     /**
      * @deprecated Due to logger changes it is no longer used and required!
      */
-    @Deprecated
-    public String getConsolePrefix() {
-        return "[" + plugin.getName() + "]";
-    }
+    @Deprecated(forRemoval = true)
+    public abstract String getConsolePrefix();
 
     /**
      * @deprecated Due to logger changes it is no longer used and required!
      */
-    @Deprecated
-    public void setConsolePrefix(String consolePrefix) {
-        //NOTHING!
-    }
+    @Deprecated(forRemoval = true)
+    public void setConsolePrefix(String consolePrefix) {}
 
     /**
      * @deprecated Due to logger changes it is no longer used and required!
      */
-    @Deprecated
-    public String getCONSOLE_PREFIX() {
-        return getConsolePrefix();
-    }
+    @Deprecated(forRemoval = true)
+    public String getCONSOLE_PREFIX() { return getConsolePrefix(); }
 
     /**
      * @deprecated Due to logger changes it is no longer used and required!
      */
-    @Deprecated
-    public void setCONSOLE_PREFIX(String consolePrefix) {
-        setConsolePrefix(consolePrefix);
-    }
+    @Deprecated(forRemoval = true)
+    public void setCONSOLE_PREFIX(String consolePrefix) {}
 
     /**
      * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#info(String)}!
      */
-    @Deprecated
-    public void sendConsoleMessage(String message) {
-        wolfyUtilities.getConsole().info(message);
-    }
+    @Deprecated(forRemoval = true)
+    public abstract void sendConsoleMessage(String message);
 
     /**
      * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#log(Level, String, String...)}!
      */
-    @Deprecated
-    public void sendConsoleMessage(String message, String... replacements) {
-        wolfyUtilities.getConsole().log(Level.INFO, message, replacements);
-    }
+    @Deprecated(forRemoval = true)
+    public abstract void sendConsoleMessage(String message, String... replacements);
 
     /**
      * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#log(Level, String, String[]...)}!
      */
-    @Deprecated
-    public void sendConsoleMessage(String message, String[]... replacements) {
-        wolfyUtilities.getConsole().log(Level.INFO, message, replacements);
-    }
+    @Deprecated(forRemoval = true)
+    public abstract void sendConsoleMessage(String message, String[]... replacements);
 
     /**
      * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#warn(String)}!
      */
-    @Deprecated
-    public void sendConsoleWarning(String message) {
-        wolfyUtilities.getConsole().warn(message);
-    }
+    @Deprecated(forRemoval = true)
+    public abstract void sendConsoleWarning(String message);
 
     /**
      * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#debug(String)}!
      */
-    @Deprecated
-    public void sendDebugMessage(String message) {
-        wolfyUtilities.getConsole().debug(message);
-    }
-
+    @Deprecated(forRemoval = true)
+    public abstract void sendDebugMessage(String message);
 }

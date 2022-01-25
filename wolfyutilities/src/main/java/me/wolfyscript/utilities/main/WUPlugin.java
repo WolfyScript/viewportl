@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
+import me.wolfyscript.utilities.api.chat.ChatImpl;
 import me.wolfyscript.utilities.api.console.Console;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.AttributesModifiersMeta;
@@ -91,6 +92,10 @@ import me.wolfyscript.utilities.util.particles.timer.TimerPi;
 import me.wolfyscript.utilities.util.particles.timer.TimerRandom;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import me.wolfyscript.utilities.util.world.WorldUtils;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -113,13 +118,14 @@ public final class WUPlugin extends WolfyUtilCore {
     private final MessageHandler messageHandler;
     private final MessageFactory messageFactory;
     private final CompatibilityManagerImpl compatibilityManager;
+    private BukkitAudiences adventure;
 
     public WUPlugin() {
         super();
         instance = this;
         this.chat = api.getChat();
         this.console = api.getConsole();
-        chat.setInGamePrefix("§8[§3WU§8] §7");
+        chat.setChatPrefix(Component.empty().color(NamedTextColor.GRAY).append(Component.text("[", NamedTextColor.DARK_RED)).append(Component.text("WU", NamedTextColor.AQUA)).append(Component.text("] ", NamedTextColor.DARK_GRAY)));
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
@@ -130,7 +136,7 @@ public final class WUPlugin extends WolfyUtilCore {
         instance = this;
         this.chat = api.getChat();
         this.console = api.getConsole();
-        chat.setInGamePrefix("§8[§3WU§8] §7");
+        chat.setChatPrefix(Component.empty().color(NamedTextColor.GRAY).append(Component.text("[", NamedTextColor.DARK_RED)).append(Component.text("WU", NamedTextColor.AQUA)).append(Component.text("] ", NamedTextColor.DARK_GRAY)));
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
@@ -144,6 +150,14 @@ public final class WUPlugin extends WolfyUtilCore {
     @Override
     public CompatibilityManager getCompatibilityManager() {
         return compatibilityManager;
+    }
+
+    @Override
+    public BukkitAudiences getAdventure() {
+        if(this.adventure == null) {
+            throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
+        }
+        return this.adventure;
     }
 
     public WolfyUtilities getWolfyUtilities() {
@@ -226,6 +240,7 @@ public final class WUPlugin extends WolfyUtilCore {
         console.info("Minecraft version: " + ServerVersion.getVersion().getVersion());
         console.info("WolfyUtilities version: " + ServerVersion.getWUVersion().getVersion());
         console.info("Environment: " + WolfyUtilities.getENVIRONMENT());
+        this.adventure = BukkitAudiences.create(this);
         this.config = new WUConfig(api.getConfigAPI(), this);
         compatibilityManager.init();
         // Register ReferenceParser
@@ -272,6 +287,10 @@ public final class WUPlugin extends WolfyUtilCore {
 
     @Override
     public void onDisable() {
+        if(this.adventure != null) {
+            this.adventure.close();
+            this.adventure = null;
+        }
         api.getConfigAPI().saveConfigs();
         PlayerUtils.saveStores();
         console.info("Save stored Custom Items");
@@ -284,7 +303,7 @@ public final class WUPlugin extends WolfyUtilCore {
     }
 
     private void registerListeners() {
-        Bukkit.getPluginManager().registerEvents(new Chat.ChatListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ChatImpl.ChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(this), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
@@ -304,13 +323,14 @@ public final class WUPlugin extends WolfyUtilCore {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equalsIgnoreCase("wolfyutils") && sender instanceof Player) {
-            chat.sendMessages((Player) sender, "——————— &3&lWolfyUtilities &7———————",
-                    "",
-                    "&7Author: &l" + String.join(", ", getDescription().getAuthors()),
-                    "",
-                    "&7Version: &l" + ServerVersion.getWUVersion().getVersion(),
-                    "",
-                    "———————————————————————");
+            chat.sendMessages((Player) sender, true,
+                    Component.text("——————— ", NamedTextColor.GRAY).append(Component.text("WolfyUtilities", NamedTextColor.AQUA, TextDecoration.BOLD)).append(Component.text(" ———————")),
+                    Component.empty(),
+                    Component.text("Author: ", NamedTextColor.GRAY).append(Component.text(String.join(", ", getDescription().getAuthors()), null, TextDecoration.BOLD)),
+                    Component.empty(),
+                    Component.text("Version: ", NamedTextColor.GRAY).append(Component.text(ServerVersion.getWUVersion().getVersion(), null, TextDecoration.BOLD)),
+                    Component.text("———————————————————————", NamedTextColor.GRAY)
+            );
         }
         return true;
     }

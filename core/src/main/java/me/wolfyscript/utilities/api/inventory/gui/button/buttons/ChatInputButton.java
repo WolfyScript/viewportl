@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
 import me.wolfyscript.utilities.api.chat.Chat;
+import me.wolfyscript.utilities.api.chat.ChatImpl;
 import me.wolfyscript.utilities.api.chat.ClickData;
 import me.wolfyscript.utilities.api.inventory.gui.*;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonAction;

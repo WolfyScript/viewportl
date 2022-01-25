@@ -29,13 +29,13 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import me.wolfyscript.utilities.util.reflection.InventoryUpdate;
+import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -308,7 +308,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     /**
-     * Opens the chat, send the player the defined message, which is set inside of the language under "inventories.&#60;guiCluster&#62;.global_items.&#60;msgKey&#62;"
+     * Opens the chat, send the player the defined message, which is set inside of the language under "inventories.&#60;guiCluster&#62;.global_messages.&#60;msgKey&#62;"
      * Then it waits for the player's input.
      * When the player sends the message the inputAction method is executed.
      *
@@ -320,7 +320,8 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public void openChat(GuiCluster<C> guiCluster, String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendMessage(guiHandler.getPlayer(), "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
+        var chat = wolfyUtilities.getChat();
+        chat.sendMessage(guiHandler.getPlayer(), chat.translated("inventories." + guiCluster.getId() + ".global_messages." + msgKey));
     }
 
     /**
@@ -371,23 +372,43 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     /**
-     * @param guiHandler   The {@link GuiHandler} that this message should be send to.
+     * @param guiHandler   The {@link GuiHandler} that this message should be sent to.
      * @param msgKey       The key of the message.
      * @param replacements The replacement strings to replace specific strings with values.
      */
     @SafeVarargs
+    @Deprecated
     public final void sendMessage(GuiHandler<C> guiHandler, String msgKey, Pair<String, String>... replacements) {
         wolfyUtilities.getChat().sendKey(guiHandler.getPlayer(), getNamespacedKey(), msgKey, replacements);
     }
 
     /**
-     * @param player       The Player this message should be send to.
+     * @param player       The Player this message should be sent to.
      * @param msgKey       The key of the message.
      * @param replacements The replacement strings to replace specific strings with values.
      */
     @SafeVarargs
+    @Deprecated
     public final void sendMessage(Player player, String msgKey, Pair<String, String>... replacements) {
         wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey, replacements);
+    }
+
+    /**
+     * @param guiHandler   The {@link GuiHandler} that this message should be sent to.
+     * @param msgKey       The key of the message.
+     * @param templates    The placeholders and values to replace in the message.
+     */
+    public final void sendMessage(GuiHandler<C> guiHandler, String msgKey, List<Template> templates) {
+        wolfyUtilities.getChat().sendKey(guiHandler.getPlayer(), getNamespacedKey(), msgKey, templates);
+    }
+
+    /**
+     * @param player       The Player this message should be sent to.
+     * @param msgKey       The key of the message.
+     * @param templates    The placeholders and values to replace in the message.
+     */
+    public final void sendMessage(Player player, String msgKey, List<Template> templates) {
+        wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey, templates);
     }
 
     /**

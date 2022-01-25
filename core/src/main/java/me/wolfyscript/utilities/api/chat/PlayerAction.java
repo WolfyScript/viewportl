@@ -42,6 +42,14 @@ public class PlayerAction {
         this.discard = clickData.isDiscard();
     }
 
+    public PlayerAction(WolfyUtilities api, Player player, ClickAction action, boolean discard) {
+        this.uuid = player.getUniqueId();
+        this.api = api;
+        this.message = null;
+        this.clickAction = action;
+        this.discard = discard;
+    }
+
     public void run(Player player) {
         if (clickAction != null) {
             clickAction.run(api, player);
@@ -64,10 +72,12 @@ public class PlayerAction {
         this.api = api;
     }
 
+    @Deprecated
     public TextComponent getMessage() {
         return message;
     }
 
+    @Deprecated
     public void setMessage(TextComponent message) {
         this.message = message;
     }

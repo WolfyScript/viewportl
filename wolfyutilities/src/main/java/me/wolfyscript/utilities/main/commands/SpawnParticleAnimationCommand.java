@@ -29,6 +29,8 @@ import me.wolfyscript.utilities.util.particles.animators.AnimatorCircle;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorSphere;
 import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import me.wolfyscript.utilities.util.particles.timer.TimerPi;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.command.Command;
@@ -86,9 +88,9 @@ public class SpawnParticleAnimationCommand implements CommandExecutor, TabComple
                             try {
                                 UUID uuid = UUID.fromString(args[1]);
                                 ParticleUtils.stopAnimation(uuid);
-                                chat.sendMessage(player, "&eStopped effect with uuid &6" + args[1] + " &eif it was active!");
+                                chat.sendMessage(player, Component.text("Stopped effect with uuid ", NamedTextColor.YELLOW).append(Component.text(args[1], NamedTextColor.GOLD)).append(Component.text("if it was active!")));
                             } catch (IllegalArgumentException ex) {
-                                chat.sendMessage(player, "&cInvalid UUID &4" + args[1]);
+                                chat.sendMessage(player, Component.text("Invalid UUID ", NamedTextColor.RED).append(Component.text(args[1], NamedTextColor.DARK_RED)));
                             }
                         }
                     }

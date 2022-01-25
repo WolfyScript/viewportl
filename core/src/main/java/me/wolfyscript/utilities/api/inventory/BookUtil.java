@@ -20,6 +20,7 @@ package me.wolfyscript.utilities.api.inventory;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
+import me.wolfyscript.utilities.api.chat.ChatImpl;
 import me.wolfyscript.utilities.api.chat.ClickData;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;

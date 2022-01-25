@@ -19,23 +19,30 @@
 package me.wolfyscript.utilities.api.language;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.JsonConfig;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class Language extends JsonConfig<JsonNode> {
 
+    private final WolfyUtilities api;
     private final Map<String, JsonNode> cachedNodes = new HashMap<>();
     private final String lang;
 
     public Language(Plugin plugin, String lang) {
         super(new File(plugin.getDataFolder(), "lang/" + lang + ".json"), JsonNode.class);
         this.lang = lang;
+        this.api = WolfyUtilCore.getInstance().getAPI(plugin);
     }
 
     public String getName() {
@@ -69,4 +76,5 @@ public class Language extends JsonConfig<JsonNode> {
         cachedNodes.put(path, currentNode);
         return currentNode;
     }
+
 }

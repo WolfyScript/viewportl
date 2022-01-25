@@ -22,9 +22,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.chat.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -32,7 +35,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class LanguageAPI {
-
 
     private static final String NAME_KEY = ".name";
     private static final String LORE_KEY = ".lore";
@@ -46,14 +48,11 @@ public class LanguageAPI {
     private Language activeLanguage;
     private Language fallbackLanguage;
 
-    //private HashMap<String, Language> playerLanguage;
-
     public LanguageAPI(WolfyUtilities api) {
         this.api = api;
         this.languages = new ArrayList<>();
         this.activeLanguage = null;
         this.fallbackLanguage = null;
-        //this.playerLanguage = new HashMap<>();
     }
 
     public void unregisterLanguages() {
@@ -213,15 +212,42 @@ public class LanguageAPI {
         return replaceColoredKey(String.format(BUTTON_CLUSTER_KEY + LORE_KEY, clusterId, buttonKey));
     }
 
-    //Feature idea to let players choose their own language.
-    /*
-    public void setPlayerLanguage(Player player, Language language){
-        playerLanguage.put(player.getUniqueId().toString(), language);
+    public Component getComponent(String key) {
+        JsonNode node = getNodeAt(key);
+        if (node.isTextual()) {
+            return api.getChat().getMiniMessage().parse(node.asText());
+        } else if(node.isArray()) {
+            Component component = Component.empty();
+            Iterator<JsonNode> nodeItr = node.elements();
+            while (nodeItr.hasNext()) {
+                JsonNode jsonNode = nodeItr.next();
+                component.append(api.getChat().getMiniMessage().parse(jsonNode.asText()));
+                if (nodeItr.hasNext()) {
+                    component.append(Component.text(" "));
+                }
+            }
+            return component;
+        }
+        return Component.empty();
     }
 
-    public Language getPlayerLanguage(Player player){
-        return playerLanguage.get(player.getUniqueId().toString());
+    public Component getComponent(String key, List<Template> templates) {
+        JsonNode node = getNodeAt(key);
+        if (node.isTextual()) {
+            return api.getChat().getMiniMessage().parse(node.asText(), templates);
+        } else if(node.isArray()) {
+            Component component = Component.empty();
+            Iterator<JsonNode> nodeItr = node.elements();
+            while (nodeItr.hasNext()) {
+                JsonNode jsonNode = nodeItr.next();
+                component.append(api.getChat().getMiniMessage().parse(jsonNode.asText(), templates));
+                if (nodeItr.hasNext()) {
+                    component.append(Component.text(" "));
+                }
+            }
+            return component;
+        }
+        return Component.empty();
     }
 
-    */
 }
