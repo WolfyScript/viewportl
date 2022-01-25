@@ -213,34 +213,23 @@ public class LanguageAPI {
     }
 
     public Component getComponent(String key) {
-        JsonNode node = getNodeAt(key);
-        if (node.isTextual()) {
-            return api.getChat().getMiniMessage().parse(node.asText());
-        } else if(node.isArray()) {
-            Component component = Component.empty();
-            Iterator<JsonNode> nodeItr = node.elements();
-            while (nodeItr.hasNext()) {
-                JsonNode jsonNode = nodeItr.next();
-                component.append(api.getChat().getMiniMessage().parse(jsonNode.asText()));
-                if (nodeItr.hasNext()) {
-                    component.append(Component.text(" "));
-                }
-            }
-            return component;
-        }
-        return Component.empty();
+        return getComponent(key, false, List.of());
     }
 
     public Component getComponent(String key, List<Template> templates) {
+        return getComponent(key, false, templates);
+    }
+
+    public Component getComponent(String key, boolean translateLegacyColor, List<Template> templates) {
         JsonNode node = getNodeAt(key);
         if (node.isTextual()) {
-            return api.getChat().getMiniMessage().parse(node.asText(), templates);
+            return api.getChat().getMiniMessage().parse(translateLegacyColor ? ChatColor.convert(node.asText()) : node.asText(), templates);
         } else if(node.isArray()) {
             Component component = Component.empty();
             Iterator<JsonNode> nodeItr = node.elements();
             while (nodeItr.hasNext()) {
                 JsonNode jsonNode = nodeItr.next();
-                component.append(api.getChat().getMiniMessage().parse(jsonNode.asText(), templates));
+                component.append(api.getChat().getMiniMessage().parse(translateLegacyColor ? ChatColor.convert(jsonNode.asText()) : jsonNode.asText(), templates));
                 if (nodeItr.hasNext()) {
                     component.append(Component.text(" "));
                 }

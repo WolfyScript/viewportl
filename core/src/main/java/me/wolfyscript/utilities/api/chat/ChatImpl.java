@@ -61,7 +61,7 @@ public class ChatImpl extends Chat {
     private final Plugin plugin;
     private final MiniMessage miniMessage;
 
-    public ChatImpl(WolfyUtilities wolfyUtilities) {
+    public ChatImpl(@NotNull WolfyUtilities wolfyUtilities) {
         super();
         this.wolfyUtilities = wolfyUtilities;
         this.languageAPI = wolfyUtilities.getLanguageAPI();
@@ -77,6 +77,7 @@ public class ChatImpl extends Chat {
      * @return The chat prefix as a String.
      */
     @Deprecated
+    @Override
     public String getInGamePrefix() {
         return BukkitComponentSerializer.legacy().serialize(chatPrefix);
     }
@@ -86,18 +87,22 @@ public class ChatImpl extends Chat {
      * @param inGamePrefix The chat prefix.
      */
     @Deprecated
+    @Override
     public void setInGamePrefix(String inGamePrefix) {
         this.chatPrefix = BukkitComponentSerializer.legacy().deserialize(inGamePrefix);
     }
 
+    @Override
     public void setChatPrefix(Component chatPrefix) {
         this.chatPrefix = chatPrefix;
     }
 
+    @Override
     public Component getChatPrefix() {
         return chatPrefix;
     }
 
+    @Override
     public MiniMessage getMiniMessage() {
         return miniMessage;
     }
@@ -110,18 +115,21 @@ public class ChatImpl extends Chat {
      * @param message The message to send.
      */
     @Deprecated
+    @Override
     public void sendMessage(Player player, String message) {
         if (player != null) {
             sendMessage(player, true, LEGACY_SERIALIZER.deserialize(ChatColor.convert(languageAPI.replaceKeys(message))));
         }
     }
 
+    @Override
     public void sendMessage(Player player, Component component) {
         if (player != null) {
             player.spigot().sendMessage(BUNGEE_SERIALIZER.serialize(component));
         }
     }
 
+    @Override
     public void sendMessage(Player player, boolean prefix, Component component) {
         if (player != null) {
             if (prefix) {
@@ -132,6 +140,7 @@ public class ChatImpl extends Chat {
     }
 
     @Deprecated
+    @Override
     public void sendMessages(Player player, String... messages) {
         if (player != null) {
             for (String message : messages) {
@@ -140,6 +149,7 @@ public class ChatImpl extends Chat {
         }
     }
 
+    @Override
     public void sendMessages(Player player, Component... components) {
         if (player != null) {
             for (Component component : components) {
@@ -148,6 +158,7 @@ public class ChatImpl extends Chat {
         }
     }
 
+    @Override
     public void sendMessages(Player player, boolean prefix, Component... components) {
         for (Component component : components) {
             sendMessage(player, prefix, component);
@@ -155,6 +166,7 @@ public class ChatImpl extends Chat {
     }
 
     @SafeVarargs
+    @Override
     public final void sendMessage(Player player, String message, Pair<String, String>... replacements) {
         if (player == null) return;
         if (replacements != null) {
@@ -174,6 +186,7 @@ public class ChatImpl extends Chat {
      * @param msgKey
      */
     @Deprecated
+    @Override
     public void sendKey(Player player, String clusterID, String msgKey) {
         sendMessage(player, translated("inventories." + clusterID + ".global_messages." + msgKey));
     }
@@ -185,44 +198,57 @@ public class ChatImpl extends Chat {
      * @param guiCluster
      * @param msgKey
      */
+    @Override
     public void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey) {
         sendMessage(player, translated("inventories." + guiCluster.getId() + ".global_messages." + msgKey));
     }
 
+    @Override
     public void sendKey(Player player, @NotNull NamespacedKey windowKey, String msgKey) {
         sendMessage(player, translated("inventories." + windowKey.getNamespace() + "." + windowKey.getKey() + ".messages." + msgKey));
     }
 
+    @Override
     public final void sendKey(Player player, @NotNull GuiCluster<?> guiCluster, String msgKey, List<Template> templates) {
         sendMessage(player, translated("inventories." + guiCluster.getId() + ".global_messages." + msgKey, templates));
     }
 
+    @Override
     public final void sendKey(Player player, NamespacedKey windowKey, String msgKey, List<Template> templates) {
         sendMessage(player, translated("inventories." + windowKey.getNamespace() + "." + windowKey.getKey() + ".messages." + msgKey, templates));
     }
 
     @Deprecated
     @SafeVarargs
+    @Override
     public final void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey, Pair<String, String>... replacements) {
-        sendMessage(player, translated("inventories." + guiCluster.getId() + ".global_messages." + msgKey, getTemplates(replacements)));
+        sendMessage(player, translated("inventories." + guiCluster.getId() + ".global_messages." + msgKey, true, getTemplates(replacements)));
     }
 
     @Deprecated
     @SafeVarargs
+    @Override
     public final void sendKey(Player player, NamespacedKey namespacedKey, String msgKey, Pair<String, String>... replacements) {
-        sendMessage(player, translated("inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey, getTemplates(replacements)));
+        sendMessage(player, translated("inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey, true, getTemplates(replacements)));
     }
 
     private List<Template> getTemplates(Pair<String, String>[] replacements) {
         return Arrays.stream(replacements).map(pair -> Template.of(pair.getKey(), pair.getValue())).toList();
     }
 
+    @Override
     public Component translated(String key) {
         return languageAPI.getComponent(key);
     }
 
+    @Override
     public Component translated(String key, List<Template> templates) {
         return languageAPI.getComponent(key, templates);
+    }
+
+    @Override
+    public Component translated(String key, boolean translateLegacyColor, List<Template> templates) {
+        return languageAPI.getComponent(key, translateLegacyColor, templates);
     }
 
     /**
@@ -235,6 +261,7 @@ public class ChatImpl extends Chat {
      * @param action The action to execute on click.
      * @return The ClickEvent with the generated command.
      */
+    @Override
     public net.kyori.adventure.text.event.ClickEvent executable(Player player, boolean discard, ClickAction action) {
         Preconditions.checkArgument(action != null, "The click action cannot be null!");
         UUID id = UUID.randomUUID();
@@ -256,12 +283,14 @@ public class ChatImpl extends Chat {
      * @param clickData The click data of the message.
      */
     @Deprecated
+    @Override
     public void sendActionMessage(Player player, ClickData... clickData) {
         TextComponent[] textComponents = getActionMessage(getInGamePrefix(), player, clickData);
         player.spigot().sendMessage(textComponents);
     }
 
     @Deprecated
+    @Override
     public TextComponent[] getActionMessage(String prefix, Player player, ClickData... clickData) {
         TextComponent[] textComponents = new TextComponent[clickData.length + 1];
         textComponents[0] = new TextComponent(prefix);
@@ -297,51 +326,32 @@ public class ChatImpl extends Chat {
         return CLICK_DATA_MAP.get(uuid);
     }
 
-    /**
-     * @deprecated Due to logger changes it is no longer used and required!
-     */
-    @Deprecated(forRemoval = true)
     @Override
     public String getConsolePrefix() {
         return "[" + plugin.getName() + "]";
     }
 
-    /**
-     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#info(String)}!
-     */
-    @Deprecated(forRemoval = true)
+    @Override
     public void sendConsoleMessage(String message) {
         wolfyUtilities.getConsole().info(message);
     }
 
-    /**
-     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#log(Level, String, String...)}!
-     */
-    @Deprecated(forRemoval = true)
+    @Override
     public void sendConsoleMessage(String message, String... replacements) {
         wolfyUtilities.getConsole().log(Level.INFO, message, replacements);
     }
 
-    /**
-     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#log(Level, String, String[]...)}!
-     */
-    @Deprecated(forRemoval = true)
+    @Override
     public void sendConsoleMessage(String message, String[]... replacements) {
         wolfyUtilities.getConsole().log(Level.INFO, message, replacements);
     }
 
-    /**
-     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#warn(String)}!
-     */
-    @Deprecated(forRemoval = true)
+    @Override
     public void sendConsoleWarning(String message) {
         wolfyUtilities.getConsole().warn(message);
     }
 
-    /**
-     * @deprecated Replaced by {@link me.wolfyscript.utilities.api.console.Console#debug(String)}!
-     */
-    @Deprecated(forRemoval = true)
+    @Override
     public void sendDebugMessage(String message) {
         wolfyUtilities.getConsole().debug(message);
     }
