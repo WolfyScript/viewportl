@@ -29,7 +29,7 @@ import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.minimessage.markdown.GithubFlavor;
+import net.kyori.adventure.text.minimessage.markdown.DiscordFlavor;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -67,7 +67,7 @@ public class ChatImpl extends Chat {
         this.languageAPI = wolfyUtilities.getLanguageAPI();
         this.plugin = wolfyUtilities.getPlugin();
         this.chatPrefix = Component.text("[" + plugin.getName() + "]");
-        this.miniMessage = MiniMessage.builder().markdown().markdownFlavor(GithubFlavor.get()).build();
+        this.miniMessage = MiniMessage.withMarkdownFlavor(DiscordFlavor.get());
         this.LEGACY_SERIALIZER = BukkitComponentSerializer.legacy();
         this.BUNGEE_SERIALIZER = BungeeComponentSerializer.get();
     }
@@ -139,6 +139,13 @@ public class ChatImpl extends Chat {
         }
     }
 
+    /**
+     * Sends multiple messages to the player with legacy chat format.
+     *
+     * @deprecated Legacy chat format. This will convert the messages multiple times (Not efficient!) {@link #sendMessages(Player, Component...)} should be used instead!
+     * @param player The player to send the message to.
+     * @param messages The messages to send.
+     */
     @Deprecated
     @Override
     public void sendMessages(Player player, String... messages) {
