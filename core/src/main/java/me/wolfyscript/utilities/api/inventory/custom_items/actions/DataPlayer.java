@@ -16,14 +16,21 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.compatibility.plugins;
+package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
-import me.wolfyscript.utilities.compatibility.PluginIntegration;
-import org.bukkit.Location;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import org.bukkit.entity.Player;
 
-public interface MythicMobsIntegration extends PluginIntegration {
+public class DataPlayer extends DataEntity {
 
-    String KEY = "MythicMobs";
+    private final Player player;
 
-    void spawnMob(String mobName, Location location, int mobLevel);
+    public DataPlayer(Player player, CustomItem customItem) {
+        super(player, customItem);
+        this.player = player;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
 }

@@ -16,24 +16,32 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.util;
+package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 
-public class TestNamespacedKey {
+public class ActionParticleAnimation extends Action<DataLocation> {
 
-    @Test
-    public void checkNamespaceAndKey() {
-        NamespacedKey namespacedKey = new NamespacedKey("test_namespace", "test_key");
-        Assertions.assertEquals("test_namespace", namespacedKey.getNamespace());
-        Assertions.assertEquals("test_key", namespacedKey.getKey());
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("location/particle_animation");
+
+    private ParticleAnimation animation;
+
+    protected ActionParticleAnimation() {
+        super(KEY, DataLocation.class);
     }
 
-    @Test
-    public void checkInvalidNamespacedKey() {
-
+    @Override
+    public void execute(WolfyUtilCore core, DataLocation data) {
+        if (data instanceof DataPlayer dataPlayer) {
+            animation.spawn(dataPlayer.getPlayer());
+            return;
+        }
+        animation.spawn(data.getLocation());
     }
 
+    public void setAnimation(ParticleAnimation animation) {
+        this.animation = animation;
+    }
 }
