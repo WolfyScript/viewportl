@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 public interface PlaceholderAPIIntegration extends PluginIntegration {
 
-    String NAME = "PlaceholderAPI";
+    String KEY = "PlaceholderAPI";
 
     @NotNull String setPlaceholders(OfflinePlayer player, @NotNull String text);
 

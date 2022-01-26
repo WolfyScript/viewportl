@@ -29,13 +29,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-@WUPluginIntegration(pluginName = ItemsAdderImpl.PLUGIN_NAME)
+@WUPluginIntegration(pluginName = ItemsAdderIntegration.KEY)
 public class ItemsAdderImpl extends PluginIntegrationAbstract implements ItemsAdderIntegration, Listener {
 
-    static final String PLUGIN_NAME = "ItemsAdder";
-
     protected ItemsAdderImpl(WolfyUtilCore core) {
-        super(core, PLUGIN_NAME);
+        super(core, ItemsAdderIntegration.KEY);
     }
 
     @Override
