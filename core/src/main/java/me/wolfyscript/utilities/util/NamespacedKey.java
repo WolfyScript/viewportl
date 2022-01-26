@@ -28,6 +28,7 @@ import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,8 +47,9 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     private static final Pattern VALID_NAMESPACE = Pattern.compile("[a-z0-9._-]+");
     @JsonIgnore
     private static final Pattern VALID_KEY = Pattern.compile("[a-z0-9/._-]+");
+    private final boolean hasPlugin;
     private final String namespace;
-    private final String key;
+    private final Key key;
 
     /**
      * <b>Only for internal use. Must be converted to a namespaced key with your plugins name as the namespaced key, if you register data in WolfyUtilities!</b>
@@ -58,9 +60,9 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     @Deprecated
     public NamespacedKey(String namespace, String key) {
         Preconditions.checkArgument(namespace != null && VALID_NAMESPACE.matcher(namespace).matches(), "Invalid namespace. Must be [a-z0-9._-]: %s", namespace);
-        Preconditions.checkArgument(key != null && VALID_KEY.matcher(key).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", key);
+        this.key = new Key(key.toLowerCase(Locale.ROOT));
         this.namespace = namespace;
-        this.key = key;
+        this.hasPlugin = false;
         var string = this.toString();
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters", string);
     }
@@ -72,21 +74,42 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     public NamespacedKey(@NotNull Plugin plugin, @NotNull String key) {
         Preconditions.checkArgument(plugin != null, "Plugin cannot be null");
         Preconditions.checkArgument(key != null, "Key cannot be null");
+        this.hasPlugin = true;
         this.namespace = plugin.getName().toLowerCase(Locale.ROOT);
-        this.key = key.toLowerCase(Locale.ROOT);
         Preconditions.checkArgument(VALID_NAMESPACE.matcher(this.namespace).matches(), "Invalid namespace. Must be [a-z0-9._-]: %s", this.namespace);
-        Preconditions.checkArgument(VALID_KEY.matcher(this.key).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", this.key);
+        this.key = new Key(key.toLowerCase(Locale.ROOT));
         String string = this.toString();
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters (%s)", string);
     }
 
+    /**
+     * Gets the namespace of this object.
+     *
+     * @return The namespace.
+     */
     @NotNull
     public String getNamespace() {
         return this.namespace;
     }
 
+    /**
+     * Gets the key of this object as a String.
+     *
+     * @return The key.
+     */
     @NotNull
     public String getKey() {
+        return this.key.toString();
+    }
+
+    /**
+     * Gets the key part of this NamespacedKey.
+     *
+     * @return The key part.
+     * @since 3.16.1.0
+     */
+    @ApiStatus.AvailableSince(value = "3.16.1.0")
+    public Key getKeyComponent() {
         return this.key;
     }
 
@@ -97,23 +120,51 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     @Nullable
     public static NamespacedKey of(@Nullable String namespaceKey) {
         if (namespaceKey == null || namespaceKey.isEmpty()) return null;
-        return new NamespacedKey(namespaceKey.split(":")[0].toLowerCase(Locale.ROOT), namespaceKey.split(":")[1].toLowerCase(Locale.ROOT));
+        String[] parts = namespaceKey.split(":", 2);
+        if (parts.length == 0) return null;
+        if (parts.length > 1) {
+            return new NamespacedKey(parts[0].toLowerCase(Locale.ROOT), parts[1].toLowerCase(Locale.ROOT));
+        } else {
+            return wolfyutilties(parts[0]);
+        }
     }
 
+    /**
+     * Creates the bukkit representation of this object.
+     *
+     * @return The Bukkit NamespacedKey.
+     */
+    public org.bukkit.NamespacedKey bukkit() {
+        return new org.bukkit.NamespacedKey(this.namespace, this.getKey());
+    }
+
+    /**
+     * Creates a new NamespacedKey from the specified Bukkit NamespacedKey.<br>
+     * <strong>This is not compatible with {@link #toBukkit()} or {@link #toBukkit(Plugin)}! Therefor those are deprecated and {@link #bukkit()} should be used instead!</strong>
+     *
+     * @param namespacedKey The bukkit NamespacedKey.
+     * @return A new NamespacedKey with the same namespace and key as the Bukkit representation.
+     */
     public static NamespacedKey fromBukkit(org.bukkit.NamespacedKey namespacedKey) {
         return new NamespacedKey(namespacedKey.getNamespace(), namespacedKey.getKey());
     }
 
+    @Deprecated
     public org.bukkit.NamespacedKey toBukkit(Plugin plugin) {
         return new org.bukkit.NamespacedKey(plugin, this.namespace + BUKKIT_SPLITTER + this.getKey());
     }
 
+    @Deprecated
     public org.bukkit.NamespacedKey toBukkit() {
         return toBukkit(WolfyUtilities.getWUPlugin());
     }
 
     public static NamespacedKey wolfyutilties(String key) {
         return new NamespacedKey(WolfyUtilCore.getInstance(), key);
+    }
+
+    public boolean hasPlugin() {
+        return hasPlugin;
     }
 
     @Override
@@ -139,13 +190,87 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         if (split == null || split.isEmpty()) {
             split = ":";
         }
-        return this.namespace + split + this.key;
+        return getNamespace() + split + getKey();
     }
 
     @Override
     public int compareTo(@NotNull NamespacedKey namespacedKey) {
         int namespaceDifference = getNamespace().compareTo(namespacedKey.getNamespace());
         return namespaceDifference == 0 ? getKey().compareTo(namespacedKey.getKey()) : namespaceDifference;
+    }
+
+    /**
+     * Represents the key part of the NamespacedKey.
+     * The idea behind this component is to make it easier to manage folders specified in the key and provide util methods for it.<br>
+     * Such as
+     * <pre>
+     *     "folder/sub_folder/another/file"</pre>
+     * is converted into
+     * <pre>
+     *     folder:  "folder/sub_folder/another"
+     *     key:     "file"
+     * </pre>
+     */
+    @ApiStatus.AvailableSince(value = "3.16.1.0")
+    public static final class Key {
+
+        private final String folder;
+        private final String key;
+
+        private Key(String keyString) {
+            Preconditions.checkArgument(VALID_KEY.matcher(keyString).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", keyString);
+            if (keyString.contains("/")) {
+                String[] args = keyString.split("/(?!.*/)");
+                if (args.length > 1) {
+                    this.folder = args[0];
+                    this.key = args[1];
+                    return;
+                } else if (args.length == 1) {
+                    this.folder = "";
+                    this.key = args[0];
+                    return;
+                }
+            }
+            this.key = keyString;
+            this.folder = "";
+        }
+
+        public String getFolder() {
+            return folder;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String toString() {
+            return toString("/");
+        }
+
+        public String toString(String separator) {
+            return toString(separator, false);
+        }
+
+        public String toString(String separator, boolean forceSeparator) {
+            if (separator == null || separator.isEmpty()) {
+                separator = "/";
+            }
+            return folder.isBlank() ? ((forceSeparator ? separator : "") + key) : (folder + separator + key);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Key that = (Key) o;
+            return Objects.equals(folder, that.folder) && Objects.equals(key, that.key);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(folder, key);
+        }
     }
 
     static class Deserializer extends JsonDeserializer<NamespacedKey> {

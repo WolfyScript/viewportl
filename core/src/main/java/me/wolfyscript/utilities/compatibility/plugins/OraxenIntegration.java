@@ -22,6 +22,7 @@ import me.wolfyscript.utilities.compatibility.PluginIntegration;
 
 public interface OraxenIntegration extends PluginIntegration {
 
+    String KEY = "Oraxen";
 
 
 }

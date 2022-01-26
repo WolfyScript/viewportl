@@ -24,6 +24,20 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.console.Console;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.Action;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionCommand;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionSound;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.Event;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerConsumeItem;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerInteract;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.ActionParticleAnimation;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerInteractAtEntity;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerInteractEntity;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerItemBreak;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerItemDamage;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerItemDrop;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerItemHandSwap;
+import me.wolfyscript.utilities.api.inventory.custom_items.actions.EventPlayerItemHeld;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.AttributesModifiersMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomDamageMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.meta.CustomDurabilityMeta;
@@ -59,9 +73,11 @@ import me.wolfyscript.utilities.main.listeners.EquipListener;
 import me.wolfyscript.utilities.main.listeners.GUIInventoryListener;
 import me.wolfyscript.utilities.main.listeners.PlayerListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomDurabilityListener;
+import me.wolfyscript.utilities.main.listeners.custom_item.CustomItemPlayerListener;
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
 import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
@@ -104,6 +120,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
+import java.util.List;
 
 public final class WUPlugin extends WolfyUtilCore {
 
@@ -221,10 +238,28 @@ public final class WUPlugin extends WolfyUtilCore {
         particleTimers.register(TimerRandom.KEY, TimerRandom.class);
         particleTimers.register(TimerPi.KEY, TimerPi.class);
 
+        var customItemActions = getRegistries().getCustomItemActions();
+        customItemActions.register(ActionCommand.KEY, ActionCommand.class);
+        customItemActions.register(ActionParticleAnimation.KEY, ActionParticleAnimation.class);
+        customItemActions.register(ActionSound.KEY, ActionSound.class);
+
+        var customItemEvents = getRegistries().getCustomItemEvents();
+        customItemEvents.register(EventPlayerInteract.KEY, EventPlayerInteract.class);
+        customItemEvents.register(EventPlayerConsumeItem.KEY, EventPlayerConsumeItem.class);
+        customItemEvents.register(EventPlayerInteractEntity.KEY, EventPlayerInteractEntity.class);
+        customItemEvents.register(EventPlayerInteractAtEntity.KEY, EventPlayerInteractAtEntity.class);
+        customItemEvents.register(EventPlayerItemBreak.KEY, EventPlayerItemBreak.class);
+        customItemEvents.register(EventPlayerItemDamage.KEY, EventPlayerItemDamage.class);
+        customItemEvents.register(EventPlayerItemDrop.KEY, EventPlayerItemDrop.class);
+        customItemEvents.register(EventPlayerItemHandSwap.KEY, EventPlayerItemHandSwap.class);
+        customItemEvents.register(EventPlayerItemHeld.KEY, EventPlayerItemHeld.class);
+
         KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
         KeyedTypeIdResolver.registerTypeRegistry(Shape.class, particleShapes);
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
+        KeyedTypeIdResolver.registerTypeRegistry((Class<Action<?>>)(Object) Action.class, customItemActions);
+        KeyedTypeIdResolver.registerTypeRegistry((Class<Event<?>>)(Object) Event.class, customItemEvents);
 
         var expansionLoaders = getRegistries().getExpansionResourceLoaders();
         expansionLoaders.register(new ResourceLoaderParticleEffects(this));
@@ -302,6 +337,7 @@ public final class WUPlugin extends WolfyUtilCore {
         Bukkit.getPluginManager().registerEvents(new Chat.ChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomDurabilityListener(this), this);
         Bukkit.getPluginManager().registerEvents(new CustomParticleListener(), this);
+        Bukkit.getPluginManager().registerEvents(new CustomItemPlayerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new EquipListener(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);

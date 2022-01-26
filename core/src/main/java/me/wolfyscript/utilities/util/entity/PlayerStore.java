@@ -23,11 +23,12 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -56,17 +57,17 @@ public class PlayerStore {
 
     static PlayerStore load(UUID uuid) {
         var file = new File(PlayerUtils.STORE_FOLDER + File.separator + uuid.toString() + ".store");
-        var data = new PlayerStore();
         if (file.exists()) {
-            try (var gzip = new GZIPInputStream(new FileInputStream(file))) {
-                data = JacksonUtil.getObjectMapper().readValue(gzip, PlayerStore.class);
-            } catch (MismatchedInputException ex) {
-                WolfyUtilities.getWUCore().getConsole().severe("Error loading player store for " + uuid+" -> Reset store!");
-            } catch (IOException e) {
-                e.printStackTrace();
+            try (var bufStream = new BufferedInputStream(new GZIPInputStream(new FileInputStream(file)))) {
+                var store = JacksonUtil.getObjectMapper().readValue(bufStream, PlayerStore.class);
+                if (store != null) {
+                    return store;
+                }
+            } catch (IOException ex) {
+                WolfyUtilities.getWUCore().getConsole().warn("Error loading player store for " + uuid+" -> Reset store!");
             }
         }
-        return data;
+        return new PlayerStore();
     }
 
     public <D extends CustomPlayerData> D getData(NamespacedKey dataKey, Class<D> dataType) {
@@ -74,11 +75,15 @@ public class PlayerStore {
     }
 
     void save(UUID uuid) {
-        try (var gzip = new GZIPOutputStream(new FileOutputStream(PlayerUtils.STORE_FOLDER + File.separator + uuid.toString() + ".store"))) {
+        try (
+                var fileStream = new FileOutputStream(PlayerUtils.STORE_FOLDER + File.separator + uuid.toString() + ".store");
+                var gzip = new GZIPOutputStream(new BufferedOutputStream(fileStream))
+        ) {
             JacksonUtil.getObjectWriter(false).writeValue(gzip, this);
             gzip.flush();
+            fileStream.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            WolfyUtilities.getWUCore().getConsole().warn("Error saving player store for " + uuid+"!");
         }
     }
 

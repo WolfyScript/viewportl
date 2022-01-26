@@ -35,10 +35,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-@WUPluginIntegration(pluginName = PlaceholderAPIImpl.PLUGIN_NAME)
+@WUPluginIntegration(pluginName = PlaceholderAPIIntegration.KEY)
 public class PlaceholderAPIImpl extends PluginIntegrationAbstract implements PlaceholderAPIIntegration, Listener {
-
-    static final String PLUGIN_NAME = "PlaceholderAPI";
 
     /**
      * The main constructor that is called whenever the integration is created.<br>
@@ -46,7 +44,7 @@ public class PlaceholderAPIImpl extends PluginIntegrationAbstract implements Pla
      * @param core       The WolfyUtilCore.
      */
     protected PlaceholderAPIImpl(WolfyUtilCore core) {
-        super(core, PLUGIN_NAME);
+        super(core, PlaceholderAPIIntegration.KEY);
     }
 
     @Override

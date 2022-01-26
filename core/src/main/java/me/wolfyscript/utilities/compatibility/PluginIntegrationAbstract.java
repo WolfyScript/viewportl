@@ -19,7 +19,10 @@
 package me.wolfyscript.utilities.compatibility;
 
 import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.plugin.Plugin;
+
+import java.util.Map;
 
 /**
  * To add a PluginIntegration you need to extend this class and add the annotation {@link me.wolfyscript.utilities.annotations.WUPluginIntegration} to that class.<br>
@@ -107,6 +110,11 @@ public abstract class PluginIntegrationAbstract implements PluginIntegration {
     protected final void markAsDoneLoading() {
         setEnabled(true);
         ((PluginsImpl) core.getCompatibilityManager().getPlugins()).checkDependencies();
+    }
+
+    @Override
+    public <T extends PluginAdapter> T getAdapter(Class<T> type, NamespacedKey key) {
+        return core.getCompatibilityManager().getPlugins().getAdapter(pluginName, type, key);
     }
 
 }

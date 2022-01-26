@@ -25,13 +25,11 @@ import me.wolfyscript.utilities.compatibility.plugins.oraxen.OraxenRefImpl;
 import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
 import org.bukkit.plugin.Plugin;
 
-@WUPluginIntegration(pluginName = OraxenImpl.PLUGIN_NAME)
+@WUPluginIntegration(pluginName = OraxenIntegration.KEY)
 public class OraxenImpl extends PluginIntegrationAbstract implements OraxenIntegration {
 
-    static final String PLUGIN_NAME = "Oraxen";
-
     protected OraxenImpl(WolfyUtilCore core) {
-        super(core, PLUGIN_NAME);
+        super(core, OraxenIntegration.KEY);
     }
 
     @Override

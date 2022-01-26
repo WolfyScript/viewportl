@@ -43,8 +43,6 @@ import me.wolfyscript.utilities.util.inventory.item_builder.AbstractItemBuilder;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.particles.ParticleLocation;
-import me.wolfyscript.utilities.util.version.MinecraftVersions;
-import me.wolfyscript.utilities.util.version.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -143,6 +141,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
     private int durabilityCost;
     @JsonAlias("particles")
     private ParticleContent particleContent;
+    private ActionSettings actionSettings = new ActionSettings();
 
     @JsonIgnore
     private boolean checkOldMetaSettings = true;
@@ -343,13 +342,7 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
      */
     @Nullable
     public static CustomItem getByItemStack(ItemStack itemStack) {
-        if (itemStack != null) {
-            var itemMeta = itemStack.getItemMeta();
-            if (itemMeta != null) {
-                return WolfyUtilCore.getInstance().getRegistries().getCustomItems().get(getKeyOfItemMeta(itemMeta));
-            }
-        }
-        return null;
+        return WolfyUtilCore.getInstance().getRegistries().getCustomItems().getByItemStack(itemStack).orElse(null);
     }
 
     /**
@@ -1167,6 +1160,16 @@ public class CustomItem extends AbstractItemBuilder<CustomItem> implements Keyed
                 }
             });
         }
+    }
+
+    @JsonGetter
+    public ActionSettings getActionSettings() {
+        return actionSettings;
+    }
+
+    @JsonSetter
+    public void setActionSettings(ActionSettings actionSettings) {
+        this.actionSettings = actionSettings == null ? new ActionSettings() : actionSettings;
     }
 
     /**
