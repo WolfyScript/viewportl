@@ -79,16 +79,32 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters (%s)", string);
     }
 
+    /**
+     * Gets the namespace of this object.
+     *
+     * @return The namespace.
+     */
     @NotNull
     public String getNamespace() {
         return this.namespace;
     }
 
+    /**
+     * Gets the key of this object as a String.
+     *
+     * @return The key.
+     */
     @NotNull
     public String getKey() {
         return this.key.toString();
     }
 
+    /**
+     * Gets the key part of this NamespacedKey.
+     *
+     * @return The key part.
+     * @since 3.16.1.0
+     */
     @ApiStatus.AvailableSince(value = "3.16.1.0")
     public Key getKeyComponent() {
         return this.key;
@@ -101,17 +117,41 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     @Nullable
     public static NamespacedKey of(@Nullable String namespaceKey) {
         if (namespaceKey == null || namespaceKey.isEmpty()) return null;
-        return new NamespacedKey(namespaceKey.split(":")[0].toLowerCase(Locale.ROOT), namespaceKey.split(":")[1].toLowerCase(Locale.ROOT));
+        String[] parts = namespaceKey.split(":", 2);
+        if (parts.length == 0) return null;
+        if (parts.length > 1) {
+            return new NamespacedKey(parts[0].toLowerCase(Locale.ROOT), parts[1].toLowerCase(Locale.ROOT));
+        } else {
+            return wolfyutilties(parts[0]);
+        }
     }
 
+    /**
+     * Creates the bukkit representation of this object.
+     *
+     * @return The Bukkit NamespacedKey.
+     */
+    public org.bukkit.NamespacedKey bukkit() {
+        return new org.bukkit.NamespacedKey(this.namespace, this.getKey());
+    }
+
+    /**
+     * Creates a new NamespacedKey from the specified Bukkit NamespacedKey.<br>
+     * <strong>This is not compatible with {@link #toBukkit()} or {@link #toBukkit(Plugin)}! Therefor those are deprecated and {@link #bukkit()} should be used instead!</strong>
+     *
+     * @param namespacedKey The bukkit NamespacedKey.
+     * @return A new NamespacedKey with the same namespace and key as the Bukkit representation.
+     */
     public static NamespacedKey fromBukkit(org.bukkit.NamespacedKey namespacedKey) {
         return new NamespacedKey(namespacedKey.getNamespace(), namespacedKey.getKey());
     }
 
+    @Deprecated
     public org.bukkit.NamespacedKey toBukkit(Plugin plugin) {
         return new org.bukkit.NamespacedKey(plugin, this.namespace + BUKKIT_SPLITTER + this.getKey());
     }
 
+    @Deprecated
     public org.bukkit.NamespacedKey toBukkit() {
         return toBukkit(WolfyUtilities.getWUPlugin());
     }
