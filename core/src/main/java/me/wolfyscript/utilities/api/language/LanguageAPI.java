@@ -239,4 +239,20 @@ public class LanguageAPI {
         return Component.empty();
     }
 
+    public List<Component> getComponents(String key, boolean translateLegacyColor, List<Template> templates) {
+        JsonNode node = getNodeAt(key);
+        if (node.isTextual()) {
+            return List.of(api.getChat().getMiniMessage().parse(translateLegacyColor ? ChatColor.convert(node.asText()) : node.asText(), templates));
+        } else if(node.isArray()) {
+            List<Component> components = new ArrayList<>();
+            Iterator<JsonNode> nodeItr = node.elements();
+            while (nodeItr.hasNext()) {
+                JsonNode jsonNode = nodeItr.next();
+                components.add(api.getChat().getMiniMessage().parse(translateLegacyColor ? ChatColor.convert(jsonNode.asText()) : jsonNode.asText(), templates));
+            }
+            return components;
+        }
+        return List.of();
+    }
+
 }

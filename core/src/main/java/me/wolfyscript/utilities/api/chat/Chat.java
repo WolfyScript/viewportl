@@ -42,6 +42,11 @@ public abstract class Chat {
 
     public abstract Component getChatPrefix();
 
+    /**
+     * Gets the {@link MiniMessage} object, that allows you to parse text with formatting.
+     *
+     * @return The MiniMessage object
+     */
     public abstract MiniMessage getMiniMessage();
 
     /**
