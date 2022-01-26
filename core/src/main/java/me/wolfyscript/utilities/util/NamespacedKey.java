@@ -47,6 +47,7 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     private static final Pattern VALID_NAMESPACE = Pattern.compile("[a-z0-9._-]+");
     @JsonIgnore
     private static final Pattern VALID_KEY = Pattern.compile("[a-z0-9/._-]+");
+    private final boolean hasPlugin;
     private final String namespace;
     private final Key key;
 
@@ -61,6 +62,7 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         Preconditions.checkArgument(namespace != null && VALID_NAMESPACE.matcher(namespace).matches(), "Invalid namespace. Must be [a-z0-9._-]: %s", namespace);
         this.key = new Key(key.toLowerCase(Locale.ROOT));
         this.namespace = namespace;
+        this.hasPlugin = false;
         var string = this.toString();
         Preconditions.checkArgument(string.length() < 256, "NamespacedKey must be less than 256 characters", string);
     }
@@ -72,6 +74,7 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     public NamespacedKey(@NotNull Plugin plugin, @NotNull String key) {
         Preconditions.checkArgument(plugin != null, "Plugin cannot be null");
         Preconditions.checkArgument(key != null, "Key cannot be null");
+        this.hasPlugin = true;
         this.namespace = plugin.getName().toLowerCase(Locale.ROOT);
         Preconditions.checkArgument(VALID_NAMESPACE.matcher(this.namespace).matches(), "Invalid namespace. Must be [a-z0-9._-]: %s", this.namespace);
         this.key = new Key(key.toLowerCase(Locale.ROOT));
@@ -158,6 +161,10 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
 
     public static NamespacedKey wolfyutilties(String key) {
         return new NamespacedKey(WolfyUtilCore.getInstance(), key);
+    }
+
+    public boolean hasPlugin() {
+        return hasPlugin;
     }
 
     @Override
