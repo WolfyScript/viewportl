@@ -29,6 +29,8 @@ import java.util.regex.Pattern;
 
 public interface PlaceholderAPIIntegration extends PluginIntegration {
 
+    String NAME = "PlaceholderAPI";
+
     @NotNull String setPlaceholders(OfflinePlayer player, @NotNull String text);
 
     @NotNull List<String> setPlaceholders(OfflinePlayer player, @NotNull List<String> text);
