@@ -67,7 +67,11 @@ public class ChatImpl extends Chat {
         this.languageAPI = wolfyUtilities.getLanguageAPI();
         this.plugin = wolfyUtilities.getPlugin();
         this.chatPrefix = Component.text("[" + plugin.getName() + "]");
-        this.miniMessage = MiniMessage.withMarkdownFlavor(DiscordFlavor.get());
+        this.miniMessage = MiniMessage.builder().markdown().markdownFlavor(DiscordFlavor.get()).parsingErrorMessageConsumer(strings -> {
+            for (String string : strings) {
+                wolfyUtilities.getConsole().getLogger().warning(string);
+            }
+        }).build();
         this.LEGACY_SERIALIZER = BukkitComponentSerializer.legacy();
         this.BUNGEE_SERIALIZER = BungeeComponentSerializer.get();
     }

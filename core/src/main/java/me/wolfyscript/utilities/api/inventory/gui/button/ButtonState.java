@@ -24,6 +24,8 @@ import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +45,11 @@ import java.util.List;
  * @param <C> The type of the {@link CustomCache}
  */
 public class ButtonState<C extends CustomCache> {
+
+    public static final String NAME_KEY = ".name";
+    public static final String LORE_KEY = ".lore";
+    public static final String BUTTON_WINDOW_KEY = "inventories.%s.%s.items.%s";
+    public static final String BUTTON_CLUSTER_KEY = "inventories.%s.global_items.%s";
 
     private WolfyUtilities wolfyUtilities;
     private String clusterID;
@@ -271,12 +278,14 @@ public class ButtonState<C extends CustomCache> {
     /*
     Not linked to language file
      */
+    @Deprecated
     public ButtonState(ItemStack presetIcon, String displayName, String[] normalLore, ButtonAction<C> action) {
         this.action = action;
         this.presetIcon = presetIcon;
         this.icon = ItemUtils.createItem(presetIcon, displayName, normalLore);
     }
 
+    @Deprecated
     public ButtonState(Material presetIcon, String displayName, String[] normalLore, ButtonAction<C> action) {
         this(new ItemStack(presetIcon), displayName, normalLore, action);
     }
@@ -301,18 +310,30 @@ public class ButtonState<C extends CustomCache> {
 
     private void createIcon(GuiWindow<C> window) {
         if (key != null && !key.isEmpty()) {
-            var langAPI = wolfyUtilities.getLanguageAPI();
-            String name = null;
-            List<String> lore = new ArrayList<>();
-            if (clusterID != null) {
-                name = langAPI.getButtonName(clusterID, key);
-                lore = langAPI.getButtonLore(clusterID, key);
-            } else if(window != null){
-                name = langAPI.getButtonName(window.getNamespacedKey(), key);
-                lore = langAPI.getButtonLore(window.getNamespacedKey(), key);
-            }
-            this.icon = ItemUtils.createItem(presetIcon, name, lore.toArray(new String[0]));
+            this.icon = ItemUtils.createItem(presetIcon, getName(window), getLore(window));
         }
+    }
+
+    public Component getName(GuiWindow<C> window) {
+        return getName(window, List.of());
+    }
+
+    public Component getName(GuiWindow<C> window, List<Template> templates) {
+        if (clusterID != null) {
+            return wolfyUtilities.getLanguageAPI().getComponent(String.format(BUTTON_CLUSTER_KEY + NAME_KEY, clusterID, key), true, templates);
+        }
+        return wolfyUtilities.getLanguageAPI().getComponent(String.format(BUTTON_WINDOW_KEY + NAME_KEY, window.getNamespacedKey().getNamespace(), window.getNamespacedKey().getKey(), key), true, templates);
+    }
+
+    public List<Component> getLore(GuiWindow<C> window) {
+        return getLore(window, List.of());
+    }
+
+    public List<Component> getLore(GuiWindow<C> window, List<Template> templates) {
+        if (clusterID != null) {
+            return wolfyUtilities.getLanguageAPI().getComponents(String.format(BUTTON_CLUSTER_KEY + LORE_KEY, clusterID, key), true, templates);
+        }
+        return wolfyUtilities.getLanguageAPI().getComponents(String.format(BUTTON_WINDOW_KEY + LORE_KEY, window.getNamespacedKey().getNamespace(), window.getNamespacedKey().getKey(), key), true, templates);
     }
 
     public ButtonAction<C> getAction() {

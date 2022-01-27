@@ -20,8 +20,10 @@ package me.wolfyscript.utilities.api.language;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.chat.ChatColor;
+import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.Template;
 
@@ -35,11 +37,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class LanguageAPI {
-
-    private static final String NAME_KEY = ".name";
-    private static final String LORE_KEY = ".lore";
-    private static final String BUTTON_WINDOW_KEY = "inventories.%s.%s.items.%s";
-    private static final String BUTTON_CLUSTER_KEY = "inventories.%s.global_items.%s";
 
     private final WolfyUtilities api;
 
@@ -197,23 +194,27 @@ public class LanguageAPI {
     }
 
     public String getButtonName(NamespacedKey window, String buttonKey) {
-        return replaceColoredKeys("$" + String.format(BUTTON_WINDOW_KEY + NAME_KEY, window.getNamespace(), window.getKey(), buttonKey) + "$");
+        return BukkitComponentSerializer.legacy().serialize(getComponent(String.format(ButtonState.BUTTON_WINDOW_KEY + ButtonState.NAME_KEY, window.getNamespace(), window.getKey(), buttonKey), true));
     }
 
     public String getButtonName(String clusterId, String buttonKey) {
-        return replaceColoredKeys("$" + String.format(BUTTON_CLUSTER_KEY + NAME_KEY, clusterId, buttonKey) + "$");
+        return BukkitComponentSerializer.legacy().serialize(getComponent(String.format(ButtonState.BUTTON_CLUSTER_KEY + ButtonState.NAME_KEY, clusterId, buttonKey), true));
     }
 
     public List<String> getButtonLore(NamespacedKey window, String buttonKey) {
-        return replaceColoredKey(String.format(BUTTON_WINDOW_KEY + LORE_KEY, window.getNamespace(), window.getKey(), buttonKey));
+        return getComponents(String.format(ButtonState.BUTTON_WINDOW_KEY + ButtonState.NAME_KEY, window.getNamespace(), window.getKey(), buttonKey), true).stream().map(component -> BukkitComponentSerializer.legacy().serialize(component)).collect(Collectors.toList());
     }
 
     public List<String> getButtonLore(String clusterId, String buttonKey) {
-        return replaceColoredKey(String.format(BUTTON_CLUSTER_KEY + LORE_KEY, clusterId, buttonKey));
+        return getComponents(String.format(ButtonState.BUTTON_CLUSTER_KEY + ButtonState.LORE_KEY, clusterId, buttonKey), true).stream().map(component -> BukkitComponentSerializer.legacy().serialize(component)).collect(Collectors.toList());
     }
 
     public Component getComponent(String key) {
         return getComponent(key, false, List.of());
+    }
+
+    public Component getComponent(String key, boolean translateLegacyColor) {
+        return getComponent(key, translateLegacyColor, List.of());
     }
 
     public Component getComponent(String key, List<Template> templates) {
@@ -237,6 +238,18 @@ public class LanguageAPI {
             return component;
         }
         return Component.empty();
+    }
+
+    public List<Component> getComponents(String key) {
+        return getComponents(key, false, List.of());
+    }
+
+    public List<Component> getComponents(String key, boolean translateLegacyColor) {
+        return getComponents(key, translateLegacyColor, List.of());
+    }
+
+    public List<Component> getComponents(String key, List<Template> templates) {
+        return getComponents(key, false, templates);
     }
 
     public List<Component> getComponents(String key, boolean translateLegacyColor, List<Template> templates) {

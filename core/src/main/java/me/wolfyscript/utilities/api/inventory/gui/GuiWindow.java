@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.api.inventory.gui;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
+import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.chat.ClickData;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
@@ -29,6 +30,7 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import me.wolfyscript.utilities.util.reflection.InventoryUpdate;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -124,6 +126,13 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      */
     public WolfyUtilities getWolfyUtilities() {
         return wolfyUtilities;
+    }
+
+    /**
+     * @return The Chat of the API.
+     */
+    public Chat getChat() {
+        return wolfyUtilities.getChat();
     }
 
     /**
@@ -297,11 +306,28 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * Opens the chat, send the player the defined message and waits for the input of the player.
      * When the player sends a message the inputAction method is executed.
      *
+     * @deprecated This uses the legacy chat format. {@link #openChat(GuiHandler, Component, ChatInputAction)} should be used instead.
      * @param guiHandler  The {@link GuiHandler} it should be opened for.
      * @param msg         The message that should be sent to the player.
      * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
      */
+    @Deprecated
     public void openChat(GuiHandler<C> guiHandler, String msg, ChatInputAction<C> inputAction) {
+        guiHandler.setChatInputAction(inputAction);
+        guiHandler.close();
+        guiHandler.getApi().getChat().sendMessage(guiHandler.getPlayer(), msg);
+    }
+
+
+    /**
+     * Opens the chat, send the player the defined message and waits for the input of the player.
+     * When the player sends a message the inputAction method is executed.
+     *
+     * @param guiHandler  The {@link GuiHandler} it should be opened for.
+     * @param msg         The message that should be sent to the player.
+     * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
+     */
+    public void openChat(GuiHandler<C> guiHandler, Component msg, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
         guiHandler.getApi().getChat().sendMessage(guiHandler.getPlayer(), msg);
@@ -343,10 +369,12 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * Opens the chat, send the player the defined action messages and waits for the input of the player.
      * When the player sends the message the inputAction method is executed
      *
+     * @deprecated This uses the legacy chat format. {@link #openChat(GuiHandler, Component, ChatInputAction)} should be used instead.
      * @param guiHandler  The {@link GuiHandler} it should be opened for.
      * @param clickData   The {@link ClickData} to be send to the player.
      * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
      */
+    @Deprecated
     public void openActionChat(GuiHandler<C> guiHandler, ClickData clickData, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
