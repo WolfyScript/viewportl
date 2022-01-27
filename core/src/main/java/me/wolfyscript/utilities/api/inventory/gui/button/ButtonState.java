@@ -30,7 +30,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,26 +60,123 @@ public class ButtonState<C extends CustomCache> {
     private ButtonPreRender<C> prepareRender;
     private ButtonPostAction<C> postAction;
 
+    /**
+     * Creates a new ButtonState of the specified key and icon.
+     *
+     * @param key  The key of the button.
+     * @param icon The preset ItemStack, that is used as the icon.
+     * @param <C>  The type of cache.
+     * @return A new instance of the ButtonState.
+     */
+    public static <C extends CustomCache> ButtonState<C> of(String key, ItemStack icon) {
+        return new ButtonState<>(key, icon);
+    }
+
+    /**
+     * Creates a new ButtonState of the specified key and icon.
+     *
+     * @param key  The key of the button.
+     * @param icon The icon type of the button.
+     * @param <C>  The type of cache.
+     * @return A new instance of the ButtonState.
+     */
+    public static <C extends CustomCache> ButtonState<C> of(String key, Material icon) {
+        return new ButtonState<>(key, icon);
+    }
+
+    /**
+     * Creates a new ButtonState with a global button key and icon.
+     *
+     * @param key  The key of the button. namespace = cluster, key = button
+     * @param icon The preset ItemStack, that is used as the icon.
+     * @param <C>  The type of cache.
+     * @return A new instance of the ButtonState.
+     */
+    public static <C extends CustomCache> ButtonState<C> of(NamespacedKey key, ItemStack icon) {
+        return new ButtonState<>(key, icon);
+    }
+
+    /**
+     * Creates a new ButtonState with a global button key and icon.
+     *
+     * @param key
+     * @param icon
+     * @param <C>
+     * @return A new instance of the ButtonState.
+     */
+    public static <C extends CustomCache> ButtonState<C> of(NamespacedKey key, Material icon) {
+        return new ButtonState<>(key, icon);
+    }
+
+    /**
+     * Sets the action callback, that is called when the button is clicked.
+     *
+     * @param action The action callback.
+     * @return This button state for chaining.
+     */
+    public ButtonState<C> with(@Nullable ButtonAction<C> action) {
+        this.action = action;
+        return this;
+    }
+
+    /**
+     * Sets the render callback, that is called when the button is rendered.
+     *
+     * @param buttonRender The render callback.
+     * @return This button state for chaining.
+     */
+    public ButtonState<C> with(@Nullable ButtonRender<C> buttonRender) {
+        this.buttonRender = buttonRender;
+        return this;
+    }
+
+    /**
+     * Sets the render callback, that is called right before the button is rendered.
+     *
+     * @param prepareRender The pre-render callback.
+     * @return This button state for chaining.
+     */
+    public ButtonState<C> with(@Nullable ButtonPreRender<C> prepareRender) {
+        this.prepareRender = prepareRender;
+        return this;
+    }
+
+    /**
+     * Sets the action callback, that is called 1 tick after the button was clicked.
+     *
+     * @param postAction The post-action callback.
+     * @return This button state for chaining.
+     */
+    public ButtonState<C> with(@Nullable ButtonPostAction<C> postAction) {
+        this.postAction = postAction;
+        return this;
+    }
+
     public ButtonState(String key, ItemStack presetIcon) {
         this(key, presetIcon, null, null);
     }
 
+    @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
         this(key, presetIcon, action, null);
     }
 
+    @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, null, render);
     }
 
+    @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, action, null, render);
     }
 
+    @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, action, null, prepareRender, render);
     }
 
+    @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this.key = key;
         this.clusterID = null;
@@ -98,47 +194,56 @@ public class ButtonState<C extends CustomCache> {
         this(key, presetIcon, null, null);
     }
 
+    @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action) {
         this(key, presetIcon, action, null);
     }
 
+    @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, null, render);
     }
 
+    @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, action, null, render);
     }
 
+    @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, action, null, prepareRender, render);
     }
 
+    @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(key, new ItemStack(presetIcon), action, postAction, prepareRender, render);
     }
-
 
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon) {
         this(buttonKey, presetIcon, null, null);
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, null, render);
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
         this(buttonKey, presetIcon, action, null);
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, action, null, render);
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, action, null, prepareRender, render);
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this.action = action;
         this.postAction = postAction;
@@ -149,26 +254,32 @@ public class ButtonState<C extends CustomCache> {
         this.key = buttonKey.getKey();
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon) {
         this(buttonKey, presetIcon, null, null);
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, null, render);
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action) {
         this(buttonKey, presetIcon, action, null);
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, action, null, render);
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, action, null, prepareRender, render);
     }
 
+    @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(buttonKey, new ItemStack(presetIcon), action, postAction, prepareRender, render);
     }
