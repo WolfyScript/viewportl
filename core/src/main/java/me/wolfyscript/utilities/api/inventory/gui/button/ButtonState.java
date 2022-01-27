@@ -156,26 +156,41 @@ public class ButtonState<C extends CustomCache> {
         this(key, presetIcon, null, null);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(String, ItemStack)} instead.
+     */
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
         this(key, presetIcon, action, null);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(String, ItemStack)} instead.
+     */
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, null, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(String, ItemStack)} instead.
+     */
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, action, null, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(String, ItemStack)} instead.
+     */
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, action, null, prepareRender, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(String, ItemStack)} instead.
+     */
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this.key = key;
@@ -194,26 +209,41 @@ public class ButtonState<C extends CustomCache> {
         this(key, presetIcon, null, null);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(String, Material)} instead.
+     */
     @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action) {
         this(key, presetIcon, action, null);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(String, Material)} instead.
+     */
     @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, null, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(String, Material)} instead.
+     */
     @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, action, null, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(String, Material)} instead.
+     */
     @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(key, presetIcon, action, null, prepareRender, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(String, Material)} instead.
+     */
     @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(key, new ItemStack(presetIcon), action, postAction, prepareRender, render);
@@ -223,26 +253,41 @@ public class ButtonState<C extends CustomCache> {
         this(buttonKey, presetIcon, null, null);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, ItemStack)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, null, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, ItemStack)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
         this(buttonKey, presetIcon, action, null);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, ItemStack)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, action, null, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, ItemStack)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, action, null, prepareRender, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, ItemStack)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this.action = action;
@@ -254,31 +299,49 @@ public class ButtonState<C extends CustomCache> {
         this.key = buttonKey.getKey();
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon) {
         this(buttonKey, presetIcon, null, null);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, null, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action) {
         this(buttonKey, presetIcon, action, null);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, action, null, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(buttonKey, presetIcon, action, null, prepareRender, render);
     }
 
+    /**
+     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(buttonKey, new ItemStack(presetIcon), action, postAction, prepareRender, render);
