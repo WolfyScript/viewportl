@@ -25,6 +25,7 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ActionButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ChatInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.DummyButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.MultipleChoiceButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.NamespacedKey;
@@ -149,6 +150,11 @@ public abstract class GuiCluster<C extends CustomCache> {
         @Override
         public ToggleButton.Builder<C> toggle(String id) {
             return new ToggleButton.Builder<>(GuiCluster.this, id);
+        }
+
+        @Override
+        public MultipleChoiceButton.Builder<C> multiChoice(String id) {
+            return new MultipleChoiceButton.Builder<>(GuiCluster.this, id);
         }
     }
 }

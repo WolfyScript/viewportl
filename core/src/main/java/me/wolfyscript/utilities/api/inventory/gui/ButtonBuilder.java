@@ -22,6 +22,7 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ActionButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ChatInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.DummyButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.MultipleChoiceButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 
@@ -36,5 +37,7 @@ public interface ButtonBuilder<C extends CustomCache> {
     ItemInputButton.Builder<C> itemInput(String id);
 
     ToggleButton.Builder<C> toggle(String id);
+
+    MultipleChoiceButton.Builder<C> multiChoice(String id);
 
 }

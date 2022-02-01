@@ -26,6 +26,7 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ActionButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ChatInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.DummyButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.MultipleChoiceButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
@@ -37,7 +38,6 @@ import me.wolfyscript.utilities.util.reflection.InventoryUpdate;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryInteractEvent;
@@ -48,7 +48,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * The GuiWindow represents an Inventory GUI in-game.
@@ -559,6 +558,11 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener, Butt
         @Override
         public ToggleButton.Builder<C> toggle(String id) {
             return new ToggleButton.Builder<>(GuiWindow.this, id);
+        }
+
+        @Override
+        public MultipleChoiceButton.Builder<C> multiChoice(String id) {
+            return new MultipleChoiceButton.Builder<>(GuiWindow.this, id);
         }
     }
 

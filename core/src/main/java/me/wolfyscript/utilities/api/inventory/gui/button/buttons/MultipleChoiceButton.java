@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * This Button goes through each of the States.
@@ -57,8 +59,17 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
      */
     @SafeVarargs
     public MultipleChoiceButton(String id, StateFunction<C> stateFunction, @NotNull ButtonState<C>... states) {
+        this(id, stateFunction, Arrays.asList(states));
+    }
+
+    /**
+     * @param id            The id of the Button
+     * @param stateFunction The {@link StateFunction} to set the state of the Button depending on the player, cached data, etc.
+     * @param states        The {@link ButtonState}s that this Button will cycle through.
+     */
+    private MultipleChoiceButton(String id, StateFunction<C> stateFunction, @NotNull List<ButtonState<C>> states) {
         super(id, ButtonType.CHOICES);
-        this.states = Arrays.asList(states);
+        this.states = states;
         settings = new HashMap<>();
         this.stateFunction = stateFunction == null ? (cache, guiHandler, player, inventory, slot) -> settings.getOrDefault(guiHandler, 0) : stateFunction;
     }
@@ -148,4 +159,39 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
         int run(C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot);
 
     }
+
+    public static class Builder<C extends CustomCache> extends Button.Builder<C, MultipleChoiceButton<C>> {
+
+        private final Supplier<ButtonState.Builder<C>> stateBuilderSupplier;
+        protected MultipleChoiceButton.StateFunction<C> stateFunction;
+        protected List<ButtonState.Builder<C>> stateBuilders;
+
+        public Builder(GuiWindow<C> window, String id) {
+            super(window, id, (Class<MultipleChoiceButton<C>>) (Object) MultipleChoiceButton.class);
+            stateBuilderSupplier = () -> ButtonState.of(window, id);
+        }
+
+        public Builder(GuiCluster<C> cluster, String id) {
+            super(cluster, id, (Class<MultipleChoiceButton<C>>) (Object) MultipleChoiceButton.class);
+            stateBuilderSupplier = () -> ButtonState.of(cluster, id);
+        }
+
+        public MultipleChoiceButton.Builder<C> addState(Consumer<ButtonState.Builder<C>> builderConsumer) {
+            var stateBuilder = stateBuilderSupplier.get();
+            builderConsumer.accept(stateBuilder);
+            stateBuilders.add(stateBuilder);
+            return this;
+        }
+
+        public MultipleChoiceButton.Builder<C> stateFunction(MultipleChoiceButton.StateFunction<C> stateFunction) {
+            this.stateFunction = stateFunction;
+            return this;
+        }
+
+        @Override
+        public MultipleChoiceButton<C> create() {
+            return new MultipleChoiceButton<>(key, stateFunction, stateBuilders.stream().map(ButtonState.Builder::create).toList());
+        }
+    }
+
 }
