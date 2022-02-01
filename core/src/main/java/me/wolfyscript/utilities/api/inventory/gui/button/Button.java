@@ -19,9 +19,11 @@
 package me.wolfyscript.utilities.api.inventory.gui.button;
 
 import com.google.common.base.Preconditions;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
+import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.chat.ChatColor;
@@ -194,5 +196,35 @@ public abstract class Button<C extends CustomCache> {
             }
         }
         return itemStack;
+    }
+
+    public static abstract class Builder<C extends CustomCache, B extends Button<C>> {
+
+        protected final Class<B> buttonType;
+        protected final WolfyUtilities api;
+        protected final InventoryAPI<C> invApi;
+        protected GuiWindow<C> window;
+        protected GuiCluster<C> cluster;
+        protected final String key;
+
+        protected Builder(GuiWindow<C> window, String key, Class<B> buttonType) {
+            this(window.getCluster().getInventoryAPI(), window.getWolfyUtilities(), key, buttonType);
+            this.window = window;
+        }
+
+        protected Builder(GuiCluster<C> cluster, String key, Class<B> buttonType) {
+            this(cluster.getInventoryAPI(), cluster.getWolfyUtilities(), key, buttonType);
+            this.cluster = cluster;
+        }
+
+        private Builder(InventoryAPI<C> invApi, WolfyUtilities api, String key, Class<B> buttonType) {
+            this.api = api;
+            this.invApi = invApi;
+            this.buttonType = buttonType;
+            this.key = key;
+        }
+
+        public abstract B create();
+
     }
 }

@@ -20,11 +20,18 @@ package me.wolfyscript.utilities.api.inventory.gui;
 
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
+import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ActionButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ChatInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.DummyButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.NamespacedKey;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public abstract class GuiCluster<C extends CustomCache> {
 
@@ -33,6 +40,7 @@ public abstract class GuiCluster<C extends CustomCache> {
     private String id;
     private final Map<String, Button<C>> buttons;
     private final Map<String, GuiWindow<C>> guiWindows;
+    private final ClusterButtonBuilder buttonBuilder;
 
     private NamespacedKey entry;
 
@@ -43,6 +51,7 @@ public abstract class GuiCluster<C extends CustomCache> {
         this.buttons = new HashMap<>();
         this.guiWindows = new HashMap<>();
         this.entry = null;
+        this.buttonBuilder = new ClusterButtonBuilder();
     }
 
     /**
@@ -61,6 +70,11 @@ public abstract class GuiCluster<C extends CustomCache> {
     protected void registerButton(Button<C> button) {
         button.init(this);
         buttons.putIfAbsent(button.getId(), button);
+    }
+
+    private <B extends Button.Builder<C, ?>> void registerButton(B builder) {
+        Button<C> button = builder.create();
+        buttons.put(button.getId(), button);
     }
 
     public Button<C> getButton(String id) {
@@ -86,6 +100,10 @@ public abstract class GuiCluster<C extends CustomCache> {
         return wolfyUtilities;
     }
 
+    public InventoryAPI<C> getInventoryAPI() {
+        return inventoryAPI;
+    }
+
     void setId(String id) {
         this.id = id;
     }
@@ -100,5 +118,37 @@ public abstract class GuiCluster<C extends CustomCache> {
 
     Map<String, GuiWindow<C>> getGuiWindows() {
         return guiWindows;
+    }
+
+    public ButtonBuilder<C> getButtonBuilder() {
+        return buttonBuilder;
+    }
+
+    public class ClusterButtonBuilder implements ButtonBuilder<C> {
+
+        @Override
+        public ChatInputButton.Builder<C> chatInput(String id) {
+            return new ChatInputButton.Builder<>(GuiCluster.this, id);
+        }
+
+        @Override
+        public ActionButton.Builder<C> action(String id) {
+            return new ActionButton.Builder<>(GuiCluster.this, id);
+        }
+
+        @Override
+        public DummyButton.Builder<C> dummy(String id) {
+            return new DummyButton.Builder<>(GuiCluster.this, id);
+        }
+
+        @Override
+        public ItemInputButton.Builder<C> itemInput(String id) {
+            return new ItemInputButton.Builder<>(GuiCluster.this, id);
+        }
+
+        @Override
+        public ToggleButton.Builder<C> toggle(String id) {
+            return new ToggleButton.Builder<>(GuiCluster.this, id);
+        }
     }
 }

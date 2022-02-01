@@ -18,9 +18,11 @@
 
 package me.wolfyscript.utilities.api.inventory.gui.button;
 
+import com.google.common.base.Preconditions;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
+import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
@@ -60,104 +62,50 @@ public class ButtonState<C extends CustomCache> {
     private ButtonPreRender<C> prepareRender;
     private ButtonPostAction<C> postAction;
 
-    /**
-     * Creates a new ButtonState of the specified key and icon.
-     *
-     * @param key  The key of the button.
-     * @param icon The preset ItemStack, that is used as the icon.
-     * @param <C>  The type of cache.
-     * @return A new instance of the ButtonState.
-     */
-    public static <C extends CustomCache> ButtonState<C> of(String key, ItemStack icon) {
-        return new ButtonState<>(key, icon);
+    public static <C extends CustomCache> ButtonState.Builder<C> of(GuiWindow<C> window, String key) {
+        return new Builder<>(window, key);
     }
 
-    /**
-     * Creates a new ButtonState of the specified key and icon.
-     *
-     * @param key  The key of the button.
-     * @param icon The icon type of the button.
-     * @param <C>  The type of cache.
-     * @return A new instance of the ButtonState.
-     */
-    public static <C extends CustomCache> ButtonState<C> of(String key, Material icon) {
-        return new ButtonState<>(key, icon);
+    public static <C extends CustomCache> ButtonState.Builder<C> of(GuiCluster<C> cluster, String key) {
+        return new Builder<>(cluster, key);
     }
 
-    /**
-     * Creates a new ButtonState with a global button key and icon.
-     *
-     * @param key  The key of the button. namespace = cluster, key = button
-     * @param icon The preset ItemStack, that is used as the icon.
-     * @param <C>  The type of cache.
-     * @return A new instance of the ButtonState.
-     */
-    public static <C extends CustomCache> ButtonState<C> of(NamespacedKey key, ItemStack icon) {
-        return new ButtonState<>(key, icon);
-    }
-
-    /**
-     * Creates a new ButtonState with a global button key and icon.
-     *
-     * @param key
-     * @param icon
-     * @param <C>
-     * @return A new instance of the ButtonState.
-     */
-    public static <C extends CustomCache> ButtonState<C> of(NamespacedKey key, Material icon) {
-        return new ButtonState<>(key, icon);
-    }
-
-    /**
-     * Sets the action callback, that is called when the button is clicked.
-     *
-     * @param action The action callback.
-     * @return This button state for chaining.
-     */
-    public ButtonState<C> with(@Nullable ButtonAction<C> action) {
-        this.action = action;
-        return this;
-    }
-
-    /**
-     * Sets the render callback, that is called when the button is rendered.
-     *
-     * @param buttonRender The render callback.
-     * @return This button state for chaining.
-     */
-    public ButtonState<C> with(@Nullable ButtonRender<C> buttonRender) {
-        this.buttonRender = buttonRender;
-        return this;
-    }
-
-    /**
-     * Sets the render callback, that is called right before the button is rendered.
-     *
-     * @param prepareRender The pre-render callback.
-     * @return This button state for chaining.
-     */
-    public ButtonState<C> with(@Nullable ButtonPreRender<C> prepareRender) {
-        this.prepareRender = prepareRender;
-        return this;
-    }
-
-    /**
-     * Sets the action callback, that is called 1 tick after the button was clicked.
-     *
-     * @param postAction The post-action callback.
-     * @return This button state for chaining.
-     */
-    public ButtonState<C> with(@Nullable ButtonPostAction<C> postAction) {
-        this.postAction = postAction;
-        return this;
-    }
-
+    @Deprecated
     public ButtonState(String key, ItemStack presetIcon) {
-        this(key, presetIcon, null, null);
+        Preconditions.checkArgument(key != null && !key.isBlank(), "Cannot create ButtonState with missing key! Provided key: " + key);
+        Preconditions.checkArgument(presetIcon != null, "Cannot create ButtonState with missing icon! Provided icon: " + presetIcon);
+        this.key = key;
+        this.clusterID = null;
+        this.presetIcon = presetIcon;
     }
 
+    @Deprecated
+    public ButtonState(String key, Material presetIcon) {
+        this(key, new ItemStack(presetIcon));
+    }
+
+    @Deprecated
+    public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon) {
+        Preconditions.checkArgument(key != null && !key.isBlank(), "Cannot create ButtonState with missing key! Provided key: " + key);
+        Preconditions.checkArgument(presetIcon != null, "Cannot create ButtonState with missing icon! Provided icon: " + presetIcon);
+        this.key = buttonKey.getKey();
+        this.clusterID = buttonKey.getNamespace();
+        this.presetIcon = presetIcon;
+    }
+
+    @Deprecated
+    public ButtonState(NamespacedKey buttonKey, Material presetIcon) {
+        this(buttonKey, new ItemStack(presetIcon));
+    }
+
+    /*
+     * The deprecated constructor should no longer be used.
+     * They are collapsed, so they are not in the way.
+     */
+    //region Deprecated constructors
+
     /**
-     * @deprecated Old usage! Use the {@link #of(String, ItemStack)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
@@ -165,7 +113,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(String, ItemStack)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
@@ -173,7 +121,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(String, ItemStack)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
@@ -181,7 +129,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(String, ItemStack)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
@@ -189,7 +137,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(String, ItemStack)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
@@ -203,14 +151,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * Constructors with Key and, Materials instead of ItemStacks
-     */
-    public ButtonState(String key, Material presetIcon) {
-        this(key, presetIcon, null, null);
-    }
-
-    /**
-     * @deprecated Old usage! Use the {@link #of(String, Material)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action) {
@@ -218,7 +159,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(String, Material)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonRender<C> render) {
@@ -226,7 +167,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(String, Material)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
@@ -234,7 +175,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(String, Material)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
@@ -242,19 +183,15 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(String, Material)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(String key, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
         this(key, new ItemStack(presetIcon), action, postAction, prepareRender, render);
     }
 
-    public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon) {
-        this(buttonKey, presetIcon, null, null);
-    }
-
     /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, ItemStack)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonRender<C> render) {
@@ -262,7 +199,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, ItemStack)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action) {
@@ -270,7 +207,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, ItemStack)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
@@ -278,7 +215,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, ItemStack)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
@@ -286,7 +223,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, ItemStack)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
@@ -300,15 +237,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
-     */
-    @Deprecated
-    public ButtonState(NamespacedKey buttonKey, Material presetIcon) {
-        this(buttonKey, presetIcon, null, null);
-    }
-
-    /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonRender<C> render) {
@@ -316,7 +245,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action) {
@@ -324,7 +253,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
@@ -332,7 +261,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
@@ -340,7 +269,7 @@ public class ButtonState<C extends CustomCache> {
     }
 
     /**
-     * @deprecated Old usage! Use the {@link #of(NamespacedKey, Material)} instead.
+     * @deprecated Old usage! Use the {@link Builder} via {@link #of(GuiWindow, String)} or {@link #of(GuiCluster, String)} instead.
      */
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, Material presetIcon, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonPreRender<C> prepareRender, @Nullable ButtonRender<C> render) {
@@ -463,6 +392,7 @@ public class ButtonState<C extends CustomCache> {
     public ButtonState(Material presetIcon, String displayName, String[] normalLore, ButtonAction<C> action) {
         this(new ItemStack(presetIcon), displayName, normalLore, action);
     }
+    //endregion
 
     public void init(GuiCluster<C> cluster) {
         this.wolfyUtilities = cluster.getWolfyUtilities();
@@ -514,6 +444,7 @@ public class ButtonState<C extends CustomCache> {
         return action;
     }
 
+    @Deprecated
     public ButtonState<C> setAction(ButtonAction<C> action) {
         this.action = action;
         return this;
@@ -523,6 +454,7 @@ public class ButtonState<C extends CustomCache> {
         return buttonRender;
     }
 
+    @Deprecated
     public ButtonState<C> setRenderAction(ButtonRender<C> renderAction) {
         this.buttonRender = renderAction;
         return this;
@@ -532,6 +464,7 @@ public class ButtonState<C extends CustomCache> {
         return prepareRender;
     }
 
+    @Deprecated
     public ButtonState<C> setPrepareRender(ButtonPreRender<C> prepareRender) {
         this.prepareRender = prepareRender;
         return this;
@@ -541,8 +474,131 @@ public class ButtonState<C extends CustomCache> {
         return postAction;
     }
 
+    @Deprecated
     public ButtonState<C> setPostAction(ButtonPostAction<C> postAction) {
         this.postAction = postAction;
         return this;
+    }
+
+    public static class Builder<C extends CustomCache> {
+
+        private WolfyUtilities api;
+        private InventoryAPI<C> invApi;
+        private GuiWindow<C> window;
+        private GuiCluster<C> cluster;
+        private String key;
+        private ItemStack icon;
+        private ButtonAction<C> action;
+        private ButtonRender<C> render;
+        private ButtonPreRender<C> preRender;
+        private ButtonPostAction<C> postAction;
+
+        private Builder(GuiWindow<C> window, String key) {
+            this(window.getCluster().getInventoryAPI(), window.getWolfyUtilities(), key);
+            this.window = window;
+        }
+
+        private Builder(GuiCluster<C> cluster, String key) {
+            this(cluster.getInventoryAPI(), cluster.getWolfyUtilities(), key);
+            this.cluster = cluster;
+        }
+
+        private Builder(InventoryAPI<C> invApi, WolfyUtilities api, String key) {
+            this.api = api;
+            this.invApi = invApi;
+            this.key = key;
+        }
+
+        public Builder<C> cluster(GuiCluster<C> cluster) {
+            this.cluster = cluster;
+            return this;
+        }
+
+        public Builder<C> key(String key) {
+            this.key = key;
+            return this;
+        }
+
+        public Builder<C> key(NamespacedKey key) {
+            String clusterID = key.getNamespace();
+            this.cluster = invApi.getGuiCluster(clusterID);
+            Preconditions.checkArgument(this.cluster != null, "Error setting key of ButtonState: Cluster does not exist! Provided Cluster" + clusterID);
+            this.key(key.getKey());
+            return this;
+        }
+
+        public Builder<C> icon(ItemStack icon) {
+            this.icon = icon;
+            return this;
+        }
+
+        public Builder<C> icon(Material icon) {
+            this.icon = new ItemStack(icon);
+            return this;
+        }
+
+        /**
+         * Sets the action callback, that is called when the button is clicked.
+         *
+         * @param action The action callback.
+         * @return This button state for chaining.
+         */
+        public Builder<C> action(@Nullable ButtonAction<C> action) {
+            this.action = action;
+            return this;
+        }
+
+        /**
+         * Sets the render callback, that is called when the button is rendered.
+         *
+         * @param buttonRender The render callback.
+         * @return This button state for chaining.
+         */
+        public Builder<C> render(@Nullable ButtonRender<C> buttonRender) {
+            this.render = buttonRender;
+            return this;
+        }
+
+        /**
+         * Sets the render callback, that is called right before the button is rendered.
+         *
+         * @param prepareRender The pre-render callback.
+         * @return This button state for chaining.
+         */
+        public Builder<C> preRender(@Nullable ButtonPreRender<C> prepareRender) {
+            this.preRender = prepareRender;
+            return this;
+        }
+
+        /**
+         * Sets the action callback, that is called 1 tick after the button was clicked.
+         *
+         * @param postAction The post-action callback.
+         * @return This button state for chaining.
+         */
+        public Builder<C> postAction(@Nullable ButtonPostAction<C> postAction) {
+            this.postAction = postAction;
+            return this;
+        }
+
+        public ButtonState<C> create() {
+            ButtonState<C> state;
+            if (cluster == null) {
+                state = new ButtonState(key, icon);
+            } else {
+                state = new ButtonState(new NamespacedKey(cluster.getId(), key), icon);
+            }
+            state.prepareRender = preRender;
+            state.buttonRender = render;
+            state.action = action;
+            state.postAction = postAction;
+            if (cluster != null) {
+                state.init(cluster);
+            } else {
+                state.init(window);
+            }
+            return state;
+        }
+
     }
 }

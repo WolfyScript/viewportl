@@ -18,7 +18,9 @@
 
 package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
+import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
+import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonRender;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonType;
@@ -66,4 +68,21 @@ public class DummyButton<C extends CustomCache> extends ActionButton<C> {
         //NOTHING
         return true;
     }
+
+    public static class Builder<C extends CustomCache> extends ActionButton.AbstractBuilder<C, DummyButton<C>> {
+
+        public Builder(GuiWindow<C> window, String id) {
+            super(window, id, (Class<DummyButton<C>>) (Object) DummyButton.class);
+        }
+
+        public Builder(GuiCluster<C> cluster, String id) {
+            super(cluster, id, (Class<DummyButton<C>>) (Object) DummyButton.class);
+        }
+
+        @Override
+        public DummyButton<C> create() {
+            return new DummyButton<>(key, stateBuilder.create());
+        }
+    }
+
 }

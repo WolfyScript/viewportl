@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  * Button that executes the action method and renders the item manipulated via the render method of the ButtonState.
@@ -55,6 +56,14 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
     private final ButtonType type;
     private final ButtonState<C> state;
 
+    /**
+     * Constructor for classes that extends the ActionButton.
+     * It creates the necessary key, type, and state.
+     *
+     * @param id The id of the key.
+     * @param type The type of the Button.
+     * @param state The state of the Button.
+     */
     protected ActionButton(String id, ButtonType type, ButtonState<C> state) {
         super(id, type);
         this.id = id;
@@ -79,7 +88,7 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
     }
 
     public ActionButton(String id, ItemStack itemStack, @Nullable ButtonAction<C> action, @Nullable ButtonRender<C> render) {
-        this(id, new ButtonState<>(id, itemStack, action, render));
+        this(id, itemStack, action, null, render, null);
     }
 
     public ActionButton(String id, ItemStack itemStack, @Nullable ButtonAction<C> action, @Nullable ButtonPostAction<C> postAction, @Nullable ButtonRender<C> render, @Nullable ButtonPreRender<C> preRender) {
@@ -155,5 +164,42 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
     @Override
     public @NotNull String getId() {
         return id;
+    }
+
+    public static abstract class AbstractBuilder<C extends CustomCache, B extends ActionButton<C>> extends Button.Builder<C, B> {
+
+        protected ButtonState.Builder<C> stateBuilder;
+
+        protected AbstractBuilder(GuiWindow<C> window, String key, Class<B> buttonType) {
+            super(window, key, buttonType);
+            this.stateBuilder = ButtonState.of(window, key);
+        }
+
+        protected AbstractBuilder(GuiCluster<C> cluster, String key, Class<B> buttonType) {
+            super(cluster, key, buttonType);
+            this.stateBuilder = ButtonState.of(cluster, key);
+        }
+
+        public AbstractBuilder<C, B> state(Consumer<ButtonState.Builder<C>> builderConsumer) {
+            builderConsumer.accept(stateBuilder);
+            return this;
+        }
+
+    }
+
+    public static class Builder<C extends CustomCache> extends AbstractBuilder<C, ActionButton<C>> {
+
+        public Builder(GuiWindow<C> window, String key) {
+            super(window, key, (Class<ActionButton<C>>)(Object) ActionButton.class);
+        }
+
+        public Builder(GuiCluster<C> cluster, String key) {
+            super(cluster, key, (Class<ActionButton<C>>)(Object) ActionButton.class);
+        }
+
+        @Override
+        public ActionButton<C> create() {
+            return new ActionButton<>(key, stateBuilder.create());
+        }
     }
 }

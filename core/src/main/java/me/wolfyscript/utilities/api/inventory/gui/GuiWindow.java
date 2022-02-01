@@ -22,7 +22,11 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.chat.ClickData;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ActionButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ChatInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.DummyButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.compatibility.plugins.PlaceholderAPIIntegration;
@@ -33,6 +37,7 @@ import me.wolfyscript.utilities.util.reflection.InventoryUpdate;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryInteractEvent;
@@ -43,6 +48,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * The GuiWindow represents an Inventory GUI in-game.
@@ -58,9 +64,10 @@ import java.util.List;
  *
  * @param <C> The type of the {@link CustomCache}.
  */
-public abstract class GuiWindow<C extends CustomCache> implements Listener {
+public abstract class GuiWindow<C extends CustomCache> implements Listener, ButtonBuilder<C> {
 
     public final WolfyUtilities wolfyUtilities;
+    protected final WindowButtonBuilder buttonBuilder;
 
     final HashMap<String, Button<C>> buttons = new HashMap<>();
     private final GuiCluster<C> cluster;
@@ -118,6 +125,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         this.inventoryType = inventoryType;
         this.size = size;
         this.forceSyncUpdate = forceSyncUpdate;
+        this.buttonBuilder = new WindowButtonBuilder();
         Bukkit.getPluginManager().registerEvents(this, wolfyUtilities.getPlugin());
     }
 
@@ -169,8 +177,8 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * When enabled this will be called every specified period.
      *
      * @param originalTitle The original title from the language file.
-     * @param inventory The inventory instance, which title is updated. Null when the inventory is opened for the first time!
-     * @param guiHandler The handler that the inventory belongs to.
+     * @param inventory     The inventory instance, which title is updated. Null when the inventory is opened for the first time!
+     * @param guiHandler    The handler that the inventory belongs to.
      * @return The new modified title. Color codes using & will be converted.
      */
     public String onUpdateTitle(String originalTitle, @Nullable GUIInventory<C> inventory, GuiHandler<C> guiHandler) {
@@ -306,10 +314,10 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * Opens the chat, send the player the defined message and waits for the input of the player.
      * When the player sends a message the inputAction method is executed.
      *
-     * @deprecated This uses the legacy chat format. {@link #openChat(GuiHandler, Component, ChatInputAction)} should be used instead.
      * @param guiHandler  The {@link GuiHandler} it should be opened for.
      * @param msg         The message that should be sent to the player.
      * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
+     * @deprecated This uses the legacy chat format. {@link #openChat(GuiHandler, Component, ChatInputAction)} should be used instead.
      */
     @Deprecated
     public void openChat(GuiHandler<C> guiHandler, String msg, ChatInputAction<C> inputAction) {
@@ -369,10 +377,10 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * Opens the chat, send the player the defined action messages and waits for the input of the player.
      * When the player sends the message the inputAction method is executed
      *
-     * @deprecated This uses the legacy chat format. {@link #openChat(GuiHandler, Component, ChatInputAction)} should be used instead.
      * @param guiHandler  The {@link GuiHandler} it should be opened for.
      * @param clickData   The {@link ClickData} to be send to the player.
      * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
+     * @deprecated This uses the legacy chat format. {@link #openChat(GuiHandler, Component, ChatInputAction)} should be used instead.
      */
     @Deprecated
     public void openActionChat(GuiHandler<C> guiHandler, ClickData clickData, ChatInputAction<C> inputAction) {
@@ -422,18 +430,18 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     /**
-     * @param guiHandler   The {@link GuiHandler} that this message should be sent to.
-     * @param msgKey       The key of the message.
-     * @param templates    The placeholders and values to replace in the message.
+     * @param guiHandler The {@link GuiHandler} that this message should be sent to.
+     * @param msgKey     The key of the message.
+     * @param templates  The placeholders and values to replace in the message.
      */
     public final void sendMessage(GuiHandler<C> guiHandler, String msgKey, List<Template> templates) {
         wolfyUtilities.getChat().sendKey(guiHandler.getPlayer(), getNamespacedKey(), msgKey, templates);
     }
 
     /**
-     * @param player       The Player this message should be sent to.
-     * @param msgKey       The key of the message.
-     * @param templates    The placeholders and values to replace in the message.
+     * @param player    The Player this message should be sent to.
+     * @param msgKey    The key of the message.
+     * @param templates The placeholders and values to replace in the message.
      */
     public final void sendMessage(Player player, String msgKey, List<Template> templates) {
         wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey, templates);
@@ -521,4 +529,37 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public int getTitleUpdatePeriod() {
         return titleUpdatePeriod;
     }
+
+    public ButtonBuilder<C> getButtonBuilder() {
+        return buttonBuilder;
+    }
+
+    public class WindowButtonBuilder implements ButtonBuilder<C> {
+
+        @Override
+        public ChatInputButton.Builder<C> chatInput(String id) {
+            return new ChatInputButton.Builder<>(GuiWindow.this, id);
+        }
+
+        @Override
+        public ActionButton.Builder<C> action(String id) {
+            return new ActionButton.Builder<>(GuiWindow.this, id);
+        }
+
+        @Override
+        public DummyButton.Builder<C> dummy(String id) {
+            return new DummyButton.Builder<>(GuiWindow.this, id);
+        }
+
+        @Override
+        public ItemInputButton.Builder<C> itemInput(String id) {
+            return new ItemInputButton.Builder<>(GuiWindow.this, id);
+        }
+
+        @Override
+        public ToggleButton.Builder<C> toggle(String id) {
+            return new ToggleButton.Builder<>(GuiWindow.this, id);
+        }
+    }
+
 }
