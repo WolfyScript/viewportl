@@ -171,14 +171,14 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
 
         public Builder(GuiWindow<C> window, String id) {
             super(window, id, (Class<ToggleButton<C>>) (Object) ToggleButton.class);
-            this.enabledStateBuilder = ButtonState.of(window);
-            this.disabledStateBuilder = ButtonState.of(window);
+            this.enabledStateBuilder = ButtonState.of(window, id);
+            this.disabledStateBuilder = ButtonState.of(window, id);
         }
 
         public Builder(GuiCluster<C> cluster, String id) {
             super(cluster, id, (Class<ToggleButton<C>>) (Object) ToggleButton.class);
-            this.enabledStateBuilder = ButtonState.of(cluster);
-            this.disabledStateBuilder = ButtonState.of(cluster);
+            this.enabledStateBuilder = ButtonState.of(cluster, id);
+            this.disabledStateBuilder = ButtonState.of(cluster, id);
         }
 
         public Builder<C> enabledState(Consumer<ButtonState.Builder<C>> builderConsumer) {
