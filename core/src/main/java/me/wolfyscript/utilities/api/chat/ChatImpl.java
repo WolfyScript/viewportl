@@ -199,7 +199,7 @@ public class ChatImpl extends Chat {
     @Deprecated
     @Override
     public void sendKey(Player player, String clusterID, String msgKey) {
-        sendMessage(player, translated("inventories." + clusterID + ".global_messages." + msgKey));
+        sendMessage(player, translated("inventories." + clusterID + ".global_messages." + msgKey, true));
     }
 
     /**
@@ -211,12 +211,12 @@ public class ChatImpl extends Chat {
      */
     @Override
     public void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey) {
-        sendMessage(player, translated("inventories." + guiCluster.getId() + ".global_messages." + msgKey));
+        sendMessage(player, translated("inventories." + guiCluster.getId() + ".global_messages." + msgKey, true));
     }
 
     @Override
     public void sendKey(Player player, @NotNull NamespacedKey windowKey, String msgKey) {
-        sendMessage(player, translated("inventories." + windowKey.getNamespace() + "." + windowKey.getKey() + ".messages." + msgKey));
+        sendMessage(player, translated("inventories." + windowKey.getNamespace() + "." + windowKey.getKey() + ".messages." + msgKey, true));
     }
 
     @Override
@@ -275,12 +275,11 @@ public class ChatImpl extends Chat {
     @Override
     public net.kyori.adventure.text.event.ClickEvent executable(Player player, boolean discard, ClickAction action) {
         Preconditions.checkArgument(action != null, "The click action cannot be null!");
-        UUID id = UUID.randomUUID();
-        while (CLICK_DATA_MAP.containsKey(id)) {
+        UUID id;
+        do {
             id = UUID.randomUUID();
-        }
-        PlayerAction playerAction = new PlayerAction(wolfyUtilities, player, action, discard);
-        CLICK_DATA_MAP.put(id, playerAction);
+        } while (CLICK_DATA_MAP.containsKey(id));
+        CLICK_DATA_MAP.put(id, new PlayerAction(wolfyUtilities, player, action, discard));
         return net.kyori.adventure.text.event.ClickEvent.clickEvent(net.kyori.adventure.text.event.ClickEvent.Action.RUN_COMMAND, "/wua " + id);
     }
 
