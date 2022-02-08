@@ -115,6 +115,17 @@ public abstract class Chat {
      * If it is not available it returns an empty component.
      *
      * @param key The key in the language.
+     * @param translateLegacyColor If it should translate legacy '&' color codes.
+     * @return The component set for the key; empty component if not available.
+     */
+    public abstract Component translated(String key, boolean translateLegacyColor);
+
+    /**
+     * Creates a {@link Component} of the specified language key.<br>
+     * If the key exists in the language it will be translated and returns the according component.
+     * If it is not available it returns an empty component.
+     *
+     * @param key The key in the language.
      * @param templates The placeholders and values in the message.
      * @return The component set for the key; empty component if not available.
      */

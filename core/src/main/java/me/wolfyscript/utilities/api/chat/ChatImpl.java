@@ -243,6 +243,11 @@ public class ChatImpl extends Chat {
     }
 
     @Override
+    public Component translated(String key, boolean translateLegacyColor) {
+        return languageAPI.getComponent(key, translateLegacyColor, List.of());
+    }
+
+    @Override
     public Component translated(String key, List<Template> templates) {
         return languageAPI.getComponent(key, templates);
     }
