@@ -242,6 +242,10 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
             return key;
         }
 
+        public String getRoot() {
+            return folder.substring(0, folder.indexOf("/"));
+        }
+
         @Override
         public String toString() {
             return toString("/");
