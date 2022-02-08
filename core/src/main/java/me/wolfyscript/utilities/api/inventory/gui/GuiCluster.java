@@ -73,7 +73,7 @@ public abstract class GuiCluster<C extends CustomCache> {
         buttons.putIfAbsent(button.getId(), button);
     }
 
-    private <B extends Button.Builder<C, ?>> void registerButton(B builder) {
+    private <B extends Button.Builder<C, ?, ?>> void registerButton(B builder) {
         Button<C> button = builder.create();
         buttons.put(button.getId(), button);
     }
@@ -105,6 +105,15 @@ public abstract class GuiCluster<C extends CustomCache> {
         return inventoryAPI;
     }
 
+    /**
+     * Gets the {@link ButtonBuilder} to create new builders for buttons.
+     *
+     * @return The button builder of the GuiCluster.
+     */
+    public ButtonBuilder<C> getButtonBuilder() {
+        return buttonBuilder;
+    }
+
     void setId(String id) {
         this.id = id;
     }
@@ -119,10 +128,6 @@ public abstract class GuiCluster<C extends CustomCache> {
 
     Map<String, GuiWindow<C>> getGuiWindows() {
         return guiWindows;
-    }
-
-    public ButtonBuilder<C> getButtonBuilder() {
-        return buttonBuilder;
     }
 
     public class ClusterButtonBuilder implements ButtonBuilder<C> {

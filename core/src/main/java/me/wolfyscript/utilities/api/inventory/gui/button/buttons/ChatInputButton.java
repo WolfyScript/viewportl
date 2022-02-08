@@ -38,6 +38,7 @@ import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  * @param <C> The type of the {@link CustomCache}
@@ -246,7 +247,7 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
         return true; //The click is always cancelled.
     }
 
-    public static class Builder<C extends CustomCache> extends ActionButton.AbstractBuilder<C, ChatInputButton<C>> {
+    public static class Builder<C extends CustomCache> extends ActionButton.AbstractBuilder<C, ChatInputButton<C>, Builder<C>> {
 
         private ChatInputAction<C> action = null;
         private ChatTabComplete<C> tabComplete = null;
@@ -262,17 +263,17 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
 
         public Builder<C> inputAction(ChatInputAction<C> inputAction) {
             this.action = inputAction;
-            return this;
+            return inst();
         }
 
         public Builder<C> tabComplete(ChatTabComplete<C> tabComplete) {
             this.tabComplete = tabComplete;
-            return this;
+            return inst();
         }
 
         public Builder<C> message(Component msg) {
             this.msg = msg;
-            return this;
+            return inst();
         }
 
         @Override

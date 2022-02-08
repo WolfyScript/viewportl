@@ -198,9 +198,10 @@ public abstract class Button<C extends CustomCache> {
         return itemStack;
     }
 
-    public static abstract class Builder<C extends CustomCache, B extends Button<C>> {
+    public static abstract class Builder<C extends CustomCache, B extends Button<C>, T extends Builder<C, B, T>> {
 
         protected final Class<B> buttonType;
+        protected final Class<T> builderType;
         protected final WolfyUtilities api;
         protected final InventoryAPI<C> invApi;
         protected GuiWindow<C> window;
@@ -222,9 +223,14 @@ public abstract class Button<C extends CustomCache> {
             this.invApi = invApi;
             this.buttonType = buttonType;
             this.key = key;
+            this.builderType = (Class<T>) getClass();
         }
 
         public abstract B create();
+
+        protected T inst() {
+            return builderType.cast(this);
+        }
 
     }
 }

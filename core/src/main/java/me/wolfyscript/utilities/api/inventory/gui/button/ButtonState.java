@@ -72,7 +72,7 @@ public class ButtonState<C extends CustomCache> {
 
     @Deprecated
     public ButtonState(String key, ItemStack presetIcon) {
-        Preconditions.checkArgument(key != null && !key.isBlank(), "Cannot create ButtonState with missing key! Provided key: " + key);
+        Preconditions.checkArgument(key != null && !key.isBlank(), "Cannot create ButtonState with missing key!");
         Preconditions.checkArgument(presetIcon != null, "Cannot create ButtonState with missing icon! Provided icon: " + presetIcon);
         this.key = key;
         this.clusterID = null;
@@ -86,7 +86,7 @@ public class ButtonState<C extends CustomCache> {
 
     @Deprecated
     public ButtonState(NamespacedKey buttonKey, ItemStack presetIcon) {
-        Preconditions.checkArgument(key != null && !key.isBlank(), "Cannot create ButtonState with missing key! Provided key: " + key);
+        Preconditions.checkArgument(buttonKey != null, "Cannot create ButtonState with missing key!");
         Preconditions.checkArgument(presetIcon != null, "Cannot create ButtonState with missing icon! Provided icon: " + presetIcon);
         this.key = buttonKey.getKey();
         this.clusterID = buttonKey.getNamespace();

@@ -293,6 +293,15 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener, Butt
     }
 
     /**
+     * Gets the {@link ButtonBuilder} to create new builders for buttons.
+     *
+     * @return The button builder of the GuiWindow.
+     */
+    public ButtonBuilder<C> getButtonBuilder() {
+        return buttonBuilder;
+    }
+
+    /**
      * @param id The id of the button.
      * @return The button if it exists, else null.
      */
@@ -354,7 +363,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener, Butt
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
         var chat = wolfyUtilities.getChat();
-        chat.sendMessage(guiHandler.getPlayer(), chat.translated("inventories." + guiCluster.getId() + ".global_messages." + msgKey));
+        chat.sendMessage(guiHandler.getPlayer(), "$inventories." + guiCluster.getId() + ".global_messages." + msgKey + "$");
     }
 
     /**
@@ -426,24 +435,6 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener, Butt
     @Deprecated
     public final void sendMessage(Player player, String msgKey, Pair<String, String>... replacements) {
         wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey, replacements);
-    }
-
-    /**
-     * @param guiHandler The {@link GuiHandler} that this message should be sent to.
-     * @param msgKey     The key of the message.
-     * @param templates  The placeholders and values to replace in the message.
-     */
-    public final void sendMessage(GuiHandler<C> guiHandler, String msgKey, List<Template> templates) {
-        wolfyUtilities.getChat().sendKey(guiHandler.getPlayer(), getNamespacedKey(), msgKey, templates);
-    }
-
-    /**
-     * @param player    The Player this message should be sent to.
-     * @param msgKey    The key of the message.
-     * @param templates The placeholders and values to replace in the message.
-     */
-    public final void sendMessage(Player player, String msgKey, List<Template> templates) {
-        wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey, templates);
     }
 
     /**
@@ -527,10 +518,6 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener, Butt
      */
     public int getTitleUpdatePeriod() {
         return titleUpdatePeriod;
-    }
-
-    public ButtonBuilder<C> getButtonBuilder() {
-        return buttonBuilder;
     }
 
     public class WindowButtonBuilder implements ButtonBuilder<C> {

@@ -162,7 +162,7 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
 
     }
 
-    public static class Builder<C extends CustomCache> extends Button.Builder<C, ToggleButton<C>> {
+    public static class Builder<C extends CustomCache> extends Button.Builder<C, ToggleButton<C>, Builder<C>> {
 
         protected boolean defaultState;
         protected StateFunction<C> stateFunction;

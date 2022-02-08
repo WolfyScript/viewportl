@@ -166,7 +166,14 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
         return id;
     }
 
-    public static abstract class AbstractBuilder<C extends CustomCache, B extends ActionButton<C>> extends Button.Builder<C, B> {
+    /**
+     * Abstract builder class to be used in classes that extend the {@link ActionButton}
+     *
+     * @param <C> The type of the {@link CustomCache}
+     * @param <B> The type of the {@link ActionButton} that this builder creates.
+     * @param <T> The type of the {@link AbstractBuilder}. A self-reference of this class, so it can return the correct types for chaining.
+     */
+    public static abstract class AbstractBuilder<C extends CustomCache, B extends ActionButton<C>, T extends AbstractBuilder<C, B, T>> extends Button.Builder<C, B, T> {
 
         protected ButtonState.Builder<C> stateBuilder;
 
@@ -180,14 +187,14 @@ public class ActionButton<C extends CustomCache> extends Button<C> {
             this.stateBuilder = ButtonState.of(cluster, key);
         }
 
-        public AbstractBuilder<C, B> state(Consumer<ButtonState.Builder<C>> builderConsumer) {
+        public T state(Consumer<ButtonState.Builder<C>> builderConsumer) {
             builderConsumer.accept(stateBuilder);
-            return this;
+            return inst();
         }
 
     }
 
-    public static class Builder<C extends CustomCache> extends AbstractBuilder<C, ActionButton<C>> {
+    public static class Builder<C extends CustomCache> extends AbstractBuilder<C, ActionButton<C>, Builder<C>> {
 
         public Builder(GuiWindow<C> window, String key) {
             super(window, key, (Class<ActionButton<C>>)(Object) ActionButton.class);

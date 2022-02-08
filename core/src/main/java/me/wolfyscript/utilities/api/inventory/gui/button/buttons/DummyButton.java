@@ -69,7 +69,7 @@ public class DummyButton<C extends CustomCache> extends ActionButton<C> {
         return true;
     }
 
-    public static class Builder<C extends CustomCache> extends ActionButton.AbstractBuilder<C, DummyButton<C>> {
+    public static class Builder<C extends CustomCache> extends ActionButton.AbstractBuilder<C, DummyButton<C>, Builder<C>> {
 
         public Builder(GuiWindow<C> window, String id) {
             super(window, id, (Class<DummyButton<C>>) (Object) DummyButton.class);

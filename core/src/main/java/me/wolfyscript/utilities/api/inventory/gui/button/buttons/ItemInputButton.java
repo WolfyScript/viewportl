@@ -107,7 +107,7 @@ public class ItemInputButton<C extends CustomCache> extends ActionButton<C> {
         return content.computeIfAbsent(guiHandler, g -> new ItemStack(Material.AIR));
     }
 
-    public static class Builder<C extends CustomCache> extends ActionButton.AbstractBuilder<C, ItemInputButton<C>> {
+    public static class Builder<C extends CustomCache> extends ActionButton.AbstractBuilder<C, ItemInputButton<C>, Builder<C>> {
 
         public Builder(GuiWindow<C> window, String id) {
             super(window, id, (Class<ItemInputButton<C>>) (Object) ItemInputButton.class);

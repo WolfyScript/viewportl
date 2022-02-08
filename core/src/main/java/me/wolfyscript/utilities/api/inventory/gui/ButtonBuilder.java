@@ -26,18 +26,60 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.MultipleChoiceB
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 
+/**
+ * Interface that contains method to create new button builders.
+ * It is implemented by either {@link GuiWindow} or {@link GuiCluster} and will create the builders accordingly.
+ *
+ * @param <C> The type of the custom cache.
+ */
 public interface ButtonBuilder<C extends CustomCache> {
 
+    /**
+     * Gets a new builder for a {@link ChatInputButton<C>}.
+     *
+     * @param id The id of the new button.
+     * @return The new builder.
+     */
     ChatInputButton.Builder<C> chatInput(String id);
 
+    /**
+     * Gets a new builder for a {@link ActionButton<C>}.
+     *
+     * @param id The id of the new button.
+     * @return The new builder.
+     */
     ActionButton.Builder<C> action(String id);
 
+    /**
+     * Gets a new builder for a {@link DummyButton<C>}.
+     *
+     * @param id The id of the new button.
+     * @return The new builder.
+     */
     DummyButton.Builder<C> dummy(String id);
 
+    /**
+     * Gets a new builder for a {@link ItemInputButton<C>}.
+     *
+     * @param id The id of the new button.
+     * @return The new builder.
+     */
     ItemInputButton.Builder<C> itemInput(String id);
 
+    /**
+     * Gets a new builder for a {@link ToggleButton<C>}.
+     *
+     * @param id The id of the new button.
+     * @return The new builder.
+     */
     ToggleButton.Builder<C> toggle(String id);
 
+    /**
+     * Gets a new builder for a {@link MultipleChoiceButton<C>}.
+     *
+     * @param id The id of the new button.
+     * @return The new builder.
+     */
     MultipleChoiceButton.Builder<C> multiChoice(String id);
 
 }

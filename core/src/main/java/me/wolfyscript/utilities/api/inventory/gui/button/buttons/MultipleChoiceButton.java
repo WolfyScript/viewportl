@@ -160,7 +160,7 @@ public class MultipleChoiceButton<C extends CustomCache> extends Button<C> {
 
     }
 
-    public static class Builder<C extends CustomCache> extends Button.Builder<C, MultipleChoiceButton<C>> {
+    public static class Builder<C extends CustomCache> extends Button.Builder<C, MultipleChoiceButton<C>, Builder<C>> {
 
         private final Supplier<ButtonState.Builder<C>> stateBuilderSupplier;
         protected MultipleChoiceButton.StateFunction<C> stateFunction;
