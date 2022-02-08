@@ -57,7 +57,6 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
      * @param namespace The namespace, that fits the pattern [a-z0-9._-]
      * @param key       The key that fits the pattern [a-z0-9/._-]
      */
-    @Deprecated
     public NamespacedKey(String namespace, String key) {
         Preconditions.checkArgument(namespace != null && VALID_NAMESPACE.matcher(namespace).matches(), "Invalid namespace. Must be [a-z0-9._-]: %s", namespace);
         this.key = new Key(key.toLowerCase(Locale.ROOT));
