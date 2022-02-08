@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
  * <br>
  * Usually the namespace should be the plugins' (lowercase) name and identifies resources as part of that plugin.<br>
  * e.g. when registering data using the {@link me.wolfyscript.utilities.registry.IRegistry}, etc.<br>
- * In those cases the {@link #NamespacedKey(Plugin, String)} constructor should be used, or namespace that uniquely identifies your plugin.
+ * In those cases the {@link #NamespacedKey(Plugin, String)} constructor should be used.
  * <br>
  * They can however be used inside a plugin itself with non-plugin namespaces, when resources are only accessible internally.<br>
  * e.g. {@link me.wolfyscript.utilities.api.inventory.gui.GuiWindow} where the namespace is the {@link me.wolfyscript.utilities.api.inventory.gui.GuiCluster}s' id and the key the GuiWindows's id, etc.<br>
