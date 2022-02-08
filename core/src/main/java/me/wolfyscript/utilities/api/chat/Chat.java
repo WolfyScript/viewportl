@@ -93,10 +93,6 @@ public abstract class Chat {
 
     public abstract void sendKey(Player player, NamespacedKey windowKey, String msgKey);
 
-    public abstract void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey, List<Template> templates);
-
-    public abstract void sendKey(Player player, NamespacedKey windowKey, String msgKey, List<Template> templates);
-
     @Deprecated
     public abstract void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey, Pair<String, String>... replacements);
 

@@ -219,16 +219,6 @@ public class ChatImpl extends Chat {
         sendMessage(player, translated("inventories." + windowKey.getNamespace() + "." + windowKey.getKey() + ".messages." + msgKey, true));
     }
 
-    @Override
-    public final void sendKey(Player player, @NotNull GuiCluster<?> guiCluster, String msgKey, List<Template> templates) {
-        sendMessage(player, translated("inventories." + guiCluster.getId() + ".global_messages." + msgKey, templates));
-    }
-
-    @Override
-    public final void sendKey(Player player, NamespacedKey windowKey, String msgKey, List<Template> templates) {
-        sendMessage(player, translated("inventories." + windowKey.getNamespace() + "." + windowKey.getKey() + ".messages." + msgKey, templates));
-    }
-
     @Deprecated
     @SafeVarargs
     @Override
