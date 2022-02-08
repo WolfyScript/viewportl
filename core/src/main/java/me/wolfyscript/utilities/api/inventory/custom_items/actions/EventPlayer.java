@@ -16,14 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.compatibility.plugins;
+package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
-import me.wolfyscript.utilities.compatibility.PluginIntegration;
-import org.bukkit.Location;
+import me.wolfyscript.utilities.util.NamespacedKey;
 
-public interface MythicMobsIntegration extends PluginIntegration {
+public abstract class EventPlayer<T extends DataPlayer> extends Event<T> {
 
-    String KEY = "MythicMobs";
+    protected EventPlayer(NamespacedKey key, Class<T> dataType) {
+        super(key, dataType);
+    }
 
-    void spawnMob(String mobName, Location location, int mobLevel);
 }

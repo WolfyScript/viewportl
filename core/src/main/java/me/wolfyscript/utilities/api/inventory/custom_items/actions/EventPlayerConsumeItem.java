@@ -16,14 +16,24 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.compatibility.plugins;
+package me.wolfyscript.utilities.api.inventory.custom_items.actions;
 
-import me.wolfyscript.utilities.compatibility.PluginIntegration;
-import org.bukkit.Location;
+import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.util.NamespacedKey;
+import org.bukkit.block.BlockFace;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
-public interface MythicMobsIntegration extends PluginIntegration {
+import java.util.List;
 
-    String KEY = "MythicMobs";
+public class EventPlayerConsumeItem extends EventPlayer<DataPlayerEvent<PlayerItemConsumeEvent>> {
 
-    void spawnMob(String mobName, Location location, int mobLevel);
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("player/consume_item");
+
+    protected EventPlayerConsumeItem() {
+        super(KEY, (Class<DataPlayerEvent<PlayerItemConsumeEvent>>)(Object) DataPlayerEvent.class);
+    }
+
 }

@@ -22,6 +22,6 @@ import me.wolfyscript.utilities.compatibility.PluginIntegration;
 
 public interface ItemsAdderIntegration extends PluginIntegration {
 
-
+    String KEY = "ItemsAdder";
 
 }
