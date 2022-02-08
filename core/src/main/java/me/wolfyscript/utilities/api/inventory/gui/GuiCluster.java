@@ -68,7 +68,7 @@ public abstract class GuiCluster<C extends CustomCache> {
         this.entry = entry;
     }
 
-    protected void registerButton(Button<C> button) {
+    public void registerButton(Button<C> button) {
         button.init(this);
         buttons.putIfAbsent(button.getId(), button);
     }

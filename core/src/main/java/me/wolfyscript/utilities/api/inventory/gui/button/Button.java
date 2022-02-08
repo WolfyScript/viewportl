@@ -228,6 +228,15 @@ public abstract class Button<C extends CustomCache> {
 
         public abstract B create();
 
+        public void register() {
+            B button = create();
+            if (window != null) {
+               window.registerButton(button);
+            } else if (cluster != null) {
+                cluster.registerButton(button);
+            }
+        }
+
         protected T inst() {
             return builderType.cast(this);
         }

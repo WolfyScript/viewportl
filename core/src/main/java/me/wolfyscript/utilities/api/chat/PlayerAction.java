@@ -34,6 +34,7 @@ public class PlayerAction {
     private ClickAction clickAction;
     private final boolean discard;
 
+    @Deprecated
     public PlayerAction(WolfyUtilities api, Player player, ClickData clickData) {
         this.uuid = player.getUniqueId();
         this.api = api;

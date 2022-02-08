@@ -63,7 +63,7 @@ import java.util.List;
  *
  * @param <C> The type of the {@link CustomCache}.
  */
-public abstract class GuiWindow<C extends CustomCache> implements Listener, ButtonBuilder<C> {
+public abstract class GuiWindow<C extends CustomCache> implements Listener {
 
     public final WolfyUtilities wolfyUtilities;
     protected final WindowButtonBuilder buttonBuilder;
