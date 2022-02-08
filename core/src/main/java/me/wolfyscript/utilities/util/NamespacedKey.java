@@ -37,11 +37,23 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+/**
+ * The NamespacedKey is used to manage and identify resources and prevent conflicts with for example plugins.<br>
+ * It consists of a unique namespace and a key. (The same key can exist in different namespaces) <br>
+ * <br>
+ * Usually the namespace should be the plugins' (lowercase) name and identifies resources as part of that plugin.<br>
+ * e.g. when registering data using the {@link me.wolfyscript.utilities.registry.IRegistry}, etc.<br>
+ * In those cases the {@link #NamespacedKey(Plugin, String)} constructor should be used, or namespace that uniquely identifies your plugin.
+ * <br>
+ * They can however be used inside a plugin itself with non-plugin namespaces, when resources are only accessible internally.<br>
+ * e.g. {@link me.wolfyscript.utilities.api.inventory.gui.GuiWindow} where the namespace is the {@link me.wolfyscript.utilities.api.inventory.gui.GuiCluster}s' id and the key the GuiWindows's id, etc.<br>
+ * In those cases the {@link #NamespacedKey(String, String)} constructor can be used.
+ *
+ */
 @JsonDeserialize(using = NamespacedKey.Deserializer.class, keyUsing = NamespacedKey.KeyDeserializer.class)
 public class NamespacedKey implements Comparable<NamespacedKey> {
 
     public static final String WOLFYUTILITIES = "wolfyutilities";
-    private static final String BUKKIT_SPLITTER = "/";
 
     @JsonIgnore
     private static final Pattern VALID_NAMESPACE = Pattern.compile("[a-z0-9._-]+");
@@ -52,7 +64,9 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     private final Key key;
 
     /**
-     * <b>Only for internal use. Must be converted to a namespaced key with your plugins name as the namespaced key, if you register data in WolfyUtilities!</b>
+     * Creates a NamespacedKey with a custom namespace and key.<br>
+     * This does not uniquely link the resource to your plugin! (Except the namespace is exactly the same as your plugins' lowercase name)<br>
+     * <b>Only for internal use. Must be converted to a namespaced key with your plugins' (lowercase) name as the namespace, if you register data in WolfyUtilities!</b>
      *
      * @param namespace The namespace, that fits the pattern [a-z0-9._-]
      * @param key       The key that fits the pattern [a-z0-9/._-]
@@ -67,6 +81,8 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     }
 
     /**
+     * Creates a new NamespacedKey with the plugins' (lowercase) name.
+     *
      * @param plugin The plugin that this data belongs to
      * @param key    The key that fits the pattern [a-z0-9/._-]
      */
@@ -148,11 +164,24 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
         return new NamespacedKey(namespacedKey.getNamespace(), namespacedKey.getKey());
     }
 
+    /**
+     * Creates a new Bukkit NamespacedKey with the plugins' name as the namespace.
+     *
+     * @deprecated A NamespacedKey should be constructed with the plugins' namespace right away (see {@link #NamespacedKey(Plugin, String)}), which makes this method redundant! Use {@link #bukkit()} instead!
+     * @param plugin The plugin
+     * @return The new constructed NamespacedKey
+     */
     @Deprecated
     public org.bukkit.NamespacedKey toBukkit(Plugin plugin) {
-        return new org.bukkit.NamespacedKey(plugin, this.namespace + BUKKIT_SPLITTER + this.getKey());
+        return new org.bukkit.NamespacedKey(plugin, this.namespace + "/" + this.getKey());
     }
 
+    /**
+     * Creates a new Bukkit NamespacedKey with the "wolfyutilities" namespace.
+     *
+     * @deprecated A NamespacedKey should be constructed with the plugins' namespace right away (see {@link #NamespacedKey(Plugin, String)}), which makes this method redundant! Use {@link #bukkit()} instead!
+     * @return The new constructed NamespacedKey
+     */
     @Deprecated
     public org.bukkit.NamespacedKey toBukkit() {
         return toBukkit(WolfyUtilities.getWUPlugin());
@@ -214,7 +243,7 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
     public static final class Key {
 
         private final String folder;
-        private final String key;
+        private final String object;
 
         private Key(String keyString) {
             Preconditions.checkArgument(VALID_KEY.matcher(keyString).matches(), "Invalid key. Must be [a-z0-9/._-]: %s", keyString);
@@ -222,44 +251,92 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
                 String[] args = keyString.split("/(?!.*/)");
                 if (args.length > 1) {
                     this.folder = args[0];
-                    this.key = args[1];
+                    this.object = args[1];
                     return;
                 } else if (args.length == 1) {
                     this.folder = "";
-                    this.key = args[0];
+                    this.object = args[0];
                     return;
                 }
             }
-            this.key = keyString;
+            this.object = keyString;
             this.folder = "";
         }
 
+        /**
+         * Gets the folder of the key component.
+         *
+         * @return The folder part of this component.
+         */
         public String getFolder() {
             return folder;
         }
 
-        public String getKey() {
-            return key;
+        /**
+         * Gets the object part of this key component.
+         *
+         * @return The object of this component.
+         */
+        public String getObject() {
+            return object;
         }
 
+        /**
+         * Gets the root folder of the folder part of this component.<br>
+         * In case the folder doesn't exist it returns an empty String.<br>
+         * If the folder part exists, but doesn't contain a "/", then the folder part will be returned as is.<br>
+         *
+         * @return The root folder; otherwise, an empty String if the key has no folder, or the folder itself if the folder contains no subfolder.
+         */
         public String getRoot() {
-            return folder.substring(0, folder.indexOf("/"));
+            if (folder.isBlank()) return "";
+            return folder.contains("/") ? folder.substring(0, folder.indexOf("/")) : folder;
         }
 
+        /**
+         * Gets the string representation of the folder and object part of this component.<br>
+         * The folder and object are concat using "/" in between.<br>
+         * e.g. <code>folder/subfolder object -> folder/subfolder/object</code><br>
+         * If no folder is available it will just return the object part.
+         *
+         * @return The folder and key part separated by a "/".
+         */
         @Override
         public String toString() {
             return toString("/");
         }
 
+        /**
+         * Gets the string representation of the folder and object part of this component.<br>
+         * The folder and object are concat using a specified separator in between.<br>
+         * e.g. <code>separator=":" folder/subfolder object -> folder/subfolder:object</code><br>
+         * If no folder is available it will just return the object part.
+         *
+         * @param separator The separator between folder and object.
+         * @return The folder and key part separated by the specified separator.
+         */
         public String toString(String separator) {
             return toString(separator, false);
         }
 
+        /**
+         * Gets the string representation of the folder and object part of this component.<br>
+         * The folder and object are concat using a specified separator in between.<br>
+         * <code>forceSeparator=true|false, separator=":" </code><br>
+         * <code>folder/subfolder object -> folder/subfolder:object</code><br>
+         * <br>
+         * <code>forceSeparator=true, separator="/"</code><br>
+         * <code>  object -> /object</code><br>
+         *
+         * @param separator The separator between folder and object.
+         * @param forceSeparator Add the separator in the front of the object, even if no folder exists.
+         * @return The folder and key part separated by the specified separator.
+         */
         public String toString(String separator, boolean forceSeparator) {
             if (separator == null || separator.isEmpty()) {
                 separator = "/";
             }
-            return folder.isBlank() ? ((forceSeparator ? separator : "") + key) : (folder + separator + key);
+            return folder.isBlank() ? ((forceSeparator ? separator : "").concat(object)) : (folder.concat(separator).concat(object));
         }
 
         @Override
@@ -267,12 +344,12 @@ public class NamespacedKey implements Comparable<NamespacedKey> {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Key that = (Key) o;
-            return Objects.equals(folder, that.folder) && Objects.equals(key, that.key);
+            return Objects.equals(folder, that.folder) && Objects.equals(object, that.object);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(folder, key);
+            return Objects.hash(folder, object);
         }
     }
 
