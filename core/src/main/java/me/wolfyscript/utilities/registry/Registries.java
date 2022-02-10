@@ -29,11 +29,14 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.tags.Tags;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.operators.Statement;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.shapes.Shape;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
+import me.wolfyscript.utilities.util.value_comparators.ValueComparator;
+import me.wolfyscript.utilities.util.value_providers.AbstractValueProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -80,6 +83,9 @@ public class Registries {
     private final TypeRegistry<Meta> customItemNbtChecks;
     private final TypeRegistry<Action<?>> customItemActions;
     private final TypeRegistry<Event<?>> customItemEvents;
+    private final TypeRegistry<AbstractValueProvider> valueProviders;
+    private final TypeRegistry<ValueComparator> valueComparators;
+    private final TypeRegistry<Statement> operators;
 
     public Registries(WolfyUtilCore core) {
         this.core = core;
@@ -99,6 +105,9 @@ public class Registries {
         customItemNbtChecks = new TypeRegistrySimple<>(new NamespacedKey(core, "custom_item_nbt_checks"), this);
         customItemActions = new TypeRegistrySimple<>(ITEM_ACTION_TYPES, this);
         customItemEvents = new TypeRegistrySimple<>(ITEM_EVENT_TYPES, this);
+        valueProviders = new TypeRegistrySimple<>(new NamespacedKey(core, "value_providers"), this);
+        valueComparators = new TypeRegistrySimple<>(new NamespacedKey(core, "value_comparators"), this);
+        operators = new TypeRegistrySimple<>(new NamespacedKey(core, "operators"), this);
     }
 
     void indexTypedRegistry(IRegistry<?> registry) {
@@ -170,10 +179,6 @@ public class Registries {
         return particleAnimations;
     }
 
-    public TypeRegistry<Shape> getParticleShapes() {
-        return particleShapes;
-    }
-
     /**
      * Gets the registry containing all the available {@link ParticleEffect}s.
      *
@@ -185,6 +190,18 @@ public class Registries {
 
     public Tags<CustomItem> getItemTags() {
         return itemTags;
+    }
+
+    public Registry<Action<?>> getCustomItemActionValues() {
+        return customItemActionValues;
+    }
+
+    public Registry<Event<?>> getCustomItemEventValues() {
+        return customItemEventValues;
+    }
+
+    public TypeRegistry<Shape> getParticleShapes() {
+        return particleShapes;
     }
 
     /**
@@ -222,11 +239,15 @@ public class Registries {
         return customItemEvents;
     }
 
-    public Registry<Action<?>> getCustomItemActionValues() {
-        return customItemActionValues;
+    public TypeRegistry<AbstractValueProvider> getValueProviders() {
+        return valueProviders;
     }
 
-    public Registry<Event<?>> getCustomItemEventValues() {
-        return customItemEventValues;
+    public TypeRegistry<ValueComparator> getValueComparators() {
+        return valueComparators;
+    }
+
+    public TypeRegistry<Statement> getOperators() {
+        return operators;
     }
 }
