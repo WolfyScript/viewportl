@@ -29,11 +29,35 @@ public class TestNamespacedKey {
         NamespacedKey namespacedKey = new NamespacedKey("test_namespace", "test_key");
         Assertions.assertEquals("test_namespace", namespacedKey.getNamespace());
         Assertions.assertEquals("test_key", namespacedKey.getKey());
-    }
 
-    @Test
-    public void checkInvalidNamespacedKey() {
+        NamespacedKey namespacedKey1 = new NamespacedKey("namespace", "root/folder/subfolder/obj");
+        Assertions.assertEquals("namespace", namespacedKey1.getNamespace());
+        NamespacedKey.Key key = namespacedKey1.getKeyComponent();
+        Assertions.assertEquals("root", key.getRoot());
+        Assertions.assertEquals("root/folder/subfolder", key.getFolder());
+        Assertions.assertEquals("obj", key.getObject());
+        Assertions.assertEquals("root/folder/subfolder/obj", key.toString());
+        Assertions.assertEquals("root/folder/subfolder:obj", key.toString(":"));
 
+        NamespacedKey namespacedKey2 = new NamespacedKey("namespace", "obj");
+        NamespacedKey.Key key2 = namespacedKey2.getKeyComponent();
+        Assertions.assertEquals("", key2.getRoot());
+        Assertions.assertEquals("", key2.getFolder());
+        Assertions.assertEquals("obj", key2.toString());
+        Assertions.assertEquals("obj", key2.toString(":"));
+        Assertions.assertEquals("obj", key2.toString("/"));
+        Assertions.assertEquals(":obj", key2.toString(":", true));
+        Assertions.assertEquals("/obj", key2.toString("/", true));
+
+        NamespacedKey namespacedKey3 = new NamespacedKey("namespace", "root/obj");
+        NamespacedKey.Key key3 = namespacedKey3.getKeyComponent();
+        Assertions.assertEquals("root", key3.getRoot());
+        Assertions.assertEquals("root", key3.getFolder());
+        Assertions.assertEquals("root/obj", key3.toString());
+        Assertions.assertEquals("root:obj", key3.toString(":"));
+        Assertions.assertEquals("root/obj", key3.toString("/"));
+        Assertions.assertEquals("root:obj", key3.toString(":", true));
+        Assertions.assertEquals("root/obj", key3.toString("/", true));
     }
 
 }
