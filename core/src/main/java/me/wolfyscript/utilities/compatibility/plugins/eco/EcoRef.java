@@ -20,7 +20,7 @@ package me.wolfyscript.utilities.compatibility.plugins.eco;
 
 import org.bukkit.NamespacedKey;
 
-public interface EcoItemRef {
+public interface EcoRef {
 
     NamespacedKey getKey();
 }
