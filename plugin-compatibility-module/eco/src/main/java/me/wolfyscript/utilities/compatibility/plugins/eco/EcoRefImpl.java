@@ -16,13 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.compatibility.plugins.eco;
+package main.java.me.wolfyscript.utilities.compatibility.plugins.eco;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.willfp.eco.core.items.Items;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
+import me.wolfyscript.utilities.compatibility.plugins.eco.EcoRef;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
