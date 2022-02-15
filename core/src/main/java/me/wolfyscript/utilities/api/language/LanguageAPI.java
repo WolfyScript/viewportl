@@ -29,7 +29,6 @@ import net.kyori.adventure.text.minimessage.Template;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -107,6 +106,14 @@ public class LanguageAPI {
         JsonNode node = getActiveLanguage().getNodeAt(path);
         if(node.isMissingNode()){
             node = getFallbackLanguage().getNodeAt(path);
+        }
+        return node;
+    }
+
+    private LanguageNode getNode(String path) {
+        LanguageNode node = getActiveLanguage().getNode(path);
+        if(node instanceof LanguageNodeMissing){
+            node = getFallbackLanguage().getNode(path);
         }
         return node;
     }
@@ -222,22 +229,7 @@ public class LanguageAPI {
     }
 
     public Component getComponent(String key, boolean translateLegacyColor, List<Template> templates) {
-        JsonNode node = getNodeAt(key);
-        if (node.isTextual()) {
-            return api.getChat().getMiniMessage().parse(translateLegacyColor ? ChatColor.convert(node.asText()) : node.asText(), templates);
-        } else if(node.isArray()) {
-            Component component = Component.empty();
-            Iterator<JsonNode> nodeItr = node.elements();
-            while (nodeItr.hasNext()) {
-                JsonNode jsonNode = nodeItr.next();
-                component.append(api.getChat().getMiniMessage().parse(translateLegacyColor ? ChatColor.convert(jsonNode.asText()) : jsonNode.asText(), templates));
-                if (nodeItr.hasNext()) {
-                    component.append(Component.text(" "));
-                }
-            }
-            return component;
-        }
-        return Component.empty();
+        return getNode(key).getComponent(translateLegacyColor, templates);
     }
 
     public List<Component> getComponents(String key) {
@@ -253,19 +245,7 @@ public class LanguageAPI {
     }
 
     public List<Component> getComponents(String key, boolean translateLegacyColor, List<Template> templates) {
-        JsonNode node = getNodeAt(key);
-        if (node.isTextual()) {
-            return List.of(api.getChat().getMiniMessage().parse(translateLegacyColor ? ChatColor.convert(node.asText()) : node.asText(), templates));
-        } else if(node.isArray()) {
-            List<Component> components = new ArrayList<>();
-            Iterator<JsonNode> nodeItr = node.elements();
-            while (nodeItr.hasNext()) {
-                JsonNode jsonNode = nodeItr.next();
-                components.add(api.getChat().getMiniMessage().parse(translateLegacyColor ? ChatColor.convert(jsonNode.asText()) : jsonNode.asText(), templates));
-            }
-            return components;
-        }
-        return List.of();
+        return getNode(key).getComponents(translateLegacyColor, templates);
     }
 
 }
