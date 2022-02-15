@@ -63,12 +63,8 @@ import java.util.List;
  *
  * @param <C> The type of the {@link CustomCache}.
  */
-public abstract class GuiWindow<C extends CustomCache> implements Listener {
+public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<C> implements Listener {
 
-    public final WolfyUtilities wolfyUtilities;
-    protected final WindowButtonBuilder buttonBuilder;
-
-    final HashMap<String, Button<C>> buttons = new HashMap<>();
     private final GuiCluster<C> cluster;
     private final NamespacedKey namespacedKey;
     private boolean forceSyncUpdate;
@@ -118,28 +114,14 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     private GuiWindow(GuiCluster<C> cluster, String key, InventoryType inventoryType, int size, boolean forceSyncUpdate) {
+        super(cluster.getInventoryAPI());
         this.cluster = cluster;
-        this.wolfyUtilities = cluster.wolfyUtilities;
         this.namespacedKey = new NamespacedKey(cluster.getId(), key);
+        this.buttonBuilder = new WindowButtonBuilder();
         this.inventoryType = inventoryType;
         this.size = size;
         this.forceSyncUpdate = forceSyncUpdate;
-        this.buttonBuilder = new WindowButtonBuilder();
         Bukkit.getPluginManager().registerEvents(this, wolfyUtilities.getPlugin());
-    }
-
-    /**
-     * @return The {@link WolfyUtilities} that this window belongs to.
-     */
-    public WolfyUtilities getWolfyUtilities() {
-        return wolfyUtilities;
-    }
-
-    /**
-     * @return The Chat of the API.
-     */
-    public Chat getChat() {
-        return wolfyUtilities.getChat();
     }
 
     /**
@@ -293,32 +275,6 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     }
 
     /**
-     * Gets the {@link ButtonBuilder} to create new builders for buttons.
-     *
-     * @return The button builder of the GuiWindow.
-     */
-    public ButtonBuilder<C> getButtonBuilder() {
-        return buttonBuilder;
-    }
-
-    /**
-     * @param id The id of the button.
-     * @return The button if it exists, else null.
-     */
-    @Nullable
-    public final Button<C> getButton(String id) {
-        return buttons.get(id);
-    }
-
-    /**
-     * @param id The id of the button.
-     * @return If the button exists. True if it exists, else false.
-     */
-    public final boolean hasButton(String id) {
-        return buttons.containsKey(id);
-    }
-
-    /**
      * Opens the chat, send the player the defined message and waits for the input of the player.
      * When the player sends a message the inputAction method is executed.
      *
@@ -331,22 +287,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public void openChat(GuiHandler<C> guiHandler, String msg, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendMessage(guiHandler.getPlayer(), msg);
-    }
-
-
-    /**
-     * Opens the chat, send the player the defined message and waits for the input of the player.
-     * When the player sends a message the inputAction method is executed.
-     *
-     * @param guiHandler  The {@link GuiHandler} it should be opened for.
-     * @param msg         The message that should be sent to the player.
-     * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
-     */
-    public void openChat(GuiHandler<C> guiHandler, Component msg, ChatInputAction<C> inputAction) {
-        guiHandler.setChatInputAction(inputAction);
-        guiHandler.close();
-        guiHandler.getApi().getChat().sendMessage(guiHandler.getPlayer(), msg);
+        getChat().sendMessage(guiHandler.getPlayer(), msg);
     }
 
     /**
@@ -359,6 +300,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param guiHandler  The {@link GuiHandler} it should be opened for.
      * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
      */
+    @Deprecated
     public void openChat(GuiCluster<C> guiCluster, String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
@@ -375,10 +317,11 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param guiHandler  the {@link GuiHandler} it should be opened for.
      * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
      */
+    @Deprecated
     public void openChat(String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendKey(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
+        getChat().sendKey(guiHandler.getPlayer(), getNamespacedKey(), msgKey);
     }
 
     /**
@@ -394,7 +337,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
     public void openActionChat(GuiHandler<C> guiHandler, ClickData clickData, ChatInputAction<C> inputAction) {
         guiHandler.setChatInputAction(inputAction);
         guiHandler.close();
-        guiHandler.getApi().getChat().sendActionMessage(guiHandler.getPlayer(), clickData);
+        getChat().sendActionMessage(guiHandler.getPlayer(), clickData);
     }
 
     /**
@@ -403,14 +346,21 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @param guiHandler The {@link GuiHandler} this message should be sent to.
      * @param msgKey     The key of the message.
      */
+    @Deprecated
     public final void sendMessage(GuiHandler<C> guiHandler, String msgKey) {
         sendMessage(guiHandler.getPlayer(), msgKey);
+    }
+
+    @Override
+    public Component translatedMsgKey(String key) {
+        return getChat().translated("inventories." + getNamespacedKey().getNamespace() + "." + getNamespacedKey().getKey() + ".messages." + key);
     }
 
     /**
      * @param player The Player this message should be send to.
      * @param msgKey The key of the message.
      */
+    @Deprecated
     public final void sendMessage(Player player, String msgKey) {
         wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey);
     }
@@ -441,7 +391,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
      * @return The inventory name of this Window.
      */
     protected String getInventoryName() {
-        return ChatColor.convert(wolfyUtilities.getLanguageAPI().replaceKeys("$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".gui_name$"));
+        return wolfyUtilities.getLanguageAPI().replaceColoredKeys("$inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".gui_name$");
     }
 
     /**
@@ -520,7 +470,7 @@ public abstract class GuiWindow<C extends CustomCache> implements Listener {
         return titleUpdatePeriod;
     }
 
-    public class WindowButtonBuilder implements ButtonBuilder<C> {
+    private class WindowButtonBuilder implements ButtonBuilder<C> {
 
         @Override
         public ChatInputButton.Builder<C> chatInput(String id) {

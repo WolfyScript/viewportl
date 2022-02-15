@@ -18,9 +18,7 @@
 
 package me.wolfyscript.utilities.api.inventory.gui;
 
-import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
-import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ActionButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ChatInputButton;
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.DummyButton;
@@ -29,27 +27,23 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.MultipleChoiceB
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import net.kyori.adventure.text.Component;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
-public abstract class GuiCluster<C extends CustomCache> {
+public abstract class GuiCluster<C extends CustomCache> extends GuiMenuComponent<C> {
 
-    protected final WolfyUtilities wolfyUtilities;
     protected final InventoryAPI<C> inventoryAPI;
     private String id;
-    private final Map<String, Button<C>> buttons;
     private final Map<String, GuiWindow<C>> guiWindows;
-    private final ClusterButtonBuilder buttonBuilder;
 
     private NamespacedKey entry;
 
     protected GuiCluster(InventoryAPI<C> inventoryAPI, String id) {
+        super(inventoryAPI);
         this.inventoryAPI = inventoryAPI;
-        this.wolfyUtilities = inventoryAPI.getWolfyUtilities();
         this.id = id;
-        this.buttons = new HashMap<>();
         this.guiWindows = new HashMap<>();
         this.entry = null;
         this.buttonBuilder = new ClusterButtonBuilder();
@@ -73,15 +67,6 @@ public abstract class GuiCluster<C extends CustomCache> {
         buttons.putIfAbsent(button.getId(), button);
     }
 
-    private <B extends Button.Builder<C, ?, ?>> void registerButton(B builder) {
-        Button<C> button = builder.create();
-        buttons.put(button.getId(), button);
-    }
-
-    public Button<C> getButton(String id) {
-        return buttons.get(id);
-    }
-
     protected void registerGuiWindow(GuiWindow<C> guiWindow) {
         if (this.entry == null) {
             this.entry = guiWindow.getNamespacedKey();
@@ -94,26 +79,6 @@ public abstract class GuiCluster<C extends CustomCache> {
         return guiWindows.get(id);
     }
 
-    /**
-     * @return The {@link WolfyUtilities} this cluster belongs to.
-     */
-    public WolfyUtilities getWolfyUtilities() {
-        return wolfyUtilities;
-    }
-
-    public InventoryAPI<C> getInventoryAPI() {
-        return inventoryAPI;
-    }
-
-    /**
-     * Gets the {@link ButtonBuilder} to create new builders for buttons.
-     *
-     * @return The button builder of the GuiCluster.
-     */
-    public ButtonBuilder<C> getButtonBuilder() {
-        return buttonBuilder;
-    }
-
     void setId(String id) {
         this.id = id;
     }
@@ -122,12 +87,13 @@ public abstract class GuiCluster<C extends CustomCache> {
         return id;
     }
 
-    Map<String, Button<C>> getButtons() {
-        return buttons;
-    }
-
     Map<String, GuiWindow<C>> getGuiWindows() {
         return guiWindows;
+    }
+
+    @Override
+    public Component translatedMsgKey(String key) {
+        return getChat().translated("inventories." + id + ".global_messages." + key);
     }
 
     public class ClusterButtonBuilder implements ButtonBuilder<C> {
