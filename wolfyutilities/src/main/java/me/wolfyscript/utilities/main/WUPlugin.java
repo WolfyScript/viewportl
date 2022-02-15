@@ -285,7 +285,7 @@ public final class WUPlugin extends WolfyUtilCore {
 
         var languageAPI = api.getLanguageAPI();
         saveResource("lang/en_US.json", true);
-        languageAPI.setActiveLanguage(new Language(this, "en_US"));
+        languageAPI.setActiveLanguage(new Language(api, "en_US"));
 
         if (!ServerVersion.isIsJUnitTest()) {
             this.metrics = new Metrics(this, 5114);

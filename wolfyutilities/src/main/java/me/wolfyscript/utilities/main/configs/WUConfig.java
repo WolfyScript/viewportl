@@ -26,7 +26,7 @@ import me.wolfyscript.utilities.main.WUPlugin;
 public class WUConfig extends YamlConfiguration {
 
     public WUConfig(ConfigAPI configAPI, WUPlugin plugin) {
-        super(configAPI, plugin.getDataFolder().getPath(), "config", "me/wolfyscript/utilities/main/configs", "config", false);
+        super(configAPI, plugin.getDataFolder().getPath(), "config", "", "config", false);
     }
 
     public boolean isAPIReferenceEnabled(APIReference.Parser<?> parser) {
