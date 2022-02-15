@@ -32,22 +32,70 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * Allows sending messages to players, with the specified prefix, translations, placeholders, etc.<br>
+ * Additionally, this class provides a system to create text component click events, that execute specified callbacks.
+ *
+ * <p>
+ * Since 3.16.1, the whole message system uses the adventure api to send chat messages.<br>
+ * Therefor, translated and click actions are also part of the component eco system.<br>
+ * To get those components see the specific method:<br>
+ * - {@link #translated}<br>
+ * - {@link #executable(Player, boolean, ClickAction)}
+ *
+ * </p>
+ *
+ *
+ *
+ * <br>
+ * (Yes this could be an interface, but for backwards compatibility it must be a class!)
+ */
 public abstract class Chat {
     
-    protected Chat() {
-        
-    }
+    protected Chat() { /* Only for the implementation */ }
 
+    /**
+     * Sets the prefix for this chat message handler.<br>
+     *
+     * You are still able to send messages without prefix, if you disable it using the parameter.
+     * See {@link #sendMessage(Player, boolean, Component)} or {@link #sendMessages(Player, boolean, Component...)}
+     *
+     * @param chatPrefix The chat prefix.
+     */
     public abstract void setChatPrefix(Component chatPrefix);
 
+    /**
+     * Gets the prefix of this chat message handler.
+     *
+     * @return The chat prefix.
+     */
     public abstract Component getChatPrefix();
 
     /**
-     * Gets the {@link MiniMessage} object, that allows you to parse text with formatting.
+     * Gets the {@link MiniMessage} object, that allows you to parse text with formatting similar to html.<br>
+     * See <a href="https://docs.adventure.kyori.net/minimessage/">MiniMessage docs</a>
      *
      * @return The MiniMessage object
      */
     public abstract MiniMessage getMiniMessage();
+
+    /**
+     * Sends a chat component message, with the previously set prefix, to the player.
+     *
+     * @param player The player to send the message to.
+     * @param component The component to send.
+     */
+    public abstract void sendMessage(Player player, Component component);
+
+    /**
+     * Sends a chat component message to the player.<br>
+     * The prefix can be disabled, which just sends the component as is.
+     *
+     * @param player The player to send the message to.
+     * @param prefix If the message should have the prefix.
+     * @param component The component to send.
+     */
+    public abstract void sendMessage(Player player, boolean prefix, Component component);
 
     /**
      * Sends a message to the player with legacy chat format.
@@ -59,18 +107,30 @@ public abstract class Chat {
     @Deprecated
     public abstract void sendMessage(Player player, String message);
 
-    public abstract void sendMessage(Player player, Component component);
+    @Deprecated
+    public abstract void sendMessage(Player player, String message, Pair<String, String>... replacements);
 
-    public abstract void sendMessage(Player player, boolean prefix, Component component);
+    /**
+     * Sends a chat component messages to the player.<br>
+     * Each message will be composed of the prefix and component.
+     *
+     * @param player The player to send the messages to.
+     * @param components The components to send.
+     */
+    public abstract void sendMessages(Player player, Component... components);
+
+    /**
+     * Sends a chat component messages to the player.<br>
+     * If `prefix` is set to false, then the messages are just composed of the component.<br>
+     * Otherwise, it does the same as {@link #sendMessages(Player, Component...)}
+     *
+     * @param player The player to send the messages to.
+     * @param components The components to send.
+     */
+    public abstract void sendMessages(Player player, boolean prefix, Component... components);
 
     @Deprecated
     public abstract void sendMessages(Player player, String... messages);
-
-    public abstract void sendMessages(Player player, Component... components);
-
-    public abstract void sendMessages(Player player, boolean prefix, Component... components);
-
-    public abstract void sendMessage(Player player, String message, Pair<String, String>... replacements);
 
     /**
      * Sends a global message of the Cluster to the player.
@@ -145,8 +205,10 @@ public abstract class Chat {
 
     /**
      * Creates a ClickEvent, that executes code when clicked.<br>
-     * It will internally link a command with an id to the code to execute.
-     * That internal command can only be executed by the player, which the message was sent to.
+     * <p>
+     * It will internally link a command with an id to the code to execute.<br>
+     * That internal command can only be executed by the player, who received the message.
+     * </p>
      *
      * @param player The player the event belongs to.
      * @param discard If it should be discarded after clicked. (Any action is removed, when the player disconnects!)
@@ -159,7 +221,7 @@ public abstract class Chat {
      * Sends the clickable chat messages to the player.<br>
      * It allows you to also include ClickData with executable code.
      *
-     * @deprecated This was mostly used to run code, when a player clicks on a text in chat. That is now replaced by {@link #executable(Player, boolean, ClickAction)}, which can be used in combination of any {@link Component} and is way more flexible!
+     * @deprecated This was mostly used to run code when a player clicks on a text in chat. That is now replaced by {@link #executable(Player, boolean, ClickAction)}, which can be used in combination of any {@link Component} and is way more flexible!
      *
      * @param player The player to send the message to.
      * @param clickData The click data of the message.
@@ -167,6 +229,15 @@ public abstract class Chat {
     @Deprecated
     public abstract void sendActionMessage(Player player, ClickData... clickData);
 
+    /**
+     * Sends the clickable chat messages to the player.<br>
+     * It allows you to also include ClickData with executable code.
+     *
+     * @deprecated This was mostly used to run code when a player clicks on a text in chat. That is now replaced by {@link #executable(Player, boolean, ClickAction)}, which can be used in combination of any {@link Component} and is way more flexible!
+     *
+     * @param player The player to send the message to.
+     * @param clickData The click data of the message.
+     */
     @Deprecated
     public abstract TextComponent[] getActionMessage(String prefix, Player player, ClickData... clickData);
 
