@@ -77,8 +77,8 @@ public class ChatImpl extends Chat {
     }
 
     /**
-     * @deprecated Replaced by {@link #getChatPrefix()}
      * @return The chat prefix as a String.
+     * @deprecated Replaced by {@link #getChatPrefix()}
      */
     @Deprecated
     @Override
@@ -87,8 +87,8 @@ public class ChatImpl extends Chat {
     }
 
     /**
-     * @deprecated Replaced by {@link #setChatPrefix(Component)}
      * @param inGamePrefix The chat prefix.
+     * @deprecated Replaced by {@link #setChatPrefix(Component)}
      */
     @Deprecated
     @Override
@@ -114,9 +114,9 @@ public class ChatImpl extends Chat {
     /**
      * Sends a message to the player with legacy chat format.
      *
-     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
-     * @param player The player to send the message to.
+     * @param player  The player to send the message to.
      * @param message The message to send.
+     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
      */
     @Deprecated
     @Override
@@ -143,21 +143,18 @@ public class ChatImpl extends Chat {
         }
     }
 
-    /**
-     * Sends multiple messages to the player with legacy chat format.
-     *
-     * @deprecated Legacy chat format. This will convert the messages multiple times (Not efficient!) {@link #sendMessages(Player, Component...)} should be used instead!
-     * @param player The player to send the message to.
-     * @param messages The messages to send.
-     */
+    @SafeVarargs
     @Deprecated
     @Override
-    public void sendMessages(Player player, String... messages) {
-        if (player != null) {
-            for (String message : messages) {
-                sendMessage(player, true, LEGACY_SERIALIZER.deserialize(ChatColor.convert(languageAPI.replaceKeys(message))));
+    public final void sendMessage(Player player, String message, Pair<String, String>... replacements) {
+        if (player == null) return;
+        if (replacements != null) {
+            message = getInGamePrefix() + languageAPI.replaceColoredKeys(message);
+            for (Pair<String, String> pair : replacements) {
+                message = message.replaceAll(pair.getKey(), pair.getValue());
             }
         }
+        player.sendMessage(ChatColor.convert(message));
     }
 
     @Override
@@ -176,17 +173,21 @@ public class ChatImpl extends Chat {
         }
     }
 
-    @SafeVarargs
+    /**
+     * Sends multiple messages to the player with legacy chat format.
+     *
+     * @param player   The player to send the message to.
+     * @param messages The messages to send.
+     * @deprecated Legacy chat format. This will convert the messages multiple times (Not efficient!) {@link #sendMessages(Player, Component...)} should be used instead!
+     */
+    @Deprecated
     @Override
-    public final void sendMessage(Player player, String message, Pair<String, String>... replacements) {
-        if (player == null) return;
-        if (replacements != null) {
-            message = getInGamePrefix() + languageAPI.replaceColoredKeys(message);
-            for (Pair<String, String> pair : replacements) {
-                message = message.replaceAll(pair.getKey(), pair.getValue());
+    public void sendMessages(Player player, String... messages) {
+        if (player != null) {
+            for (String message : messages) {
+                sendMessage(player, true, LEGACY_SERIALIZER.deserialize(ChatColor.convert(languageAPI.replaceKeys(message))));
             }
         }
-        player.sendMessage(ChatColor.convert(message));
     }
 
     /**
@@ -209,11 +210,13 @@ public class ChatImpl extends Chat {
      * @param guiCluster
      * @param msgKey
      */
+    @Deprecated
     @Override
     public void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey) {
         sendMessage(player, translated("inventories." + guiCluster.getId() + ".global_messages." + msgKey, true));
     }
 
+    @Deprecated
     @Override
     public void sendKey(Player player, @NotNull NamespacedKey windowKey, String msgKey) {
         sendMessage(player, translated("inventories." + windowKey.getNamespace() + "." + windowKey.getKey() + ".messages." + msgKey, true));
@@ -262,9 +265,9 @@ public class ChatImpl extends Chat {
      * It will internally link a command with an id to the code to execute.
      * That internal command can only be executed by the player, which the message was sent to.
      *
-     * @param player The player the event belongs to.
+     * @param player  The player the event belongs to.
      * @param discard If it should be discarded after clicked. (Any action is removed, when the player disconnects!)
-     * @param action The action to execute on click.
+     * @param action  The action to execute on click.
      * @return The ClickEvent with the generated command.
      */
     @Override
@@ -282,10 +285,9 @@ public class ChatImpl extends Chat {
      * Sends the clickable chat messages to the player.<br>
      * It allows you to also include ClickData with executable code.
      *
-     * @deprecated This was mostly used to run code, when a player clicks on a text in chat. That is now replaced by {@link #executable(Player, boolean, ClickAction)}, which can be used in combination of any {@link Component} and is way more flexible!
-     *
-     * @param player The player to send the message to.
+     * @param player    The player to send the message to.
      * @param clickData The click data of the message.
+     * @deprecated This was mostly used to run code, when a player clicks on a text in chat. That is now replaced by {@link #executable(Player, boolean, ClickAction)}, which can be used in combination of any {@link Component} and is way more flexible!
      */
     @Deprecated
     @Override
@@ -303,12 +305,11 @@ public class ChatImpl extends Chat {
             ClickData data = clickData[i - 1];
             TextComponent component = new TextComponent(languageAPI.replaceColoredKeys(data.getMessage()));
             if (data.getClickAction() != null) {
-                UUID id = UUID.randomUUID();
-                while (CLICK_DATA_MAP.containsKey(id)) {
+                UUID id;
+                do {
                     id = UUID.randomUUID();
-                }
-                PlayerAction playerAction = new PlayerAction(wolfyUtilities, player, data);
-                CLICK_DATA_MAP.put(id, playerAction);
+                } while(CLICK_DATA_MAP.containsKey(id));
+                CLICK_DATA_MAP.put(id, new PlayerAction(wolfyUtilities, player, data));
                 component.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/wua " + id));
             }
             for (ChatEvent<?, ?> chatEvent : data.getChatEvents()) {
@@ -363,7 +364,6 @@ public class ChatImpl extends Chat {
 
     /**
      * Listener for chat specific features.
-     *
      */
     public static class ChatListener implements Listener {
 

@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.api.language;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import me.wolfyscript.utilities.api.chat.Chat;
 import net.kyori.adventure.text.Component;
@@ -25,7 +26,6 @@ import net.kyori.adventure.text.minimessage.Template;
 
 import java.util.List;
 
-//Annotation telling de/serializer that there are other types!
 public abstract class LanguageNode {
 
     private final JsonNode value;
@@ -42,6 +42,7 @@ public abstract class LanguageNode {
 
     abstract public String getRaw();
 
+    @JsonValue
     public JsonNode getValue() {
         return value;
     }

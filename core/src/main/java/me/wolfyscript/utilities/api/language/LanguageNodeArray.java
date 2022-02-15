@@ -29,7 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//Annotation that links a type in json (or TOKEN) to this type
 public class LanguageNodeArray extends LanguageNode {
 
     private final List<String> raw;
