@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -99,8 +100,8 @@ public class LanguageAPI {
             registerLanguage(language);
             return language;
         } catch (IOException ex) {
-            api.getConsole().getLogger().severe("Couldn't load language \""+lang+"\"!");
-            api.getConsole().getLogger().throwing("LanguageAPI", "loadLangFile", ex);
+            api.getConsole().getLogger().log(Level.SEVERE, "Couldn't load language \""+lang+"\"!");
+            ex.printStackTrace();
         }
         return null;
     }

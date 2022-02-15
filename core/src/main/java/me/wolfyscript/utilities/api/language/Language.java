@@ -69,7 +69,7 @@ public class Language extends JsonConfig<JsonNode> {
      * @see LanguageAPI#loadLangFile(String)
      */
     @JsonCreator
-    protected Language(@JsonProperty("file") @JacksonInject File file, @JsonProperty("api") @JacksonInject WolfyUtilities api, @JsonProperty("lang") @JacksonInject String lang) {
+    protected Language(@JsonProperty("file") @JacksonInject("file") File file, @JacksonInject("api")  WolfyUtilities api, @JsonProperty("lang") @JacksonInject("lang") String lang) {
         super(file, JsonNode.class);
         this.lang = lang;
         this.api = api;
