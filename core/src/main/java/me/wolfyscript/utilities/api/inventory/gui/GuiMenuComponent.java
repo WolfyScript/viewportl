@@ -21,6 +21,12 @@ package me.wolfyscript.utilities.api.inventory.gui;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.inventory.gui.button.Button;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ActionButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ChatInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.DummyButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ItemInputButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.MultipleChoiceButton;
+import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +34,18 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a GUI menu, that is linked to the InventoryAPI.<br>
+ * It is possible to register Buttons and to open the chat for a player to request input.
+ * <br>
+ * Classes that are GUI menus:
+ * <ul>
+ *     <li>{@link GuiCluster}</li>
+ *     <li>{@link GuiWindow}</li>
+ * </ul>
+ *
+ * @param <C> The type of the CustomCache
+ */
 public abstract class GuiMenuComponent<C extends CustomCache> {
 
     public final WolfyUtilities wolfyUtilities;
@@ -41,6 +59,11 @@ public abstract class GuiMenuComponent<C extends CustomCache> {
         this.wolfyUtilities = inventoryAPI.getWolfyUtilities();
     }
 
+    /**
+     * Gets the InventoryAPI of this GuiMenu.
+     *
+     * @return The InventoryAPI
+     */
     public InventoryAPI<C> getInventoryAPI() {
         return inventoryAPI;
     }
@@ -80,6 +103,12 @@ public abstract class GuiMenuComponent<C extends CustomCache> {
         return buttons.containsKey(id);
     }
 
+    /**
+     * Gets all the registered Buttons.<br>
+     * For internal use only.
+     *
+     * @return The map of the registered buttons.
+     */
     Map<String, Button<C>> getButtons() {
         return buttons;
     }
@@ -108,5 +137,64 @@ public abstract class GuiMenuComponent<C extends CustomCache> {
 
     public void sendMessage(GuiHandler<C> guiHandler, Component msg) {
         getChat().sendMessage(guiHandler.getPlayer(), msg);
+    }
+
+    /**
+     * Interface that contains methods to create new button builders.<br>
+     * It is implemented by either {@link GuiWindow} or {@link GuiCluster} and will create the builders accordingly.
+     * Calling the {@link Button.Builder#register()} will then register the button either into the {@link GuiWindow} or {@link GuiCluster} depending on from which one the builder was created.
+     *
+     * @param <C> The type of the custom cache.
+     */
+    protected interface ButtonBuilder<C extends CustomCache> {
+
+        /**
+         * Gets a new builder for a {@link ChatInputButton <C>}.
+         *
+         * @param id The id of the new button.
+         * @return The new builder.
+         */
+        ChatInputButton.Builder<C> chatInput(String id);
+
+        /**
+         * Gets a new builder for a {@link ActionButton <C>}.
+         *
+         * @param id The id of the new button.
+         * @return The new builder.
+         */
+        ActionButton.Builder<C> action(String id);
+
+        /**
+         * Gets a new builder for a {@link DummyButton <C>}.
+         *
+         * @param id The id of the new button.
+         * @return The new builder.
+         */
+        DummyButton.Builder<C> dummy(String id);
+
+        /**
+         * Gets a new builder for a {@link ItemInputButton <C>}.
+         *
+         * @param id The id of the new button.
+         * @return The new builder.
+         */
+        ItemInputButton.Builder<C> itemInput(String id);
+
+        /**
+         * Gets a new builder for a {@link ToggleButton <C>}.
+         *
+         * @param id The id of the new button.
+         * @return The new builder.
+         */
+        ToggleButton.Builder<C> toggle(String id);
+
+        /**
+         * Gets a new builder for a {@link MultipleChoiceButton <C>}.
+         *
+         * @param id The id of the new button.
+         * @return The new builder.
+         */
+        MultipleChoiceButton.Builder<C> multiChoice(String id);
+
     }
 }
