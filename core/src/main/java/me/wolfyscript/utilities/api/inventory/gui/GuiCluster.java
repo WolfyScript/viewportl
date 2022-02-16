@@ -28,8 +28,10 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class GuiCluster<C extends CustomCache> extends GuiMenuComponent<C> {
@@ -92,8 +94,8 @@ public abstract class GuiCluster<C extends CustomCache> extends GuiMenuComponent
     }
 
     @Override
-    public Component translatedMsgKey(String key) {
-        return getChat().translated("inventories." + id + ".global_messages." + key);
+    public Component translatedMsgKey(String key, boolean translateLegacyColor, List<Template> templates) {
+        return getChat().translated("inventories." + id + ".global_messages." + key, translateLegacyColor, templates);
     }
 
     protected class ClusterButtonBuilder implements ButtonBuilder<C> {

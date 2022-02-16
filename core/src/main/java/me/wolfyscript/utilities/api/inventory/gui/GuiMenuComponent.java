@@ -29,9 +29,11 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.MultipleChoiceB
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -114,12 +116,54 @@ public abstract class GuiMenuComponent<C extends CustomCache> {
     }
 
     /**
-     * Creates a new Component of the given language message key.
+     * Creates a {@link Component} of the specified language key.<br>
+     * If the key exists in the language it will be translated and returns the according component.
+     * If it is not available it returns an empty component.
      *
-     * @param key The key of the message in the language.
-     * @return The translated Component of that message; Or empty Component if non-existing.
+     * @param key The key in the language.
+     * @return The component set for the key; empty component if not available.
      */
-    abstract Component translatedMsgKey(String key);
+    public Component translatedMsgKey(String key) {
+        return translatedMsgKey(key, false, List.of());
+    }
+
+    /**
+     * Creates a {@link Component} of the specified language key.<br>
+     * If the key exists in the language it will be translated and returns the according component.
+     * If it is not available it returns an empty component.
+     *
+     * @param key The key in the language.
+     * @param translateLegacyColor If it should translate legacy '&' color codes.
+     * @return The component set for the key; empty component if not available.
+     */
+    public Component translatedMsgKey(String key, boolean translateLegacyColor) {
+        return translatedMsgKey(key, translateLegacyColor, List.of());
+    }
+
+    /**
+     * Creates a {@link Component} of the specified language key.<br>
+     * If the key exists in the language it will be translated and returns the according component.
+     * If it is not available it returns an empty component.
+     *
+     * @param key The key in the language.
+     * @param templates The placeholders and values in the message.
+     * @return The component set for the key; empty component if not available.
+     */
+    public Component translatedMsgKey(String key, List<Template> templates) {
+        return translatedMsgKey(key, false, templates);
+    }
+
+    /**
+     * Creates a {@link Component} of the specified language key.<br>
+     * If the key exists in the language it will be translated and returns the according component.
+     * If it is not available it returns an empty component.
+     *
+     * @param key The key in the language.
+     * @param templates The placeholders and values in the message.
+     * @param translateLegacyColor If it should translate legacy '&' color codes.
+     * @return The component set for the key; empty component if not available.
+     */
+    public abstract Component translatedMsgKey(String key, boolean translateLegacyColor, List<Template> templates);
 
     /**
      * Opens the chat, send the player the defined message and waits for the input of the player.

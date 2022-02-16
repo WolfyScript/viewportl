@@ -36,6 +36,7 @@ import me.wolfyscript.utilities.util.Pair;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import me.wolfyscript.utilities.util.reflection.InventoryUpdate;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -366,8 +367,8 @@ public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<
      * @return The translated Component of that message; Or empty Component if non-existing.
      */
     @Override
-    Component translatedMsgKey(String key) {
-        return getChat().translated("inventories." + getNamespacedKey().getNamespace() + "." + getNamespacedKey().getKey() + ".messages." + key);
+    public Component translatedMsgKey(String key, boolean translateLegacyColor, List<Template> templates) {
+        return getChat().translated("inventories." + getNamespacedKey().getNamespace() + "." + getNamespacedKey().getKey() + ".messages." + key, translateLegacyColor, templates);
     }
 
     /**
