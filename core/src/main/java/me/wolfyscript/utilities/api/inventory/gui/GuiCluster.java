@@ -96,7 +96,7 @@ public abstract class GuiCluster<C extends CustomCache> extends GuiMenuComponent
         return getChat().translated("inventories." + id + ".global_messages." + key);
     }
 
-    public class ClusterButtonBuilder implements ButtonBuilder<C> {
+    protected class ClusterButtonBuilder implements ButtonBuilder<C> {
 
         @Override
         public ChatInputButton.Builder<C> chatInput(String id) {

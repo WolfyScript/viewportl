@@ -470,7 +470,11 @@ public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<
         return titleUpdatePeriod;
     }
 
-    private class WindowButtonBuilder implements ButtonBuilder<C> {
+    /**
+     * The button builder for this GuiWindow. It creates new instances of the builders using the instance of this GuiWindow.<br>
+     * Therefor calling the {@link Button.Builder#register()} will then register the button into this GuiWindow.
+     */
+    protected class WindowButtonBuilder implements ButtonBuilder<C> {
 
         @Override
         public ChatInputButton.Builder<C> chatInput(String id) {
