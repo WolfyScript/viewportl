@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.api.chat;
 
 import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
+import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.Pair;
 import net.kyori.adventure.text.Component;
@@ -101,17 +102,27 @@ public abstract class Chat {
      * Sends a message to the player with legacy chat format.
      *
      * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
+     *             Use {@link #translated(String)} or {@link #translated(String, boolean)} to translate language keys!
      * @param player The player to send the message to.
      * @param message The message to send.
      */
     @Deprecated
     public abstract void sendMessage(Player player, String message);
 
+    /**
+     * Sends a message to the player with legacy chat format.
+     *
+     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
+     *             Use {@link #translated(String, List)} or {@link #translated(String, boolean, List)} to translate language keys!
+     * @param player The player to send the message to.
+     * @param message The message to send.
+     * @param replacements The placeholder values to replace in the message.
+     */
     @Deprecated
     public abstract void sendMessage(Player player, String message, Pair<String, String>... replacements);
 
     /**
-     * Sends a chat component messages to the player.<br>
+     * Sends chat component messages to the player.<br>
      * Each message will be composed of the prefix and component.
      *
      * @param player The player to send the messages to.
@@ -120,7 +131,7 @@ public abstract class Chat {
     public abstract void sendMessages(Player player, Component... components);
 
     /**
-     * Sends a chat component messages to the player.<br>
+     * Sends chat component messages to the player.<br>
      * If `prefix` is set to false, then the messages are just composed of the component.<br>
      * Otherwise, it does the same as {@link #sendMessages(Player, Component...)}
      *
@@ -129,15 +140,26 @@ public abstract class Chat {
      */
     public abstract void sendMessages(Player player, boolean prefix, Component... components);
 
+    /**
+     * Sends messages to the player with legacy chat format.
+     *
+     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
+     *             Use {@link #translated(String)} or {@link #translated(String, boolean)} to translate language keys!
+     *             Consider using the {@link GuiCluster#translatedMsgKey(String)} to get the translated global message from the cluster.
+     * @param player The player to send the message to.
+     * @param messages The messages to send.
+     */
     @Deprecated
     public abstract void sendMessages(Player player, String... messages);
 
     /**
      * Sends a global message of the Cluster to the player.
      *
-     * @param player
-     * @param clusterID
-     * @param msgKey
+     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
+     *             Use {@link #translated(String)} or {@link #translated(String, boolean)} to translate language keys!
+     *             Consider using the {@link GuiCluster#translatedMsgKey(String)} to get the translated global message from the cluster.
+     * @param player The player to send the message to.
+     * @param msgKey The key of the messages to send.
      */
     @Deprecated
     public abstract void sendKey(Player player, String clusterID, String msgKey);
@@ -145,12 +167,21 @@ public abstract class Chat {
     /**
      * Sends a global message of the Cluster to the player.
      *
-     * @param player
-     * @param guiCluster
-     * @param msgKey
+     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
+     *             Consider using the {@link GuiCluster#translatedMsgKey(String)} to get the translated global message from the cluster.
+     * @param player The player to send the message to.
+     * @param msgKey The key of the messages to send.
      */
     public abstract void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey);
 
+    /**
+     * Sends a message of the {@link GuiWindow} to the player.
+     *
+     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
+     *             Consider using the {@link GuiWindow#translatedMsgKey(String)} to get the translated message from the window.
+     * @param player The player to send the message to.
+     * @param msgKey The key of the messages to send.
+     */
     public abstract void sendKey(Player player, NamespacedKey windowKey, String msgKey);
 
     @Deprecated
@@ -240,14 +271,6 @@ public abstract class Chat {
      */
     @Deprecated
     public abstract TextComponent[] getActionMessage(String prefix, Player player, ClickData... clickData);
-
-    static void removeClickData(UUID uuid) {
-        ChatImpl.removeClickData(uuid);
-    }
-
-    static PlayerAction getClickData(UUID uuid) {
-        return ChatImpl.getClickData(uuid);
-    }
 
     /**
      * @deprecated Replaced by {@link #getChatPrefix()}
