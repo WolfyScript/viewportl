@@ -32,6 +32,7 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.JsonConfig;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -103,6 +104,7 @@ public class Language extends JsonConfig<JsonNode> {
                     mappedLangNodes.put(path, new LanguageNodeText(api.getChat(), jsonNode));
                 }
             });
+            default -> { /* Not going to happen */ }
         }
     }
 

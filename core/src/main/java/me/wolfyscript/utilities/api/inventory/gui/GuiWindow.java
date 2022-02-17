@@ -356,17 +356,6 @@ public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<
     }
 
     /**
-     * Creates a new Component of the given language message key.
-     *
-     * @param key The key of the message in the language.
-     * @return The translated Component of that message; Or empty Component if non-existing.
-     */
-    @Override
-    public Component translatedMsgKey(String key, boolean translateLegacyColor, List<Template> templates) {
-        return getChat().translated("inventories." + getNamespacedKey().getNamespace() + "." + getNamespacedKey().getKey() + ".messages." + key, translateLegacyColor, templates);
-    }
-
-    /**
      * @param player The Player this message should be sent to.
      * @param msgKey The key of the message.
      * @deprecated This uses the legacy chat format. <b>Use {@link Chat#sendMessage(Player, Component)} or {@link #sendMessage(GuiHandler, Component)} instead!</b>
@@ -396,6 +385,17 @@ public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<
     @Deprecated
     public final void sendMessage(Player player, String msgKey, Pair<String, String>... replacements) {
         wolfyUtilities.getChat().sendKey(player, getNamespacedKey(), msgKey, replacements);
+    }
+
+    /**
+     * Creates a new Component of the given language message key.
+     *
+     * @param key The key of the message in the language.
+     * @return The translated Component of that message; Or empty Component if non-existing.
+     */
+    @Override
+    public Component translatedMsgKey(String key, boolean translateLegacyColor, List<Template> templates) {
+        return getChat().translated("inventories." + getNamespacedKey().getNamespace() + "." + getNamespacedKey().getKey() + ".messages." + key, translateLegacyColor, templates);
     }
 
     /**

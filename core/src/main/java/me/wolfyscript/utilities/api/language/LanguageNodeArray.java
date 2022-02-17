@@ -60,12 +60,12 @@ public class LanguageNodeArray extends LanguageNode {
         return translateLegacyColor ? getComponents(rawLegacy, templates) : getComponents(raw, templates);
     }
 
+    private List<Component> getComponents(List<String> rawValues, List<Template> templates) {
+        return rawValues.stream().map(s -> chat.getMiniMessage().parse(s, templates)).collect(Collectors.toList());
+    }
+
     @Override
     public String getRaw() {
         return rawLine;
-    }
-
-    private List<Component> getComponents(List<String> rawValues, List<Template> templates) {
-        return rawValues.stream().map(s -> chat.getMiniMessage().parse(s, templates)).collect(Collectors.toList());
     }
 }
