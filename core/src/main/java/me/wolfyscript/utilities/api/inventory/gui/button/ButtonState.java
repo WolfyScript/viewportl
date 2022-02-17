@@ -33,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * ButtonState represents the state of a Button.
@@ -480,10 +481,25 @@ public class ButtonState<C extends CustomCache> {
         return this;
     }
 
+    /**
+     * The builder provides an easy solution to create ButtonStates.<br>
+     * <p>
+     * You can get an instance of this builder via {@link ButtonState#of(GuiWindow, String)} or {@link ButtonState#of(GuiCluster, String)}.<br>
+     * It can also be accessed via the button builders:
+     * <ul>
+     *     <li>{@linkplain me.wolfyscript.utilities.api.inventory.gui.button.buttons.ActionButton.Builder#state(Consumer)}</li>
+     *     <li>{@linkplain  me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton.Builder#enabledState(Consumer)} or {@linkplain me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton.Builder#disabledState(Consumer)}</li>
+     *     <li>{@linkplain me.wolfyscript.utilities.api.inventory.gui.button.buttons.MultipleChoiceButton.Builder#addState(Consumer)}</li>
+     * </ul>
+     * When the instance is provided via the Button builder, then the default key is equal to the button key.
+     * </p>
+     *
+     * @param <C> The CustomCache type
+     */
     public static class Builder<C extends CustomCache> {
 
-        private WolfyUtilities api;
-        private InventoryAPI<C> invApi;
+        private final WolfyUtilities api;
+        private final InventoryAPI<C> invApi;
         private GuiWindow<C> window;
         private GuiCluster<C> cluster;
         private String key;
@@ -509,29 +525,80 @@ public class ButtonState<C extends CustomCache> {
             this.key = key;
         }
 
+        /**
+         * Sets the cluster of the ButtonState.<br>
+         * This overrides the previous cluster or window.<br>
+         *
+         * That can be useful to make use of states from global cluster buttons inside the {@link GuiWindow}.
+         *
+         * @param cluster The cluster to switch to.
+         * @return This button state builder for chaining.
+         */
         public Builder<C> cluster(GuiCluster<C> cluster) {
             this.cluster = cluster;
             return this;
         }
 
+        /**
+         * Sets the key of the ButtonState (The location in the language where it fetches the name & lore from).
+         *
+         * @param key The key of the state.
+         * @return This button state builder for chaining.
+         */
         public Builder<C> key(String key) {
             this.key = key;
             return this;
         }
 
-        public Builder<C> key(NamespacedKey key) {
-            String clusterID = key.getNamespace();
+        /**
+         * Sets the key of the ButtonState (The location in the language where it fetches the name & lore from).<br>
+         * The NamespacedKey must be from a button in a {@link GuiCluster}. <br>
+         * The namespace is equal to the id of the cluster, and the key is equal to the button id.<br>
+         *
+         * @throws IllegalArgumentException if there is no cluster for the specified namespace.
+         * @param buttonKey The namespaced key of the button.
+         * @return This button state builder for chaining.
+         */
+        public Builder<C> key(NamespacedKey buttonKey) {
+            String clusterID = buttonKey.getNamespace();
             this.cluster = invApi.getGuiCluster(clusterID);
             Preconditions.checkArgument(this.cluster != null, "Error setting key of ButtonState: Cluster does not exist! Provided Cluster" + clusterID);
-            this.key(key.getKey());
+            this.key(buttonKey.getKey());
             return this;
         }
 
+        /**
+         * Appends a sub-key to the end of the current key separated by a '.'.
+         * <p>e.g.:
+         * <code><pre>ButtonState.of(window, "button_id").subKey("enabled").create();<br></pre></code>
+         * (key == "button_id.enabled")
+         * </p><br><br>
+         * This is useful for multi state buttons, that all have a parent language node with sub nodes for the different states.
+         * @param subKey The sub-key to append to the current key.
+         * @return This button state builder for chaining.
+         */
+        public Builder<C> subKey(String subKey) {
+            this.key += "." + subKey;
+            return this;
+        }
+
+        /**
+         * Sets the icon of the ButtonState.
+         *
+         * @param icon The material to use as the icon.
+         * @return This button state builder for chaining.
+         */
         public Builder<C> icon(ItemStack icon) {
             this.icon = icon;
             return this;
         }
 
+        /**
+         * Sets the icon of the ButtonState.
+         *
+         * @param icon The ItemStack to use as the icon.
+         * @return This button state builder for chaining.
+         */
         public Builder<C> icon(Material icon) {
             this.icon = new ItemStack(icon);
             return this;
@@ -581,12 +648,17 @@ public class ButtonState<C extends CustomCache> {
             return this;
         }
 
+        /**
+         * Creates a ButtonState with the previously configured settings.
+         *
+         * @return A new ButtonState instance with the configured settings.
+         */
         public ButtonState<C> create() {
             ButtonState<C> state;
             if (cluster == null) {
-                state = new ButtonState(key, icon);
+                state = new ButtonState<>(key, icon);
             } else {
-                state = new ButtonState(new NamespacedKey(cluster.getId(), key), icon);
+                state = new ButtonState<>(new NamespacedKey(cluster.getId(), key), icon);
             }
             state.prepareRender = preRender;
             state.buttonRender = render;
