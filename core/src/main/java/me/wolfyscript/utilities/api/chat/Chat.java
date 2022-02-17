@@ -184,9 +184,25 @@ public abstract class Chat {
      */
     public abstract void sendKey(Player player, NamespacedKey windowKey, String msgKey);
 
+    /**
+     * Sends a global message of the Cluster to the player.
+     *
+     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
+     *             Consider using the {@link GuiCluster#translatedMsgKey(String)} to get the translated global message from the cluster.
+     * @param player The player to send the message to.
+     * @param replacements The placeholder values to replace in the message.
+     */
     @Deprecated
     public abstract void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey, Pair<String, String>... replacements);
 
+    /**
+     * Sends a message of the {@link GuiWindow} to the player.
+     *
+     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
+     *             Consider using the {@link GuiWindow#translatedMsgKey(String)} to get the translated message from the window.
+     * @param player The player to send the message to.
+     * @param msgKey The key of the messages to send.
+     */
     @Deprecated
     public abstract void sendKey(Player player, NamespacedKey namespacedKey, String msgKey, Pair<String, String>... replacements);
 
