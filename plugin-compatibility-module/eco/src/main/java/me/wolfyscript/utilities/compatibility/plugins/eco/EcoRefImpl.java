@@ -72,7 +72,7 @@ public class EcoRefImpl extends APIReference implements EcoRef {
     public static class Parser extends PluginParser<EcoRefImpl> {
 
         public Parser() {
-            super("ItemsAdder", "itemsadder");
+            super("eco", "eco");
         }
 
         @Override
