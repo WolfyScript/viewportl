@@ -34,10 +34,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The GuiCluster combines multiple child <b>{@link GuiWindow}s</b>.<br>
+ * You can think of it as a namespace of GuiWindows.<br>
+ *
+ * Buttons registered in a GuiCluster are available globally, so you can use them in the child windows or access them in windows outside this cluster.<br>
+ *
+ * @param <C> The type of the CustomCache
+ */
 public abstract class GuiCluster<C extends CustomCache> extends GuiMenuComponent<C> {
 
     protected final InventoryAPI<C> inventoryAPI;
-    private String id;
+    private final String id;
     private final Map<String, GuiWindow<C>> guiWindows;
 
     private NamespacedKey entry;
@@ -56,19 +64,40 @@ public abstract class GuiCluster<C extends CustomCache> extends GuiMenuComponent
      */
     public abstract void onInit();
 
+    /**
+     * Gets the entrypoint of this cluster.
+     *
+     * @return The namespaced key of the entrypoint window.
+     */
     public NamespacedKey getEntry() {
         return entry;
     }
 
+    /**
+     * Sets the {@link GuiWindow} entrypoint of this cluster.
+     *
+     * @param entry The namespaced key of the {@link GuiWindow}. See {@link GuiWindow#getNamespacedKey()}
+     */
     protected void setEntry(NamespacedKey entry) {
         this.entry = entry;
     }
 
+    /**
+     * Registers the button in this cluster.
+     *
+     * @param button The button to register.
+     */
     public void registerButton(Button<C> button) {
         button.init(this);
         buttons.putIfAbsent(button.getId(), button);
     }
 
+    /**
+     * Registers a {@link GuiWindow} in this cluster.<br>
+     * In case the entrypoint isn't set at the time of the registration, it'll set this window as the entry.
+     *
+     * @param guiWindow The GuiWindow to register.
+     */
     protected void registerGuiWindow(GuiWindow<C> guiWindow) {
         if (this.entry == null) {
             this.entry = guiWindow.getNamespacedKey();
@@ -77,14 +106,21 @@ public abstract class GuiCluster<C extends CustomCache> extends GuiMenuComponent
         guiWindows.put(guiWindow.getNamespacedKey().getKey(), guiWindow);
     }
 
+    /**
+     * Gets the child {@link GuiWindow} by its id.
+     *
+     * @param id The id of the child window.
+     * @return The GuiWindow of the id; otherwise null if there is no GuiWindow for that id.
+     */
     public GuiWindow<C> getGuiWindow(String id) {
         return guiWindows.get(id);
     }
 
-    void setId(String id) {
-        this.id = id;
-    }
-
+    /**
+     * Gets the id of the GuiCluster.
+     *
+     * @return The id of the cluster.
+     */
     public String getId() {
         return id;
     }
@@ -93,11 +129,25 @@ public abstract class GuiCluster<C extends CustomCache> extends GuiMenuComponent
         return guiWindows;
     }
 
+    /**
+     * Creates a {@link Component} of the specified language key.<br>
+     * If the key exists in the language it will be translated and returns the according component.
+     * If it is not available it returns an empty component.
+     *
+     * @param key The key in the language.
+     * @param templates The placeholders and values in the message.
+     * @param translateLegacyColor If it should translate legacy '&' color codes.
+     * @return The component set for the key; empty component if not available.
+     */
     @Override
     public Component translatedMsgKey(String key, boolean translateLegacyColor, List<Template> templates) {
         return getChat().translated("inventories." + id + ".global_messages." + key, translateLegacyColor, templates);
     }
 
+    /**
+     * The button builder for this GuiCluster. It creates new instances of the builders using the instance of this GuiCluster.<br>
+     * Therefor calling the {@link Button.Builder#register()} will then register the button into this GuiCluster.
+     */
     protected class ClusterButtonBuilder implements ButtonBuilder<C> {
 
         @Override
