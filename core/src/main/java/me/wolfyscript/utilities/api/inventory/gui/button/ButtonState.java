@@ -562,7 +562,7 @@ public class ButtonState<C extends CustomCache> {
         public Builder<C> key(NamespacedKey buttonKey) {
             String clusterID = buttonKey.getNamespace();
             this.cluster = invApi.getGuiCluster(clusterID);
-            Preconditions.checkArgument(this.cluster != null, "Error setting key of ButtonState: Cluster does not exist! Provided Cluster" + clusterID);
+            Preconditions.checkArgument(this.cluster != null, "Error setting key of ButtonState: Cluster \"" + clusterID + "\" does not exist!");
             this.key(buttonKey.getKey());
             return this;
         }

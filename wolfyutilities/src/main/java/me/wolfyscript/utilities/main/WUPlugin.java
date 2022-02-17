@@ -57,7 +57,6 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.UnbreakableMeta;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
-import me.wolfyscript.utilities.api.language.Language;
 import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.compatibility.CompatibilityManagerImpl;
 import me.wolfyscript.utilities.main.commands.ChatActionCommand;
@@ -74,7 +73,6 @@ import me.wolfyscript.utilities.main.listeners.custom_item.CustomItemPlayerListe
 import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListener;
 import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
-import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
@@ -121,7 +119,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
-import java.util.List;
 
 public final class WUPlugin extends WolfyUtilCore {
 
@@ -142,7 +139,10 @@ public final class WUPlugin extends WolfyUtilCore {
         instance = this;
         this.chat = api.getChat();
         this.console = api.getConsole();
-        chat.setChatPrefix(Component.empty().color(NamedTextColor.GRAY).append(Component.text("[", NamedTextColor.DARK_RED)).append(Component.text("WU", NamedTextColor.AQUA)).append(Component.text("] ", NamedTextColor.DARK_GRAY)));
+        chat.setChatPrefix(Component.text("[", NamedTextColor.GRAY)
+                .append(Component.text("WU", NamedTextColor.AQUA))
+                .append(Component.text("] ", NamedTextColor.DARK_GRAY))
+        );
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
@@ -153,7 +153,10 @@ public final class WUPlugin extends WolfyUtilCore {
         instance = this;
         this.chat = api.getChat();
         this.console = api.getConsole();
-        chat.setChatPrefix(Component.empty().color(NamedTextColor.GRAY).append(Component.text("[", NamedTextColor.DARK_RED)).append(Component.text("WU", NamedTextColor.AQUA)).append(Component.text("] ", NamedTextColor.DARK_GRAY)));
+        chat.setChatPrefix(Component.text("[", NamedTextColor.GRAY)
+                .append(Component.text("WU", NamedTextColor.AQUA))
+                .append(Component.text("] ", NamedTextColor.DARK_GRAY))
+        );
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
