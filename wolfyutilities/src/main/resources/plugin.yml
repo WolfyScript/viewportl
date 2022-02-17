@@ -24,6 +24,7 @@ softdepend:
   - ItemsAdder
   - ExecutableItems
   - PlaceholderAPI
+  - eco
 
 commands:
   wolfyutils:

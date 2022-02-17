@@ -39,7 +39,7 @@ public class ActionCommand extends Action<DataPlayer> {
 
     public ActionCommand() {
         super(KEY, DataPlayer.class);
-        papi = WolfyUtilCore.getInstance().getCompatibilityManager().getPlugins().getIntegration(PlaceholderAPIIntegration.NAME, PlaceholderAPIIntegration.class);
+        papi = WolfyUtilCore.getInstance().getCompatibilityManager().getPlugins().getIntegration(PlaceholderAPIIntegration.KEY, PlaceholderAPIIntegration.class);
     }
 
     @Override

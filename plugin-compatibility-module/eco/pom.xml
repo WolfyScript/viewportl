@@ -21,32 +21,26 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>wolfyutilities-parent</artifactId>
+        <artifactId>plugin-compatibility-module</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
         <version>3.16-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <!--
-     This module could be its own repository. Maybe in the future.
-     -->
-    <modules>
-        <module>itemsadder</module>
-        <module>eco</module>
-        <module>mmoitems</module>
-        <module>oraxen</module>
-        <module>magic</module>
-        <module>mythicmobs</module>
-        <module>plugin-compatibility-artifact</module>
-    </modules>
 
-    <artifactId>plugin-compatibility-module</artifactId>
+    <artifactId>eco</artifactId>
+
+    <repositories>
+        <repository>
+            <id>jitpack-repo</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.willfp</groupId>
+            <artifactId>eco</artifactId>
+            <version>6.13.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
