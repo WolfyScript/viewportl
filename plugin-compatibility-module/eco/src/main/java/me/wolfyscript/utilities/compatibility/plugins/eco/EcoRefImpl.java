@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package main.java.me.wolfyscript.utilities.compatibility.plugins.eco;
+package me.wolfyscript.utilities.compatibility.plugins.eco;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
