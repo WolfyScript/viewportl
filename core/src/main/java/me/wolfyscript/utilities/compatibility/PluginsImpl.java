@@ -81,7 +81,7 @@ final class PluginsImpl implements Plugins, Listener {
                     if (!pluginIntegrationClasses.containsKey(pluginName)) {
                         pluginIntegrationClasses.put(pluginName, (Class<? extends PluginIntegrationAbstract>) integrationClass);
                     } else {
-                        core.getLogger().info("     ERROR -> Failed to add Integration! A Plugin Integration for \"" + pluginName + "\" already exists!");
+                        core.getLogger().severe("Failed to add Integration! A Plugin Integration for \"" + pluginName + "\" already exists!");
                     }
                 }
             }
@@ -94,7 +94,7 @@ final class PluginsImpl implements Plugins, Listener {
                 core.getLogger().info(" - No integrations created.");
             }
         } else {
-            core.getLogger().info(" - No integrations found for available plugins");
+            core.getLogger().info(" - No integrations found");
             doneLoading = true;
         }
     }
@@ -109,17 +109,15 @@ final class PluginsImpl implements Plugins, Listener {
                 if (isPluginEnabled(pluginName)) { //Only init the integration if the plugin has already been enabled!
                     integration.init(Bukkit.getPluginManager().getPlugin(pluginName));
                     if (!integration.hasAsyncLoading()) {
-                        core.getLogger().info(" - " + pluginName);
                         integration.setEnabled(true);
-                    } else {
-                        core.getLogger().info(" - " + pluginName + " : Integration is async. Enabled once done loading!");
                     }
+                    core.getLogger().info(" - " + pluginName + (integration.hasAsyncLoading() ? " [async]" : ""));
                 } else {
                     core.getLogger().info(" - " + pluginName);
                 }
                 checkDependencies();
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException | RuntimeException e) {
-                core.getLogger().info("     Failed to initialise integration for " + pluginName + "! Cause: " + e.getMessage());
+                core.getLogger().warning("     Failed to initialise integration for " + pluginName + "! Cause: " + e.getMessage());
                 pluginIntegrations.remove(pluginName);
             }
         }
