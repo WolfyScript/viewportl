@@ -278,11 +278,10 @@ public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<
      * Opens the chat, send the player the defined message and waits for the input of the player.
      * When the player sends a message the inputAction method is executed.
      *
-     * @deprecated This uses the legacy chat format. <b>Use {@link #openChat(GuiHandler, Component, ChatInputAction)} instead!</b>
-     *
      * @param guiHandler  The {@link GuiHandler} it should be opened for.
      * @param msg         The message that should be sent to the player.
      * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
+     * @deprecated This uses the legacy chat format. <b>Use {@link #openChat(GuiHandler, Component, ChatInputAction)} instead!</b>
      */
     @Deprecated
     public void openChat(GuiHandler<C> guiHandler, String msg, ChatInputAction<C> inputAction) {
@@ -296,12 +295,11 @@ public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<
      * Then it waits for the player's input.
      * When the player sends the message the inputAction method is executed.
      *
-     * @deprecated This uses the legacy chat format. <b>Use {@link #openChat(GuiHandler, Component, ChatInputAction)} instead!</b>
-     *
      * @param guiCluster  The {@link GuiCluster} of the message.
      * @param msgKey      The key of the message.
      * @param guiHandler  The {@link GuiHandler} it should be opened for.
      * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
+     * @deprecated This uses the legacy chat format. <b>Use {@link #openChat(GuiHandler, Component, ChatInputAction)} instead!</b>
      */
     @Deprecated
     public void openChat(GuiCluster<C> guiCluster, String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
@@ -316,11 +314,10 @@ public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<
      * Then it waits for the player's input.
      * When the player sends the message the inputAction method is executed
      *
-     * @deprecated This uses the legacy chat format. <b>Use {@link #openChat(GuiHandler, Component, ChatInputAction)} instead!</b>
-     *
      * @param msgKey      The key of the message.
      * @param guiHandler  the {@link GuiHandler} it should be opened for.
      * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
+     * @deprecated This uses the legacy chat format. <b>Use {@link #openChat(GuiHandler, Component, ChatInputAction)} instead!</b>
      */
     @Deprecated
     public void openChat(String msgKey, GuiHandler<C> guiHandler, ChatInputAction<C> inputAction) {
@@ -333,12 +330,11 @@ public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<
      * Opens the chat, send the player the defined action messages and waits for the input of the player.
      * When the player sends the message the inputAction method is executed
      *
-     * @deprecated This uses the legacy chat format. <b>Use {@link #openChat(GuiHandler, Component, ChatInputAction)} instead!</b> For callback execution on text click use {@link Chat#executable(Player, boolean, ClickAction)}
-     *
      * @param guiHandler  The {@link GuiHandler} it should be opened for.
      * @param clickData   The {@link ClickData} to be send to the player.
      * @param inputAction The {@link ChatInputAction} to be executed when the player types in the chat.
      * @see #openChat(GuiHandler, Component, ChatInputAction)
+     * @deprecated This uses the legacy chat format. <b>Use {@link #openChat(GuiHandler, Component, ChatInputAction)} instead!</b> For callback execution on text click use {@link Chat#executable(Player, boolean, ClickAction)}
      */
     @Deprecated
     public void openActionChat(GuiHandler<C> guiHandler, ClickData clickData, ChatInputAction<C> inputAction) {
@@ -350,10 +346,9 @@ public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<
     /**
      * Send message to the player without closing the window.
      *
-     * @deprecated This uses the legacy chat format. <b>Use {@link #sendMessage(GuiHandler, Component)} instead!</b>
-     *
      * @param guiHandler The {@link GuiHandler} this message should be sent to.
      * @param msgKey     The key of the message.
+     * @deprecated This uses the legacy chat format. <b>Use {@link #sendMessage(GuiHandler, Component)} instead!</b>
      */
     @Deprecated
     public final void sendMessage(GuiHandler<C> guiHandler, String msgKey) {
@@ -372,10 +367,9 @@ public abstract class GuiWindow<C extends CustomCache> extends GuiMenuComponent<
     }
 
     /**
-     * @deprecated This uses the legacy chat format. <b>Use {@link Chat#sendMessage(Player, Component)} or {@link #sendMessage(GuiHandler, Component)} instead!</b>
-     *
      * @param player The Player this message should be sent to.
      * @param msgKey The key of the message.
+     * @deprecated This uses the legacy chat format. <b>Use {@link Chat#sendMessage(Player, Component)} or {@link #sendMessage(GuiHandler, Component)} instead!</b>
      */
     @Deprecated
     public final void sendMessage(Player player, String msgKey) {
