@@ -84,6 +84,11 @@ public abstract class GuiMenuComponent<C extends CustomCache> {
         return wolfyUtilities.getChat();
     }
 
+    /**
+     * Gets the menu specific ButtonBuilder.
+     *
+     * @return The ButtonBuilder of this menu.
+     */
     public ButtonBuilder<C> getButtonBuilder() {
         return buttonBuilder;
     }

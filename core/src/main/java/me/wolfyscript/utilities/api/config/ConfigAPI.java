@@ -25,15 +25,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ConfigAPI {
 
     private final Plugin plugin;
     private final WolfyUtilities api;
     private boolean prettyPrinting = false;
-
-    private final HashMap<String, YamlConfiguration> configs;
-
+    private final Map<String, YamlConfiguration> configs;
     private int autoSave = -1;
 
     public ConfigAPI(WolfyUtilities api) {

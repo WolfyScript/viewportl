@@ -134,29 +134,29 @@ public final class WUPlugin extends WolfyUtilCore {
     private final CompatibilityManagerImpl compatibilityManager;
     private BukkitAudiences adventure;
 
+    /**
+     * Constructor invoked by Spigot when the plugin is loaded.
+     */
     public WUPlugin() {
         super();
         instance = this;
         this.chat = api.getChat();
         this.console = api.getConsole();
-        chat.setChatPrefix(Component.text("[", NamedTextColor.GRAY)
-                .append(Component.text("WU", NamedTextColor.AQUA))
-                .append(Component.text("] ", NamedTextColor.DARK_GRAY))
-        );
+        chat.setChatPrefix(Component.text("[", NamedTextColor.GRAY).append(Component.text("WU", NamedTextColor.AQUA)).append(Component.text("] ", NamedTextColor.DARK_GRAY)));
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
     }
 
+    /**
+     * Constructor invoked by MockBukkit to mock the plugin.
+     */
     private WUPlugin(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
         super(loader, description, dataFolder, file);
         instance = this;
         this.chat = api.getChat();
         this.console = api.getConsole();
-        chat.setChatPrefix(Component.text("[", NamedTextColor.GRAY)
-                .append(Component.text("WU", NamedTextColor.AQUA))
-                .append(Component.text("] ", NamedTextColor.DARK_GRAY))
-        );
+        chat.setChatPrefix(Component.text("[", NamedTextColor.GRAY).append(Component.text("WU", NamedTextColor.AQUA)).append(Component.text("] ", NamedTextColor.DARK_GRAY)));
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
