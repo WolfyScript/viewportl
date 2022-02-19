@@ -1,6 +1,4 @@
-<div align="center">
-  <img src="docs/wu_banner.png" alt="WolfyUtilities Banner" />
-</div>
+<div align="center"><img src="docs/wu_banner.png" alt="WolfyUtilities Banner" /></div>
 
 ## WolfyUtilities
 ![bstats_server](https://img.shields.io/bstats/servers/5114)
@@ -14,16 +12,16 @@ Core API that provides an API and Utils for plugins based on Spigot.
 ### APIs & Utils
 - **API** is plugin dependent, which means there is one instance of the API per plugin.
 - **Utils** are plugin independent. They can be used everywhere.
-- **Registry** is bound to the core of WolfyUtilities, but can be accessed from everywhere. 
+- **Registry** is bound to the core of WolfyUtilities, but can be accessed from anywhere. 
 
 #### APIs
 - **Inventory** - Functional API to create in-game GUIs.
-- **Language** - Load JSON based language files and support multiple languages for GUIs, messages, etc.!
+- **Language** - Load JSON based language files and support multiple languages for GUIs, messages, etc.
 - **Chat** - Send translatable messages, text click event callbacks, and more.
   - (**3.16.1+**) [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure) implementation.
-- **Config** - to easily manage configs.
-- **NMS** - including a fully featured **NBTTag API**, custom **RecipeIterator**, and some block and Inventory Utils.
-- **CustomItems** - allow creating custom items with special settings.
+- **Config** - Simple config utilities.
+- **NMS** - Fully featured **NBTTag API**, custom **RecipeIterator**, and some block and Inventory Utils.
+- **CustomItems** - Create flexible custom items with settings like custom fuel, durability, actions, etc.
 
 #### Registry
 The Registry is the base of all custom content in WolfyUtilities and the plugins that build on it.
