@@ -9,29 +9,48 @@
 ![github_commit](https://img.shields.io/github/last-commit/WolfyScript/WolfyUtilities)
 ![lines_code](https://img.shields.io/tokei/lines/github/WolfyScript/WolfyUtilities)
 
-This API is the core that powers all of my plugins like CustomCrafting, ArmorStandTool, and possible future ones.
+Core API that provides an API and Utils for plugins based on Spigot.
 
-#### WolfyUtilities contains a lot of useful APIs, such as:
+### APIs & Utils
+- **API** is plugin dependent, which means there is one instance of the API per plugin.
+- **Utils** are plugin independent. They can be used everywhere.
+- **Registry** is bound to the core of WolfyUtilities, but can be accessed from everywhere. 
 
-- **InventoryAPI** to create and manage in-game GUIs.
-- **ConfigAPI** to easily manage _YAML_ and _JSON_ configs.
-- **LanguageAPI** to load languages and support multiple languages for GUIs, messages, etc.!
-- **ChatAPI** to send translatable messages, make clickable text execute code, and more.
-- **NMS API** including a fully featured **NBTTag API**, custom **RecipeIterator**, and some block and Inventory Utils.
-- **CustomItems** allow creating custom items with special settings.
+#### APIs
+- **Inventory** - Functional API to create in-game GUIs.
+- **Language** - Load JSON based language files and support multiple languages for GUIs, messages, etc.!
+- **Chat** - Send translatable messages, text click event callbacks, and more.
+  - (**3.16.1+**) [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure) implementation.
+- **Config** - to easily manage configs.
+- **NMS** - including a fully featured **NBTTag API**, custom **RecipeIterator**, and some block and Inventory Utils.
+- **CustomItems** - allow creating custom items with special settings.
 
-#### and Utils:
+#### Registry
+The Registry is the base of all custom content in WolfyUtilities and the plugins that build on it.
+It allows you to register types & objects under unique namespaced keys. 
+That not only allows the plugin to register things like CustomItems, etc., but it can be extended by other plugins too.
 
-- **Serialize/Deserialize ItemStacks** via Base64.
-- Basic **Reflection** Utils.
+#### Utils:
+- **NamespacedKey** - Unique key for all registrable content.
+- **JSON** - Various Jackson utils that simplify de-/serialization
+  - Custom de-/serializer for Bukkit objects
+  - Easy de-/serialization from Registry values
+    - Object  (See @OptionalKeyReference)
+    - Type to object (See @KeyedTypeIdResolver & @KeyedTypeResolver)
+- **Particles** - Configure custom particle effects & animations using JSON.
+- **RandomCollection** - Weight based random collection.
+- **Reflection** - Basic Reflection Utils.
 - **Player Head** utils to set textures and more.
 - Basic **MySQL** connection to run queries and updates.
 - ItemBuilder to edit/create ItemStacks.
 - Save player specific data.
 
-The API is build with customization in mind, so that you can register a lot of your own settings, data, CustomItems into
-the Registry and share it across plugins.  
-It constantly receives updates to improve, fix issues, and make it as easy as possible to use.
+### Plugins using WolfyUtilities
+
+#### CustomCrafting
+CustomCrafting is heavily based on these APIs and Utils, and is more of an extension than standalone plugin.  
+CustomCrafting especially makes use of the InventoryAPI to create and manage the in-game RecipeCreators.
+The JSON utils are used to load/save recipes & items from/to JSON, and to allow for custom settings inside the json files.
 
 # Getting started
 
