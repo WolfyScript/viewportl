@@ -25,7 +25,7 @@
     <parent>
         <artifactId>wolfyutilities-parent</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <version>3.16-SNAPSHOT</version>
+        <version>3.16.1.0</version>
     </parent>
     <build>
         <plugins>
