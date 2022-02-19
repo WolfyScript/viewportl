@@ -25,21 +25,41 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * Caches all the data necessary to create and call callbacks, when the corresponding text component is clicked.
+ *
+ * @deprecated <b>Only for internal usages in WolfyUtilities! Going to be made package private in the future!</b>
+ */
+@Deprecated(since = "3.16.1.0")
 public class PlayerAction {
 
     private UUID uuid;
     private WolfyUtilities api;
 
+    /**
+     * @deprecated No longer used, as the text is now managed by the parent {@link net.kyori.adventure.text.Component}
+     */
+    @Deprecated(since = "3.16.1.0")
     private TextComponent message;
+
     private ClickAction clickAction;
     private final boolean discard;
 
+    @Deprecated(since = "3.16.1.0")
     public PlayerAction(WolfyUtilities api, Player player, ClickData clickData) {
         this.uuid = player.getUniqueId();
         this.api = api;
         this.message = new TextComponent(ChatColor.convert(api.getLanguageAPI().replaceKeys(clickData.getMessage())));
         this.clickAction = clickData.getClickAction();
         this.discard = clickData.isDiscard();
+    }
+
+    public PlayerAction(WolfyUtilities api, Player player, ClickAction action, boolean discard) {
+        this.uuid = player.getUniqueId();
+        this.api = api;
+        this.message = null;
+        this.clickAction = action;
+        this.discard = discard;
     }
 
     public void run(Player player) {
@@ -64,10 +84,18 @@ public class PlayerAction {
         this.api = api;
     }
 
+    /**
+     * @deprecated No longer used, as the text is now managed by the parent {@link net.kyori.adventure.text.Component}
+     */
+    @Deprecated
     public TextComponent getMessage() {
         return message;
     }
 
+    /**
+     * @deprecated No longer used, as the text is now managed by the parent {@link net.kyori.adventure.text.Component}
+     */
+    @Deprecated
     public void setMessage(TextComponent message) {
         this.message = message;
     }

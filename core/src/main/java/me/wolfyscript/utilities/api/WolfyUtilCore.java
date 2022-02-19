@@ -23,6 +23,7 @@ import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.registry.Registries;
 import me.wolfyscript.utilities.util.version.ServerVersion;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -116,6 +117,8 @@ public abstract class WolfyUtilCore extends JavaPlugin {
      * @return The {@link CompatibilityManager}.
      */
     public abstract CompatibilityManager getCompatibilityManager();
+
+    public abstract BukkitAudiences getAdventure();
 
     /**
      * Gets the {@link Reflections} instance of the plugins' package.

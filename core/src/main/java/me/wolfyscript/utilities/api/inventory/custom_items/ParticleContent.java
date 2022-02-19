@@ -202,6 +202,10 @@ public class ParticleContent {
             this.animation = Objects.requireNonNull(animation, "Animation cannot be null!");
         }
 
+        public void setAnimation(NamespacedKey animation) {
+            this.animation = Objects.requireNonNull(WolfyUtilCore.getInstance().getRegistries().getParticleAnimations().get(animation), "Animation \"" + animation + "\" not found!");
+        }
+
         /**
          * Used to convert old config "effect" setting to the new version.
          */
@@ -211,10 +215,6 @@ public class ParticleContent {
             if(animation != null) {
                 setAnimation(animation);
             }
-        }
-
-        public void setAnimation(NamespacedKey animation) {
-            this.animation = Objects.requireNonNull(WolfyUtilCore.getInstance().getRegistries().getParticleAnimations().get(animation), "Animation \"" + animation + "\" not found!");
         }
 
         @Override

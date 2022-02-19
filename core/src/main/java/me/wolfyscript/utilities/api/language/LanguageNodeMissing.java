@@ -16,21 +16,33 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.main.configs;
+package me.wolfyscript.utilities.api.language;
 
-import me.wolfyscript.utilities.api.config.ConfigAPI;
-import me.wolfyscript.utilities.api.config.YamlConfiguration;
-import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
-import me.wolfyscript.utilities.main.WUPlugin;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import me.wolfyscript.utilities.api.chat.Chat;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.Template;
 
-public class WUConfig extends YamlConfiguration {
+import java.util.List;
 
-    public WUConfig(ConfigAPI configAPI, WUPlugin plugin) {
-        super(configAPI, plugin.getDataFolder().getPath(), "config", "", "config", false);
+public class LanguageNodeMissing extends LanguageNode {
+
+    LanguageNodeMissing(Chat chat) {
+        super(chat, JsonNodeFactory.instance.missingNode());
     }
 
-    public boolean isAPIReferenceEnabled(APIReference.Parser<?> parser) {
-        return getBoolean("api_references." + parser.getId(), true);
+    @Override
+    public Component getComponent(boolean translateLegacyColor, List<Template> templates) {
+        return Component.empty();
     }
 
+    @Override
+    public List<Component> getComponents(boolean translateLegacyColor, List<Template> templates) {
+        return List.of(Component.empty());
+    }
+
+    @Override
+    public String getRaw() {
+        return "";
+    }
 }

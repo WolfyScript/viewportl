@@ -33,6 +33,7 @@ import java.util.function.Supplier;
  *
  * @param <T> any type you want to save in/load from the config file. See the Jackson documentation for more information about how to use custom serializer.
  */
+@Deprecated
 public class KeyedJsonConfig<T> extends JsonConfig<T> {
 
     private final NamespacedKey namespacedKey;

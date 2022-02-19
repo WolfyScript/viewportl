@@ -70,8 +70,8 @@ public class InventoryAPI<C extends CustomCache> implements Listener {
      * @param guiCluster The {@link GuiCluster} to register.
      */
     public void registerCluster(GuiCluster<C> guiCluster) {
+        guiClusters.putIfAbsent(guiCluster.getId(), guiCluster); //Make sure the cluster is registered before the init is called. Otherwise, buttons might fail to init!
         guiCluster.onInit();
-        guiClusters.putIfAbsent(guiCluster.getId(), guiCluster);
     }
 
     /**

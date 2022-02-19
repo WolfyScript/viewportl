@@ -18,7 +18,9 @@
 
 package me.wolfyscript.utilities.api.inventory.gui.button.buttons;
 
+import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
+import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonAction;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonRender;
 import me.wolfyscript.utilities.api.inventory.gui.button.ButtonState;
@@ -98,15 +100,26 @@ public class ItemInputButton<C extends CustomCache> extends ActionButton<C> {
 
     @Override
     public void render(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ItemStack itemStack, int slot, boolean help) throws IOException {
-        ItemStack item = getContent(guiHandler);
-        HashMap<String, Object> values = new HashMap<>();
-        if (getState().getRenderAction() != null) {
-            item = getState().getRenderAction().render(values, guiHandler.getCustomCache(), guiHandler, player, guiInventory, item, slot, help);
-        }
-        inventory.setItem(slot, replaceKeysWithValue(item, values));
+        applyItem(guiHandler, player, guiInventory, inventory, getState(), getContent(guiHandler), slot, help);
     }
 
     public ItemStack getContent(GuiHandler<C> guiHandler) {
         return content.computeIfAbsent(guiHandler, g -> new ItemStack(Material.AIR));
+    }
+
+    public static class Builder<C extends CustomCache> extends ActionButton.AbstractBuilder<C, ItemInputButton<C>, Builder<C>> {
+
+        public Builder(GuiWindow<C> window, String id) {
+            super(window, id, (Class<ItemInputButton<C>>) (Object) ItemInputButton.class);
+        }
+
+        public Builder(GuiCluster<C> cluster, String id) {
+            super(cluster, id, (Class<ItemInputButton<C>>) (Object) ItemInputButton.class);
+        }
+
+        @Override
+        public ItemInputButton<C> create() {
+            return new ItemInputButton<>(key, stateBuilder.create());
+        }
     }
 }

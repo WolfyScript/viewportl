@@ -21,21 +21,17 @@ package me.wolfyscript.utilities.api.inventory.gui.button;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
+import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
- * <strong>
- *     This callback should no longer be used! It uses the legacy chat format and convert language keys multiple times!<br>
- *     {@link CallbackButtonRender<C>} uses the new {@link net.kyori.adventure.text.Component} chat format.
- * </strong>
- *
  * @param <C> The type of the {@link CustomCache}
- * @see CallbackButtonRender<C>
  */
-public interface ButtonRender<C extends CustomCache> {
+public interface CallbackButtonRender<C extends CustomCache> extends ButtonRender<C> {
 
     /**
      * Run when the button is rendered into the GUI.
@@ -49,8 +45,11 @@ public interface ButtonRender<C extends CustomCache> {
      * @param guiInventory The GUIInventory in which this render was called from.
      * @param itemStack    The current itemsStack of the button.
      * @param slot         The slot in which the button is rendered.
-     * @param helpEnabled  Returns true if help is enabled.
      * @return The itemStack that should be set into the GUI.
      */
-    ItemStack render(HashMap<String, Object> values, C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, ItemStack itemStack, int slot, boolean helpEnabled);
+    ItemStack render(List<Template> values, C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, ItemStack itemStack, int slot);
+
+    default ItemStack render(HashMap<String, Object> values, C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, ItemStack itemStack, int slot, boolean helpEnabled) {
+        return render(List.of(), cache, guiHandler, player, guiInventory, itemStack, slot);
+    }
 }

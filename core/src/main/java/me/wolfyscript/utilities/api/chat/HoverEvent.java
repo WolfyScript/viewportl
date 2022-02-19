@@ -23,6 +23,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.inventory.ItemStack;
 
+@Deprecated
 public class HoverEvent implements ChatEvent<net.md_5.bungee.api.chat.HoverEvent.Action, BaseComponent[]> {
 
     private final net.md_5.bungee.api.chat.HoverEvent.Action action;

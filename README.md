@@ -50,8 +50,8 @@ You can get the API from the public maven repo:
 <dependencies>
     <dependency>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <artifactId>core</artifactId>
-        <version>2.16.2.0</version>
+        <artifactId>wolfyutilities</artifactId>
+        <version>3.16.1.0</version>
         <scope>provided</scope>
     </dependency>
 </dependencies>
@@ -65,6 +65,7 @@ It's best to initiate it in your constructor, so you don't mistakenly change the
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.lib.net.kyori.adventure.text.Component;
 
 public class YourPlugin extends JavaPlugin {
     
@@ -75,11 +76,13 @@ public class YourPlugin extends JavaPlugin {
         //Create the instance for your plugin. We don't want to initialize the events yet (so set it to false)!
         api = WolfyUtilCore.getInstance().getAPI(this, false);
         this.chat = api.getChat();
-        //We should set our prefixes for the chat and console.
-        this.chat.setInGamePrefix("§7[§3CC§7] ");
-        this.chat.setConsolePrefix("§7[§3CC§7] ");
+        //We should set our prefix for the chat
+        this.chat.setChatPrefix(Component.text("[", NamedTextColor.GRAY).append(Component.text("CC", NamedTextColor.AQUA))
+                .append(Component.text("] ", NamedTextColor.DARK_GRAY)));
+        //Or using the MiniMessage api
+        this.chat.setChatPrefix(chat.getMiniMessage().parse("<gray>[<gradient:dark_aqua:aqua>CC</gradient><gray>]"));
         
-        //Optionally you can set a custom cache object to save custom data for your GUI. (More detail soon)
+        //Optionally you can set a custom cache object to cache data for your GUI.
         api.setInventoryAPI(new InventoryAPI<>(api.getPlugin(), api, CCCache.class));
     }
 

@@ -181,7 +181,7 @@ public class YamlConfiguration extends org.bukkit.configuration.file.YamlConfigu
         Reader stream;
         try {
             String fileName = defFileName.isEmpty() ? getName() : defFileName;
-            InputStream inputStream = plugin.getResource(defPath.isEmpty() ? fileName : defPath + "/" + fileName + ".yml");
+            InputStream inputStream = plugin.getResource((defPath.isEmpty() ? fileName : defPath + "/" + fileName) + ".yml");
             if (inputStream != null) {
                 stream = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                 org.bukkit.configuration.file.YamlConfiguration defConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(stream);
