@@ -48,14 +48,16 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
     private ChatInputAction<C> action;
     private ChatTabComplete<C> tabComplete;
     private Component msg = null;
-    private boolean global = false;
+    private final boolean deprecated;
     private ClickData clickData = null;
 
-    //region Deprecated constructors
     @Deprecated
     public ChatInputButton(String id, ButtonState<C> buttonState) {
         super(id, buttonState);
+        this.deprecated = false;
     }
+
+    //region Deprecated constructors
 
     @Deprecated
     public ChatInputButton(String id, ButtonState<C> buttonState, String msg, ChatInputAction<C> action) {
@@ -68,6 +70,7 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
         this.action = action;
         this.tabComplete = tabComplete;
         this.msg = BukkitComponentSerializer.legacy().deserialize(msg);
+        this.deprecated = true;
     }
 
     @Deprecated
@@ -105,6 +108,7 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
         super(id, buttonState);
         this.action = action;
         this.tabComplete = tabComplete;
+        this.deprecated = true;
     }
 
     @Deprecated
@@ -168,6 +172,7 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
         this.action = chatInput;
         this.tabComplete = tabComplete;
         this.clickData = clickData;
+        this.deprecated = true;
     }
 
     @Deprecated
@@ -214,13 +219,17 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
     @Override
     public void init(GuiWindow<C> guiWindow) {
         super.init(guiWindow);
-        this.global = false;
+        if (msg == null && clickData == null) {
+            this.msg = guiWindow.getChat().translated(String.format(ButtonState.BUTTON_WINDOW_KEY + ".message", guiWindow.getCluster().getId(), guiWindow.getNamespacedKey().getKey(), getId()), deprecated);
+        }
     }
 
     @Override
     public void init(GuiCluster<C> guiCluster) {
         super.init(guiCluster);
-        this.global = true;
+        if (msg == null && clickData == null) {
+            this.msg = guiCluster.getChat().translated(String.format(ButtonState.BUTTON_CLUSTER_KEY + ".message", guiCluster.getId(), getId()), deprecated);
+        }
     }
 
     @Override
@@ -234,12 +243,6 @@ public class ChatInputButton<C extends CustomCache> extends ActionButton<C> {
                 chat.sendMessage(guiHandler.getPlayer(), msg);
             } else if (clickData != null) {
                 chat.sendActionMessage(guiHandler.getPlayer(), clickData);
-            } else {
-                if (global) {
-                    chat.sendMessage(player, chat.translated(String.format(ButtonState.BUTTON_CLUSTER_KEY + ".message", guiHandler.getCluster().getId(), getId())));
-                } else if (guiHandler.getWindow() != null) {
-                    chat.sendMessage(player, chat.translated(String.format(ButtonState.BUTTON_WINDOW_KEY + ".message", guiHandler.getCluster().getId(), guiHandler.getWindow().getNamespacedKey().getKey(), getId())));
-                }
             }
             guiHandler.close();
         }
