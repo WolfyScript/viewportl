@@ -28,7 +28,7 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import java.util.HashMap;
 import java.util.List;
@@ -140,7 +140,7 @@ public abstract class GuiCluster<C extends CustomCache> extends GuiMenuComponent
      * @return The component set for the key; empty component if not available.
      */
     @Override
-    public Component translatedMsgKey(String key, boolean translateLegacyColor, List<Template> templates) {
+    public Component translatedMsgKey(String key, boolean translateLegacyColor, List<? extends TagResolver> templates) {
         return getChat().translated("inventories." + id + ".global_messages." + key, translateLegacyColor, templates);
     }
 

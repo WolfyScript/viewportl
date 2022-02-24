@@ -27,7 +27,7 @@ import me.wolfyscript.utilities.util.chat.ChatColor;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -169,12 +169,12 @@ public class LanguageAPI {
         return getComponent(key, translateLegacyColor, List.of());
     }
 
-    public Component getComponent(String key, List<Template> templates) {
-        return getComponent(key, false, templates);
+    public Component getComponent(String key, List<? extends TagResolver> resolvers) {
+        return getComponent(key, false, resolvers);
     }
 
-    public Component getComponent(String key, boolean translateLegacyColor, List<Template> templates) {
-        return getNode(key).getComponent(translateLegacyColor, templates);
+    public Component getComponent(String key, boolean translateLegacyColor, List<? extends TagResolver> resolvers) {
+        return getNode(key).getComponent(translateLegacyColor, resolvers);
     }
 
     public List<Component> getComponents(String key) {
@@ -185,12 +185,12 @@ public class LanguageAPI {
         return getComponents(key, translateLegacyColor, List.of());
     }
 
-    public List<Component> getComponents(String key, List<Template> templates) {
-        return getComponents(key, false, templates);
+    public List<Component> getComponents(String key, List<? extends TagResolver> resolvers) {
+        return getComponents(key, false, resolvers);
     }
 
-    public List<Component> getComponents(String key, boolean translateLegacyColor, List<Template> templates) {
-        return getNode(key).getComponents(translateLegacyColor, templates);
+    public List<Component> getComponents(String key, boolean translateLegacyColor, List<? extends TagResolver> resolvers) {
+        return getNode(key).getComponents(translateLegacyColor, resolvers);
     }
 
     public String replaceKeys(String msg) {

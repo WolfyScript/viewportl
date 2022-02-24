@@ -21,7 +21,7 @@ package me.wolfyscript.utilities.api.language;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import me.wolfyscript.utilities.api.chat.Chat;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import java.util.List;
 
@@ -32,13 +32,13 @@ public class LanguageNodeMissing extends LanguageNode {
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor, List<Template> templates) {
+    public Component getComponent(boolean translateLegacyColor, List<? extends TagResolver> templates) {
         return Component.empty();
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor, List<Template> templates) {
-        return List.of(Component.empty());
+    public List<Component> getComponents(boolean translateLegacyColor, List<? extends TagResolver> templates) {
+        return List.of();
     }
 
     @Override

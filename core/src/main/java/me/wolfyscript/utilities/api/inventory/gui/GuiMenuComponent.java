@@ -29,7 +29,7 @@ import me.wolfyscript.utilities.api.inventory.gui.button.buttons.MultipleChoiceB
 import me.wolfyscript.utilities.api.inventory.gui.button.buttons.ToggleButton;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -154,7 +154,7 @@ public abstract class GuiMenuComponent<C extends CustomCache> {
      * @param templates The placeholders and values in the message.
      * @return The component set for the key; empty component if not available.
      */
-    public Component translatedMsgKey(String key, List<Template> templates) {
+    public Component translatedMsgKey(String key, List<? extends TagResolver> templates) {
         return translatedMsgKey(key, false, templates);
     }
 
@@ -168,7 +168,7 @@ public abstract class GuiMenuComponent<C extends CustomCache> {
      * @param translateLegacyColor If it should translate legacy '&' color codes.
      * @return The component set for the key; empty component if not available.
      */
-    public abstract Component translatedMsgKey(String key, boolean translateLegacyColor, List<Template> templates);
+    public abstract Component translatedMsgKey(String key, boolean translateLegacyColor, List<? extends TagResolver> templates);
 
     /**
      * Opens the chat, send the player the defined message and waits for the input of the player.
