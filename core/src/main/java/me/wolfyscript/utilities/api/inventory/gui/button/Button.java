@@ -30,7 +30,8 @@ import me.wolfyscript.utilities.util.chat.ChatColor;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -42,6 +43,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -109,11 +111,11 @@ public abstract class Button<C extends CustomCache> {
 
     protected void applyItem(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ButtonState<C> state, ItemStack item, int slot, boolean help) {
         var window = guiHandler.getWindow();
-        List<Template> templates = new LinkedList<>();
+        List<? extends TagResolver> tagResolvers = new LinkedList<>();
         if (state.getRenderAction() instanceof CallbackButtonRender<C> renderTemplates) {
             //No longer set default templates, that should be purely managed by the plugin.
-            item = renderTemplates.render(templates, guiHandler.getCustomCache(), guiHandler, player, guiInventory, item, slot);
-            item = ItemUtils.applyNameAndLore(item, state.getName(window, templates), state.getLore(window, templates));
+            item = renderTemplates.render(tagResolvers, guiHandler.getCustomCache(), guiHandler, player, guiInventory, item, slot);
+            item = ItemUtils.applyNameAndLore(item, state.getName(window, tagResolvers), state.getLore(window, tagResolvers));
         } else {
             //Using the legacy placeholder system, with backwards compatibility of the new system.
             HashMap<String, Object> values = new HashMap<>();
@@ -125,27 +127,25 @@ public abstract class Button<C extends CustomCache> {
                 item = state.getRenderAction().render(values, guiHandler.getCustomCache(), guiHandler, player, guiInventory, item, slot, help);
             }
             //Backwards compatibility of the new system.
-            templates = values.entrySet().stream().map(entry -> {
+            tagResolvers = values.entrySet().stream().map(entry -> {
                 var key = entry.getKey();
+                if (!key.equals(key.toLowerCase(Locale.ROOT))) {
+                    //Make sure to filter out uppercase keys, as they are not allowed in Adventure
+                    return null;
+                }
                 var value = entry.getValue();
                 if (value instanceof String text) {
-                    return Template.of(key, text);
+                    return Placeholder.unparsed(key, text);
                 } else if (value instanceof List<?> list && !list.isEmpty()) {
                     Component component = Component.empty();
-                    for (Object object : list) {
-                        if (object instanceof Component component1) {
-                            component.append(component1);
-                        } else {
-                            component.append(BukkitComponentSerializer.legacy().deserialize(String.valueOf(object)));
-                        }
-                    }
-                    return Template.of(key, component);
+                    list.forEach(o -> component.append(o instanceof Component component1 ? component1 : BukkitComponentSerializer.legacy().deserialize(String.valueOf(o))));
+                    return Placeholder.component(key, component);
                 } else if (value instanceof Component component) {
-                    return Template.of(key, component);
+                    return Placeholder.component(key, component);
                 }
                 return null;
             }).filter(Objects::nonNull).toList();
-            item = ItemUtils.applyNameAndLore(item, state.getName(window, templates), state.getLore(window, templates));
+            item = ItemUtils.applyNameAndLore(item, state.getName(window, tagResolvers), state.getLore(window, tagResolvers));
             //Legacy key replacements.
             item = replaceKeysWithValue(item, values);
         }

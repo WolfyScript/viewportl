@@ -25,7 +25,7 @@
     <parent>
         <artifactId>wolfyutilities-parent</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <version>3.16.1.0</version>
+        <version>3.16-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.9.3</version>
+            <version>4.10.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.1.0-SNAPSHOT</version>
+            <version>4.10.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <!-- NMS module -->
@@ -135,8 +135,8 @@
                                     <shadedPattern>me.wolfyscript.lib.com.fasterxml.jackson</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>net.kyori</pattern>
-                                    <shadedPattern>me.wolfyscript.lib.net.kyori</shadedPattern>
+                                    <pattern>net.kyori.adventure</pattern>
+                                    <shadedPattern>me.wolfyscript.lib.net.kyori.adventure</shadedPattern>
                                 </relocation>
                             </relocations>
                             <shadeSourcesContent>true</shadeSourcesContent>

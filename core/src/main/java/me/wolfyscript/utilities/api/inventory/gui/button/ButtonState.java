@@ -27,7 +27,7 @@ import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.inventory.ItemUtils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -423,7 +423,7 @@ public class ButtonState<C extends CustomCache> {
         return getName(window, List.of());
     }
 
-    public Component getName(GuiWindow<C> window, List<Template> templates) {
+    public Component getName(GuiWindow<C> window, List<? extends TagResolver> templates) {
         if (clusterID != null) {
             return wolfyUtilities.getLanguageAPI().getComponent(String.format(BUTTON_CLUSTER_KEY + NAME_KEY, clusterID, key), true, templates);
         }
@@ -434,7 +434,7 @@ public class ButtonState<C extends CustomCache> {
         return getLore(window, List.of());
     }
 
-    public List<Component> getLore(GuiWindow<C> window, List<Template> templates) {
+    public List<Component> getLore(GuiWindow<C> window, List<? extends TagResolver> templates) {
         if (clusterID != null) {
             return wolfyUtilities.getLanguageAPI().getComponents(String.format(BUTTON_CLUSTER_KEY + LORE_KEY, clusterID, key), true, templates);
         }

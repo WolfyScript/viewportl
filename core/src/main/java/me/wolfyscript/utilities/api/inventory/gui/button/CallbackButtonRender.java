@@ -21,7 +21,7 @@ package me.wolfyscript.utilities.api.inventory.gui.button;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -47,7 +47,7 @@ public interface CallbackButtonRender<C extends CustomCache> extends ButtonRende
      * @param slot         The slot in which the button is rendered.
      * @return The itemStack that should be set into the GUI.
      */
-    ItemStack render(List<Template> values, C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, ItemStack itemStack, int slot);
+    ItemStack render(List<? extends TagResolver> values, C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, ItemStack itemStack, int slot);
 
     default ItemStack render(HashMap<String, Object> values, C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, ItemStack itemStack, int slot, boolean helpEnabled) {
         return render(List.of(), cache, guiHandler, player, guiInventory, itemStack, slot);

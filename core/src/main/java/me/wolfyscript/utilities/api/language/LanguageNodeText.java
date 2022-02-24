@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import java.util.List;
 
@@ -38,13 +38,13 @@ public class LanguageNodeText extends LanguageNode {
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor, List<Template> templates) {
-        return chat.getMiniMessage().parse(translateLegacyColor ? rawLegacy : raw, templates);
+    public Component getComponent(boolean translateLegacyColor, List<? extends TagResolver> templates) {
+        return chat.getMiniMessage().deserialize(translateLegacyColor ? rawLegacy : raw, templates.toArray(TagResolver[]::new));
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor, List<Template> templates) {
-        return List.of(chat.getMiniMessage().parse(translateLegacyColor ? rawLegacy : raw, templates));
+    public List<Component> getComponents(boolean translateLegacyColor, List<? extends TagResolver> templates) {
+        return List.of(chat.getMiniMessage().deserialize(translateLegacyColor ? rawLegacy : raw, templates.toArray(TagResolver[]::new)));
     }
 
     @Override

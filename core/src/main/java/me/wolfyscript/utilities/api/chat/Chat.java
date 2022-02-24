@@ -25,7 +25,7 @@ import me.wolfyscript.utilities.util.Pair;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
@@ -233,10 +233,10 @@ public abstract class Chat {
      * If it is not available it returns an empty component.
      *
      * @param key The key in the language.
-     * @param templates The placeholders and values in the message.
+     * @param resolvers The custom tag resolvers to use.
      * @return The component set for the key; empty component if not available.
      */
-    public abstract Component translated(String key, List<Template> templates);
+    public abstract Component translated(String key, List<? extends TagResolver> resolvers);
 
     /**
      * Creates a {@link Component} of the specified language key.<br>
@@ -244,11 +244,11 @@ public abstract class Chat {
      * If it is not available it returns an empty component.
      *
      * @param key The key in the language.
-     * @param templates The placeholders and values in the message.
+     * @param resolvers The custom tag resolvers to use.
      * @param translateLegacyColor If it should translate legacy '&' color codes.
      * @return The component set for the key; empty component if not available.
      */
-    public abstract Component translated(String key, boolean translateLegacyColor, List<Template> templates);
+    public abstract Component translated(String key, boolean translateLegacyColor, List<? extends TagResolver> resolvers);
 
     /**
      * Creates a ClickEvent, that executes code when clicked.<br>

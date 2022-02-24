@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import me.wolfyscript.utilities.api.chat.Chat;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import java.util.List;
 
@@ -36,9 +36,9 @@ public abstract class LanguageNode {
         this.value = value;
     }
 
-    abstract public Component getComponent(boolean translateLegacyColor, List<Template> templates);
+    abstract public Component getComponent(boolean translateLegacyColor, List<? extends TagResolver> templates);
 
-    abstract public List<Component> getComponents(boolean translateLegacyColor, List<Template> templates);
+    abstract public List<Component> getComponents(boolean translateLegacyColor, List<? extends TagResolver> templates);
 
     abstract public String getRaw();
 

@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,17 +51,17 @@ public class LanguageNodeArray extends LanguageNode {
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor, List<Template> templates) {
-        return chat.getMiniMessage().parse(translateLegacyColor ? rawLegacyLine : rawLine, templates);
+    public Component getComponent(boolean translateLegacyColor, List<? extends TagResolver> templates) {
+        return chat.getMiniMessage().deserialize(translateLegacyColor ? rawLegacyLine : rawLine, templates.toArray(TagResolver[]::new));
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor, List<Template> templates) {
+    public List<Component> getComponents(boolean translateLegacyColor, List<? extends TagResolver> templates) {
         return translateLegacyColor ? getComponents(rawLegacy, templates) : getComponents(raw, templates);
     }
 
-    private List<Component> getComponents(List<String> rawValues, List<Template> templates) {
-        return rawValues.stream().map(s -> chat.getMiniMessage().parse(s, templates)).collect(Collectors.toList());
+    private List<Component> getComponents(List<String> rawValues, List<? extends TagResolver> templates) {
+        return rawValues.stream().map(s -> chat.getMiniMessage().deserialize(s, templates.toArray(TagResolver[]::new))).collect(Collectors.toList());
     }
 
     @Override

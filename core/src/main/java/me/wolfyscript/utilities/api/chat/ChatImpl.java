@@ -28,8 +28,8 @@ import me.wolfyscript.utilities.util.chat.ChatColor;
 import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.minimessage.markdown.DiscordFlavor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -67,12 +67,7 @@ public class ChatImpl extends Chat {
         this.languageAPI = wolfyUtilities.getLanguageAPI();
         this.plugin = wolfyUtilities.getPlugin();
         this.chatPrefix = Component.text("[" + plugin.getName() + "]");
-        this.miniMessage = MiniMessage.builder().markdown().markdownFlavor(DiscordFlavor.get()).parsingErrorMessageConsumer(strings -> {
-            for (String string : strings) {
-                //TODO: Config setting for that. As it is useful when creating lang files.
-                //wolfyUtilities.getConsole().getLogger().warning(string);
-            }
-        }).build();
+        this.miniMessage = MiniMessage.miniMessage();
         this.LEGACY_SERIALIZER = BukkitComponentSerializer.legacy();
         this.BUNGEE_SERIALIZER = BungeeComponentSerializer.get();
     }
@@ -237,8 +232,8 @@ public class ChatImpl extends Chat {
         sendMessage(player, translated("inventories." + namespacedKey.getNamespace() + "." + namespacedKey.getKey() + ".messages." + msgKey, true, getTemplates(replacements)));
     }
 
-    private List<Template> getTemplates(Pair<String, String>[] replacements) {
-        return Arrays.stream(replacements).map(pair -> Template.of(pair.getKey(), pair.getValue())).toList();
+    private List<? extends TagResolver> getTemplates(Pair<String, String>[] replacements) {
+        return Arrays.stream(replacements).map(pair -> Placeholder.unparsed(pair.getKey(), pair.getValue())).toList();
     }
 
     @Override
@@ -252,13 +247,13 @@ public class ChatImpl extends Chat {
     }
 
     @Override
-    public Component translated(String key, List<Template> templates) {
-        return languageAPI.getComponent(key, templates);
+    public Component translated(String key, List<? extends TagResolver> resolvers) {
+        return languageAPI.getComponent(key, resolvers);
     }
 
     @Override
-    public Component translated(String key, boolean translateLegacyColor, List<Template> templates) {
-        return languageAPI.getComponent(key, translateLegacyColor, templates);
+    public Component translated(String key, boolean translateLegacyColor, List<? extends TagResolver> resolvers) {
+        return languageAPI.getComponent(key, translateLegacyColor, resolvers);
     }
 
     /**
