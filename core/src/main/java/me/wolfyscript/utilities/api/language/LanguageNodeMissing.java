@@ -38,7 +38,7 @@ public class LanguageNodeMissing extends LanguageNode {
 
     @Override
     public List<Component> getComponents(boolean translateLegacyColor, List<Template> templates) {
-        return List.of(Component.empty());
+        return List.of();
     }
 
     @Override

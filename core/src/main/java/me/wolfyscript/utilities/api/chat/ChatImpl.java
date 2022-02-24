@@ -69,7 +69,8 @@ public class ChatImpl extends Chat {
         this.chatPrefix = Component.text("[" + plugin.getName() + "]");
         this.miniMessage = MiniMessage.builder().markdown().markdownFlavor(DiscordFlavor.get()).parsingErrorMessageConsumer(strings -> {
             for (String string : strings) {
-                wolfyUtilities.getConsole().getLogger().warning(string);
+                //TODO: Config setting for that. As it is useful when creating lang files.
+                //wolfyUtilities.getConsole().getLogger().warning(string);
             }
         }).build();
         this.LEGACY_SERIALIZER = BukkitComponentSerializer.legacy();
