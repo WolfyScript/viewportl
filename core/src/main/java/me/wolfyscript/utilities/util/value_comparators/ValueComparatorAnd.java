@@ -23,7 +23,7 @@ import me.wolfyscript.utilities.util.value_providers.ValueProvider;
 
 public class ValueComparatorAnd extends ValueComparator<ValueComparator<?>> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("and");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("comparator/and");
 
     public ValueComparatorAnd(ValueProvider<ValueComparator<?>> valueThis, ValueProvider<ValueComparator<?>> valueThat) {
         super(valueThis, valueThat);

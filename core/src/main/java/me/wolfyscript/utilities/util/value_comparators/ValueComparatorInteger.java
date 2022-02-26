@@ -23,7 +23,7 @@ import me.wolfyscript.utilities.util.value_providers.ValueProvider;
 
 public class ValueComparatorInteger extends ValueComparatorNumber<Integer> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("int");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("comparator/int");
 
     public ValueComparatorInteger(ValueProvider<Integer> valueThis, ValueProvider<Integer> valueThat, Operator operator) {
         super(valueThis, valueThat, operator);

@@ -21,11 +21,9 @@ package me.wolfyscript.utilities.util.value_comparators;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.value_providers.ValueProvider;
 
-import java.util.Objects;
-
 public class ValueComparatorFloat extends ValueComparatorNumber<Float> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("float");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("comparator/float");
 
     public ValueComparatorFloat(ValueProvider<Float> valueThis, ValueProvider<Float> valueThat, Operator operator) {
         super(valueThis, valueThat, operator);

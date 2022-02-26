@@ -45,7 +45,7 @@ public abstract class ValueComparator<I> implements Keyed {
         this.valueThat = valueThat;
     }
 
-    abstract boolean evaluate();
+    public abstract boolean evaluate();
 
     @JsonGetter("key")
     @Override

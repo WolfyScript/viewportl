@@ -20,8 +20,6 @@ package me.wolfyscript.utilities.util.value_comparators;
 
 import me.wolfyscript.utilities.util.value_providers.ValueProvider;
 
-import java.util.Objects;
-
 public abstract class ValueComparatorNumber<I extends Number & Comparable<I>> extends ValueComparator<I> {
 
     private final ValueComparatorNumber.Operator operator;

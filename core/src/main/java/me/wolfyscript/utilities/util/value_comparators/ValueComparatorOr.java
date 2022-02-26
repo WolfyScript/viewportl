@@ -19,22 +19,19 @@
 package me.wolfyscript.utilities.util.value_comparators;
 
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.value_providers.ValueProvider;
 
-public class ValueComparatorOr implements ValueComparator<ValueComparator<?>> {
+public class ValueComparatorOr extends ValueComparator<ValueComparator<?>> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("or");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("comparator/or");
 
-    private final ValueComparator<?> value;
-    private final ValueComparator<?> other;
-
-    public ValueComparatorOr(ValueComparator<?> value, ValueComparator<?> other) {
-        this.value = value;
-        this.other = other;
+    public ValueComparatorOr(ValueProvider<ValueComparator<?>> valueThis, ValueProvider<ValueComparator<?>> valueThat) {
+        super(valueThis, valueThat);
     }
 
     @Override
     public boolean evaluate() {
-        return value.evaluate() || other.evaluate();
+        return valueThis.getValue().evaluate() || valueThat.getValue().evaluate();
     }
 
     @Override
