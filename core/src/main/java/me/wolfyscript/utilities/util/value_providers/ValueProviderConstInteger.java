@@ -21,10 +21,11 @@ package me.wolfyscript.utilities.util.value_providers;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.context.EvalContext;
 
-public class ValueProviderConstInteger extends ValueProviderInteger {
+public class ValueProviderConstInteger extends AbstractValueProvider<Integer> implements ValueProviderInteger {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("int/constant");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/int/constant");
 
     private final int value;
 
@@ -40,7 +41,7 @@ public class ValueProviderConstInteger extends ValueProviderInteger {
     }
 
     @Override
-    public float getValue() {
+    public Integer getValue(EvalContext context) {
         return value;
     }
 }

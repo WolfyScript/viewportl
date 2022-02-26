@@ -18,10 +18,29 @@
 
 package me.wolfyscript.utilities.util.value_providers;
 
+import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.context.EvalContext;
+import me.wolfyscript.utilities.util.operators.BoolOperator;
+import me.wolfyscript.utilities.util.operators.Operator;
+import me.wolfyscript.utilities.util.value_comparators.ValueComparator;
 
-public interface ValueProviderInteger extends ValueProvider<Integer> {
+public class ValueProviderConditioned<V> extends AbstractValueProvider<V> {
+
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/conditioned");
+
+    private final BoolOperator condition;
+    private final ValueProvider<V> thenValue;
+    private final ValueProvider<V> elseValue;
+
+    protected ValueProviderConditioned(BoolOperator condition, ValueProvider<V> thenValue, ValueProvider<V> elseValue) {
+        super(KEY);
+        this.condition = condition;
+        this.thenValue = thenValue;
+        this.elseValue = elseValue;
+    }
 
     @Override
-    Integer getValue(EvalContext context);
+    public V getValue(EvalContext context) {
+        return condition.evaluate(context) ? thenValue.getValue() : elseValue.getValue();
+    }
 }

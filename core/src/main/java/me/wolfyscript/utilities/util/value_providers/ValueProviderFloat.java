@@ -18,7 +18,9 @@
 
 package me.wolfyscript.utilities.util.value_providers;
 
+import me.wolfyscript.utilities.util.context.EvalContext;
+
 public interface ValueProviderFloat extends ValueProvider<Float> {
 
-    float getValue();
+    Float getValue(EvalContext context);
 }

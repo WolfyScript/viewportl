@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.context.EvalContext;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
 
@@ -36,7 +37,11 @@ import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
 @JsonPropertyOrder(value = {"key"})
 public interface ValueProvider<V> extends Keyed {
 
-    V getValue();
+    V getValue(EvalContext context);
+
+    default V getValue() {
+        return getValue(new EvalContext());
+    }
 
     @JsonGetter("key")
     @Override

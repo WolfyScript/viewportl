@@ -18,16 +18,30 @@
 
 package me.wolfyscript.utilities.util.value_providers;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.value_comparators.ValueComparator;
+import me.wolfyscript.utilities.util.context.EvalContext;
 
-public abstract class ValueProviderCondition<V> extends AbstractValueProvider<V> {
+public class ValueProviderConstString extends AbstractValueProvider<String> {
 
-    private final ValueComparator comparator;
-    private final ValueProvider<V> thenValue;
-    private final ValueProvider<V> elseValue;
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/string/constant");
 
-    protected ValueProviderCondition(NamespacedKey key) {
+    private String value;
+
+    protected ValueProviderConstString(NamespacedKey key) {
         super(key);
     }
+
+    @JsonCreator
+    public ValueProviderConstString(@JsonProperty("value") String value) {
+        super(KEY);
+        this.value = value;
+    }
+
+    @Override
+    public String getValue(EvalContext context) {
+        return value;
+    }
+
 }
