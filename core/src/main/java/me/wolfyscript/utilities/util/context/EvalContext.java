@@ -16,10 +16,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.value_providers;
+package me.wolfyscript.utilities.util.context;
 
-public interface StatementValueProvider<V> extends ValueProvider<V> {
+import java.util.HashMap;
+import java.util.Map;
 
+public class EvalContext {
 
+    private final Map<String, Object> variables;
+
+    public EvalContext() {
+        this.variables = new HashMap<>();
+    }
+
+    public Object getVariable(String variableName) {
+        return variables.get(variableName);
+    }
+
+    public void setVariable(String name, Object value) {
+        variables.put(name, value);
+    }
 
 }
