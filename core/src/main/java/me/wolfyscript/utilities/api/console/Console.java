@@ -18,6 +18,8 @@
 
 package me.wolfyscript.utilities.api.console;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 import org.bukkit.plugin.Plugin;
@@ -29,6 +31,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Console {
 
     private final WolfyUtilities wolfyUtilities;
@@ -103,6 +106,7 @@ public class Console {
         }
     }
 
+    @JsonIgnore
     public Logger getLogger() {
         return logger;
     }

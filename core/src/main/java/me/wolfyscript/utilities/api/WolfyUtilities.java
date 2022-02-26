@@ -19,6 +19,7 @@
 package me.wolfyscript.utilities.api;
 
 import me.wolfyscript.utilities.api.chat.Chat;
+import me.wolfyscript.utilities.api.chat.ChatImpl;
 import me.wolfyscript.utilities.api.config.ConfigAPI;
 import me.wolfyscript.utilities.api.config.YamlConfiguration;
 import me.wolfyscript.utilities.api.console.Console;
@@ -109,7 +110,7 @@ public class WolfyUtilities {
         this.configAPI = new ConfigAPI(this);
         this.languageAPI = new LanguageAPI(this);
         this.inventoryAPI = new InventoryAPI<>(this.plugin, this, cacheType);
-        this.chat = new Chat(this);
+        this.chat = new ChatImpl(this);
         this.console = new Console(this);
         this.permissions = new Permissions(this);
         this.itemUtils = new ItemUtils(this);
@@ -246,8 +247,8 @@ public class WolfyUtilities {
     }
 
     /**
-     * @return The {@link Chat} instance.
-     * @see Chat More information about Chat.
+     * @return The {@link ChatImpl} instance.
+     * @see ChatImpl More information about Chat.
      */
     public Chat getChat() {
         return chat;

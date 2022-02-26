@@ -202,6 +202,7 @@ public class EquipListener implements Listener {
                     case CHESTPLATE -> player.getInventory().setChestplate(stack);
                     case LEGGINGS -> player.getInventory().setLeggings(stack);
                     case BOOTS -> player.getInventory().setBoots(stack);
+                    default -> { /* Invalid armor equipment slot */ }
                 }
             }
         }

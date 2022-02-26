@@ -23,12 +23,13 @@ import me.wolfyscript.utilities.api.inventory.custom_items.ArmorType;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.chat.ChatColor;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
+import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ItemUtils {
@@ -110,34 +111,25 @@ public class ItemUtils {
         return itemBuilder.create();
     }
 
-    @Deprecated(forRemoval = true)
-    public ItemStack translateItemStack(ItemStack itemStack) {
-        if (itemStack != null && itemStack.hasItemMeta()) {
-            var itemMeta = itemStack.getItemMeta();
-            if (itemMeta.hasDisplayName()) {
-                String displayName = itemMeta.getDisplayName();
-                if (wolfyUtilities.getLanguageAPI().getActiveLanguage() != null) {
-                    displayName = wolfyUtilities.getLanguageAPI().replaceKeys(displayName);
-                }
-                itemMeta.setDisplayName(ChatColor.convert(displayName));
-            }
-            if (itemMeta.hasLore() && wolfyUtilities.getLanguageAPI().getActiveLanguage() != null) {
-                List<String> newLore = new ArrayList<>();
-                for (String row : itemMeta.getLore()) {
-                    if (row.startsWith("[WU]")) {
-                        newLore.add(wolfyUtilities.getLanguageAPI().replaceKeys(row.substring("[WU]".length())));
-                    } else if (row.startsWith("[WU!]")) {
-                        for (String newRow : wolfyUtilities.getLanguageAPI().replaceKey(row.substring("[WU!]".length()))) {
-                            newLore.add(ChatColor.convert(newRow));
-                        }
-                    } else {
-                        newLore.add(row);
-                    }
-                }
-                itemMeta.setLore(newLore);
-            }
-            itemStack.setItemMeta(itemMeta);
+    public static ItemStack createItem(ItemStack itemStack, Component displayName, List<Component> lore) {
+        var itemBuilder = new ItemBuilder(itemStack);
+        var itemMeta = itemBuilder.getItemMeta();
+        if (itemMeta != null) {
+            itemBuilder.setDisplayName(BukkitComponentSerializer.legacy().serialize(displayName));
+            itemBuilder.setLore(lore.stream().map(line -> BukkitComponentSerializer.legacy().serialize(line)).toList());
+            itemBuilder.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_POTION_EFFECTS);
         }
-        return itemStack;
+        return itemBuilder.create();
     }
+
+    public static ItemStack applyNameAndLore(ItemStack itemStack, Component displayName, List<Component> lore) {
+        var itemBuilder = new ItemBuilder(itemStack);
+        var itemMeta = itemBuilder.getItemMeta();
+        if (itemMeta != null) {
+            itemBuilder.setDisplayName(BukkitComponentSerializer.legacy().serialize(displayName));
+            itemBuilder.setLore(lore.stream().map(line -> BukkitComponentSerializer.legacy().serialize(line)).toList());
+        }
+        return itemBuilder.create();
+    }
+
 }

@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.api.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
@@ -38,11 +39,16 @@ import java.util.function.Supplier;
  *
  * @param <T> any type you want to save in or load from the config file. See the Jackson documentation for more information about how to use custom serializer.
  */
+@Deprecated
 public class JsonConfig<T> {
 
+    @JsonIgnore
     protected File file;
+    @JsonIgnore
     protected T value;
+    @JsonIgnore
     private final Function<File, T> rootFunction;
+    @JsonIgnore
     private final Supplier<T> rootSupplier;
 
     /**

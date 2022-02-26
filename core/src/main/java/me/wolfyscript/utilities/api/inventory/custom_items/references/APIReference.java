@@ -79,7 +79,9 @@ public abstract class APIReference {
      * @deprecated This method should not be used! It usually returns the same as {@link #getLinkedItem()}!
      */
     @Deprecated
-    public abstract ItemStack getIdItem();
+    public ItemStack getIdItem() {
+        return getLinkedItem();
+    }
 
     public abstract boolean isValidItem(ItemStack itemStack);
 

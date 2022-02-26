@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
+@Deprecated
 public class ChatColor {
 
     private ChatColor() {

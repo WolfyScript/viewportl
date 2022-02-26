@@ -25,7 +25,7 @@
     <parent>
         <artifactId>wolfyutilities-parent</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <version>3.16-SNAPSHOT</version>
+        <version>3.16.2.0</version>
     </parent>
     <dependencies>
         <dependency>
@@ -55,6 +55,25 @@
             <artifactId>placeholderapi</artifactId>
             <version>2.11.1</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- Adventure API -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>4.10.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.0.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-minimessage</artifactId>
+            <version>4.10.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <!-- NMS module -->
         <dependency>
@@ -115,6 +134,10 @@
                                     <pattern>com.fasterxml.jackson</pattern>
                                     <shadedPattern>me.wolfyscript.lib.com.fasterxml.jackson</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>net.kyori.adventure</pattern>
+                                    <shadedPattern>me.wolfyscript.lib.net.kyori.adventure</shadedPattern>
+                                </relocation>
                             </relocations>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
@@ -126,6 +149,7 @@
                                     <include>com.fasterxml.jackson.core</include>
                                     <include>org.reflections</include>
                                     <include>org.javassist</include>
+                                    <include>net.kyori</include>
                                 </includes>
                             </artifactSet>
                             <filters>

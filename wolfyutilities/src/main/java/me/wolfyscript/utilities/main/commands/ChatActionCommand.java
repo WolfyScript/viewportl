@@ -18,7 +18,7 @@
 
 package me.wolfyscript.utilities.main.commands;
 
-import me.wolfyscript.utilities.api.chat.Chat;
+import me.wolfyscript.utilities.api.chat.ChatImpl;
 import me.wolfyscript.utilities.api.chat.PlayerAction;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -42,11 +42,11 @@ public class ChatActionCommand implements TabExecutor {
             } catch (IllegalArgumentException expected) {
                 return true;
             }
-            PlayerAction action = Chat.getClickData(uuid);
+            PlayerAction action = ChatImpl.getClickData(uuid);
             if (action != null && player.getUniqueId().equals(action.getUuid())) {
                 action.run(player);
                 if (action.isDiscard()) {
-                    Chat.removeClickData(uuid);
+                    ChatImpl.removeClickData(uuid);
                 }
             }
         }

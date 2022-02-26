@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 /**
  * This Button toggles between two states and executes the corresponding action!
@@ -159,5 +160,50 @@ public class ToggleButton<C extends CustomCache> extends Button<C> {
          */
         boolean run(C cache, GuiHandler<C> guiHandler, Player player, GUIInventory<C> inventory, int slot);
 
+    }
+
+    public static class Builder<C extends CustomCache> extends Button.Builder<C, ToggleButton<C>, Builder<C>> {
+
+        protected boolean defaultState;
+        protected StateFunction<C> stateFunction;
+        protected ButtonState.Builder<C> enabledStateBuilder;
+        protected ButtonState.Builder<C> disabledStateBuilder;
+
+        public Builder(GuiWindow<C> window, String id) {
+            super(window, id, (Class<ToggleButton<C>>) (Object) ToggleButton.class);
+            this.enabledStateBuilder = ButtonState.of(window, id);
+            this.disabledStateBuilder = ButtonState.of(window, id);
+        }
+
+        public Builder(GuiCluster<C> cluster, String id) {
+            super(cluster, id, (Class<ToggleButton<C>>) (Object) ToggleButton.class);
+            this.enabledStateBuilder = ButtonState.of(cluster, id);
+            this.disabledStateBuilder = ButtonState.of(cluster, id);
+        }
+
+        public Builder<C> enabledState(Consumer<ButtonState.Builder<C>> builderConsumer) {
+            builderConsumer.accept(enabledStateBuilder);
+            return this;
+        }
+
+        public Builder<C> disabledState(Consumer<ButtonState.Builder<C>> builderConsumer) {
+            builderConsumer.accept(disabledStateBuilder);
+            return this;
+        }
+
+        public Builder<C> stateFunction(StateFunction<C> stateFunction) {
+            this.stateFunction = stateFunction;
+            return this;
+        }
+
+        public Builder<C> defaultState(boolean defaultState) {
+            this.defaultState = defaultState;
+            return this;
+        }
+
+        @Override
+        public ToggleButton<C> create() {
+            return new ToggleButton<>(key, defaultState, stateFunction, enabledStateBuilder.create(), disabledStateBuilder.create());
+        }
     }
 }

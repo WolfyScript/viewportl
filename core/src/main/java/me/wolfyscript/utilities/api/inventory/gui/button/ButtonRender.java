@@ -27,7 +27,13 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 
 /**
+ * <strong>
+ *     This callback should no longer be used! It uses the legacy chat format and convert language keys multiple times!<br>
+ *     {@link CallbackButtonRender<C>} uses the new {@link net.kyori.adventure.text.Component} chat format.
+ * </strong>
+ *
  * @param <C> The type of the {@link CustomCache}
+ * @see CallbackButtonRender<C>
  */
 public interface ButtonRender<C extends CustomCache> {
 
@@ -36,7 +42,7 @@ public interface ButtonRender<C extends CustomCache> {
      * The returned ItemStack will be set into the slot of the button.
      * Using the values HashMap you can replace specific Strings in the item names (e.g. replace placeholder from language file) with custom values.
      *
-     * @param values       The HashMap, which contains the Strings, that will be replaced with it's value.
+     * @param values       The HashMap, which contains the Strings, that will be replaced with its value.
      * @param cache        The current cache of the GuiHandler
      * @param guiHandler   The current GuiHandler.
      * @param player       The current Player.

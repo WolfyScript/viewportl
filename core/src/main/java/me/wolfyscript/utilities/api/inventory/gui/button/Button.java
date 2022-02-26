@@ -19,12 +19,19 @@
 package me.wolfyscript.utilities.api.inventory.gui.button;
 
 import com.google.common.base.Preconditions;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
 import me.wolfyscript.utilities.api.inventory.gui.GuiHandler;
 import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
+import me.wolfyscript.utilities.api.inventory.gui.InventoryAPI;
 import me.wolfyscript.utilities.api.inventory.gui.cache.CustomCache;
 import me.wolfyscript.utilities.api.nms.inventory.GUIInventory;
 import me.wolfyscript.utilities.util.chat.ChatColor;
+import me.wolfyscript.utilities.util.inventory.ItemUtils;
+import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -34,8 +41,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -99,19 +109,61 @@ public abstract class Button<C extends CustomCache> {
         return id;
     }
 
-    protected void applyItem(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ButtonState<C> state, int slot, boolean help) {
-        ItemStack item = state.getIcon();
-        HashMap<String, Object> values = new HashMap<>();
-        if (guiHandler.getWindow() != null) {
-            values.put("%wolfyutilities.help%", guiHandler.getWindow().getHelpInformation());
+    protected void applyItem(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ButtonState<C> state, ItemStack item, int slot, boolean help) {
+        var window = guiHandler.getWindow();
+        List<? extends TagResolver> tagResolvers = new LinkedList<>();
+        if (state.getRenderAction() instanceof CallbackButtonRender<C> renderTemplates) {
+            //No longer set default templates, that should be purely managed by the plugin.
+            item = renderTemplates.render(tagResolvers, guiHandler.getCustomCache(), guiHandler, player, guiInventory, item, slot);
+            item = ItemUtils.applyNameAndLore(item, state.getName(window, tagResolvers), state.getLore(window, tagResolvers));
+        } else {
+            //Using the legacy placeholder system, with backwards compatibility of the new system.
+            HashMap<String, Object> values = new HashMap<>();
+            values.put("%plugin.version%", guiHandler.getApi().getPlugin().getDescription().getVersion());
+            if (guiHandler.getWindow() != null) {
+                values.put("%wolfyutilities.help%", guiHandler.getWindow().getHelpInformation());
+            }
+            if (state.getRenderAction() != null) {
+                item = state.getRenderAction().render(values, guiHandler.getCustomCache(), guiHandler, player, guiInventory, item, slot, help);
+            }
+            //Backwards compatibility of the new system.
+            tagResolvers = values.entrySet().stream().map(entry -> {
+                var key = entry.getKey();
+                if (!key.equals(key.toLowerCase(Locale.ROOT))) {
+                    //Make sure to filter out uppercase keys, as they are not allowed in Adventure
+                    return null;
+                }
+                var value = entry.getValue();
+                if (value instanceof String text) {
+                    return Placeholder.unparsed(key, text);
+                } else if (value instanceof List<?> list && !list.isEmpty()) {
+                    Component component = Component.empty();
+                    list.forEach(o -> component.append(o instanceof Component component1 ? component1 : BukkitComponentSerializer.legacy().deserialize(String.valueOf(o))));
+                    return Placeholder.component(key, component);
+                } else if (value instanceof Component component) {
+                    return Placeholder.component(key, component);
+                }
+                return null;
+            }).filter(Objects::nonNull).toList();
+            item = ItemUtils.applyNameAndLore(item, state.getName(window, tagResolvers), state.getLore(window, tagResolvers));
+            //Legacy key replacements.
+            item = replaceKeysWithValue(item, values);
         }
-        values.put("%plugin.version%", guiHandler.getApi().getPlugin().getDescription().getVersion());
-        if (state.getRenderAction() != null) {
-            item = state.getRenderAction().render(values, guiHandler.getCustomCache(), guiHandler, player, guiInventory, item, slot, help);
-        }
-        inventory.setItem(slot, replaceKeysWithValue(item, values));
+        inventory.setItem(slot, item);
     }
 
+    protected void applyItem(GuiHandler<C> guiHandler, Player player, GUIInventory<C> guiInventory, Inventory inventory, ButtonState<C> state, int slot, boolean help) {
+        applyItem(guiHandler, player, guiInventory, inventory, state, state.getIcon(), slot, help);
+    }
+
+    /**
+     * Legacy method to replace placeholders in the ItemStack lore and name.
+     *
+     * @param itemStack The ItemStack
+     * @param values The placeholder keys and values.
+     * @return The ItemStack with replaced lore and name.
+     */
+    @Deprecated
     protected ItemStack replaceKeysWithValue(ItemStack itemStack, Map<String, Object> values) {
         if (itemStack != null) {
             ItemMeta meta = itemStack.getItemMeta();
@@ -119,9 +171,8 @@ public abstract class Button<C extends CustomCache> {
                 String name = meta.getDisplayName();
                 List<String> lore = meta.getLore();
                 for (Map.Entry<String, Object> entry : values.entrySet()) {
-                    if (entry.getValue() instanceof List) {
-                        List<Object> list = (List<Object>) entry.getValue();
-                        if (meta.hasLore()) {
+                    if (entry.getValue() instanceof List<?> list) {
+                        if (lore != null) {
                             for (int i = 0; i < lore.size(); i++) {
                                 if (!lore.get(i).contains(entry.getKey())) continue;
                                 lore.set(i, !list.isEmpty() ? lore.get(i).replace(entry.getKey(), ChatColor.convert(String.valueOf(list.get(list.size() - 1)))) : "");
@@ -145,5 +196,50 @@ public abstract class Button<C extends CustomCache> {
             }
         }
         return itemStack;
+    }
+
+    public static abstract class Builder<C extends CustomCache, B extends Button<C>, T extends Builder<C, B, T>> {
+
+        protected final Class<B> buttonType;
+        protected final Class<T> builderType;
+        protected final WolfyUtilities api;
+        protected final InventoryAPI<C> invApi;
+        protected GuiWindow<C> window;
+        protected GuiCluster<C> cluster;
+        protected final String key;
+
+        protected Builder(GuiWindow<C> window, String key, Class<B> buttonType) {
+            this(window.getCluster().getInventoryAPI(), window.getWolfyUtilities(), key, buttonType);
+            this.window = window;
+        }
+
+        protected Builder(GuiCluster<C> cluster, String key, Class<B> buttonType) {
+            this(cluster.getInventoryAPI(), cluster.getWolfyUtilities(), key, buttonType);
+            this.cluster = cluster;
+        }
+
+        private Builder(InventoryAPI<C> invApi, WolfyUtilities api, String key, Class<B> buttonType) {
+            this.api = api;
+            this.invApi = invApi;
+            this.buttonType = buttonType;
+            this.key = key;
+            this.builderType = (Class<T>) getClass();
+        }
+
+        public abstract B create();
+
+        public void register() {
+            B button = create();
+            if (window != null) {
+               window.registerButton(button);
+            } else if (cluster != null) {
+                cluster.registerButton(button);
+            }
+        }
+
+        protected T inst() {
+            return builderType.cast(this);
+        }
+
     }
 }
