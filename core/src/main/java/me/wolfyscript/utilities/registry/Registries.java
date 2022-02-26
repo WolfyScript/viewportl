@@ -29,14 +29,14 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.tags.Tags;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.operators.Statement;
+import me.wolfyscript.utilities.util.operators.Operator;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.shapes.Shape;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import me.wolfyscript.utilities.util.value_comparators.ValueComparator;
-import me.wolfyscript.utilities.util.value_providers.AbstractValueProvider;
+import me.wolfyscript.utilities.util.value_providers.ValueProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,9 +83,10 @@ public class Registries {
     private final TypeRegistry<Meta> customItemNbtChecks;
     private final TypeRegistry<Action<?>> customItemActions;
     private final TypeRegistry<Event<?>> customItemEvents;
-    private final TypeRegistry<AbstractValueProvider> valueProviders;
-    private final TypeRegistry<ValueComparator> valueComparators;
-    private final TypeRegistry<Statement> operators;
+
+    private final TypeRegistry<ValueProvider<?>> valueProviders;
+    private final TypeRegistry<ValueComparator<?>> valueComparators;
+    private final TypeRegistry<Operator> operators;
 
     public Registries(WolfyUtilCore core) {
         this.core = core;
@@ -239,15 +240,15 @@ public class Registries {
         return customItemEvents;
     }
 
-    public TypeRegistry<AbstractValueProvider> getValueProviders() {
+    public TypeRegistry<ValueProvider<?>> getValueProviders() {
         return valueProviders;
     }
 
-    public TypeRegistry<ValueComparator> getValueComparators() {
+    public TypeRegistry<ValueComparator<?>> getValueComparators() {
         return valueComparators;
     }
 
-    public TypeRegistry<Statement> getOperators() {
+    public TypeRegistry<Operator> getOperators() {
         return operators;
     }
 }

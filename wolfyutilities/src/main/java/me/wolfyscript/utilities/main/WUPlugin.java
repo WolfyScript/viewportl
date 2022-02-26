@@ -86,6 +86,11 @@ import me.wolfyscript.utilities.util.json.jackson.serialization.LocationSerializ
 import me.wolfyscript.utilities.util.json.jackson.serialization.PotionEffectSerialization;
 import me.wolfyscript.utilities.util.json.jackson.serialization.PotionEffectTypeSerialization;
 import me.wolfyscript.utilities.util.json.jackson.serialization.VectorSerialization;
+import me.wolfyscript.utilities.util.operators.ComparisonOperatorEqual;
+import me.wolfyscript.utilities.util.operators.ComparisonOperatorGreater;
+import me.wolfyscript.utilities.util.operators.ComparisonOperatorGreaterEqual;
+import me.wolfyscript.utilities.util.operators.ComparisonOperatorLess;
+import me.wolfyscript.utilities.util.operators.ComparisonOperatorLessEqual;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorCircle;
@@ -104,6 +109,8 @@ import me.wolfyscript.utilities.util.particles.timer.Timer;
 import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import me.wolfyscript.utilities.util.particles.timer.TimerPi;
 import me.wolfyscript.utilities.util.particles.timer.TimerRandom;
+import me.wolfyscript.utilities.util.value_providers.ValueProviderConstFloat;
+import me.wolfyscript.utilities.util.value_providers.ValueProviderConstInteger;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import me.wolfyscript.utilities.util.world.WorldUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -263,6 +270,17 @@ public final class WUPlugin extends WolfyUtilCore {
         customItemEvents.register(EventPlayerItemDrop.KEY, EventPlayerItemDrop.class);
         customItemEvents.register(EventPlayerItemHandSwap.KEY, EventPlayerItemHandSwap.class);
         customItemEvents.register(EventPlayerItemHeld.KEY, EventPlayerItemHeld.class);
+
+        var operators = getRegistries().getOperators();
+        operators.register(ComparisonOperatorEqual.KEY, ComparisonOperatorEqual.class);
+        operators.register(ComparisonOperatorGreater.KEY, ComparisonOperatorGreater.class);
+        operators.register(ComparisonOperatorGreaterEqual.KEY, ComparisonOperatorGreaterEqual.class);
+        operators.register(ComparisonOperatorLess.KEY, ComparisonOperatorLess.class);
+        operators.register(ComparisonOperatorLessEqual.KEY, ComparisonOperatorLessEqual.class);
+
+        var valueProviders = getRegistries().getValueProviders();
+        valueProviders.register(ValueProviderConstInteger.KEY, ValueProviderConstInteger.class);
+        valueProviders.register(ValueProviderConstFloat.KEY, ValueProviderConstFloat.class);
 
         KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
