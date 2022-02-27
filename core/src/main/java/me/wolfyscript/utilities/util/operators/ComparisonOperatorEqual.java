@@ -26,7 +26,7 @@ import me.wolfyscript.utilities.util.value_providers.ValueProvider;
 
 public class ComparisonOperatorEqual<V extends Comparable<V>> extends ComparisonOperator<V> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("operator/equal");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("equal");
 
     @JsonCreator
     protected ComparisonOperatorEqual(@JsonProperty("this") ValueProvider<V> thisValue, @JsonProperty("that") ValueProvider<V> thatValue) {

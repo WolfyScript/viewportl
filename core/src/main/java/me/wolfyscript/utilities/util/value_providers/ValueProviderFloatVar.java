@@ -25,7 +25,7 @@ import me.wolfyscript.utilities.util.context.EvalContext;
 
 public class ValueProviderFloatVar extends ValueProviderVariable<Float> implements ValueProviderFloat {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/float/var");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("float/var");
 
     @JsonCreator
     public ValueProviderFloatVar(@JsonProperty("var") String name) {

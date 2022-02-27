@@ -24,7 +24,7 @@ import me.wolfyscript.utilities.util.value_providers.ValueProvider;
 
 public class ComparisonOperatorLessEqual<V extends Comparable<V>> extends ComparisonOperator<V> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("operator/less_equal");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("less_equal");
 
     protected ComparisonOperatorLessEqual(ValueProvider<V> thisValue, ValueProvider<V> thatValue) {
         super(KEY, thisValue, thatValue);

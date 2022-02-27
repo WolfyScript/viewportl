@@ -22,6 +22,9 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.context.EvalContext;
 import me.wolfyscript.utilities.util.json.jackson.annotations.KeyedBaseType;
 
+/**
+ * An Operator that evaluates into a booleanish value.
+ */
 @KeyedBaseType(baseType = Operator.class)
 public abstract class BoolOperator extends Operator {
 

@@ -25,7 +25,7 @@ import me.wolfyscript.utilities.util.context.EvalContext;
 
 public class ValueProviderIntegerConst extends AbstractValueProvider<Integer> implements ValueProviderInteger {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/int/const");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("int/const");
 
     private final int value;
 

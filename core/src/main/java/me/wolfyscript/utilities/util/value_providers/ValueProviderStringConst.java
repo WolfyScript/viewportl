@@ -25,9 +25,9 @@ import me.wolfyscript.utilities.util.context.EvalContext;
 
 public class ValueProviderStringConst extends AbstractValueProvider<String> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/string/const");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("string/const");
 
-    private String value;
+    private final String value;
 
     @JsonCreator
     public ValueProviderStringConst(@JsonProperty("value") String value) {

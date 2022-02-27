@@ -24,7 +24,7 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 
 public class ValueProviderStringVar extends ValueProviderVariable<String> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/string/var");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("string/var");
 
     @JsonCreator
     public ValueProviderStringVar(@JsonProperty("var") String name) {

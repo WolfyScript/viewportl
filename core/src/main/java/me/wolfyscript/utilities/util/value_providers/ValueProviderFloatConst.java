@@ -25,9 +25,9 @@ import me.wolfyscript.utilities.util.context.EvalContext;
 
 public class ValueProviderFloatConst extends AbstractValueProvider<Float> implements ValueProviderFloat {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/float/const");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("float/const");
 
-    private float value;
+    private final float value;
 
     @JsonCreator
     public ValueProviderFloatConst(@JsonProperty("value") float value) {

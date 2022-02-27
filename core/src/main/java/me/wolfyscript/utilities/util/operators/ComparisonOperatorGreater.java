@@ -24,7 +24,7 @@ import me.wolfyscript.utilities.util.value_providers.ValueProvider;
 
 public class ComparisonOperatorGreater<V extends Comparable<V>> extends ComparisonOperator<V> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("operator/greater");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("greater");
 
     protected ComparisonOperatorGreater(ValueProvider<V> thisValue, ValueProvider<V> thatValue) {
         super(KEY, thisValue, thatValue);

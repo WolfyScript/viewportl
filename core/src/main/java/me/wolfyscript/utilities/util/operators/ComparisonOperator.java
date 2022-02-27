@@ -23,6 +23,15 @@ import me.wolfyscript.utilities.util.context.EvalContext;
 import me.wolfyscript.utilities.util.value_providers.ValueProvider;
 
 /**
+ * Represents comparison operators that compare values.<br>
+ * <ul>
+ *     <li>equal (==) {@link ComparisonOperatorEqual}</li>
+ *     <li>not equal (!=) {@link ComparisonOperatorNotEqual}</li>
+ *     <li>less (<) {@link ComparisonOperatorLess}</li>
+ *     <li>less or equal(<=) {@link ComparisonOperatorLessEqual}</li>
+ *     <li>greater (>) {@link ComparisonOperatorGreater}</li>
+ *     <li>greater or equal (>=) {@link ComparisonOperatorGreaterEqual}</li>
+ * </ul>
  *
  * @param <V> The type of the objects to compare. Must be the same for both objects.
  */

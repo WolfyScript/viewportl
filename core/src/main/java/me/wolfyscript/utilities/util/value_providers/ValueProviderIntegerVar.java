@@ -23,7 +23,7 @@ import me.wolfyscript.utilities.util.NamespacedKey;
 
 public class ValueProviderIntegerVar extends ValueProviderVariable<Integer> implements ValueProviderInteger {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/int/var");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("int/var");
 
     public ValueProviderIntegerVar(@JsonProperty("var") String variable) {
         super(KEY, Integer.class, variable);
