@@ -35,7 +35,6 @@ import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.shapes.Shape;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
-import me.wolfyscript.utilities.util.value_comparators.ValueComparator;
 import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
 
 import java.util.HashMap;
@@ -85,7 +84,6 @@ public class Registries {
     private final TypeRegistry<Event<?>> customItemEvents;
 
     private final TypeRegistry<ValueProvider<?>> valueProviders;
-    private final TypeRegistry<ValueComparator<?>> valueComparators;
     private final TypeRegistry<Operator> operators;
 
     public Registries(WolfyUtilCore core) {
@@ -107,7 +105,6 @@ public class Registries {
         customItemActions = new TypeRegistrySimple<>(ITEM_ACTION_TYPES, this);
         customItemEvents = new TypeRegistrySimple<>(ITEM_EVENT_TYPES, this);
         valueProviders = new TypeRegistrySimple<>(new NamespacedKey(core, "value_providers"), this);
-        valueComparators = new TypeRegistrySimple<>(new NamespacedKey(core, "value_comparators"), this);
         operators = new TypeRegistrySimple<>(new NamespacedKey(core, "operators"), this);
     }
 
@@ -242,10 +239,6 @@ public class Registries {
 
     public TypeRegistry<ValueProvider<?>> getValueProviders() {
         return valueProviders;
-    }
-
-    public TypeRegistry<ValueComparator<?>> getValueComparators() {
-        return valueComparators;
     }
 
     public TypeRegistry<Operator> getOperators() {
