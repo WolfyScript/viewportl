@@ -91,6 +91,9 @@ import me.wolfyscript.utilities.util.operators.ComparisonOperatorGreater;
 import me.wolfyscript.utilities.util.operators.ComparisonOperatorGreaterEqual;
 import me.wolfyscript.utilities.util.operators.ComparisonOperatorLess;
 import me.wolfyscript.utilities.util.operators.ComparisonOperatorLessEqual;
+import me.wolfyscript.utilities.util.operators.LogicalOperatorAnd;
+import me.wolfyscript.utilities.util.operators.LogicalOperatorNot;
+import me.wolfyscript.utilities.util.operators.LogicalOperatorOr;
 import me.wolfyscript.utilities.util.operators.Operator;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
@@ -285,6 +288,9 @@ public final class WUPlugin extends WolfyUtilCore {
         operators.register(ComparisonOperatorGreaterEqual.KEY, ComparisonOperatorGreaterEqual.class);
         operators.register(ComparisonOperatorLess.KEY, ComparisonOperatorLess.class);
         operators.register(ComparisonOperatorLessEqual.KEY, ComparisonOperatorLessEqual.class);
+        operators.register(LogicalOperatorAnd.KEY, LogicalOperatorAnd.class);
+        operators.register(LogicalOperatorOr.KEY, LogicalOperatorOr.class);
+        operators.register(LogicalOperatorNot.KEY, LogicalOperatorNot.class);
 
         var valueProviders = getRegistries().getValueProviders();
         valueProviders.register(ValueProviderConditioned.KEY, (Class<ValueProviderConditioned<?>>)(Object) ValueProviderConditioned.class);
@@ -301,7 +307,6 @@ public final class WUPlugin extends WolfyUtilCore {
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
         KeyedTypeIdResolver.registerTypeRegistry((Class<Action<?>>)(Object) Action.class, customItemActions);
         KeyedTypeIdResolver.registerTypeRegistry((Class<Event<?>>)(Object) Event.class, customItemEvents);
-
         KeyedTypeIdResolver.registerTypeRegistry(Operator.class, operators);
         KeyedTypeIdResolver.registerTypeRegistry((Class<ValueProvider<?>>) (Object)ValueProvider.class, valueProviders);
     }
