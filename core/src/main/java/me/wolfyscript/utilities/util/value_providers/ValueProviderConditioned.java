@@ -18,6 +18,8 @@
 
 package me.wolfyscript.utilities.util.value_providers;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.context.EvalContext;
 import me.wolfyscript.utilities.util.operators.BoolOperator;
@@ -26,13 +28,16 @@ import me.wolfyscript.utilities.util.value_comparators.ValueComparator;
 
 public class ValueProviderConditioned<V> extends AbstractValueProvider<V> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/conditioned");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/condition");
 
     private final BoolOperator condition;
+    @JsonProperty("then")
     private final ValueProvider<V> thenValue;
+    @JsonProperty("else")
     private final ValueProvider<V> elseValue;
 
-    protected ValueProviderConditioned(BoolOperator condition, ValueProvider<V> thenValue, ValueProvider<V> elseValue) {
+    @JsonCreator
+    public ValueProviderConditioned(@JsonProperty("condition") BoolOperator condition, @JsonProperty("then") ValueProvider<V> thenValue, @JsonProperty("else") ValueProvider<V> elseValue) {
         super(KEY);
         this.condition = condition;
         this.thenValue = thenValue;

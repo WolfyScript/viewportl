@@ -23,18 +23,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.context.EvalContext;
 
-public class ValueProviderConstString extends AbstractValueProvider<String> {
+public class ValueProviderStringConst extends AbstractValueProvider<String> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/string/constant");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("value_providers/string/const");
 
     private String value;
 
-    protected ValueProviderConstString(NamespacedKey key) {
-        super(key);
-    }
-
     @JsonCreator
-    public ValueProviderConstString(@JsonProperty("value") String value) {
+    public ValueProviderStringConst(@JsonProperty("value") String value) {
         super(KEY);
         this.value = value;
     }
