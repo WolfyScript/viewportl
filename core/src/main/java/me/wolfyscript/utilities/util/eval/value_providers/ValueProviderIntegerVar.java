@@ -16,12 +16,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.value_providers;
+package me.wolfyscript.utilities.util.eval.value_providers;
 
-import me.wolfyscript.utilities.util.context.EvalContext;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import me.wolfyscript.utilities.util.NamespacedKey;
 
-public interface ValueProviderInteger extends ValueProvider<Integer> {
+public class ValueProviderIntegerVar extends ValueProviderVariable<Integer> implements ValueProviderInteger {
 
-    @Override
-    Integer getValue(EvalContext context);
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("int/var");
+
+    public ValueProviderIntegerVar(@JsonProperty("var") String variable) {
+        super(KEY, Integer.class, variable);
+    }
+
 }

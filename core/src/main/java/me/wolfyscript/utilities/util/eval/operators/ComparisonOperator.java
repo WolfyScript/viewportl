@@ -16,11 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.operators;
+package me.wolfyscript.utilities.util.eval.operators;
 
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.context.EvalContext;
-import me.wolfyscript.utilities.util.value_providers.ValueProvider;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
 
 /**
  * Represents comparison operators that compare values.<br>

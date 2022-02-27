@@ -16,11 +16,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.value_providers;
+package me.wolfyscript.utilities.util.eval.context;
 
-import me.wolfyscript.utilities.util.context.EvalContext;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface ValueProviderFloat extends ValueProvider<Float> {
+public class EvalContext {
 
-    Float getValue(EvalContext context);
+    private final Map<String, Object> variables;
+
+    public EvalContext() {
+        this.variables = new HashMap<>();
+    }
+
+    public Object getVariable(String variableName) {
+        return variables.get(variableName);
+    }
+
+    public void setVariable(String name, Object value) {
+        variables.put(name, value);
+    }
+
 }

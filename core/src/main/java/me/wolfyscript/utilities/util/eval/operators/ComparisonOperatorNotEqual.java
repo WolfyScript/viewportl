@@ -16,25 +16,22 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.context;
+package me.wolfyscript.utilities.util.eval.operators;
 
-import java.util.HashMap;
-import java.util.Map;
+import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
 
-public class EvalContext {
+public class ComparisonOperatorNotEqual<V extends Comparable<V>> extends ComparisonOperator<V> {
 
-    private final Map<String, Object> variables;
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("not_equal");
 
-    public EvalContext() {
-        this.variables = new HashMap<>();
+    protected ComparisonOperatorNotEqual(ValueProvider<V> thisValue, ValueProvider<V> thatValue) {
+        super(KEY, thisValue, thatValue);
     }
 
-    public Object getVariable(String variableName) {
-        return variables.get(variableName);
+    @Override
+    public boolean evaluate(EvalContext context) {
+        return this.thisValue.getValue(context).compareTo(this.thatValue.getValue(context)) != 0;
     }
-
-    public void setVariable(String name, Object value) {
-        variables.put(name, value);
-    }
-
 }

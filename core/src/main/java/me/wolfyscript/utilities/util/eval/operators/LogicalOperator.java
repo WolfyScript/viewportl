@@ -16,18 +16,30 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.value_providers;
+package me.wolfyscript.utilities.util.eval.operators;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
 
-public class ValueProviderStringVar extends ValueProviderVariable<String> {
+/**
+ * An Operator that represents logical operators like and (&&), or (||), not (!).<br>
+ * They evaluate at least one inner {@link BoolOperator}, which then results in a booleanish output.
+ *
+ * <ul>
+ *     <li>{@link LogicalOperatorAnd}</li>
+ *     <li>{@link LogicalOperatorOr}</li>
+ *     <li>{@link LogicalOperatorNot}</li>
+ * </ul>
+ *
+ */
+public abstract class LogicalOperator extends BoolOperator {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("string/var");
+    @JsonProperty("this")
+    protected final BoolOperator thisValue;
 
-    @JsonCreator
-    public ValueProviderStringVar(@JsonProperty("var") String name) {
-        super(KEY, String.class, name);
+    public LogicalOperator(NamespacedKey namespacedKey, BoolOperator thisValue) {
+        super(namespacedKey);
+        this.thisValue = thisValue;
     }
+
 }

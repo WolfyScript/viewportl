@@ -28,7 +28,7 @@ import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
-import me.wolfyscript.utilities.util.value_providers.ValueProvider;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
 
 @JsonTypeResolver(KeyedTypeResolver.class)
 @JsonTypeIdResolver(KeyedTypeIdResolver.class)

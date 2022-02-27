@@ -19,7 +19,7 @@
 package me.wolfyscript.utilities.util.value_comparators;
 
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.value_providers.ValueProvider;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
 
 public class ValueComparatorAnd extends ValueComparator<ValueComparator<?>> {
 

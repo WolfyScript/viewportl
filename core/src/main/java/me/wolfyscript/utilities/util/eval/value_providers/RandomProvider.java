@@ -16,22 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.operators;
+package me.wolfyscript.utilities.util.eval.value_providers;
 
-import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.context.EvalContext;
-import me.wolfyscript.utilities.util.value_providers.ValueProvider;
+import java.util.Random;
 
-public class ComparisonOperatorLess<V extends Comparable<V>> extends ComparisonOperator<V> {
+public interface RandomProvider<V> extends ValueProvider<V> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("less");
+    V sample(Random random);
 
-    protected ComparisonOperatorLess(ValueProvider<V> thisValue, ValueProvider<V> thatValue) {
-        super(KEY, thisValue, thatValue);
-    }
-
-    @Override
-    public boolean evaluate(EvalContext context) {
-        return this.thisValue.getValue(context).compareTo(this.thatValue.getValue(context)) < 0;
-    }
 }

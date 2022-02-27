@@ -16,22 +16,22 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.value_providers;
+package me.wolfyscript.utilities.util.eval.operators;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
 
-public abstract class AbstractValueProvider<V> implements ValueProvider<V> {
+public class ComparisonOperatorLessEqual<V extends Comparable<V>> extends ComparisonOperator<V> {
 
-    protected final NamespacedKey key;
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("less_equal");
 
-    protected AbstractValueProvider(NamespacedKey key) {
-        this.key = key;
+    protected ComparisonOperatorLessEqual(ValueProvider<V> thisValue, ValueProvider<V> thatValue) {
+        super(KEY, thisValue, thatValue);
     }
 
-    @JsonIgnore
     @Override
-    public NamespacedKey getNamespacedKey() {
-        return key;
+    public boolean evaluate(EvalContext context) {
+        return this.thisValue.getValue(context).compareTo(this.thatValue.getValue(context)) <= 0;
     }
 }

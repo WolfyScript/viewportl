@@ -16,30 +16,21 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.operators;
+package me.wolfyscript.utilities.util.eval.operators;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
+import me.wolfyscript.utilities.util.json.jackson.annotations.KeyedBaseType;
 
 /**
- * An Operator that represents logical operators like and (&&), or (||), not (!).<br>
- * They evaluate at least one inner {@link BoolOperator}, which then results in a booleanish output.
- *
- * <ul>
- *     <li>{@link LogicalOperatorAnd}</li>
- *     <li>{@link LogicalOperatorOr}</li>
- *     <li>{@link LogicalOperatorNot}</li>
- * </ul>
- *
+ * An Operator that evaluates into a booleanish value.
  */
-public abstract class LogicalOperator extends BoolOperator {
+@KeyedBaseType(baseType = Operator.class)
+public abstract class BoolOperator extends Operator {
 
-    @JsonProperty("this")
-    protected final BoolOperator thisValue;
-
-    public LogicalOperator(NamespacedKey namespacedKey, BoolOperator thisValue) {
+    public BoolOperator(NamespacedKey namespacedKey) {
         super(namespacedKey);
-        this.thisValue = thisValue;
     }
 
+    public abstract boolean evaluate(EvalContext context);
 }

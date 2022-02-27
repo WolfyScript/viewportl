@@ -16,26 +16,28 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.value_comparators;
+package me.wolfyscript.utilities.util.eval.operators;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
 
-public class ValueComparatorOr extends ValueComparator<ValueComparator<?>> {
+public class LogicalOperatorAnd extends LogicalOperator {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("comparator/or");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("and");
 
-    public ValueComparatorOr(ValueProvider<ValueComparator<?>> valueThis, ValueProvider<ValueComparator<?>> valueThat) {
-        super(valueThis, valueThat);
+    @JsonProperty("that")
+    protected final BoolOperator thatValue;
+
+    @JsonCreator
+    public LogicalOperatorAnd(@JsonProperty("this") BoolOperator thisValue, @JsonProperty("that") BoolOperator thatValue) {
+        super(KEY, thisValue);
+        this.thatValue = thatValue;
     }
 
     @Override
-    public boolean evaluate() {
-        return valueThis.getValue().evaluate() || valueThat.getValue().evaluate();
-    }
-
-    @Override
-    public NamespacedKey getNamespacedKey() {
-        return null;
+    public boolean evaluate(EvalContext context) {
+        return thisValue.evaluate(context) && thatValue.evaluate(context);
     }
 }

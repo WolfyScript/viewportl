@@ -16,22 +16,28 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.operators;
+package me.wolfyscript.utilities.util.eval.operators;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.context.EvalContext;
-import me.wolfyscript.utilities.util.value_providers.ValueProvider;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
 
-public class ComparisonOperatorGreater<V extends Comparable<V>> extends ComparisonOperator<V> {
+public class LogicalOperatorOr extends LogicalOperator {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("greater");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("or");
 
-    protected ComparisonOperatorGreater(ValueProvider<V> thisValue, ValueProvider<V> thatValue) {
-        super(KEY, thisValue, thatValue);
+    @JsonProperty("that")
+    protected final BoolOperator thatValue;
+
+    @JsonCreator
+    public LogicalOperatorOr(@JsonProperty("this") BoolOperator thisValue, @JsonProperty("that") BoolOperator thatValue) {
+        super(KEY, thisValue);
+        this.thatValue = thatValue;
     }
 
     @Override
     public boolean evaluate(EvalContext context) {
-        return this.thisValue.getValue(context).compareTo(this.thatValue.getValue(context)) > 0;
+        return thisValue.evaluate(context) || thatValue.evaluate(context);
     }
 }

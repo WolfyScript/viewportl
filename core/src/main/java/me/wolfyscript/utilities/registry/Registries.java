@@ -29,14 +29,14 @@ import me.wolfyscript.utilities.api.inventory.custom_items.meta.Meta;
 import me.wolfyscript.utilities.api.inventory.tags.Tags;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.operators.Operator;
+import me.wolfyscript.utilities.util.eval.operators.Operator;
 import me.wolfyscript.utilities.util.particles.ParticleAnimation;
 import me.wolfyscript.utilities.util.particles.ParticleEffect;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.shapes.Shape;
 import me.wolfyscript.utilities.util.particles.timer.Timer;
 import me.wolfyscript.utilities.util.value_comparators.ValueComparator;
-import me.wolfyscript.utilities.util.value_providers.ValueProvider;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
 
 import java.util.HashMap;
 import java.util.Map;

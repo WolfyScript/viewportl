@@ -16,21 +16,24 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.operators;
+package me.wolfyscript.utilities.util.eval.operators;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.context.EvalContext;
-import me.wolfyscript.utilities.util.json.jackson.annotations.KeyedBaseType;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
 
-/**
- * An Operator that evaluates into a booleanish value.
- */
-@KeyedBaseType(baseType = Operator.class)
-public abstract class BoolOperator extends Operator {
+public class LogicalOperatorNot extends LogicalOperator {
 
-    public BoolOperator(NamespacedKey namespacedKey) {
-        super(namespacedKey);
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("not");
+
+    @JsonCreator
+    public LogicalOperatorNot(@JsonProperty("this") BoolOperator thisValue) {
+        super(KEY, thisValue);
     }
 
-    public abstract boolean evaluate(EvalContext context);
+    @Override
+    public boolean evaluate(EvalContext context) {
+        return !thisValue.evaluate(context);
+    }
 }

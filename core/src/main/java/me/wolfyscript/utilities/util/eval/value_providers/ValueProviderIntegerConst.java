@@ -16,20 +16,27 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.context;
+package me.wolfyscript.utilities.util.eval.value_providers;
 
-import org.bukkit.entity.Player;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
 
-public class EvalContextPlayer extends EvalContext {
+public class ValueProviderIntegerConst extends AbstractValueProvider<Integer> implements ValueProviderInteger {
 
-    private final Player player;
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("int/const");
 
-    public EvalContextPlayer(Player player) {
-        super();
-        this.player = player;
+    private final int value;
+
+    @JsonCreator
+    public ValueProviderIntegerConst(@JsonProperty("value") int value) {
+        super(KEY);
+        this.value = value;
     }
 
-    public Player getPlayer() {
-        return player;
+    @Override
+    public Integer getValue(EvalContext context) {
+        return value;
     }
 }

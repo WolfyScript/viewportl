@@ -18,7 +18,7 @@
 
 package me.wolfyscript.utilities.util.value_comparators;
 
-import me.wolfyscript.utilities.util.value_providers.ValueProvider;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
 
 public abstract class ValueComparatorNumber<I extends Number & Comparable<I>> extends ValueComparator<I> {
 

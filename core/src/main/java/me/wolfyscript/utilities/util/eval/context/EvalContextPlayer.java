@@ -16,28 +16,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.operators;
+package me.wolfyscript.utilities.util.eval.context;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.context.EvalContext;
+import org.bukkit.entity.Player;
 
-public class LogicalOperatorAnd extends LogicalOperator {
+public class EvalContextPlayer extends EvalContext {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("and");
+    private final Player player;
 
-    @JsonProperty("that")
-    protected final BoolOperator thatValue;
-
-    @JsonCreator
-    public LogicalOperatorAnd(@JsonProperty("this") BoolOperator thisValue, @JsonProperty("that") BoolOperator thatValue) {
-        super(KEY, thisValue);
-        this.thatValue = thatValue;
+    public EvalContextPlayer(Player player) {
+        super();
+        this.player = player;
     }
 
-    @Override
-    public boolean evaluate(EvalContext context) {
-        return thisValue.evaluate(context) && thatValue.evaluate(context);
+    public Player getPlayer() {
+        return player;
     }
 }

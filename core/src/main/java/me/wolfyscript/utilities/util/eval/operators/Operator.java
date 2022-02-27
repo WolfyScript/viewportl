@@ -16,10 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.value_providers;
+package me.wolfyscript.utilities.util.eval.operators;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -27,26 +26,25 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.context.EvalContext;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
 
 @JsonTypeResolver(KeyedTypeResolver.class)
 @JsonTypeIdResolver(KeyedTypeIdResolver.class)
-@JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, property = "key")
+@JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "key")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonPropertyOrder(value = {"key"})
-public interface ValueProvider<V> extends Keyed {
+public abstract class Operator implements Keyed {
 
-    @JsonIgnore
-    V getValue(EvalContext context);
+    protected final NamespacedKey key;
 
-    @JsonIgnore
-    default V getValue() {
-        return getValue(new EvalContext());
+    public Operator(NamespacedKey namespacedKey) {
+        this.key = namespacedKey;
     }
 
-    @JsonGetter("key")
+    @JsonIgnore
     @Override
-    NamespacedKey getNamespacedKey();
+    public NamespacedKey getNamespacedKey() {
+        return key;
+    }
 }

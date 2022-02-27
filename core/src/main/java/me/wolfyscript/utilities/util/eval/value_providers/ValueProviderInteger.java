@@ -16,28 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.operators;
+package me.wolfyscript.utilities.util.eval.value_providers;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.context.EvalContext;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
 
-public class LogicalOperatorOr extends LogicalOperator {
-
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("or");
-
-    @JsonProperty("that")
-    protected final BoolOperator thatValue;
-
-    @JsonCreator
-    public LogicalOperatorOr(@JsonProperty("this") BoolOperator thisValue, @JsonProperty("that") BoolOperator thatValue) {
-        super(KEY, thisValue);
-        this.thatValue = thatValue;
-    }
+public interface ValueProviderInteger extends ValueProvider<Integer> {
 
     @Override
-    public boolean evaluate(EvalContext context) {
-        return thisValue.evaluate(context) || thatValue.evaluate(context);
-    }
+    Integer getValue(EvalContext context);
 }

@@ -16,22 +16,22 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.operators;
+package me.wolfyscript.utilities.util.eval.operators;
 
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.context.EvalContext;
-import me.wolfyscript.utilities.util.value_providers.ValueProvider;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
 
-public class ComparisonOperatorGreaterEqual<V extends Comparable<V>> extends ComparisonOperator<V> {
+public class ComparisonOperatorGreater<V extends Comparable<V>> extends ComparisonOperator<V> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("greater_equal");
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("greater");
 
-    protected ComparisonOperatorGreaterEqual(ValueProvider<V> thisValue, ValueProvider<V> thatValue) {
+    protected ComparisonOperatorGreater(ValueProvider<V> thisValue, ValueProvider<V> thatValue) {
         super(KEY, thisValue, thatValue);
     }
 
     @Override
     public boolean evaluate(EvalContext context) {
-        return this.thisValue.getValue(context).compareTo(this.thatValue.getValue(context)) >= 0;
+        return this.thisValue.getValue(context).compareTo(this.thatValue.getValue(context)) > 0;
     }
 }

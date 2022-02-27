@@ -16,19 +16,29 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.value_providers;
+package me.wolfyscript.utilities.util.eval.value_providers;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.context.EvalContext;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
 
-public class ValueProviderFloatVar extends ValueProviderVariable<Float> implements ValueProviderFloat {
+public abstract class ValueProviderVariable<V> extends AbstractValueProvider<V> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("float/var");
+    @JsonProperty("var")
+    private final String variable;
+    @JsonIgnore
+    private final Class<V> typeClass;
 
-    @JsonCreator
-    public ValueProviderFloatVar(@JsonProperty("var") String name) {
-        super(KEY, Float.class, name);
+    protected ValueProviderVariable(NamespacedKey key, Class<V> typeClass, String variable) {
+        super(key);
+        this.typeClass = typeClass;
+        this.variable = variable;
     }
+
+    @Override
+    public V getValue(EvalContext context) {
+        return typeClass.cast(context.getVariable(variable));
+    }
+
 }

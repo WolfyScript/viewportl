@@ -16,32 +16,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.value_providers;
+package me.wolfyscript.utilities.util.eval.operators;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
-import me.wolfyscript.utilities.util.context.EvalContext;
+import me.wolfyscript.utilities.util.eval.context.EvalContext;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
 
-public class ValueProviderFloatConst extends AbstractValueProvider<Float> implements ValueProviderFloat {
+public class ComparisonOperatorEqual<V extends Comparable<V>> extends ComparisonOperator<V> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("float/const");
-
-    private final float value;
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("equal");
 
     @JsonCreator
-    public ValueProviderFloatConst(@JsonProperty("value") float value) {
-        super(KEY);
-        this.value = value;
+    protected ComparisonOperatorEqual(@JsonProperty("this") ValueProvider<V> thisValue, @JsonProperty("that") ValueProvider<V> thatValue) {
+        super(KEY, thisValue, thatValue);
     }
 
     @Override
-    public Float getValue(EvalContext context) {
-        return value;
-    }
-
-    @Override
-    public NamespacedKey getNamespacedKey() {
-        return null;
+    public boolean evaluate(EvalContext context) {
+        return this.thisValue.getValue(context).compareTo(this.thatValue.getValue(context)) == 0;
     }
 }
