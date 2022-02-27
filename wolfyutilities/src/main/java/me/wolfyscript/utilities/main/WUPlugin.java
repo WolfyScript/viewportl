@@ -301,6 +301,9 @@ public final class WUPlugin extends WolfyUtilCore {
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
         KeyedTypeIdResolver.registerTypeRegistry((Class<Action<?>>)(Object) Action.class, customItemActions);
         KeyedTypeIdResolver.registerTypeRegistry((Class<Event<?>>)(Object) Event.class, customItemEvents);
+
+        KeyedTypeIdResolver.registerTypeRegistry(Operator.class, operators);
+        KeyedTypeIdResolver.registerTypeRegistry((Class<ValueProvider<?>>) (Object)ValueProvider.class, valueProviders);
     }
 
     @Override
