@@ -20,6 +20,7 @@ package me.wolfyscript.utilities.util.value_providers;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
@@ -37,8 +38,10 @@ import me.wolfyscript.utilities.util.json.jackson.KeyedTypeResolver;
 @JsonPropertyOrder(value = {"key"})
 public interface ValueProvider<V> extends Keyed {
 
+    @JsonIgnore
     V getValue(EvalContext context);
 
+    @JsonIgnore
     default V getValue() {
         return getValue(new EvalContext());
     }
