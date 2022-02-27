@@ -32,6 +32,6 @@ public class ComparisonOperatorGreaterEqual<V extends Comparable<V>> extends Com
 
     @Override
     public boolean evaluate(EvalContext context) {
-        return this.thisValue.getValue().compareTo(this.thatValue.getValue()) >= 0;
+        return this.thisValue.getValue(context).compareTo(this.thatValue.getValue(context)) >= 0;
     }
 }

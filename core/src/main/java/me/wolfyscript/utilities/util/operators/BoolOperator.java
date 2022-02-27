@@ -20,7 +20,9 @@ package me.wolfyscript.utilities.util.operators;
 
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.context.EvalContext;
+import me.wolfyscript.utilities.util.json.jackson.annotations.KeyedBaseType;
 
+@KeyedBaseType(baseType = Operator.class)
 public abstract class BoolOperator extends Operator {
 
     public BoolOperator(NamespacedKey namespacedKey) {
