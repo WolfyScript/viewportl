@@ -23,6 +23,10 @@ import me.clip.placeholderapi.events.ExpansionsLoadedEvent;
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
+import me.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers.ValueProviderFloatPAPI;
+import me.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers.ValueProviderIntegerPAPI;
+import me.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers.ValueProviderStringPAPI;
+import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -50,6 +54,11 @@ public class PlaceholderAPIImpl extends PluginIntegrationAbstract implements Pla
     @Override
     public void init(Plugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, core);
+
+        var valueProviderRegistry = core.getRegistries().getValueProviders();
+        valueProviderRegistry.register(ValueProviderFloatPAPI.KEY, ValueProviderFloatPAPI.class);
+        valueProviderRegistry.register(ValueProviderIntegerPAPI.KEY, ValueProviderIntegerPAPI.class);
+        valueProviderRegistry.register(ValueProviderStringPAPI.KEY, ValueProviderStringPAPI.class);
     }
 
     @Override

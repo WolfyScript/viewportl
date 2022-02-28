@@ -16,34 +16,31 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.eval.value_providers;
+package me.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import me.wolfyscript.utilities.util.eval.context.EvalContext;
-import me.wolfyscript.utilities.util.eval.operators.BoolOperator;
 
-public class ValueProviderConditioned<V> extends AbstractValueProvider<V> {
+public class ValueProviderFloatPAPI extends ValueProviderPlaceholderAPI<Float> {
 
-    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("conditioned");
-
-    private final BoolOperator condition;
-    @JsonProperty("then")
-    private final ValueProvider<V> thenValue;
-    @JsonProperty("else")
-    private final ValueProvider<V> elseValue;
+    public static final NamespacedKey KEY = NamespacedKey.wolfyutilties("float/papi");
 
     @JsonCreator
-    public ValueProviderConditioned(@JsonProperty("condition") BoolOperator condition, @JsonProperty("then") ValueProvider<V> thenValue, @JsonProperty("else") ValueProvider<V> elseValue) {
-        super(KEY);
-        this.condition = condition;
-        this.thenValue = thenValue;
-        this.elseValue = elseValue;
+    protected ValueProviderFloatPAPI(@JsonProperty("value") String value) {
+        super(KEY, value);
     }
 
     @Override
-    public V getValue(EvalContext context) {
-        return condition.evaluate(context) ? thenValue.getValue() : elseValue.getValue();
+    public Float getValue(EvalContext context) {
+        String result = getPlaceholderValue(context);
+        if (result.isBlank()) return Float.NaN;
+        try {
+            return Float.valueOf(result);
+        } catch (NumberFormatException ex) {
+            return 0f;
+        }
     }
+
 }
