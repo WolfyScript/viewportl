@@ -21,6 +21,7 @@ package me.wolfyscript.utilities.api.language;
 import com.fasterxml.jackson.databind.JsonNode;
 import me.wolfyscript.utilities.api.chat.Chat;
 import me.wolfyscript.utilities.util.chat.ChatColor;
+import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
@@ -34,7 +35,7 @@ public class LanguageNodeText extends LanguageNode {
     LanguageNodeText(Chat chat, JsonNode jsonNode) {
         super(chat, jsonNode);
         this.raw = jsonNode.asText("");
-        this.rawLegacy = ChatColor.convert(raw);
+        this.rawLegacy = convertLegacyToMiniMessage(raw);
     }
 
     @Override

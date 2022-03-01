@@ -21,6 +21,8 @@ package me.wolfyscript.utilities.api.language;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import me.wolfyscript.utilities.api.chat.Chat;
+import me.wolfyscript.utilities.util.chat.ChatColor;
+import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
@@ -45,5 +47,13 @@ public abstract class LanguageNode {
     @JsonValue
     public JsonNode getValue() {
         return value;
+    }
+
+    protected String convertLegacyToMiniMessage(String legacyText) {
+        String rawLegacy = ChatColor.convert(legacyText);
+        if (rawLegacy.contains("§")) {
+            return chat.getMiniMessage().serialize(BukkitComponentSerializer.legacy().deserialize(rawLegacy));
+        }
+        return rawLegacy;
     }
 }
