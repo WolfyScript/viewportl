@@ -54,6 +54,6 @@ public abstract class LanguageNode {
         if (rawLegacy.contains("§")) {
             return chat.getMiniMessage().serialize(BukkitComponentSerializer.legacy().deserialize(rawLegacy));
         }
-        return  "";
+        return rawLegacy;
     }
 }
