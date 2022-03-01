@@ -21,6 +21,7 @@ package me.wolfyscript.utilities.api.nms;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.util.Reflection;
 import me.wolfyscript.utilities.util.version.ServerVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
@@ -135,7 +136,10 @@ public abstract class NMSUtil {
         }
 
         public String getPackageName() {
-            return version + "_P" + ServerVersion.getVersion().getPatch();
+            if (ServerVersion.getVersion().getPatch() > 0) {
+                return version + "_P" + ServerVersion.getVersion().getPatch();
+            }
+            return version;
         }
     }
 }
