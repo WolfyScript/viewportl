@@ -44,7 +44,7 @@ public class LanguageNodeArray extends LanguageNode {
         while (nodeItr.hasNext()) {
             String value = nodeItr.next().textValue();
             this.raw.add(value);
-            this.rawLegacy.add(ChatColor.convert(value));
+            this.rawLegacy.add(convertLegacyToMiniMessage(value));
         }
         this.rawLine = raw.stream().reduce("", (s, s2) -> s + " " + s2);
         this.rawLegacyLine = rawLegacy.stream().reduce("", (s, s2) -> s + " " + s2);
