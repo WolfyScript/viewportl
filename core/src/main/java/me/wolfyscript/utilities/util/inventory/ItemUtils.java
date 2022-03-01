@@ -18,6 +18,7 @@
 
 package me.wolfyscript.utilities.util.inventory;
 
+import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.ArmorType;
 import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
@@ -25,11 +26,15 @@ import me.wolfyscript.utilities.util.chat.ChatColor;
 import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder;
 import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Material;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class ItemUtils {
@@ -130,6 +135,11 @@ public class ItemUtils {
             itemBuilder.setLore(lore.stream().map(line -> BukkitComponentSerializer.legacy().serialize(line)).toList());
         }
         return itemBuilder.create();
+    }
+
+    public static ItemStack replaceNameAndLore(MiniMessage miniMessage, ItemStack itemStack, @NotNull TagResolver... tagResolvers) {
+        var itemMeta = itemStack.getItemMeta();
+        return itemMeta != null ? applyNameAndLore(itemStack, miniMessage.deserialize(itemMeta.getDisplayName(), tagResolvers), itemMeta.hasLore() ? itemMeta.getLore().stream().map(s -> miniMessage.deserialize(s, tagResolvers)).toList() : new LinkedList<>()) : itemStack;
     }
 
 }
