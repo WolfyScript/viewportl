@@ -29,6 +29,7 @@ import me.wolfyscript.utilities.registry.TypeRegistry;
 import me.wolfyscript.utilities.util.ClassRegistry;
 import me.wolfyscript.utilities.util.Keyed;
 import me.wolfyscript.utilities.util.NamespacedKey;
+import me.wolfyscript.utilities.util.json.jackson.annotations.KeyedBaseType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -108,6 +109,12 @@ public class KeyedTypeIdResolver extends TypeIdResolverBase {
     protected Class<?> getTypeClass(NamespacedKey key) {
         if (key != null) {
             Class<?> rawClass = superType.getRawClass();
+
+            //If it is specified, use the custom base type instead.
+            KeyedBaseType baseTypeAnnot = rawClass.getDeclaredAnnotation(KeyedBaseType.class);
+            if (baseTypeAnnot != null) {
+                rawClass = baseTypeAnnot.baseType();
+            }
             var registry = TYPE_REGISTRIES.get(rawClass);
             if (registry != null) {
                 var object = registry.get(key);

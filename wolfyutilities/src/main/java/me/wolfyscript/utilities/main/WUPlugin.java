@@ -86,6 +86,15 @@ import me.wolfyscript.utilities.util.json.jackson.serialization.LocationSerializ
 import me.wolfyscript.utilities.util.json.jackson.serialization.PotionEffectSerialization;
 import me.wolfyscript.utilities.util.json.jackson.serialization.PotionEffectTypeSerialization;
 import me.wolfyscript.utilities.util.json.jackson.serialization.VectorSerialization;
+import me.wolfyscript.utilities.util.eval.operators.ComparisonOperatorEqual;
+import me.wolfyscript.utilities.util.eval.operators.ComparisonOperatorGreater;
+import me.wolfyscript.utilities.util.eval.operators.ComparisonOperatorGreaterEqual;
+import me.wolfyscript.utilities.util.eval.operators.ComparisonOperatorLess;
+import me.wolfyscript.utilities.util.eval.operators.ComparisonOperatorLessEqual;
+import me.wolfyscript.utilities.util.eval.operators.LogicalOperatorAnd;
+import me.wolfyscript.utilities.util.eval.operators.LogicalOperatorNot;
+import me.wolfyscript.utilities.util.eval.operators.LogicalOperatorOr;
+import me.wolfyscript.utilities.util.eval.operators.Operator;
 import me.wolfyscript.utilities.util.particles.animators.Animator;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorBasic;
 import me.wolfyscript.utilities.util.particles.animators.AnimatorCircle;
@@ -104,6 +113,14 @@ import me.wolfyscript.utilities.util.particles.timer.Timer;
 import me.wolfyscript.utilities.util.particles.timer.TimerLinear;
 import me.wolfyscript.utilities.util.particles.timer.TimerPi;
 import me.wolfyscript.utilities.util.particles.timer.TimerRandom;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProvider;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProviderConditioned;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProviderFloatConst;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProviderFloatVar;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProviderIntegerConst;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProviderIntegerVar;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProviderStringConst;
+import me.wolfyscript.utilities.util.eval.value_providers.ValueProviderStringVar;
 import me.wolfyscript.utilities.util.version.ServerVersion;
 import me.wolfyscript.utilities.util.world.WorldUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -264,12 +281,33 @@ public final class WUPlugin extends WolfyUtilCore {
         customItemEvents.register(EventPlayerItemHandSwap.KEY, EventPlayerItemHandSwap.class);
         customItemEvents.register(EventPlayerItemHeld.KEY, EventPlayerItemHeld.class);
 
+        var operators = getRegistries().getOperators();
+        operators.register(ComparisonOperatorEqual.KEY, ComparisonOperatorEqual.class);
+        operators.register(ComparisonOperatorGreater.KEY, ComparisonOperatorGreater.class);
+        operators.register(ComparisonOperatorGreaterEqual.KEY, ComparisonOperatorGreaterEqual.class);
+        operators.register(ComparisonOperatorLess.KEY, ComparisonOperatorLess.class);
+        operators.register(ComparisonOperatorLessEqual.KEY, ComparisonOperatorLessEqual.class);
+        operators.register(LogicalOperatorAnd.KEY, LogicalOperatorAnd.class);
+        operators.register(LogicalOperatorOr.KEY, LogicalOperatorOr.class);
+        operators.register(LogicalOperatorNot.KEY, LogicalOperatorNot.class);
+
+        var valueProviders = getRegistries().getValueProviders();
+        valueProviders.register(ValueProviderConditioned.KEY, (Class<ValueProviderConditioned<?>>)(Object) ValueProviderConditioned.class);
+        valueProviders.register(ValueProviderIntegerConst.KEY, ValueProviderIntegerConst.class);
+        valueProviders.register(ValueProviderIntegerVar.KEY, ValueProviderIntegerVar.class);
+        valueProviders.register(ValueProviderFloatConst.KEY, ValueProviderFloatConst.class);
+        valueProviders.register(ValueProviderFloatVar.KEY, ValueProviderFloatVar.class);
+        valueProviders.register(ValueProviderStringConst.KEY, ValueProviderStringConst.class);
+        valueProviders.register(ValueProviderStringVar.KEY, ValueProviderStringVar.class);
+
         KeyedTypeIdResolver.registerTypeRegistry(Meta.class, nbtChecks);
         KeyedTypeIdResolver.registerTypeRegistry(Animator.class, particleAnimators);
         KeyedTypeIdResolver.registerTypeRegistry(Shape.class, particleShapes);
         KeyedTypeIdResolver.registerTypeRegistry(Timer.class, particleTimers);
         KeyedTypeIdResolver.registerTypeRegistry((Class<Action<?>>)(Object) Action.class, customItemActions);
         KeyedTypeIdResolver.registerTypeRegistry((Class<Event<?>>)(Object) Event.class, customItemEvents);
+        KeyedTypeIdResolver.registerTypeRegistry(Operator.class, operators);
+        KeyedTypeIdResolver.registerTypeRegistry((Class<ValueProvider<?>>) (Object)ValueProvider.class, valueProviders);
     }
 
     @Override
