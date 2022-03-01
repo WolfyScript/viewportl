@@ -19,7 +19,7 @@
 package me.wolfyscript.utilities.util.protection;
 
 import com.plotsquared.bukkit.util.BukkitUtil;
-import com.plotsquared.core.api.PlotAPI;
+import com.plotsquared.core.PlotAPI;
 import com.plotsquared.core.plot.Plot;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -32,11 +32,11 @@ public class PSUtils {
     private static final PlotAPI plotAPI = new PlotAPI();
 
     public static Plot getPlot(org.bukkit.Location location) {
-        return BukkitUtil.getLocation(location).getPlot();
+        return BukkitUtil.adapt(location).getPlot();
     }
 
     public static boolean hasPerm(Player player, org.bukkit.Location location) {
-        var location1 = BukkitUtil.getLocation(location);
+        var location1 = BukkitUtil.adapt(location);
         if (!isPlotWorld(player.getWorld())) {
             return true;
         }
@@ -45,7 +45,7 @@ public class PSUtils {
     }
 
     public static boolean isPlotWorld(World world) {
-        return plotAPI.getPlotSquared().hasPlotArea(world.getName());
+        return !plotAPI.getPlotAreas(world.getName()).isEmpty();
     }
 
     public static boolean hasPlotPerm(UUID uuid, Plot plot) {

@@ -127,7 +127,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.63.Final</version>
+            <version>4.1.72.Final</version>
             <scope>provided</scope>
         </dependency>
         <!-- Adventure ChatComponent API -->
@@ -179,13 +179,13 @@
         <dependency>
             <groupId>com.plotsquared</groupId>
             <artifactId>PlotSquared-Core</artifactId>
-            <version>5.13.3</version>
+            <version>6.4.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.plotsquared</groupId>
             <artifactId>PlotSquared-Bukkit</artifactId>
-            <version>5.13.3</version>
+            <version>6.4.0</version>
             <scope>provided</scope>
         </dependency>
         <!-- Some plugins that wu implements -->
