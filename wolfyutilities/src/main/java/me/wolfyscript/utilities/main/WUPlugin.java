@@ -290,6 +290,7 @@ public final class WUPlugin extends WolfyUtilCore {
 
         var operators = getRegistries().getOperators();
         operators.register(ComparisonOperatorEqual.KEY, ComparisonOperatorEqual.class);
+        operators.register(ComparisonOperatorNotEqual.KEY, ComparisonOperatorNotEqual.class);
         operators.register(ComparisonOperatorGreater.KEY, ComparisonOperatorGreater.class);
         operators.register(ComparisonOperatorGreaterEqual.KEY, ComparisonOperatorGreaterEqual.class);
         operators.register(ComparisonOperatorLess.KEY, ComparisonOperatorLess.class);
