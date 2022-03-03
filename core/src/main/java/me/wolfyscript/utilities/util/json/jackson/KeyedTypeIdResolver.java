@@ -115,6 +115,7 @@ public class KeyedTypeIdResolver extends TypeIdResolverBase {
             if (baseTypeAnnot != null) {
                 rawClass = baseTypeAnnot.baseType();
             }
+            //Get the registry of the required base type
             var registry = TYPE_REGISTRIES.get(rawClass);
             if (registry != null) {
                 var object = registry.get(key);
@@ -123,7 +124,8 @@ public class KeyedTypeIdResolver extends TypeIdResolverBase {
                 } else if(object instanceof Keyed) {
                     return object.getClass();
                 }
-            } else if(!TYPE_CLASS_REGISTRIES_OLD.isEmpty() || !TYPE_REGISTRIES_OLD.isEmpty()) { //Only try to get data from the old registries if required.
+            } else if(!TYPE_CLASS_REGISTRIES_OLD.isEmpty() || !TYPE_REGISTRIES_OLD.isEmpty()) {
+                //Only try to get data from the old registries if required.
                 var classRegistry = TYPE_CLASS_REGISTRIES_OLD.get(superType.getRawClass());
                 if (classRegistry != null) {
                     return classRegistry.get(key);
