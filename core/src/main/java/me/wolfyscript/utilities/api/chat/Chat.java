@@ -265,6 +265,16 @@ public abstract class Chat {
     public abstract ClickEvent executable(Player player, boolean discard, ClickAction action);
 
     /**
+     * Converts the old placeholder to a new mini-message compatible tag.<br>
+     * If the placeholder wasn't already converted, it converts it and returns it.<br>
+     * Otherwise, it uses the cached value and returns it.
+     *
+     * @param oldPlaceholder The old placeholder, that might be incompatible with mini-message.
+     * @return The converted mini-message compatible placeholder.
+     */
+    public abstract String convertOldPlaceholder(String oldPlaceholder);
+
+    /**
      * Sends the clickable chat messages to the player.<br>
      * It allows you to also include ClickData with executable code.
      *

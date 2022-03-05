@@ -43,14 +43,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChatImpl extends Chat {
 
+    private static final Pattern ADVENTURE_PLACEHOLDER_PATTERN = Pattern.compile("([!?#]?)([a-z0-9_-]*)");
+    private static final Pattern LEGACY_PLACEHOLDER_PATTERN = Pattern.compile("%([^%]+)%");
     protected static final Map<UUID, PlayerAction> CLICK_DATA_MAP = new HashMap<>();
 
+    private final Map<String, String> convertedLegacyPlaceholders = new HashMap<>();
     private final LegacyComponentSerializer LEGACY_SERIALIZER;
     private final BungeeComponentSerializer BUNGEE_SERIALIZER;
 
@@ -233,7 +239,7 @@ public class ChatImpl extends Chat {
     }
 
     private List<? extends TagResolver> getTemplates(Pair<String, String>[] replacements) {
-        return Arrays.stream(replacements).map(pair -> Placeholder.unparsed(pair.getKey(), pair.getValue())).toList();
+        return Arrays.stream(replacements).map(pair -> Placeholder.unparsed(convertOldPlaceholder(pair.getKey()), pair.getValue())).toList();
     }
 
     @Override
@@ -326,6 +332,46 @@ public class ChatImpl extends Chat {
 
     public static PlayerAction getClickData(UUID uuid) {
         return CLICK_DATA_MAP.get(uuid);
+    }
+
+    /**
+     * Converts the old placeholder to a new mini-message compatible tag.<br>
+     * If the placeholder wasn't already converted, it converts it and returns it.<br>
+     * Otherwise, it uses the cached value and returns it.
+     *
+     * @param oldPlaceholder The old placeholder, that might be incompatible with mini-message.
+     * @return The converted mini-message compatible placeholder.
+     */
+    @Override
+    public String convertOldPlaceholder(String oldPlaceholder) {
+        return convertedLegacyPlaceholders.computeIfAbsent(oldPlaceholder, placeholder -> {
+            //Placeholder wasn't converted yet, lets convert it and cache it.
+            Matcher matcher = LEGACY_PLACEHOLDER_PATTERN.matcher(placeholder);
+            if (matcher.matches()) {
+                placeholder = matcher.group(1);
+            }
+            //Going to make it lowercase, as that is required anyway.
+            placeholder = placeholder.toLowerCase(Locale.ROOT);
+            //Make sure it matches the mini-message tag pattern.
+            Matcher adventureMatcher = ADVENTURE_PLACEHOLDER_PATTERN.matcher(placeholder);
+            if (!adventureMatcher.matches()) {
+                //remove invalid characters
+                var builder = new StringBuilder();
+                char[] chars = placeholder.toCharArray();
+                boolean passedFirstGroup = false;
+                for (char currentChar : chars) {
+                    Matcher charMatch = ADVENTURE_PLACEHOLDER_PATTERN.matcher("" + currentChar);
+                    if (!charMatch.matches()) continue;
+                    if (!passedFirstGroup) {
+                        passedFirstGroup = true;
+                    }
+                    if (!charMatch.group(1).isEmpty()) continue;
+                    builder.append(currentChar);
+                }
+                return builder.toString();
+            }
+            return placeholder;
+        });
     }
 
     @Override

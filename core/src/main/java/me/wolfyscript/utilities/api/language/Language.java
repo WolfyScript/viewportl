@@ -32,13 +32,12 @@ import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.config.JsonConfig;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +58,7 @@ public class Language extends JsonConfig<JsonNode> {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private final Type type = Type.NESTED;
     @JsonIgnore
-    private final Map<String, LanguageNode> mappedLangNodes = new HashMap<>();
+    private final Map<String, LanguageNode> mappedLangNodes = new ConcurrentHashMap<>();
 
     /**
      * Used to create (deserialize) the Language from Json. The {@link LanguageAPI} provides the option to load the Language from a file.

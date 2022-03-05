@@ -27,8 +27,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class LanguageNode {
+
+    private static final Pattern LEGACY_PLACEHOLDER_PATTERN = Pattern.compile("%([^%]+)%");
 
     private final JsonNode value;
     protected Chat chat;
@@ -51,6 +55,11 @@ public abstract class LanguageNode {
 
     protected String convertLegacyToMiniMessage(String legacyText) {
         String rawLegacy = ChatColor.convert(legacyText);
+        Matcher matcher = LEGACY_PLACEHOLDER_PATTERN.matcher(rawLegacy);
+        while (matcher.find()) {
+            //replace the old placeholder with the new converted one.
+            rawLegacy = rawLegacy.replace(matcher.group(), "<" + chat.convertOldPlaceholder(matcher.group(1)) + ">");
+        }
         if (rawLegacy.contains("§")) {
             return chat.getMiniMessage().serialize(BukkitComponentSerializer.legacy().deserialize(rawLegacy));
         }
