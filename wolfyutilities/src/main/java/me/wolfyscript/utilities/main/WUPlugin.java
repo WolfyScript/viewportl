@@ -74,10 +74,13 @@ import me.wolfyscript.utilities.main.listeners.custom_item.CustomParticleListene
 import me.wolfyscript.utilities.main.messages.MessageFactory;
 import me.wolfyscript.utilities.main.messages.MessageHandler;
 import me.wolfyscript.utilities.util.entity.PlayerUtils;
+import me.wolfyscript.utilities.util.eval.operators.ComparisonOperatorNotEqual;
 import me.wolfyscript.utilities.util.inventory.CreativeModeTab;
 import me.wolfyscript.utilities.util.json.jackson.JacksonUtil;
 import me.wolfyscript.utilities.util.json.jackson.KeyedTypeIdResolver;
 import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalKeyReference;
+import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalValueDeserializer;
+import me.wolfyscript.utilities.util.json.jackson.annotations.OptionalValueSerializer;
 import me.wolfyscript.utilities.util.json.jackson.serialization.APIReferenceSerialization;
 import me.wolfyscript.utilities.util.json.jackson.serialization.ColorSerialization;
 import me.wolfyscript.utilities.util.json.jackson.serialization.DustOptionsSerialization;
@@ -219,10 +222,14 @@ public final class WUPlugin extends WolfyUtilCore {
         APIReferenceSerialization.create(module);
         JacksonUtil.registerModule(module);
 
-        var beanModifiers = new SimpleModule();
-        beanModifiers.setSerializerModifier(new OptionalKeyReference.SerializerModifier());
-        beanModifiers.setDeserializerModifier(new OptionalKeyReference.DeserializerModifier());
-        JacksonUtil.registerModule(beanModifiers);
+        var keyReferenceModule = new SimpleModule();
+        keyReferenceModule.setSerializerModifier(new OptionalKeyReference.SerializerModifier());
+        keyReferenceModule.setDeserializerModifier(new OptionalKeyReference.DeserializerModifier());
+        var valueReferenceModule = new SimpleModule();
+        valueReferenceModule.setSerializerModifier(new OptionalValueSerializer.SerializerModifier());
+        valueReferenceModule.setDeserializerModifier(new OptionalValueDeserializer.DeserializerModifier());
+        JacksonUtil.registerModule(keyReferenceModule);
+        JacksonUtil.registerModule(valueReferenceModule);
 
         //Register custom item data
 
@@ -283,6 +290,7 @@ public final class WUPlugin extends WolfyUtilCore {
 
         var operators = getRegistries().getOperators();
         operators.register(ComparisonOperatorEqual.KEY, ComparisonOperatorEqual.class);
+        operators.register(ComparisonOperatorNotEqual.KEY, ComparisonOperatorNotEqual.class);
         operators.register(ComparisonOperatorGreater.KEY, ComparisonOperatorGreater.class);
         operators.register(ComparisonOperatorGreaterEqual.KEY, ComparisonOperatorGreaterEqual.class);
         operators.register(ComparisonOperatorLess.KEY, ComparisonOperatorLess.class);
