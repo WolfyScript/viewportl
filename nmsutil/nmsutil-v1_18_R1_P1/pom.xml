@@ -23,7 +23,7 @@
     <parent>
         <artifactId>nmsutil</artifactId>
         <groupId>com.wolfyscript.wolfyutilities</groupId>
-        <version>3.16.3.0</version>
+        <version>3.16.3.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
