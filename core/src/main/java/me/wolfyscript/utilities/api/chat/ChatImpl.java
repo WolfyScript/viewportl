@@ -73,7 +73,7 @@ public class ChatImpl extends Chat {
         this.languageAPI = wolfyUtilities.getLanguageAPI();
         this.plugin = wolfyUtilities.getPlugin();
         this.chatPrefix = Component.text("[" + plugin.getName() + "]");
-        this.miniMessage = MiniMessage.miniMessage();
+        this.miniMessage = MiniMessage.builder().tags(TagResolver.standard())/*.debug(System.out::println)*/.build();
         this.LEGACY_SERIALIZER = BukkitComponentSerializer.legacy();
         this.BUNGEE_SERIALIZER = BungeeComponentSerializer.get();
     }
@@ -239,7 +239,7 @@ public class ChatImpl extends Chat {
     }
 
     private List<? extends TagResolver> getTemplates(Pair<String, String>[] replacements) {
-        return Arrays.stream(replacements).map(pair -> Placeholder.unparsed(convertOldPlaceholder(pair.getKey()), pair.getValue())).toList();
+        return Arrays.stream(replacements).map(pair -> Placeholder.parsed(convertOldPlaceholder(pair.getKey()), pair.getValue())).toList();
     }
 
     @Override
