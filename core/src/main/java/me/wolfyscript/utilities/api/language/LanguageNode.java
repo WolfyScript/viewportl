@@ -26,7 +26,9 @@ import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,12 +58,19 @@ public abstract class LanguageNode {
     protected String convertLegacyToMiniMessage(String legacyText) {
         String rawLegacy = ChatColor.convert(legacyText);
         Matcher matcher = LEGACY_PLACEHOLDER_PATTERN.matcher(rawLegacy);
+        Map<String, String> foundPlaceholders = new HashMap<>();
         while (matcher.find()) {
-            //replace the old placeholder with the new converted one.
-            rawLegacy = rawLegacy.replace(matcher.group(), "<" + chat.convertOldPlaceholder(matcher.group(1)) + ">");
+            //find the old placeholder.
+            foundPlaceholders.put(matcher.group(), "<" + chat.convertOldPlaceholder(matcher.group(1)) + ">");
         }
         if (rawLegacy.contains("§")) {
-            return chat.getMiniMessage().serialize(BukkitComponentSerializer.legacy().deserialize(rawLegacy));
+            rawLegacy = chat.getMiniMessage().serialize(BukkitComponentSerializer.legacy().deserialize(rawLegacy));
+        }
+        //Replace the old placeholders with the new tags after the color conversion, so these tags are not escaped!
+        if (!foundPlaceholders.isEmpty()) {
+            for (Map.Entry<String, String> entry : foundPlaceholders.entrySet()) {
+                rawLegacy = rawLegacy.replace(entry.getKey(), entry.getValue());
+            }
         }
         return rawLegacy;
     }
