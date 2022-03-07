@@ -16,17 +16,40 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.compatibility.plugins;
+package me.wolfyscript.utilities.compatibility.plugins.itemsadder;
 
-import me.wolfyscript.utilities.compatibility.PluginIntegration;
-import me.wolfyscript.utilities.compatibility.plugins.itemsadder.CustomStack;
 import org.bukkit.inventory.ItemStack;
 
-public interface ItemsAdderIntegration extends PluginIntegration {
+public interface CustomStack {
 
-    String KEY = "ItemsAdder";
+    ItemStack getItemStack();
 
-    CustomStack getByItemStack(ItemStack itemStack);
+    String getNamespace();
 
-    CustomStack getInstance(String namespacedID);
+    String getId();
+
+    String getNamespacedID();
+
+    String getPermission();
+
+    boolean hasPermission();
+
+    boolean isBlockAllEnchants();
+
+    boolean hasUsagesAttribute();
+
+    void setUsages(int amount);
+
+    void reduceUsages(int amount);
+
+    int getUsages();
+
+    boolean hasCustomDurability();
+
+    int getDurability();
+
+    void setDurability(int durability);
+
+    int getMaxDurability();
+
 }
