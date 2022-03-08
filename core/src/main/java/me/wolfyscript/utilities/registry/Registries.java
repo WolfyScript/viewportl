@@ -80,6 +80,8 @@ public class Registries {
     private final TypeRegistry<Shape> particleShapes;
     private final TypeRegistry<Timer> particleTimer;
     private final TypeRegistry<Meta> customItemNbtChecks;
+    //Expansions
+    private final RegistryResourceLoader expansionLoaders;
     private final TypeRegistry<Action<?>> customItemActions;
     private final TypeRegistry<Event<?>> customItemEvents;
 
