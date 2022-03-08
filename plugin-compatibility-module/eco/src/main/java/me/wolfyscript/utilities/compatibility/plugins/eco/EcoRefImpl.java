@@ -29,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class EcoRefImpl extends APIReference implements EcoRef {
 
@@ -51,7 +52,8 @@ public class EcoRefImpl extends APIReference implements EcoRef {
 
     @Override
     public boolean isValidItem(ItemStack itemStack) {
-        return Items.isCustomItem(itemStack);
+        var item = Items.getCustomItem(itemStack);
+        return item != null && Objects.equals(itemKey, item.getKey());
     }
 
     @Override
