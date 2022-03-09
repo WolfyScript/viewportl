@@ -23,10 +23,13 @@ import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
 import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
+import me.wolfyscript.utilities.compatibility.plugins.itemsadder.CustomStack;
+import me.wolfyscript.utilities.compatibility.plugins.itemsadder.CustomStackWrapper;
 import me.wolfyscript.utilities.compatibility.plugins.itemsadder.ItemsAdderRefImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 @WUPluginIntegration(pluginName = ItemsAdderIntegration.KEY)
@@ -59,4 +62,13 @@ public class ItemsAdderImpl extends PluginIntegrationAbstract implements ItemsAd
         }
     }
 
+    @Override
+    public CustomStack getByItemStack(ItemStack itemStack) {
+        return new CustomStackWrapper(dev.lone.itemsadder.api.CustomStack.byItemStack(itemStack));
+    }
+
+    @Override
+    public CustomStack getInstance(String namespacedID) {
+        return new CustomStackWrapper(dev.lone.itemsadder.api.CustomStack.getInstance(namespacedID));
+    }
 }
