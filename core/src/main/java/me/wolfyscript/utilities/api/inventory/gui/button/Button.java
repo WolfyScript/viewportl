@@ -122,7 +122,7 @@ public abstract class Button<C extends CustomCache> {
                 item = state.getRenderAction().render(values, guiHandler.getCustomCache(), guiHandler, player, guiInventory, item, slot, help);
             }
             //Legacy key replacements.
-            item = replaceKeysWithValue(item, values.entrySet().stream().collect(Collectors.toMap(entry -> "<" + guiHandler.getApi().getChat().convertOldPlaceholder(entry.getKey()) + ">", Map.Entry::getValue)));
+            item = replaceKeysWithValue(item, values.entrySet().stream().collect(Collectors.toMap(entry -> "<" + guiHandler.getApi().getChat().convertOldPlaceholder(entry.getKey()) + ">", entry -> entry.getValue() != null ? entry.getValue() : "")));
         }
         inventory.setItem(slot, item);
     }
