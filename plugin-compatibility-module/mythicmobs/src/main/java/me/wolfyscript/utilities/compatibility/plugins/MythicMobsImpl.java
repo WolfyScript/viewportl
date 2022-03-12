@@ -23,7 +23,9 @@ import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.wolfyscript.utilities.annotations.WUPluginIntegration;
 import me.wolfyscript.utilities.api.WolfyUtilCore;
+import me.wolfyscript.utilities.api.WolfyUtilities;
 import me.wolfyscript.utilities.api.inventory.custom_items.references.APIReference;
+import me.wolfyscript.utilities.compatibility.plugins.mythicmobs.MythicMobs5RefImpl;
 import me.wolfyscript.utilities.compatibility.plugins.mythicmobs.MythicMobsRefImpl;
 import me.wolfyscript.utilities.compatibility.PluginIntegrationAbstract;
 import org.bukkit.Location;
@@ -38,8 +40,11 @@ public class MythicMobsImpl extends PluginIntegrationAbstract implements MythicM
 
     @Override
     public void init(Plugin plugin) {
-        core.registerAPIReference(new MythicMobsRefImpl.Parser());
-
+        if (WolfyUtilities.hasClass("io.lumine.mythic.bukkit.MythicBukkit")) {
+            core.registerAPIReference(new MythicMobs5RefImpl.Parser());
+        } else {
+            core.registerAPIReference(new MythicMobsRefImpl.Parser());
+        }
     }
 
     @Override

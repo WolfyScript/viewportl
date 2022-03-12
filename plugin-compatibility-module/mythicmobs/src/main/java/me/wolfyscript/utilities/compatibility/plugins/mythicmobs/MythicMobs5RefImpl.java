@@ -19,7 +19,7 @@
 package me.wolfyscript.utilities.compatibility.plugins.mythicmobs;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,40 +32,41 @@ import org.jetbrains.annotations.Nullable;
  *     AppendType: true
  * </pre>
  */
-public class MythicMobsRefImpl extends AbstractMythicMobsRef {
+public class MythicMobs5RefImpl extends AbstractMythicMobsRef {
 
-    public MythicMobsRefImpl(String itemName) {
+    public MythicMobs5RefImpl(String itemName) {
         super(itemName);
     }
 
-    public MythicMobsRefImpl(MythicMobsRefImpl mythicMobsRefImpl) {
+    public MythicMobs5RefImpl(MythicMobs5RefImpl mythicMobsRefImpl) {
         super(mythicMobsRefImpl);
     }
 
     @Override
     public ItemStack getLinkedItem() {
-        return MythicMobs.inst().getItemManager().getItemStack(itemName);
+        return MythicBukkit.inst().getItemManager().getItemStack(itemName);
     }
 
     @Override
-    public MythicMobsRefImpl clone() {
-        return new MythicMobsRefImpl(this);
+    public MythicMobs5RefImpl clone() {
+        return new MythicMobs5RefImpl(this);
     }
 
-    public static class Parser extends AbstractMythicMobsRef.Parser<MythicMobsRefImpl> {
+    public static class Parser extends AbstractMythicMobsRef.Parser<MythicMobs5RefImpl> {
 
         @Override
-        protected MythicMobsRefImpl construct(String value) {
-            if (MythicMobs.inst().getItemManager().getItem(value).isPresent()) {
-                return new MythicMobsRefImpl(value);
+        protected MythicMobs5RefImpl construct(String value) {
+            if (MythicBukkit.inst().getItemManager().getItem(value).isPresent()) {
+                return new MythicMobs5RefImpl(value);
             }
             return null;
         }
 
         @Override
         public @Nullable
-        MythicMobsRefImpl parse(JsonNode element) {
-            return new MythicMobsRefImpl(element.asText());
+        MythicMobs5RefImpl parse(JsonNode element) {
+            return new MythicMobs5RefImpl(element.asText());
         }
+
     }
 }
