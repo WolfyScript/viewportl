@@ -87,26 +87,27 @@ final class PluginsImpl implements Plugins, Listener {
             }
         }
         if (!pluginIntegrationClasses.isEmpty()) {
-            core.getLogger().info("Create & Init Plugin integrations: ");
             //Initialize the plugin integrations for that the plugin is already enabled.
             pluginIntegrationClasses.forEach(this::createPluginIntegration);
-            if (pluginIntegrations.isEmpty()) {
-                core.getLogger().info(" - No integrations created.");
-            }
         } else {
             core.getLogger().info(" - No integrations found");
             doneLoading = true;
         }
     }
 
+    private void createPluginIntegration(String pluginName) {
+        createPluginIntegration(pluginName, pluginIntegrationClasses.get(pluginName));
+    }
+
     private void createPluginIntegration(String pluginName, Class<? extends PluginIntegrationAbstract> integrationClass) {
-        if (integrationClass != null && !pluginIntegrations.containsKey(pluginName)) {
+        if (!pluginIntegrations.containsKey(pluginName) && integrationClass != null) {
             try {
                 Constructor<? extends PluginIntegrationAbstract> integrationConstructor = integrationClass.getDeclaredConstructor(WolfyUtilCore.class);
                 integrationConstructor.setAccessible(true);
                 var integration = integrationConstructor.newInstance(core);
                 pluginIntegrations.put(pluginName, integration);
-                if (isPluginEnabled(pluginName)) { //Only init the integration if the plugin has already been enabled!
+                if (isPluginEnabled(pluginName)) {
+                    //Only init the integration if the plugin has already been enabled!
                     integration.init(Bukkit.getPluginManager().getPlugin(pluginName));
                     if (!integration.hasAsyncLoading()) {
                         integration.setEnabled(true);
@@ -123,16 +124,27 @@ final class PluginsImpl implements Plugins, Listener {
         }
     }
 
+    /**
+     * Checks if all available integrations are created and enabled.
+     * If that is the case it calls the {@link DependenciesLoadedEvent}
+     */
     void checkDependencies() {
         int availableIntegrations = pluginIntegrationClasses.size();
         long enabledIntegrations = pluginIntegrations.values().stream().filter(PluginIntegrationAbstract::isDoneLoading).count();
         if (availableIntegrations == enabledIntegrations) {
-            doneLoading = true;
-            Bukkit.getScheduler().runTaskLater(core, () -> {
-                core.getLogger().info("All dependencies are loaded. Calling the DependenciesLoadedEvent to notify other plugins!");
-                Bukkit.getPluginManager().callEvent(new DependenciesLoadedEvent(core));
-            }, 10);
+            doneLoadingAndCallEvent();
         }
+    }
+
+    /**
+     * Marks this handler as done and calls the {@link DependenciesLoadedEvent}
+     */
+    void doneLoadingAndCallEvent() {
+        doneLoading = true;
+        Bukkit.getScheduler().runTaskLater(core, () -> {
+            core.getLogger().info("All dependencies are loaded. Calling the DependenciesLoadedEvent to notify other plugins!");
+            Bukkit.getPluginManager().callEvent(new DependenciesLoadedEvent(core));
+        }, 10);
     }
 
     @EventHandler
@@ -144,14 +156,7 @@ final class PluginsImpl implements Plugins, Listener {
 
     @EventHandler
     private void onPluginEnable(PluginEnableEvent event) {
-        String pluginName = event.getPlugin().getName();
-        Class<? extends PluginIntegrationAbstract> integrationClass = pluginIntegrationClasses.get(pluginName);
-        if (integrationClass != null) {
-            createPluginIntegration(pluginName, integrationClass);
-            if (!hasIntegration(event.getPlugin().getName())) {
-                core.getLogger().warning("Failed to initiate PluginIntegration for " + pluginName);
-            }
-        }
+        createPluginIntegration(event.getPlugin().getName());
     }
 
     /**
