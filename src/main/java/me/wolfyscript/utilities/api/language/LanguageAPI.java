@@ -166,6 +166,8 @@ public abstract class LanguageAPI {
         return msg;
     }
 
+    protected abstract String convertLegacyToMiniMessage(String legacyText);
+
     @Deprecated
     public abstract List<String> replaceKeys(List<String> msg);
 

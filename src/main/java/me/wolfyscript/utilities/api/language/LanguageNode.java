@@ -24,15 +24,9 @@ import com.wolfyscript.utilities.common.chat.Chat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public abstract class LanguageNode {
-
-    private static final Pattern LEGACY_PLACEHOLDER_PATTERN = Pattern.compile("%([^%]+)%");
 
     private final JsonNode value;
     protected Chat chat;
@@ -51,25 +45,5 @@ public abstract class LanguageNode {
     @JsonValue
     public JsonNode getValue() {
         return value;
-    }
-
-    protected String convertLegacyToMiniMessage(String legacyText) {
-        String rawLegacy = "";//ChatColor.convert(legacyText);
-        Matcher matcher = LEGACY_PLACEHOLDER_PATTERN.matcher(rawLegacy);
-        Map<String, String> foundPlaceholders = new HashMap<>();
-        while (matcher.find()) {
-            //find the old placeholder.
-            foundPlaceholders.put(matcher.group(), "<" + chat.convertOldPlaceholder(matcher.group(1)) + ">");
-        }
-        if (rawLegacy.contains("§")) {
-            //TODO: rawLegacy = chat.getMiniMessage().serialize(BukkitComponentSerializer.legacy().deserialize(rawLegacy));
-        }
-        //Replace the old placeholders with the new tags after the color conversion, so these tags are not escaped!
-        if (!foundPlaceholders.isEmpty()) {
-            for (Map.Entry<String, String> entry : foundPlaceholders.entrySet()) {
-                rawLegacy = rawLegacy.replace(entry.getKey(), entry.getValue());
-            }
-        }
-        return rawLegacy;
     }
 }

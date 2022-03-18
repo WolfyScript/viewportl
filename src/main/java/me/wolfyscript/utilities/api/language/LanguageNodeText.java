@@ -33,7 +33,7 @@ public class LanguageNodeText extends LanguageNode {
     LanguageNodeText(Chat chat, JsonNode jsonNode) {
         super(chat, jsonNode);
         this.raw = jsonNode.asText("");
-        this.rawLegacy = convertLegacyToMiniMessage(raw);
+        this.rawLegacy = chat.getWolfyUtils().getLanguageAPI().convertLegacyToMiniMessage(raw);
     }
 
     @Override

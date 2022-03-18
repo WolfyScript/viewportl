@@ -51,7 +51,6 @@ public class Language {
     private final String lang;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private final Type type = Type.NESTED;
-    @JsonIgnore
     private final Map<String, LanguageNode> mappedLangNodes = new ConcurrentHashMap<>();
 
     /**
@@ -69,16 +68,16 @@ public class Language {
     }
 
     @JsonAnySetter
-    private void setValues(Map<String, JsonNode> nodes) {
+    private void setValues(String fieldName, JsonNode value) {
         switch (type) {
-            case NESTED -> nodes.forEach(this::readNestedNode);
-            case FLAT -> nodes.forEach((path, jsonNode) -> {
-                if (jsonNode.isArray()) {
-                    mappedLangNodes.put(path, new LanguageNodeArray(api.getChat(), jsonNode));
+            case NESTED -> readNestedNode(fieldName, value);
+            case FLAT -> {
+                if (value.isArray()) {
+                    mappedLangNodes.put(fieldName, new LanguageNodeArray(api.getChat(), value));
                 } else {
-                    mappedLangNodes.put(path, new LanguageNodeText(api.getChat(), jsonNode));
+                    mappedLangNodes.put(fieldName, new LanguageNodeText(api.getChat(), value));
                 }
-            });
+            }
             default -> { /* Not going to happen */ }
         }
     }
