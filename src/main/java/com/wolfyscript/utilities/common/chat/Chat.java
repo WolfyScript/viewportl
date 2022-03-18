@@ -18,15 +18,14 @@
 
 package com.wolfyscript.utilities.common.chat;
 
-import me.wolfyscript.utilities.api.chat.ClickAction;
-import me.wolfyscript.utilities.api.inventory.gui.GuiCluster;
-import me.wolfyscript.utilities.api.inventory.gui.GuiWindow;
-import me.wolfyscript.utilities.util.NamespacedKey;
+import com.wolfyscript.utilities.common.WolfyUtils;
+import me.wolfyscript.utilities.api.chat.ClickActionCallback;
+import me.wolfyscript.utilities.api.language.LanguageAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.bukkit.entity.Player;
+import com.wolfyscript.utilities.common.adapters.Player;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ import java.util.List;
  * Therefor, translated and click actions are also part of the component eco system.<br>
  * To get those components see the specific method:<br>
  * - {@link #translated}<br>
- * - {@link #executable(Player, boolean, ClickAction)}
+ * - {@link #executable(Player, boolean, ClickActionCallback)}
  *
  * </p>
  *
@@ -48,7 +47,20 @@ import java.util.List;
  * <br>
  * (Yes this could be an interface, but for backwards compatibility it must be a class!)
  */
-public interface Chat {
+public abstract class Chat {
+
+    protected final WolfyUtils wolfyUtils;
+
+    private Component chatPrefix;
+    protected final MiniMessage miniMessage;
+    protected final LanguageAPI languageAPI;
+
+    protected Chat(WolfyUtils wolfyUtils) {
+        this.wolfyUtils = wolfyUtils;
+        this.languageAPI = wolfyUtils.getLanguageAPI();
+        this.chatPrefix = Component.text("[" + wolfyUtils.getName() + "]");
+        this.miniMessage = MiniMessage.builder().tags(TagResolver.standard())/*.debug(System.out::println)*/.build();
+    }
 
     /**
      * Sets the prefix for this chat message handler.<br>
@@ -58,14 +70,18 @@ public interface Chat {
      *
      * @param chatPrefix The chat prefix.
      */
-    void setChatPrefix(Component chatPrefix);
+    public void setChatPrefix(Component chatPrefix) {
+        this.chatPrefix = chatPrefix;
+    }
 
     /**
      * Gets the prefix of this chat message handler.
      *
      * @return The chat prefix.
      */
-    Component getChatPrefix();
+    public Component getChatPrefix() {
+        return chatPrefix;
+    }
 
     /**
      * Gets the {@link MiniMessage} object, that allows you to parse text with formatting similar to html.<br>
@@ -73,7 +89,13 @@ public interface Chat {
      *
      * @return The MiniMessage object
      */
-    MiniMessage getMiniMessage();
+    public MiniMessage getMiniMessage() {
+        return miniMessage;
+    }
+
+    public WolfyUtils getWolfyUtils() {
+        return wolfyUtils;
+    }
 
     /**
      * Sends a chat component message, with the previously set prefix, to the player.
@@ -81,7 +103,7 @@ public interface Chat {
      * @param player The player to send the message to.
      * @param component The component to send.
      */
-    void sendMessage(Player player, Component component);
+    public abstract void sendMessage(Player player, Component component);
 
     /**
      * Sends a chat component message to the player.<br>
@@ -91,7 +113,7 @@ public interface Chat {
      * @param prefix If the message should have the prefix.
      * @param component The component to send.
      */
-    void sendMessage(Player player, boolean prefix, Component component);
+    public abstract void sendMessage(Player player, boolean prefix, Component component);
 
     /**
      * Sends chat component messages to the player.<br>
@@ -100,7 +122,7 @@ public interface Chat {
      * @param player The player to send the messages to.
      * @param components The components to send.
      */
-    void sendMessages(Player player, Component... components);
+    public abstract void sendMessages(Player player, Component... components);
 
     /**
      * Sends chat component messages to the player.<br>
@@ -110,27 +132,7 @@ public interface Chat {
      * @param player The player to send the messages to.
      * @param components The components to send.
      */
-    void sendMessages(Player player, boolean prefix, Component... components);
-
-    /**
-     * Sends a global message of the Cluster to the player.
-     *
-     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
-     *             Consider using the {@link GuiCluster#translatedMsgKey(String)} to get the translated global message from the cluster.
-     * @param player The player to send the message to.
-     * @param msgKey The key of the messages to send.
-     */
-    void sendKey(Player player, GuiCluster<?> guiCluster, String msgKey);
-
-    /**
-     * Sends a message of the {@link GuiWindow} to the player.
-     *
-     * @deprecated Legacy chat format. This will convert the message multiple times (Not efficient!) {@link #sendMessage(Player, Component)} should be used instead!
-     *             Consider using the {@link GuiWindow#translatedMsgKey(String)} to get the translated message from the window.
-     * @param player The player to send the message to.
-     * @param msgKey The key of the messages to send.
-     */
-    void sendKey(Player player, NamespacedKey windowKey, String msgKey);
+    public abstract void sendMessages(Player player, boolean prefix, Component... components);
 
     /**
      * Creates a {@link Component} of the specified language key.<br>
@@ -140,7 +142,7 @@ public interface Chat {
      * @param key The key in the language.
      * @return The component set for the key; empty component if not available.
      */
-    Component translated(String key);
+    public abstract Component translated(String key);
 
     /**
      * Creates a {@link Component} of the specified language key.<br>
@@ -151,7 +153,7 @@ public interface Chat {
      * @param translateLegacyColor If it should translate legacy '&' color codes.
      * @return The component set for the key; empty component if not available.
      */
-    Component translated(String key, boolean translateLegacyColor);
+    public abstract Component translated(String key, boolean translateLegacyColor);
 
     /**
      * Creates a {@link Component} of the specified language key.<br>
@@ -162,7 +164,7 @@ public interface Chat {
      * @param resolvers The custom tag resolvers to use.
      * @return The component set for the key; empty component if not available.
      */
-    Component translated(String key, List<? extends TagResolver> resolvers);
+    public abstract Component translated(String key, List<? extends TagResolver> resolvers);
 
     /**
      * Creates a {@link Component} of the specified language key.<br>
@@ -174,7 +176,7 @@ public interface Chat {
      * @param translateLegacyColor If it should translate legacy '&' color codes.
      * @return The component set for the key; empty component if not available.
      */
-    Component translated(String key, boolean translateLegacyColor, List<? extends TagResolver> resolvers);
+    public abstract Component translated(String key, boolean translateLegacyColor, List<? extends TagResolver> resolvers);
 
     /**
      * Creates a ClickEvent, that executes code when clicked.<br>
@@ -188,5 +190,15 @@ public interface Chat {
      * @param action The action to execute on click.
      * @return The ClickEvent with the generated command.
      */
-    ClickEvent executable(Player player, boolean discard, ClickAction action);
+    public abstract ClickEvent executable(Player player, boolean discard, ClickActionCallback action);
+
+    /**
+     * Converts the old placeholder to a new mini-message compatible tag.<br>
+     * If the placeholder wasn't already converted, it converts it and returns it.<br>
+     * Otherwise, it uses the cached value and returns it.
+     *
+     * @param oldPlaceholder The old placeholder, that might be incompatible with mini-message.
+     * @return The converted mini-message compatible placeholder.
+     */
+    public abstract String convertOldPlaceholder(String oldPlaceholder);
 }

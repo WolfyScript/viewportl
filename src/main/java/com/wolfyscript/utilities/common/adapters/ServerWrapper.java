@@ -19,4 +19,8 @@
 package com.wolfyscript.utilities.common.adapters;
 
 public abstract class ServerWrapper {
+
+    public abstract Items getItems();
+
+    public abstract Location createLocation(World world, int x, int y, int z);
 }

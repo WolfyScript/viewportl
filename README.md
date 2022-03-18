@@ -79,36 +79,34 @@ It's best to initiate it in your constructor, so you don't mistakenly change the
 (And we are able to use some options of the API **onLoad()**)
 
 ```java
-import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.chat.Chat;
-import me.wolfyscript.utilities.api.WolfyUtilCore;
+
 import me.wolfyscript.lib.net.kyori.adventure.text.Component;
 
 public class YourPlugin extends JavaPlugin {
-    
-    private final WolfyUtilities api;
 
-    public YourPlugin() {
-        super();
-        //Create the instance for your plugin. We don't want to initialize the events yet (so set it to false)!
-        api = WolfyUtilCore.getInstance().getAPI(this, false);
-        this.chat = api.getChat();
-        //We should set our prefix for the chat
-        this.chat.setChatPrefix(Component.text("[", NamedTextColor.GRAY).append(Component.text("CC", NamedTextColor.AQUA))
-                .append(Component.text("] ", NamedTextColor.DARK_GRAY)));
-        //Or using the MiniMessage api
-        this.chat.setChatPrefix(chat.getMiniMessage().parse("<gray>[<gradient:dark_aqua:aqua>CC</gradient><gray>]"));
-        
-        //Optionally you can set a custom cache object to cache data for your GUI.
-        api.setInventoryAPI(new InventoryAPI<>(api.getPlugin(), api, CCCache.class));
-    }
+  private final WolfyUtilities api;
 
-    @Override
-    public void onEnable() {
-        //Once the plugin is enabled we can initialize the events!
-        this.api.initialize();
-    }
-    
+  public YourPlugin() {
+    super();
+    //Create the instance for your plugin. We don't want to initialize the events yet (so set it to false)!
+    api = WolfyUtilCore.getInstance().getAPI(this, false);
+    this.chat = api.getChat();
+    //We should set our prefix for the chat
+    this.chat.setChatPrefix(Component.text("[", NamedTextColor.GRAY).append(Component.text("CC", NamedTextColor.AQUA))
+            .append(Component.text("] ", NamedTextColor.DARK_GRAY)));
+    //Or using the MiniMessage api
+    this.chat.setChatPrefix(chat.getMiniMessage().parse("<gray>[<gradient:dark_aqua:aqua>CC</gradient><gray>]"));
+
+    //Optionally you can set a custom cache object to cache data for your GUI.
+    api.setInventoryAPI(new InventoryAPI<>(api.getPlugin(), api, CCCache.class));
+  }
+
+  @Override
+  public void onEnable() {
+    //Once the plugin is enabled we can initialize the events!
+    this.api.initialize();
+  }
+
 }
 
 ```

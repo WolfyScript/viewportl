@@ -18,39 +18,15 @@
 
 package com.wolfyscript.utilities.common.adapters;
 
-import org.jetbrains.annotations.Nullable;
+public abstract class Vector3D {
 
-public interface Inventory {
+    protected double x;
+    protected double y;
+    protected double z;
 
-    /**
-     * Returns the size of the inventory
-     *
-     * @return The size of the inventory
-     */
-    int getSize();
-
-    /**
-     * Returns the maximum stack size for an ItemStack in this inventory.
-     *
-     * @return The maximum size for an ItemStack in this inventory.
-     */
-    int getMaxStackSize();
-
-    /**
-     * Returns the ItemStack found in the slot at the given index
-     *
-     * @param index The index of the Slot's ItemStack to return
-     * @return The ItemStack in the slot
-     */
-    @Nullable
-    ItemStack getItem(int index);
-
-    /**
-     * Stores the ItemStack at the given index of the inventory.
-     *
-     * @param index The index where to put the ItemStack
-     * @param item  The ItemStack to set
-     */
-    void setItem(int index, @Nullable ItemStack item);
-
+    protected Vector3D(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
 }

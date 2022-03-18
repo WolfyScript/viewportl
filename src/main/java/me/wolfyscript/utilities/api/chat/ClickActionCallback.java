@@ -16,10 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.adapters;
+package me.wolfyscript.utilities.api.chat;
 
-public interface Location {
+import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.common.adapters.Player;
 
-
-
+public interface ClickActionCallback {
+    void run(WolfyUtils api, Player player);
 }

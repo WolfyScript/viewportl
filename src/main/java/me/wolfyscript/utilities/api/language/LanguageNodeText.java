@@ -19,9 +19,7 @@
 package me.wolfyscript.utilities.api.language;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import me.wolfyscript.utilities.api.chat.Chat;
-import me.wolfyscript.utilities.util.chat.ChatColor;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import com.wolfyscript.utilities.common.chat.Chat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 

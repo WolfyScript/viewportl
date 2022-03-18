@@ -26,26 +26,26 @@ import java.util.List;
 public class ClickData {
 
     private final String message;
-    private final ClickAction clickAction;
+    private final ClickActionCallback clickAction;
     private final List<ChatEvent<?, ?>> clickEvents;
     private final boolean discard;
 
-    public ClickData(String message, @Nullable ClickAction clickAction, boolean discard, ChatEvent<?, ?>... clickEvents) {
+    public ClickData(String message, @Nullable ClickActionCallback clickAction, boolean discard, ChatEvent<?, ?>... clickEvents) {
         this.clickAction = clickAction;
         this.message = message;
         this.clickEvents = Arrays.asList(clickEvents);
         this.discard = discard;
     }
 
-    public ClickData(String message, @Nullable ClickAction clickAction, ChatEvent<?, ?>... clickEvents) {
+    public ClickData(String message, @Nullable ClickActionCallback clickAction, ChatEvent<?, ?>... clickEvents) {
         this(message, clickAction, false, clickEvents);
     }
 
-    public ClickData(String message, @Nullable ClickAction clickAction) {
+    public ClickData(String message, @Nullable ClickActionCallback clickAction) {
         this(message, clickAction, new ChatEvent[]{});
     }
 
-    public ClickAction getClickAction() {
+    public ClickActionCallback getClickAction() {
         return clickAction;
     }
 

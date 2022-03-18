@@ -18,5 +18,15 @@
 
 package com.wolfyscript.utilities.common.adapters;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface World {
+
+    @NotNull
+    Block getBlockAt(int x, int y, int z);
+
+    Block getBlockAt(Location location);
+
+
+
 }

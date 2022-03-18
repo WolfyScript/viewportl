@@ -18,8 +18,6 @@
 
 package com.wolfyscript.utilities.common.adapters;
 
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,14 +36,14 @@ public interface Entity {
      *
      * @param velocity New velocity to travel with
      */
-    void setVelocity(@NotNull Vector velocity);
+    void setVelocity(@NotNull Vector3D velocity);
 
     /**
      * Gets this entity's current velocity
      *
      * @return Current traveling velocity of this entity
      */
-    @NotNull Vector getVelocity();
+    @NotNull Vector3D getVelocity();
 
     /**
      * Gets the entity's height

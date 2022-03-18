@@ -19,17 +19,41 @@
 package com.wolfyscript.utilities.common;
 
 import com.wolfyscript.utilities.common.chat.Chat;
-import net.kyori.adventure.platform.AudienceProvider;
-import org.jetbrains.annotations.NotNull;
+import me.wolfyscript.utilities.api.language.LanguageAPI;
+
+import java.io.File;
 
 /**
- * Represents the core instance of the WolfyUtils plugin.
+ * Represents a single API instance that is bound to a plugin or mod.
  *
  */
-public interface WolfyCore {
+public abstract class WolfyUtils {
 
-    Chat getChat();
+    private static final String ENVIRONMENT = System.getProperties().getProperty("com.wolfyscript.env", "PROD");
 
-    @NotNull AudienceProvider getAdventure();
+    public static String getENVIRONMENT() {
+        return ENVIRONMENT;
+    }
+
+    public static boolean isDevEnv() {
+        return ENVIRONMENT.equalsIgnoreCase("DEV");
+    }
+
+    public static boolean isProdEnv() {
+        return ENVIRONMENT.equalsIgnoreCase("PROD");
+    }
+
+    public abstract WolfyCore getCore();
+
+    public abstract String getName();
+
+    public abstract File getDataFolder();
+
+    public abstract LanguageAPI getLanguageAPI();
+
+    public abstract Chat getChat();
+
+
+
 
 }

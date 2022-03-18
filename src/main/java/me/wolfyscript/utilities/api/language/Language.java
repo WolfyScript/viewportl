@@ -26,11 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Streams;
-import me.wolfyscript.utilities.api.WolfyUtilCore;
-import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.config.JsonConfig;
-import org.bukkit.plugin.Plugin;
+import com.wolfyscript.utilities.common.WolfyUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -38,21 +34,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Represents a single Language that can be loaded from a JSON file.<br>
  * You can load and register a language using {@link LanguageAPI#loadLangFile(String)}
  *
  * <p>
- * <strong>It only extends the {@link JsonConfig} for backwards compatibility, so in future it will get removed!</strong><br>
  * Instead of creating it via the old constructor you need to use the {@link LanguageAPI#loadLangFile(String)} method!
  * </p>
  */
-public class Language extends JsonConfig<JsonNode> {
+public class Language {
 
     @JsonIgnore
-    private final WolfyUtilities api;
+    private final WolfyUtils api;
     @JsonIgnore
     private final String lang;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -69,27 +63,9 @@ public class Language extends JsonConfig<JsonNode> {
      * @see LanguageAPI#loadLangFile(String)
      */
     @JsonCreator
-    protected Language(@JsonProperty("file") @JacksonInject("file") File file, @JacksonInject("api")  WolfyUtilities api, @JsonProperty("lang") @JacksonInject("lang") String lang) {
-        super(file, JsonNode.class);
+    protected Language(@JsonProperty("file") @JacksonInject("file") File file, @JacksonInject("api")  WolfyUtils api, @JsonProperty("lang") @JacksonInject("lang") String lang) {
         this.lang = lang;
         this.api = api;
-    }
-
-    /**
-     * Creates a new Language and loads it from the file. <br>
-     * <strong>Only used for backwards compatibility!</strong>
-     *
-     * @deprecated {@link LanguageAPI#loadLangFile(String)} should be used instead!
-     * @param plugin
-     * @param lang
-     */
-    @Deprecated
-    public Language(Plugin plugin, String lang) {
-        super(new File(plugin.getDataFolder(), "lang/" + lang + ".json"), JsonNode.class);
-        this.lang = lang;
-        this.api = WolfyUtilCore.getInstance().getAPI(plugin);
-        //Make sure Languages created the old way are still setting the values.
-        setValues(Streams.stream(value.fields()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
     @JsonAnySetter

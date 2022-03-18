@@ -18,5 +18,13 @@
 
 package com.wolfyscript.utilities.common.adapters;
 
-public interface Player {
+import net.kyori.adventure.text.Component;
+
+public interface Player extends Entity {
+
+    void setDisplayName(Component component);
+
+    Component getDisplayName();
+
+
 }
