@@ -9,6 +9,25 @@
 
 Core API that provides an API and Utils for plugins based on Spigot.
 
+**In the recent versions WolfyUtilities was redesigned.  
+This repository only contains the platform independent API and Utils**  
+That is in preparation to support other platforms like Sponge.
+- Spigot Implementation – [WolfyScript/WolfyUtils-Spigot](https://github.com/WolfyScript/WolfyUtils-Spigot)
+
+## Updates
+Updates are planned to be released in their dedicated repositories in the future.  
+For now, they might still be published here as a mirror.
+
+## Future plans
+In the future the API will be designed to provide a system, that makes it easy to combine common code, and load platform dependent modules.  
+The Sponge implementation will definitely require a lot of work, and I am not sure how it'll work out, so no ETA or anything for that.  
+Spigot is still the main focus of this plugin for now.
+
+## **Spigot Implementation**
+The latest Spigot specific implementation (4.16-SNAPSHOT) is nearly completely backwards compatible with previous WolfyUtilities versions, except some internal changes. 
+But it is still being tested and not released yet!  
+Below you can find the info about the previous info about WolfyUtils, that is now Spigot dependent.
+
 ### APIs & Utils
 - **API** is plugin dependent, which means there is one instance of the API per plugin.
 - **Utils** are plugin independent. They can be used everywhere.
