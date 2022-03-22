@@ -166,6 +166,12 @@ public abstract class LanguageAPI {
         return msg;
     }
 
+    /**
+     * Converts a message using legacy color codes (§ or &) to the MiniMessage format.
+     *
+     * @param legacyText The legacy text that may include legacy color codes.
+     * @return The converted text compatible with MiniMessage.
+     */
     protected abstract String convertLegacyToMiniMessage(String legacyText);
 
     @Deprecated
