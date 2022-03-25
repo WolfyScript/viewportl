@@ -1,0 +1,8 @@
+{
+  "pack": {
+    "version": 1,
+    "namespace": "<your_namespace> (Usually your lowercase plugin name. Spaces are not allowed! Must be unique from other packs, so make sure to pick a good name!)",
+    "authors": [],
+    "description": ""
+  }
+}

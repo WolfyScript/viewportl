@@ -59,11 +59,15 @@ import me.wolfyscript.utilities.api.inventory.custom_items.references.VanillaRef
 import me.wolfyscript.utilities.api.inventory.custom_items.references.WolfyUtilitiesRef;
 import me.wolfyscript.utilities.compatibility.CompatibilityManager;
 import me.wolfyscript.utilities.compatibility.CompatibilityManagerImpl;
+import me.wolfyscript.utilities.expansions.ExpansionManager;
 import me.wolfyscript.utilities.main.commands.ChatActionCommand;
 import me.wolfyscript.utilities.main.commands.InputCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleAnimationCommand;
 import me.wolfyscript.utilities.main.commands.SpawnParticleEffectCommand;
 import me.wolfyscript.utilities.main.configs.WUConfig;
+import me.wolfyscript.utilities.main.resource_loader.ResourceLoaderCustomItems;
+import me.wolfyscript.utilities.main.resource_loader.ResourceLoaderParticleAnimations;
+import me.wolfyscript.utilities.main.resource_loader.ResourceLoaderParticleEffects;
 import me.wolfyscript.utilities.main.listeners.BlockListener;
 import me.wolfyscript.utilities.main.listeners.EquipListener;
 import me.wolfyscript.utilities.main.listeners.GUIInventoryListener;
@@ -153,6 +157,7 @@ public final class WUPlugin extends WolfyUtilCore {
     private final MessageFactory messageFactory;
     private final CompatibilityManagerImpl compatibilityManager;
     private BukkitAudiences adventure;
+    private final ExpansionManager expansionManager;
 
     /**
      * Constructor invoked by Spigot when the plugin is loaded.
@@ -166,6 +171,7 @@ public final class WUPlugin extends WolfyUtilCore {
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
+        this.expansionManager = new ExpansionManager(this);
     }
 
     /**
@@ -180,6 +186,7 @@ public final class WUPlugin extends WolfyUtilCore {
         this.messageHandler = new MessageHandler(this);
         this.messageFactory = new MessageFactory(this);
         this.compatibilityManager = new CompatibilityManagerImpl(this);
+        this.expansionManager = new ExpansionManager(this);
     }
 
     @Deprecated
@@ -316,6 +323,11 @@ public final class WUPlugin extends WolfyUtilCore {
         KeyedTypeIdResolver.registerTypeRegistry((Class<Event<?>>)(Object) Event.class, customItemEvents);
         KeyedTypeIdResolver.registerTypeRegistry(Operator.class, operators);
         KeyedTypeIdResolver.registerTypeRegistry((Class<ValueProvider<?>>) (Object)ValueProvider.class, valueProviders);
+
+        var expansionLoaders = getRegistries().getExpansionResourceLoaders();
+        expansionLoaders.register(new ResourceLoaderParticleEffects(this));
+        expansionLoaders.register(new ResourceLoaderParticleAnimations(this));
+        expansionLoaders.register(new ResourceLoaderCustomItems(this));
     }
 
     @Override
@@ -331,6 +343,9 @@ public final class WUPlugin extends WolfyUtilCore {
         console.info("Register API references");
         registerAPIReference(new VanillaRef.Parser());
         registerAPIReference(new WolfyUtilitiesRef.Parser());
+
+        expansionManager.initPacks();
+        expansionManager.loadPacks();
 
         //Load Language
         api.getLanguageAPI().loadLangFile("en_US");
