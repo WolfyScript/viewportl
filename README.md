@@ -1,4 +1,4 @@
-<div align="center"><img src="docs/wu_banner.png" alt="WolfyUtilities Banner" /></div>
+<div align="center"><img src="https://user-images.githubusercontent.com/41468455/158254076-d856f0db-12a0-4cd8-a186-568a656dd96f.png" alt="WolfyUtilities Banner" /></div>
 
 ## WolfyUtilities
 ![bstats_server](https://img.shields.io/bstats/servers/5114)
@@ -9,50 +9,25 @@
 
 Core API that provides an API and Utils for plugins based on Spigot.
 
-### APIs & Utils
-- **API** is plugin dependent, which means there is one instance of the API per plugin.
-- **Utils** are plugin independent. They can be used everywhere.
-- **Registry** is bound to the core of WolfyUtilities, but can be accessed from anywhere. 
+**In the recent versions WolfyUtilities was redesigned.  
+This repository only contains the platform independent API and Utils**  
+That is in preparation to support other platforms like Sponge.
+- Spigot Implementation – [WolfyScript/WolfyUtils-Spigot](https://github.com/WolfyScript/WolfyUtils-Spigot)
 
-#### APIs
-- **Inventory** - Functional API to create in-game GUIs.
-- **Language** - Load JSON based language files and support multiple languages for GUIs, messages, etc.
-- **Chat** - Send translatable messages, text click event callbacks, and more.
-  - (**3.16.1+**) [KyoriPowered/adventure](https://github.com/KyoriPowered/adventure) implementation.
-- **Config** - Simple config utilities.
-- **NMS** - Fully featured **NBTTag API**, custom **RecipeIterator**, and some block and Inventory Utils.
-- **CustomItems** - Create flexible custom items with settings like custom fuel, durability, actions, etc.
+## Updates
+Updates are planned to be released in their dedicated repositories in the future.  
+For now, they might still be published here as a mirror.
 
-#### Registry
-The Registry is the base of all custom content in WolfyUtilities and the plugins that build on it.
-It allows you to register types & objects under unique namespaced keys. 
-That not only allows the plugin to register things like CustomItems, etc., but it can be extended by other plugins too.
+## Future plans
+In the future the API will be designed to provide a system, that makes it easy to combine common code, and load platform dependent modules.  
+The Sponge implementation will definitely require a lot of work, and I am not sure how it'll work out, so no ETA or anything for that.  
+Spigot is still the main focus of this plugin for now.
 
-#### Utils:
-- **NamespacedKey** - Unique key for all registrable content.
-- **JSON** - Various Jackson utils that simplify de-/serialization
-  - Custom de-/serializer for Bukkit objects
-  - Easy de-/serialization from Registry values
-    - Object  (See @OptionalKeyReference)
-    - Type to object (See @KeyedTypeIdResolver & @KeyedTypeResolver)
-- **Particles** - Configure custom particle effects & animations using JSON.
-- **RandomCollection** - Weight based random collection.
-- **Reflection** - Basic Reflection Utils.
-- **Player Head** utils to set textures and more.
-- Basic **MySQL** connection to run queries and updates.
-- ItemBuilder to edit/create ItemStacks.
-- Save player specific data.
-
-### Plugins using WolfyUtilities
-
-#### CustomCrafting
-CustomCrafting is heavily based on these APIs and Utils, and is more of an extension than standalone plugin.  
-CustomCrafting especially makes use of the InventoryAPI to create and manage the in-game RecipeCreators.
-The JSON utils are used to load/save recipes & items from/to JSON, and to allow for custom settings inside the json files.
-
-# Getting started
-
-You can get the API from the public maven repo:
+## Common API
+The common API is available via Maven.  
+It is currently very spare and might not work on its own!  
+<details>
+<summary>Maven</summary>
 
 ```xml
 <repositories>
@@ -66,52 +41,25 @@ You can get the API from the public maven repo:
 ```xml
 <dependencies>
     <dependency>
-        <groupId>com.wolfyscript.wolfyutilities</groupId>
+        <groupId>com.wolfyscript.wolfyutils</groupId>
         <artifactId>wolfyutilities</artifactId>
-        <version>3.16.1.0</version>
+        <version>4.16-SNAPSHOT</version>
         <scope>provided</scope>
     </dependency>
 </dependencies>
 ```
+</details>
 
-To start using it you need to create an API instance for your plugin.<br>
-It's best to initiate it in your constructor, so you don't mistakenly change the instance of the api.
-(And we are able to use some options of the API **onLoad()**)
+# Implementations
+Usually you would use the platform dependent implementation to make use of the API and utils in your plugin.
 
-```java
-import me.wolfyscript.utilities.api.WolfyUtilities;
-import me.wolfyscript.utilities.api.chat.Chat;
-import me.wolfyscript.utilities.api.WolfyUtilCore;
-import me.wolfyscript.lib.net.kyori.adventure.text.Component;
+## Spigot Implementation
+The latest Spigot specific implementation (4.16-SNAPSHOT) is nearly completely backwards compatible with previous WolfyUtilities versions, except some internal changes.  
+More info in the new repo: [WolfyScript/WolfyUtils-Spigot](https://github.com/WolfyScript/WolfyUtils-Spigot).
 
-public class YourPlugin extends JavaPlugin {
-    
-    private final WolfyUtilities api;
-
-    public YourPlugin() {
-        super();
-        //Create the instance for your plugin. We don't want to initialize the events yet (so set it to false)!
-        api = WolfyUtilCore.getInstance().getAPI(this, false);
-        this.chat = api.getChat();
-        //We should set our prefix for the chat
-        this.chat.setChatPrefix(Component.text("[", NamedTextColor.GRAY).append(Component.text("CC", NamedTextColor.AQUA))
-                .append(Component.text("] ", NamedTextColor.DARK_GRAY)));
-        //Or using the MiniMessage api
-        this.chat.setChatPrefix(chat.getMiniMessage().parse("<gray>[<gradient:dark_aqua:aqua>CC</gradient><gray>]"));
-        
-        //Optionally you can set a custom cache object to cache data for your GUI.
-        api.setInventoryAPI(new InventoryAPI<>(api.getPlugin(), api, CCCache.class));
-    }
-
-    @Override
-    public void onEnable() {
-        //Once the plugin is enabled we can initialize the events!
-        this.api.initialize();
-    }
-    
-}
-
-```
+## Sponge Implementation
+This implementation is still being planned and developed.  
+No ETA yet!
 
 More info about the API can be found in the [Wiki](https://github.com/WolfyScript/WolfyUtilities/wiki).
 <br>
