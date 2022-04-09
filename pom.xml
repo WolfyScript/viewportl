@@ -96,6 +96,12 @@
             <version>4.1.74.Final</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Adventure ChatComponent API -->
         <dependency>
             <groupId>net.kyori</groupId>
