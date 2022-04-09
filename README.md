@@ -70,7 +70,7 @@ repositories {
 ```
 ```groovy
 dependencies {
-    implementation "com.wolfyscript.wolfyutils", "wolfyutilities","4.16-SNAPSHOT"
+    implementation "com.wolfyscript.wolfyutils:wolfyutilities:4.16-SNAPSHOT"
 }
 ```
 
