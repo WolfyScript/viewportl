@@ -44,6 +44,39 @@ It is currently very spare and does not work on its own!
 ```
 </details>
 
+<details>
+<summary>Gradle</summary>
+
+#### Kotlin DSL
+```kotlin
+repositories {
+    maven("https://maven.wolfyscript.com/repository/public/")
+}
+```
+
+```kotlin
+dependencies {
+    implementation("com.wolfyscript.wolfyutils", "wolfyutilities","4.16-SNAPSHOT")
+}
+```
+
+#### Groovy
+```groovy
+repositories {
+    maven { 
+        url "https://maven.wolfyscript.com/repository/public/" 
+    }
+}
+```
+```groovy
+dependencies {
+    implementation "com.wolfyscript.wolfyutils", "wolfyutilities","4.16-SNAPSHOT"
+}
+```
+
+</details>
+
+
 # Implementations
 Usually you would use the platform dependent implementation to make use of the API and utils in your plugin.
 
