@@ -19,8 +19,6 @@
 package com.wolfyscript.utilities.common;
 
 import com.wolfyscript.utilities.common.chat.Chat;
-import net.kyori.adventure.platform.AudienceProvider;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents the core instance of the WolfyUtils plugin.
@@ -29,7 +27,5 @@ import org.jetbrains.annotations.NotNull;
 public interface WolfyCore {
 
     Chat getChat();
-
-    @NotNull AudienceProvider getAdventure();
 
 }
