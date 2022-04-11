@@ -37,13 +37,27 @@ public class LanguageNodeText extends LanguageNode {
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor, List<? extends TagResolver> templates) {
-        return chat.getMiniMessage().deserialize(translateLegacyColor ? rawLegacy : raw, templates.toArray(TagResolver[]::new));
+    public Component getComponent(boolean translateLegacyColor) {
+        return chat.getMiniMessage().deserialize(getText(translateLegacyColor));
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor, List<? extends TagResolver> templates) {
-        return List.of(chat.getMiniMessage().deserialize(translateLegacyColor ? rawLegacy : raw, templates.toArray(TagResolver[]::new)));
+    public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver) {
+        return chat.getMiniMessage().deserialize(getText(translateLegacyColor), tagResolver);
+    }
+
+    @Override
+    public List<Component> getComponents(boolean translateLegacyColor) {
+        return List.of(chat.getMiniMessage().deserialize(getText(translateLegacyColor)));
+    }
+
+    @Override
+    public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver) {
+        return List.of(chat.getMiniMessage().deserialize(getText(translateLegacyColor), tagResolver));
+    }
+
+    private String getText(boolean translateLegacyColor) {
+        return translateLegacyColor ? rawLegacy : raw;
     }
 
     @Override
