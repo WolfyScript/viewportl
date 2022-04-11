@@ -123,29 +123,49 @@ public abstract class LanguageAPI {
     }
 
     public Component getComponent(String key, boolean translateLegacyColor) {
-        return getComponent(key, translateLegacyColor, List.of());
+        return getNode(key).getComponent(translateLegacyColor);
     }
 
-    public Component getComponent(String key, List<? extends TagResolver> resolvers) {
+    public Component getComponent(String key, TagResolver... resolvers) {
         return getComponent(key, false, resolvers);
     }
 
+    public Component getComponent(String key, boolean translateLegacyColor, TagResolver... resolvers) {
+        return getNode(key).getComponent(translateLegacyColor, resolvers);
+    }
+
+    @Deprecated
     public Component getComponent(String key, boolean translateLegacyColor, List<? extends TagResolver> resolvers) {
         return getNode(key).getComponent(translateLegacyColor, resolvers);
     }
 
+    @Deprecated
+    public Component getComponent(String key, List<? extends TagResolver> resolvers) {
+        return getComponent(key, false, resolvers);
+    }
+
     public List<Component> getComponents(String key) {
-        return getComponents(key, false, List.of());
+        return getComponents(key, false);
     }
 
     public List<Component> getComponents(String key, boolean translateLegacyColor) {
-        return getComponents(key, translateLegacyColor, List.of());
+        return getNode(key).getComponents(translateLegacyColor);
     }
 
+    public List<Component> getComponents(String key, TagResolver... resolvers) {
+        return getComponents(key, false, resolvers);
+    }
+
+    public List<Component> getComponents(String key, boolean translateLegacyColor, TagResolver... resolvers) {
+        return getNode(key).getComponents(translateLegacyColor, resolvers);
+    }
+
+    @Deprecated
     public List<Component> getComponents(String key, List<? extends TagResolver> resolvers) {
         return getComponents(key, false, resolvers);
     }
 
+    @Deprecated
     public List<Component> getComponents(String key, boolean translateLegacyColor, List<? extends TagResolver> resolvers) {
         return getNode(key).getComponents(translateLegacyColor, resolvers);
     }

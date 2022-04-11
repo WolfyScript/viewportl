@@ -32,12 +32,22 @@ public class LanguageNodeMissing extends LanguageNode {
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor, List<? extends TagResolver> templates) {
+    public Component getComponent(boolean translateLegacyColor) {
         return Component.empty();
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor, List<? extends TagResolver> templates) {
+    public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver) {
+        return Component.empty();
+    }
+
+    @Override
+    public List<Component> getComponents(boolean translateLegacyColor) {
+        return List.of();
+    }
+
+    @Override
+    public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver) {
         return List.of();
     }
 

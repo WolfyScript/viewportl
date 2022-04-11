@@ -36,9 +36,29 @@ public abstract class LanguageNode {
         this.value = value;
     }
 
-    abstract public Component getComponent(boolean translateLegacyColor, List<? extends TagResolver> templates);
+    abstract public Component getComponent(boolean translateLegacyColor);
 
-    abstract public List<Component> getComponents(boolean translateLegacyColor, List<? extends TagResolver> templates);
+    abstract public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver);
+
+    public Component getComponent(boolean translateLegacyColor, TagResolver... tagResolvers) {
+        return getComponent(translateLegacyColor, TagResolver.resolver(tagResolvers));
+    }
+
+    public Component getComponent(boolean translateLegacyColor, List<? extends TagResolver> tagResolvers) {
+        return getComponent(translateLegacyColor, tagResolvers.toArray(new TagResolver[0]));
+    }
+
+    abstract public List<Component> getComponents(boolean translateLegacyColor);
+
+    abstract public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver);
+
+    public List<Component> getComponents(boolean translateLegacyColor, TagResolver... tagResolvers) {
+        return getComponents(translateLegacyColor, TagResolver.resolver(tagResolvers));
+    }
+
+    public List<Component> getComponents(boolean translateLegacyColor, List<? extends TagResolver> tagResolvers) {
+        return getComponents(translateLegacyColor, tagResolvers.toArray(new TagResolver[0]));
+    }
 
     abstract public String getRaw();
 

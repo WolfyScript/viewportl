@@ -50,17 +50,31 @@ public class LanguageNodeArray extends LanguageNode {
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor, List<? extends TagResolver> templates) {
-        return chat.getMiniMessage().deserialize(translateLegacyColor ? rawLegacyLine : rawLine, templates.toArray(TagResolver[]::new));
+    public Component getComponent(boolean translateLegacyColor) {
+        return chat.getMiniMessage().deserialize(translateLegacyColor ? rawLegacyLine : rawLine);
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor, List<? extends TagResolver> templates) {
-        return translateLegacyColor ? getComponents(rawLegacy, templates) : getComponents(raw, templates);
+    public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver) {
+        return chat.getMiniMessage().deserialize(translateLegacyColor ? rawLegacyLine : rawLine, tagResolver);
     }
 
-    private List<Component> getComponents(List<String> rawValues, List<? extends TagResolver> templates) {
-        return rawValues.stream().map(s -> chat.getMiniMessage().deserialize(s, templates.toArray(TagResolver[]::new))).collect(Collectors.toList());
+    @Override
+    public List<Component> getComponents(boolean translateLegacyColor) {
+        return getComponents(translateLegacyColor ? rawLegacy : raw);
+    }
+
+    @Override
+    public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver) {
+        return getComponents(translateLegacyColor ? rawLegacy : raw, tagResolver);
+    }
+
+    private List<Component> getComponents(List<String> rawValues) {
+        return rawValues.stream().map(s -> chat.getMiniMessage().deserialize(s)).collect(Collectors.toList());
+    }
+
+    private List<Component> getComponents(List<String> rawValues, TagResolver tagResolver) {
+        return rawValues.stream().map(s -> chat.getMiniMessage().deserialize(s, tagResolver)).collect(Collectors.toList());
     }
 
     @Override
