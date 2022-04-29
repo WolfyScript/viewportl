@@ -27,8 +27,8 @@ import java.util.List;
 
 public class LanguageNodeMissing extends LanguageNode {
 
-    LanguageNodeMissing(Chat chat) {
-        super(chat, JsonNodeFactory.instance.missingNode());
+    LanguageNodeMissing(Language language, Chat chat) {
+        super(language, chat, JsonNodeFactory.instance.missingNode());
     }
 
     @Override

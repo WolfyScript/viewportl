@@ -29,11 +29,13 @@ import java.util.List;
 public abstract class LanguageNode {
 
     private final JsonNode value;
+    protected final Language language;
     protected Chat chat;
 
-    protected LanguageNode(Chat chat, JsonNode value) {
+    protected LanguageNode(Language language, Chat chat, JsonNode value) {
         this.chat = chat;
         this.value = value;
+        this.language = language;
     }
 
     abstract public Component getComponent(boolean translateLegacyColor);

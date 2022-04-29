@@ -35,8 +35,8 @@ public class LanguageNodeArray extends LanguageNode {
     private final String rawLine;
     private final String rawLegacyLine;
 
-    LanguageNodeArray(Chat chat, JsonNode jsonNode) {
-        super(chat, jsonNode);
+    LanguageNodeArray(Language language, Chat chat, JsonNode jsonNode) {
+        super(language, chat, jsonNode);
         this.raw = new LinkedList<>();
         this.rawLegacy = new LinkedList<>();
         Iterator<JsonNode> nodeItr = jsonNode.elements();
