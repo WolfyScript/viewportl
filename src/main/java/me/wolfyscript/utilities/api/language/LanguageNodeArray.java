@@ -31,42 +31,37 @@ import java.util.stream.Collectors;
 public class LanguageNodeArray extends LanguageNode {
 
     private final List<String> raw;
-    private final List<String> rawLegacy;
     private final String rawLine;
-    private final String rawLegacyLine;
 
     LanguageNodeArray(Language language, Chat chat, JsonNode jsonNode) {
         super(language, chat, jsonNode);
         this.raw = new LinkedList<>();
-        this.rawLegacy = new LinkedList<>();
         Iterator<JsonNode> nodeItr = jsonNode.elements();
         while (nodeItr.hasNext()) {
             String value = nodeItr.next().textValue();
-            this.raw.add(value);
-            this.rawLegacy.add(chat.getWolfyUtils().getLanguageAPI().convertLegacyToMiniMessage(value));
+            this.raw.add(language.usesMiniMessageFormat() ? value : chat.getWolfyUtils().getLanguageAPI().convertLegacyToMiniMessage(value));
         }
         this.rawLine = raw.stream().reduce("", (s, s2) -> s + " " + s2);
-        this.rawLegacyLine = rawLegacy.stream().reduce("", (s, s2) -> s + " " + s2);
     }
 
     @Override
     public Component getComponent(boolean translateLegacyColor) {
-        return chat.getMiniMessage().deserialize(translateLegacyColor ? rawLegacyLine : rawLine);
+        return chat.getMiniMessage().deserialize(rawLine);
     }
 
     @Override
     public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver) {
-        return chat.getMiniMessage().deserialize(translateLegacyColor ? rawLegacyLine : rawLine, tagResolver);
+        return chat.getMiniMessage().deserialize(rawLine, tagResolver);
     }
 
     @Override
     public List<Component> getComponents(boolean translateLegacyColor) {
-        return getComponents(translateLegacyColor ? rawLegacy : raw);
+        return getComponents(raw);
     }
 
     @Override
     public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver) {
-        return getComponents(translateLegacyColor ? rawLegacy : raw, tagResolver);
+        return getComponents(raw, tagResolver);
     }
 
     private List<Component> getComponents(List<String> rawValues) {
