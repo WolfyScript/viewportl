@@ -51,6 +51,8 @@ public class Language {
     private final String lang;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private final Type type = Type.NESTED;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private final boolean useMiniMessageFormat = false;
     private final Map<String, LanguageNode> mappedLangNodes = new ConcurrentHashMap<>();
 
     /**
@@ -139,6 +141,10 @@ public class Language {
     @NotNull
     public JsonNode getNodeAt(String path) {
         return getNode(path).getValue();
+    }
+
+    public boolean usesMiniMessageFormat() {
+        return useMiniMessageFormat;
     }
 
     /**
