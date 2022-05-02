@@ -118,20 +118,39 @@ public abstract class LanguageAPI {
         return node;
     }
 
+    /**
+     * Retrieves the Component of the specified key from the active language.<br>
+     * In case the key cannot be found in the active language, it retrieves it from the fallback language, if available.<br>
+     * Otherwise, returns an empty Component.
+     *
+     * @param key The key to the text in the language.
+     * @return The Component of the key, or an empty Component if not found.
+     */
     public Component getComponent(String key) {
-        return getComponent(key, false, List.of());
+        return getNode(key).getComponent();
     }
 
-    public Component getComponent(String key, boolean translateLegacyColor) {
-        return getNode(key).getComponent(translateLegacyColor);
-    }
-
+    /**
+     * Retrieves the Component of the specified key from the active language.<br>
+     * In case the key cannot be found in the active language, it retrieves it from the fallback language, if available.<br>
+     * Otherwise, returns an empty Component.<br>
+     * The TagResolvers can be used to handle custom tags the component might need.
+     *
+     * @param key The key to the text in the language.
+     * @return The Component of the key, or an empty Component if not found.
+     */
     public Component getComponent(String key, TagResolver... resolvers) {
-        return getComponent(key, false, resolvers);
+        return getNode(key).getComponent(resolvers);
     }
 
+    @Deprecated
+    public Component getComponent(String key, boolean translateLegacyColor) {
+        return getNode(key).getComponent();
+    }
+
+    @Deprecated
     public Component getComponent(String key, boolean translateLegacyColor, TagResolver... resolvers) {
-        return getNode(key).getComponent(translateLegacyColor, resolvers);
+        return getNode(key).getComponent(resolvers);
     }
 
     @Deprecated
@@ -144,20 +163,39 @@ public abstract class LanguageAPI {
         return getComponent(key, false, resolvers);
     }
 
+    /**
+     * Retrieves the Components of the specified key from the active language.<br>
+     * In case the key cannot be found in the active language, it retrieves it from the fallback language, if available.<br>
+     * Otherwise, returns an empty List.
+     *
+     * @param key The key to the text in the language.
+     * @return The Component of the key, or an empty List if not found.
+     */
     public List<Component> getComponents(String key) {
-        return getComponents(key, false);
+        return getNode(key).getComponents();
     }
 
-    public List<Component> getComponents(String key, boolean translateLegacyColor) {
-        return getNode(key).getComponents(translateLegacyColor);
-    }
-
+    /**
+     * Retrieves the Components of the specified key from the active language.<br>
+     * In case the key cannot be found in the active language, it retrieves it from the fallback language, if available.<br>
+     * Otherwise, returns an empty List.<br>
+     * The TagResolvers can be used to handle custom tags the components might need.
+     *
+     * @param key The key to the text in the language.
+     * @return The Component of the key, or an empty List if not found.
+     */
     public List<Component> getComponents(String key, TagResolver... resolvers) {
-        return getComponents(key, false, resolvers);
+        return getNode(key).getComponents(resolvers);
     }
 
+    @Deprecated
+    public List<Component> getComponents(String key, boolean translateLegacyColor) {
+        return getNode(key).getComponents();
+    }
+
+    @Deprecated
     public List<Component> getComponents(String key, boolean translateLegacyColor, TagResolver... resolvers) {
-        return getNode(key).getComponents(translateLegacyColor, resolvers);
+        return getNode(key).getComponents(resolvers);
     }
 
     @Deprecated
