@@ -39,22 +39,22 @@ public class LanguageNodeText extends LanguageNode {
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor) {
+    public Component getComponent() {
         return chat.getMiniMessage().deserialize(raw);
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver) {
+    public Component getComponent(TagResolver tagResolver) {
         return chat.getMiniMessage().deserialize(raw, tagResolver);
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor) {
+    public List<Component> getComponents() {
         return List.of(chat.getMiniMessage().deserialize(raw));
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver) {
+    public List<Component> getComponents(TagResolver tagResolver) {
         return List.of(chat.getMiniMessage().deserialize(raw, tagResolver));
     }
 

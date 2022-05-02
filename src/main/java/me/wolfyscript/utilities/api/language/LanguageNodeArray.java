@@ -45,22 +45,22 @@ public class LanguageNodeArray extends LanguageNode {
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor) {
+    public Component getComponent() {
         return chat.getMiniMessage().deserialize(rawLine);
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver) {
+    public Component getComponent(TagResolver tagResolver) {
         return chat.getMiniMessage().deserialize(rawLine, tagResolver);
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor) {
+    public List<Component> getComponents() {
         return getComponents(raw);
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver) {
+    public List<Component> getComponents(TagResolver tagResolver) {
         return getComponents(raw, tagResolver);
     }
 
