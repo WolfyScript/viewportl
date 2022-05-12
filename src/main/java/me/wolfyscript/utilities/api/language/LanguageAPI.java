@@ -230,7 +230,7 @@ public abstract class LanguageAPI {
      * @param legacyText The legacy text that may include legacy color codes.
      * @return The converted text compatible with MiniMessage.
      */
-    protected abstract String convertLegacyToMiniMessage(String legacyText);
+    public abstract String convertLegacyToMiniMessage(String legacyText);
 
     @Deprecated
     public abstract List<String> replaceKeys(List<String> msg);
