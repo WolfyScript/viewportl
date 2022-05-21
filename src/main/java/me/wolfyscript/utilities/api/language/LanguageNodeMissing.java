@@ -27,27 +27,27 @@ import java.util.List;
 
 public class LanguageNodeMissing extends LanguageNode {
 
-    LanguageNodeMissing(Chat chat) {
-        super(chat, JsonNodeFactory.instance.missingNode());
+    LanguageNodeMissing(Language language, Chat chat) {
+        super(language, chat, JsonNodeFactory.instance.missingNode());
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor) {
+    public Component getComponent() {
         return Component.empty();
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver) {
+    public Component getComponent(TagResolver tagResolver) {
         return Component.empty();
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor) {
+    public List<Component> getComponents() {
         return List.of();
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver) {
+    public List<Component> getComponents(TagResolver tagResolver) {
         return List.of();
     }
 

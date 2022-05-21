@@ -51,6 +51,8 @@ public class Language {
     private final String lang;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private final Type type = Type.NESTED;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private final boolean useMiniMessageFormat = false;
     private final Map<String, LanguageNode> mappedLangNodes = new ConcurrentHashMap<>();
 
     /**
@@ -71,13 +73,7 @@ public class Language {
     private void setValues(String fieldName, JsonNode value) {
         switch (type) {
             case NESTED -> readNestedNode(fieldName, value);
-            case FLAT -> {
-                if (value.isArray()) {
-                    mappedLangNodes.put(fieldName, new LanguageNodeArray(api.getChat(), value));
-                } else {
-                    mappedLangNodes.put(fieldName, new LanguageNodeText(api.getChat(), value));
-                }
-            }
+            case FLAT -> registerNode(fieldName, value);
             default -> { /* Not going to happen */ }
         }
     }
@@ -94,13 +90,19 @@ public class Language {
         return mappedLangNodes;
     }
 
+    private void registerNode(String path, JsonNode node) {
+        if (node.isArray()) {
+            mappedLangNodes.put(path, new LanguageNodeArray(this, api.getChat(), node));
+        } else {
+            mappedLangNodes.put(path, new LanguageNodeText(this, api.getChat(), node));
+        }
+    }
+
     private void readNestedNode(String path, JsonNode node) {
         if (node.isObject()) {
             node.fields().forEachRemaining(entry -> readNestedNode(path + "." + entry.getKey(), entry.getValue()));
-        } else if (node.isArray()) {
-            mappedLangNodes.put(path, new LanguageNodeArray(api.getChat(), node));
         } else {
-            mappedLangNodes.put(path, new LanguageNodeText(api.getChat(), node));
+            registerNode(path, node);
         }
     }
 
@@ -133,12 +135,16 @@ public class Language {
 
     @NotNull
     public LanguageNode getNode(String path) {
-        return mappedLangNodes.computeIfAbsent(path, s -> new LanguageNodeMissing(api.getChat()));
+        return mappedLangNodes.computeIfAbsent(path, s -> new LanguageNodeMissing(this, api.getChat()));
     }
 
     @NotNull
     public JsonNode getNodeAt(String path) {
         return getNode(path).getValue();
+    }
+
+    public boolean usesMiniMessageFormat() {
+        return useMiniMessageFormat;
     }
 
     /**

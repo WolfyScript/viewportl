@@ -150,10 +150,35 @@ public abstract class Chat {
      * If it is not available it returns an empty component.
      *
      * @param key The key in the language.
+     * @param resolvers The custom tag resolvers to use.
+     * @return The component set for the key; empty component if not available.
+     */
+    public abstract Component translated(String key, TagResolver... resolvers);
+
+    /**
+     * Creates a {@link Component} of the specified language key.<br>
+     * If the key exists in the language it will be translated and returns the according component.
+     * If it is not available it returns an empty component.
+     *
+     * @param key The key in the language.
+     * @param resolver The custom tag resolver to use.
+     * @return The component set for the key; empty component if not available.
+     */
+    public abstract Component translated(String key, TagResolver resolver);
+
+    /**
+     * Creates a {@link Component} of the specified language key.<br>
+     * If the key exists in the language it will be translated and returns the according component.
+     * If it is not available it returns an empty component.
+     *
+     * @param key The key in the language.
      * @param translateLegacyColor If it should translate legacy '&' color codes.
      * @return The component set for the key; empty component if not available.
      */
-    public abstract Component translated(String key, boolean translateLegacyColor);
+    @Deprecated
+    public Component translated(String key, boolean translateLegacyColor) {
+        return translated(key);
+    }
 
     /**
      * Creates a {@link Component} of the specified language key.<br>
@@ -164,7 +189,10 @@ public abstract class Chat {
      * @param resolvers The custom tag resolvers to use.
      * @return The component set for the key; empty component if not available.
      */
-    public abstract Component translated(String key, List<? extends TagResolver> resolvers);
+    @Deprecated
+    public Component translated(String key, List<? extends TagResolver> resolvers) {
+        return translated(key, resolvers.toArray(new TagResolver[0]));
+    }
 
     /**
      * Creates a {@link Component} of the specified language key.<br>
@@ -176,7 +204,10 @@ public abstract class Chat {
      * @param translateLegacyColor If it should translate legacy '&' color codes.
      * @return The component set for the key; empty component if not available.
      */
-    public abstract Component translated(String key, boolean translateLegacyColor, List<? extends TagResolver> resolvers);
+    @Deprecated
+    public Component translated(String key, boolean translateLegacyColor, List<? extends TagResolver> resolvers) {
+        return translated(key, resolvers.toArray(new TagResolver[0]));
+    }
 
     /**
      * Creates a ClickEvent, that executes code when clicked.<br>

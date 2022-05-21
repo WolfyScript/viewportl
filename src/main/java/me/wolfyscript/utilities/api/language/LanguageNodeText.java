@@ -28,36 +28,34 @@ import java.util.List;
 public class LanguageNodeText extends LanguageNode {
 
     private final String raw;
-    private final String rawLegacy;
 
-    LanguageNodeText(Chat chat, JsonNode jsonNode) {
-        super(chat, jsonNode);
-        this.raw = jsonNode.asText("");
-        this.rawLegacy = chat.getWolfyUtils().getLanguageAPI().convertLegacyToMiniMessage(raw);
+    LanguageNodeText(Language language, Chat chat, JsonNode jsonNode) {
+        super(language, chat, jsonNode);
+        if (language.usesMiniMessageFormat()) {
+            this.raw = jsonNode.asText("");
+        } else {
+            this.raw = chat.getWolfyUtils().getLanguageAPI().convertLegacyToMiniMessage(jsonNode.asText(""));
+        }
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor) {
-        return chat.getMiniMessage().deserialize(getText(translateLegacyColor));
+    public Component getComponent() {
+        return chat.getMiniMessage().deserialize(raw);
     }
 
     @Override
-    public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver) {
-        return chat.getMiniMessage().deserialize(getText(translateLegacyColor), tagResolver);
+    public Component getComponent(TagResolver tagResolver) {
+        return chat.getMiniMessage().deserialize(raw, tagResolver);
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor) {
-        return List.of(chat.getMiniMessage().deserialize(getText(translateLegacyColor)));
+    public List<Component> getComponents() {
+        return List.of(chat.getMiniMessage().deserialize(raw));
     }
 
     @Override
-    public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver) {
-        return List.of(chat.getMiniMessage().deserialize(getText(translateLegacyColor), tagResolver));
-    }
-
-    private String getText(boolean translateLegacyColor) {
-        return translateLegacyColor ? rawLegacy : raw;
+    public List<Component> getComponents(TagResolver tagResolver) {
+        return List.of(chat.getMiniMessage().deserialize(raw, tagResolver));
     }
 
     @Override

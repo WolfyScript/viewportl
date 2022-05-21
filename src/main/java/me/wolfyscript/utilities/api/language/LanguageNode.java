@@ -29,33 +29,94 @@ import java.util.List;
 public abstract class LanguageNode {
 
     private final JsonNode value;
+    protected final Language language;
     protected Chat chat;
 
-    protected LanguageNode(Chat chat, JsonNode value) {
+    protected LanguageNode(Language language, Chat chat, JsonNode value) {
         this.chat = chat;
         this.value = value;
+        this.language = language;
     }
 
-    abstract public Component getComponent(boolean translateLegacyColor);
+    abstract public Component getComponent();
 
-    abstract public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver);
+    abstract public Component getComponent(TagResolver tagResolver);
 
+    public Component getComponent(TagResolver... tagResolvers) {
+        return getComponent(TagResolver.resolver(tagResolvers));
+    }
+
+    @Deprecated
+    public Component getComponent(boolean translateLegacyColor) {
+        return getComponent();
+    }
+
+    @Deprecated
+    public Component getComponent(boolean translateLegacyColor, TagResolver tagResolver) {
+        return getComponent(tagResolver);
+    }
+
+    @Deprecated
     public Component getComponent(boolean translateLegacyColor, TagResolver... tagResolvers) {
-        return getComponent(translateLegacyColor, TagResolver.resolver(tagResolvers));
+        return getComponent(tagResolvers);
     }
 
+    /**
+     * @deprecated Replaced by {@link #getComponents(TagResolver)}! The translateLegacyColor has no effect anymore!
+     *  Plus, converting a list to an array is expensive! You may also use {@link #getComponent(TagResolver)} and {@link TagResolver#resolver(Iterable)}.
+     * @param translateLegacyColor translate the legacy color codes in the raw value
+     * @return The Component of this node
+     */
+    @Deprecated
     public Component getComponent(boolean translateLegacyColor, List<? extends TagResolver> tagResolvers) {
         return getComponent(translateLegacyColor, tagResolvers.toArray(new TagResolver[0]));
     }
 
-    abstract public List<Component> getComponents(boolean translateLegacyColor);
+    abstract public List<Component> getComponents();
 
-    abstract public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver);
+    abstract public List<Component> getComponents(TagResolver tagResolver);
 
-    public List<Component> getComponents(boolean translateLegacyColor, TagResolver... tagResolvers) {
-        return getComponents(translateLegacyColor, TagResolver.resolver(tagResolvers));
+    public List<Component> getComponents(TagResolver... tagResolvers) {
+        return getComponents(TagResolver.resolver(tagResolvers));
     }
 
+    /**
+     * @deprecated Replaced by {@link #getComponents()}! The translateLegacyColor has no effect anymore!
+     * @param translateLegacyColor translate the legacy color codes in the raw value
+     * @return The list of Components.
+     */
+    @Deprecated
+    public List<Component> getComponents(boolean translateLegacyColor) {
+        return getComponents();
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getComponents(TagResolver)}! The translateLegacyColor has no effect anymore!
+     * @param translateLegacyColor translate the legacy color codes in the raw value
+     * @return The list of Components.
+     */
+    @Deprecated
+    public List<Component> getComponents(boolean translateLegacyColor, TagResolver tagResolver) {
+        return getComponents(tagResolver);
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getComponents(TagResolver...)}! The translateLegacyColor has no effect anymore!
+     * @param translateLegacyColor translate the legacy color codes in the raw value
+     * @return The list of Components.
+     */
+    @Deprecated
+    public List<Component> getComponents(boolean translateLegacyColor, TagResolver... tagResolvers) {
+        return getComponents(tagResolvers);
+    }
+
+    /**
+     * @deprecated Replaced by {@link #getComponents(TagResolver...)}! The translateLegacyColor has no effect anymore!
+     *  Plus, converting a list to an array is expensive! You may also use {@link #getComponent(TagResolver)} and {@link TagResolver#resolver(Iterable)}.
+     * @param translateLegacyColor translate the legacy color codes in the raw value
+     * @return The list of Components.
+     */
+    @Deprecated
     public List<Component> getComponents(boolean translateLegacyColor, List<? extends TagResolver> tagResolvers) {
         return getComponents(translateLegacyColor, tagResolvers.toArray(new TagResolver[0]));
     }
