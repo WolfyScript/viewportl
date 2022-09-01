@@ -19,6 +19,7 @@
 package com.wolfyscript.utilities.common;
 
 import com.wolfyscript.utilities.common.chat.Chat;
+import com.wolfyscript.utilities.common.json.jackson.MapperUtil;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 
 import java.io.File;
@@ -28,6 +29,12 @@ import java.io.File;
  *
  */
 public abstract class WolfyUtils {
+
+    protected MapperUtil mapperUtil;
+
+    protected WolfyUtils() {
+        this.mapperUtil = new MapperUtil(this);
+    }
 
     private static final String ENVIRONMENT = System.getProperties().getProperty("com.wolfyscript.env", "PROD");
 
@@ -53,7 +60,9 @@ public abstract class WolfyUtils {
 
     public abstract Chat getChat();
 
-
+    public MapperUtil getJacksonMapperUtil() {
+        return mapperUtil;
+    }
 
 
 }
