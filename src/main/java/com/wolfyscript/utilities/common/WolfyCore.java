@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfyscript.utilities.common.chat.Chat;
 
 /**
@@ -28,4 +29,7 @@ public interface WolfyCore {
 
     Chat getChat();
 
+    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+
+    WolfyUtils getWolfyUtils();
 }
