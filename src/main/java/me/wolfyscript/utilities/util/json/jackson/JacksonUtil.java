@@ -48,8 +48,8 @@ public class JacksonUtil {
         objectMapper.registerModule(module);
     }
 
-    public static <T> void addSerializer(SimpleModule module, Class<T> t, @NotNull Serialize<T> serialize) {
-        module.addSerializer(t, new StdSerializer<T>(t) {
+    public static <T> void addSerializer(SimpleModule module, Class<T> type, @NotNull Serialize<T> serialize) {
+        module.addSerializer(type, new StdSerializer<>(type) {
             @Override
             public void serialize(T t, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
                 serialize.serialize(t, jsonGenerator, serializerProvider);
@@ -57,8 +57,8 @@ public class JacksonUtil {
         });
     }
 
-    public static <T> void addDeserializer(SimpleModule module, Class<T> t, @NotNull Deserialize<T> deserialize) {
-        module.addDeserializer(t, new StdDeserializer<T>(t) {
+    public static <T> void addDeserializer(SimpleModule module, Class<T> type, @NotNull Deserialize<T> deserialize) {
+        module.addDeserializer(type, new StdDeserializer<>(type) {
             @Override
             public T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
                 return deserialize.deserialize(jsonParser, deserializationContext);
