@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolfyscript.wolfyutils</groupId>
     <artifactId>wolfyutilities</artifactId>
-    <version>4.16.1-HOCON-SNAPSHOT</version>
+    <version>4.16.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
