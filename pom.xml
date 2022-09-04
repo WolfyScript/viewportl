@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolfyscript.wolfyutils</groupId>
     <artifactId>wolfyutilities</artifactId>
-    <version>4.16-SNAPSHOT</version>
+    <version>4.16.1-HOCON-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -57,6 +57,12 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.13.2.1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.wolfyscript</groupId>
+            <artifactId>jackson-dataformat-hocon</artifactId>
+            <version>2.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
