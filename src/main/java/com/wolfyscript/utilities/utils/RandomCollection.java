@@ -25,6 +25,13 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Implementation of a weighted random collection.<br>
+ * The chance of the values in the collection are based on their individual weight and total weight.<br>
+ * <pre>valueChance = valueWeight / totalWeight</pre>
+ *
+ * @param <E> The type of the values
+ */
 public class RandomCollection<E> extends TreeMap<Double, E> {
 
     private double total = 0;
@@ -43,6 +50,13 @@ public class RandomCollection<E> extends TreeMap<Double, E> {
         this.random = random;
     }
 
+    /**
+     * Adds a new value with the specified weight to the collection.<br>
+     *
+     * @param weight The weight of the value.
+     * @param result The value to store.
+     * @return This collection to allow for chaining.
+     */
     public RandomCollection<E> add(double weight, E result) {
         if (weight <= 0) return this;
         total += weight;
