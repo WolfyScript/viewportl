@@ -37,7 +37,7 @@ public class EncryptionUtils {
     @Deprecated
     public static String getCode() {
         var random = new Random();
-        var alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß";
         final int x = alphabet.length();
         StringBuilder sB = new StringBuilder();
         for (int i = 0; i < 16; i++) {

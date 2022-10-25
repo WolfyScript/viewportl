@@ -60,6 +60,11 @@ public abstract class WolfyUtils {
 
     public abstract Chat getChat();
 
+    //this gives out the Instance of this plugin
+    public static WolfyUtils getInstance() {
+        return getInstance();
+    }
+
     public MapperUtil getJacksonMapperUtil() {
         return mapperUtil;
     }
