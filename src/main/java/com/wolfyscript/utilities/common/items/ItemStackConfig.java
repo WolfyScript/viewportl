@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.item;
+package com.wolfyscript.utilities.common.items;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public abstract class ItemStackConfig<I> {
     /**
      * The id of the item in the <code>&lt;namespace&gt;:&lt;item_key&gt;</code> format.
      */
-    private final String itemId;
+    protected final String itemId;
 
     /* ********************
      * Common NBT Settings
@@ -40,18 +40,18 @@ public abstract class ItemStackConfig<I> {
      * The display name of the stack.
      * Direct support for Adventure tags.
      */
-    private String name = null;
+    protected String name = null;
     /**
      * The lore of the stack. Direct support for Adventure tags.
      */
-    private List<String> lore = new ArrayList<>();
+    protected List<String> lore = new ArrayList<>();
 
-    private int amount = 1;
-    private int repairCost = 0;
-    private int damage = 0;
-    private boolean unbreakable = false;
-    private int customModelData = 0;
-    private Map<String, Integer> enchants = new HashMap<>();
+    protected int amount = 1;
+    protected int repairCost = 0;
+    protected int damage = 0;
+    protected boolean unbreakable = false;
+    protected int customModelData = 0;
+    protected Map<String, Integer> enchants = new HashMap<>();
 
     public ItemStackConfig(String itemId) {
         this.itemId = itemId;
