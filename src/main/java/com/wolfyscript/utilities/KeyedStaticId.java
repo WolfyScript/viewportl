@@ -27,6 +27,27 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface KeyedStaticId {
 
-    String value();
+    String value() default "";
+
+    String namespace() default "wolfyutilities";
+
+    String key() default "";
+
+    class KeyBuilder {
+
+        public static String createKeyString(Class<?> annotated) {
+            KeyedStaticId annotation = annotated.getAnnotation(KeyedStaticId.class);
+            if (annotation != null) {
+                if (!annotation.value().isBlank()) {
+                    return annotation.value();
+                }
+                if (!annotation.namespace().isBlank() && !annotation.key().isBlank()) {
+                    return annotation.namespace() + ":" + annotation.key();
+                }
+            }
+            throw new IllegalArgumentException("Invalid static id properties! Either use the value, or both the namespace and key options!");
+        }
+
+    }
 
 }
