@@ -18,10 +18,12 @@
 
 package com.wolfyscript.utilities.common.json.jackson;
 
+import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.wolfyscript.utilities.common.WolfyCore;
 import com.wolfyscript.utilities.common.WolfyUtils;
 
 /**
@@ -76,6 +78,14 @@ public class MapperUtil {
      */
     public <M extends ObjectMapper> M applyWolfyUtilsModules(M mapper) {
         return wolfyUtils.getCore().applyWolfyUtilsJsonMapperModules(mapper);
+    }
+
+    public <M extends ObjectMapper> M applyWolfyUtilsInjectableValues(M mapper, InjectableValues.Std injectableValues) {
+        mapper.setInjectableValues(injectableValues
+                .addValue(WolfyCore.class, wolfyUtils.getCore())
+                .addValue(WolfyUtils.class, wolfyUtils)
+        );
+        return mapper;
     }
 
     private static <T> void addSerializer(SimpleModule module, JsonSerializer<T> serializer) {
