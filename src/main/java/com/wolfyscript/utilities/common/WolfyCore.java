@@ -20,6 +20,8 @@ package com.wolfyscript.utilities.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfyscript.utilities.common.chat.Chat;
+import com.wolfyscript.utilities.registry.Registries;
+import org.reflections.Reflections;
 
 /**
  * Represents the core instance of the WolfyUtils plugin.
@@ -32,4 +34,8 @@ public interface WolfyCore {
     <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
 
     WolfyUtils getWolfyUtils();
+
+    Reflections getReflections();
+
+    Registries getRegistries();
 }
