@@ -16,26 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.eval.value_provider;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.registry.Registries;
-import org.reflections.Reflections;
+import com.wolfyscript.utilities.eval.context.EvalContext;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+public interface ValueProviderFloat extends ValueProvider<Float> {
 
-    Chat getChat();
-
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
-
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
+    Float getValue(EvalContext context);
 }

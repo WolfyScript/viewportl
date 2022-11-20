@@ -16,26 +16,28 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.eval.value_provider;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.registry.Registries;
-import org.reflections.Reflections;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.common.WolfyUtils;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+public abstract class AbstractValueProvider<V> implements ValueProvider<V> {
 
-    Chat getChat();
+    protected final NamespacedKey key;
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    protected AbstractValueProvider(NamespacedKey key) {
+        this.key = key;
+    }
 
-    WolfyUtils getWolfyUtils();
+    protected AbstractValueProvider(@JacksonInject WolfyUtils wolfyUtils) {
+        this.key = wolfyUtils.getIdentifiers().getNamespaced(getClass());
+    }
 
-    Reflections getReflections();
-
-    Registries getRegistries();
+    @JsonIgnore
+    @Override
+    public NamespacedKey getNamespacedKey() {
+        return key;
+    }
 }

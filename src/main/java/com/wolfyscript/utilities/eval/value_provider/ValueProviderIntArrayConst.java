@@ -16,26 +16,28 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.eval.value_provider;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.registry.Registries;
-import org.reflections.Reflections;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wolfyscript.utilities.KeyedStaticId;
+import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.eval.context.EvalContext;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+@KeyedStaticId(key = "int/array/const")
+public class ValueProviderIntArrayConst extends AbstractValueProvider<int[]> {
 
-    Chat getChat();
+    private final int[] value;
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    @JsonCreator
+    public ValueProviderIntArrayConst(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") int[] value) {
+        super(wolfyUtils);
+        this.value = value;
+    }
 
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
+    @Override
+    public int[] getValue(EvalContext context) {
+        return value;
+    }
 }

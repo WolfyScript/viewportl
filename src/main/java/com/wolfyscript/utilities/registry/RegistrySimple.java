@@ -16,26 +16,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.registry;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.registry.Registries;
-import org.reflections.Reflections;
+import com.wolfyscript.utilities.Keyed;
+import com.wolfyscript.utilities.NamespacedKey;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Represents the core instance of the WolfyUtils plugin.
+ * A simple registry, used for basic use cases.
  *
+ * @param <V> The type of the value.
  */
-public interface WolfyCore {
+public class RegistrySimple<V extends Keyed> extends AbstractRegistry<Map<NamespacedKey, V>, V> {
 
-    Chat getChat();
+    public RegistrySimple(NamespacedKey namespacedKey, Registries registries) {
+        super(namespacedKey, new HashMap<>(), registries);
+    }
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
-
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
+    public RegistrySimple(NamespacedKey namespacedKey, Registries registries, Class<V> type) {
+        super(namespacedKey, new HashMap<>(), registries, type);
+    }
 }

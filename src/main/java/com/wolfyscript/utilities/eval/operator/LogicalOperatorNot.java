@@ -16,26 +16,26 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.eval.operator;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.registry.Registries;
-import org.reflections.Reflections;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wolfyscript.utilities.KeyedStaticId;
+import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.eval.context.EvalContext;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+@KeyedStaticId(key = "not")
+public class LogicalOperatorNot extends LogicalOperator {
 
-    Chat getChat();
+    @JsonCreator
+    public LogicalOperatorNot(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("this") BoolOperator thisValue) {
+        super(wolfyUtils, thisValue);
+    }
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
-
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
+    @Override
+    public boolean evaluate(EvalContext context) {
+        return !thisValue.evaluate(context);
+    }
 }
