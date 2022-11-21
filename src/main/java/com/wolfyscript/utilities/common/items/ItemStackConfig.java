@@ -19,6 +19,12 @@
 package com.wolfyscript.utilities.common.items;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.eval.operator.BoolOperator;
+import com.wolfyscript.utilities.eval.operator.BoolOperatorConst;
+import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
+import com.wolfyscript.utilities.eval.value_provider.ValueProviderIntegerConst;
+import com.wolfyscript.utilities.eval.value_provider.ValueProviderStringConst;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,21 +46,33 @@ public abstract class ItemStackConfig<I> {
      * The display name of the stack.
      * Direct support for Adventure tags.
      */
-    protected String name = null;
+    protected ValueProvider<String> name;
     /**
      * The lore of the stack. Direct support for Adventure tags.
      */
-    protected List<String> lore = new ArrayList<>();
+    protected List<ValueProvider<String>> lore = new ArrayList<>();
 
-    protected int amount = 1;
-    protected int repairCost = 0;
-    protected int damage = 0;
-    protected boolean unbreakable = false;
-    protected int customModelData = 0;
-    protected Map<String, Integer> enchants = new HashMap<>();
+    protected ValueProvider<Integer> amount;
+    protected ValueProvider<Integer> repairCost;
+    protected ValueProvider<Integer> damage;
+    protected BoolOperator unbreakable;
+    protected ValueProvider<Integer> customModelData;
+    protected Map<String, ValueProvider<Integer>> enchants = new HashMap<>();
 
-    public ItemStackConfig(String itemId) {
+    /* ********************
+     * Unhandled NBT Tags
+     * ********************/
+
+    protected Map<String, NBTTagSettings> nbt = new HashMap<>();
+
+    public ItemStackConfig(WolfyUtils wolfyUtils, String itemId) {
         this.itemId = itemId;
+        this.amount = new ValueProviderIntegerConst(wolfyUtils, 1);
+        this.name = new ValueProviderStringConst(wolfyUtils, null);
+        this.repairCost = new ValueProviderIntegerConst(wolfyUtils, 0);
+        this.damage = new ValueProviderIntegerConst(wolfyUtils, 0);
+        this.unbreakable = new BoolOperatorConst(wolfyUtils, false);
+        this.customModelData = new ValueProviderIntegerConst(wolfyUtils, 0);
     }
 
     /**
@@ -68,67 +86,77 @@ public abstract class ItemStackConfig<I> {
         return itemId;
     }
 
-    public String getName() {
+    public ValueProvider<String> getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(ValueProvider<String> name) {
         this.name = name;
     }
 
-    public List<String> getLore() {
-        return lore;
+    public List<ValueProvider<String>> getLore() {
+        return List.copyOf(lore);
     }
 
-    public void setLore(List<String> lore) {
+    public void setLore(List<ValueProvider<String>> lore) {
         this.lore = lore;
     }
 
-    public int getAmount() {
+    public ValueProvider<Integer> getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(ValueProvider<Integer> amount) {
         this.amount = amount;
     }
 
-    public int getRepairCost() {
+    public ValueProvider<Integer> getRepairCost() {
         return repairCost;
     }
 
-    public void setRepairCost(int repairCost) {
+    public void setRepairCost(ValueProvider<Integer> repairCost) {
         this.repairCost = repairCost;
     }
 
-    public int getDamage() {
+    public ValueProvider<Integer> getDamage() {
         return damage;
     }
 
-    public void setDamage(int damage) {
+    public void setDamage(ValueProvider<Integer> damage) {
         this.damage = damage;
     }
 
-    public boolean isUnbreakable() {
+    public BoolOperator getUnbreakable() {
         return unbreakable;
     }
 
-    public void setUnbreakable(boolean unbreakable) {
+    public void setUnbreakable(BoolOperator unbreakable) {
         this.unbreakable = unbreakable;
     }
 
-    public int getCustomModelData() {
+    public ValueProvider<Integer> getCustomModelData() {
         return customModelData;
     }
 
-    public void setCustomModelData(int customModelData) {
+    public void setCustomModelData(ValueProvider<Integer> customModelData) {
         this.customModelData = customModelData;
     }
 
-    public Map<String, Integer> getEnchants() {
-        return enchants;
+    public Map<String, ValueProvider<Integer>> getEnchants() {
+        return Map.copyOf(enchants);
     }
 
-    public void setEnchants(Map<String, Integer> enchants) {
+    public void setEnchants(Map<String, ValueProvider<Integer>> enchants) {
         this.enchants = enchants;
     }
+
+    public static class NBTTagSettings {
+
+        private final String key;
+
+        public NBTTagSettings(String key) {
+            this.key = key;
+        }
+    }
+
 }
