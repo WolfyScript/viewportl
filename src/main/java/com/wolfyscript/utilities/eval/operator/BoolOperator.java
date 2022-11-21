@@ -35,7 +35,7 @@ import java.io.IOException;
  * An Operator that evaluates into a booleanish value.
  */
 @KeyedBaseType(baseType = Operator.class)
-@OptionalValueDeserializer(delegateObjectDeserializer = true, deserializer = BoolOperator.OptionalValueDeserializer.class)
+@OptionalValueDeserializer(deserializer = BoolOperator.OptionalValueDeserializer.class)
 public abstract class BoolOperator extends Operator {
 
     public BoolOperator(NamespacedKey namespacedKey) {
@@ -60,7 +60,6 @@ public abstract class BoolOperator extends Operator {
         @Override
         public BoolOperator deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             JsonNode node = p.readValueAsTree();
-            if (node.isObject()) return null;
             return new BoolOperatorConst(wolfyUtils, node.asBoolean());
         }
     }
