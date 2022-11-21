@@ -63,7 +63,7 @@ public abstract class ItemStackConfig<I> {
      * Unhandled NBT Tags
      * ********************/
 
-    protected Map<String, NBTTagSettings> nbt = new HashMap<>();
+    protected Map<String, NBTTagConfig> nbt = new HashMap<>();
 
     public ItemStackConfig(WolfyUtils wolfyUtils, String itemId) {
         this.itemId = itemId;
@@ -148,15 +148,6 @@ public abstract class ItemStackConfig<I> {
 
     public void setEnchants(Map<String, ValueProvider<Integer>> enchants) {
         this.enchants = enchants;
-    }
-
-    public static class NBTTagSettings {
-
-        private final String key;
-
-        public NBTTagSettings(String key) {
-            this.key = key;
-        }
     }
 
 }
