@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common.items;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import com.wolfyscript.utilities.eval.operator.BoolOperator;
@@ -150,4 +151,12 @@ public abstract class ItemStackConfig<I> {
         this.enchants = enchants;
     }
 
+    @JsonGetter("nbt")
+    public Map<String, NBTTagConfig> getNBT() {
+        return Map.copyOf(nbt);
+    }
+
+    public void setNbt(Map<String, NBTTagConfig> nbt) {
+        this.nbt = nbt;
+    }
 }
