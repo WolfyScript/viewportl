@@ -20,6 +20,7 @@ package com.wolfyscript.utilities.common;
 
 import com.wolfyscript.utilities.common.chat.Chat;
 import com.wolfyscript.utilities.common.json.jackson.MapperUtil;
+import com.wolfyscript.utilities.common.registry.Registries;
 import me.wolfyscript.utilities.api.language.LanguageAPI;
 
 import java.io.File;

@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.registry;
+package com.wolfyscript.utilities.common.registry;
 
 import com.wolfyscript.utilities.NamespacedKey;
 import java.util.Collection;

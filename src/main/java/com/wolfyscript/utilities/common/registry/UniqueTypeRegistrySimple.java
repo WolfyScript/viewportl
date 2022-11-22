@@ -16,31 +16,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.registry;
+package com.wolfyscript.utilities.common.registry;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.common.Registries;
 
-/**
- * A simple registry, used for basic use cases.
- *
- * @param <V> The type of the value.
- */
-public class UniqueRegistrySimple<V extends Keyed> extends AbstractRegistry<BiMap<NamespacedKey, V>, V> {
+public class UniqueTypeRegistrySimple<V extends Keyed> extends AbstractTypeRegistry<BiMap<NamespacedKey, Class<? extends V>>, V> {
 
-    public UniqueRegistrySimple(NamespacedKey namespacedKey, Registries registries) {
-        super(namespacedKey, HashBiMap.create(), registries);
+    public UniqueTypeRegistrySimple(NamespacedKey key, Registries registries) {
+        super(key, HashBiMap.create(), registries);
     }
 
-    public UniqueRegistrySimple(NamespacedKey namespacedKey, Registries registries, Class<V> type) {
-        super(namespacedKey, HashBiMap.create(), registries, type);
-    }
-
-    @Override
-    public NamespacedKey getKey(V value) {
+    public NamespacedKey getKey(Class<? extends V> value) {
         return map.inverse().get(value);
     }
 

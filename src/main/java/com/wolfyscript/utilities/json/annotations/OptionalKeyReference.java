@@ -40,7 +40,7 @@ import com.google.inject.Inject;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.common.WolfyCore;
-import com.wolfyscript.utilities.registry.Registry;
+import com.wolfyscript.utilities.common.registry.Registry;
 import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
