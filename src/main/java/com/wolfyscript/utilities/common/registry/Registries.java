@@ -60,7 +60,7 @@ public abstract class Registries {
         operators = new UniqueTypeRegistrySimple<>(core.getWolfyUtils().getIdentifiers().getSelfNamespaced("operators"), this);
     }
 
-    void indexTypedRegistry(@NotNull Registry<?> registry) {
+    protected void indexTypedRegistry(@NotNull Registry<?> registry) {
         Preconditions.checkArgument(!REGISTRIES_BY_KEY.containsKey(registry.getKey()), "A registry with the key \"" + registry.getKey() + "\" already exists!");
         REGISTRIES_BY_KEY.put(registry.getKey(), registry);
 
