@@ -22,6 +22,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.common.Registries;
 
 /**
  * A simple registry, used for basic use cases.

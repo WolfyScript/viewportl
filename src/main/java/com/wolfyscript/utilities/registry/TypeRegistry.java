@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * This registry allows you to register classes under NamespacedKeys. <br>
- * It is similar to the {@link me.wolfyscript.utilities.util.Registry}, with the difference that it stores the classes of the type. <br>
+ * It is similar to the {@link Registry}, with the difference that it stores the classes of the type. <br>
  * To get a new instance of an entry you must use {@link #create(NamespacedKey)} or create it manually. <br>
  * <p>
  * Main use case of this registry would be to prevent using the {@link Registry} with default objects <br>

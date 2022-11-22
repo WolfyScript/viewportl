@@ -20,6 +20,7 @@ package com.wolfyscript.utilities.registry;
 
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.common.Registries;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.common.Registries;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
