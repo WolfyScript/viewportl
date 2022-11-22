@@ -3,6 +3,7 @@ package com.wolfyscript.utilities.registry;
 import com.google.common.base.Preconditions;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.common.Registries;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;

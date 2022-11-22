@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.common.Registries;
 
 public class UniqueTypeRegistrySimple<V extends Keyed> extends AbstractTypeRegistry<BiMap<NamespacedKey, Class<? extends V>>, V> {
 

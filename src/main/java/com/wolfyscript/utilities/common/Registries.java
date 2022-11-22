@@ -16,15 +16,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.registry;
+package com.wolfyscript.utilities.common;
 
 import com.google.common.base.Preconditions;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.common.WolfyCore;
-import com.wolfyscript.utilities.common.WolfyUtils;
 import com.wolfyscript.utilities.eval.operator.Operator;
 import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
+import com.wolfyscript.utilities.registry.Registry;
+import com.wolfyscript.utilities.registry.RegistrySimple;
+import com.wolfyscript.utilities.registry.TypeRegistry;
+import com.wolfyscript.utilities.registry.UniqueTypeRegistrySimple;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,7 +61,7 @@ public abstract class Registries {
         operators = new UniqueTypeRegistrySimple<>(core.getWolfyUtils().getIdentifiers().getSelfNamespaced("operators"), this);
     }
 
-    void indexTypedRegistry(Registry<?> registry) {
+    public void indexTypedRegistry(Registry<?> registry) {
         Preconditions.checkArgument(!REGISTRIES_BY_KEY.containsKey(registry.getKey()), "A registry with the key \"" + registry.getKey() + "\" already exists!");
         REGISTRIES_BY_KEY.put(registry.getKey(), registry);
 

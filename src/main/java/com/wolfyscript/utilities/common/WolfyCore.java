@@ -20,7 +20,6 @@ package com.wolfyscript.utilities.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.registry.Registries;
 import org.reflections.Reflections;
 
 /**
