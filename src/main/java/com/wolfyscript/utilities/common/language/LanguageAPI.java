@@ -16,10 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.api.language;
+package com.wolfyscript.utilities.common.language;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.language.Language;
+import com.wolfyscript.utilities.language.LanguageNode;
+import com.wolfyscript.utilities.language.LanguageNodeMissing;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;

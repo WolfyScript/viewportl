@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.api.language;
+package com.wolfyscript.utilities.language;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.wolfyscript.utilities.common.chat.Chat;

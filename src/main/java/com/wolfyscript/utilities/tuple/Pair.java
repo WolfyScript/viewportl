@@ -16,16 +16,31 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.api.chat;
+package com.wolfyscript.utilities.tuple;
 
-/**
- * @param <A> defines the type of the value. String or BaseComponent
- * @param <V> defines the type of the Action. HoverEvent.Action or ClickEvent.Action
- */
-public interface ChatEvent<A, V> {
+public class Pair<K, V> {
 
-    V getValue();
+    K key;
+    V value;
 
-    A getAction();
+    public Pair(K key, V value){
+        this.key = key;
+        this.value = value;
+    }
 
+    public K getKey() {
+        return key;
+    }
+
+    public void setKey(K key) {
+        this.key = key;
+    }
+
+    public V getValue() {
+        return value;
+    }
+
+    public void setValue(V value) {
+        this.value = value;
+    }
 }

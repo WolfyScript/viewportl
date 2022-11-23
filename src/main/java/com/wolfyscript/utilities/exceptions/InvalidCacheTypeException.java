@@ -16,14 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.json.jackson.function;
+package com.wolfyscript.utilities.exceptions;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
+public class InvalidCacheTypeException extends Error {
 
-import java.io.IOException;
+    public InvalidCacheTypeException(String message){
+        super(message);
+    }
 
-public interface Deserialize<T> {
 
-    T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException;
 }

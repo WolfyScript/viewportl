@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.json.gson;
+package com.wolfyscript.utilities.json.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

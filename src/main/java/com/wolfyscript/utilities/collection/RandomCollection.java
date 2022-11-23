@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.utils;
+package com.wolfyscript.utilities.collection;
 
 import org.jetbrains.annotations.Nullable;
 

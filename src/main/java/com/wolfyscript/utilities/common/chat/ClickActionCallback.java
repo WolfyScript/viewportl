@@ -16,31 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util;
+package com.wolfyscript.utilities.common.chat;
 
-public class Pair<K, V> {
+import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.common.adapters.Player;
 
-    K key;
-    V value;
-
-    public Pair(K key, V value){
-        this.key = key;
-        this.value = value;
-    }
-
-    public K getKey() {
-        return key;
-    }
-
-    public void setKey(K key) {
-        this.key = key;
-    }
-
-    public V getValue() {
-        return value;
-    }
-
-    public void setValue(V value) {
-        this.value = value;
-    }
+public interface ClickActionCallback {
+    void run(WolfyUtils api, Player player);
 }

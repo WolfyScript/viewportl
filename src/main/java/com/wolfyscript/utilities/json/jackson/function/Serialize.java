@@ -16,13 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.exceptions;
+package com.wolfyscript.utilities.json.jackson.function;
 
-public class InvalidCacheTypeException extends Error {
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
-    public InvalidCacheTypeException(String message){
-        super(message);
-    }
+import java.io.IOException;
 
+public interface Serialize<T> {
 
+    void serialize(T t, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException;
 }

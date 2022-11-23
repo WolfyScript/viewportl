@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.json.jackson;
+package com.wolfyscript.utilities.json.jackson;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -26,8 +26,8 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import me.wolfyscript.utilities.util.json.jackson.function.Deserialize;
-import me.wolfyscript.utilities.util.json.jackson.function.Serialize;
+import com.wolfyscript.utilities.json.jackson.function.Deserialize;
+import com.wolfyscript.utilities.json.jackson.function.Serialize;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

@@ -16,64 +16,50 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.api.language;
+package com.wolfyscript.utilities.language;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wolfyscript.utilities.common.chat.Chat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class LanguageNodeArray extends LanguageNode {
+public class LanguageNodeText extends LanguageNode {
 
-    private final List<String> raw;
-    private final String rawLine;
+    private final String raw;
 
-    LanguageNodeArray(Language language, Chat chat, JsonNode jsonNode) {
+    LanguageNodeText(Language language, Chat chat, JsonNode jsonNode) {
         super(language, chat, jsonNode);
-        this.raw = new LinkedList<>();
-        Iterator<JsonNode> nodeItr = jsonNode.elements();
-        while (nodeItr.hasNext()) {
-            String value = nodeItr.next().textValue();
-            this.raw.add(language.usesMiniMessageFormat() ? value : chat.getWolfyUtils().getLanguageAPI().convertLegacyToMiniMessage(value));
+        if (language.usesMiniMessageFormat()) {
+            this.raw = jsonNode.asText("");
+        } else {
+            this.raw = chat.getWolfyUtils().getLanguageAPI().convertLegacyToMiniMessage(jsonNode.asText(""));
         }
-        this.rawLine = raw.stream().reduce("", (s, s2) -> s + " " + s2);
     }
 
     @Override
     public Component getComponent() {
-        return chat.getMiniMessage().deserialize(rawLine);
+        return chat.getMiniMessage().deserialize(raw);
     }
 
     @Override
     public Component getComponent(TagResolver tagResolver) {
-        return chat.getMiniMessage().deserialize(rawLine, tagResolver);
+        return chat.getMiniMessage().deserialize(raw, tagResolver);
     }
 
     @Override
     public List<Component> getComponents() {
-        return getComponents(raw);
+        return List.of(chat.getMiniMessage().deserialize(raw));
     }
 
     @Override
     public List<Component> getComponents(TagResolver tagResolver) {
-        return getComponents(raw, tagResolver);
-    }
-
-    private List<Component> getComponents(List<String> rawValues) {
-        return rawValues.stream().map(s -> chat.getMiniMessage().deserialize(s)).collect(Collectors.toList());
-    }
-
-    private List<Component> getComponents(List<String> rawValues, TagResolver tagResolver) {
-        return rawValues.stream().map(s -> chat.getMiniMessage().deserialize(s, tagResolver)).collect(Collectors.toList());
+        return List.of(chat.getMiniMessage().deserialize(raw, tagResolver));
     }
 
     @Override
     public String getRaw() {
-        return rawLine;
+        return raw;
     }
 }

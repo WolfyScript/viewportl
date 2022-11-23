@@ -16,14 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util.json.jackson.function;
+package com.wolfyscript.utilities.json.jackson.function;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
 
 import java.io.IOException;
 
-public interface Serialize<T> {
+public interface Deserialize<T> {
 
-    void serialize(T t, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException;
+    T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException;
 }

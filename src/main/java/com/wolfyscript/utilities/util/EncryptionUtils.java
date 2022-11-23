@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.util;
+package com.wolfyscript.utilities.util;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

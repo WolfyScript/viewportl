@@ -16,11 +16,16 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.wolfyscript.utilities.api.chat;
+package com.wolfyscript.utilities.common.chat;
 
-import com.wolfyscript.utilities.common.WolfyUtils;
-import com.wolfyscript.utilities.common.adapters.Player;
+/**
+ * @param <A> defines the type of the value. String or BaseComponent
+ * @param <V> defines the type of the Action. HoverEvent.Action or ClickEvent.Action
+ */
+public interface ChatEvent<A, V> {
 
-public interface ClickActionCallback {
-    void run(WolfyUtils api, Player player);
+    V getValue();
+
+    A getAction();
+
 }
