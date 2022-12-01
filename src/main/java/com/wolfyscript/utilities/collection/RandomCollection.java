@@ -18,6 +18,8 @@
 
 package com.wolfyscript.utilities.collection;
 
+import java.util.function.BiConsumer;
+import java.util.stream.Collector;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -48,6 +50,10 @@ public class RandomCollection<E> extends TreeMap<Double, E> {
      */
     public RandomCollection(Random random) {
         this.random = random;
+    }
+
+    public static <T> Collector<T, RandomCollection<T>, RandomCollection<T>> createCollector(BiConsumer<RandomCollection<T>, T> accumulator) {
+        return Collector.of(RandomCollection::new, accumulator, RandomCollection::addAll);
     }
 
     /**
