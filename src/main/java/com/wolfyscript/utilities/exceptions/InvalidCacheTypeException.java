@@ -16,26 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.exceptions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import org.reflections.Reflections;
+public class InvalidCacheTypeException extends Error {
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+    public InvalidCacheTypeException(String message){
+        super(message);
+    }
 
-    Chat getChat();
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
-
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
 }

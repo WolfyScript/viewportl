@@ -20,7 +20,9 @@ package com.wolfyscript.utilities.common;
 
 import com.wolfyscript.utilities.common.chat.Chat;
 import com.wolfyscript.utilities.common.json.jackson.MapperUtil;
-import me.wolfyscript.utilities.api.language.LanguageAPI;
+import com.wolfyscript.utilities.common.registry.Registries;
+import java.util.logging.Logger;
+import com.wolfyscript.utilities.common.language.LanguageAPI;
 
 import java.io.File;
 
@@ -55,6 +57,8 @@ public abstract class WolfyUtils {
     public abstract String getName();
 
     public abstract File getDataFolder();
+
+    public abstract Logger getLogger();
 
     public abstract LanguageAPI getLanguageAPI();
 

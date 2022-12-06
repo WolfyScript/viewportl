@@ -89,6 +89,10 @@ public interface ValueProvider<V> extends Keyed {
                     }
                     return new ValueProviderStringConst(wolfyUtils, text);
                 }
+            } else if (node.isInt()) {
+                return new ValueProviderIntegerConst(wolfyUtils, node.asInt());
+            } else if (node.isDouble()) {
+                return new ValueProviderDoubleConst(wolfyUtils, node.asDouble());
             }
             return null;
         }
