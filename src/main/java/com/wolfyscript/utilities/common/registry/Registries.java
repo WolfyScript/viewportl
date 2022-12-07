@@ -23,6 +23,7 @@ import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.common.WolfyCore;
 import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.common.nbt.NBTTagConfig;
 import com.wolfyscript.utilities.eval.operator.Operator;
 import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
 import java.util.HashMap;
@@ -52,12 +53,14 @@ public abstract class Registries {
 
     private final TypeRegistry<ValueProvider<?>> valueProviders;
     private final TypeRegistry<Operator> operators;
+    private final TypeRegistry<NBTTagConfig> nbtTagConfigs;
 
     public Registries(@NotNull WolfyCore core) {
         this.core = core;
 
         valueProviders = new UniqueTypeRegistrySimple<>(core.getWolfyUtils().getIdentifiers().getSelfNamespaced("value_providers"), this);
         operators = new UniqueTypeRegistrySimple<>(core.getWolfyUtils().getIdentifiers().getSelfNamespaced("operators"), this);
+        nbtTagConfigs = new UniqueTypeRegistrySimple<>(core.getWolfyUtils().getIdentifiers().getSelfNamespaced("nbt_configs"), this);
     }
 
     protected void indexTypedRegistry(@NotNull Registry<?> registry) {
@@ -103,5 +106,9 @@ public abstract class Registries {
 
     public TypeRegistry<Operator> getOperators() {
         return operators;
+    }
+
+    public TypeRegistry<NBTTagConfig> getNbtTagConfigs() {
+        return nbtTagConfigs;
     }
 }

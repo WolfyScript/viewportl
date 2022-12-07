@@ -21,6 +21,8 @@ package com.wolfyscript.utilities.common.items;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.common.nbt.NBTTagConfig;
+import com.wolfyscript.utilities.common.nbt.NBTTagConfigCompound;
 import com.wolfyscript.utilities.eval.operator.BoolOperator;
 import com.wolfyscript.utilities.eval.operator.BoolOperatorConst;
 import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
@@ -64,7 +66,7 @@ public abstract class ItemStackConfig<I> {
      * Unhandled NBT Tags
      * ********************/
 
-    protected Map<String, NBTTagConfig> nbt = new HashMap<>();
+    protected NBTTagConfigCompound nbt;
 
     public ItemStackConfig(WolfyUtils wolfyUtils, String itemId) {
         this.itemId = itemId;
@@ -74,6 +76,7 @@ public abstract class ItemStackConfig<I> {
         this.damage = new ValueProviderIntegerConst(wolfyUtils, 0);
         this.unbreakable = new BoolOperatorConst(wolfyUtils, false);
         this.customModelData = new ValueProviderIntegerConst(wolfyUtils, 0);
+        this.nbt = new NBTTagConfigCompound(wolfyUtils, "", "");
     }
 
     /**
@@ -152,11 +155,11 @@ public abstract class ItemStackConfig<I> {
     }
 
     @JsonGetter("nbt")
-    public Map<String, NBTTagConfig> getNBT() {
-        return Map.copyOf(nbt);
+    public NBTTagConfigCompound getNbt() {
+        return nbt;
     }
 
-    public void setNbt(Map<String, NBTTagConfig> nbt) {
+    public void setNbt(NBTTagConfigCompound nbt) {
         this.nbt = nbt;
     }
 }
