@@ -11,8 +11,8 @@ import com.wolfyscript.utilities.eval.value_provider.ValueProviderLong;
 public class NBTTagConfigLong extends NBTTagConfigPrimitive<Long> {
 
     @JsonCreator
-    public NBTTagConfigLong(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") ValueProviderLong value, @JacksonInject("key") String key, @JacksonInject("parent_path") String parentPath) {
-        super(wolfyUtils, value, key, parentPath);
+    public NBTTagConfigLong(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") ValueProviderLong value, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
+        super(wolfyUtils, value, key, parent);
     }
 
     public NBTTagConfigLong(NBTTagConfigPrimitive<Long> other) {

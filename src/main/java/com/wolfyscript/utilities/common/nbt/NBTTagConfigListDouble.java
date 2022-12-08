@@ -9,8 +9,8 @@ import java.util.List;
 @KeyedStaticId(key = "list/double")
 public class NBTTagConfigListDouble extends NBTTagConfigListPrimitive<Double, NBTTagConfigDouble> {
 
-    public NBTTagConfigListDouble(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<NBTTagConfigDouble>> elements, @JacksonInject("key") String key, @JacksonInject("parent_path") String path) {
-        super(wolfyUtils, elements, key, path, NBTTagConfigDouble.class);
+    public NBTTagConfigListDouble(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<NBTTagConfigDouble>> elements, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
+        super(wolfyUtils, elements, key, parent, NBTTagConfigDouble.class);
     }
 
     public NBTTagConfigListDouble(NBTTagConfigList<NBTTagConfigDouble> other) {

@@ -9,8 +9,8 @@ import java.util.List;
 @KeyedStaticId(key = "list/int_array")
 public class NBTTagConfigListIntArray extends NBTTagConfigListPrimitive<int[], NBTTagConfigIntArray> {
 
-    public NBTTagConfigListIntArray(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<NBTTagConfigIntArray>> elements, @JacksonInject("key") String key, @JacksonInject("parent_path") String path) {
-        super(wolfyUtils, elements, key, path, NBTTagConfigIntArray.class);
+    public NBTTagConfigListIntArray(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<NBTTagConfigIntArray>> elements, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
+        super(wolfyUtils, elements, key, parent, NBTTagConfigIntArray.class);
     }
 
     public NBTTagConfigListIntArray(NBTTagConfigList<NBTTagConfigIntArray> other) {

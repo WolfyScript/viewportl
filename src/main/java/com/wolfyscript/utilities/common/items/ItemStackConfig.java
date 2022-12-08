@@ -41,6 +41,8 @@ public abstract class ItemStackConfig<I> {
      */
     protected final String itemId;
 
+    protected final WolfyUtils wolfyUtils;
+
     /* ********************
      * Common NBT Settings
      * ********************/
@@ -76,7 +78,8 @@ public abstract class ItemStackConfig<I> {
         this.damage = new ValueProviderIntegerConst(wolfyUtils, 0);
         this.unbreakable = new BoolOperatorConst(wolfyUtils, false);
         this.customModelData = new ValueProviderIntegerConst(wolfyUtils, 0);
-        this.nbt = new NBTTagConfigCompound(wolfyUtils, "", "");
+        this.nbt = new NBTTagConfigCompound(wolfyUtils, "", null);
+        this.wolfyUtils = wolfyUtils;
     }
 
     /**

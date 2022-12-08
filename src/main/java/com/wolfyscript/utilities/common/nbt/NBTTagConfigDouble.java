@@ -11,8 +11,8 @@ import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
 public class NBTTagConfigDouble extends NBTTagConfigPrimitive<Double> {
 
     @JsonCreator
-    public NBTTagConfigDouble(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") ValueProvider<Double> value, @JacksonInject("key") String key, @JacksonInject("parent_path") String parentPath) {
-        super(wolfyUtils, value, key, parentPath);
+    public NBTTagConfigDouble(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") ValueProvider<Double> value, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
+        super(wolfyUtils, value, key, parent);
     }
 
     private NBTTagConfigDouble(NBTTagConfigDouble other) {

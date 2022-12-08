@@ -49,15 +49,15 @@ public class NBTTagConfigCompound extends NBTTagConfig {
     @JsonIgnore
     protected Map<String, NBTTagConfig> children;
 
-    public NBTTagConfigCompound(@JacksonInject WolfyUtils wolfyUtils, @JacksonInject("key") String key, @JacksonInject("parent_path") String parentPath) {
-        super(wolfyUtils, key, parentPath);
+    public NBTTagConfigCompound(@JacksonInject WolfyUtils wolfyUtils, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
+        super(wolfyUtils, key, parent);
         this.includes = new HashMap<>();
         this.required = new HashMap<>();
         this.children = new HashMap<>();
     }
 
     protected NBTTagConfigCompound(NBTTagConfigCompound other) {
-        super(other.wolfyUtils, other.key, other.parentPath);
+        super(other.wolfyUtils, other.key, other.parent);
         this.includes = new HashMap<>(other.includes);
         this.preservePath = other.preservePath;
         this.includeAll = other.includeAll;

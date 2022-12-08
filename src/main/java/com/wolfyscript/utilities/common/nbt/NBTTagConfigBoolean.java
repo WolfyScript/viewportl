@@ -35,13 +35,13 @@ public class NBTTagConfigBoolean extends NBTTagConfig {
     private final BoolOperator value;
 
     @JsonCreator
-    public NBTTagConfigBoolean(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") BoolOperator value, @JacksonInject("key") String key, @JacksonInject("parent_path") String parentPath) {
-        super(wolfyUtils, key, parentPath);
+    public NBTTagConfigBoolean(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") BoolOperator value, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
+        super(wolfyUtils, key, parent);
         this.value = value;
     }
 
     private NBTTagConfigBoolean(NBTTagConfigBoolean other) {
-        super(other.wolfyUtils, other.key, other.parentPath);
+        super(other.wolfyUtils, other.key, other.parent);
         this.value = other.value;
     }
 

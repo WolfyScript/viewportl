@@ -9,8 +9,8 @@ import java.util.List;
 @KeyedStaticId(key = "list/compound")
 public class NBTTagConfigListCompound extends NBTTagConfigList<NBTTagConfigCompound> {
 
-    public NBTTagConfigListCompound(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<NBTTagConfigCompound>> elements, @JacksonInject("key") String key, @JacksonInject("parent_path") String path) {
-        super(wolfyUtils, elements, key, path, NBTTagConfigCompound.class);
+    public NBTTagConfigListCompound(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<NBTTagConfigCompound>> elements, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
+        super(wolfyUtils, elements, key, parent, NBTTagConfigCompound.class);
     }
 
     private NBTTagConfigListCompound(NBTTagConfigListCompound other) {

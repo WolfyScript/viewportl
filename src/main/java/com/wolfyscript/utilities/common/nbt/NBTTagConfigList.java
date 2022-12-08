@@ -36,23 +36,27 @@ public abstract class NBTTagConfigList<VAL extends NBTTagConfig> extends NBTTagC
 
     @JsonIgnore
     private final Class<VAL> elementType;
-    private final List<Element<VAL>> elements;
+    private List<Element<VAL>> elements;
 
     @JsonCreator
-    public NBTTagConfigList(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<VAL>> elements, @JacksonInject("key") String key, @JacksonInject("parent_path") String path, Class<VAL> elementClass) {
-        super(wolfyUtils, key, path);
+    public NBTTagConfigList(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<VAL>> elements, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent, Class<VAL> elementClass) {
+        super(wolfyUtils, key, parent);
         this.elementType = elementClass;
         this.elements = elements;
     }
 
     protected NBTTagConfigList(NBTTagConfigList<VAL> other) {
-        super(other.wolfyUtils, other.key, other.parentPath);
+        super(other.wolfyUtils, other.key, other.parent);
         this.elementType = other.elementType;
         this.elements = other.elements.stream().map(Element::copy).toList();
     }
 
     public List<Element<VAL>> getElements() {
         return elements;
+    }
+
+    public void overrideElements(List<Element<VAL>> elements) {
+        this.elements = elements.stream().map(Element::copy).toList();
     }
 
     public Class<VAL> getElementType() {

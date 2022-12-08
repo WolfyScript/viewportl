@@ -11,12 +11,12 @@ import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
 public class NBTTagConfigIntArray extends NBTTagConfigPrimitive<int[]> {
 
     @JsonCreator
-    public NBTTagConfigIntArray(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") ValueProvider<int[]> value, @JacksonInject("key") String key, @JacksonInject("parent_path") String parentPath) {
-        super(wolfyUtils, value, key, parentPath);
+    public NBTTagConfigIntArray(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") ValueProvider<int[]> value, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
+        super(wolfyUtils, value, key, parent);
     }
 
     public NBTTagConfigIntArray(NBTTagConfigIntArray other) {
-        super(other.wolfyUtils, other.value, other.key, other.parentPath);
+        super(other.wolfyUtils, other.value, other.key, other.parent);
     }
 
     @Override

@@ -58,15 +58,15 @@ public abstract class NBTTagConfig implements Keyed {
 
     protected final NamespacedKey type;
     @JsonIgnore
-    protected final String parentPath;
-    @JsonIgnore
     protected final String key;
+    @JsonIgnore
+    protected final NBTTagConfig parent;
 
-    protected NBTTagConfig(@JacksonInject WolfyUtils wolfyUtils, @JacksonInject("key") String key, @JacksonInject("path") String parentPath) {
+    protected NBTTagConfig(@JacksonInject WolfyUtils wolfyUtils, @JacksonInject("nbt_tag_config.key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
         this.wolfyUtils = wolfyUtils;
         this.type = wolfyUtils.getIdentifiers().getNamespaced(getClass());
-        this.parentPath = parentPath;
         this.key = key;
+        this.parent = parent;
     }
 
     @JsonGetter("type")
@@ -78,6 +78,10 @@ public abstract class NBTTagConfig implements Keyed {
     @Override
     public NamespacedKey getNamespacedKey() {
         return type;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public abstract NBTTagConfig copy();
