@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.eval.context.EvalContext;
 import com.wolfyscript.utilities.eval.operator.BoolOperator;
 
 @KeyedStaticId(key = "bool")
@@ -43,6 +44,14 @@ public class NBTTagConfigBoolean extends NBTTagConfig {
     private NBTTagConfigBoolean(NBTTagConfigBoolean other) {
         super(other.wolfyUtils, other.key, other.parent);
         this.value = other.value;
+    }
+
+    public boolean getValue(EvalContext context) {
+        return value.evaluate(context);
+    }
+
+    public boolean getValue() {
+        return getValue(new EvalContext());
     }
 
     @Override
