@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import com.wolfyscript.utilities.common.nbt.NBTTagConfig;
 import com.wolfyscript.utilities.common.nbt.NBTTagConfigCompound;
+import com.wolfyscript.utilities.eval.context.EvalContext;
 import com.wolfyscript.utilities.eval.operator.BoolOperator;
 import com.wolfyscript.utilities.eval.operator.BoolOperatorConst;
 import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
@@ -88,6 +89,15 @@ public abstract class ItemStackConfig<I> {
      * @return The constructed ItemStack.
      */
     public abstract I constructItemStack();
+
+    /**
+     * Constructs the implementation specific ItemStack from the settings.<br>
+     * The context allows settings to use contextual data to create the ItemStack data.
+     *
+     * @param context The context to use.
+     * @return The constructed ItemStack.
+     */
+    public abstract I constructItemStack(EvalContext context);
 
     public String getItemId() {
         return itemId;
