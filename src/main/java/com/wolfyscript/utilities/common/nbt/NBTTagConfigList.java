@@ -26,9 +26,11 @@ import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.wolfyscript.utilities.common.WolfyUtils;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,24 +41,48 @@ public abstract class NBTTagConfigList<VAL extends NBTTagConfig> extends NBTTagC
     private List<Element<VAL>> elements;
 
     @JsonCreator
-    public NBTTagConfigList(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<VAL>> elements, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent, Class<VAL> elementClass) {
-        super(wolfyUtils, key, parent);
+    NBTTagConfigList(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<VAL>> elements, Class<VAL> elementClass) {
+        super(wolfyUtils);
         this.elementType = elementClass;
+        this.elements = elements == null ? new ArrayList<>() : elements;
+    }
+
+    public NBTTagConfigList(WolfyUtils wolfyUtils, NBTTagConfig parent, Class<VAL> elementType, List<Element<VAL>> elements) {
+        super(wolfyUtils, parent);
+        this.elementType = elementType;
         this.elements = elements;
     }
 
     protected NBTTagConfigList(NBTTagConfigList<VAL> other) {
-        super(other.wolfyUtils, other.key, other.parent);
+        super(other.wolfyUtils);
         this.elementType = other.elementType;
-        this.elements = other.elements.stream().map(Element::copy).toList();
+        this.elements = other.elements.stream().map(element -> {
+            Element<VAL> copyElem = element.copy();
+            copyElem.getValue().setParent(this);
+            return copyElem;
+        }).toList();
     }
 
     public List<Element<VAL>> getElements() {
         return elements;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, value = "values")
+    void addValues(List<VAL> values) {
+        this.elements.addAll(values.stream().map(val -> {
+            Element<VAL> element = new Element<>();
+            val.setParent(this);
+            element.setValue(val);
+            return element;
+        }).toList());
+    }
+
     public void overrideElements(List<Element<VAL>> elements) {
-        this.elements = elements.stream().map(Element::copy).toList();
+        this.elements = elements.stream().map(element -> {
+            Element<VAL> copyElem = element.copy();
+            copyElem.getValue().setParent(this);
+            return copyElem;
+        }).toList();
     }
 
     public Class<VAL> getElementType() {
@@ -65,7 +91,9 @@ public abstract class NBTTagConfigList<VAL extends NBTTagConfig> extends NBTTagC
 
     public static class Element<VAL extends NBTTagConfig> {
 
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         private Integer index;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         private VAL value;
 
         public Element() {
@@ -92,7 +120,7 @@ public abstract class NBTTagConfigList<VAL extends NBTTagConfig> extends NBTTagC
         }
 
         @JsonGetter
-        private int getIndex() {
+        private Integer getIndex() {
             return index;
         }
 
@@ -110,4 +138,5 @@ public abstract class NBTTagConfigList<VAL extends NBTTagConfig> extends NBTTagC
             return new Element<>(this);
         }
     }
+
 }

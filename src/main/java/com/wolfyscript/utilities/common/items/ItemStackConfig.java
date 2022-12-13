@@ -19,9 +19,9 @@
 package com.wolfyscript.utilities.common.items;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wolfyscript.utilities.common.WolfyUtils;
-import com.wolfyscript.utilities.common.nbt.NBTTagConfig;
 import com.wolfyscript.utilities.common.nbt.NBTTagConfigCompound;
 import com.wolfyscript.utilities.eval.context.EvalContext;
 import com.wolfyscript.utilities.eval.operator.BoolOperator;
@@ -37,12 +37,13 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public abstract class ItemStackConfig<I> {
 
+    @JsonIgnore
+    protected final WolfyUtils wolfyUtils;
+
     /**
      * The id of the item in the <code>&lt;namespace&gt;:&lt;item_key&gt;</code> format.
      */
     protected final String itemId;
-
-    protected final WolfyUtils wolfyUtils;
 
     /* ********************
      * Common NBT Settings
@@ -79,7 +80,7 @@ public abstract class ItemStackConfig<I> {
         this.damage = new ValueProviderIntegerConst(wolfyUtils, 0);
         this.unbreakable = new BoolOperatorConst(wolfyUtils, false);
         this.customModelData = new ValueProviderIntegerConst(wolfyUtils, 0);
-        this.nbt = new NBTTagConfigCompound(wolfyUtils, "", null);
+        this.nbt = new NBTTagConfigCompound(wolfyUtils, null);
         this.wolfyUtils = wolfyUtils;
     }
 

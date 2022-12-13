@@ -35,13 +35,18 @@ public abstract class NBTTagConfigPrimitive<VAL> extends NBTTagConfig {
     protected final ValueProvider<VAL> value;
 
     @JsonCreator
-    protected NBTTagConfigPrimitive(@JacksonInject WolfyUtils wolfyUtils, ValueProvider<VAL> value, @JacksonInject("key") String key, @JacksonInject("path") NBTTagConfig parent) {
-        super(wolfyUtils, key, parent);
+    protected NBTTagConfigPrimitive(@JacksonInject WolfyUtils wolfyUtils, ValueProvider<VAL> value) {
+        super(wolfyUtils);
+        this.value = value;
+    }
+
+    protected NBTTagConfigPrimitive(WolfyUtils wolfyUtils, NBTTagConfig parent, ValueProvider<VAL> value) {
+        super(wolfyUtils, parent);
         this.value = value;
     }
 
     protected NBTTagConfigPrimitive(NBTTagConfigPrimitive<VAL> other) {
-        super(other.wolfyUtils, other.key, other.parent);
+        super(other.wolfyUtils);
         this.value = other.value;
     }
 

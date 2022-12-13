@@ -24,15 +24,14 @@ package com.wolfyscript.utilities.common.nbt;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @KeyedStaticId(key = "compound")
@@ -49,20 +48,36 @@ public class NBTTagConfigCompound extends NBTTagConfig {
     @JsonIgnore
     protected Map<String, NBTTagConfig> children;
 
-    public NBTTagConfigCompound(@JacksonInject WolfyUtils wolfyUtils, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
-        super(wolfyUtils, key, parent);
+    @JsonCreator
+    NBTTagConfigCompound(@JacksonInject WolfyUtils wolfyUtils) {
+        super(wolfyUtils);
+        this.includes = new HashMap<>();
+        this.required = new HashMap<>();
+        this.children = new HashMap<>();
+    }
+
+    public NBTTagConfigCompound(WolfyUtils wolfyUtils, NBTTagConfig parent) {
+        super(wolfyUtils, parent);
         this.includes = new HashMap<>();
         this.required = new HashMap<>();
         this.children = new HashMap<>();
     }
 
     protected NBTTagConfigCompound(NBTTagConfigCompound other) {
-        super(other.wolfyUtils, other.key, other.parent);
+        super(other.wolfyUtils);
         this.includes = new HashMap<>(other.includes);
         this.preservePath = other.preservePath;
         this.includeAll = other.includeAll;
-        this.required = other.required.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().copy()));
-        this.children = other.children.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().copy()));
+        this.required = other.required.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+            NBTTagConfig value = entry.getValue().copy();
+            value.setParent(this);
+            return value;
+        }));
+        this.children = other.children.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+            NBTTagConfig value = entry.getValue().copy();
+            value.setParent(this);
+            return value;
+        }));
     }
 
     @JsonAnySetter
@@ -70,6 +85,7 @@ public class NBTTagConfigCompound extends NBTTagConfig {
         //Sets the children that are specified in the root of the object without the "children" node!
         //That is supported behaviour!
         children.putIfAbsent(key, child);
+        child.setParent(this);
     }
 
     public void setIncludeAll(boolean fullyInclude) {
@@ -112,7 +128,11 @@ public class NBTTagConfigCompound extends NBTTagConfig {
 
     @JsonSetter("children")
     public void setChildren(Map<String, NBTTagConfig> children) {
-        this.children = children;
+        this.children = children.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+            NBTTagConfig value = entry.getValue();
+            value.setParent(this);
+            return value;
+        }));
     }
 
     @JsonGetter

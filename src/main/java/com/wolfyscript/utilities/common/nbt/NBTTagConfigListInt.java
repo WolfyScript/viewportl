@@ -1,6 +1,7 @@
 package com.wolfyscript.utilities.common.nbt;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.common.WolfyUtils;
@@ -9,8 +10,13 @@ import java.util.List;
 @KeyedStaticId(key = "list/int")
 public class NBTTagConfigListInt extends NBTTagConfigListPrimitive<Integer, NBTTagConfigInt> {
 
-    public NBTTagConfigListInt(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<NBTTagConfigInt>> elements, @JacksonInject("key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
-        super(wolfyUtils, elements, key, parent, NBTTagConfigInt.class);
+    @JsonCreator
+    NBTTagConfigListInt(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<NBTTagConfigInt>> elements) {
+        super(wolfyUtils, elements, NBTTagConfigInt.class);
+    }
+
+    public NBTTagConfigListInt(WolfyUtils wolfyUtils, NBTTagConfig parent,  List<Element<NBTTagConfigInt>> elements) {
+        super(wolfyUtils, parent, NBTTagConfigInt.class, elements);
     }
 
     public NBTTagConfigListInt(NBTTagConfigList<NBTTagConfigInt> other) {
