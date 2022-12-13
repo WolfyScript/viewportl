@@ -21,11 +21,17 @@ package com.wolfyscript.utilities.eval.operator;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
+import com.wolfyscript.utilities.json.ValueSerializer;
+import com.wolfyscript.utilities.json.annotations.OptionalValueSerializer;
+import java.io.IOException;
 
+@OptionalValueSerializer(serializer = BoolOperatorConst.ValueSerializer.class)
 @KeyedStaticId(key = "bool/const")
 public class BoolOperatorConst extends BoolOperator {
 
@@ -40,5 +46,18 @@ public class BoolOperatorConst extends BoolOperator {
     @Override
     public boolean evaluate(EvalContext context) {
         return value;
+    }
+
+    public static class ValueSerializer extends com.wolfyscript.utilities.json.ValueSerializer<BoolOperatorConst> {
+
+        public ValueSerializer() {
+            super(BoolOperatorConst.class);
+        }
+
+        @Override
+        public boolean serialize(BoolOperatorConst targetObject, JsonGenerator generator, SerializerProvider provider) throws IOException {
+            generator.writeBoolean(targetObject.value);
+            return true;
+        }
     }
 }

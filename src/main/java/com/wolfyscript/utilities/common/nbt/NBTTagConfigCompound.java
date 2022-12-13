@@ -37,42 +37,22 @@ import java.util.stream.Collectors;
 @KeyedStaticId(key = "compound")
 public class NBTTagConfigCompound extends NBTTagConfig {
 
-    protected boolean preservePath = true;
-    //If include is true it includes this node with each and every child node.
-    protected boolean includeAll = false;
-    //If includes has values it includes this node with the specified child nodes.
-    protected Map<String, Boolean> includes;
-    //Checks and verifies the child nodes. This node is only included if all the child nodes are valid.
-    protected Map<String, NBTTagConfig> required;
-    //Child nodes to proceed to next. This is useful for further child compound tag settings.
     @JsonIgnore
     protected Map<String, NBTTagConfig> children;
 
     @JsonCreator
     NBTTagConfigCompound(@JacksonInject WolfyUtils wolfyUtils) {
         super(wolfyUtils);
-        this.includes = new HashMap<>();
-        this.required = new HashMap<>();
         this.children = new HashMap<>();
     }
 
     public NBTTagConfigCompound(WolfyUtils wolfyUtils, NBTTagConfig parent) {
         super(wolfyUtils, parent);
-        this.includes = new HashMap<>();
-        this.required = new HashMap<>();
         this.children = new HashMap<>();
     }
 
     protected NBTTagConfigCompound(NBTTagConfigCompound other) {
         super(other.wolfyUtils);
-        this.includes = new HashMap<>(other.includes);
-        this.preservePath = other.preservePath;
-        this.includeAll = other.includeAll;
-        this.required = other.required.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-            NBTTagConfig value = entry.getValue().copy();
-            value.setParent(this);
-            return value;
-        }));
         this.children = other.children.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
             NBTTagConfig value = entry.getValue().copy();
             value.setParent(this);
@@ -86,44 +66,6 @@ public class NBTTagConfigCompound extends NBTTagConfig {
         //That is supported behaviour!
         children.putIfAbsent(key, child);
         child.setParent(this);
-    }
-
-    public void setIncludeAll(boolean fullyInclude) {
-        this.includeAll = fullyInclude;
-    }
-
-    public boolean isIncludeAll() {
-        return includeAll;
-    }
-
-    @JsonSetter("preservePath")
-    public void setPreservePath(boolean preservePath) {
-        this.preservePath = preservePath;
-    }
-
-    @JsonGetter("preservePath")
-    public boolean isPreservePath() {
-        return preservePath;
-    }
-
-    @JsonSetter
-    public void setIncludes(Map<String, Boolean> includes) {
-        this.includes = includes;
-    }
-
-    @JsonGetter
-    public Map<String, Boolean> getIncludes() {
-        return includes;
-    }
-
-    @JsonSetter
-    public void setRequired(Map<String, NBTTagConfig> required) {
-        this.required = required;
-    }
-
-    @JsonGetter
-    public Map<String, NBTTagConfig> getRequired() {
-        return required;
     }
 
     @JsonSetter("children")
