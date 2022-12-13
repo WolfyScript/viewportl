@@ -24,7 +24,6 @@ package com.wolfyscript.utilities.common.nbt;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -42,7 +41,8 @@ import com.wolfyscript.utilities.json.KeyedTypeResolver;
 import com.wolfyscript.utilities.json.ValueDeserializer;
 import com.wolfyscript.utilities.json.annotations.OptionalValueDeserializer;
 import java.io.IOException;
-import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @JsonTypeResolver(KeyedTypeResolver.class)
 @JsonTypeIdResolver(KeyedTypeIdResolver.class)
@@ -54,22 +54,24 @@ public abstract class NBTTagConfig implements Keyed {
 
     private static final String ERROR_MISMATCH = "Mismatched NBT types! Requested type: %s but found type %s, at node %s.%s";
 
+    @JsonIgnore
     protected final WolfyUtils wolfyUtils;
-
+    @JsonIgnore
     protected final NamespacedKey type;
     @JsonIgnore
-    protected final String key;
-    @JsonIgnore
-    protected final NBTTagConfig parent;
+    protected NBTTagConfig parent;
 
-    protected NBTTagConfig(@JacksonInject WolfyUtils wolfyUtils, @JacksonInject("nbt_tag_config.key") String key, @JacksonInject("nbt_tag_config.parent") NBTTagConfig parent) {
+    protected NBTTagConfig(@JacksonInject WolfyUtils wolfyUtils) {
         this.wolfyUtils = wolfyUtils;
         this.type = wolfyUtils.getIdentifiers().getNamespaced(getClass());
-        this.key = key;
+    }
+
+    protected NBTTagConfig(WolfyUtils wolfyUtils, NBTTagConfig parent) {
+        this.wolfyUtils = wolfyUtils;
+        this.type = wolfyUtils.getIdentifiers().getNamespaced(getClass());
         this.parent = parent;
     }
 
-    @JsonGetter("type")
     public NamespacedKey getType() {
         return type;
     }
@@ -80,13 +82,21 @@ public abstract class NBTTagConfig implements Keyed {
         return type;
     }
 
-    public String getKey() {
-        return key;
+    @JsonIgnore
+    protected void setParent(NBTTagConfig parent) {
+        this.parent = parent;
+    }
+
+    @JsonIgnore
+    public NBTTagConfig getParent() {
+        return parent;
     }
 
     public abstract NBTTagConfig copy();
 
     public static class OptionalValueDeserializer extends ValueDeserializer<NBTTagConfig> {
+
+        private static final Pattern NUM_PATTERN = Pattern.compile("([0-9]+)([bBsSiIlL])|([0-9]?\\.?[0-9])+([fFdD])");
 
         public OptionalValueDeserializer() {
             super(NBTTagConfig.class);
@@ -105,15 +115,26 @@ public abstract class NBTTagConfig implements Keyed {
                 case VALUE_STRING -> {
                     node = jsonParser.readValueAsTree();
                     var text = node.asText();
-                    yield switch (!text.isBlank() ? text.charAt(text.length() - 1) : '0') {
-                        case 'b', 'B' -> regNBTQueries.getKey(NBTTagConfigByte.class);
-                        case 's', 'S' -> regNBTQueries.getKey(NBTTagConfigShort.class);
-                        case 'i', 'I' -> regNBTQueries.getKey(NBTTagConfigInt.class);
-                        case 'l', 'L' -> regNBTQueries.getKey(NBTTagConfigLong.class);
-                        case 'f', 'F' -> regNBTQueries.getKey(NBTTagConfigFloat.class);
-                        case 'd', 'D' -> regNBTQueries.getKey(NBTTagConfigDouble.class);
-                        default -> regNBTQueries.getKey(NBTTagConfigString.class);
-                    };
+                    Matcher matcher = NUM_PATTERN.matcher(text);
+                    if (matcher.matches()) {
+                        String id = matcher.group(2);
+                        if (id != null) {
+                            // integer value
+                        } else {
+                            // float value
+                            id = matcher.group(4);
+                        }
+                        yield switch (id.charAt(0)) {
+                            case 'b', 'B' -> regNBTQueries.getKey(NBTTagConfigByte.class);
+                            case 's', 'S' -> regNBTQueries.getKey(NBTTagConfigShort.class);
+                            case 'i', 'I' -> regNBTQueries.getKey(NBTTagConfigInt.class);
+                            case 'l', 'L' -> regNBTQueries.getKey(NBTTagConfigLong.class);
+                            case 'f', 'F' -> regNBTQueries.getKey(NBTTagConfigFloat.class);
+                            case 'd', 'D' -> regNBTQueries.getKey(NBTTagConfigDouble.class);
+                            default -> regNBTQueries.getKey(NBTTagConfigString.class);
+                        };
+                    }
+                    yield regNBTQueries.getKey(NBTTagConfigString.class);
                 }
                 case VALUE_NUMBER_INT -> regNBTQueries.getKey(NBTTagConfigInt.class);
                 case VALUE_NUMBER_FLOAT -> regNBTQueries.getKey(NBTTagConfigDouble.class);

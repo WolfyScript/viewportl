@@ -23,10 +23,13 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
 import com.wolfyscript.utilities.Keyed;
@@ -36,11 +39,15 @@ import com.wolfyscript.utilities.eval.context.EvalContext;
 import com.wolfyscript.utilities.json.KeyedTypeIdResolver;
 import com.wolfyscript.utilities.json.KeyedTypeResolver;
 import com.wolfyscript.utilities.json.annotations.OptionalValueDeserializer;
+import com.wolfyscript.utilities.json.annotations.OptionalValueSerializer;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @JsonTypeResolver(KeyedTypeResolver.class)
 @JsonTypeIdResolver(KeyedTypeIdResolver.class)
 @OptionalValueDeserializer(deserializer = ValueProvider.ValueDeserializer.class)
+@OptionalValueSerializer(serializer = ValueProvider.ValueSerializer.class)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, property = "key")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonPropertyOrder(value = {"key"})
@@ -60,39 +67,50 @@ public interface ValueProvider<V> extends Keyed {
 
     class ValueDeserializer extends com.wolfyscript.utilities.json.ValueDeserializer<ValueProvider<?>> {
 
-        private final WolfyUtils wolfyUtils;
+        private static final Pattern NUM_PATTERN = Pattern.compile("([0-9]+)([bBsSiIlL])|([0-9]?\\.?[0-9])+([fFdD])");
 
-        public ValueDeserializer(WolfyUtils wolfyUtils) {
+        public ValueDeserializer() {
             super((Class<ValueProvider<?>>)(Object) ValueProvider.class);
-            this.wolfyUtils = wolfyUtils;
         }
 
         @Override
         public ValueProvider<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode node = p.readValueAsTree();
-            if (node.isTextual()) {
+            WolfyUtils wolfyUtils = (WolfyUtils) ctxt.findInjectableValue(WolfyUtils.class.getName(), null, null);
+            if (p.currentToken() == JsonToken.VALUE_STRING) {
+                JsonNode node = p.readValueAsTree();
                 String text = node.asText();
                 if (!text.isBlank()) {
-                    char identifier = text.charAt(text.length() - 1);
-                    String value = text.substring(0, text.length() - 1);
-                    try {
-                        return switch (identifier) {
-                            case 's', 'S' -> new ValueProviderShortConst(wolfyUtils, Short.parseShort(value));
-                            case 'i', 'I' -> new ValueProviderIntegerConst(wolfyUtils, Integer.parseInt(value));
-                            case 'l', 'L' -> new ValueProviderLongConst(wolfyUtils, Long.parseLong(value));
-                            case 'f', 'F' -> new ValueProviderFloatConst(wolfyUtils, Float.parseFloat(value));
-                            case 'd', 'D' -> new ValueProviderDoubleConst(wolfyUtils, Double.parseDouble(value));
-                            default -> new ValueProviderStringConst(wolfyUtils, text);
-                        };
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
+                    Matcher matcher = NUM_PATTERN.matcher(text);
+                    if (matcher.matches()) {
+                        String value;
+                        String id = matcher.group(2);
+                        if (id != null) {
+                            // integer value
+                            value = matcher.group(1);
+                        } else {
+                            // float value
+                            id = matcher.group(4);
+                            value = matcher.group(3);
+                        }
+                        try {
+                            return switch (id.charAt(0)) {
+                                case 's', 'S' -> new ValueProviderShortConst(wolfyUtils, Short.parseShort(value));
+                                case 'i', 'I' -> new ValueProviderIntegerConst(wolfyUtils, Integer.parseInt(value));
+                                case 'l', 'L' -> new ValueProviderLongConst(wolfyUtils, Long.parseLong(value));
+                                case 'f', 'F' -> new ValueProviderFloatConst(wolfyUtils, Float.parseFloat(value));
+                                case 'd', 'D' -> new ValueProviderDoubleConst(wolfyUtils, Double.parseDouble(value));
+                                default -> new ValueProviderStringConst(wolfyUtils, text);
+                            };
+                        } catch (NumberFormatException e) {
+                            // Cannot parse the value. Might a String value!
+                        }
                     }
                     return new ValueProviderStringConst(wolfyUtils, text);
                 }
-            } else if (node.isInt()) {
-                return new ValueProviderIntegerConst(wolfyUtils, node.asInt());
-            } else if (node.isDouble()) {
-                return new ValueProviderDoubleConst(wolfyUtils, node.asDouble());
+            } else if (p.currentToken() == JsonToken.VALUE_NUMBER_INT) {
+                return new ValueProviderIntegerConst(wolfyUtils, ctxt.readValue(p, Integer.class));
+            } else if (p.currentToken() == JsonToken.VALUE_NUMBER_FLOAT) {
+                return new ValueProviderDoubleConst(wolfyUtils, ctxt.readValue(p, Double.class));
             }
             return null;
         }
