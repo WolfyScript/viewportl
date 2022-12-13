@@ -38,24 +38,33 @@ public abstract class NBTTagConfigList<VAL extends NBTTagConfig> extends NBTTagC
 
     @JsonIgnore
     private final Class<VAL> elementType;
+    @JsonIgnore
     private List<Element<VAL>> elements;
+    private List<VAL> values;
 
     @JsonCreator
-    NBTTagConfigList(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<VAL>> elements, Class<VAL> elementClass) {
+    NBTTagConfigList(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("values") List<VAL> values, Class<VAL> elementClass) {
         super(wolfyUtils);
         this.elementType = elementClass;
-        this.elements = elements == null ? new ArrayList<>() : elements;
+        setValues(values);
+        this.elements = new ArrayList<>();
     }
 
-    public NBTTagConfigList(WolfyUtils wolfyUtils, NBTTagConfig parent, Class<VAL> elementType, List<Element<VAL>> elements) {
+    public NBTTagConfigList(WolfyUtils wolfyUtils, NBTTagConfig parent, Class<VAL> elementType, List<VAL> values) {
         super(wolfyUtils, parent);
         this.elementType = elementType;
-        this.elements = elements;
+        setValues(values);
+        this.elements = new ArrayList<>();
     }
 
     protected NBTTagConfigList(NBTTagConfigList<VAL> other) {
         super(other.wolfyUtils);
         this.elementType = other.elementType;
+        this.values = other.values.stream().map(val -> {
+            VAL copy = (VAL) val.copy();
+            copy.setParent(this);
+            return copy;
+        }).toList();
         this.elements = other.elements.stream().map(element -> {
             Element<VAL> copyElem = element.copy();
             copyElem.getValue().setParent(this);
@@ -67,22 +76,12 @@ public abstract class NBTTagConfigList<VAL extends NBTTagConfig> extends NBTTagC
         return elements;
     }
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, value = "values")
-    void addValues(List<VAL> values) {
-        this.elements.addAll(values.stream().map(val -> {
-            Element<VAL> element = new Element<>();
-            val.setParent(this);
-            element.setValue(val);
-            return element;
-        }).toList());
+    public void setValues(List<VAL> values) {
+        this.values = values.stream().peek(val -> val.setParent(this)).toList();
     }
 
-    public void overrideElements(List<Element<VAL>> elements) {
-        this.elements = elements.stream().map(element -> {
-            Element<VAL> copyElem = element.copy();
-            copyElem.getValue().setParent(this);
-            return copyElem;
-        }).toList();
+    public List<VAL> getValues() {
+        return values;
     }
 
     public Class<VAL> getElementType() {

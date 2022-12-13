@@ -11,11 +11,11 @@ import java.util.List;
 public class NBTTagConfigListDouble extends NBTTagConfigListPrimitive<Double, NBTTagConfigDouble> {
 
     @JsonCreator
-    NBTTagConfigListDouble(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<NBTTagConfigDouble>> elements) {
+    NBTTagConfigListDouble(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("values") List<NBTTagConfigDouble> elements) {
         super(wolfyUtils, elements, NBTTagConfigDouble.class);
     }
 
-    public NBTTagConfigListDouble(WolfyUtils wolfyUtils, NBTTagConfig parent, List<Element<NBTTagConfigDouble>> elements) {
+    public NBTTagConfigListDouble(WolfyUtils wolfyUtils, NBTTagConfig parent, List<NBTTagConfigDouble> elements) {
         super(wolfyUtils, parent, NBTTagConfigDouble.class, elements);
     }
 

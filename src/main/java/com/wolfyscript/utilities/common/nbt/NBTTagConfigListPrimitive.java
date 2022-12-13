@@ -9,12 +9,12 @@ import java.util.List;
 public abstract class NBTTagConfigListPrimitive<VAL, T extends NBTTagConfigPrimitive<VAL>> extends NBTTagConfigList<T> {
 
     @JsonCreator
-    NBTTagConfigListPrimitive(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("elements") List<Element<T>> elements, Class<T> elementType) {
+    NBTTagConfigListPrimitive(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("values") List<T> elements, Class<T> elementType) {
         super(wolfyUtils, elements, elementType);
     }
 
-    public NBTTagConfigListPrimitive(WolfyUtils wolfyUtils, NBTTagConfig parent, Class<T> elementType, List<Element<T>> elements) {
-        super(wolfyUtils, parent, elementType, elements);
+    public NBTTagConfigListPrimitive(WolfyUtils wolfyUtils, NBTTagConfig parent, Class<T> elementType, List<T> values) {
+        super(wolfyUtils, parent, elementType, values);
     }
 
     public NBTTagConfigListPrimitive(NBTTagConfigList<T> other) {
