@@ -21,10 +21,15 @@ package com.wolfyscript.utilities.eval.value_provider;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
+import com.wolfyscript.utilities.json.annotations.OptionalValueSerializer;
+import java.io.IOException;
 
+@OptionalValueSerializer(serializer = ValueProviderFloatConst.ValueSerializer.class)
 @KeyedStaticId(key = "float/const")
 public class ValueProviderFloatConst extends AbstractValueProvider<Float> implements ValueProviderFloat {
 
@@ -41,4 +46,16 @@ public class ValueProviderFloatConst extends AbstractValueProvider<Float> implem
         return value;
     }
 
+    public static class ValueSerializer extends com.wolfyscript.utilities.json.ValueSerializer<ValueProviderFloatConst> {
+
+        public ValueSerializer() {
+            super(ValueProviderFloatConst.class);
+        }
+
+        @Override
+        public boolean serialize(ValueProviderFloatConst valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
+            generator.writeString(valueProvider.getValue() + "f");
+            return true;
+        }
+    }
 }

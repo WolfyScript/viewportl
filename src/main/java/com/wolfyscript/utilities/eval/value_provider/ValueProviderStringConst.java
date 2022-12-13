@@ -21,10 +21,15 @@ package com.wolfyscript.utilities.eval.value_provider;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
+import com.wolfyscript.utilities.json.annotations.OptionalValueSerializer;
+import java.io.IOException;
 
+@OptionalValueSerializer(serializer = ValueProviderStringConst.ValueSerializer.class)
 @KeyedStaticId(key = "string/const")
 public class ValueProviderStringConst extends AbstractValueProvider<String> {
 
@@ -41,4 +46,16 @@ public class ValueProviderStringConst extends AbstractValueProvider<String> {
         return value;
     }
 
+    public static class ValueSerializer extends com.wolfyscript.utilities.json.ValueSerializer<ValueProviderStringConst> {
+
+        public ValueSerializer() {
+            super(ValueProviderStringConst.class);
+        }
+
+        @Override
+        public boolean serialize(ValueProviderStringConst valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
+            generator.writeString(valueProvider.getValue());
+            return true;
+        }
+    }
 }

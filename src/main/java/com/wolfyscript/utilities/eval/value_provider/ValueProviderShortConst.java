@@ -21,10 +21,15 @@ package com.wolfyscript.utilities.eval.value_provider;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
+import com.wolfyscript.utilities.json.annotations.OptionalValueSerializer;
+import java.io.IOException;
 
+@OptionalValueSerializer(serializer = ValueProviderShortConst.ValueSerializer.class)
 @KeyedStaticId(key = "short/const")
 public class ValueProviderShortConst extends AbstractValueProvider<Short> implements ValueProviderShort {
 
@@ -40,4 +45,18 @@ public class ValueProviderShortConst extends AbstractValueProvider<Short> implem
     public Short getValue(EvalContext context) {
         return value;
     }
+
+    public static class ValueSerializer extends com.wolfyscript.utilities.json.ValueSerializer<ValueProviderShortConst> {
+
+        public ValueSerializer() {
+            super(ValueProviderShortConst.class);
+        }
+
+        @Override
+        public boolean serialize(ValueProviderShortConst valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
+            generator.writeString(valueProvider.getValue() + "s");
+            return true;
+        }
+    }
+
 }

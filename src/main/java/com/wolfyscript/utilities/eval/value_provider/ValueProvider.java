@@ -115,4 +115,39 @@ public interface ValueProvider<V> extends Keyed {
             return null;
         }
     }
+
+    class ValueSerializer extends com.wolfyscript.utilities.json.ValueSerializer<ValueProvider<?>> {
+
+        public ValueSerializer() {
+            super((Class<ValueProvider<?>>)(Object) ValueProvider.class);
+        }
+
+        @Override
+        public boolean serialize(ValueProvider<?> valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
+            System.out.println("Serialize ValueProvider!");
+            if (valueProvider instanceof ValueProviderStringConst stringConst) {
+                generator.writeString(stringConst.getValue());
+                return true;
+            } else if (valueProvider instanceof ValueProviderByteConst byteConst) {
+                generator.writeString(byteConst.getValue() + "b");
+                return true;
+            } else if (valueProvider instanceof ValueProviderShortConst shortConst) {
+                generator.writeString(shortConst.getValue().byteValue() + "s");
+                return true;
+            } else if (valueProvider instanceof ValueProviderIntegerConst integerConst) {
+                generator.writeNumber(integerConst.getValue());
+                return true;
+            } else if (valueProvider instanceof ValueProviderLongConst longConst) {
+                generator.writeString(longConst.getValue() + "L");
+                return true;
+            } else if (valueProvider instanceof ValueProviderFloatConst floatConst) {
+                generator.writeString(floatConst.getValue() + "f");
+                return true;
+            } else if (valueProvider instanceof ValueProviderDoubleConst doubleConst) {
+                generator.writeString(doubleConst.getValue() + "d");
+                return true;
+            }
+            return false;
+        }
+    }
 }

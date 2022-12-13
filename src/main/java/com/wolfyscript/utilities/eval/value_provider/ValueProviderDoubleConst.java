@@ -21,10 +21,15 @@ package com.wolfyscript.utilities.eval.value_provider;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
+import com.wolfyscript.utilities.json.annotations.OptionalValueSerializer;
+import java.io.IOException;
 
+@OptionalValueSerializer(serializer = ValueProviderDoubleConst.ValueSerializer.class)
 @KeyedStaticId(key = "double/const")
 public class ValueProviderDoubleConst extends AbstractValueProvider<Double> implements ValueProviderDouble {
 
@@ -39,6 +44,19 @@ public class ValueProviderDoubleConst extends AbstractValueProvider<Double> impl
     @Override
     public Double getValue(EvalContext context) {
         return value;
+    }
+
+    public static class ValueSerializer extends com.wolfyscript.utilities.json.ValueSerializer<ValueProviderDoubleConst> {
+
+        public ValueSerializer() {
+            super(ValueProviderDoubleConst.class);
+        }
+
+        @Override
+        public boolean serialize(ValueProviderDoubleConst valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
+            generator.writeString(valueProvider.getValue() + "d");
+            return true;
+        }
     }
 
 }

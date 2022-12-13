@@ -50,17 +50,14 @@ public abstract class BoolOperator extends Operator {
 
     public static class OptionalValueDeserializer extends ValueDeserializer<BoolOperator> {
 
-        private final WolfyUtils wolfyUtils;
-
-        public OptionalValueDeserializer(WolfyUtils wolfyUtils) {
+        public OptionalValueDeserializer() {
             super(BoolOperator.class);
-            this.wolfyUtils = wolfyUtils;
         }
 
         @Override
         public BoolOperator deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             JsonNode node = p.readValueAsTree();
-            return new BoolOperatorConst(wolfyUtils, node.asBoolean());
+            return new BoolOperatorConst((WolfyUtils) ctxt.findInjectableValue(WolfyUtils.class.getName(), null, null), node.asBoolean());
         }
     }
 }

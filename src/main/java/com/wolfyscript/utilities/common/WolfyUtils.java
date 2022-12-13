@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.wolfyscript.utilities.common.chat.Chat;
 import com.wolfyscript.utilities.common.json.jackson.MapperUtil;
 import com.wolfyscript.utilities.common.registry.Registries;
@@ -30,6 +31,7 @@ import java.io.File;
  * Represents a single API instance that is bound to a plugin or mod.
  *
  */
+@JsonIncludeProperties()
 public abstract class WolfyUtils {
 
     protected MapperUtil mapperUtil;

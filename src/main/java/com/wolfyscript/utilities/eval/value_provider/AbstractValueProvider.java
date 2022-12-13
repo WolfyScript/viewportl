@@ -25,7 +25,9 @@ import com.wolfyscript.utilities.common.WolfyUtils;
 
 public abstract class AbstractValueProvider<V> implements ValueProvider<V> {
 
+    @JsonIgnore
     protected WolfyUtils wolfyUtils;
+    @JsonIgnore
     protected final NamespacedKey key;
 
     protected AbstractValueProvider(NamespacedKey key) {
