@@ -57,14 +57,14 @@ public abstract class ItemStackConfig<I> {
     /**
      * The lore of the stack. Direct support for Adventure tags.
      */
-    protected List<ValueProvider<String>> lore = new ArrayList<>();
+    protected List<? extends ValueProvider<String>> lore = new ArrayList<>();
 
     protected ValueProvider<Integer> amount;
     protected ValueProvider<Integer> repairCost;
     protected ValueProvider<Integer> damage;
     protected BoolOperator unbreakable;
     protected ValueProvider<Integer> customModelData;
-    protected Map<String, ValueProvider<Integer>> enchants = new HashMap<>();
+    protected Map<String, ? extends ValueProvider<Integer>> enchants = new HashMap<>();
 
     /* ********************
      * Unhandled NBT Tags
