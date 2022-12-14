@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wolfyscript.utilities.common.WolfyUtils;
-import com.wolfyscript.utilities.common.nbt.NBTTagConfigCompound;
+import com.wolfyscript.utilities.nbt.NBTTagConfigCompound;
 import com.wolfyscript.utilities.eval.context.EvalContext;
 import com.wolfyscript.utilities.eval.operator.BoolOperator;
 import com.wolfyscript.utilities.eval.operator.BoolOperatorConst;

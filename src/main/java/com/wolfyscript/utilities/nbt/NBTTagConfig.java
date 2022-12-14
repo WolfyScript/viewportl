@@ -1,9 +1,5 @@
 /*
- *       ____ _  _ ____ ___ ____ _  _ ____ ____ ____ ____ ___ _ _  _ ____
- *       |    |  | [__   |  |  | |\/| |    |__/ |__| |___  |  | |\ | | __
- *       |___ |__| ___]  |  |__| |  | |___ |  \ |  | |     |  | | \| |__]
- *
- *       CustomCrafting Recipe creation and management tool for Minecraft
+ *       WolfyUtilities, APIs and Utilities for Minecraft Spigot plugins
  *                      Copyright (C) 2021  WolfyScript
  *
  *     This program is free software: you can redistribute it and/or modify
@@ -20,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.nbt;
+package com.wolfyscript.utilities.nbt;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
