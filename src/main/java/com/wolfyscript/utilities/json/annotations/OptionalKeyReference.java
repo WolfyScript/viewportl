@@ -148,13 +148,19 @@ public @interface OptionalKeyReference {
 
     final class DeserializerModifier extends BeanDeserializerModifier {
 
+        private final WolfyCore core;
+
+        public DeserializerModifier(WolfyCore core) {
+            this.core = core;
+        }
+
         @Override
         public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
             var handledType = deserializer.handledType();
             var annotation = handledType.getAnnotation(OptionalKeyReference.class);
             if(annotation != null) {
                 if(Keyed.class.isAssignableFrom(handledType)) {
-                    return new Deserializer<>(annotation, (JsonDeserializer<? extends Keyed>) deserializer);
+                    return new Deserializer<>(core, annotation, (JsonDeserializer<? extends Keyed>) deserializer);
                 }
             }
             return deserializer;
@@ -162,15 +168,14 @@ public @interface OptionalKeyReference {
 
         private static class Deserializer<T extends Keyed> extends StdDeserializer<T> implements ResolvableDeserializer {
 
-            @Inject
-            private WolfyCore core;
+            private final WolfyCore core;
             private final Class<T> genericType;
             private final JsonDeserializer<T> defaultDeserializer;
             private final NamespacedKey registryKey;
 
-            @Inject
-            protected Deserializer(OptionalKeyReference reference, JsonDeserializer<T> defaultSerializer) {
+            protected Deserializer(WolfyCore core, OptionalKeyReference reference, JsonDeserializer<T> defaultSerializer) {
                 super(defaultSerializer.handledType());
+                this.core = core;
                 this.registryKey = core.getWolfyUtils().getIdentifiers().getNamespaced(reference.registryKey());
                 this.genericType = (Class<T>) defaultSerializer.handledType();
                 this.defaultDeserializer = defaultSerializer;

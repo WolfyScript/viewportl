@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.inject.Inject;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.common.WolfyCore;
@@ -36,16 +37,10 @@ import org.jetbrains.annotations.Nullable;
 public class KeyedTypeIdResolver extends TypeIdResolverBase {
 
     private static final Map<Class<?>, Registry<?>> TYPE_REGISTRIES = new HashMap<>();
-    private static WolfyCore CORE;
-
+    @Inject private static WolfyCore CORE;
     private JavaType superType;
 
-    public static void setCore(WolfyCore core) {
-        if (CORE != null) {
-            throw new IllegalCallerException("Cannot be called from another program!");
-        }
-        CORE = core;
-    }
+    public KeyedTypeIdResolver() { }
 
     /**
      * Registers a registry to be used for Json serialization and deserialization. <br>
