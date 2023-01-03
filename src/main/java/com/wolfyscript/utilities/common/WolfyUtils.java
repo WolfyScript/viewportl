@@ -20,6 +20,7 @@ package com.wolfyscript.utilities.common;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.wolfyscript.utilities.common.chat.Chat;
+import com.wolfyscript.utilities.common.gui.GuiAPIManager;
 import com.wolfyscript.utilities.common.json.jackson.MapperUtil;
 import com.wolfyscript.utilities.common.registry.Registries;
 import java.util.logging.Logger;
@@ -67,6 +68,8 @@ public abstract class WolfyUtils {
     public abstract Chat getChat();
 
     public abstract Identifiers getIdentifiers();
+
+    public abstract GuiAPIManager getGUIManager();
 
     public Registries getRegistries() {
         return getCore().getRegistries();
