@@ -18,10 +18,33 @@
 
 package com.wolfyscript.utilities.common.adapters;
 
+import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.common.items.ItemStackConfig;
+
 public interface ItemStack {
 
-    Item getItem();
+    /**
+     * The id representing the item of this ItemStack.<br>
+     * Usually e.g. <pre>minecraft:&lt;item_id&gt;</pre>
+     *
+     * @return The id of the item.
+     */
+    NamespacedKey getItem();
 
+    /**
+     * The stack amount of this ItemStack.
+     *
+     * @return The stack amount.
+     */
     int getAmount();
+
+    /**
+     * Creates a snapshot of the whole ItemStack including the full NBT.<br>
+     * <b>This can be quite resource heavy!</b><br>
+     * The snapshot can be simply written to json using the Json mapper of WolfyUtils.
+     *
+     * @return The snapshot ItemStack config of this ItemStack.
+     */
+    ItemStackConfig<?> snapshot();
 
 }
