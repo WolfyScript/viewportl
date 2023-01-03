@@ -20,6 +20,6 @@ package com.wolfyscript.utilities.common.adapters;
 
 public interface Items {
 
-    Item getItem(String key);
+
 
 }
