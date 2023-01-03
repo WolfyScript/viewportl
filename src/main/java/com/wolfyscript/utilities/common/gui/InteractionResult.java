@@ -1,14 +1,14 @@
 package com.wolfyscript.utilities.common.gui;
 
-public class ButtonInteractionResult {
+public class InteractionResult {
 
     private ResultType type;
 
-    ButtonInteractionResult() {
+    InteractionResult() {
         type = ResultType.DEFAULT;
     }
 
-    ButtonInteractionResult(ResultType type) {
+    InteractionResult(ResultType type) {
         this.type = type;
     }
 
@@ -28,18 +28,18 @@ public class ButtonInteractionResult {
         this.type = type;
     }
 
-    public static ButtonInteractionResult cancel(boolean cancelled) {
-        ButtonInteractionResult result = new ButtonInteractionResult();
+    public static InteractionResult cancel(boolean cancelled) {
+        InteractionResult result = new InteractionResult();
         result.setCancelled(cancelled);
         return result;
     }
 
-    public static ButtonInteractionResult def() {
-        return new ButtonInteractionResult();
+    public static InteractionResult def() {
+        return new InteractionResult();
     }
 
-    public static ButtonInteractionResult type(ResultType type) {
-        return new ButtonInteractionResult(type);
+    public static InteractionResult type(ResultType type) {
+        return new InteractionResult(type);
     }
 
     public enum ResultType {
