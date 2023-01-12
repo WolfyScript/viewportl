@@ -27,6 +27,7 @@ import java.util.Deque;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class GuiViewManagerCommonImpl<D extends Data> implements GuiViewManager<D> {
 
@@ -51,6 +52,7 @@ public abstract class GuiViewManagerCommonImpl<D extends Data> implements GuiVie
         data = injector.getInstance(rootCluster.dataType());
     }
 
+    @NotNull
     public D getData() {
         return data;
     }
@@ -67,6 +69,21 @@ public abstract class GuiViewManagerCommonImpl<D extends Data> implements GuiVie
                 throw new IllegalArgumentException("Cannot open non-menu Component!");
             }
         });
+    }
+
+    @Override
+    public void openNew() {
+        openNew(new String[0]);
+    }
+
+    @Override
+    public void open() {
+        if (history.isEmpty()) {
+            openNew();
+        } else {
+            MenuComponent<D> component = history.peek();
+            viewers.forEach(uuid -> component.open(this, uuid));
+        }
     }
 
     @Override
