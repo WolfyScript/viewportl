@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.wolfyscript.utilities.common.WolfyUtils;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -47,5 +48,18 @@ public abstract class GuiAPIManagerCommonImpl implements GuiAPIManager {
         return handler;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <D extends Data> Optional<Cluster<D>> getCluster(String id, Class<D> dataType) {
+        Cluster<?> cluster = clustersMap.get(id);
+        if (cluster != null && cluster.dataType().equals(dataType)) {
+            return Optional.of((Cluster<D>) cluster); // We checked the data type, so we can cast it.
+        }
+        return Optional.empty();
+    }
 
+    @Override
+    public Optional<Cluster<?>> getCluster(String id) {
+        return Optional.of(clustersMap.get(id));
+    }
 }
