@@ -104,7 +104,7 @@ public abstract class ClusterCommonImpl<D extends Data> implements Cluster<D> {
 
     @Override
     public ComponentState<D> getState(GuiHolder<D> holder) {
-        return states[stateSelector.run(holder, holder.getHandler().getData(), this)];
+        return states[stateSelector.run(holder, holder.getViewManager().getData(), this)];
     }
 
     @Override

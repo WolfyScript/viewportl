@@ -20,7 +20,7 @@ package com.wolfyscript.utilities.common.gui;
 
 public interface GuiHolder<D extends Data> {
 
-    GuiViewManager<D> getHandler();
+    GuiViewManager<D> getViewManager();
 
     Window<D> getCurrentWindow();
 
