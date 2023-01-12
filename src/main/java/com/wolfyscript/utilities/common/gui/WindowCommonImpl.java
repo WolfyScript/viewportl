@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.wolfyscript.utilities.NamespacedKey;
@@ -37,14 +38,19 @@ public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
     private final ComponentState<D>[] states;
     private final StateSelector<D> stateSelector;
     private final BiMap<String, ? extends SlotComponent<D>> children;
+    private final Integer size;
+    private final WindowType type;
 
-    protected WindowCommonImpl(String id, Cluster<D> parent, StateSelector<D> stateSelector, ComponentState<D>[] states, BiMap<String, ? extends SlotComponent<D>> children) {
+    protected WindowCommonImpl(String id, Cluster<D> parent, StateSelector<D> stateSelector, ComponentState<D>[] states, BiMap<String, ? extends SlotComponent<D>> children, Integer size, WindowType type) {
         this.id = id;
         this.parent = parent;
         this.wolfyUtils = parent.getWolfyUtils();
         this.stateSelector = stateSelector;
         this.states = states;
         this.children = HashBiMap.create(children);
+        Preconditions.checkArgument(size != null || type != null, "Either type or size must be specified!");
+        this.size = size;
+        this.type = type;
     }
 
     @Override
@@ -74,7 +80,17 @@ public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
 
     @Override
     public ComponentState<D> getState(GuiHolder<D> holder) {
-        return states[stateSelector.run(holder, holder.getHandler().getData(), this)];
+        return states[stateSelector.run(holder, holder.getViewManager().getData(), this)];
+    }
+
+    @Override
+    public Optional<Integer> getSize() {
+        return Optional.ofNullable(size);
+    }
+
+    @Override
+    public Optional<WindowType> getType() {
+        return Optional.ofNullable(type);
     }
 
     public net.kyori.adventure.text.Component onUpdateTitle(GuiHolder<D> holder) {
@@ -101,11 +117,25 @@ public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
         protected StateSelector<D> stateSelector;
         protected final List<ComponentState.Builder<D, ComponentState<D>>> stateBuilders = new ArrayList<>();
         protected final WindowChildComponentBuilder<D> childComponentBuilder;
+        protected Integer size;
+        protected WindowType type;
 
-        Builder(String subID, Cluster<D> parent) {
+        protected Builder(String subID, Cluster<D> parent, WindowChildComponentBuilder<D> childComponentBuilder) {
             this.subID = subID;
             this.parent = parent;
-            this.childComponentBuilder = new ChildBuilder<>(parent);
+            this.childComponentBuilder = childComponentBuilder;
+        }
+
+        @Override
+        public Builder<D> size(int size) {
+            this.size = size;
+            return this;
+        }
+
+        @Override
+        public Builder<D> type(WindowType type) {
+            this.type = type;
+            return this;
         }
 
         @Override
@@ -134,20 +164,21 @@ public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
                     parent,
                     stateSelector == null ? (holder, data, component) -> 0 : stateSelector,
                     stateBuilders.stream().map(ComponentState.Builder::create).<ComponentState<D>>toArray(ComponentState[]::new),
-                    childComponentBuilder.create()
+                    childComponentBuilder.create(),
+                    size, type
             );
         }
 
-        protected abstract Window<D> constructImplementation(String id, Cluster<D> cluster, StateSelector<D> stateSelector, ComponentState<D>[] states, BiMap<String, ? extends SlotComponent<D>> children);
+        protected abstract Window<D> constructImplementation(String id, Cluster<D> cluster, StateSelector<D> stateSelector, ComponentState<D>[] states, BiMap<String, ? extends SlotComponent<D>> children, Integer size, WindowType type);
 
     }
 
-    static class ChildBuilder<D extends Data> implements WindowChildComponentBuilder<D> {
+    public static class ChildBuilder<D extends Data> implements WindowChildComponentBuilder<D> {
 
         private final Cluster<D> parent;
         private final BiMap<String, SlotComponent<D>> children = HashBiMap.create();
 
-        ChildBuilder(Cluster<D> parent) {
+        protected ChildBuilder(Cluster<D> parent) {
             this.parent = parent;
         }
 
