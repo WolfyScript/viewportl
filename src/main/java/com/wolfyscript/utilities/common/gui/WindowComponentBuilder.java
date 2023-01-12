@@ -20,4 +20,8 @@ package com.wolfyscript.utilities.common.gui;
 
 public interface WindowComponentBuilder<D extends Data> extends Component.Builder<D, Window<D>, WindowChildComponentBuilder<D>> {
 
+    WindowComponentBuilder<D> size(int size);
+
+    WindowComponentBuilder<D> type(WindowType type);
+
 }
