@@ -18,7 +18,9 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import java.util.Optional;
 import java.util.Set;
+import net.kyori.adventure.text.Component;
 
 public interface Window<D extends Data> extends MenuComponent<D> {
 
@@ -27,4 +29,11 @@ public interface Window<D extends Data> extends MenuComponent<D> {
 
     @Override
     Set<? extends SlotComponent<D>> children();
+
+    Optional<WindowType> getType();
+
+    Optional<Integer> getSize();
+
+    Component createTitle(GuiHolder<D> holder);
+
 }
