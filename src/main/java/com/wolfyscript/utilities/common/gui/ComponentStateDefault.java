@@ -25,14 +25,12 @@ public class ComponentStateDefault<D extends Data> implements ComponentState<D> 
 
         private final String key;
         private final InteractionCallback<D> interactionCallback;
-        private final InteractionPostCallback<D> interactPostCallback;
         private final RenderPreCallback<D> renderPreCallback;
         private final RenderCallback<D> renderCallback;
 
-        protected ComponentStateDefault(String key, InteractionCallback<D> interactionCallback, InteractionPostCallback<D> interactPostCallback, RenderPreCallback<D> renderPreCallback, RenderCallback<D> renderCallback) {
+        protected ComponentStateDefault(String key, InteractionCallback<D> interactionCallback, RenderPreCallback<D> renderPreCallback, RenderCallback<D> renderCallback) {
             this.key = key;
             this.interactionCallback = interactionCallback;
-            this.interactPostCallback = interactPostCallback;
             this.renderPreCallback = renderPreCallback;
             this.renderCallback = renderCallback;
         }
@@ -40,11 +38,6 @@ public class ComponentStateDefault<D extends Data> implements ComponentState<D> 
         @Override
         public InteractionCallback<D> interactCallback() {
             return interactionCallback;
-        }
-
-        @Override
-        public InteractionPostCallback<D> interactPostCallback() {
-            return interactPostCallback;
         }
 
         @Override
@@ -66,7 +59,6 @@ public class ComponentStateDefault<D extends Data> implements ComponentState<D> 
 
             private String key;
             private InteractionCallback<D> interactionCallback;
-            private InteractionPostCallback<D> interactPostCallback;
             private RenderPreCallback<D> renderPreCallback;
             private RenderCallback<D> renderCallback;
 
@@ -93,12 +85,6 @@ public class ComponentStateDefault<D extends Data> implements ComponentState<D> 
             }
 
             @Override
-            public Builder<D> interactPost(InteractionPostCallback<D> interactPostCallback) {
-                this.interactPostCallback = interactPostCallback;
-                return this;
-            }
-
-            @Override
             public Builder<D> renderPre(RenderPreCallback<D> renderPreCallback) {
                 this.renderPreCallback = renderPreCallback;
                 return null;
@@ -114,11 +100,10 @@ public class ComponentStateDefault<D extends Data> implements ComponentState<D> 
             public ComponentStateDefault<D> create() {
                 Preconditions.checkNotNull(renderCallback, "Cannot create Component without a RenderCallback!");
                 final var interactCallback = Objects.requireNonNullElseGet(this.interactionCallback, () -> (holder, data, component, details) -> InteractionResult.def());
-                final var interactPostCallback = Objects.requireNonNullElseGet(this.interactPostCallback, () -> (holder, data, component, details) -> {});
                 final var renderPreCallback = Objects.requireNonNullElseGet(this.renderPreCallback, () -> (holder, data, component, context) -> {});
                 final var renderCallback = Objects.requireNonNullElseGet(this.renderCallback, () -> (holder, data, component, context) -> {});
 
-                return new ComponentStateDefault<>(key, interactCallback, interactPostCallback, renderPreCallback, renderCallback);
+                return new ComponentStateDefault<>(key, interactCallback, renderPreCallback, renderCallback);
             }
         }
     }

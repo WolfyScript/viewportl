@@ -55,15 +55,6 @@ public interface ComponentState<D extends Data> {
     InteractionCallback<D> interactCallback();
 
     /**
-     * Called after each interaction.
-     * This propagates from the root Component to the Component that caused the interaction.
-     * This is called before the interaction of the child Component.
-     *
-     * @return The post interact callback
-     */
-    InteractionPostCallback<D> interactPostCallback();
-
-    /**
      * Called before each render.
      *
      *
@@ -100,8 +91,6 @@ public interface ComponentState<D extends Data> {
         Builder<D, S> key(String key);
 
         Builder<D, S> interact(InteractionCallback<D> interactionCallback);
-
-        Builder<D, S> interactPost(InteractionPostCallback<D> interactPostCallback);
 
         Builder<D, S> renderPre(RenderPreCallback<D> renderPreCallback);
 
