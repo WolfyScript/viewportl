@@ -120,22 +120,6 @@ public interface Component<D extends Data> {
     }
 
     /**
-     * Called after the interaction was completed.<br>
-     *
-     * @param holder    The holder that caused the interaction.
-     * @param data      The data of the handler (for convenience)
-     * @param interactionDetails    The details about the interaction.
-     */
-    default void postInteract(GuiHolder<D> holder, D data, InteractionDetails<D> interactionDetails) {
-        if (parent() != null) parent().postInteract(holder, data, interactionDetails);
-        getState(holder).interactPostCallback().run(holder, data, this, interactionDetails);
-    }
-
-    default void preRender(GuiHolder<D> holder, D data) {
-        if (parent() != null) parent().preRender(holder, data);
-    }
-
-    /**
      * Called whenever a Component is rendered.
      *
      * @param holder
