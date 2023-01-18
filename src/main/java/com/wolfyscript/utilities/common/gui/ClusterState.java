@@ -18,8 +18,8 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-@FunctionalInterface
-public interface InteractionPostCallback<D extends Data> {
+public interface ClusterState<D extends Data> extends ComponentState<D> {
 
-    void run(GuiHolder<D> holder, D data, Component<D> component, InteractionDetails<D> details);
+    MenuComponent<D> getComponentToRender();
+
 }

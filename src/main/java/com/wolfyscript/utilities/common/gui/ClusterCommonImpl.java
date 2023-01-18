@@ -143,12 +143,7 @@ public abstract class ClusterCommonImpl<D extends Data> implements Cluster<D> {
             return this;
         }
 
-        public final ClusterComponentBuilder<D> state(Consumer<ComponentState.Builder<D, ComponentState<D>>> stateBuilderConsumer) {
-            ComponentState.Builder<D, ComponentState<D>> stateBuilder = new ComponentStateDefault.Builder<>(subID);
-            stateBuilderConsumer.accept(stateBuilder);
-            stateBuilders.add(stateBuilder);
-            return this;
-        }
+        public abstract ClusterComponentBuilder<D> state(Consumer<ClusterStateBuilder<D>> stateBuilderConsumer);
 
         @Override
         public ClusterComponentBuilder<D> children(Consumer<ClusterChildComponentBuilder<D>> childComponentBuilderConsumer) {
@@ -196,7 +191,7 @@ public abstract class ClusterCommonImpl<D extends Data> implements Cluster<D> {
         }
 
         @Override
-        public <CT extends Component.Builder<D, ?, ?>> ClusterChildComponentBuilder<D> custom(String subID, NamespacedKey builderId, Class<CT> builderType, Consumer<CT> builderConsumer) {
+        public <CT extends Component.Builder<D, ?, ?, ?>> ClusterChildComponentBuilder<D> custom(String subID, NamespacedKey builderId, Class<CT> builderType, Consumer<CT> builderConsumer) {
             // TODO
             return this;
         }

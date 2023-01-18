@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface ClusterComponentBuilder<D extends Data> extends Component.Builder<D, Cluster<D>, ClusterChildComponentBuilder<D>> {
+public interface ClusterComponentBuilder<D extends Data> extends Component.Builder<D, Cluster<D>, ClusterChildComponentBuilder<D>, ClusterStateBuilder<D>> {
 
     ClusterComponentBuilder<D> entry(String subID);
 

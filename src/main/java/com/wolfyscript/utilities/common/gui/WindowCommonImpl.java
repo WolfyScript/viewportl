@@ -32,18 +32,20 @@ import java.util.function.Consumer;
 
 public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
 
-    private final WolfyUtils wolfyUtils;
-    private final String id;
-    private final MenuComponent<D> parent;
-    private final ComponentState<D>[] states;
-    private final StateSelector<D> stateSelector;
-    private final BiMap<String, ? extends SlotComponent<D>> children;
-    private final Integer size;
-    private final WindowType type;
+    protected final WolfyUtils wolfyUtils;
+    protected final String id;
+    protected final MenuComponent<D> parent;
+    protected final WindowState<D>[] states;
+    protected final StateSelector<D> stateSelector;
+    protected final BiMap<String, ? extends SlotComponent<D>> children;
+    protected final Integer size;
+    protected final WindowType type;
+    protected final WindowTitleUpdateCallback<D> titleUpdateCallback;
 
-    protected WindowCommonImpl(String id, Cluster<D> parent, StateSelector<D> stateSelector, ComponentState<D>[] states, BiMap<String, ? extends SlotComponent<D>> children, Integer size, WindowType type) {
+    protected WindowCommonImpl(String id, Cluster<D> parent, WindowTitleUpdateCallback<D> titleUpdateCallback, StateSelector<D> stateSelector, WindowState<D>[] states, BiMap<String, ? extends SlotComponent<D>> children, Integer size, WindowType type) {
         this.id = id;
         this.parent = parent;
+        this.titleUpdateCallback = titleUpdateCallback;
         this.wolfyUtils = parent.getWolfyUtils();
         this.stateSelector = stateSelector;
         this.states = states;
@@ -79,7 +81,7 @@ public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
     }
 
     @Override
-    public ComponentState<D> getState(GuiHolder<D> holder) {
+    public WindowState<D> getState(GuiHolder<D> holder) {
         return states[stateSelector.run(holder, holder.getViewManager().getData(), this)];
     }
 
@@ -93,8 +95,9 @@ public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
         return Optional.ofNullable(type);
     }
 
-    public net.kyori.adventure.text.Component onUpdateTitle(GuiHolder<D> holder) {
-        return null;
+    @Override
+    public net.kyori.adventure.text.Component createTitle(GuiHolder<D> holder) {
+        return titleUpdateCallback.run(holder, holder.getViewManager().getData(), this);
     }
 
     @Override
@@ -115,10 +118,11 @@ public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
         protected final String subID;
         protected final Cluster<D> parent;
         protected StateSelector<D> stateSelector;
-        protected final List<ComponentState.Builder<D, ComponentState<D>>> stateBuilders = new ArrayList<>();
+        protected final List<WindowStateBuilder<D>> stateBuilders = new ArrayList<>();
         protected final WindowChildComponentBuilder<D> childComponentBuilder;
         protected Integer size;
         protected WindowType type;
+        protected WindowTitleUpdateCallback<D> titleUpdateCallback;
 
         protected Builder(String subID, Cluster<D> parent, WindowChildComponentBuilder<D> childComponentBuilder) {
             this.subID = subID;
@@ -139,18 +143,19 @@ public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
         }
 
         @Override
+        public Builder<D> title(WindowTitleUpdateCallback<D> titleUpdateCallback) {
+            this.titleUpdateCallback = titleUpdateCallback;
+            return this;
+        }
+
+        @Override
         public Builder<D> stateSelector(StateSelector<D> stateSelector) {
             this.stateSelector = stateSelector;
             return this;
         }
 
         @Override
-        public Builder<D> state(Consumer<ComponentState.Builder<D, ComponentState<D>>> stateBuilderConsumer) {
-            ComponentState.Builder<D, ComponentState<D>> stateBuilder = new ComponentStateDefault.Builder<>(subID);
-            stateBuilderConsumer.accept(stateBuilder);
-            stateBuilders.add(stateBuilder);
-            return this;
-        }
+        public abstract Builder<D> state(Consumer<WindowStateBuilder<D>> stateBuilderConsumer);
 
         @Override
         public Builder<D> children(Consumer<WindowChildComponentBuilder<D>> childComponentBuilderConsumer) {
@@ -163,13 +168,13 @@ public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
             return constructImplementation(parent.getID() + "/" + subID,
                     parent,
                     stateSelector == null ? (holder, data, component) -> 0 : stateSelector,
-                    stateBuilders.stream().map(ComponentState.Builder::create).<ComponentState<D>>toArray(ComponentState[]::new),
+                    stateBuilders.stream().map(WindowStateBuilder::create).<WindowState<D>>toArray(WindowState[]::new),
                     childComponentBuilder.create(),
                     size, type
             );
         }
 
-        protected abstract Window<D> constructImplementation(String id, Cluster<D> cluster, StateSelector<D> stateSelector, ComponentState<D>[] states, BiMap<String, ? extends SlotComponent<D>> children, Integer size, WindowType type);
+        protected abstract Window<D> constructImplementation(String id, Cluster<D> cluster, StateSelector<D> stateSelector, WindowState<D>[] states, BiMap<String, ? extends SlotComponent<D>> children, Integer size, WindowType type);
 
     }
 
@@ -183,7 +188,7 @@ public abstract class WindowCommonImpl<D extends Data> implements Window<D> {
         }
 
         @Override
-        public <CT extends Component.Builder<D, ?, ?>> WindowChildComponentBuilder<D> custom(String subID, NamespacedKey builderId, Class<CT> builderType, Consumer<CT> builderConsumer) {
+        public <CT extends Component.Builder<D, ?, ?, ?>> WindowChildComponentBuilder<D> custom(String subID, NamespacedKey builderId, Class<CT> builderType, Consumer<CT> builderConsumer) {
             // TODO
             return this;
         }
