@@ -138,7 +138,7 @@ public interface Component<D extends Data> {
      * @param <D>
      * @param <C>
      */
-    interface Builder<D extends Data, C extends Component<D>, CB extends ChildComponentBuilder<D>> {
+    interface Builder<D extends Data, C extends Component<D>, CB extends ChildComponentBuilder<D>, SB extends ComponentState.Builder<D, ?>> {
 
         /**
          * Specifies the StateSelector to use to select the Components state based on
@@ -147,7 +147,7 @@ public interface Component<D extends Data> {
          * @param stateSelector The state selector to use.
          * @return This builder for chaining.
          */
-        Builder<D, C, CB> stateSelector(StateSelector<D> stateSelector);
+        Builder<D, C, CB, SB> stateSelector(StateSelector<D> stateSelector);
 
         /**
          * Specifies the state of the Component.<br>
@@ -160,7 +160,7 @@ public interface Component<D extends Data> {
          * @param builderConsumer The consumer that provides an instance of a new {@link ComponentState.Builder}
          * @return This builder for chaining.
          */
-        Builder<D, C, CB> state(Consumer<ComponentState.Builder<D, ComponentState<D>>> builderConsumer);
+        Builder<D, C, CB, SB> state(Consumer<SB> builderConsumer);
 
         /**
          * The ChildComponentBuilder is used to create and register
@@ -168,7 +168,7 @@ public interface Component<D extends Data> {
          *
          * @return The ChildComponentBuilder of this Component.
          */
-        Component.Builder<D, C, CB> children(Consumer<CB> childComponentBuilder);
+        Component.Builder<D, C, CB, SB> children(Consumer<CB> childComponentBuilder);
 
         /**
          * Creates the Component this builder belongs to.
