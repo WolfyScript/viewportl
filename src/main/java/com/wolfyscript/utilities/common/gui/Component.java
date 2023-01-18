@@ -57,15 +57,23 @@ public interface Component<D extends Data> {
     Component<D> parent();
 
     /**
+     * Gets the child at the relative path from this Component.<br>
+     * When the path is null or empty then it returns this Component instead.
      *
-     * @param path
-     * @return
+     * @param path The path to the child Component.
+     * @return The child at the specified path; or this Component when the path is null or empty.
      */
     default Optional<Component<D>> getChild(String... path) {
         if (path == null || path.length == 0) return Optional.of(this);
         return getChild(path[0]).flatMap(component -> component.getChild(Arrays.copyOfRange(path, 1, path.length)));
     }
 
+    /**
+     * Gets the direct child Component, or an empty Optional when it wasn't found.
+     *
+     * @param id The id of the child Component.
+     * @return The child Component; or empty Component.
+     */
     Optional<Component<D>> getChild(String id);
 
     /**

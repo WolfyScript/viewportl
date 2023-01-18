@@ -43,12 +43,13 @@ public interface GuiViewManager<D extends Data> {
     void openNew(String... path);
 
     /**
-     * Opens the entry menu of this cluster.
+     * Opens the entry menu of this root cluster.
      */
     void openNew();
 
     /**
-     * Opens the currently active menu without updating the history.
+     * Opens the currently active menu without updating the history.<br>
+     * In case there is no active menu it opens the entry of the root cluster.
      */
     void open();
 

@@ -18,10 +18,49 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface WindowComponentBuilder<D extends Data> extends Component.Builder<D, Window<D>, WindowChildComponentBuilder<D>> {
+import org.jetbrains.annotations.Nullable;
 
+/**
+ * Builder used to create Window Menus.<br>
+ *
+ *
+ * @param <D> The type of the data implementation.
+ */
+public interface WindowComponentBuilder<D extends Data> extends Component.Builder<D, Window<D>, WindowChildComponentBuilder<D>, WindowStateBuilder<D>> {
+
+    /**
+     * The size of the inventory.<br>
+     * This only applies when the type is not specified.<br>
+     * <b>Either the type or size must be specified!</b>
+     *
+     * @param size The size of the inventory.
+     * @return This builder to allow chaining the methods.
+     */
     WindowComponentBuilder<D> size(int size);
 
-    WindowComponentBuilder<D> type(WindowType type);
+    /**
+     * The type of the inventory.<br>
+     * When the type is specified the size is ignored.<br>
+     * <b>Either the type or size must be specified!</b>
+     *
+     * @param type
+     * @return This builder to allow chaining the methods.
+     */
+    WindowComponentBuilder<D> type(@Nullable WindowType type);
+
+    /**
+     * <p>
+     *     The callback used to create the title of the inventory.
+     * </p>
+     * <p>
+     *     The implementation may work different across platforms.<br>
+     *     On plain Spigot servers, the titles do not support all components inside inventory titles, like fonts.<br>
+     *     Paper fully supports all Components inside inventory titles.
+     * </p>
+     *
+     * @param titleUpdateCallback
+     * @return
+     */
+    WindowComponentBuilder<D> title(WindowTitleUpdateCallback<D> titleUpdateCallback);
 
 }

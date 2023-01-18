@@ -30,10 +30,30 @@ public interface Window<D extends Data> extends MenuComponent<D> {
     @Override
     Set<? extends SlotComponent<D>> children();
 
+    /**
+     * Gets the type that is configured for this Window.<br>
+     * <b>When this is empty, then {@link #getSize()} will return the specified size.</b>
+     *
+     * @return The specified type; or empty Optional when no type is configured.
+     * @see #getSize()
+     */
     Optional<WindowType> getType();
 
+    /**
+     * Gets the size that is configured for this Window.<br>
+     *
+     * <b>When this is empty, then {@link #getType()} will return the specified type.</b>
+     *
+     * @return The specified size: or empty Optional when no size is configured.
+     */
     Optional<Integer> getSize();
 
+    /**
+     * Creates the title of this window for the specified holder.
+     *
+     * @param holder The holder to create the title for.
+     * @return The title component.
+     */
     Component createTitle(GuiHolder<D> holder);
 
 }

@@ -25,5 +25,11 @@ public interface MenuComponent<D extends Data> extends Component<D> {
     @Override
     MenuComponent<D> parent();
 
-    void open(GuiViewManager<D> guiHandler, UUID uuid);
+    /**
+     * Opens this component for the specified view and player.<br>
+     *
+     * @param viewManager The view manager to open.
+     * @param uuid The uuid to open the Window for.
+     */
+    void open(GuiViewManager<D> viewManager, UUID uuid);
 }
