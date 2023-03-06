@@ -18,9 +18,16 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-@FunctionalInterface
-public interface RenderPreCallback<D extends Data> {
+import java.util.function.Consumer;
 
-    void run(GuiHolder<D> holder, D data, Component<D> component, RenderContext<D> context);
+public interface RouterBuilder {
+
+    RouterBuilder entry(Consumer<RouterEntryBuilder> entryBuilder);
+
+    RouterBuilder children(Consumer<RouterChildBuilder> childComponentBuilderConsumer);
+
+    RouterBuilder interact(InteractionCallback interactionCallback);
+
+    Router create(Router parent);
 
 }

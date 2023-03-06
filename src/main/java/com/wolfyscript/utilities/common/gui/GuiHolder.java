@@ -18,10 +18,10 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface GuiHolder<D extends Data> {
+public interface GuiHolder {
 
-    GuiViewManager<D> getViewManager();
+    GuiViewManager getViewManager();
 
-    Window<D> getCurrentWindow();
+    Window getCurrentWindow();
 
 }

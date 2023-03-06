@@ -18,8 +18,17 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface ClusterState<D extends Data> extends ComponentState<D> {
+public interface RouterEntry {
 
-    MenuComponent<D> getComponentToRender();
+    String id();
+
+    Type type();
+
+    MenuComponent component();
+
+    enum Type {
+        WINDOW,
+        ROUTER
+    }
 
 }

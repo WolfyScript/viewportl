@@ -20,8 +20,9 @@ package com.wolfyscript.utilities.common.gui;
 
 import com.google.common.collect.BiMap;
 
-public interface WindowChildComponentBuilder<D extends Data> extends ChildComponentBuilder<D> {
+public interface WindowChildComponentBuilder extends ChildComponentBuilder {
 
-    @Override
-    BiMap<String, ? extends SlotComponent<D>> create();
+    BiMap<String, ? extends SizedComponent> create();
+
+    void applyTo(Window window);
 }

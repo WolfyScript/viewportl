@@ -18,8 +18,8 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface StateSelector<D extends Data> {
+public interface StateSelector {
 
-    int run(GuiHolder<D> holder, D data, Component<D> component);
+    int run(GuiHolder holder, Object data, Component component);
 
 }

@@ -18,23 +18,23 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public abstract class GuiHolderCommonImpl<D extends Data> implements GuiHolder<D> {
+public abstract class GuiHolderCommonImpl implements GuiHolder {
 
-    protected final Window<D> currentWindow;
-    protected final GuiViewManager<D> viewManager;
+    protected final Window currentWindow;
+    protected final GuiViewManager viewManager;
 
-    public GuiHolderCommonImpl(Window<D> currentWindow, GuiViewManager<D> viewManager) {
+    public GuiHolderCommonImpl(Window currentWindow, GuiViewManager viewManager) {
         this.currentWindow = currentWindow;
         this.viewManager = viewManager;
     }
 
     @Override
-    public Window<D> getCurrentWindow() {
+    public Window getCurrentWindow() {
         return currentWindow;
     }
 
     @Override
-    public GuiViewManager<D> getViewManager() {
+    public GuiViewManager getViewManager() {
         return viewManager;
     }
 }

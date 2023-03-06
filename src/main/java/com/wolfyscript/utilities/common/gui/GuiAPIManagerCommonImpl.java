@@ -29,37 +29,25 @@ import java.util.function.Consumer;
 public abstract class GuiAPIManagerCommonImpl implements GuiAPIManager {
 
     protected final WolfyUtils wolfyUtils;
-    private final BiMap<String, Cluster<?>> clustersMap = HashBiMap.create();
+    private final BiMap<String, Router> clustersMap = HashBiMap.create();
 
     public GuiAPIManagerCommonImpl(WolfyUtils wolfyUtils) {
         this.wolfyUtils = wolfyUtils;
     }
 
-    public abstract <D extends Data> void registerCluster(String id, Class<D> dataType, Consumer<ClusterComponentBuilder<D>> clusterBuilderConsumer);
-
-    protected <D extends Data> void registerCluster(Cluster<D> cluster) {
-        Preconditions.checkArgument(!clustersMap.containsKey(cluster.getID()), "A cluster with the id '" + cluster.getID() + "' is already registered!");
-        clustersMap.put(cluster.getID(), cluster);
+    protected void registerCluster(Router router) {
+        Preconditions.checkArgument(!clustersMap.containsKey(router.getID()), "A cluster with the id '" + router.getID() + "' is already registered!");
+        clustersMap.put(router.getID(), router);
     }
 
-    public <D extends Data> GuiViewManager<D> createViewAndOpen(String clusterID, Class<D> dataType, UUID... players) {
-        GuiViewManager<D> handler = createView(clusterID, dataType, players);
+    public GuiViewManager createViewAndOpen(String clusterID, UUID... players) {
+        GuiViewManager handler = createView(clusterID, players);
         handler.openNew();
         return handler;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <D extends Data> Optional<Cluster<D>> getCluster(String id, Class<D> dataType) {
-        Cluster<?> cluster = clustersMap.get(id);
-        if (cluster != null && cluster.dataType().equals(dataType)) {
-            return Optional.of((Cluster<D>) cluster); // We checked the data type, so we can cast it.
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Cluster<?>> getCluster(String id) {
+    public Optional<Router> getRouter(String id) {
         return Optional.of(clustersMap.get(id));
     }
 }

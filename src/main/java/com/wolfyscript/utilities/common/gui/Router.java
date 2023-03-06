@@ -18,17 +18,37 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import java.util.Optional;
 import java.util.Set;
 
-public interface SlotComponent<D extends Data> extends Component<D> {
+/**
+ * <p>
+ *     The Cluster acts as a structure and root Component for Menus.
+ *     It can have both other Clusters and Windows as children.
+ * </p>
+ * The entry is used to define the default menu that is opened.
+ *
+ * @param <D> The type of the data implementation.
+ */
+public interface Router extends MenuComponent, Component, BranchComponent, Interactable {
 
     @Override
-    Set<? extends SlotComponent<D>> children();
+    Router parent();
 
-    int position();
+    /**
+     * Gets the entry menu Component that is opened by default.
+     *
+     * @return The entry Component.
+     */
+    RouterEntry entry();
 
-    int width();
+    Optional<Router> getRoute(String routeID);
 
-    int height();
+    Set<? extends Router> childRoutes();
 
+    @Override
+    Set<? extends Window> childComponents();
+
+    @Override
+    Optional<? extends Window> getChild(String... path);
 }

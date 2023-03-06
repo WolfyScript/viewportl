@@ -18,6 +18,6 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface AreaComponent<D extends Data> extends SlotComponent<D> {
+public interface AreaComponent extends Component {
 
 }

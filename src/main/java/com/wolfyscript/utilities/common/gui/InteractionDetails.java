@@ -1,6 +1,6 @@
 package com.wolfyscript.utilities.common.gui;
 
-public interface InteractionDetails<D extends Data> {
+public interface InteractionDetails {
 
     boolean isCancelled();
 

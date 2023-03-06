@@ -18,15 +18,15 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import com.google.common.collect.BiMap;
-import java.util.function.Consumer;
-
-public interface ClusterChildComponentBuilder<D extends Data> extends ChildComponentBuilder<D> {
-
-    ClusterChildComponentBuilder<D> window(String id, Consumer<WindowComponentBuilder<D>> builderConsumer);
-
-    ClusterChildComponentBuilder<D> cluster(String id, Consumer<ClusterComponentBuilder<D>> builderConsumer);
+public interface Button extends Component, Interactable, Renderable, SizedComponent {
 
     @Override
-    BiMap<String, ? extends MenuComponent<D>> create();
+    default int width() {
+        return 1;
+    }
+
+    @Override
+    default int height() {
+        return 1;
+    }
 }

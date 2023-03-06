@@ -18,19 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import java.util.function.Supplier;
-
-public interface ComponentState {
-
-    Component getOwner();
-
-    <V> StateHook<V> getOrCreateHook(String id, Supplier<V> defaultValue);
-
-    boolean shouldUpdate();
-
-    InteractionResult interact(GuiHolder holder, InteractionDetails interactionDetails);
-    
-    void render(GuiHolder holder, RenderContext context);
+public interface Stateful {
 
 
 

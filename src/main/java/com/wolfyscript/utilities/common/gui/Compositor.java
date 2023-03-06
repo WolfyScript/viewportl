@@ -18,20 +18,10 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import java.util.function.Supplier;
+import com.wolfyscript.utilities.common.items.ItemStackConfig;
 
-public interface ComponentState {
+public interface Compositor<T extends ItemStackConfig<?>> {
 
-    Component getOwner();
-
-    <V> StateHook<V> getOrCreateHook(String id, Supplier<V> defaultValue);
-
-    boolean shouldUpdate();
-
-    InteractionResult interact(GuiHolder holder, InteractionDetails interactionDetails);
-    
-    void render(GuiHolder holder, RenderContext context);
-
-
+    void setStack(int slot, T stackConfig);
 
 }

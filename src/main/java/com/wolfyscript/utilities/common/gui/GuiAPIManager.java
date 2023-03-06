@@ -23,65 +23,46 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * Handles the general GUI API and acts as an entry point to the whole creation of {@link Cluster}s and {@link GuiViewManager}s.<br>
- * It stores all the registered {@link Cluster}s and allows to register new clusters via builders.<br>
+ * Handles the general GUI API and acts as an entry point to the whole creation of {@link Router}s and {@link GuiViewManager}s.<br>
+ * It stores all the registered {@link Router}s and allows to register new clusters via builders.<br>
  * Additionally, it stores the {@link GuiViewManager}s that handle the views for players.
  */
 public interface GuiAPIManager {
 
     /**
-     * Registers a new cluster under the given id, using the specified custom {@link Data} type ({@link D}).<br>
-     * The builder consumer provides the newly constructed {@link ClusterComponentBuilder<D>}, which can then be used inside that consumer.<br>
-     * <b>It is not required to call the {@link ClusterComponentBuilder#create()} method, because that is done after the consumer function ends.</b>
+     * Registers a new router under the given id.<br>
+     * The builder consumer provides the newly constructed {@link RouterBuilder}, which can then be used inside that consumer.<br>
      *
-     * @param id The unique id of the cluster to register.
-     * @param dataType The type of the custom {@link Data} implementation.
-     * @param clusterBuilderConsumer The consumer that provides the new builder.
-     * @param <D> The type of the specified data implementation.
+     * @param id The unique id of the router to register.
+     * @param routerBuilderConsumer The consumer that provides the new builder.
      */
-    <D extends Data> void registerCluster(String id, Class<D> dataType, Consumer<ClusterComponentBuilder<D>> clusterBuilderConsumer);
+    void registerRouter(String id, Consumer<RouterBuilder> routerBuilderConsumer);
 
     /**
-     * Gets the registered cluster with the specified id.<br>
-     * If the cluster is available it checks if it matches the provided type.<br>
-     * When the type does not match an empty Optional is returned instead.
+     * Gets the registered router with the specified id.<br>
      *
-     * @param id The id of the cluster.
-     * @param dataType The type of the cluster.
-     * @return The registered cluster only if the id and data type matches; otherwise empty Optional.
-     * @param <D> The type of the data implementation.
+     * @param id The id of the router.
+     * @return The registered router only if the id matches; otherwise empty Optional.
      */
-    <D extends Data> Optional<Cluster<D>> getCluster(String id, Class<D> dataType);
-
-    /**
-     * Gets the registered cluster with the specified id.<br>
-     *
-     * @param id The id of the cluster.
-     * @return The registered cluster only if the id matches; otherwise empty Optional.
-     */
-    Optional<Cluster<?>> getCluster(String id);
+    Optional<Router> getRouter(String id);
 
     /**
      * Creates a new view for the specified viewers, with the specified cluster as its root.<br>
-     * This gets the registered cluster using {@link #getCluster(String, Class)}.
+     * This gets the registered cluster using {@link #getRouter(String)}.
      *
      * @param clusterId The id of the root cluster.
-     * @param dataType The type of the cluster data implementation.
      * @param viewers The viewers of this view.
      * @return The newly created view.
-     * @param <D> The type of the data implementation.
      */
-    <D extends Data> GuiViewManager<D> createView(String clusterId, Class<D> dataType, UUID... viewers);
+    GuiViewManager createView(String clusterId, UUID... viewers);
 
     /**
-     * Same as {@link #createView(String, Class, UUID...)} and opens the entry menu right after the creation of the view.
+     * Same as {@link #createView(String, UUID...)} and opens the entry menu right after the creation of the view.
      *
      * @param clusterID The id of the root cluster.
-     * @param dataType The type of the cluster data implementation.
      * @param viewers The viewers of this view.
      * @return The newly created view.
-     * @param <D> The type of the data implementation.
      */
-    <D extends Data> GuiViewManager<D> createViewAndOpen(String clusterID, Class<D> dataType, UUID... viewers);
+    GuiViewManager createViewAndOpen(String clusterID, UUID... viewers);
 
 }

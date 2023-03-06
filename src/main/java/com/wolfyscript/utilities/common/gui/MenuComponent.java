@@ -20,10 +20,7 @@ package com.wolfyscript.utilities.common.gui;
 
 import java.util.UUID;
 
-public interface MenuComponent<D extends Data> extends Component<D> {
-
-    @Override
-    MenuComponent<D> parent();
+public interface MenuComponent {
 
     /**
      * Opens this component for the specified view and player.<br>
@@ -31,5 +28,5 @@ public interface MenuComponent<D extends Data> extends Component<D> {
      * @param viewManager The view manager to open.
      * @param uuid The uuid to open the Window for.
      */
-    void open(GuiViewManager<D> viewManager, UUID uuid);
+    void open(GuiViewManager viewManager, UUID uuid);
 }

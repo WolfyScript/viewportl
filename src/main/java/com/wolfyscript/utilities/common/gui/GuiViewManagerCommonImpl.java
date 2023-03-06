@@ -27,47 +27,37 @@ import java.util.Deque;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import org.jetbrains.annotations.NotNull;
 
-public abstract class GuiViewManagerCommonImpl<D extends Data> implements GuiViewManager<D> {
+public abstract class GuiViewManagerCommonImpl implements GuiViewManager {
 
     private final WolfyUtils wolfyUtils;
-    private final Cluster<D> root;
-    private final Deque<MenuComponent<D>> history;
+    private final Router root;
+    private final Deque<MenuComponent> history;
     private final Set<UUID> viewers;
-    private final D data;
 
-    protected GuiViewManagerCommonImpl(WolfyUtils wolfyUtils, Cluster<D> rootCluster, Set<UUID> viewers) {
+    protected GuiViewManagerCommonImpl(WolfyUtils wolfyUtils, Router rootRouter, Set<UUID> viewers) {
         this.wolfyUtils = wolfyUtils;
-        this.root = rootCluster;
+        this.root = rootRouter;
         this.history = new ArrayDeque<>();
         this.viewers = viewers;
         // Construct custom data instance
         Injector injector = Guice.createInjector(binder -> {
             binder.bind(WolfyUtils.class).toInstance(wolfyUtils);
-            binder.bind(Cluster.class).toInstance(root);
-            binder.bind(new TypeLiteral<GuiViewManager<D>>(){}).toInstance(this);
-            binder.bind(new TypeLiteral<Set<UUID>>(){}).toInstance(viewers);
+            binder.bind(Router.class).toInstance(root);
+            binder.bind(new TypeLiteral<GuiViewManager>() {
+            }).toInstance(this);
+            binder.bind(new TypeLiteral<Set<UUID>>() {
+            }).toInstance(viewers);
         });
-        data = injector.getInstance(rootCluster.dataType());
-    }
-
-    @NotNull
-    public D getData() {
-        return data;
     }
 
     @Override
     public void openNew(String... path) {
         root.getChild(path).ifPresent(component -> {
-            if (component instanceof MenuComponent<D> menu) {
-                for (UUID viewer : viewers) {
-                    menu.open(this, viewer);
-                }
-                history.push(menu); // push the new menu to the history
-            } else {
-                throw new IllegalArgumentException("Cannot open non-menu Component!");
+            for (UUID viewer : viewers) {
+                component.open(this, viewer);
             }
+            history.push(component); // push the new menu to the history
         });
     }
 
@@ -81,7 +71,7 @@ public abstract class GuiViewManagerCommonImpl<D extends Data> implements GuiVie
         if (history.isEmpty()) {
             openNew();
         } else {
-            MenuComponent<D> component = history.peek();
+            MenuComponent component = history.peek();
             viewers.forEach(uuid -> component.open(this, uuid));
         }
     }
@@ -96,7 +86,7 @@ public abstract class GuiViewManagerCommonImpl<D extends Data> implements GuiVie
     }
 
     @Override
-    public Optional<MenuComponent<D>> getCurrentMenu() {
+    public Optional<MenuComponent> getCurrentMenu() {
         return Optional.ofNullable(history.peek());
     }
 
@@ -106,7 +96,7 @@ public abstract class GuiViewManagerCommonImpl<D extends Data> implements GuiVie
     }
 
     @Override
-    public Cluster<D> getRoot() {
+    public Router getRoot() {
         return root;
     }
 

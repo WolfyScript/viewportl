@@ -20,8 +20,8 @@ package com.wolfyscript.utilities.common.gui;
 
 import net.kyori.adventure.text.Component;
 
-public interface WindowTitleUpdateCallback<D extends Data> {
+public interface WindowTitleUpdateCallback {
 
-    Component run(GuiHolder<D> holder, D data, Window<D> window);
+    Component run(GuiHolder holder, Window window);
 
 }

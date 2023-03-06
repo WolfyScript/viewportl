@@ -18,11 +18,15 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.common.items.ItemStackConfig;
+
 /**
  * The data that contains all the information needed to render the Menu.
  *
- * @param <D>
  */
-public interface RenderContext<D extends Data> {
-    //TODO
+public interface RenderContext {
+
+    ComponentState getCurrentState();
+
+    void setStack(int slot, ItemStackConfig<?> stackConfig);
 }

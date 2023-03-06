@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <D> The type of the data implementation.
  */
-public interface WindowComponentBuilder<D extends Data> extends Component.Builder<D, Window<D>, WindowChildComponentBuilder<D>, WindowStateBuilder<D>> {
+public interface WindowComponentBuilder {
 
     /**
      * The size of the inventory.<br>
@@ -36,7 +36,7 @@ public interface WindowComponentBuilder<D extends Data> extends Component.Builde
      * @param size The size of the inventory.
      * @return This builder to allow chaining the methods.
      */
-    WindowComponentBuilder<D> size(int size);
+    WindowComponentBuilder size(int size);
 
     /**
      * The type of the inventory.<br>
@@ -46,7 +46,7 @@ public interface WindowComponentBuilder<D extends Data> extends Component.Builde
      * @param type
      * @return This builder to allow chaining the methods.
      */
-    WindowComponentBuilder<D> type(@Nullable WindowType type);
+    WindowComponentBuilder type(@Nullable WindowType type);
 
     /**
      * <p>
@@ -61,6 +61,12 @@ public interface WindowComponentBuilder<D extends Data> extends Component.Builde
      * @param titleUpdateCallback
      * @return
      */
-    WindowComponentBuilder<D> title(WindowTitleUpdateCallback<D> titleUpdateCallback);
+    WindowComponentBuilder title(WindowTitleUpdateCallback titleUpdateCallback);
+
+    WindowComponentBuilder interact(InteractionCallback interactionCallback);
+
+    WindowComponentBuilder render(RenderCallback renderCallback);
+
+    Window create(Router parent);
 
 }

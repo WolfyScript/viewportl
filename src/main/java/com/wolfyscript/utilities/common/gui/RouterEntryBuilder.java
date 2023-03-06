@@ -18,37 +18,10 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import java.util.Set;
+public interface RouterEntryBuilder {
 
-/**
- * <p>
- *     The Cluster acts as a structure and root Component for Menus.
- *     It can have both other Clusters and Windows as children.
- * </p>
- * The entry is used to define the default menu that is opened.
- *
- * @param <D> The type of the data implementation.
- */
-public interface Cluster<D extends Data> extends MenuComponent<D> {
+    RouterEntryBuilder window(String id);
 
-    /**
-     * Gets the entry menu Component that is opened by default.
-     *
-     * @return The entry Component.
-     */
-    MenuComponent<D> entry();
-
-    @Override
-    Cluster<D> parent();
-
-    @Override
-    Set<? extends MenuComponent<D>> children();
-
-    /**
-     * The type is specified for root Clusters and propagated to the children.
-     *
-     * @return The type of the data implementation.
-     */
-    Class<D> dataType();
+    RouterEntryBuilder route(String id);
 
 }

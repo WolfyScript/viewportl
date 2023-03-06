@@ -22,17 +22,15 @@ import com.wolfyscript.utilities.common.WolfyUtils;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * The GuiViewManager, as the name suggests, manages a view of the GUI for one or more players.<br>
- * It contains the custom Data ({@link D}) object that stores all the required data of this view.<br>
+ * It contains the custom Data object that stores all the required data of this view.<br>
  *
  * The view is immutable, so you need to create a new view each time you need to add a viewer or change the root.
  *
- * @param <D> The custom data object type.
  */
-public interface GuiViewManager<D extends Data> {
+public interface GuiViewManager {
 
     /**
      * Opens a new menu under the specific path.
@@ -59,28 +57,20 @@ public interface GuiViewManager<D extends Data> {
     void openPrevious();
 
     /**
-     * Gets the data object of this view manager.
-     *
-     * @return The data of this view manager.
-     */
-    @NotNull
-    D getData();
-
-    /**
      * The root cluster of this view manager.
      * This is used for methods like {@link #openNew()} to open the entry menu.
      *
      * @return The root cluster of this view manager.
      */
-    Cluster<D> getRoot();
+    Router getRoot();
 
     /**
      * Gets the currently active menu.
-     * This may be a {@link Window<D>}, {@link Cluster<D>}, or any other {@link MenuComponent<D>}.
+     * This may be a {@link Window<D>}, {@link Router <D>}, or any other {@link MenuComponent<D>}.
      *
      * @return The currently active menu.
      */
-    Optional<MenuComponent<D>> getCurrentMenu();
+    Optional<MenuComponent> getCurrentMenu();
 
     /**
      * Gets the viewers that are handled by this view manager.

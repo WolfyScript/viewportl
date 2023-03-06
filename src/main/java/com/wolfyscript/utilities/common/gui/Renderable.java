@@ -18,20 +18,22 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import java.util.function.Supplier;
+public interface Renderable {
 
-public interface ComponentState {
+    /**
+     * Called whenever a Component is rendered.
+     *
+     * @param holder
+     * @param context
+     */
+    void render(GuiHolder holder, ComponentState state, RenderContext context);
 
-    Component getOwner();
-
-    <V> StateHook<V> getOrCreateHook(String id, Supplier<V> defaultValue);
-
-    boolean shouldUpdate();
-
-    InteractionResult interact(GuiHolder holder, InteractionDetails interactionDetails);
-    
-    void render(GuiHolder holder, RenderContext context);
-
-
+    /**
+     * Called each time the Component or a child Component is rendered in the GUI.
+     *
+     *
+     * @return
+     */
+    RenderCallback renderCallback();
 
 }

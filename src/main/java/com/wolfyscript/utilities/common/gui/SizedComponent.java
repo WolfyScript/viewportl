@@ -18,8 +18,24 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface ClusterComponentBuilder<D extends Data> extends Component.Builder<D, Cluster<D>, ClusterChildComponentBuilder<D>, ClusterStateBuilder<D>> {
+/**
+ * This Component represents components that have a specific width and height.<br>
+ * They can only be placed into non-sized Components or Components of the same or bigger dimension.
+ */
+public interface SizedComponent extends Component {
 
-    ClusterComponentBuilder<D> entry(String subID);
+    /**
+     * Gets the width of this Component in slot count.
+     *
+     * @return The width in slots.
+     */
+    int width();
+
+    /**
+     * Gets the width of this Component in slot count.
+     *
+     * @return The height in slots.
+     */
+    int height();
 
 }

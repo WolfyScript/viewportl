@@ -19,8 +19,8 @@
 package com.wolfyscript.utilities.common.gui;
 
 @FunctionalInterface
-public interface RenderCallback<D extends Data> {
+public interface RenderCallback {
 
-    void render(GuiHolder<D> holder, D data, Component<D> component, RenderContext<D> context);
+    void render(GuiHolder holder, ComponentState state);
 
 }

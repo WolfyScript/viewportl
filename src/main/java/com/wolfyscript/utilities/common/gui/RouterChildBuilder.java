@@ -18,7 +18,13 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-/**
- * Data object that can be extended to store custom data for GUI Views.<br>
- */
-public abstract class Data { }
+import java.util.function.Consumer;
+
+public interface RouterChildBuilder {
+
+    RouterChildBuilder window(String id, Consumer<WindowComponentBuilder> builderConsumer);
+
+    RouterChildBuilder router(String id, Consumer<RouterBuilder> builderConsumer);
+
+    void applyTo(Router parent);
+}

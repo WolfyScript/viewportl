@@ -18,14 +18,8 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface ClusterStateBuilder<D extends Data> extends ComponentState.Builder<D, ClusterState<D>> {
+public interface ComponentStateWindow extends ComponentState {
 
-    /**
-     * Clusters can only render child menus, that were configured using the ClusterComponentBuilder.
-     *
-     * @param childID The id of the child MenuComponent.
-     * @return This builder to allow for chaining.
-     */
-    ClusterStateBuilder<D> childComponentToRender(String childID);
+    void setComponent(int slot, String componentID);
 
 }

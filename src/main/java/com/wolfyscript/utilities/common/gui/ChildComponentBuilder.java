@@ -19,23 +19,18 @@
 package com.wolfyscript.utilities.common.gui;
 
 import com.google.common.collect.BiMap;
-import com.wolfyscript.utilities.NamespacedKey;
-import java.util.function.Consumer;
 
 /**
  * Used to create child Components for parent Components.
  *
  * @param <D> The type of the data implementation.
  */
-public interface ChildComponentBuilder<D extends Data> {
-
-    // TODO: This needs proper testing
-    <CT extends Component.Builder<D, ?, ?, ?>> ChildComponentBuilder<D> custom(String subID, NamespacedKey builderId, Class<CT> builderType, Consumer<CT> builderConsumer);
+public interface ChildComponentBuilder {
 
     /**
      * Creates the children map that has the id of the child and Component as the value.
      *
      * @return The child Component map.
      */
-    BiMap<String, ? extends Component<D>> create();
+    BiMap<String, ? extends Component> create();
 }

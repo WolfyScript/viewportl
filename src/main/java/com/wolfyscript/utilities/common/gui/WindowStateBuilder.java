@@ -18,10 +18,10 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface WindowStateBuilder<D extends Data> extends ComponentState.Builder<D, WindowState<D>> {
+public interface WindowStateBuilder extends ButtonState.Builder<WindowState> {
 
-    WindowStateBuilder<D> childSlot(int slot, String childID);
+    WindowStateBuilder childSlot(int slot, String childID);
 
-    WindowStateBuilder<D> componentSlot(int slot, String... pathFromRoot);
+    WindowStateBuilder componentSlot(int slot, String... pathFromRoot);
 
 }

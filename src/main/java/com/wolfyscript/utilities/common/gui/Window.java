@@ -20,15 +20,13 @@ package com.wolfyscript.utilities.common.gui;
 
 import java.util.Optional;
 import java.util.Set;
-import net.kyori.adventure.text.Component;
 
-public interface Window<D extends Data> extends MenuComponent<D> {
-
-    @Override
-    MenuComponent<D> parent();
+public interface Window extends MenuComponent, SizedComponent, BranchComponent, Component, Interactable, Renderable {
 
     @Override
-    Set<? extends SlotComponent<D>> children();
+    Router parent();
+
+    Set<? extends SizedComponent> childComponents();
 
     /**
      * Gets the type that is configured for this Window.<br>
@@ -54,6 +52,8 @@ public interface Window<D extends Data> extends MenuComponent<D> {
      * @param holder The holder to create the title for.
      * @return The title component.
      */
-    Component createTitle(GuiHolder<D> holder);
+    net.kyori.adventure.text.Component createTitle(GuiHolder holder);
 
+    @Override
+    Class<? extends ComponentStateWindow> getComponentStateType();
 }
