@@ -18,10 +18,36 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import com.wolfyscript.utilities.common.items.ItemStackConfig;
+import java.util.function.Function;
 
-public interface Compositor<T extends ItemStackConfig<?>> {
+public interface Signal<MT> {
 
-    void setStack(int slot, T stackConfig);
+    String key();
+
+    Class<MT> messageType();
+
+    Value<MT> createMessage(ComponentState state);
+
+    interface Value<T> {
+
+        Signal<T> signal();
+
+        ComponentState state();
+
+        void update(T newValue);
+
+        void update(Function<T, T> updateFunction);
+
+        T get();
+
+    }
+
+    interface Builder<T> {
+
+        Builder<T> defaultValue(Function<ComponentState, T> defaultValueFunction);
+
+        Signal<T> create();
+
+    }
 
 }
