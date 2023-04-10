@@ -28,6 +28,8 @@ public interface RouterBuilder {
 
     RouterBuilder interact(InteractionCallback interactionCallback);
 
+    <T> RouterBuilder useSignal(String key, Class<T> type, Consumer<Signal.Builder<T>> signalBuilder);
+
     Router create(Router parent);
 
 }
