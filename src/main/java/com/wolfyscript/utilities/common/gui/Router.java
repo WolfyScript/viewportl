@@ -30,7 +30,7 @@ import java.util.Set;
  *
  * @param <D> The type of the data implementation.
  */
-public interface Router extends MenuComponent, Component, BranchComponent, Interactable {
+public interface Router extends MenuComponent<RouterState>, Stateful<RouterState>, Component, BranchComponent, Interactable {
 
     @Override
     Router parent();
@@ -51,4 +51,5 @@ public interface Router extends MenuComponent, Component, BranchComponent, Inter
 
     @Override
     Optional<? extends Window> getChild(String... path);
+
 }

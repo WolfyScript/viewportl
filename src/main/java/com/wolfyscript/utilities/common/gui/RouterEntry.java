@@ -24,7 +24,7 @@ public interface RouterEntry {
 
     Type type();
 
-    MenuComponent component();
+    MenuComponent<RouterState> component();
 
     enum Type {
         WINDOW,
