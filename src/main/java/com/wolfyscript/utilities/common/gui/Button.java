@@ -18,7 +18,12 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface Button extends Component, Interactable, Renderable, SizedComponent {
+/**
+ * A simple button that has an icon (ItemStack) and an interaction callback.
+ * It always has a 1x1 size, because it occupies a single slot.
+ *
+ */
+public interface Button extends Component, Stateful<ButtonComponentState>, Interactable, SizedComponent {
 
     @Override
     default int width() {
@@ -29,4 +34,6 @@ public interface Button extends Component, Interactable, Renderable, SizedCompon
     default int height() {
         return 1;
     }
+
+    ButtonIcon icon();
 }
