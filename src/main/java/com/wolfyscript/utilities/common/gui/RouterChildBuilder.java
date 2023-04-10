@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 public interface RouterChildBuilder {
 
-    RouterChildBuilder window(String id, Consumer<WindowComponentBuilder> builderConsumer);
+    RouterChildBuilder window(String id, Consumer<WindowBuilder> builderConsumer);
 
     RouterChildBuilder router(String id, Consumer<RouterBuilder> builderConsumer);
 
