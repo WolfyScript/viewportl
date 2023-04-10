@@ -29,4 +29,15 @@ public interface RenderContext {
     ComponentState getCurrentState();
 
     void setStack(int slot, ItemStackConfig<?> stackConfig);
+
+    Component next();
+
+    default boolean checkIfSlotInBounds(int slot) {
+        if (!(getCurrentState().getOwner().parent() instanceof SizedComponent sizedParent) || slot >= 0 && slot < sizedParent.width() * sizedParent.height()) {
+            return true;
+        } else {
+            throw new IllegalArgumentException("Slot " + slot + " out of bounds! Must be in the range of [" + 0 + "..." + (sizedParent.width() * sizedParent.height() - 1) + "] !");
+        }
+    }
+
 }
