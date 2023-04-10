@@ -18,10 +18,8 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import java.util.Map;
+public interface WindowState extends ComponentState {
 
-public interface WindowState extends ButtonState {
-
-    Map<Integer, SizedComponent> getComponentPositions();
+    void setComponent(int slot, String componentID);
 
 }
