@@ -21,7 +21,7 @@ package com.wolfyscript.utilities.common.gui;
 import java.util.Optional;
 import java.util.Set;
 
-public interface Window extends MenuComponent, SizedComponent, BranchComponent, Component, Interactable, Renderable {
+public interface Window extends MenuComponent<RouterState>, Stateful<WindowState>, SizedComponent, BranchComponent, Component, Interactable, Renderable<WindowState> {
 
     @Override
     Router parent();
@@ -54,6 +54,4 @@ public interface Window extends MenuComponent, SizedComponent, BranchComponent, 
      */
     net.kyori.adventure.text.Component createTitle(GuiHolder holder);
 
-    @Override
-    Class<? extends ComponentStateWindow> getComponentStateType();
 }
