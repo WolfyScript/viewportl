@@ -18,8 +18,5 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface ComponentStateWindow extends ComponentState {
-
-    void setComponent(int slot, String componentID);
-
+public interface ButtonComponentState extends ComponentState {
 }
