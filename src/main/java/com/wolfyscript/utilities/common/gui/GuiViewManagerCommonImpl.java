@@ -52,16 +52,6 @@ public abstract class GuiViewManagerCommonImpl implements GuiViewManager {
     }
 
     @Override
-    public void openNew(String... path) {
-        root.getChild(path).ifPresent(component -> {
-            for (UUID viewer : viewers) {
-                component.open(this, viewer);
-            }
-            history.push(component); // push the new menu to the history
-        });
-    }
-
-    @Override
     public void openNew() {
         openNew(new String[0]);
     }
@@ -72,7 +62,7 @@ public abstract class GuiViewManagerCommonImpl implements GuiViewManager {
             openNew();
         } else {
             MenuComponent component = history.peek();
-            viewers.forEach(uuid -> component.open(this, uuid));
+            //viewers.forEach(uuid -> component.open(this, uuid));
         }
     }
 
@@ -81,7 +71,7 @@ public abstract class GuiViewManagerCommonImpl implements GuiViewManager {
         history.poll(); // Remove active current menu
         getCurrentMenu().ifPresent(previous -> {
             // Do not add menu to history, as it is already available
-            viewers.forEach(uuid -> previous.open(this, uuid));
+            //viewers.forEach(uuid -> previous.open(this, uuid));
         });
     }
 
