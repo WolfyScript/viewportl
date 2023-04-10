@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <D> The type of the data implementation.
  */
-public interface WindowComponentBuilder {
+public interface WindowBuilder {
 
     /**
      * The size of the inventory.<br>
@@ -36,7 +37,7 @@ public interface WindowComponentBuilder {
      * @param size The size of the inventory.
      * @return This builder to allow chaining the methods.
      */
-    WindowComponentBuilder size(int size);
+    WindowBuilder size(int size);
 
     /**
      * The type of the inventory.<br>
@@ -46,7 +47,7 @@ public interface WindowComponentBuilder {
      * @param type
      * @return This builder to allow chaining the methods.
      */
-    WindowComponentBuilder type(@Nullable WindowType type);
+    WindowBuilder type(@Nullable WindowType type);
 
     /**
      * <p>
@@ -61,11 +62,15 @@ public interface WindowComponentBuilder {
      * @param titleUpdateCallback
      * @return
      */
-    WindowComponentBuilder title(WindowTitleUpdateCallback titleUpdateCallback);
+    WindowBuilder title(WindowTitleUpdateCallback titleUpdateCallback);
 
-    WindowComponentBuilder interact(InteractionCallback interactionCallback);
+    <T> WindowBuilder useSignal(String key, Class<T> type, Consumer<Signal.Builder<T>> signalBuilder);
 
-    WindowComponentBuilder render(RenderCallback renderCallback);
+    WindowBuilder interact(InteractionCallback interactionCallback);
+
+    WindowBuilder render(RenderCallback<WindowState> renderCallback);
+
+    WindowBuilder children(Consumer<WindowChildComponentBuilder> children);
 
     Window create(Router parent);
 
