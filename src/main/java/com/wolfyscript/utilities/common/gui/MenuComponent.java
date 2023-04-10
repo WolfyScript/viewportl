@@ -18,9 +18,10 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import java.util.Deque;
 import java.util.UUID;
 
-public interface MenuComponent {
+public interface MenuComponent<PARENT_STATE extends ComponentState> {
 
     /**
      * Opens this component for the specified view and player.<br>
@@ -28,5 +29,7 @@ public interface MenuComponent {
      * @param viewManager The view manager to open.
      * @param uuid The uuid to open the Window for.
      */
-    void open(GuiViewManager viewManager, UUID uuid);
+    RenderContext createContext(GuiViewManager viewManager, Deque<String> path, UUID uuid);
+
+    void open(GuiViewManager viewManager, PARENT_STATE parentState, Deque<String> path, UUID player);
 }
