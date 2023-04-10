@@ -18,20 +18,20 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import java.util.function.Supplier;
-
 public interface ComponentState {
+
+    ComponentState getParent();
 
     Component getOwner();
 
-    <V> StateHook<V> getOrCreateHook(String id, Supplier<V> defaultValue);
+    <T> Signal.Value<T> captureSignal(String signalKey, Class<T> msgType);
+
+    Signal.Value<?> captureSignal(String signalKey);
 
     boolean shouldUpdate();
 
     InteractionResult interact(GuiHolder holder, InteractionDetails interactionDetails);
     
     void render(GuiHolder holder, RenderContext context);
-
-
 
 }
