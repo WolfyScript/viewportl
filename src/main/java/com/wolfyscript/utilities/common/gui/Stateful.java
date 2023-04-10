@@ -18,8 +18,19 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface Stateful {
+import java.util.Map;
+import java.util.Optional;
 
+public interface Stateful<S extends ComponentState> {
 
+    S createState(ComponentState parentState);
+
+    Map<String, Signal<?>> signals();
+
+    default <T> Optional<Signal<T>> getSignal(String key, Class<T> type) {
+        Signal<?> signal = signals().get(key);
+        if (signal != null && signal.messageType() == type) return Optional.of((Signal<T>) signal);
+        return Optional.empty();
+    }
 
 }
