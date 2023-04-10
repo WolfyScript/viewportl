@@ -18,11 +18,11 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import com.google.common.collect.BiMap;
+import java.util.function.Consumer;
 
-public interface WindowChildComponentBuilder extends ChildComponentBuilder {
+public interface WindowChildComponentBuilder {
 
-    BiMap<String, ? extends SizedComponent> create();
+    WindowChildComponentBuilder button(String id, Consumer<ButtonBuilder> button);
 
     void applyTo(Window window);
 }
