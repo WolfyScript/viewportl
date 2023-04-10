@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface WindowStateBuilder extends ButtonState.Builder<WindowState> {
+public interface WindowStateBuilder {
 
     WindowStateBuilder childSlot(int slot, String childID);
 
