@@ -21,7 +21,6 @@ package com.wolfyscript.utilities.common.gui;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.function.Consumer;
 
 public interface Component {
 
@@ -57,18 +56,6 @@ public interface Component {
         Deque<Component> path = parent().getPathToRoot();
         path.add(parent());
         return path;
-    }
-
-    Class<? extends ComponentState> getComponentStateType();
-
-    /**
-     * Builder used to create Components.<br>
-     * A Builder should always be preferred over creating Components via constructor.
-     *
-     * @param <C>
-     */
-    interface Builder<C extends Component, CB extends ChildComponentBuilder> {
-
     }
 
 }
