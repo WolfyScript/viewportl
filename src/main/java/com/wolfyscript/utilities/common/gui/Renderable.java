@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface Renderable {
+public interface Renderable<S extends ComponentState> {
 
     /**
      * Called whenever a Component is rendered.
@@ -26,7 +26,7 @@ public interface Renderable {
      * @param holder
      * @param context
      */
-    void render(GuiHolder holder, ComponentState state, RenderContext context);
+    void render(GuiHolder holder, S state, RenderContext context);
 
     /**
      * Called each time the Component or a child Component is rendered in the GUI.
@@ -34,6 +34,6 @@ public interface Renderable {
      *
      * @return
      */
-    RenderCallback renderCallback();
+    RenderCallback<S> renderCallback();
 
 }
