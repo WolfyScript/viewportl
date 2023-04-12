@@ -20,7 +20,7 @@ package com.wolfyscript.utilities.common.gui;
 
 import java.util.function.Consumer;
 
-public interface RouterBuilder {
+public interface RouterBuilder extends ComponentBuilder<Router, Router> {
 
     RouterBuilder entry(Consumer<RouterEntryBuilder> entryBuilder);
 
