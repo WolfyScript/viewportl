@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <D> The type of the data implementation.
  */
-public interface WindowBuilder {
+public interface WindowBuilder extends ComponentBuilder<Window, Router> {
 
     /**
      * The size of the inventory.<br>

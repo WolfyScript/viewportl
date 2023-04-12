@@ -22,7 +22,7 @@ import com.wolfyscript.utilities.common.items.ItemStackConfig;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public interface ButtonBuilder {
+public interface ButtonBuilder extends ComponentBuilder<Button, SizedComponent> {
 
     ButtonBuilder icon(Consumer<IconBuilder> icon);
 
