@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 
 public interface WindowChildComponentBuilder {
 
+    <B extends ComponentBuilder<? extends SizedComponent, SizedComponent>> WindowChildComponentBuilder custom(String componentId, Class<B> builderType, Consumer<B> builderConsumer);
+
     WindowChildComponentBuilder button(String id, Consumer<ButtonBuilder> button);
 
     void applyTo(Window window);
