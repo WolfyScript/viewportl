@@ -44,6 +44,10 @@ public interface Signal<MT> {
 
     interface Builder<T> {
 
+        String getKey();
+
+        Class<T> getValueType();
+
         Builder<T> defaultValue(Function<ComponentState, T> defaultValueFunction);
 
         Signal<T> create();
