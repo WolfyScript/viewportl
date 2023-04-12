@@ -18,11 +18,24 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wolfyscript.utilities.Keyed;
+import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public interface Component {
+public interface Component extends Keyed {
+
+    @JsonIgnore
+    @Override
+    NamespacedKey getNamespacedKey();
+
+    @JsonGetter("type")
+    default NamespacedKey type() {
+        return getNamespacedKey();
+    }
 
     /**
      * Gets the unique id (in context of the parent) of this component.
