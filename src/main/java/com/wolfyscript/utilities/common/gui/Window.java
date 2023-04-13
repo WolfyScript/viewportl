@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -53,5 +54,17 @@ public interface Window extends MenuComponent<RouterState>, Stateful<WindowState
      * @return The title component.
      */
     net.kyori.adventure.text.Component createTitle(GuiHolder holder);
+
+    RenderOptions getRenderOptions();
+
+    interface RenderOptions {
+
+        Optional<RenderCallback<WindowState>> renderCallback();
+
+        Map<Integer, ? extends Component> placement();
+
+        int[] getSlotsFor(Component component);
+
+    }
 
 }
