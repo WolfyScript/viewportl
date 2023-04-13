@@ -22,8 +22,18 @@ import com.wolfyscript.utilities.common.items.ItemStackConfig;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Builder to create a {@link Button} instance.
+ *
+ */
 public interface ButtonBuilder extends ComponentBuilder<Button, SizedComponent> {
 
+    /**
+     * Creates a new {@link IconBuilder} to create the icon of the button.
+     *
+     * @param icon The consumer that provides the {@link IconBuilder}
+     * @return This builder instance for chaining.
+     */
     ButtonBuilder icon(Consumer<IconBuilder> icon);
 
     ButtonBuilder interact(InteractionCallback interactionCallback);
@@ -32,6 +42,11 @@ public interface ButtonBuilder extends ComponentBuilder<Button, SizedComponent> 
 
     Button create(SizedComponent parent);
 
+    /**
+     * Provides methods to create an icon for Buttons.
+     * Dynamic icons are recreated each time the component is re-rendered, while static icons are just created once and then reused.
+     * By default, all icons are static to improve performance.
+     */
     interface IconBuilder {
 
         IconBuilder stack(ItemStackConfig<?> stackConfig);
