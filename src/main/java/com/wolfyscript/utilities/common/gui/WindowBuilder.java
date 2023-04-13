@@ -64,14 +64,24 @@ public interface WindowBuilder extends ComponentBuilder<Window, Router> {
      */
     WindowBuilder title(WindowTitleUpdateCallback titleUpdateCallback);
 
-    <T> WindowBuilder useSignal(String key, Class<T> type, Consumer<Signal.Builder<T>> signalBuilder);
+    <T> WindowBuilder createSignal(String key, Class<T> type, Consumer<Signal.Builder<T>> signalBuilder);
 
     WindowBuilder interact(InteractionCallback interactionCallback);
 
-    WindowBuilder render(RenderCallback<WindowState> renderCallback);
-
     WindowBuilder children(Consumer<WindowChildComponentBuilder> children);
 
+    WindowBuilder render(Consumer<RenderOptionsBuilder> renderOptionsBuilder);
+
     Window create(Router parent);
+
+    interface RenderOptionsBuilder {
+
+        RenderOptionsBuilder position(int slot, String componentID);
+
+        RenderOptionsBuilder custom(RenderCallback<WindowState> renderCallback);
+
+        Window.RenderOptions create(Window window);
+
+    }
 
 }
