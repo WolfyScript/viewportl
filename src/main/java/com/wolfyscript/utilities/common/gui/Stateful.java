@@ -29,7 +29,7 @@ public interface Stateful<S extends ComponentState> {
 
     default <T> Optional<Signal<T>> getSignal(String key, Class<T> type) {
         Signal<?> signal = signals().get(key);
-        if (signal != null && signal.messageType() == type) return Optional.of((Signal<T>) signal);
+        if (signal != null && signal.valueType() == type) return Optional.of((Signal<T>) signal);
         return Optional.empty();
     }
 
