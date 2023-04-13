@@ -20,6 +20,8 @@ package com.wolfyscript.utilities.common.gui;
 
 public interface WindowState extends ComponentState {
 
-    void setComponent(int slot, String componentID);
+    void renderComponent(int slot, String componentID);
+
+    void renderComponent(String componentID);
 
 }
