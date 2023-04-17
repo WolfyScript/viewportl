@@ -18,15 +18,15 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.json.annotations.KeyedBaseType;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Builder used to create Window Menus.<br>
  *
- *
- * @param <D> The type of the data implementation.
  */
+@KeyedBaseType(baseType = ComponentBuilder.class)
 public interface WindowBuilder extends ComponentBuilder<Window, Router> {
 
     /**

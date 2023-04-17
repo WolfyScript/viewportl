@@ -18,8 +18,10 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.json.annotations.KeyedBaseType;
 import java.util.function.Consumer;
 
+@KeyedBaseType(baseType = ComponentBuilder.class)
 public interface RouterBuilder extends ComponentBuilder<Router, Router> {
 
     RouterBuilder entry(Consumer<RouterEntryBuilder> entryBuilder);
