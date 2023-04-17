@@ -48,6 +48,6 @@ public abstract class GuiAPIManagerCommonImpl implements GuiAPIManager {
 
     @Override
     public Optional<Router> getRouter(String id) {
-        return Optional.of(clustersMap.get(id));
+        return Optional.ofNullable(clustersMap.get(id));
     }
 }
