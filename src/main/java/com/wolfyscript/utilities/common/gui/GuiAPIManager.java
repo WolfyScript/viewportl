@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -37,6 +38,15 @@ public interface GuiAPIManager {
      * @param routerBuilderConsumer The consumer that provides the new builder.
      */
     void registerRouter(String id, Consumer<RouterBuilder> routerBuilderConsumer);
+
+    /**
+     * Registers a new router that it loads from the given file.
+     * The consumer function provides that newly constructed {@link RouterBuilder}, which can be used to manipulate the builder.
+     *
+     * @param file The file to load the router from.
+     * @param routerBuilderConsumer The function to manipulate the new builder.
+     */
+    void registerRouterFromFile(File file, Consumer<RouterBuilder> routerBuilderConsumer);
 
     /**
      * Gets the registered router with the specified id.<br>
