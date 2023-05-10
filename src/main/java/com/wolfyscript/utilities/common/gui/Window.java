@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.common.gui.components.CallbackInitComponent;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -53,9 +54,11 @@ public interface Window extends MenuComponent<RouterState>, Stateful<WindowState
      * @param holder The holder to create the title for.
      * @return The title component.
      */
-    net.kyori.adventure.text.Component createTitle(GuiHolder holder);
+    net.kyori.adventure.text.Component createTitle(GuiHolder holder, WindowState window);
 
     RenderOptions getRenderOptions();
+
+    CallbackInitComponent getInitCallback();
 
     interface RenderOptions {
 

@@ -16,16 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-public interface Renderable<S extends ComponentState> {
+import com.wolfyscript.utilities.common.items.ItemStackConfig;
 
-    /**
-     * Called each time the Component or a child Component is rendered in the GUI.
-     *
-     *
-     * @return
-     */
-    RenderCallback<S> renderCallback();
+public interface ButtonIcon {
+
+    ItemStackConfig<?> getStack();
+
+    boolean isDynamic();
 
 }

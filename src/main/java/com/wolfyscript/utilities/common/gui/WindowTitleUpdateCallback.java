@@ -22,6 +22,6 @@ import net.kyori.adventure.text.Component;
 
 public interface WindowTitleUpdateCallback {
 
-    Component run(GuiHolder holder, Window window);
+    Component run(GuiHolder holder, Window window, WindowState state);
 
 }

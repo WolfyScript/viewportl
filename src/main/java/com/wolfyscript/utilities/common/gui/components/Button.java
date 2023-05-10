@@ -16,7 +16,29 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-public interface ButtonComponentState extends ComponentState {
+import com.wolfyscript.utilities.common.gui.Component;
+import com.wolfyscript.utilities.common.gui.Interactable;
+import com.wolfyscript.utilities.common.gui.SizedComponent;
+import com.wolfyscript.utilities.common.gui.Stateful;
+
+/**
+ * A simple button that has an icon (ItemStack) and an interaction callback.
+ * It always has a 1x1 size, because it occupies a single slot.
+ *
+ */
+public interface Button extends Component, Stateful<ButtonComponentState>, Interactable, SizedComponent {
+
+    @Override
+    default int width() {
+        return 1;
+    }
+
+    @Override
+    default int height() {
+        return 1;
+    }
+
+    ButtonIcon icon();
 }

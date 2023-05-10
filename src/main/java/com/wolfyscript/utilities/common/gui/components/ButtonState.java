@@ -16,7 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
+
+import com.wolfyscript.utilities.common.gui.InteractionCallback;
+import com.wolfyscript.utilities.common.gui.RenderCallback;
+import com.wolfyscript.utilities.common.gui.StateSelector;
 
 /**
  * <p>

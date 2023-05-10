@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.common.gui.components.ButtonBuilder;
 import java.util.function.Consumer;
 
 public interface WindowChildComponentBuilder {

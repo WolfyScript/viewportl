@@ -16,16 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-public interface Renderable<S extends ComponentState> {
+import com.wolfyscript.utilities.common.gui.GuiHolder;
 
-    /**
-     * Called each time the Component or a child Component is rendered in the GUI.
-     *
-     *
-     * @return
-     */
-    RenderCallback<S> renderCallback();
+@FunctionalInterface
+public interface CallbackInitComponent {
+
+    void run(GuiHolder holder, RenderFunction render);
 
 }

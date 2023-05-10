@@ -16,24 +16,35 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-/**
- * A simple button that has an icon (ItemStack) and an interaction callback.
- * It always has a 1x1 size, because it occupies a single slot.
- *
- */
-public interface Button extends Component, Stateful<ButtonComponentState>, Interactable, SizedComponent {
+import com.wolfyscript.utilities.common.gui.Signal;
+import com.wolfyscript.utilities.common.gui.WindowBuilder;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
-    @Override
-    default int width() {
-        return 1;
+public interface RenderFunction {
+
+    <T> Signal.Value<T> createSignal(String key, Class<T> type, Supplier<T> defaultValue);
+
+    RenderFunction component(int i, String id);
+
+    RenderFunction component(String id);
+
+    <R extends RenderFunction, S> R reactive(Signal.Value<S> signal, Consumer<Signal.Value<S>> provideRenderFunction);
+
+    RenderFunction then();
+
+    interface Conditional {
+
+        Conditional then(Supplier<RenderFunction> render);
+
+        RenderFunction orElse(Supplier<RenderFunction> render);
+
+        RenderFunction orIgnore();
+
     }
 
-    @Override
-    default int height() {
-        return 1;
-    }
 
-    ButtonIcon icon();
 }

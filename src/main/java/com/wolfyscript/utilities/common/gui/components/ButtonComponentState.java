@@ -16,14 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-import com.wolfyscript.utilities.common.items.ItemStackConfig;
+import com.wolfyscript.utilities.common.gui.ComponentState;
 
-public interface ButtonIcon {
-
-    ItemStackConfig<?> getStack();
-
-    boolean isDynamic();
-
+public interface ButtonComponentState extends ComponentState {
 }

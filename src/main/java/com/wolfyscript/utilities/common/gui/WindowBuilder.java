@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.common.gui.components.CallbackInitComponent;
 import com.wolfyscript.utilities.json.annotations.KeyedBaseType;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
@@ -70,7 +71,7 @@ public interface WindowBuilder extends ComponentBuilder<Window, Router> {
 
     WindowBuilder children(Consumer<WindowChildComponentBuilder> children);
 
-    WindowBuilder render(Consumer<RenderOptionsBuilder> renderOptionsBuilder);
+    WindowBuilder render(CallbackInitComponent render);
 
     Window create(Router parent);
 

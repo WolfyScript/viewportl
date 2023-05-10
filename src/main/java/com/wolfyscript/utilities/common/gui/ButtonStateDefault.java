@@ -19,6 +19,7 @@
 package com.wolfyscript.utilities.common.gui;
 
 import com.google.common.base.Preconditions;
+import com.wolfyscript.utilities.common.gui.components.ButtonState;
 import java.util.Objects;
 
 public class ButtonStateDefault implements ButtonState {

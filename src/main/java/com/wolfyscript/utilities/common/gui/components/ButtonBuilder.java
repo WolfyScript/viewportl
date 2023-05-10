@@ -16,8 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
+import com.wolfyscript.utilities.common.gui.ComponentBuilder;
+import com.wolfyscript.utilities.common.gui.InteractionCallback;
+import com.wolfyscript.utilities.common.gui.Signal;
+import com.wolfyscript.utilities.common.gui.SizedComponent;
 import com.wolfyscript.utilities.common.items.ItemStackConfig;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
