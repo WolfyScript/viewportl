@@ -18,6 +18,8 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.common.gui.components.Router;
+import com.wolfyscript.utilities.common.gui.components.RouterBuilder;
 import java.io.File;
 import java.util.Optional;
 import java.util.UUID;

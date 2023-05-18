@@ -16,12 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-public interface WindowStateBuilder {
+import com.wolfyscript.utilities.common.gui.GuiHolder;
+import net.kyori.adventure.text.Component;
 
-    WindowStateBuilder childSlot(int slot, String childID);
+public interface WindowTitleUpdateCallback {
 
-    WindowStateBuilder componentSlot(int slot, String... pathFromRoot);
+    Component run(GuiHolder holder, Window window, WindowState state);
 
 }

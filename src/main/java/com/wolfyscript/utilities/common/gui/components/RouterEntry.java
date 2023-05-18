@@ -16,9 +16,23 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-public interface RouterState extends ComponentState {
+import java.util.Optional;
 
+public interface RouterEntry {
+
+    String id();
+
+    Type type();
+
+    Optional<Router> getRoute();
+
+    Optional<Window> getWindow();
+
+    enum Type {
+        WINDOW,
+        ROUTER
+    }
 
 }

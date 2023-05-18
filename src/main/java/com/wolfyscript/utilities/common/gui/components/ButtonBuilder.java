@@ -18,10 +18,10 @@
 
 package com.wolfyscript.utilities.common.gui.components;
 
+import com.wolfyscript.utilities.common.gui.Component;
 import com.wolfyscript.utilities.common.gui.ComponentBuilder;
 import com.wolfyscript.utilities.common.gui.InteractionCallback;
 import com.wolfyscript.utilities.common.gui.Signal;
-import com.wolfyscript.utilities.common.gui.SizedComponent;
 import com.wolfyscript.utilities.common.items.ItemStackConfig;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * Builder to create a {@link Button} instance.
  *
  */
-public interface ButtonBuilder extends ComponentBuilder<Button, SizedComponent> {
+public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
 
     /**
      * Creates a new {@link IconBuilder} to create the icon of the button.
@@ -44,7 +44,7 @@ public interface ButtonBuilder extends ComponentBuilder<Button, SizedComponent> 
 
     <T> ButtonBuilder useSignal(String key, Class<T> type, Consumer<Signal.Builder<T>> signalBuilder);
 
-    Button create(SizedComponent parent);
+    Button create(Component parent);
 
     /**
      * Provides methods to create an icon for Buttons.

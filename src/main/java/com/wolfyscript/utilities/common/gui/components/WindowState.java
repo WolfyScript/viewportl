@@ -18,33 +18,11 @@
 
 package com.wolfyscript.utilities.common.gui.components;
 
-import com.wolfyscript.utilities.common.gui.Signal;
-import com.wolfyscript.utilities.common.gui.WindowBuilder;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import com.wolfyscript.utilities.common.gui.ComponentCollection;
+import com.wolfyscript.utilities.common.gui.Signalable;
 
-public interface RenderFunction {
+public interface WindowState extends Signalable, ComponentCollection {
 
-    <T> Signal.Value<T> createSignal(String key, Class<T> type, Supplier<T> defaultValue);
-
-    RenderFunction component(int i, String id);
-
-    RenderFunction component(String id);
-
-    <R extends RenderFunction, S> R reactive(Signal.Value<S> signal, Consumer<Signal.Value<S>> provideRenderFunction);
-
-    RenderFunction then();
-
-    interface Conditional {
-
-        Conditional then(Supplier<RenderFunction> render);
-
-        RenderFunction orElse(Supplier<RenderFunction> render);
-
-        RenderFunction orIgnore();
-
-    }
-
+    Window getOwner();
 
 }

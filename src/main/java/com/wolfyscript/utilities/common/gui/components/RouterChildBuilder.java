@@ -16,36 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
 import java.util.function.Consumer;
 
-/**
- * This Component represents components that have a specific width and height.<br>
- * They can only be placed into non-sized Components or Components of the same or bigger dimension.
- */
-public interface SizedComponent extends Component {
+public interface RouterChildBuilder {
 
-    /**
-     * Gets the width of this Component in slot count.
-     *
-     * @return The width in slots.
-     */
-    int width();
+    RouterChildBuilder window(String id, Consumer<WindowBuilder> builderConsumer);
 
-    /**
-     * Gets the width of this Component in slot count.
-     *
-     * @return The height in slots.
-     */
-    int height();
+    RouterChildBuilder router(String id, Consumer<RouterBuilder> builderConsumer);
 
-    default void executeForAllSlots(int positionSlot, Consumer<Integer> slotFunction) {
-        for (int i = 0; i < height(); i++) {
-            for (int j = 0; j < width(); j++) {
-                slotFunction.accept(positionSlot + j + i * (9 - width()));
-            }
-        }
-    }
-
+    void applyTo(Router parent);
 }

@@ -16,21 +16,18 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-import com.wolfyscript.utilities.json.annotations.KeyedBaseType;
+import com.wolfyscript.utilities.common.gui.InteractionCallback;
 import java.util.function.Consumer;
 
-@KeyedBaseType(baseType = ComponentBuilder.class)
-public interface RouterBuilder extends ComponentBuilder<Router, Router> {
-
-    RouterBuilder entry(Consumer<RouterEntryBuilder> entryBuilder);
-
-    RouterBuilder children(Consumer<RouterChildBuilder> childComponentBuilderConsumer);
+public interface RouterBuilder {
 
     RouterBuilder interact(InteractionCallback interactionCallback);
 
-    <T> RouterBuilder useSignal(String key, Class<T> type, Consumer<Signal.Builder<T>> signalBuilder);
+    RouterBuilder route(String path, Consumer<RouterBuilder> subRouteBuilder);
+
+    RouterBuilder window(Consumer<WindowBuilder> windowBuilder);
 
     Router create(Router parent);
 

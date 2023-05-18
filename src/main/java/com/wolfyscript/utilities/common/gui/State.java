@@ -18,10 +18,5 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import net.kyori.adventure.text.Component;
-
-public interface WindowTitleUpdateCallback {
-
-    Component run(GuiHolder holder, Window window, WindowState state);
-
+public interface State {
 }

@@ -35,7 +35,7 @@ import com.wolfyscript.utilities.json.KeyedTypeResolver;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonPropertyOrder(value = { "type" })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public interface ComponentBuilder<COMPONENT extends Component, PARENT extends Component> extends Keyed {
+public interface ComponentBuilder<COMPONENT extends Component, PARENT> extends Keyed {
 
     @JsonIgnore
     @Override

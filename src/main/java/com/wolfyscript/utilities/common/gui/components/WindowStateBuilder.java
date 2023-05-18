@@ -16,12 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-public interface WindowState extends ComponentState {
+public interface WindowStateBuilder {
 
-    void renderComponent(int slot, String componentID);
+    WindowStateBuilder childSlot(int slot, String childID);
 
-    void renderComponent(String componentID);
+    WindowStateBuilder componentSlot(int slot, String... pathFromRoot);
 
 }

@@ -18,6 +18,12 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface AreaComponent extends Component {
+import java.util.Optional;
+
+public interface ComponentCollection {
+
+    Optional<ComponentState> get(int slot);
+
+    void updateComponent(int slot, ComponentState componentState);
 
 }

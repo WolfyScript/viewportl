@@ -22,6 +22,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.common.gui.components.Router;
+import com.wolfyscript.utilities.common.gui.components.Window;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
@@ -31,19 +33,21 @@ import java.util.UUID;
 public abstract class GuiViewManagerCommonImpl implements GuiViewManager {
 
     private final WolfyUtils wolfyUtils;
-    private final Router root;
-    private final Deque<MenuComponent> history;
+    private final Router router;
+    private Window currentRoot;
+    private final Deque<Window> history;
     private final Set<UUID> viewers;
 
-    protected GuiViewManagerCommonImpl(WolfyUtils wolfyUtils, Router rootRouter, Set<UUID> viewers) {
+    protected GuiViewManagerCommonImpl(WolfyUtils wolfyUtils, Router router, Set<UUID> viewers) {
         this.wolfyUtils = wolfyUtils;
-        this.root = rootRouter;
+        this.router = router;
+
         this.history = new ArrayDeque<>();
         this.viewers = viewers;
         // Construct custom data instance
         Injector injector = Guice.createInjector(binder -> {
             binder.bind(WolfyUtils.class).toInstance(wolfyUtils);
-            binder.bind(Router.class).toInstance(root);
+            binder.bind(Router.class).toInstance(router);
             binder.bind(new TypeLiteral<GuiViewManager>() {
             }).toInstance(this);
             binder.bind(new TypeLiteral<Set<UUID>>() {
@@ -61,23 +65,27 @@ public abstract class GuiViewManagerCommonImpl implements GuiViewManager {
         if (history.isEmpty()) {
             openNew();
         } else {
-            MenuComponent component = history.peek();
-            //viewers.forEach(uuid -> component.open(this, uuid));
+            getCurrentMenu().ifPresent(window -> window.open(this));
         }
     }
 
     @Override
     public void openPrevious() {
         history.poll(); // Remove active current menu
+        setCurrentRoot(history.peek());
         getCurrentMenu().ifPresent(previous -> {
             // Do not add menu to history, as it is already available
-            //viewers.forEach(uuid -> previous.open(this, uuid));
+            previous.open(this);
         });
     }
 
+    public void setCurrentRoot(Window currentRoot) {
+        this.currentRoot = currentRoot;
+    }
+
     @Override
-    public Optional<MenuComponent> getCurrentMenu() {
-        return Optional.ofNullable(history.peek());
+    public Optional<Window> getCurrentMenu() {
+        return Optional.ofNullable(currentRoot);
     }
 
     @Override
@@ -87,7 +95,7 @@ public abstract class GuiViewManagerCommonImpl implements GuiViewManager {
 
     @Override
     public Router getRoot() {
-        return root;
+        return router;
     }
 
     @Override

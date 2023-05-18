@@ -16,10 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
+import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.common.gui.GuiViewManager;
+import com.wolfyscript.utilities.common.gui.Interactable;
+import com.wolfyscript.utilities.common.gui.RenderContext;
+import java.util.Deque;
 import java.util.Optional;
-import java.util.Set;
+import java.util.UUID;
 
 /**
  * <p>
@@ -30,26 +35,25 @@ import java.util.Set;
  *
  * @param <D> The type of the data implementation.
  */
-public interface Router extends MenuComponent<RouterState>, Stateful<RouterState>, Component, BranchComponent, Interactable {
+public interface Router extends Interactable {
 
-    @Override
+    String getID();
+
+    WolfyUtils getWolfyUtils();
+
     Router parent();
 
+    Optional<Router> getSubRoute(String routeID);
+
+    Optional<Window> getWindow();
+
+    Window open(GuiViewManager viewManager, String... path);
+
     /**
-     * Gets the entry menu Component that is opened by default.
+     * Opens this component for the specified view and player.<br>
      *
-     * @return The entry Component.
+     * @param viewManager The view manager to open.
+     * @param uuid The uuid to open the Window for.
      */
-    RouterEntry entry();
-
-    Optional<Router> getRoute(String routeID);
-
-    Set<? extends Router> childRoutes();
-
-    @Override
-    Set<? extends Window> childComponents();
-
-    @Override
-    Optional<? extends Window> getChild(String... path);
-
+    RenderContext createContext(GuiViewManager viewManager, Deque<String> path, UUID uuid);
 }

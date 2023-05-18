@@ -18,14 +18,18 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import com.wolfyscript.utilities.common.gui.components.ButtonBuilder;
-import java.util.function.Consumer;
+import com.wolfyscript.utilities.common.gui.components.WindowState;
+import java.util.function.Function;
+import net.kyori.adventure.text.Component;
 
-public interface WindowChildComponentBuilder {
+public interface WindowRenderer extends Renderer<WindowState> {
 
-    <B extends ComponentBuilder<? extends SizedComponent, SizedComponent>> WindowChildComponentBuilder custom(String componentId, Class<B> builderType, Consumer<B> builderConsumer);
+    interface Builder extends Renderer.Builder<WindowRenderer> {
 
-    WindowChildComponentBuilder button(String id, Consumer<ButtonBuilder> button);
+        Builder title(Component textComponent);
 
-    void applyTo(Window window);
+        <S> Builder title(Signal<S> signal, Function<Signal.Value<S>, Component> updateTextComponent);
+
+    }
+
 }

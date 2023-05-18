@@ -25,6 +25,7 @@ import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.function.Consumer;
 
 public interface Component extends Keyed {
 
@@ -58,17 +59,35 @@ public interface Component extends Keyed {
      */
     Component parent();
 
-    /**
-     * Called when the Component is initialised.
-     *
-     */
-    void init();
+    Renderer<? extends ComponentState> getRenderer();
 
     default Deque<Component> getPathToRoot() {
         if (parent() == null) return new ArrayDeque<>();
         Deque<Component> path = parent().getPathToRoot();
         path.add(parent());
         return path;
+    }
+
+    /**
+     * Gets the width of this Component in slot count.
+     *
+     * @return The width in slots.
+     */
+    int width();
+
+    /**
+     * Gets the width of this Component in slot count.
+     *
+     * @return The height in slots.
+     */
+    int height();
+
+    default void executeForAllSlots(int positionSlot, Consumer<Integer> slotFunction) {
+        for (int i = 0; i < height(); i++) {
+            for (int j = 0; j < width(); j++) {
+                slotFunction.accept(positionSlot + j + i * (9 - width()));
+            }
+        }
     }
 
 }

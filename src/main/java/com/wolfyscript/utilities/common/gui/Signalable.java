@@ -18,17 +18,15 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface RouterEntry {
+import java.util.Deque;
+import java.util.Map;
 
-    String id();
+public interface Signalable {
 
-    Type type();
+    Map<String, Signal.Value<?>> getSignalValues();
 
-    MenuComponent<RouterState> component();
+    Deque<Signal.Value<?>> updatedSignals();
 
-    enum Type {
-        WINDOW,
-        ROUTER
-    }
+    void receiveUpdate(Signal.Value<?> signal);
 
 }

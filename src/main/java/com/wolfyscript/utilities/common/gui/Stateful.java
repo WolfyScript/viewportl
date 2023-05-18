@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public interface Stateful<S extends ComponentState> {
 
-    S createState(ComponentState parentState);
+    S createState(ComponentState parentState, GuiViewManager viewManager);
 
     Map<String, Signal<?>> signals();
 

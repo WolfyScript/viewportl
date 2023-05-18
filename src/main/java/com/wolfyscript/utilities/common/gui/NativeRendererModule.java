@@ -18,10 +18,12 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-public interface RouterEntryBuilder {
+import com.wolfyscript.utilities.common.items.ItemStackConfig;
 
-    RouterEntryBuilder window(String id);
+public interface NativeRendererModule<T_STACK> {
 
-    RouterEntryBuilder route(String id);
+    void renderStack(T_STACK stack);
+
+    void renderStack(ItemStackConfig<T_STACK> stackConfig);
 
 }

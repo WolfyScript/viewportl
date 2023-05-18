@@ -16,9 +16,16 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-import com.wolfyscript.utilities.common.gui.components.CallbackInitComponent;
+import com.wolfyscript.utilities.common.gui.Component;
+import com.wolfyscript.utilities.common.gui.ComponentBuilder;
+import com.wolfyscript.utilities.common.gui.InteractionCallback;
+import com.wolfyscript.utilities.common.gui.RenderCallback;
+import com.wolfyscript.utilities.common.gui.Renderer;
+import com.wolfyscript.utilities.common.gui.Signal;
+import com.wolfyscript.utilities.common.gui.WindowRenderer;
+import com.wolfyscript.utilities.common.gui.WindowType;
 import com.wolfyscript.utilities.json.annotations.KeyedBaseType;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
  *
  */
 @KeyedBaseType(baseType = ComponentBuilder.class)
-public interface WindowBuilder extends ComponentBuilder<Window, Router> {
+public interface WindowBuilder {
 
     /**
      * The size of the inventory.<br>
@@ -71,18 +78,8 @@ public interface WindowBuilder extends ComponentBuilder<Window, Router> {
 
     WindowBuilder children(Consumer<WindowChildComponentBuilder> children);
 
-    WindowBuilder render(CallbackInitComponent render);
+    WindowBuilder render(Consumer<WindowRenderer.Builder> render);
 
     Window create(Router parent);
-
-    interface RenderOptionsBuilder {
-
-        RenderOptionsBuilder position(int slot, String componentID);
-
-        RenderOptionsBuilder custom(RenderCallback<WindowState> renderCallback);
-
-        Window.RenderOptions create(Window window);
-
-    }
 
 }

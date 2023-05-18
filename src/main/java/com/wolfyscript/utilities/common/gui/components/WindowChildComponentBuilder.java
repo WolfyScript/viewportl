@@ -16,20 +16,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-import java.util.Deque;
-import java.util.UUID;
+import com.wolfyscript.utilities.common.gui.Component;
+import com.wolfyscript.utilities.common.gui.ComponentBuilder;
+import java.util.function.Consumer;
 
-public interface MenuComponent<PARENT_STATE extends ComponentState> {
+public interface WindowChildComponentBuilder {
 
-    /**
-     * Opens this component for the specified view and player.<br>
-     *
-     * @param viewManager The view manager to open.
-     * @param uuid The uuid to open the Window for.
-     */
-    RenderContext createContext(GuiViewManager viewManager, Deque<String> path, UUID uuid);
+    <B extends ComponentBuilder<? extends Component, Component>> WindowChildComponentBuilder custom(String componentId, Class<B> builderType, Consumer<B> builderConsumer);
 
-    void open(GuiViewManager viewManager, PARENT_STATE parentState, Deque<String> path, UUID player);
+    WindowChildComponentBuilder button(String id, Consumer<ButtonBuilder> button);
+
+    void applyTo(Window window);
 }

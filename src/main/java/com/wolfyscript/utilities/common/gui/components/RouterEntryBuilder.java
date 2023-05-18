@@ -16,15 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.components;
 
-import java.util.function.Consumer;
+public interface RouterEntryBuilder {
 
-public interface RouterChildBuilder {
+    RouterEntryBuilder window(String id);
 
-    RouterChildBuilder window(String id, Consumer<WindowBuilder> builderConsumer);
+    RouterEntryBuilder route(String id);
 
-    RouterChildBuilder router(String id, Consumer<RouterBuilder> builderConsumer);
-
-    void applyTo(Router parent);
 }

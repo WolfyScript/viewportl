@@ -19,10 +19,11 @@
 package com.wolfyscript.utilities.common.gui.components;
 
 import com.wolfyscript.utilities.common.gui.GuiHolder;
+import com.wolfyscript.utilities.common.gui.Renderer;
 
 @FunctionalInterface
 public interface CallbackInitComponent {
 
-    void run(GuiHolder holder, RenderFunction render);
+    void run(Renderer.Builder render);
 
 }

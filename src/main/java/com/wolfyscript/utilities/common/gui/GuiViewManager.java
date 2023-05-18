@@ -19,6 +19,8 @@
 package com.wolfyscript.utilities.common.gui;
 
 import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.common.gui.components.Router;
+import com.wolfyscript.utilities.common.gui.components.Window;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -66,11 +68,11 @@ public interface GuiViewManager {
 
     /**
      * Gets the currently active menu.
-     * This may be a {@link Window<D>}, {@link Router <D>}, or any other {@link MenuComponent<D>}.
+     * This may be a {@link Window <D>}, {@link Router <D>}
      *
      * @return The currently active menu.
      */
-    Optional<MenuComponent> getCurrentMenu();
+    Optional<Window> getCurrentMenu();
 
     /**
      * Gets the viewers that are handled by this view manager.
