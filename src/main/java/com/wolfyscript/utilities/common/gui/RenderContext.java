@@ -35,11 +35,20 @@ public interface RenderContext {
     void setNativeStack(int slot, Object nativeStack);
 
     default boolean checkIfSlotInBounds(int slot) {
-        Component parent = getCurrentState().getOwner().parent();
-        if (slot >= 0 && slot < parent.width() * parent.height()) {
+        int outerWidth;
+        int outerHeight;
+        if (getCurrentState().getOwner().parent() != null) {
+            Component parent = getCurrentState().getOwner().parent();
+            outerWidth = parent.width();
+            outerHeight = parent.height();
+        } else {
+            outerWidth = 9;
+            outerHeight = 6;
+        }
+        if (slot >= 0 && slot < outerWidth * outerHeight) {
             return true;
         }
-        throw new IllegalArgumentException("Slot " + slot + " out of bounds! Must be in the range of [" + 0 + "..." + (parent.width() * parent.height() - 1) + "] !");
+        throw new IllegalArgumentException("Slot " + slot + " out of bounds! Must be in the range of [" + 0 + "..." + (outerWidth * outerHeight - 1) + "] !");
     }
 
 }
