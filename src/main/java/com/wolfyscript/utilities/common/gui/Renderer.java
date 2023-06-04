@@ -18,10 +18,9 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import com.wolfyscript.utilities.common.items.ItemStackConfig;
-import com.wolfyscript.utilities.tuple.Pair;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import com.wolfyscript.utilities.common.gui.functions.SerializableConsumer;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public interface Renderer<T_STATE> {
 
@@ -33,20 +32,14 @@ public interface Renderer<T_STATE> {
 
     void renderComponent(T_STATE state, int slot, Component component);
 
+    Map<String, Signal<?>> getSignals();
+
     NativeRendererModule<?> getNativeModule();
 
     default boolean checkBoundsAtPos(int slot, Component component) throws IllegalStateException {
         int parentWidth = getWidth();
         int parentHeight = getHeight();
         return slot > 0 && slot < parentWidth * parentHeight && (slot / parentHeight) + component.width() <= parentWidth && (slot / parentWidth) + component.height() <= parentHeight;
-    }
-
-    interface ReactiveFunction <T_SIGNAL_VALUE, T_RENDERER extends Renderer<?>> {
-
-        Pair<Integer, String> run(T_RENDERER builder, Signal.Value<?> value);
-
-        Signal<T_SIGNAL_VALUE> getSignal();
-
     }
 
     interface Builder<T_RENDERER extends Renderer<?>> {

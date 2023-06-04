@@ -18,17 +18,46 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import com.wolfyscript.utilities.common.gui.components.WindowState;
-import java.util.function.Function;
-import net.kyori.adventure.text.Component;
+import com.wolfyscript.utilities.common.gui.functions.SerializableConsumer;
+import com.wolfyscript.utilities.common.gui.functions.SerializableSupplier;
+import java.util.function.Consumer;
 
 public interface WindowRenderer extends Renderer<WindowState> {
 
     interface Builder extends Renderer.Builder<WindowRenderer> {
 
-        Builder title(Component textComponent);
+        Builder title(SerializableSupplier<net.kyori.adventure.text.Component> titleSupplier);
 
-        <S> Builder title(Signal<S> signal, Function<Signal.Value<S>, Component> updateTextComponent);
+
+        /**
+         * <p>
+         *     Constructs a reactive function to select Components to render.
+         *     An empty list or null means it renders nothing.
+         * </p>
+         * <p>
+         *     The function detects all the signals inside the lambda that are from outside the lambda.
+         *     Each of these signals will cause the function to re-run on updates.
+         * </p>
+         *
+         * @param reactiveFunction The function to run on signal updates.
+         * @return This builder for chaining.
+         */
+        @Override
+        Builder reactive(SerializableConsumer<ReactiveRenderBuilder> reactiveFunction);
+
+        <B extends ComponentBuilder<? extends com.wolfyscript.utilities.common.gui.Component, com.wolfyscript.utilities.common.gui.Component>> Builder position(int slot, String id, Class<B> builderType, Consumer<B> builderConsumer);
+
+        <B extends ComponentBuilder<? extends com.wolfyscript.utilities.common.gui.Component, com.wolfyscript.utilities.common.gui.Component>> Builder render(String id, Class<B> builderType, Consumer<B> builderConsumer);
+
+        <B extends ComponentBuilder<? extends com.wolfyscript.utilities.common.gui.Component, com.wolfyscript.utilities.common.gui.Component>> Builder renderAt(int slot, String id, Class<B> builderType, Consumer<B> builderConsumer);
+
+    }
+
+    interface ReactiveRenderBuilder {
+
+        <B extends ComponentBuilder<? extends Component, Component>> ReactiveRenderBuilder render(String id, Class<B> builderType, Consumer<B> builderConsumer);
+
+        <B extends ComponentBuilder<? extends Component, Component>> ReactiveRenderBuilder renderAt(int slot, String id, Class<B> builderType, Consumer<B> builderConsumer);
 
     }
 
