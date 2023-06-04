@@ -19,6 +19,7 @@
 package com.wolfyscript.utilities.common.gui.components;
 
 import com.wolfyscript.utilities.common.gui.Component;
+import com.wolfyscript.utilities.common.gui.ComponentState;
 import com.wolfyscript.utilities.common.gui.Interactable;
 import com.wolfyscript.utilities.common.gui.Stateful;
 
@@ -27,7 +28,7 @@ import com.wolfyscript.utilities.common.gui.Stateful;
  * It always has a 1x1 size, because it occupies a single slot.
  *
  */
-public interface Button extends Component, Stateful<ButtonComponentState>, Interactable {
+public interface Button extends Component, Stateful<ComponentState>, Interactable {
 
     @Override
     default int width() {
