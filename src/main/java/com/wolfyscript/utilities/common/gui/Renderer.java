@@ -44,22 +44,9 @@ public interface Renderer<T_STATE> {
 
     interface Builder<T_RENDERER extends Renderer<?>> {
 
-        <T> Signal<T> useSignal(String key, Class<T> type, Function<ComponentState, T> defaultValueFunction);
+        <T> Signal<T> useSignal(String key, Class<T> type, Supplier<T> defaultValueFunction);
 
-        Builder<T_RENDERER> position(int slot, String component);
-
-        Builder<T_RENDERER> renderAt(int slot, ItemStackConfig<?> stackConfig);
-
-        Builder<T_RENDERER> renderAt(int slot, String component);
-
-        Builder<T_RENDERER> render(String component);
-
-        <S> Builder<T_RENDERER> position(Signal<S> signal, Function<Signal.Value<S>, Integer> slot, Function<Signal.Value<S>, String> selector);
-
-        <S> Builder<T_RENDERER> render(Signal<S> signal, Function<Signal.Value<S>, String> selector);
-
-        <S> Builder<T_RENDERER> renderAt(Signal<S> signal, Function<Signal.Value<S>, Integer> slot, Function<Signal.Value<S>, String> selector);
-
+        Builder<T_RENDERER> reactive(SerializableConsumer<WindowRenderer.ReactiveRenderBuilder> reactiveFunction);
     }
 
 }
