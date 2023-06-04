@@ -61,13 +61,6 @@ public interface Component extends Keyed {
 
     Renderer<? extends ComponentState> getRenderer();
 
-    default Deque<Component> getPathToRoot() {
-        if (parent() == null) return new ArrayDeque<>();
-        Deque<Component> path = parent().getPathToRoot();
-        path.add(parent());
-        return path;
-    }
-
     /**
      * Gets the width of this Component in slot count.
      *
