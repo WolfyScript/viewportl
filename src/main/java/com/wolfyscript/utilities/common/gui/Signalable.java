@@ -23,10 +23,10 @@ import java.util.Map;
 
 public interface Signalable {
 
-    Map<String, Signal.Value<?>> getSignalValues();
+    Map<String, Signal<?>> getSignalValues();
 
-    Deque<Signal.Value<?>> updatedSignals();
+    Deque<Signal<?>> updatedSignals();
 
-    void receiveUpdate(Signal.Value<?> signal);
+    void receiveUpdate(Signal<?> signal);
 
 }

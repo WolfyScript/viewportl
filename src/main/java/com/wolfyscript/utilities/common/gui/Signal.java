@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import java.util.Collection;
 import java.util.function.Function;
 
 /**
@@ -44,52 +45,41 @@ public interface Signal<MT> {
      */
     Class<MT> valueType();
 
-    Value<MT> createValue(ComponentState state);
+    /**
+     * Sets the tracked value to a new value and causes a re-render.
+     *
+     * @param newValue The new value to apply.
+     */
+    void set(MT newValue);
 
     /**
-     * Bound to a specific ComponentState and View, this is the actual holder of the value and provides methods to update and get the tracked value.
-     * Each invocation of the update/set methods changes the value and schedules a rerender.
+     * Gets the tracked value, then updates it, and causes a re-render.
      *
-     * @param <T> The type of value that is tracked.
+     * @param updateFunction The function to update the value.
      */
-    interface Value<T> {
+    void update(Function<MT, MT> updateFunction);
 
-        /**
-         * The Signal that this value belongs to.
-         *
-         * @return The signal of this value.
-         */
-        Signal<T> signal();
+    /**
+     * Gets the current value.
+     *
+     * @return The current value.
+     */
+    MT get();
 
-        /**
-         * The ComponentState that this value belongs to.
-         *
-         * @return The ComponentState that tracks this value.
-         */
-        ComponentState state();
+    /**
+     * Enters the context of the specified the {@link GuiViewManager}.
+     * From this point onward the {@link #get()}, {@link #set(MT)}, {@link #set(MT)} return/manipulate the value of the specified view manager.
+     *
+     * @param viewManager The view manager to use.
+     */
+    void enter(GuiViewManager viewManager);
 
-        /**
-         * Sets the tracked value to a new value and causes a re-render.
-         *
-         * @param newValue The new value to apply.
-         */
-        void set(T newValue);
-
-        /**
-         * Gets the tracked value, then updates it, and causes a re-render.
-         *
-         * @param updateFunction The function to update the value.
-         */
-        void update(Function<T, T> updateFunction);
-
-        /**
-         * Gets the current value.
-         *
-         * @return The current value.
-         */
-        T get();
-
-    }
+    /**
+     * Exits the context of the current view manager or does nothing if no view manager is active.
+     *
+     * @return A boolean telling if the signal was updated since the last {@link #enter(GuiViewManager)}.
+     */
+    boolean exit();
 
     /**
      * The Builder is used to construct signals for Components (See ComponentBuilder).
