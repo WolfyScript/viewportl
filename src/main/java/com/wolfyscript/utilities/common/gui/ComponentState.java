@@ -24,14 +24,12 @@ public interface ComponentState {
 
     Component getOwner();
 
-    <T> Signal.Value<T> captureSignal(String signalKey, Class<T> msgType);
+    <T> Signal<T> captureSignal(String signalKey, Class<T> msgType);
 
-    Signal.Value<?> captureSignal(String signalKey);
+    Signal<?> captureSignal(String signalKey);
 
     boolean shouldUpdate();
 
     InteractionResult interact(GuiHolder holder, InteractionDetails interactionDetails);
     
-    void render(GuiHolder holder, RenderContext context);
-
 }
