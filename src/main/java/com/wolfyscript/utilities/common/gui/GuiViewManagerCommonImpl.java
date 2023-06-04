@@ -92,7 +92,7 @@ public abstract class GuiViewManagerCommonImpl implements GuiViewManager {
     }
 
     @Override
-    public Router getRoot() {
+    public Router getRouter() {
         return router;
     }
 
