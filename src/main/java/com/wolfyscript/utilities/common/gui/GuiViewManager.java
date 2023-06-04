@@ -57,16 +57,16 @@ public interface GuiViewManager {
     void openPrevious();
 
     /**
-     * The root cluster of this view manager.
-     * This is used for methods like {@link #openNew()} to open the entry menu.
+     * The router of this view manager.
      *
      * @return The root cluster of this view manager.
      */
-    Router getRoot();
+    Router getRouter();
+
+    Optional<WindowState> getCurrentWindowState();
 
     /**
      * Gets the currently active menu.
-     * This may be a {@link Window <D>}, {@link Router <D>}
      *
      * @return The currently active menu.
      */
@@ -86,5 +86,7 @@ public interface GuiViewManager {
      * @return The API instance of this manager.
      */
     WolfyUtils getWolfyUtils();
+
+    Optional<RenderContext> getRenderContext(UUID viewer);
 
 }
