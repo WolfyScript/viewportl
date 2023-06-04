@@ -18,8 +18,6 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import com.wolfyscript.utilities.common.gui.components.Window;
-
 public abstract class GuiHolderCommonImpl implements GuiHolder {
 
     protected final Window currentWindow;

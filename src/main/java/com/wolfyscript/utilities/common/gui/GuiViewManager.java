@@ -19,8 +19,6 @@
 package com.wolfyscript.utilities.common.gui;
 
 import com.wolfyscript.utilities.common.WolfyUtils;
-import com.wolfyscript.utilities.common.gui.components.Router;
-import com.wolfyscript.utilities.common.gui.components.Window;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;

@@ -22,8 +22,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import com.wolfyscript.utilities.common.WolfyUtils;
-import com.wolfyscript.utilities.common.gui.components.Router;
-import com.wolfyscript.utilities.common.gui.components.Window;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
