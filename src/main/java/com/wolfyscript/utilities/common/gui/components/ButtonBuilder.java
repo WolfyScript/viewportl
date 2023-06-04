@@ -42,8 +42,6 @@ public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
 
     ButtonBuilder interact(InteractionCallback interactionCallback);
 
-    <T> ButtonBuilder useSignal(String key, Class<T> type, Consumer<Signal.Builder<T>> signalBuilder);
-
     Button create(Component parent);
 
     /**
@@ -57,9 +55,7 @@ public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
 
         IconBuilder stack(Supplier<ItemStackConfig<?>> stackConfigSupplier);
 
-        IconBuilder dynamic();
-
-        IconBuilder dynamic(boolean isDynamic);
+        IconBuilder updateOnSignals(Signal<?>... signals);
 
         ButtonIcon create();
     }
