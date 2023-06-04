@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui.components;
+package com.wolfyscript.utilities.common.gui;
 
 public interface WindowStateBuilder {
 

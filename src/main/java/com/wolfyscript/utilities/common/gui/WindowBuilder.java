@@ -16,16 +16,8 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui.components;
+package com.wolfyscript.utilities.common.gui;
 
-import com.wolfyscript.utilities.common.gui.Component;
-import com.wolfyscript.utilities.common.gui.ComponentBuilder;
-import com.wolfyscript.utilities.common.gui.InteractionCallback;
-import com.wolfyscript.utilities.common.gui.RenderCallback;
-import com.wolfyscript.utilities.common.gui.Renderer;
-import com.wolfyscript.utilities.common.gui.Signal;
-import com.wolfyscript.utilities.common.gui.WindowRenderer;
-import com.wolfyscript.utilities.common.gui.WindowType;
 import com.wolfyscript.utilities.json.annotations.KeyedBaseType;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
@@ -72,11 +64,7 @@ public interface WindowBuilder {
      */
     WindowBuilder title(WindowTitleUpdateCallback titleUpdateCallback);
 
-    <T> WindowBuilder createSignal(String key, Class<T> type, Consumer<Signal.Builder<T>> signalBuilder);
-
     WindowBuilder interact(InteractionCallback interactionCallback);
-
-    WindowBuilder children(Consumer<WindowChildComponentBuilder> children);
 
     WindowBuilder render(Consumer<WindowRenderer.Builder> render);
 

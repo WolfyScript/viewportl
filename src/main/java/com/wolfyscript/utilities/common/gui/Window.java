@@ -16,17 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui.components;
+package com.wolfyscript.utilities.common.gui;
 
 import com.wolfyscript.utilities.common.WolfyUtils;
-import com.wolfyscript.utilities.common.gui.Component;
-import com.wolfyscript.utilities.common.gui.GuiHolder;
-import com.wolfyscript.utilities.common.gui.GuiViewManager;
-import com.wolfyscript.utilities.common.gui.Interactable;
-import com.wolfyscript.utilities.common.gui.RenderContext;
-import com.wolfyscript.utilities.common.gui.Renderable;
-import com.wolfyscript.utilities.common.gui.Renderer;
-import com.wolfyscript.utilities.common.gui.WindowType;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
@@ -148,7 +140,7 @@ public interface Window extends Interactable, Renderable {
      */
     int height();
 
-    Renderer<? extends WindowState> getRenderer();
+    Renderer<WindowState> getRenderer();
 
     default void executeForAllSlots(int positionSlot, Consumer<Integer> slotFunction) {
         for (int i = 0; i < height(); i++) {

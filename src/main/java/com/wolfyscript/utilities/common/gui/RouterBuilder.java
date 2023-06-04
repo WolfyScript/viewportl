@@ -16,13 +16,18 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui.components;
+package com.wolfyscript.utilities.common.gui;
 
-import com.wolfyscript.utilities.common.gui.GuiHolder;
-import net.kyori.adventure.text.Component;
+import java.util.function.Consumer;
 
-public interface WindowTitleUpdateCallback {
+public interface RouterBuilder {
 
-    Component run(GuiHolder holder, Window window, WindowState state);
+    RouterBuilder interact(InteractionCallback interactionCallback);
+
+    RouterBuilder route(String path, Consumer<RouterBuilder> subRouteBuilder);
+
+    RouterBuilder window(Consumer<WindowBuilder> windowBuilder);
+
+    Router create(Router parent);
 
 }

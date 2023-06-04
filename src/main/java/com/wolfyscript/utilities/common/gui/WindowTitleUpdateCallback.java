@@ -16,13 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui.components;
+package com.wolfyscript.utilities.common.gui;
 
-import com.wolfyscript.utilities.common.gui.ComponentCollection;
-import com.wolfyscript.utilities.common.gui.Signalable;
+import net.kyori.adventure.text.Component;
 
-public interface WindowState extends Signalable, ComponentCollection {
+public interface WindowTitleUpdateCallback {
 
-    Window getOwner();
+    Component run(GuiHolder holder, Window window, WindowState state);
 
 }

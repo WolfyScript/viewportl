@@ -16,12 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui.components;
+package com.wolfyscript.utilities.common.gui;
 
 import com.wolfyscript.utilities.common.WolfyUtils;
-import com.wolfyscript.utilities.common.gui.GuiViewManager;
-import com.wolfyscript.utilities.common.gui.Interactable;
-import com.wolfyscript.utilities.common.gui.RenderContext;
 import java.util.Deque;
 import java.util.Optional;
 import java.util.UUID;
