@@ -19,11 +19,13 @@
 package com.wolfyscript.utilities.common.gui.components;
 
 import com.wolfyscript.utilities.common.items.ItemStackConfig;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 public interface ButtonIcon {
 
     ItemStackConfig<?> getStack();
 
-    boolean isDynamic();
+    TagResolver getResolvers();
+
 
 }
