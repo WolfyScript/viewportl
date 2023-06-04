@@ -16,8 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.functions;
 
-public interface Context {
+import java.io.Serializable;
+
+public interface SerializableRunnable extends Runnable, Serializable {
 
 }

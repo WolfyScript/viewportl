@@ -16,12 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui.components;
+package com.wolfyscript.utilities.common.gui.functions;
 
-public interface RouterEntryBuilder {
+import java.io.Serializable;
+import java.util.function.Consumer;
 
-    RouterEntryBuilder window(String id);
-
-    RouterEntryBuilder route(String id);
-
+public interface SerializableConsumer<T> extends Consumer<T>, Serializable {
 }

@@ -16,23 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui.components;
+package com.wolfyscript.utilities.common.gui.functions;
 
-import java.util.Optional;
+import java.io.Serializable;
+import java.util.function.Supplier;
 
-public interface RouterEntry {
-
-    String id();
-
-    Type type();
-
-    Optional<Router> getRoute();
-
-    Optional<Window> getWindow();
-
-    enum Type {
-        WINDOW,
-        ROUTER
-    }
-
+public interface SerializableSupplier<T> extends Supplier<T>, Serializable {
 }
