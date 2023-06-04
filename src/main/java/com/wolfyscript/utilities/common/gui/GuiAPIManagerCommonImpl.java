@@ -22,7 +22,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.wolfyscript.utilities.common.WolfyUtils;
-import com.wolfyscript.utilities.common.gui.components.Router;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,19 +34,20 @@ public abstract class GuiAPIManagerCommonImpl implements GuiAPIManager {
         this.wolfyUtils = wolfyUtils;
     }
 
-    protected void registerCluster(Router router) {
+    protected void registerGui(String id, Router router) {
         Preconditions.checkArgument(!clustersMap.containsKey(router.getID()), "A cluster with the id '" + router.getID() + "' is already registered!");
-        clustersMap.put(router.getID(), router);
+        clustersMap.put(id, router);
     }
 
-    public GuiViewManager createViewAndOpen(String clusterID, UUID... players) {
-        GuiViewManager handler = createView(clusterID, players);
+    @Override
+    public GuiViewManager createViewAndOpen(String guiId, UUID... players) {
+        GuiViewManager handler = createView(guiId, players);
         handler.openNew();
         return handler;
     }
 
     @Override
-    public Optional<Router> getRouter(String id) {
+    public Optional<Router> getGui(String id) {
         return Optional.ofNullable(clustersMap.get(id));
     }
 }
