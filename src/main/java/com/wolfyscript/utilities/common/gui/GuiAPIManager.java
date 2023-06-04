@@ -18,8 +18,6 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import com.wolfyscript.utilities.common.gui.components.Router;
-import com.wolfyscript.utilities.common.gui.components.RouterBuilder;
 import java.io.File;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,7 +37,7 @@ public interface GuiAPIManager {
      * @param id The unique id of the router to register.
      * @param routerBuilderConsumer The consumer that provides the new builder.
      */
-    void registerRouter(String id, Consumer<RouterBuilder> routerBuilderConsumer);
+    void registerGui(String id, Consumer<RouterBuilder> routerBuilderConsumer);
 
     /**
      * Registers a new router that it loads from the given file.
@@ -48,7 +46,7 @@ public interface GuiAPIManager {
      * @param file The file to load the router from.
      * @param routerBuilderConsumer The function to manipulate the new builder.
      */
-    void registerRouterFromFile(File file, Consumer<RouterBuilder> routerBuilderConsumer);
+    void registerGuiFromFile(String id, File file, Consumer<RouterBuilder> routerBuilderConsumer);
 
     /**
      * Gets the registered router with the specified id.<br>
@@ -56,11 +54,11 @@ public interface GuiAPIManager {
      * @param id The id of the router.
      * @return The registered router only if the id matches; otherwise empty Optional.
      */
-    Optional<Router> getRouter(String id);
+    Optional<Router> getGui(String id);
 
     /**
      * Creates a new view for the specified viewers, with the specified cluster as its root.<br>
-     * This gets the registered cluster using {@link #getRouter(String)}.
+     * This gets the registered cluster using {@link #getGui(String)}.
      *
      * @param clusterId The id of the root cluster.
      * @param viewers The viewers of this view.
