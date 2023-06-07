@@ -51,6 +51,11 @@ public interface WindowRenderer extends Renderer<WindowState> {
 
         <B extends ComponentBuilder<? extends com.wolfyscript.utilities.common.gui.Component, com.wolfyscript.utilities.common.gui.Component>> Builder renderAt(int slot, String id, Class<B> builderType, Consumer<B> builderConsumer);
 
+        Builder title(net.kyori.adventure.text.Component textComponent);
+
+        Builder title(String staticTitle);
+
+        Builder titleSignals(Signal<?>... signals);
     }
 
     interface ReactiveRenderBuilder {
@@ -58,6 +63,7 @@ public interface WindowRenderer extends Renderer<WindowState> {
         <B extends ComponentBuilder<? extends Component, Component>> ReactiveRenderBuilder render(String id, Class<B> builderType, Consumer<B> builderConsumer);
 
         <B extends ComponentBuilder<? extends Component, Component>> ReactiveRenderBuilder renderAt(int slot, String id, Class<B> builderType, Consumer<B> builderConsumer);
+
 
     }
 
