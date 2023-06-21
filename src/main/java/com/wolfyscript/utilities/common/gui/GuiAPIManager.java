@@ -40,13 +40,13 @@ public interface GuiAPIManager {
     void registerGui(String id, Consumer<RouterBuilder> routerBuilderConsumer);
 
     /**
-     * Registers a new router that it loads from the given file.
+     * Registers a new router that it loads from the specified gui data directory.
      * The consumer function provides that newly constructed {@link RouterBuilder}, which can be used to manipulate the builder.
      *
-     * @param file The file to load the router from.
+     * @param id The unique id of the router to register.
      * @param routerBuilderConsumer The function to manipulate the new builder.
      */
-    void registerGuiFromFile(String id, File file, Consumer<RouterBuilder> routerBuilderConsumer);
+    void registerGuiFromFiles(String id, Consumer<RouterBuilder> routerBuilderConsumer);
 
     /**
      * Gets the registered router with the specified id.<br>
