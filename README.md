@@ -1,4 +1,4 @@
-<div align="center"><img src="https://user-images.githubusercontent.com/41468455/158254076-d856f0db-12a0-4cd8-a186-568a656dd96f.png" alt="WolfyUtilities Banner" /></div>
+<div align="center"><img src="https://github.com/WolfyScript/WolfyUtilities/assets/41468455/d863fd5a-89d0-492e-84bd-98c1a0fabddd" alt="WolfyUtilities Banner" /></div>
 
 ## WolfyUtilities
 ![bstats_server](https://img.shields.io/bstats/servers/5114?label=Servers)  
@@ -47,14 +47,16 @@ It is currently very spare and does not work on its own!
 <details>
 <summary>Gradle</summary>
 
-#### Kotlin DSL
+#### Kotlin DSL![wolfyutils_banner](https://github.com/WolfyScript/WolfyUtilities/assets/41468455/8a82294a-a628-4158-8e91-159832bcfcef)
+
 ```kotlin
 repositories {
     maven("https://maven.wolfyscript.com/repository/public/")
 }
 ```
 
-```kotlin
+```kotlin![wolfyutils_banner](https://github.com/WolfyScript/WolfyUtilities/assets/41468455/35040b83-933b-47ba-be6c-170598d13fbb)
+
 dependencies {
     implementation("com.wolfyscript.wolfyutils", "wolfyutilities","4.16-SNAPSHOT")
 }
@@ -75,6 +77,7 @@ dependencies {
 ```
 
 </details>
+
 
 
 # Implementations
