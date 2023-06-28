@@ -29,6 +29,8 @@ import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.json.KeyedTypeIdResolver;
 import com.wolfyscript.utilities.json.KeyedTypeResolver;
 
+import java.util.List;
+
 
 @JsonTypeResolver(KeyedTypeResolver.class)
 @JsonTypeIdResolver(KeyedTypeIdResolver.class)
@@ -46,6 +48,8 @@ public interface ComponentBuilder<COMPONENT extends Component, PARENT> extends K
     }
 
     String getID();
+
+    List<Integer> getSlots();
 
     COMPONENT create(PARENT parent);
 
