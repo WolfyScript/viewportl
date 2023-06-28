@@ -18,9 +18,13 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.common.adapters.Player;
+
 public interface GuiHolder {
 
     GuiViewManager getViewManager();
+
+    Player getPlayer();
 
     Window getCurrentWindow();
 
