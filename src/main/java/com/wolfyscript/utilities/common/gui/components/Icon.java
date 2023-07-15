@@ -19,11 +19,9 @@
 package com.wolfyscript.utilities.common.gui.components;
 
 import com.wolfyscript.utilities.common.gui.Component;
-import com.wolfyscript.utilities.common.gui.ComponentState;
-import com.wolfyscript.utilities.common.gui.Stateful;
 import com.wolfyscript.utilities.common.items.ItemStackConfig;
 
-public interface Icon<T_NATIVE_STACK> extends Component, Stateful<ComponentState> {
+public interface Icon<T_NATIVE_STACK> extends Component {
 
     ItemStackConfig<T_NATIVE_STACK> getItemStackConfig();
 

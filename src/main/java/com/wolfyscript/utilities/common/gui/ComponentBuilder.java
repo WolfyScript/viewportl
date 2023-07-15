@@ -30,6 +30,7 @@ import com.wolfyscript.utilities.json.KeyedTypeIdResolver;
 import com.wolfyscript.utilities.json.KeyedTypeResolver;
 
 import java.util.List;
+import java.util.Set;
 
 
 @JsonTypeResolver(KeyedTypeResolver.class)
@@ -50,6 +51,13 @@ public interface ComponentBuilder<COMPONENT extends Component, PARENT> extends K
     String getID();
 
     List<Integer> getSlots();
+
+    /**
+     * Gets the signals that this component builder uses inside the parent construction consumer.
+     *
+     * @return The signals used in this builder.
+     */
+    Set<Signal<?>> getSignals();
 
     COMPONENT create(PARENT parent);
 

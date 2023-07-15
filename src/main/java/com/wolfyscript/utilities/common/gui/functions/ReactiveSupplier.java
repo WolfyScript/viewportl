@@ -19,6 +19,8 @@
 package com.wolfyscript.utilities.common.gui.functions;
 
 import com.wolfyscript.utilities.common.gui.Signal;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -33,12 +35,12 @@ public class ReactiveSupplier<T> implements Supplier<T> {
     private static int NEXT_ID = 0;
 
     private final int id;
-    private final List<Signal<?>> signals;
-    private final Supplier<T> supplier;
+    private final Collection<Signal<?>> signals;
+    private final SerializableSupplier<T> supplier;
 
-    public ReactiveSupplier(List<Signal<?>> signals, Supplier<T> supplier) {
+    public ReactiveSupplier(SerializableSupplier<T> supplier) {
         this.id = NEXT_ID++;
-        this.signals = signals;
+        this.signals = supplier.getSignalsUsed();
         this.supplier = supplier;
     }
 
@@ -50,7 +52,7 @@ public class ReactiveSupplier<T> implements Supplier<T> {
         return supplier.get();
     }
 
-    public List<Signal<?>> signals() {
+    public Collection<Signal<?>> signals() {
         return signals;
     }
 

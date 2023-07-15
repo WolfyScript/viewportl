@@ -86,8 +86,8 @@ public class ButtonStateDefault implements ButtonState {
             @Override
             public ButtonStateDefault create() {
                 Preconditions.checkNotNull(renderCallback, "Cannot create Component without a RenderCallback!");
-                final var interactCallback = Objects.requireNonNullElseGet(this.interactionCallback, () -> (holder, state, details) -> InteractionResult.def());
-                final var renderCallback = Objects.requireNonNullElseGet(this.renderCallback, () -> (holder, state) -> {});
+                final var interactCallback = Objects.requireNonNullElseGet(this.interactionCallback, () -> (holder, details) -> InteractionResult.def());
+                final var renderCallback = Objects.requireNonNullElseGet(this.renderCallback, () -> (holder) -> {});
 
                 return new ButtonStateDefault(key, interactCallback, renderCallback);
             }

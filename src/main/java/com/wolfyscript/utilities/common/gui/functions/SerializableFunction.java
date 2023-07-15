@@ -16,10 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.functions;
 
-public interface WindowState extends Signalable, ComponentCollection {
+import java.util.function.Function;
 
-    Window getOwner();
-
+public interface SerializableFunction<T, R> extends Function<T, R>, SignalledSerializable {
 }

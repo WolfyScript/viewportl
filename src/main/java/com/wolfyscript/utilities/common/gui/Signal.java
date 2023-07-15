@@ -18,7 +18,6 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import java.util.Collection;
 import java.util.function.Function;
 
 /**
@@ -65,55 +64,5 @@ public interface Signal<MT> {
      * @return The current value.
      */
     MT get();
-
-    /**
-     * Enters the context of the specified the {@link GuiViewManager}.
-     * From this point onward the {@link #get()}, {@link #set(MT)}, {@link #set(MT)} return/manipulate the value of the specified view manager.
-     *
-     * @param viewManager The view manager to use.
-     */
-    void enter(GuiViewManager viewManager);
-
-    /**
-     * Exits the context of the current view manager or does nothing if no view manager is active.
-     *
-     * @return A boolean telling if the signal was updated since the last {@link #enter(GuiViewManager)}.
-     */
-    boolean exit();
-
-    /**
-     * The Builder is used to construct signals for Components (See ComponentBuilder).
-     * The type is defined by whatever parent Builder constructs this Builder. Usually a ComponentBuilder.
-     *
-     * @param <T> The type of the value tracked.
-     */
-    interface Builder<T> {
-
-        /**
-         * The key of the Signal.
-         * Must be unique in the path of the component, meaning no parent nor child can create a Signal with the same key!
-         *
-         * @return The key of the Signal.
-         */
-        String getKey();
-
-        Class<T> getValueType();
-
-        /**
-         * Defines a function that is used by the signal to provide a default value, whenever requested by a for example ComponentState.
-         *
-         * @param defaultValueFunction The function to create a default value.
-         * @return This Builder instance for chaining.
-         */
-        Builder<T> defaultValue(Function<ComponentState, T> defaultValueFunction);
-
-        /**
-         * Creates an instance of the Signal with the predefined settings of this builder.
-         *
-         * @return A new instance of a Signal.
-         */
-        Signal<T> create();
-
-    }
 
 }

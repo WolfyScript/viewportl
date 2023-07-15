@@ -26,7 +26,7 @@ import com.wolfyscript.utilities.common.items.ItemStackConfig;
  */
 public interface RenderContext {
 
-    ComponentState getCurrentState();
+    Component getCurrentComponent();
 
     int getCurrentOffset();
 
@@ -37,8 +37,8 @@ public interface RenderContext {
     default boolean checkIfSlotInBounds(int slot) {
         int outerWidth;
         int outerHeight;
-        if (getCurrentState().getOwner().parent() != null) {
-            Component parent = getCurrentState().getOwner().parent();
+        if (getCurrentComponent().parent() != null) {
+            Component parent = getCurrentComponent().parent();
             outerWidth = parent.width();
             outerHeight = parent.height();
         } else {

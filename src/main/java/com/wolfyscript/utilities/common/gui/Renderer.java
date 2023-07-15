@@ -18,19 +18,16 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import com.wolfyscript.utilities.common.gui.functions.SerializableConsumer;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public interface Renderer<T_STATE> {
+public interface Renderer {
 
     int getWidth();
 
     int getHeight();
 
-    void render(T_STATE state, GuiHolder holder, RenderContext context);
-
-    void renderComponent(T_STATE state, int slot, Component component);
+    void render(GuiHolder holder, RenderContext context);
 
     Map<String, Signal<?>> getSignals();
 
@@ -42,11 +39,10 @@ public interface Renderer<T_STATE> {
         return slot > 0 && slot < parentWidth * parentHeight && (slot / parentHeight) + component.width() <= parentWidth && (slot / parentWidth) + component.height() <= parentHeight;
     }
 
-    interface Builder<T_RENDERER extends Renderer<?>> {
+    interface Builder<T_RENDERER extends Renderer> {
 
-        <T> Signal<T> useSignal(String key, Class<T> type, Supplier<T> defaultValueFunction);
+        <T> Signal<T> createSignal(String key, Class<T> type, Supplier<T> defaultValueFunction);
 
-        Builder<T_RENDERER> reactive(SerializableConsumer<WindowRenderer.ReactiveRenderBuilder> reactiveFunction);
     }
 
 }

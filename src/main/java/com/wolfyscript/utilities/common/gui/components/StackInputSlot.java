@@ -21,7 +21,7 @@ package com.wolfyscript.utilities.common.gui.components;
 import com.wolfyscript.utilities.common.adapters.ItemStack;
 import com.wolfyscript.utilities.common.gui.*;
 
-public interface StackInputSlot extends Component, Stateful<ComponentState>, Interactable {
+public interface StackInputSlot extends Component, Interactable {
 
     Signal<ItemStack> signal();
 

@@ -18,8 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui.functions;
 
-import java.io.Serializable;
 import java.util.function.Supplier;
 
-public interface SerializableSupplier<T> extends Supplier<T>, Serializable {
+public interface SerializableSupplier<T> extends Supplier<T>, SignalledSerializable {
 }

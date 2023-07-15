@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.common.WolfyUtils;
+import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.function.Consumer;
@@ -52,6 +54,8 @@ public interface Component extends Keyed {
      */
     WolfyUtils getWolfyUtils();
 
+    IntList getSlots();
+
     /**
      * The parent of this Component, or null if it is a root Component.
      *
@@ -59,7 +63,9 @@ public interface Component extends Keyed {
      */
     Component parent();
 
-    Renderer<? extends ComponentState> getRenderer();
+    Renderer getRenderer();
+
+    Renderer construct(GuiViewManager viewManager);
 
     /**
      * Gets the width of this Component in slot count.

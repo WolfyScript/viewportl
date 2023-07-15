@@ -19,6 +19,8 @@
 package com.wolfyscript.utilities.common.gui.functions;
 
 import com.wolfyscript.utilities.common.gui.Signal;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -33,12 +35,12 @@ public class ReactiveConsumer<T> implements Consumer<T> {
     private static int NEXT_ID = 0;
 
     private final int id;
-    private final List<Signal<?>> signals;
-    private final Consumer<T> consumer;
+    private final Collection<Signal<?>> signals;
+    private final SerializableConsumer<T> consumer;
 
-    public ReactiveConsumer(List<Signal<?>> signals, Consumer<T> consumer) {
+    public ReactiveConsumer(SerializableConsumer<T> consumer) {
         this.id = NEXT_ID++;
-        this.signals = signals;
+        this.signals = consumer.getSignalsUsed();
         this.consumer = consumer;
     }
 
@@ -50,7 +52,7 @@ public class ReactiveConsumer<T> implements Consumer<T> {
         consumer.accept(value);
     }
 
-    public List<Signal<?>> signals() {
+    public Collection<Signal<?>> signals() {
         return signals;
     }
 

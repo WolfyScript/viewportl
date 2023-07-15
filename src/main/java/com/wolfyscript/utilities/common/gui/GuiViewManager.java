@@ -63,8 +63,6 @@ public interface GuiViewManager {
      */
     Router getRouter();
 
-    Optional<WindowState> getCurrentWindowState();
-
     /**
      * Gets the currently active menu.
      *

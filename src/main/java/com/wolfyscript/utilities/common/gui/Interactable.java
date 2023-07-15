@@ -32,7 +32,7 @@ public interface Interactable {
      * @param interactionDetails The details about the interaction.
      * @return The interaction result.
      */
-    InteractionResult interact(GuiHolder holder, ComponentState state, InteractionDetails interactionDetails);
+    InteractionResult interact(GuiHolder holder, InteractionDetails interactionDetails);
 
     /**
      * Called whenever an interaction occurs.<br>

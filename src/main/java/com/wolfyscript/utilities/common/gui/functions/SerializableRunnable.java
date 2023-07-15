@@ -18,8 +18,6 @@
 
 package com.wolfyscript.utilities.common.gui.functions;
 
-import java.io.Serializable;
-
-public interface SerializableRunnable extends Runnable, Serializable {
+public interface SerializableRunnable extends Runnable, SignalledSerializable {
 
 }

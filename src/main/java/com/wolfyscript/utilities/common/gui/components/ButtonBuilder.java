@@ -18,10 +18,8 @@
 
 package com.wolfyscript.utilities.common.gui.components;
 
-import com.wolfyscript.utilities.common.gui.Component;
-import com.wolfyscript.utilities.common.gui.ComponentBuilder;
-import com.wolfyscript.utilities.common.gui.InteractionCallback;
-import com.wolfyscript.utilities.common.gui.Signal;
+import com.wolfyscript.utilities.common.gui.*;
+import com.wolfyscript.utilities.common.gui.functions.SerializableSupplier;
 import com.wolfyscript.utilities.common.items.ItemStackConfig;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -53,7 +51,7 @@ public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
 
         IconBuilder stack(ItemStackConfig<?> stackConfig);
 
-        IconBuilder stack(Supplier<ItemStackConfig<?>> stackConfigSupplier);
+        IconBuilder stack(SerializableSupplier<ItemStackConfig<?>> stackConfigSupplier);
 
         IconBuilder updateOnSignals(Signal<?>... signals);
 

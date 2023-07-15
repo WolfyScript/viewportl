@@ -16,13 +16,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.functions;
 
-import java.util.Map;
-import java.util.Optional;
+import com.wolfyscript.utilities.common.gui.Signal;
 
-public interface Stateful<S extends ComponentState> {
+import java.io.Serializable;
+import java.util.Collection;
 
-    S createState(ComponentState parentState, GuiViewManager viewManager);
+/**
+ * This represents an interface that is Serializable and contains information about the used {@link Signal}s inside of the closure.
+ */
+public interface SignalledSerializable extends Serializable {
+
+    default Collection<Signal<?>> getSignalsUsed() {
+        return SerializableFunctionUtil.getUsedSignals(this);
+    }
 
 }

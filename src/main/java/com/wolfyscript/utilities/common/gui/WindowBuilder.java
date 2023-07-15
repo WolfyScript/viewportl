@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.common.gui.functions.SerializableConsumer;
 import com.wolfyscript.utilities.json.annotations.KeyedBaseType;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
@@ -51,22 +52,95 @@ public interface WindowBuilder {
 
     /**
      * <p>
-     *     The callback used to create the title of the inventory.
-     * </p>
-     * <p>
      *     The implementation may work different across platforms.<br>
      *     On plain Spigot servers, the titles do not support all components inside inventory titles, like fonts.<br>
      *     Paper fully supports all Components inside inventory titles.
      * </p>
      *
-     * @param titleUpdateCallback
-     * @return
+     * @return This builder to allow chaining the methods
      */
-    WindowBuilder title(WindowTitleUpdateCallback titleUpdateCallback);
+    WindowBuilder title(String staticTitle);
 
     WindowBuilder interact(InteractionCallback interactionCallback);
 
-    WindowBuilder render(Consumer<WindowRenderer.Builder> render);
+    /**
+     * Specifies the constructor callback, that is called right before the component is created.
+     *
+     * @param render The consumer to configure the renderer
+     * @return This builder for chaining
+     */
+    WindowBuilder construct(Consumer<WindowRenderer.Builder> render);
+
+    /**
+     * <p>
+     *     Initializes the specified component with the given id at the given slot.<br>
+     *     <b>The component won't yet be constructed nor rendered!</b>
+     *     <p>
+     *         This is useful if the component has some static parts that are non-reactive.<br>
+     *         <i>This is used when loading the components from the config files (.conf)</i><br>
+     *         They can then be extended and rendered inside the {@link #construct(Consumer)} callback.
+     *     </p>
+     * </p>
+     * <p>
+     *     In case you need to have reactive components, create them inside the {@link #construct(Consumer)} callback.
+     * </p>
+     * @param id                The id of the component to render
+     * @param builderType       The type of the builder to use
+     * @param builderConsumer   The consumer to configure the builder
+     * @return This Builder for chaining
+     * @param <B> The type of the component builder
+     */
+    <B extends ComponentBuilder<? extends Component, Component>> WindowBuilder init(int slot, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
+
+    /**
+     * <p>
+     *     Renders the specified <b>static</b> component with the given id.
+     * </p>
+     * <p>
+     *     Static components are constructed directly and are not recreated per {@link GuiViewManager}.
+     *     Therefor they improve performance, as they are only created once.<br>
+     *     <b>Static components cannot use signals!</b>
+     * </p>
+     * <p>
+     *     In case you need to have reactive components, create them inside the {@link #construct(Consumer)} callback.
+     * </p>
+     * @param id                The id of the component to render
+     * @param builderType       The type of the builder to use
+     * @param builderConsumer   The consumer to configure the builder
+     * @return This Builder for chaining
+     * @param <B> The type of the component builder
+     */
+    <B extends ComponentBuilder<? extends Component, Component>> WindowBuilder render(String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
+
+    /**
+     * <p>
+     *     Initializes the specified component with the given id at the given slot, and renders it statically.<br>
+     *     <b>It basically combines <br>
+     *     {@link #init(int, String, Class, SerializableConsumer)} and <br>
+     *     {@link #render(String, Class, SerializableConsumer)}</b>
+     *
+     *     <p>
+     *         This is only really useful if you need to define positions of components in code.<br>
+     *         Usually you should use the config files (.conf), to specify slots.
+     *     </p>
+     * </p>
+     * <p>
+     *     Static components are constructed directly and are not recreated per {@link GuiViewManager}.
+     *     Therefor they improve performance, as they are only created once.<br>
+     *     <b>Static components cannot use signals!</b>
+     * </p>
+     * <p>
+     *     In case you need to have reactive components, create them inside the {@link #construct(Consumer)} callback.
+     * </p>
+     *
+     * @param slot
+     * @param id
+     * @param builderType
+     * @param builderConsumer
+     * @return
+     * @param <B>
+     */
+    <B extends ComponentBuilder<? extends Component, Component>> WindowBuilder renderAt(int slot, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 
     Window create(Router parent);
 

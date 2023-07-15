@@ -36,16 +36,9 @@ public interface Window extends Interactable, Renderable {
      */
     RenderContext createContext(GuiViewManager viewManager, UUID uuid);
 
-    /**
-     * Creates the state of this window for the specified view manager.
-     * The state keeps track of the signal values and child component(state)s.
-     *
-     * @param viewManager The view manager to create the state for.
-     * @return The new state for the view manager.
-     */
-    WindowState createState(GuiViewManager viewManager);
-
     void open(GuiViewManager viewManager);
+
+    WindowRenderer construct(GuiViewManager viewManager);
 
     /**
      * Gets the type that is configured for this Window.<br>
@@ -71,7 +64,7 @@ public interface Window extends Interactable, Renderable {
      * @param holder The holder to create the title for.
      * @return The title component.
      */
-    net.kyori.adventure.text.Component createTitle(GuiHolder holder, WindowState window);
+    net.kyori.adventure.text.Component createTitle(GuiHolder holder);
 
     /**
      * The children of this Component; or an empty Set if there are no children.
@@ -140,7 +133,7 @@ public interface Window extends Interactable, Renderable {
      */
     int height();
 
-    Renderer<WindowState> getRenderer();
+    Renderer getRenderer();
 
     default void executeForAllSlots(int positionSlot, Consumer<Integer> slotFunction) {
         for (int i = 0; i < height(); i++) {

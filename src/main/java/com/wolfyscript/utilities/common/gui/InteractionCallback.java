@@ -21,6 +21,6 @@ package com.wolfyscript.utilities.common.gui;
 @FunctionalInterface
 public interface InteractionCallback {
 
-    InteractionResult interact(GuiHolder holder, ComponentState state, InteractionDetails details);
+    InteractionResult interact(GuiHolder holder, InteractionDetails details);
 
 }
