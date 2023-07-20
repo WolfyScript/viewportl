@@ -12,6 +12,7 @@ Core API that provides an API and Utils for plugins based on Spigot.
 This repository only contains the platform independent API and Utils**  
 That is in preparation to support other platforms like Sponge.
 - Spigot Implementation – [WolfyScript/WolfyUtils-Spigot](https://github.com/WolfyScript/WolfyUtils-Spigot)
+- Sponge Implementation – Coming Soon!
 
 ## Updates
 Updates are planned to be released in their dedicated repositories in the future.  
@@ -47,7 +48,7 @@ It is currently very spare and does not work on its own!
 <details>
 <summary>Gradle</summary>
 
-#### Kotlin DSL![wolfyutils_banner](https://github.com/WolfyScript/WolfyUtilities/assets/41468455/8a82294a-a628-4158-8e91-159832bcfcef)
+#### Kotlin DSL
 
 ```kotlin
 repositories {
