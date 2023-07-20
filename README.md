@@ -56,7 +56,7 @@ repositories {
 }
 ```
 
-```kotlin![wolfyutils_banner](https://github.com/WolfyScript/WolfyUtilities/assets/41468455/35040b83-933b-47ba-be6c-170598d13fbb)
+```kotlin
 
 dependencies {
     implementation("com.wolfyscript.wolfyutils", "wolfyutilities","4.16-SNAPSHOT")
