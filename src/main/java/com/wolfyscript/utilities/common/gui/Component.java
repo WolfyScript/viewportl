@@ -63,7 +63,7 @@ public interface Component extends Keyed {
 
     Component construct(GuiViewManager viewManager);
 
-    Renderer construct(GuiViewManager viewManager);
+    void remove(GuiHolder holder, GuiViewManager viewManager, RenderContext context);
 
     /**
      * Gets the width of this Component in slot count.
