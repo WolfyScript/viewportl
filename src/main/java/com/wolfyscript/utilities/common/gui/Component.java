@@ -25,8 +25,6 @@ import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.function.Consumer;
 
 public interface Component extends Keyed {
@@ -63,7 +61,7 @@ public interface Component extends Keyed {
      */
     Component parent();
 
-    Renderer getRenderer();
+    Component construct(GuiViewManager viewManager);
 
     Renderer construct(GuiViewManager viewManager);
 
