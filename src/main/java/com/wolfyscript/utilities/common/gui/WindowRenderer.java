@@ -19,6 +19,7 @@
 package com.wolfyscript.utilities.common.gui;
 
 import com.wolfyscript.utilities.common.gui.functions.SerializableConsumer;
+import com.wolfyscript.utilities.common.gui.functions.SerializableFunction;
 import com.wolfyscript.utilities.common.gui.functions.SerializableSupplier;
 
 import java.util.function.Consumer;
@@ -69,7 +70,7 @@ public interface WindowRenderer extends Renderer {
          * @param reactiveFunction The function to run on signal updates.
          * @return This builder for chaining.
          */
-        Builder reactive(SerializableConsumer<ReactiveRenderBuilder> reactiveFunction);
+        Builder reactive(SerializableFunction<ReactiveRenderBuilder, ReactiveRenderBuilder.ReactiveResult> reactiveFunction);
 
         /**
          * <p>
@@ -109,14 +110,6 @@ public interface WindowRenderer extends Renderer {
         <B extends ComponentBuilder<? extends Component, Component>> Builder render(String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 
         <B extends ComponentBuilder<? extends Component, Component>> Builder renderAt(int slot, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
-    }
-
-    interface ReactiveRenderBuilder {
-
-        <B extends ComponentBuilder<? extends Component, Component>> ReactiveRenderBuilder render(String id, Class<B> builderType, Consumer<B> builderConsumer);
-
-        <B extends ComponentBuilder<? extends Component, Component>> ReactiveRenderBuilder renderAt(int slot, String id, Class<B> builderType, Consumer<B> builderConsumer);
-
     }
 
 }
