@@ -38,7 +38,9 @@ public interface Window extends Interactable, Renderable {
 
     void open(GuiViewManager viewManager);
 
-    WindowRenderer construct(GuiViewManager viewManager);
+    Window construct(GuiViewManager viewManager);
+
+    void render(GuiHolder holder, GuiViewManager viewManager, RenderContext context);
 
     /**
      * Gets the type that is configured for this Window.<br>
@@ -132,8 +134,6 @@ public interface Window extends Interactable, Renderable {
      * @return The height in slots.
      */
     int height();
-
-    Renderer getRenderer();
 
     default void executeForAllSlots(int positionSlot, Consumer<Integer> slotFunction) {
         for (int i = 0; i < height(); i++) {
