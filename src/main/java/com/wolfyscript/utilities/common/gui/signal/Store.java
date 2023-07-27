@@ -16,20 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui.functions;
+package com.wolfyscript.utilities.common.gui.signal;
 
-import com.wolfyscript.utilities.common.gui.signal.Signal;
+public interface Store<V> extends Signal<V> {
 
-import java.io.Serializable;
-import java.util.Collection;
 
-/**
- * This represents an interface that is Serializable and contains information about the used {@link Signal}s inside of the closure.
- */
-public interface SignalledSerializable extends Serializable {
 
-    default Collection<Signal<?>> getSignalsUsed() {
-        return SerializableFunctionUtil.getUsedSignals(this);
-    }
 
 }

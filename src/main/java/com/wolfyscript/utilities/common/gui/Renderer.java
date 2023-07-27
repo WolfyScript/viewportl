@@ -18,7 +18,11 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.common.gui.signal.Signal;
+import com.wolfyscript.utilities.common.gui.signal.Store;
+
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public interface Renderer {
@@ -41,7 +45,9 @@ public interface Renderer {
 
     interface Builder<T_RENDERER extends Renderer> {
 
-        <T> Signal<T> createSignal(String key, Class<T> type, Supplier<T> defaultValueFunction);
+        <T> Signal<T> signal(String key, Class<T> type, Supplier<T> defaultValueFunction);
+
+        <T> Store<T> syncStore(String key, Class<T> type, Supplier<T> getValue, Consumer<T> setValue);
 
     }
 

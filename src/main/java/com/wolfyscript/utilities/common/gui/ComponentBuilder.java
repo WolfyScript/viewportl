@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.common.gui.signal.Signal;
 import com.wolfyscript.utilities.json.KeyedTypeIdResolver;
 import com.wolfyscript.utilities.json.KeyedTypeResolver;
 

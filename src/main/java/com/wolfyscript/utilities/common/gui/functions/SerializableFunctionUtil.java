@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.common.gui.functions;
 
-import com.wolfyscript.utilities.common.gui.Signal;
+import com.wolfyscript.utilities.common.gui.signal.Signal;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;

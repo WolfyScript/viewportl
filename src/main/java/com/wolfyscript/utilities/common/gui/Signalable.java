@@ -18,6 +18,8 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.common.gui.signal.Signal;
+
 import java.util.Deque;
 import java.util.Map;
 

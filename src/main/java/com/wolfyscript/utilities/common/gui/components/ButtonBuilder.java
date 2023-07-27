@@ -20,9 +20,9 @@ package com.wolfyscript.utilities.common.gui.components;
 
 import com.wolfyscript.utilities.common.gui.*;
 import com.wolfyscript.utilities.common.gui.functions.SerializableSupplier;
+import com.wolfyscript.utilities.common.gui.signal.Signal;
 import com.wolfyscript.utilities.common.items.ItemStackConfig;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Builder to create a {@link Button} instance.

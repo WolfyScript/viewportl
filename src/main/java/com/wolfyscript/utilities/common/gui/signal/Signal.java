@@ -16,7 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.signal;
+
+import com.wolfyscript.utilities.common.gui.SignalledObject;
 
 import java.util.function.Function;
 
@@ -25,9 +27,9 @@ import java.util.function.Function;
  * Signals are shared across all children of the Component that creates the Signal,
  * meaning that children can listen to that of the parent, but not the other way around!
  *
- * @param <MT> The value type this Signal holds. Can be any Object.
+ * @param <V> The value type this Signal holds. Can be any Object.
  */
-public interface Signal<MT> {
+public interface Signal<V> {
 
     /**
      * The key of this Signal.
@@ -42,27 +44,29 @@ public interface Signal<MT> {
      *
      * @return The value type of this signal.
      */
-    Class<MT> valueType();
+    Class<V> valueType();
 
     /**
      * Sets the tracked value to a new value and causes a re-render.
      *
      * @param newValue The new value to apply.
      */
-    void set(MT newValue);
+    void set(V newValue);
 
     /**
      * Gets the tracked value, then updates it, and causes a re-render.
      *
      * @param updateFunction The function to update the value.
      */
-    void update(Function<MT, MT> updateFunction);
+    void update(Function<V, V> updateFunction);
 
     /**
      * Gets the current value.
      *
      * @return The current value.
      */
-    MT get();
+    V get();
+
+    void linkTo(SignalledObject signalledObject);
 
 }

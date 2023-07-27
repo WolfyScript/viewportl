@@ -8,7 +8,7 @@ import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import com.wolfyscript.utilities.common.gui.Component;
 import com.wolfyscript.utilities.common.gui.ComponentBuilder;
-import com.wolfyscript.utilities.common.gui.Signal;
+import com.wolfyscript.utilities.common.gui.signal.Signal;
 import com.wolfyscript.utilities.json.annotations.KeyedBaseType;
 import it.unimi.dsi.fastutil.ints.IntList;
 

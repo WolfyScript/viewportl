@@ -21,6 +21,7 @@ package com.wolfyscript.utilities.common.gui;
 import com.wolfyscript.utilities.common.gui.functions.SerializableConsumer;
 import com.wolfyscript.utilities.common.gui.functions.SerializableFunction;
 import com.wolfyscript.utilities.common.gui.functions.SerializableSupplier;
+import com.wolfyscript.utilities.common.gui.signal.Signal;
 
 import java.util.function.Consumer;
 
