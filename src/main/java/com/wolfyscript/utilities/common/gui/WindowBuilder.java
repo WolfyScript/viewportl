@@ -69,7 +69,7 @@ public interface WindowBuilder {
      * @param render The consumer to configure the renderer
      * @return This builder for chaining
      */
-    WindowBuilder construct(Consumer<WindowRenderer.Builder> render);
+    WindowBuilder construct(Consumer<WindowDynamicConstructor> render);
 
     /**
      * <p>

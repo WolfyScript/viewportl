@@ -61,7 +61,7 @@ public interface Component extends Keyed {
      */
     Component parent();
 
-    Component construct(GuiViewManager viewManager);
+    Component construct(GuiHolder holder, GuiViewManager viewManager);
 
     void remove(GuiHolder holder, GuiViewManager viewManager, RenderContext context);
 

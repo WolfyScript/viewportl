@@ -21,34 +21,17 @@ package com.wolfyscript.utilities.common.gui;
 import com.wolfyscript.utilities.common.gui.signal.Signal;
 import com.wolfyscript.utilities.common.gui.signal.Store;
 
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public interface Renderer {
+public interface DynamicConstructor {
 
-    int getWidth();
+    GuiViewManager viewManager();
 
-    int getHeight();
+    GuiHolder holder();
 
-    void render(GuiHolder holder, RenderContext context);
+    <T> Signal<T> signal(String key, Class<T> type, Supplier<T> defaultValueFunction);
 
-    Map<String, Signal<?>> getSignals();
-
-    NativeRendererModule<?> getNativeModule();
-
-    default boolean checkBoundsAtPos(int slot, Component component) throws IllegalStateException {
-        int parentWidth = getWidth();
-        int parentHeight = getHeight();
-        return slot > 0 && slot < parentWidth * parentHeight && (slot / parentHeight) + component.width() <= parentWidth && (slot / parentWidth) + component.height() <= parentHeight;
-    }
-
-    interface Builder<T_RENDERER extends Renderer> {
-
-        <T> Signal<T> signal(String key, Class<T> type, Supplier<T> defaultValueFunction);
-
-        <T> Store<T> syncStore(String key, Class<T> type, Supplier<T> getValue, Consumer<T> setValue);
-
-    }
+    <T> Store<T> syncStore(String key, Class<T> type, Supplier<T> getValue, Consumer<T> setValue);
 
 }

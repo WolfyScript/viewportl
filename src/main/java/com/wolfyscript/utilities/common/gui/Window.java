@@ -38,7 +38,7 @@ public interface Window extends Interactable, Renderable {
 
     void open(GuiViewManager viewManager);
 
-    Window construct(GuiViewManager viewManager);
+    Window construct(GuiHolder holder, GuiViewManager viewManager);
 
     void render(GuiHolder holder, GuiViewManager viewManager, RenderContext context);
 
