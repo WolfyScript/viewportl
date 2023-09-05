@@ -18,6 +18,8 @@
 
 package com.wolfyscript.utilities.common.gui;
 
+import com.wolfyscript.utilities.common.gui.callback.InteractionCallback;
+
 public interface Interactable {
 
     /**

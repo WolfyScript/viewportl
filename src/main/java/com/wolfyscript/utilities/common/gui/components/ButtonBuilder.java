@@ -19,6 +19,7 @@
 package com.wolfyscript.utilities.common.gui.components;
 
 import com.wolfyscript.utilities.common.gui.*;
+import com.wolfyscript.utilities.common.gui.callback.InteractionCallback;
 import com.wolfyscript.utilities.common.gui.functions.SerializableSupplier;
 import com.wolfyscript.utilities.common.gui.signal.Signal;
 import com.wolfyscript.utilities.common.items.ItemStackConfig;

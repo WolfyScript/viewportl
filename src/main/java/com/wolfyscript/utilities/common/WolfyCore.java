@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfyscript.utilities.Platform;
 import com.wolfyscript.utilities.common.chat.Chat;
 import com.wolfyscript.utilities.common.registry.Registries;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.AudienceProvider;
 import org.reflections.Reflections;
 
 /**

@@ -19,6 +19,9 @@
 package com.wolfyscript.utilities.common.gui;
 
 import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.common.gui.callback.TextInputCallback;
+import com.wolfyscript.utilities.common.gui.callback.TextInputTabCompleteCallback;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -86,5 +89,13 @@ public interface GuiViewManager {
     WolfyUtils getWolfyUtils();
 
     Optional<RenderContext> getRenderContext(UUID viewer);
+
+    Optional<TextInputCallback> textInputCallback();
+
+    void setTextInputCallback(TextInputCallback inputCallback);
+
+    Optional<TextInputTabCompleteCallback> textInputTabCompleteCallback();
+
+    void setTextInputTabCompleteCallback(TextInputTabCompleteCallback textInputTabCompleteCallback);
 
 }

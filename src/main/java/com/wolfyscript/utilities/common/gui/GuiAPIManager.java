@@ -18,10 +18,10 @@
 
 package com.wolfyscript.utilities.common.gui;
 
-import java.io.File;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Handles the general GUI API and acts as an entry point to the whole creation of {@link Router}s and {@link GuiViewManager}s.<br>
@@ -37,7 +37,7 @@ public interface GuiAPIManager {
      * @param id The unique id of the router to register.
      * @param routerBuilderConsumer The consumer that provides the new builder.
      */
-    void registerGui(String id, Consumer<RouterBuilder> routerBuilderConsumer);
+    void registerGui(String guiID, Consumer<RouterBuilder> routerBuilderConsumer);
 
     /**
      * Registers a new router that it loads from the specified gui data directory.
@@ -46,7 +46,7 @@ public interface GuiAPIManager {
      * @param id The unique id of the router to register.
      * @param routerBuilderConsumer The function to manipulate the new builder.
      */
-    void registerGuiFromFiles(String id, Consumer<RouterBuilder> routerBuilderConsumer);
+    void registerGuiFromFiles(String guiID, Consumer<RouterBuilder> routerBuilderConsumer);
 
     /**
      * Gets the registered router with the specified id.<br>
@@ -64,7 +64,7 @@ public interface GuiAPIManager {
      * @param viewers The viewers of this view.
      * @return The newly created view.
      */
-    GuiViewManager createView(String clusterId, UUID... viewers);
+    GuiViewManager createView(String guiId, UUID... viewers);
 
     /**
      * Same as {@link #createView(String, UUID...)} and opens the entry menu right after the creation of the view.
@@ -73,6 +73,10 @@ public interface GuiAPIManager {
      * @param viewers The viewers of this view.
      * @return The newly created view.
      */
-    GuiViewManager createViewAndOpen(String clusterID, UUID... viewers);
+    GuiViewManager createViewAndOpen(String guiID, UUID... viewers);
+
+    Stream<GuiViewManager> getViewManagersFor(UUID uuid);
+
+    Stream<GuiViewManager> getViewManagersFor(UUID uuid, String guiID);
 
 }

@@ -16,11 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.gui;
+package com.wolfyscript.utilities.common.gui.callback;
+
+import com.wolfyscript.utilities.common.gui.GuiHolder;
 
 @FunctionalInterface
-public interface InteractionCallback {
+public interface RenderCallback {
 
-    InteractionResult interact(GuiHolder holder, InteractionDetails details);
+    void render(GuiHolder holder);
 
 }

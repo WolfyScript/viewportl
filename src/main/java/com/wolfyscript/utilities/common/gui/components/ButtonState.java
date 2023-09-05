@@ -18,8 +18,8 @@
 
 package com.wolfyscript.utilities.common.gui.components;
 
-import com.wolfyscript.utilities.common.gui.InteractionCallback;
-import com.wolfyscript.utilities.common.gui.RenderCallback;
+import com.wolfyscript.utilities.common.gui.callback.InteractionCallback;
+import com.wolfyscript.utilities.common.gui.callback.RenderCallback;
 import com.wolfyscript.utilities.common.gui.StateSelector;
 
 /**

@@ -19,6 +19,8 @@
 package com.wolfyscript.utilities.common.gui;
 
 import com.google.common.base.Preconditions;
+import com.wolfyscript.utilities.common.gui.callback.InteractionCallback;
+import com.wolfyscript.utilities.common.gui.callback.RenderCallback;
 import com.wolfyscript.utilities.common.gui.components.ButtonState;
 import java.util.Objects;
 
