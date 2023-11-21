@@ -23,7 +23,11 @@ import com.wolfyscript.utilities.common.gui.callback.InteractionCallback;
 import com.wolfyscript.utilities.common.gui.functions.SerializableSupplier;
 import com.wolfyscript.utilities.common.gui.signal.Signal;
 import com.wolfyscript.utilities.common.items.ItemStackConfig;
+import net.kyori.adventure.sound.Sound;
+
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Builder to create a {@link Button} instance.
@@ -40,6 +44,8 @@ public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
     ButtonBuilder icon(Consumer<IconBuilder> icon);
 
     ButtonBuilder interact(InteractionCallback interactionCallback);
+
+    ButtonBuilder sound(Function<GuiHolder, Optional<Sound>> soundFunction);
 
     Button create(Component parent);
 
