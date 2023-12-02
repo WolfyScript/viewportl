@@ -18,6 +18,12 @@
 
 package com.wolfyscript.utilities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Namespaced;
+import org.intellij.lang.annotations.Pattern;
+import org.intellij.lang.annotations.Subst;
+
 /**
  * The NamespacedKey is used to manage and identify resources and prevent conflicts with for example plugins.<br>
  * It consists of a unique namespace and a key. (The same key can exist in different namespaces) <br>
@@ -54,6 +60,10 @@ public interface NamespacedKey {
     Key getKeyComponent();
 
     String toString(String separator);
+
+    default net.kyori.adventure.key.Key toKyoriKey() {
+        return net.kyori.adventure.key.Key.key(toString(":"));
+    }
 
     /**
      * Represents the key part of the NamespacedKey.
