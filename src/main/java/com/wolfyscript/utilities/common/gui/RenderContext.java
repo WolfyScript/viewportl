@@ -28,7 +28,7 @@ public interface RenderContext {
 
     Component getCurrentComponent();
 
-    int getCurrentOffset();
+    int currentOffset();
 
     void setStack(int slot, ItemStackConfig<?> stackConfig);
 

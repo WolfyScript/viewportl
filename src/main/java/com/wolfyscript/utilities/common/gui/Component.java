@@ -52,8 +52,6 @@ public interface Component extends Keyed {
      */
     WolfyUtils getWolfyUtils();
 
-    IntList getSlots();
-
     /**
      * The parent of this Component, or null if it is a root Component.
      *
@@ -78,6 +76,18 @@ public interface Component extends Keyed {
      * @return The height in slots.
      */
     int height();
+
+    Position position();
+
+    default int offset() {
+        Component parent = parent();
+        int totalOffset = 0;
+        while(parent != null && parent.position().type() != Position.Type.ABSOLUTE) {
+            totalOffset += parent.position().slot();
+            parent = parent.parent();
+        }
+        return totalOffset;
+    }
 
     default void executeForAllSlots(int positionSlot, Consumer<Integer> slotFunction) {
         for (int i = 0; i < height(); i++) {

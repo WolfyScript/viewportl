@@ -5,6 +5,8 @@ import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.common.WolfyUtils;
 import com.wolfyscript.utilities.common.gui.Component;
+import com.wolfyscript.utilities.common.gui.Position;
+import com.wolfyscript.utilities.common.gui.Positionable;
 import com.wolfyscript.utilities.common.gui.SignalledObject;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -21,15 +23,15 @@ import java.util.Objects;
  * Duplicate code may occur, but it can be put into static methods.
  * </p>
  */
-public abstract class AbstractComponentImpl implements Component, SignalledObject {
+public abstract class AbstractComponentImpl implements Component, SignalledObject, Positionable {
 
     private final NamespacedKey type;
     private final String internalID;
     private final WolfyUtils wolfyUtils;
     private final Component parent;
-    private final IntList slots;
+    private final Position position;
 
-    public AbstractComponentImpl(String internalID, WolfyUtils wolfyUtils, Component parent, IntList slots) {
+    public AbstractComponentImpl(String internalID, WolfyUtils wolfyUtils, Component parent, Position position) {
         Preconditions.checkNotNull(internalID);
         Preconditions.checkNotNull(wolfyUtils);
         this.type = wolfyUtils.getIdentifiers().getNamespaced(getClass());
@@ -37,7 +39,7 @@ public abstract class AbstractComponentImpl implements Component, SignalledObjec
         this.internalID = internalID;
         this.wolfyUtils = wolfyUtils;
         this.parent = parent;
-        this.slots = slots;
+        this.position = position;
     }
 
     @Override
@@ -60,8 +62,9 @@ public abstract class AbstractComponentImpl implements Component, SignalledObjec
         return parent;
     }
 
-    public IntList getSlots() {
-        return slots;
+    @Override
+    public Position position() {
+        return position;
     }
 
     @Override

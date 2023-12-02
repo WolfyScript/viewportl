@@ -20,6 +20,7 @@ package com.wolfyscript.utilities.common.gui.components;
 
 import com.wolfyscript.utilities.common.gui.Component;
 import com.wolfyscript.utilities.common.gui.ComponentBuilder;
+import com.wolfyscript.utilities.common.gui.Position;
 
 import java.util.function.Consumer;
 
@@ -27,6 +28,6 @@ public interface ComponentClusterBuilder extends ComponentBuilder<ComponentClust
 
     <B extends ComponentBuilder<? extends com.wolfyscript.utilities.common.gui.Component, com.wolfyscript.utilities.common.gui.Component>> ComponentClusterBuilder render(String id, Class<B> builderType, Consumer<B> builderConsumer);
 
-    <B extends ComponentBuilder<? extends com.wolfyscript.utilities.common.gui.Component, com.wolfyscript.utilities.common.gui.Component>> ComponentClusterBuilder renderAt(int slot, String id, Class<B> builderType, Consumer<B> builderConsumer);
+    <B extends ComponentBuilder<? extends com.wolfyscript.utilities.common.gui.Component, com.wolfyscript.utilities.common.gui.Component>> ComponentClusterBuilder renderAt(Position position, String id, Class<B> builderType, Consumer<B> builderConsumer);
 
 }

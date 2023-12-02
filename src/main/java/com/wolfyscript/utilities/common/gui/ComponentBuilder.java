@@ -39,7 +39,7 @@ import java.util.Set;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonPropertyOrder(value = { "type" })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public interface ComponentBuilder<COMPONENT extends Component, PARENT> extends Keyed {
+public interface ComponentBuilder<COMPONENT extends Component, PARENT extends Component> extends Keyed {
 
     @JsonIgnore
     @Override
@@ -49,16 +49,16 @@ public interface ComponentBuilder<COMPONENT extends Component, PARENT> extends K
         return getNamespacedKey();
     }
 
-    String getID();
+    String id();
 
-    List<Integer> getSlots();
+    Position position();
 
     /**
      * Gets the signals that this component builder uses inside the parent construction consumer.
      *
      * @return The signals used in this builder.
      */
-    Set<Signal<?>> getSignals();
+    Set<Signal<?>> signals();
 
     COMPONENT create(PARENT parent);
 

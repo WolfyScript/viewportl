@@ -20,6 +20,6 @@ package com.wolfyscript.utilities.common.gui;
 
 public interface Positionable {
 
-    int getPosition();
+    Position position();
 
 }

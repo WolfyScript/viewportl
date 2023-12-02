@@ -91,7 +91,7 @@ public interface WindowBuilder {
      * @return This Builder for chaining
      * @param <B> The type of the component builder
      */
-    <B extends ComponentBuilder<? extends Component, Component>> WindowBuilder init(int slot, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
+    <B extends ComponentBuilder<? extends Component, Component>> WindowBuilder init(Position position, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 
     /**
      * <p>
@@ -117,7 +117,7 @@ public interface WindowBuilder {
      * <p>
      *     Initializes the specified component with the given id at the given slot, and renders it statically.<br>
      *     <b>It basically combines <br>
-     *     {@link #init(int, String, Class, SerializableConsumer)} and <br>
+     *     {@link #init(Position, String, Class, SerializableConsumer)} and <br>
      *     {@link #render(String, Class, SerializableConsumer)}</b>
      *
      *     <p>
@@ -134,14 +134,14 @@ public interface WindowBuilder {
      *     In case you need to have reactive components, create them inside the {@link #construct(Consumer)} callback.
      * </p>
      *
-     * @param slot
+     * @param position
      * @param id
      * @param builderType
      * @param builderConsumer
      * @return
      * @param <B>
      */
-    <B extends ComponentBuilder<? extends Component, Component>> WindowBuilder renderAt(int slot, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
+    <B extends ComponentBuilder<? extends Component, Component>> WindowBuilder renderAt(Position position, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 
     Window create(Router parent);
 

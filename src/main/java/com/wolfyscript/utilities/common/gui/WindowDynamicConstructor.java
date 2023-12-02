@@ -60,8 +60,8 @@ public interface WindowDynamicConstructor extends DynamicConstructor {
     /**
      * <p>
      *     Constructs a reactive function to dynamically render components.<br>
-     *     This is only recommended for complex methods like if switches are required.<br>
-     *     If a simple condition is enough {@link #ifThenRender(SerializableSupplier, String, Class, SerializableConsumer)} should be used instead!
+     *     This is only recommended for complex methods, like if switches are required.<br>
+     *     If a simple condition is enough {@link #renderWhen(SerializableSupplier, String, Class, SerializableConsumer)} should be used instead!
      * </p>
      * <p>
      *     The callback is updated whenever a signal used inside it is updated.
@@ -89,9 +89,9 @@ public interface WindowDynamicConstructor extends DynamicConstructor {
      * @param <B>             The type of the Component Builder
      * @return This builder for chaining
      */
-    <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor ifThenRender(SerializableSupplier<Boolean> condition, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
+    <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor renderWhen(SerializableSupplier<Boolean> condition, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 
-    <BV extends ComponentBuilder<? extends Component, Component>, BI extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor ifThenRenderOr(SerializableSupplier<Boolean> condition, Class<BV> builderValidType, Consumer<BV> builderValidConsumer, Class<BI> builderInvalidType, SerializableConsumer<BI> builderInvalidConsumer);
+    <BV extends ComponentBuilder<? extends Component, Component>, BI extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor renderWhenElse(SerializableSupplier<Boolean> condition, Class<BV> builderValidType, Consumer<BV> builderValidConsumer, Class<BI> builderInvalidType, SerializableConsumer<BI> builderInvalidConsumer);
 
     /**
      *
@@ -103,7 +103,7 @@ public interface WindowDynamicConstructor extends DynamicConstructor {
      * @return
      * @param <B>
      */
-    <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor position(int slot, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
+    <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor position(Position position, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 
     /**
      * <p>
@@ -118,5 +118,5 @@ public interface WindowDynamicConstructor extends DynamicConstructor {
      */
     <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor render(String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 
-    <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor renderAt(int slot, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
+    <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor renderAt(Position position, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 }

@@ -24,7 +24,7 @@ public interface ReactiveRenderBuilder {
 
     <B extends ComponentBuilder<? extends Component, Component>> ReactiveResult render(String id, Class<B> builderType, Consumer<B> builderConsumer);
 
-    <B extends ComponentBuilder<? extends Component, Component>> ReactiveResult renderAt(int slot, String id, Class<B> builderType, Consumer<B> builderConsumer);
+    <B extends ComponentBuilder<? extends Component, Component>> ReactiveResult renderAt(Position position, String id, Class<B> builderType, Consumer<B> builderConsumer);
 
     interface ReactiveResult {
 

@@ -20,13 +20,14 @@ package com.wolfyscript.utilities.common.gui.components;
 
 import com.wolfyscript.utilities.common.gui.Component;
 import com.wolfyscript.utilities.common.gui.Interactable;
+import com.wolfyscript.utilities.common.gui.Positionable;
 
 /**
  * A simple button that has an icon (ItemStack) and an interaction callback.
  * It always has a 1x1 size, because it occupies a single slot.
  *
  */
-public interface Button extends Component, Interactable {
+public interface Button extends Component, Interactable, Positionable {
 
     @Override
     default int width() {
