@@ -18,7 +18,36 @@
 
 package com.wolfyscript.utilities.common.gui.animation;
 
-public interface FrameBuilder<F extends Frame> {
+import com.wolfyscript.utilities.common.gui.Component;
+import com.wolfyscript.utilities.common.gui.signal.Signal;
 
-    FrameBuilder<F> duration();
+import java.util.List;
+
+public abstract class AnimationCommonImpl<F extends AnimationFrame> implements Animation<F> {
+
+    private final Component owner;
+    private final List<F> frames;
+    private final Signal<?> updateSignal;
+
+    protected AnimationCommonImpl(Component owner, List<? extends AnimationFrameBuilder<F>> frameBuilders, Signal<?> updateSignal) {
+        this.owner = owner;
+        this.frames = frameBuilders.stream().map(frame -> frame.build(this)).toList();
+        this.updateSignal = updateSignal;
+    }
+
+    @Override
+    public List<F> frames() {
+        return frames;
+    }
+
+    @Override
+    public Component owner() {
+        return owner;
+    }
+
+    @Override
+    public Signal<?> updateSignal() {
+        return updateSignal;
+    }
+
 }

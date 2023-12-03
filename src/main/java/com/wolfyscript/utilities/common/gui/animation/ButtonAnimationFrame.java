@@ -18,30 +18,10 @@
 
 package com.wolfyscript.utilities.common.gui.animation;
 
-import com.wolfyscript.utilities.common.gui.Component;
-import com.wolfyscript.utilities.common.gui.signal.Signal;
+import com.wolfyscript.utilities.common.items.ItemStackConfig;
 
-import java.util.function.Consumer;
+public interface ButtonAnimationFrame extends AnimationFrame {
 
-public interface AnimationBuilder<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> {
-
-    /**
-     *
-     *
-     * @param frameBuild
-     * @return
-     */
-    AnimationBuilderCommonImpl<F, FB> frame(Consumer<FB> frameBuild);
-
-    /**
-     * Optional: Can be used to manually start the animation.
-     * The animation is started whenever the value of the signal changes.
-     *
-     * @param signal The signal to listen to
-     * @return This builder for chaining
-     */
-    AnimationBuilderCommonImpl<F, FB> customSignal(Signal<?> signal);
-
-    Animation<F> build(Component owner);
+    ItemStackConfig<?> stack();
 
 }

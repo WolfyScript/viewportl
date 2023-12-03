@@ -19,6 +19,9 @@
 package com.wolfyscript.utilities.common.gui.components;
 
 import com.wolfyscript.utilities.common.gui.*;
+import com.wolfyscript.utilities.common.gui.animation.AnimationBuilder;
+import com.wolfyscript.utilities.common.gui.animation.ButtonAnimationFrame;
+import com.wolfyscript.utilities.common.gui.animation.ButtonAnimationFrameBuilder;
 import com.wolfyscript.utilities.common.gui.callback.InteractionCallback;
 import com.wolfyscript.utilities.common.gui.functions.SerializableSupplier;
 import com.wolfyscript.utilities.common.gui.signal.Signal;
@@ -46,6 +49,8 @@ public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
     ButtonBuilder interact(InteractionCallback interactionCallback);
 
     ButtonBuilder sound(Function<GuiHolder, Optional<Sound>> soundFunction);
+
+    ButtonBuilder animation(DynamicConstructor dC, Consumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild);
 
     Button create(Component parent);
 

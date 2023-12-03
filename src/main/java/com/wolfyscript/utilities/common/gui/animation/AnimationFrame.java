@@ -22,22 +22,21 @@ import com.wolfyscript.utilities.common.gui.GuiHolder;
 import com.wolfyscript.utilities.common.gui.GuiViewManager;
 import com.wolfyscript.utilities.common.gui.RenderContext;
 
-public abstract class Frame {
-
-    private final int duration;
-
-    protected Frame(int duration) {
-        this.duration = duration;
-    }
+public interface AnimationFrame {
 
     /**
      * Gets the duration of this frame in ticks
      *
      * @return The duration in ticks
      */
-    public int duration() {
-        return duration;
-    }
+    int duration();
+
+    /**
+     * Gets the Animation this frame belongs to
+     *
+     * @return The Animation this frame belongs to
+     */
+    Animation<? extends AnimationFrame> animation();
 
     /**
      * Renders this frame into the GUI.<br>
@@ -47,6 +46,6 @@ public abstract class Frame {
      * @param holder        The holder of the GUI
      * @param context       The rendering context
      */
-    public abstract void render(GuiViewManager viewManager, GuiHolder holder, RenderContext context);
+    void render(GuiViewManager viewManager, GuiHolder holder, RenderContext context);
 
 }

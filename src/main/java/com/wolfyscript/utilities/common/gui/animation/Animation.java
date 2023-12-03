@@ -19,13 +19,17 @@
 package com.wolfyscript.utilities.common.gui.animation;
 
 import com.wolfyscript.utilities.common.gui.Component;
+import com.wolfyscript.utilities.common.gui.SignalledObject;
+import com.wolfyscript.utilities.common.gui.signal.Signal;
 
 import java.util.List;
 
-public interface Animation<F extends Frame> {
+public interface Animation<F extends AnimationFrame> extends SignalledObject {
 
     List<F> frames();
 
     Component owner();
+
+    Signal<?> updateSignal();
 
 }
