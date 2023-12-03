@@ -57,6 +57,8 @@ public interface WindowDynamicConstructor extends DynamicConstructor {
      */
     WindowDynamicConstructor titleSignals(Signal<?>... signals);
 
+    WindowDynamicConstructor addIntervalTask(Runnable runnable, long l);
+
     /**
      * <p>
      *     Constructs a reactive function to dynamically render components.<br>

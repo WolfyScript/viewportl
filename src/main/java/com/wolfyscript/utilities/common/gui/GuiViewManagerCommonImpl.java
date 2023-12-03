@@ -71,13 +71,11 @@ public abstract class GuiViewManagerCommonImpl implements GuiViewManager {
     public void openPrevious() {
         history.poll(); // Remove active current menu
         setCurrentRoot(history.peek());
-        getCurrentMenu().ifPresent(previous -> {
-            // Do not add menu to history, as it is already available
-            previous.open(this);
-        });
+
     }
 
     public void setCurrentRoot(Window currentRoot) {
+        getCurrentMenu().ifPresent(window -> window.close(this));
         this.currentRoot = currentRoot;
     }
 
