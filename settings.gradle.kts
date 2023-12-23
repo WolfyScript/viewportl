@@ -1,6 +1,13 @@
+rootProject.name = "wolfyutils-parent"
 pluginManagement {
-    // Include 'plugins build' to define convention plugins.
-    //includeBuild("build-logic")
+    includeBuild("build-logic") // Include 'plugins build' to define convention plugins.
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+    }
 }
 
-rootProject.name = "wolfyutilities"
+include(":api")
+
+project(":api").projectDir = file("api")

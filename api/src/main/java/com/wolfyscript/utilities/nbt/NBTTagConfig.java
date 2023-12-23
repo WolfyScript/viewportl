@@ -108,7 +108,7 @@ public abstract class NBTTagConfig implements Keyed {
             JsonNode node = null;
             var regNBTQueries = wolfyUtils.getRegistries().getNbtTagConfigs();
             NamespacedKey type = switch (token) {
-                case VALUE_STRING -> {
+                case JsonToken.VALUE_STRING -> {
                     node = jsonParser.readValueAsTree();
                     var text = node.asText();
                     Matcher matcher = NUM_PATTERN.matcher(text);
@@ -132,9 +132,9 @@ public abstract class NBTTagConfig implements Keyed {
                     }
                     yield regNBTQueries.getKey(NBTTagConfigString.class);
                 }
-                case VALUE_NUMBER_INT -> regNBTQueries.getKey(NBTTagConfigInt.class);
-                case VALUE_NUMBER_FLOAT -> regNBTQueries.getKey(NBTTagConfigDouble.class);
-                case VALUE_FALSE, VALUE_TRUE -> regNBTQueries.getKey(NBTTagConfigBoolean.class);
+                case JsonToken.VALUE_NUMBER_INT -> regNBTQueries.getKey(NBTTagConfigInt.class);
+                case JsonToken.VALUE_NUMBER_FLOAT -> regNBTQueries.getKey(NBTTagConfigDouble.class);
+                case JsonToken.VALUE_FALSE, JsonToken.VALUE_TRUE -> regNBTQueries.getKey(NBTTagConfigBoolean.class);
                 default -> null;
             };
             if (type == null) return null;

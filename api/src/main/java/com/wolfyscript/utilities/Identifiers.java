@@ -18,9 +18,6 @@
 
 package com.wolfyscript.utilities;
 
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.NamespacedKey;
-
 public interface Identifiers {
 
     /**

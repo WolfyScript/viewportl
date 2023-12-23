@@ -27,8 +27,6 @@ import com.google.inject.Inject;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.WolfyCore;
-import com.wolfyscript.utilities.config.jackson.KeyedBaseType;
-import com.wolfyscript.utilities.config.jackson.OptionalKeyReference;
 import com.wolfyscript.utilities.registry.Registry;
 import com.wolfyscript.utilities.registry.TypeRegistry;
 import java.util.HashMap;
