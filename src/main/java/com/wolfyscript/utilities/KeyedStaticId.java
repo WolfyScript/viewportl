@@ -29,8 +29,15 @@ public @interface KeyedStaticId {
 
     String value() default "";
 
+    /**
+     * @return The namespace of the key
+     */
     String namespace() default "wolfyutilities";
 
+    /**
+     *
+     * @return The key to the object
+     */
     String key() default "";
 
     class KeyBuilder {

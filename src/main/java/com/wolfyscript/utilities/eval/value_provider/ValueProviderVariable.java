@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
 
 public abstract class ValueProviderVariable<V> extends AbstractValueProvider<V> {

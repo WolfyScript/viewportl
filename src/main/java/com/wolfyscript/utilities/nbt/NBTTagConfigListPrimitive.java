@@ -21,7 +21,7 @@ package com.wolfyscript.utilities.nbt;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 import java.util.List;
 
 public abstract class NBTTagConfigListPrimitive<VAL, T extends NBTTagConfigPrimitive<VAL>> extends NBTTagConfigList<T> {

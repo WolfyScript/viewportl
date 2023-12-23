@@ -24,11 +24,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.json.ValueDeserializer;
-import com.wolfyscript.utilities.json.annotations.KeyedBaseType;
-import com.wolfyscript.utilities.json.annotations.OptionalValueDeserializer;
+import com.wolfyscript.utilities.config.jackson.ValueDeserializer;
+import com.wolfyscript.utilities.config.jackson.KeyedBaseType;
+import com.wolfyscript.utilities.config.jackson.OptionalValueDeserializer;
 import java.io.IOException;
 
 /**

@@ -24,11 +24,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
 import com.wolfyscript.utilities.eval.value_provider.ValueProviderStringConst;
-import com.wolfyscript.utilities.json.ValueSerializer;
-import com.wolfyscript.utilities.json.annotations.OptionalValueSerializer;
+import com.wolfyscript.utilities.config.jackson.ValueSerializer;
+import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer;
 import java.io.IOException;
 
 @OptionalValueSerializer(serializer = NBTTagConfigString.OptionalValueSerializer.class)

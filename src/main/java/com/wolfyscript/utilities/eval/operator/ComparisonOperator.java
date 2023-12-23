@@ -19,7 +19,7 @@
 package com.wolfyscript.utilities.eval.operator;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
 import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
 

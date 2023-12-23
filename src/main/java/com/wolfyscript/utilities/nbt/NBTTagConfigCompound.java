@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;

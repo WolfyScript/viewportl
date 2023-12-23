@@ -24,9 +24,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.json.annotations.OptionalValueSerializer;
+import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer;
 import java.io.IOException;
 
 @OptionalValueSerializer(serializer = ValueProviderStringConst.ValueSerializer.class)
@@ -46,7 +46,7 @@ public class ValueProviderStringConst extends AbstractValueProvider<String> {
         return value;
     }
 
-    public static class ValueSerializer extends com.wolfyscript.utilities.json.ValueSerializer<ValueProviderStringConst> {
+    public static class ValueSerializer extends com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderStringConst> {
 
         public ValueSerializer() {
             super(ValueProviderStringConst.class);

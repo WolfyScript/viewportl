@@ -19,7 +19,7 @@
 package com.wolfyscript.utilities.language;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.wolfyscript.utilities.common.chat.Chat;
+import com.wolfyscript.utilities.chat.Chat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 

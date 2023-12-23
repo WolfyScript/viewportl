@@ -21,7 +21,7 @@ package com.wolfyscript.utilities.eval.value_provider;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 
 @KeyedStaticId(key = "int/var")
 public class ValueProviderIntegerVar extends ValueProviderVariable<Integer> implements ValueProviderInteger {

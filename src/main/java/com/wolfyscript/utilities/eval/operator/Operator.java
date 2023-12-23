@@ -26,11 +26,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
 import com.wolfyscript.utilities.Keyed;
-import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.common.WolfyUtils;
-import com.wolfyscript.utilities.json.KeyedTypeIdResolver;
-import com.wolfyscript.utilities.json.KeyedTypeResolver;
+import com.wolfyscript.utilities.WolfyUtils;
+import com.wolfyscript.utilities.config.jackson.KeyedTypeIdResolver;
+import com.wolfyscript.utilities.config.jackson.KeyedTypeResolver;
 
 @JsonTypeResolver(KeyedTypeResolver.class)
 @JsonTypeIdResolver(KeyedTypeIdResolver.class)

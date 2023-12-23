@@ -20,7 +20,7 @@ package com.wolfyscript.utilities.eval.operator;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 
 /**
  * An Operator that represents logical operators like and (&&), or (||), not (!).<br>

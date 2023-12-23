@@ -34,12 +34,12 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.json.KeyedTypeIdResolver;
-import com.wolfyscript.utilities.json.KeyedTypeResolver;
-import com.wolfyscript.utilities.json.annotations.OptionalValueDeserializer;
-import com.wolfyscript.utilities.json.annotations.OptionalValueSerializer;
+import com.wolfyscript.utilities.config.jackson.KeyedTypeIdResolver;
+import com.wolfyscript.utilities.config.jackson.KeyedTypeResolver;
+import com.wolfyscript.utilities.config.jackson.OptionalValueDeserializer;
+import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,7 +65,7 @@ public interface ValueProvider<V> extends Keyed {
     @Override
     NamespacedKey getNamespacedKey();
 
-    class ValueDeserializer extends com.wolfyscript.utilities.json.ValueDeserializer<ValueProvider<?>> {
+    class ValueDeserializer extends com.wolfyscript.utilities.config.jackson.ValueDeserializer<ValueProvider<?>> {
 
         private static final Pattern NUM_PATTERN = Pattern.compile("([0-9]+)([bBsSiIlL])|([0-9]?\\.?[0-9])+([fFdD])");
 
@@ -116,7 +116,7 @@ public interface ValueProvider<V> extends Keyed {
         }
     }
 
-    class ValueSerializer extends com.wolfyscript.utilities.json.ValueSerializer<ValueProvider<?>> {
+    class ValueSerializer extends com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProvider<?>> {
 
         public ValueSerializer() {
             super((Class<ValueProvider<?>>)(Object) ValueProvider.class);

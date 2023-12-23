@@ -21,7 +21,7 @@ package com.wolfyscript.utilities.eval.value_provider;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.common.WolfyUtils;
+import com.wolfyscript.utilities.WolfyUtils;
 
 public abstract class AbstractValueProvider<V> implements ValueProvider<V> {
 
