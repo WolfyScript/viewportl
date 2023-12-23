@@ -16,26 +16,19 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.eval.value_provider;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import org.reflections.Reflections;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wolfyscript.utilities.KeyedStaticId;
+import com.wolfyscript.utilities.common.WolfyUtils;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+@KeyedStaticId(key = "double/var")
+public class ValueProviderDoubleVar extends ValueProviderVariable<Double> implements ValueProviderDouble {
 
-    Chat getChat();
-
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
-
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
+    @JsonCreator
+    public ValueProviderDoubleVar(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("var") String name) {
+        super(wolfyUtils, Double.class, name);
+    }
 }

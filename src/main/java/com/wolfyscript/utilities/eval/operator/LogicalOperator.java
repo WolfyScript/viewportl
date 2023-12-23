@@ -16,26 +16,31 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.eval.operator;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import org.reflections.Reflections;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wolfyscript.utilities.common.WolfyUtils;
 
 /**
- * Represents the core instance of the WolfyUtils plugin.
+ * An Operator that represents logical operators like and (&&), or (||), not (!).<br>
+ * They evaluate at least one inner {@link BoolOperator}, which then results in a booleanish output.
+ *
+ * <ul>
+ *     <li>{@link LogicalOperatorAnd}</li>
+ *     <li>{@link LogicalOperatorOr}</li>
+ *     <li>{@link LogicalOperatorNot}</li>
+ * </ul>
  *
  */
-public interface WolfyCore {
+public abstract class LogicalOperator extends BoolOperator {
 
-    Chat getChat();
+    @JsonProperty("this")
+    protected final BoolOperator thisValue;
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    public LogicalOperator(@JacksonInject WolfyUtils wolfyUtils, BoolOperator thisValue) {
+        super(wolfyUtils);
+        this.thisValue = thisValue;
+    }
 
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
 }

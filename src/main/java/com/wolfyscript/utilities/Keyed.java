@@ -16,26 +16,21 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import org.reflections.Reflections;
+package com.wolfyscript.utilities;
 
 /**
- * Represents the core instance of the WolfyUtils plugin.
- *
+ * Objects that implement this interface are bound to a {@link NamespacedKey} and can be uniquely identified.<br>
+ * This interface may only be used for registrable resources and/or uniquely identifiably public resources!
+ * <b>This interface may not be used for internal plugin resources!</b><br>
+ * Usually this interface is implemented to register data into a kind of Registry,
+ * and allowing third-party plugins to register custom derivations too.
  */
-public interface WolfyCore {
+public interface Keyed {
 
-    Chat getChat();
-
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
-
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
+    /**
+     * The unique NamespacedKey of the object.
+     *
+     * @return The NamespacedKey of the object.
+     */
+    NamespacedKey getNamespacedKey();
 }

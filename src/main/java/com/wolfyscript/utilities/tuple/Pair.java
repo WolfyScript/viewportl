@@ -16,26 +16,31 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.tuple;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import org.reflections.Reflections;
+public class Pair<K, V> {
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+    K key;
+    V value;
 
-    Chat getChat();
+    public Pair(K key, V value){
+        this.key = key;
+        this.value = value;
+    }
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    public K getKey() {
+        return key;
+    }
 
-    WolfyUtils getWolfyUtils();
+    public void setKey(K key) {
+        this.key = key;
+    }
 
-    Reflections getReflections();
+    public V getValue() {
+        return value;
+    }
 
-    Registries getRegistries();
+    public void setValue(V value) {
+        this.value = value;
+    }
 }

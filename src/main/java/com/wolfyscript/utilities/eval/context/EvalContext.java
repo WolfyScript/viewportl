@@ -16,26 +16,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.eval.context;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import org.reflections.Reflections;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+public class EvalContext {
 
-    Chat getChat();
+    private final Map<String, Object> variables;
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    public EvalContext() {
+        this.variables = new HashMap<>();
+    }
 
-    WolfyUtils getWolfyUtils();
+    public Object getVariable(String variableName) {
+        return variables.get(variableName);
+    }
 
-    Reflections getReflections();
+    public void setVariable(String name, Object value) {
+        variables.put(name, value);
+    }
 
-    Registries getRegistries();
 }

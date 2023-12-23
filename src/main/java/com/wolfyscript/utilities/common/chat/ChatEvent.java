@@ -16,26 +16,16 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import org.reflections.Reflections;
+package com.wolfyscript.utilities.common.chat;
 
 /**
- * Represents the core instance of the WolfyUtils plugin.
- *
+ * @param <A> defines the type of the value. String or BaseComponent
+ * @param <V> defines the type of the Action. HoverEvent.Action or ClickEvent.Action
  */
-public interface WolfyCore {
+public interface ChatEvent<A, V> {
 
-    Chat getChat();
+    V getValue();
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    A getAction();
 
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
 }

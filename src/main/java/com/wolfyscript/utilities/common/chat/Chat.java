@@ -19,8 +19,7 @@
 package com.wolfyscript.utilities.common.chat;
 
 import com.wolfyscript.utilities.common.WolfyUtils;
-import me.wolfyscript.utilities.api.chat.ClickActionCallback;
-import me.wolfyscript.utilities.api.language.LanguageAPI;
+import com.wolfyscript.utilities.common.language.LanguageAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;

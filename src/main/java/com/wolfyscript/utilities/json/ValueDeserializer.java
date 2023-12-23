@@ -16,26 +16,24 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.json;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import org.reflections.Reflections;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import java.io.IOException;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+public abstract class ValueDeserializer<T> {
 
-    Chat getChat();
+    protected Class<T> type;
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    protected ValueDeserializer(Class<T> type) {
+        this.type = type;
+    }
 
-    WolfyUtils getWolfyUtils();
+    public abstract T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException;
 
-    Reflections getReflections();
-
-    Registries getRegistries();
+    public Class<T> getType() {
+        return type;
+    }
 }

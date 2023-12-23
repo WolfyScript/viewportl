@@ -16,26 +16,35 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.json.annotations;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import org.reflections.Reflections;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.regex.Matcher;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface OptionalRegexCreator {
 
-    Chat getChat();
+    String regex();
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    Class<? extends RegexCreator<?>> creator();
 
-    WolfyUtils getWolfyUtils();
+    abstract class RegexCreator<T> {
 
-    Reflections getReflections();
+        protected Class<T> type;
 
-    Registries getRegistries();
+        protected RegexCreator(Class<T> type) {
+            this.type = type;
+        }
+
+        public abstract T create(Matcher matcher);
+
+        public Class<T> getType() {
+            return type;
+        }
+    }
+
 }

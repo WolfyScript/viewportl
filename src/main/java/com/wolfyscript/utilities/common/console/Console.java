@@ -21,7 +21,7 @@ package com.wolfyscript.utilities.common.console;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wolfyscript.utilities.common.WolfyUtils;
-import me.wolfyscript.utilities.api.language.LanguageAPI;
+import com.wolfyscript.utilities.common.language.LanguageAPI;
 
 import java.util.ArrayList;
 import java.util.List;
