@@ -16,31 +16,32 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.common.gui.animation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.Platform;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.AudienceProvider;
-import org.reflections.Reflections;
+import com.wolfyscript.utilities.common.gui.Component;
+import com.wolfyscript.utilities.common.gui.signal.Signal;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+import java.util.function.Consumer;
 
-    Chat getChat();
+public interface AnimationBuilder<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> {
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    /**
+     *
+     *
+     * @param frameBuild
+     * @return
+     */
+    AnimationBuilderCommonImpl<F, FB> frame(Consumer<FB> frameBuild);
 
-    WolfyUtils getWolfyUtils();
+    /**
+     * Optional: Can be used to manually start the animation.
+     * The animation is started whenever the value of the signal changes.
+     *
+     * @param signal The signal to listen to
+     * @return This builder for chaining
+     */
+    AnimationBuilderCommonImpl<F, FB> customSignal(Signal<?> signal);
 
-    Reflections getReflections();
+    Animation<F> build(Component owner);
 
-    Registries getRegistries();
-
-    Platform getPlatform();
 }

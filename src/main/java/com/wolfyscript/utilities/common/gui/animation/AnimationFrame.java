@@ -16,35 +16,36 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common.adapters;
+package com.wolfyscript.utilities.common.gui.animation;
 
-import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.common.items.ItemStackConfig;
+import com.wolfyscript.utilities.common.gui.GuiHolder;
+import com.wolfyscript.utilities.common.gui.GuiViewManager;
+import com.wolfyscript.utilities.common.gui.RenderContext;
 
-public interface ItemStack {
-
-    /**
-     * The id representing the item of this ItemStack.<br>
-     * Usually e.g. <pre>minecraft:&lt;item_id&gt;</pre>
-     *
-     * @return The id of the item.
-     */
-    NamespacedKey getItem();
+public interface AnimationFrame {
 
     /**
-     * The stack amount of this ItemStack.
+     * Gets the duration of this frame in ticks
      *
-     * @return The stack amount.
+     * @return The duration in ticks
      */
-    int getAmount();
+    int duration();
 
     /**
-     * Creates a snapshot of the whole ItemStack including the full NBT.<br>
-     * <b>This can be quite resource heavy!</b><br>
-     * The snapshot can be simply written to json using the Json mapper of WolfyUtils.
+     * Gets the Animation this frame belongs to
      *
-     * @return The snapshot ItemStack config of this ItemStack.
+     * @return The Animation this frame belongs to
      */
-    ItemStackConfig<?> snapshot();
+    Animation<? extends AnimationFrame> animation();
+
+    /**
+     * Renders this frame into the GUI.<br>
+     * The Context already entered the Component that this frames' animation belongs to.
+     *
+     * @param viewManager   The view manager to render this for
+     * @param holder        The holder of the GUI
+     * @param context       The rendering context
+     */
+    void render(GuiViewManager viewManager, GuiHolder holder, RenderContext context);
 
 }

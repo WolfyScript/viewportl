@@ -2,7 +2,7 @@ package com.wolfyscript.utilities.common.gui;
 
 import java.util.Set;
 
-public interface GUIDragInteractionDetails extends GUIInteractionDetails {
+public interface DragInteractionDetails extends InteractionDetails {
 
     Set<Integer> getInventorySlots();
 

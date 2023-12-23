@@ -16,31 +16,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.common.gui.animation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.Platform;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.AudienceProvider;
-import org.reflections.Reflections;
+import com.wolfyscript.utilities.common.gui.Component;
+import com.wolfyscript.utilities.common.gui.SignalledObject;
+import com.wolfyscript.utilities.common.gui.signal.Signal;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+import java.util.List;
 
-    Chat getChat();
+public interface Animation<F extends AnimationFrame> extends SignalledObject {
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    List<F> frames();
 
-    WolfyUtils getWolfyUtils();
+    Component owner();
 
-    Reflections getReflections();
+    Signal<?> updateSignal();
 
-    Registries getRegistries();
-
-    Platform getPlatform();
 }

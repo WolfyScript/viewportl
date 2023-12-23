@@ -16,31 +16,29 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.common.gui.components;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.Platform;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.AudienceProvider;
-import org.reflections.Reflections;
+import com.wolfyscript.utilities.common.gui.Component;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+import java.util.Optional;
+import java.util.Set;
 
-    Chat getChat();
+public interface ComponentCluster extends Component {
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    /**
+     * The children of this Component; or an empty Set if there are no children.
+     *
+     * @return The child Components of this Component.
+     */
+    Set<? extends Component> childComponents();
 
-    WolfyUtils getWolfyUtils();
+    /**
+     * Gets the direct child Component, or an empty Optional when it wasn't found.
+     *
+     * @param id The id of the child Component.
+     * @return The child Component; or empty Component.
+     */
+    Optional<? extends Component> getChild(String id);
 
-    Reflections getReflections();
 
-    Registries getRegistries();
-
-    Platform getPlatform();
 }
