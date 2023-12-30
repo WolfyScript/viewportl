@@ -20,12 +20,14 @@ package com.wolfyscript.utilities.common;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.wolfyscript.utilities.common.chat.Chat;
+import com.wolfyscript.utilities.common.gui.GuiAPIManager;
 import com.wolfyscript.utilities.common.json.jackson.MapperUtil;
 import com.wolfyscript.utilities.common.registry.Registries;
 import java.util.logging.Logger;
 import com.wolfyscript.utilities.common.language.LanguageAPI;
 
 import java.io.File;
+import java.util.regex.Pattern;
 
 /**
  * Represents a single API instance that is bound to a plugin or mod.
@@ -68,6 +70,8 @@ public abstract class WolfyUtils {
 
     public abstract Identifiers getIdentifiers();
 
+    public abstract GuiAPIManager getGUIManager();
+
     public Registries getRegistries() {
         return getCore().getRegistries();
     }
@@ -76,5 +80,7 @@ public abstract class WolfyUtils {
         return mapperUtil;
     }
 
+    public abstract void exportResource(String resourcePath, File destination, boolean replace);
 
+    public abstract void exportResources(String resourceName, File dir, boolean replace, Pattern filePattern);
 }

@@ -16,31 +16,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.common.gui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.Platform;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.AudienceProvider;
-import org.reflections.Reflections;
+public abstract class GuiHolderCommonImpl implements GuiHolder {
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+    protected final Window currentWindow;
+    protected final GuiViewManager viewManager;
 
-    Chat getChat();
+    public GuiHolderCommonImpl(Window currentWindow, GuiViewManager viewManager) {
+        this.currentWindow = currentWindow;
+        this.viewManager = viewManager;
+    }
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    @Override
+    public Window getCurrentWindow() {
+        return currentWindow;
+    }
 
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
-
-    Platform getPlatform();
+    @Override
+    public GuiViewManager getViewManager() {
+        return viewManager;
+    }
 }

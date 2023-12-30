@@ -16,31 +16,19 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.common.gui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.Platform;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.AudienceProvider;
-import org.reflections.Reflections;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ComponentBuilderSettings {
 
-    Chat getChat();
+    Class<? extends Component> component();
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    Class<? extends ComponentBuilder<?,?>> base();
 
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
-
-    Platform getPlatform();
 }

@@ -16,31 +16,28 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.common.gui.components;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.Platform;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.AudienceProvider;
-import org.reflections.Reflections;
+import com.wolfyscript.utilities.common.gui.Component;
+import com.wolfyscript.utilities.common.gui.Interactable;
+import com.wolfyscript.utilities.common.gui.Positionable;
 
 /**
- * Represents the core instance of the WolfyUtils plugin.
+ * A simple button that has an icon (ItemStack) and an interaction callback.
+ * It always has a 1x1 size, because it occupies a single slot.
  *
  */
-public interface WolfyCore {
+public interface Button extends Component, Interactable, Positionable {
 
-    Chat getChat();
+    @Override
+    default int width() {
+        return 1;
+    }
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    @Override
+    default int height() {
+        return 1;
+    }
 
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
-
-    Platform getPlatform();
+    ButtonIcon icon();
 }

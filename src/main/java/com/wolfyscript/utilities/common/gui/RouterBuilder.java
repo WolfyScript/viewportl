@@ -16,31 +16,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.common;
+package com.wolfyscript.utilities.common.gui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.Platform;
-import com.wolfyscript.utilities.common.chat.Chat;
-import com.wolfyscript.utilities.common.registry.Registries;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.AudienceProvider;
-import org.reflections.Reflections;
+import com.wolfyscript.utilities.common.gui.callback.InteractionCallback;
 
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
+import java.util.function.Consumer;
 
-    Chat getChat();
+public interface RouterBuilder {
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+    RouterBuilder interact(InteractionCallback interactionCallback);
 
-    WolfyUtils getWolfyUtils();
+    RouterBuilder route(String path, Consumer<RouterBuilder> subRouteBuilder);
 
-    Reflections getReflections();
+    RouterBuilder window(Consumer<WindowBuilder> windowBuilder);
 
-    Registries getRegistries();
+    Router create(Router parent);
 
-    Platform getPlatform();
 }

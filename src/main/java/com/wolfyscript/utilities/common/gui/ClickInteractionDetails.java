@@ -1,6 +1,6 @@
 package com.wolfyscript.utilities.common.gui;
 
-public interface GUIClickInteractionDetails extends GUIInteractionDetails {
+public interface ClickInteractionDetails extends InteractionDetails {
 
     boolean isShift();
 
