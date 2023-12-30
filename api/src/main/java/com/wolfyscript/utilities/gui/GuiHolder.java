@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.gui;
 
-import com.wolfyscript.utilities.adapters.Player;
+import com.wolfyscript.utilities.platform.adapters.Player;
 
 public interface GuiHolder {
 

@@ -23,7 +23,7 @@ import com.wolfyscript.utilities.gui.animation.AnimationBuilder;
 import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrame;
 import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-import com.wolfyscript.utilities.gui.functions.SerializableSupplier;
+import com.wolfyscript.utilities.gui.functions.SerializableFunction;
 import com.wolfyscript.utilities.gui.signal.Signal;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 import net.kyori.adventure.sound.Sound;
@@ -61,13 +61,15 @@ public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
      */
     interface IconBuilder {
 
-        IconBuilder stack(ItemStackConfig<?> stackConfig);
+        IconBuilder stack(String itemId, Consumer<ItemStackConfig> configure);
 
-        IconBuilder stack(SerializableSupplier<ItemStackConfig<?>> stackConfigSupplier);
+        IconBuilder stack(SerializableFunction<ItemHelper, ItemStackConfig> stackConfigSupplier);
 
         IconBuilder updateOnSignals(Signal<?>... signals);
 
         ButtonIcon create();
     }
+
+
 
 }

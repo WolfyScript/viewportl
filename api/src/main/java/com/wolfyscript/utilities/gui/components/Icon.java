@@ -21,8 +21,8 @@ package com.wolfyscript.utilities.gui.components;
 import com.wolfyscript.utilities.gui.Component;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 
-public interface Icon<T_NATIVE_STACK> extends Component {
+public interface Icon extends Component {
 
-    ItemStackConfig<T_NATIVE_STACK> getItemStackConfig();
+    ItemStackConfig getItemStackConfig();
 
 }

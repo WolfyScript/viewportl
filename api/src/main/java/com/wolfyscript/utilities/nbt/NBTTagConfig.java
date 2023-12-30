@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
@@ -108,7 +109,7 @@ public abstract class NBTTagConfig implements Keyed {
             JsonNode node = null;
             var regNBTQueries = wolfyUtils.getRegistries().getNbtTagConfigs();
             NamespacedKey type = switch (token) {
-                case JsonToken.VALUE_STRING -> {
+                case VALUE_STRING -> {
                     node = jsonParser.readValueAsTree();
                     var text = node.asText();
                     Matcher matcher = NUM_PATTERN.matcher(text);
@@ -132,9 +133,9 @@ public abstract class NBTTagConfig implements Keyed {
                     }
                     yield regNBTQueries.getKey(NBTTagConfigString.class);
                 }
-                case JsonToken.VALUE_NUMBER_INT -> regNBTQueries.getKey(NBTTagConfigInt.class);
-                case JsonToken.VALUE_NUMBER_FLOAT -> regNBTQueries.getKey(NBTTagConfigDouble.class);
-                case JsonToken.VALUE_FALSE, JsonToken.VALUE_TRUE -> regNBTQueries.getKey(NBTTagConfigBoolean.class);
+                case VALUE_NUMBER_INT -> regNBTQueries.getKey(NBTTagConfigInt.class);
+                case VALUE_NUMBER_FLOAT -> regNBTQueries.getKey(NBTTagConfigDouble.class);
+                case VALUE_FALSE, VALUE_TRUE -> regNBTQueries.getKey(NBTTagConfigBoolean.class);
                 default -> null;
             };
             if (type == null) return null;

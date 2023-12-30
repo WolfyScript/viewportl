@@ -8,6 +8,10 @@ pluginManagement {
     }
 }
 
-include(":api")
-
-project(":api").projectDir = file("api")
+sequenceOf(
+    "api",
+    "common"
+).forEach {
+    include(":${it}")
+    project(":${it}").projectDir = file(it)
+}

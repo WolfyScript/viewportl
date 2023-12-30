@@ -18,7 +18,11 @@
 
 package com.wolfyscript.utilities.gui;
 
+import com.wolfyscript.utilities.platform.adapters.ItemStack;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+
+import java.util.UUID;
 
 /**
  * The data that contains all the information needed to render the Menu.
@@ -26,13 +30,32 @@ import com.wolfyscript.utilities.world.items.ItemStackConfig;
  */
 public interface RenderContext {
 
+    GuiHolder holder();
+
+    void enterNode(Component component);
+
+    void exitNode();
+
     Component getCurrentComponent();
 
     int currentOffset();
 
-    void setStack(int slot, ItemStackConfig<?> stackConfig);
+    void setStack(int slot, ItemStackConfig stackConfig);
 
-    void setNativeStack(int slot, Object nativeStack);
+    void renderStack(Position position, ItemStack itemStack);
+
+    void renderStack(Position position, ItemStackConfig itemStackConfig, ItemStackContext itemStackContext);
+
+    void updateTitle(GuiHolder holder, net.kyori.adventure.text.Component component);
+
+    ItemStackContext createContext(GuiHolder guiHolder, TagResolver tagResolvers);
+
+    /**
+     *
+     *
+     * @param viewer
+     */
+    void openAndRenderMenuFor(GuiViewManager viewManager, UUID viewer);
 
     default boolean checkIfSlotInBounds(int slot) {
         int outerWidth;

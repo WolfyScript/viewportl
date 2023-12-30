@@ -18,11 +18,19 @@
 
 package com.wolfyscript.utilities.gui.animation;
 
+import com.wolfyscript.utilities.gui.ItemHelper;
+import com.wolfyscript.utilities.gui.functions.SerializableFunction;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
+import com.wolfyscript.utilities.platform.world.items.Items;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public interface ButtonAnimationFrameBuilder extends AnimationFrameBuilder<ButtonAnimationFrame> {
 
-    ButtonAnimationFrameBuilder stack(ItemStackConfig<?> stackConfig);
+    ButtonAnimationFrameBuilder stack(String itemId, Consumer<ItemStackConfig> config);
+
+    ButtonAnimationFrameBuilder stack(SerializableFunction<ItemHelper, ItemStackConfig> config);
 
     @Override
     ButtonAnimationFrameBuilder duration(int duration);

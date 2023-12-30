@@ -90,6 +90,13 @@ public interface GuiViewManager {
 
     Optional<RenderContext> getRenderContext(UUID viewer);
 
+    void blockedByInteraction();
+
+    void unblockedByInteraction();
+
+
+    void updateSignalQueue(RenderContext context);
+
     Optional<TextInputCallback> textInputCallback();
 
     void setTextInputCallback(TextInputCallback inputCallback);

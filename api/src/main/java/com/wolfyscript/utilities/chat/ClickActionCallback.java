@@ -19,7 +19,7 @@
 package com.wolfyscript.utilities.chat;
 
 import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.adapters.Player;
+import com.wolfyscript.utilities.platform.adapters.Player;
 
 public interface ClickActionCallback {
     void run(WolfyUtils api, Player player);

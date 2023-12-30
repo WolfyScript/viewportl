@@ -36,12 +36,12 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-//kotlin {
-//    target {
-//        compilations.configureEach {
-//            kotlinOptions {
-//                jvmTarget = "17"
-//            }
-//        }
-//    }
-//}
+kotlin {
+    target {
+        compilations.configureEach {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+    }
+}

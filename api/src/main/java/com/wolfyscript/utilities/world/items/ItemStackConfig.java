@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wolfyscript.utilities.WolfyUtils;
+import com.wolfyscript.utilities.platform.adapters.ItemStack;
 import com.wolfyscript.utilities.nbt.NBTTagConfigCompound;
 import com.wolfyscript.utilities.eval.context.EvalContext;
 import com.wolfyscript.utilities.eval.operator.BoolOperator;
@@ -29,6 +30,9 @@ import com.wolfyscript.utilities.eval.operator.BoolOperatorConst;
 import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
 import com.wolfyscript.utilities.eval.value_provider.ValueProviderIntegerConst;
 import com.wolfyscript.utilities.eval.value_provider.ValueProviderStringConst;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +45,7 @@ import java.util.Map;
  * @param <I> The native ItemStackType
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public abstract class ItemStackConfig<I> {
+public abstract class ItemStackConfig {
 
     @JsonIgnore
     protected final WolfyUtils wolfyUtils;
@@ -95,7 +99,7 @@ public abstract class ItemStackConfig<I> {
      *
      * @return The constructed ItemStack.
      */
-    public abstract I constructItemStack();
+    public abstract ItemStack constructItemStack();
 
     /**
      * Constructs the implementation specific ItemStack from the settings.<br>
@@ -104,7 +108,9 @@ public abstract class ItemStackConfig<I> {
      * @param context The context to use.
      * @return The constructed ItemStack.
      */
-    public abstract I constructItemStack(EvalContext context);
+    public abstract ItemStack constructItemStack(EvalContext context);
+
+    public abstract ItemStack constructItemStack(EvalContext context, MiniMessage miniMessage, TagResolver tagResolvers);
 
     public String getItemId() {
         return itemId;

@@ -22,6 +22,6 @@ import com.wolfyscript.utilities.world.items.ItemStackConfig;
 
 public interface ButtonAnimationFrame extends AnimationFrame {
 
-    ItemStackConfig<?> stack();
+    ItemStackConfig stack();
 
 }

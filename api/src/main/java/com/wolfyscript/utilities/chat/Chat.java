@@ -24,7 +24,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import com.wolfyscript.utilities.adapters.Player;
+import com.wolfyscript.utilities.platform.adapters.Player;
 
 import java.util.List;
 

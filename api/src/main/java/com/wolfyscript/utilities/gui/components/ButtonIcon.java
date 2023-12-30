@@ -23,7 +23,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 public interface ButtonIcon {
 
-    ItemStackConfig<?> getStack();
+    ItemStackConfig getStack();
 
     TagResolver getResolvers();
 

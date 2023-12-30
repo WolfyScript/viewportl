@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.gui.callback;
 
-import com.wolfyscript.utilities.adapters.Player;
+import com.wolfyscript.utilities.platform.adapters.Player;
 import com.wolfyscript.utilities.gui.GuiViewManager;
 
 public interface TextInputCallback {

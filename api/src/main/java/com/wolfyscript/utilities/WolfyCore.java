@@ -20,6 +20,7 @@ package com.wolfyscript.utilities;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfyscript.utilities.chat.Chat;
+import com.wolfyscript.utilities.platform.Platform;
 import com.wolfyscript.utilities.registry.Registries;
 import org.reflections.Reflections;
 
@@ -39,5 +40,6 @@ public interface WolfyCore {
 
     Registries getRegistries();
 
-    Platform getPlatform();
+    Platform platform();
+
 }
