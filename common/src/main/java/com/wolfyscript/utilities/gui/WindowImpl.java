@@ -23,7 +23,7 @@ public final class WindowImpl implements Window {
     private String staticTitle = null;
     private SerializableSupplier<net.kyori.adventure.text.Component> dynamicTitle;
     private final InteractionCallback interactionCallback;
-    final Map<Component, Position> staticComponents;
+    final Map<Component, Position> componentsToRender;
     final Map<ComponentBuilder<?, ?>, Position> nonRenderedComponents;
 
     // Intervalls
@@ -36,7 +36,6 @@ public final class WindowImpl implements Window {
                WindowType type,
                String staticTitle,
                InteractionCallback interactionCallback,
-               Map<Component, Position> staticComponents,
                Map<ComponentBuilder<?, ?>, Position> nonRenderedComponents,
                Consumer<WindowDynamicConstructor> rendererConstructor) {
         Preconditions.checkNotNull(id);
@@ -50,7 +49,7 @@ public final class WindowImpl implements Window {
         this.type = type;
         this.staticTitle = staticTitle;
         this.interactionCallback = interactionCallback;
-        this.staticComponents = staticComponents;
+        this.componentsToRender = new HashMap<>();
         this.nonRenderedComponents = nonRenderedComponents;
         this.dynamicTitle = null;
     }
@@ -65,7 +64,7 @@ public final class WindowImpl implements Window {
         this.staticTitle = staticWindow.staticTitle;
         this.dynamicTitle = staticWindow.dynamicTitle;
         this.interactionCallback = staticWindow.interactionCallback;
-        this.staticComponents = new HashMap<>(staticWindow.staticComponents);
+        this.componentsToRender = new HashMap<>(staticWindow.componentsToRender);
         this.nonRenderedComponents = new HashMap<>(staticWindow.nonRenderedComponents);
     }
 
@@ -74,7 +73,7 @@ public final class WindowImpl implements Window {
                                   SerializableSupplier<net.kyori.adventure.text.Component> dynamicTitle,
                                   List<Pair<Runnable, Long>> intervalRunnables) {
         WindowImpl copy = new WindowImpl(this);
-        copy.staticComponents.putAll(dynamicComponents);
+        copy.componentsToRender.putAll(dynamicComponents);
         copy.nonRenderedComponents.putAll(nonRenderedComponents);
         copy.dynamicTitle = dynamicTitle;
         copy.intervalRunnables.addAll(intervalRunnables);
@@ -117,7 +116,7 @@ public final class WindowImpl implements Window {
             context.updateTitle(guiHolder, dynamicTitle.get());
         }
 
-        for (Map.Entry<Component, Position> entry : staticComponents.entrySet()) {
+        for (Map.Entry<Component, Position> entry : componentsToRender.entrySet()) {
             var position = entry.getValue();
             var component = entry.getKey();
             if (position == null) continue;

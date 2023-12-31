@@ -31,7 +31,6 @@ public class WindowBuilderImpl implements WindowBuilder {
     private InteractionCallback interactionCallback = (guiHolder, interactionDetails) -> InteractionResult.def();
     private Consumer<WindowDynamicConstructor> rendererConstructor = builder -> {};
     private final Map<ComponentBuilder<?, ?>, Position> componentBuilderPositions = new HashMap<>();
-    private final Set<ComponentBuilder<?, ?>> componentRenderSet = new HashSet<>();
 
     @Inject
     @JsonCreator
@@ -98,18 +97,6 @@ public class WindowBuilderImpl implements WindowBuilder {
 
     @Override
     public Window create(Router parent) {
-        Map<Component, Position> staticComponents = new HashMap<>();
-        Map<ComponentBuilder<?, ?>, Position> nonRenderedComponents = new HashMap<>();
-
-        for (ComponentBuilder<?, ?> componentBuilder : componentBuilderPositions.keySet()) {
-            Position position = componentBuilderPositions.get(componentBuilder);
-            if (componentRenderSet.contains(componentBuilder)) {
-                staticComponents.put(componentBuilder.create(null), position);
-                continue;
-            }
-            nonRenderedComponents.put(componentBuilder, position);
-        }
-
         return new WindowImpl(
                 parent.getID() + "/" + id,
                 parent,
@@ -117,8 +104,7 @@ public class WindowBuilderImpl implements WindowBuilder {
                 type,
                 staticTitle,
                 interactionCallback,
-                staticComponents,
-                nonRenderedComponents,
+                componentBuilderPositions,
                 rendererConstructor
         );
     }
