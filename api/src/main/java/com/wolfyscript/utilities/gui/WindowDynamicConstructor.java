@@ -57,7 +57,14 @@ public interface WindowDynamicConstructor extends DynamicConstructor {
      */
     WindowDynamicConstructor titleSignals(Signal<?>... signals);
 
-    WindowDynamicConstructor addIntervalTask(Runnable runnable, long l);
+    /**
+     * Adds a task that is run periodically while the Window is open.
+     *
+     * @param runnable The task to run, may update signals
+     * @param intervalInTicks The interval for the task in ticks
+     * @return This builder for chaining
+     */
+    WindowDynamicConstructor addIntervalTask(Runnable runnable, long intervalInTicks);
 
     /**
      * <p>
@@ -94,18 +101,6 @@ public interface WindowDynamicConstructor extends DynamicConstructor {
     <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor renderWhen(SerializableSupplier<Boolean> condition, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 
     <BV extends ComponentBuilder<? extends Component, Component>, BI extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor renderWhenElse(SerializableSupplier<Boolean> condition, Class<BV> builderValidType, Consumer<BV> builderValidConsumer, Class<BI> builderInvalidType, SerializableConsumer<BI> builderInvalidConsumer);
-
-    /**
-     *
-     *
-     * @param slot
-     * @param id
-     * @param builderType
-     * @param builderConsumer
-     * @return
-     * @param <B>
-     */
-    <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor position(Position position, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 
     /**
      * <p>
