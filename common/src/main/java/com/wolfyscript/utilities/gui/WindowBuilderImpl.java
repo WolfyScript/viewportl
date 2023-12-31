@@ -97,64 +97,6 @@ public class WindowBuilderImpl implements WindowBuilder {
     }
 
     @Override
-    public <B extends ComponentBuilder<? extends Component, Component>> WindowBuilder init(Position position, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer) {
-        Pair<NamespacedKey, Class<B>> builderTypeInfo = getBuilderType(wolfyUtils, id, builderType);
-        findExistingComponentBuilder(id, builderTypeInfo.getValue(), builderTypeInfo.getKey()).ifPresentOrElse(builderConsumer, () -> {
-            Injector injector = Guice.createInjector(Stage.PRODUCTION, binder -> {
-                binder.bind(WolfyUtils.class).toInstance(wolfyUtils);
-                binder.bind(String.class).toInstance(id);
-            });
-            B builder = injector.getInstance(builderTypeInfo.getValue());
-            builderConsumer.accept(builder);
-            componentBuilderPositions.put(builder, position);
-        });
-        return this;
-    }
-
-    @Override
-    public <B extends ComponentBuilder<? extends Component, Component>> WindowBuilder render(String id, Class<B> builderType, SerializableConsumer<B> builderConsumer) {
-        Pair<NamespacedKey, Class<B>> builderTypeInfo = getBuilderType(wolfyUtils, id, builderType);
-        B builder = findExistingComponentBuilder(id, builderTypeInfo.getValue(), builderTypeInfo.getKey())
-                .orElseThrow(() -> new IllegalStateException(String.format("Failed to link to component '%s'! Cannot find existing placement", id)));
-        builderConsumer.accept(builder);
-        componentRenderSet.add(builder);
-        return this;
-    }
-
-    @Override
-    public <B extends ComponentBuilder<? extends Component, Component>> WindowBuilder renderAt(Position position, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer) {
-        Pair<NamespacedKey, Class<B>> builderTypeInfo = getBuilderType(wolfyUtils, id, builderType);
-        findExistingComponentBuilder(id, builderTypeInfo.getValue(), builderTypeInfo.getKey()).ifPresentOrElse(builderConsumer, () -> {
-            Injector injector = Guice.createInjector(Stage.PRODUCTION, binder -> {
-                binder.bind(WolfyUtils.class).toInstance(wolfyUtils);
-                binder.bind(String.class).toInstance(id);
-            });
-            B builder = injector.getInstance(builderTypeInfo.getValue());
-            builderConsumer.accept(builder);
-            componentBuilderPositions.put(builder, position);
-            componentRenderSet.add(builder);
-        });
-        return this;
-    }
-
-    private <B extends ComponentBuilder<? extends Component, Component>> Optional<B> findExistingComponentBuilder(String id, Class<B> builderImplType, NamespacedKey builderKey) {
-        return componentBuilderPositions.keySet().stream()
-                .filter(componentBuilder -> componentBuilder.id().equals(id) && componentBuilder.getType().equals(builderKey))
-                .findFirst()
-                .map(builderImplType::cast);
-    }
-
-    private static <B extends ComponentBuilder<? extends Component, Component>> Pair<NamespacedKey, Class<B>> getBuilderType(WolfyUtils wolfyUtils, String id, Class<B> builderType) {
-        RegistryGUIComponentBuilders registry = wolfyUtils.getRegistries().getGuiComponentBuilders();
-        NamespacedKey key = registry.getKey(builderType);
-        Preconditions.checkArgument(key != null, "Failed to create component '%s'! Cannot find builder '%s' in registry!", id, builderType.getName());
-        @SuppressWarnings("unchecked")
-        Class<B> builderImplType = (Class<B>) registry.get(key); // We can be sure that the cast is valid, because the key is only non-null if and only if the type matches!
-        Preconditions.checkNotNull(builderImplType, "Failed to create component '%s'! Cannot find implementation type of builder '%s' in registry!", id, builderType.getName());
-        return new Pair<>(key, builderImplType);
-    }
-
-    @Override
     public Window create(Router parent) {
         Map<Component, Position> staticComponents = new HashMap<>();
         Map<ComponentBuilder<?, ?>, Position> nonRenderedComponents = new HashMap<>();
