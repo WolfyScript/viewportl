@@ -115,5 +115,17 @@ public interface WindowDynamicConstructor extends DynamicConstructor {
      */
     <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor render(String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
 
+    /**
+     * Renders the specified component at the given position.
+     * This is useful if the position wasn't specified by a config file
+     *
+     * @param position
+     * @param id
+     * @param builderType
+     * @param builderConsumer
+     * @return
+     * @param <B>
+     */
     <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructor renderAt(Position position, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer);
+
 }
