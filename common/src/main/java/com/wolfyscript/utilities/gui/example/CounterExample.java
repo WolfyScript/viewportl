@@ -3,7 +3,7 @@ package com.wolfyscript.utilities.gui.example;
 import com.wolfyscript.utilities.gui.GuiAPIManager;
 import com.wolfyscript.utilities.gui.GuiViewManager;
 import com.wolfyscript.utilities.gui.InteractionResult;
-import com.wolfyscript.utilities.gui.WindowDynamicConstructor;
+import com.wolfyscript.utilities.gui.WindowBuilder;
 import com.wolfyscript.utilities.gui.components.ButtonBuilder;
 import com.wolfyscript.utilities.gui.signal.Signal;
 import com.wolfyscript.utilities.gui.signal.Store;
@@ -21,7 +21,7 @@ import java.util.WeakHashMap;
  *     <li>another button to decrease the count,</li>
  *     <li>and a button to reset the count to 0.</li>
  * </ul>
- *
+ * <p>
  * The reset Button is only displayed, when the count is not 0.<br>
  * Whenever the GUI is open the count is increased periodically every second, without requiring any input.
  * <br>
@@ -49,7 +49,18 @@ public class CounterExample {
     }
 
     public static void register(GuiAPIManager manager) {
-        manager.registerGuiFromFiles("example_counter", builder -> builder.window(mainMenu -> mainMenu.size(9 * 3).construct((renderer) -> {
+        manager.registerGuiFromFiles("example_counter", builder -> builder.window(CounterExample::mainMenu));
+    }
+
+    /**
+     * Almost all the functions can be written the way you want.
+     * You can have everything in one function, or split into different functions, like I did here.
+     * If you only have a single inventory it isn't helping a lot, but for multi-window GUIs this makes it a lot cleaner.
+     *
+     * @param builder The WindowBuilder to use for the main menu
+     */
+    static void mainMenu(WindowBuilder builder) {
+        builder.size(9 * 3).construct((renderer) -> {
             // This is only called upon creation of the component. So this is not called when the signal is updated!
 
             // Use signals that provide a simple value storage & synchronisation. Signals are not persistent and will get destroyed when the GUI is closed!
@@ -63,22 +74,20 @@ public class CounterExample {
                 count.update(integer -> ++integer); // Updates the count periodically (every second increases it by 1)
             }, 20);
 
-            renderer
-                    .titleSignals(count)
+            renderer.titleSignals(count)
                     .render("count_down", ButtonBuilder.class, bb -> countDownButton(bb, count))
                     // Sometimes we want to render components dependent on signals
                     .renderWhen(() -> count.get() != 0, "reset", ButtonBuilder.class, bb -> resetButton(bb, count))
                     // The state of a component is only reconstructed if the slot it is positioned at changes.
                     // Here the slot will always have the same type of component, so the state is created only once.
-                    .render("count_up", ButtonBuilder.class, bb -> countUpButton(bb, renderer, count))
+                    .render("count_up", ButtonBuilder.class, bb -> countUpButton(bb, count))
                     .render("counter", ButtonBuilder.class, bb -> bb.icon(ib -> ib.updateOnSignals(count)));
-        })));
+        });
     }
 
     /**
-     * Since all the components are declared statically we can easily move them into their own functions
+     * Since all the components are declared statically as well we can easily move them into their own functions
      **/
-
     static void countDownButton(ButtonBuilder bb, Signal<Integer> count) {
         bb.interact((guiHolder, interactionDetails) -> {
             count.update(old -> --old);
@@ -86,11 +95,11 @@ public class CounterExample {
         });
     }
 
-    static void countUpButton(ButtonBuilder bb, WindowDynamicConstructor renderer, Signal<Integer> count) {
+    static void countUpButton(ButtonBuilder bb, Signal<Integer> count) {
         bb.interact((guiHolder, interactionDetails) -> {
             count.update(old -> ++old);
             return InteractionResult.cancel(true);
-        }).animation(renderer, animationBuilder -> animationBuilder
+        }).animation(animationBuilder -> animationBuilder
                 // Here we specify the frames to render after each other
                 // So it first renders the cyan_concrete for a tick, then lime_concrete for a tick
                 .frame(frame -> frame.duration(1).stack("cyan_concrete", conf -> {}))

@@ -27,6 +27,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
     private InteractionCallback interactionCallback = (guiHolder, interactionDetails) -> InteractionResult.cancel(true);
     private Function<GuiHolder, Optional<Sound>> soundFunction = holder -> Optional.of(Sound.sound(Key.key("minecraft:ui.button.click"), Sound.Source.MASTER, 0.25f, 1));;
     private final IconBuilderImpl iconBuilder;
+    private final DynamicConstructor dynamicConstructor;
     private AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> animationBuilder;
 
     /**
@@ -36,15 +37,21 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
      * @param wolfyUtils The wolfyutils that this button belongs to.
      */
     @Inject
-    private ButtonBuilderImpl(String id, WolfyUtils wolfyUtils, Position position) {
+    private ButtonBuilderImpl(String id, WolfyUtils wolfyUtils, Position position, DynamicConstructor dynamicConstructor) {
         super(id, wolfyUtils, position);
         this.iconBuilder = new IconBuilderImpl(wolfyUtils);
+        this.dynamicConstructor = dynamicConstructor;
     }
 
     @JsonCreator
-    public ButtonBuilderImpl(@JsonProperty("id") String id, @JsonProperty("icon") IconBuilderImpl iconBuilder, @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils, @JsonProperty("position") Position position) {
+    public ButtonBuilderImpl(@JsonProperty("id") String id,
+                             @JsonProperty("icon") IconBuilderImpl iconBuilder,
+                             @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils,
+                             @JsonProperty("position") Position position,
+                             @JsonProperty("dynamicConstructor") DynamicConstructor dynamicConstructor) {
         super(id, wolfyUtils, position);
         this.iconBuilder = iconBuilder;
+        this.dynamicConstructor = dynamicConstructor;
     }
 
     @Override
@@ -68,8 +75,8 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
     }
 
     @Override
-    public ButtonBuilder animation(DynamicConstructor dC, Consumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild) {
-        AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> builder = new AnimationBuilderImpl<>(dC, () -> new ButtonAnimationFrameBuilderImpl(getWolfyUtils()));
+    public ButtonBuilder animation(Consumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild) {
+        AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> builder = new AnimationBuilderImpl<>(dynamicConstructor, () -> new ButtonAnimationFrameBuilderImpl(getWolfyUtils()));
         animationBuild.accept(builder);
         this.animationBuilder = builder;
         return this;

@@ -50,7 +50,7 @@ public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
 
     ButtonBuilder sound(Function<GuiHolder, Optional<Sound>> soundFunction);
 
-    ButtonBuilder animation(DynamicConstructor dC, Consumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild);
+    ButtonBuilder animation(Consumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild);
 
     Button create(Component parent);
 

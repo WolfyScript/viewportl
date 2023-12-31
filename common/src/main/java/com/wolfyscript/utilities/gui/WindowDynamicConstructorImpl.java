@@ -1,7 +1,6 @@
 package com.wolfyscript.utilities.gui;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.base.Preconditions;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -61,13 +60,6 @@ public class WindowDynamicConstructorImpl implements WindowDynamicConstructor {
         return this;
     }
 
-    @JsonSetter("placement")
-    private void setPlacement(List<ComponentBuilder<?, ?>> componentBuilders) {
-        for (ComponentBuilder<?, ?> componentBuilder : componentBuilders) {
-            componentBuilderPositions.put(componentBuilder, componentBuilder.position());
-        }
-    }
-
     @Override
     public GuiViewManager viewManager() {
         return viewManager;
@@ -117,7 +109,7 @@ public class WindowDynamicConstructorImpl implements WindowDynamicConstructor {
 
             @Override
             public void update(GuiViewManager guiViewManager, GuiHolder guiHolder, RenderContext context) {
-                ReactiveRenderBuilderImpl builder = new ReactiveRenderBuilderImpl(wolfyUtils, componentBuilderPositions);
+                ReactiveRenderBuilderImpl builder = new ReactiveRenderBuilderImpl(wolfyUtils, window.nonRenderedComponents);
                 ReactiveRenderBuilder.ReactiveResult result = consumer.apply(builder);
                 Component component = result == null ? null : result.construct().construct(guiHolder, viewManager);
                 if (Objects.equals(previousComponent, component)) return;
@@ -192,29 +184,6 @@ public class WindowDynamicConstructorImpl implements WindowDynamicConstructor {
     }
 
     @Override
-    public <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructorImpl position(Position position, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer) {
-        Pair<NamespacedKey, Class<B>> builderTypeInfo = getBuilderType(wolfyUtils, id, builderType);
-
-        findExistingComponentBuilder(id, builderTypeInfo.getValue(), builderTypeInfo.getKey()).ifPresentOrElse(builderConsumer, () -> {
-            Injector injector = Guice.createInjector(Stage.PRODUCTION, binder -> {
-                binder.bind(WolfyUtils.class).toInstance(wolfyUtils);
-                binder.bind(String.class).toInstance(id);
-            });
-            B builder = injector.getInstance(builderTypeInfo.getValue());
-            builderConsumer.accept(builder);
-            componentBuilderPositions.put(builder, position);
-        });
-        return this;
-    }
-
-    private <B extends ComponentBuilder<? extends Component, Component>> Optional<B> findExistingComponentBuilder(String id, Class<B> builderImplType, NamespacedKey builderKey) {
-        return componentBuilderPositions.keySet().stream()
-                .filter(componentBuilder -> componentBuilder.id().equals(id) && componentBuilder.getType().equals(builderKey))
-                .findFirst()
-                .map(builderImplType::cast);
-    }
-
-    @Override
     public <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructorImpl render(String id, Class<B> builderType, SerializableConsumer<B> builderConsumer) {
         Pair<NamespacedKey, Class<B>> builderTypeInfo = getBuilderType(wolfyUtils, id, builderType);
         B builder = findExistingComponentBuilder(id, builderTypeInfo.getValue(), builderTypeInfo.getKey())
@@ -228,16 +197,28 @@ public class WindowDynamicConstructorImpl implements WindowDynamicConstructor {
     public <B extends ComponentBuilder<? extends Component, Component>> WindowDynamicConstructorImpl renderAt(Position position, String id, Class<B> builderType, SerializableConsumer<B> builderConsumer) {
         Pair<NamespacedKey, Class<B>> builderTypeInfo = getBuilderType(wolfyUtils, id, builderType);
         findExistingComponentBuilder(id, builderTypeInfo.getValue(), builderTypeInfo.getKey()).ifPresentOrElse(builderConsumer, () -> {
-            Injector injector = Guice.createInjector(Stage.PRODUCTION, binder -> {
-                binder.bind(WolfyUtils.class).toInstance(wolfyUtils);
-                binder.bind(String.class).toInstance(id);
-            });
-            B builder = injector.getInstance(builderTypeInfo.getValue());
+            B builder = instantiateNewBuilder(id, builderTypeInfo);
             builderConsumer.accept(builder);
             componentBuilderPositions.put(builder, position);
             componentRenderSet.add(builder);
         });
         return this;
+    }
+
+    private <B extends ComponentBuilder<? extends Component, Component>> B instantiateNewBuilder(String id, Pair<NamespacedKey, Class<B>> builderTypeInfo) {
+        Injector injector = Guice.createInjector(Stage.PRODUCTION, binder -> {
+            binder.bind(WolfyUtils.class).toInstance(wolfyUtils);
+            binder.bind(String.class).toInstance(id);
+            binder.bind(DynamicConstructor.class).toInstance(this);
+        });
+        return injector.getInstance(builderTypeInfo.getValue());
+    }
+
+    private <B extends ComponentBuilder<? extends Component, Component>> Optional<B> findExistingComponentBuilder(String id, Class<B> builderImplType, NamespacedKey builderKey) {
+        return componentBuilderPositions.keySet().stream()
+                .filter(componentBuilder -> componentBuilder.id().equals(id) && componentBuilder.getType().equals(builderKey))
+                .findFirst()
+                .map(builderImplType::cast);
     }
 
     static <B extends ComponentBuilder<? extends Component, Component>> Pair<NamespacedKey, Class<B>> getBuilderType(WolfyUtils wolfyUtils, String id, Class<B> builderType) {
