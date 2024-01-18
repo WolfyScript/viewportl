@@ -179,9 +179,11 @@ public class ViewRuntimeImpl implements ViewRuntime {
         Window window = getRouter().open(this, path);
         setCurrentRoot(window);
         for (UUID viewer : getViewers()) {
-            RenderContext context = window.createContext(this, viewer);
+            RenderContext context = wolfyUtils.getCore().platform().guiUtils().createRenderContext(window, this, viewer);
             viewerContexts.put(viewer, context);
-            context.openAndRenderMenuFor(this, viewer);
+            wolfyUtils.getCore().platform().scheduler().syncTask(wolfyUtils, () -> {
+                context.openAndRenderMenuFor(this, viewer);
+            });
         }
     }
 
