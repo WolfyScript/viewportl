@@ -19,12 +19,12 @@
 package com.wolfyscript.utilities.gui.callback;
 
 import com.wolfyscript.utilities.platform.adapters.Player;
-import com.wolfyscript.utilities.gui.GuiViewManager;
+import com.wolfyscript.utilities.gui.ViewRuntime;
 
 import java.util.List;
 
 public interface TextInputTabCompleteCallback {
 
-    List<String> apply(Player player, GuiViewManager viewManager, String input, String[] args);
+    List<String> apply(Player player, ViewRuntime viewManager, String input, String[] args);
 
 }

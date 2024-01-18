@@ -33,7 +33,9 @@ import java.util.UUID;
  * The view is immutable, so you need to create a new view each time you need to add a viewer or change the root.
  *
  */
-public interface GuiViewManager {
+public interface ViewRuntime {
+
+    long id();
 
     /**
      * Opens a new menu under the specific path.
@@ -93,7 +95,6 @@ public interface GuiViewManager {
     void blockedByInteraction();
 
     void unblockedByInteraction();
-
 
     void updateSignalQueue(RenderContext context);
 

@@ -10,9 +10,6 @@ import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.pointer.Pointer;
-import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
@@ -76,18 +73,18 @@ public class ButtonImpl extends AbstractComponentImpl implements Button {
     }
 
     @Override
-    public Button construct(GuiHolder holder, GuiViewManager guiViewManager) {
+    public Button construct(GuiHolder holder, ViewRuntime viewRuntime) {
         return this;
     }
 
     @Override
-    public void remove(GuiHolder guiHolder, GuiViewManager guiViewManager, RenderContext renderContext) {
+    public void remove(GuiHolder guiHolder, ViewRuntime viewRuntime, RenderContext renderContext) {
         renderContext.renderStack(position(), null);
         //((GuiViewManagerImpl) guiHolder.getViewManager()).updateLeaveNodes(null, renderContext.currentOffset() + position().slot());
     }
 
     @Override
-    public void update(GuiViewManager viewManager, GuiHolder guiHolder, RenderContext renderContext) {
+    public void update(ViewRuntime viewManager, GuiHolder guiHolder, RenderContext renderContext) {
         renderContext.renderStack(position(), icon().getStack(), renderContext.createContext(guiHolder, icon().getResolvers()));
     }
 

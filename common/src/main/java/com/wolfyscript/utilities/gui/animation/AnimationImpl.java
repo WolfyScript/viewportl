@@ -14,7 +14,7 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
     }
 
     @Override
-    public void update(GuiViewManager viewManager, GuiHolder guiHolder, RenderContext context) {
+    public void update(ViewRuntime viewManager, GuiHolder guiHolder, RenderContext context) {
         context.enterNode(owner());
 
         AtomicInteger frameDelay = new AtomicInteger(0);

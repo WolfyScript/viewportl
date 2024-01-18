@@ -23,10 +23,10 @@ import com.wolfyscript.utilities.platform.adapters.Player;
 public class GuiHolderImpl implements GuiHolder {
 
     protected final Window currentWindow;
-    protected final GuiViewManager viewManager;
+    protected final ViewRuntime viewManager;
     protected final Player player;
 
-    public GuiHolderImpl(Window currentWindow, GuiViewManager viewManager, Player player) {
+    public GuiHolderImpl(Window currentWindow, ViewRuntime viewManager, Player player) {
         this.currentWindow = currentWindow;
         this.viewManager = viewManager;
         this.player = player;
@@ -38,7 +38,7 @@ public class GuiHolderImpl implements GuiHolder {
     }
 
     @Override
-    public GuiViewManager getViewManager() {
+    public ViewRuntime getViewManager() {
         return viewManager;
     }
 

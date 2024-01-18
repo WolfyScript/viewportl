@@ -24,9 +24,9 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * Handles the general GUI API and acts as an entry point to the whole creation of {@link Router}s and {@link GuiViewManager}s.<br>
+ * Handles the general GUI API and acts as an entry point to the whole creation of {@link Router}s and {@link ViewRuntime}s.<br>
  * It stores all the registered {@link Router}s and allows to register new clusters via builders.<br>
- * Additionally, it stores the {@link GuiViewManager}s that handle the views for players.
+ * Additionally, it stores the {@link ViewRuntime}s that handle the views for players.
  */
 public interface GuiAPIManager {
 
@@ -75,8 +75,8 @@ public interface GuiAPIManager {
      */
     GuiViewManager createViewAndOpen(String guiID, UUID... viewers);
 
-    Stream<GuiViewManager> getViewManagersFor(UUID uuid);
+    Stream<ViewRuntime> getViewManagersFor(UUID uuid);
 
-    Stream<GuiViewManager> getViewManagersFor(UUID uuid, String guiID);
+    Stream<ViewRuntime> getViewManagersFor(UUID uuid, String guiID);
 
 }

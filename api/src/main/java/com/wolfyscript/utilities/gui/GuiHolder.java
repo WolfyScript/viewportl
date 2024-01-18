@@ -22,7 +22,7 @@ import com.wolfyscript.utilities.platform.adapters.Player;
 
 public interface GuiHolder {
 
-    GuiViewManager getViewManager();
+    ViewRuntime getViewManager();
 
     Player getPlayer();
 

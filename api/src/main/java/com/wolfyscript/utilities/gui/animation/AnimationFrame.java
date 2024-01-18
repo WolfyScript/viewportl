@@ -19,7 +19,7 @@
 package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.GuiHolder;
-import com.wolfyscript.utilities.gui.GuiViewManager;
+import com.wolfyscript.utilities.gui.ViewRuntime;
 import com.wolfyscript.utilities.gui.RenderContext;
 
 public interface AnimationFrame {
@@ -46,6 +46,6 @@ public interface AnimationFrame {
      * @param holder        The holder of the GUI
      * @param context       The rendering context
      */
-    void render(GuiViewManager viewManager, GuiHolder holder, RenderContext context);
+    void render(ViewRuntime viewManager, GuiHolder holder, RenderContext context);
 
 }

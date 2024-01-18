@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 
 public interface DynamicConstructor {
 
-    GuiViewManager viewManager();
+    ViewRuntime viewManager();
 
     GuiHolder holder();
 

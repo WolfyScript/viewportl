@@ -19,10 +19,10 @@
 package com.wolfyscript.utilities.gui.callback;
 
 import com.wolfyscript.utilities.platform.adapters.Player;
-import com.wolfyscript.utilities.gui.GuiViewManager;
+import com.wolfyscript.utilities.gui.ViewRuntime;
 
 public interface TextInputCallback {
 
-    boolean run(Player player, GuiViewManager viewManager, String input, String[] args);
+    boolean run(Player player, ViewRuntime viewManager, String input, String[] args);
 
 }

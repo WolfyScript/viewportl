@@ -1,16 +1,14 @@
 package com.wolfyscript.utilities.gui;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.callback.TextInputCallback;
 import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback;
 import com.wolfyscript.utilities.gui.components.AbstractComponentImpl;
 
 import java.util.*;
+import java.util.function.Function;
 
-public class GuiViewManagerImpl implements GuiViewManager {
+public class ViewRuntimeImpl implements ViewRuntime {
 
     private static long NEXT_ID = Long.MIN_VALUE;
 
@@ -29,21 +27,12 @@ public class GuiViewManagerImpl implements GuiViewManager {
     private TextInputCallback textInputCallback;
     private TextInputTabCompleteCallback textInputTabCompleteCallback;
 
-    protected GuiViewManagerImpl(WolfyUtils wolfyUtils, Router rootRouter, Set<UUID> viewers) {
+    protected ViewRuntimeImpl(WolfyUtils wolfyUtils, Function<ViewRuntime, RouterBuilder> rootRouter, Set<UUID> viewers) {
         this.wolfyUtils = wolfyUtils;
-        this.router = rootRouter;
+        this.router = rootRouter.apply(this).create(null);
 
         this.history = new ArrayDeque<>();
         this.viewers = viewers;
-        // Construct custom data instance
-        Injector injector = Guice.createInjector(binder -> {
-            binder.bind(WolfyUtils.class).toInstance(wolfyUtils);
-            binder.bind(Router.class).toInstance(router);
-            binder.bind(new TypeLiteral<GuiViewManager>() {
-            }).toInstance(this);
-            binder.bind(new TypeLiteral<Set<UUID>>() {
-            }).toInstance(viewers);
-        });
         id = NEXT_ID++;
     }
 
@@ -140,10 +129,6 @@ public class GuiViewManagerImpl implements GuiViewManager {
         }
     }
 
-    public void removeComponent(Component component) {
-
-    }
-
     public void updateLeaveNodes(Component state, int... slots) {
         for (int slot : slots) {
             updateLeaveNodes(state, slot);
@@ -184,6 +169,11 @@ public class GuiViewManagerImpl implements GuiViewManager {
     }
 
     @Override
+    public long id() {
+        return id;
+    }
+
+    @Override
     public void openNew(String... path) {
         unblockedByInteraction();
         Window window = getRouter().open(this, path);
@@ -199,7 +189,7 @@ public class GuiViewManagerImpl implements GuiViewManager {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GuiViewManagerImpl that = (GuiViewManagerImpl) o;
+        ViewRuntimeImpl that = (ViewRuntimeImpl) o;
         return id == that.id;
     }
 

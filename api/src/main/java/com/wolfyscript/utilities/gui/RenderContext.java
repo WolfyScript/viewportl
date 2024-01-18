@@ -55,7 +55,7 @@ public interface RenderContext {
      *
      * @param viewer
      */
-    void openAndRenderMenuFor(GuiViewManager viewManager, UUID viewer);
+    void openAndRenderMenuFor(ViewRuntime viewManager, UUID viewer);
 
     default boolean checkIfSlotInBounds(int slot) {
         int outerWidth;

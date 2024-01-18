@@ -50,12 +50,12 @@ public final class RouterImpl implements Router {
     }
 
     @Override
-    public RenderContext createContext(GuiViewManager guiViewManager, Deque<String> path, UUID uuid) {
+    public RenderContext createContext(ViewRuntime viewRuntime, Deque<String> path, UUID uuid) {
         return null;
     }
 
     @Override
-    public Window open(GuiViewManager viewManager, String... path) {
+    public Window open(ViewRuntime viewManager, String... path) {
         if (path == null || path.length == 0) {
             Window window1 = getWindow().orElseThrow(() -> new IllegalArgumentException(String.format("Path not found for router '%s'", id)));
             window1.open(viewManager);

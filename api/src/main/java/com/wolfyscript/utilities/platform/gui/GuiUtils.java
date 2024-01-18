@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.platform.gui;
 
-import com.wolfyscript.utilities.gui.GuiViewManager;
+import com.wolfyscript.utilities.gui.ViewRuntime;
 import com.wolfyscript.utilities.gui.RenderContext;
 import com.wolfyscript.utilities.gui.Window;
 
@@ -26,6 +26,6 @@ import java.util.UUID;
 
 public interface GuiUtils {
 
-    RenderContext createRenderContext(Window window, GuiViewManager viewManager, UUID viewer);
+    RenderContext createRenderContext(Window window, ViewRuntime viewManager, UUID viewer);
 
 }

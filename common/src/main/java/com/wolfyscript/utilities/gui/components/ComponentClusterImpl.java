@@ -50,19 +50,19 @@ public class ComponentClusterImpl extends AbstractComponentImpl implements Compo
     }
 
     @Override
-    public ComponentCluster construct(GuiHolder holder, GuiViewManager guiViewManager) {
+    public ComponentCluster construct(GuiHolder holder, ViewRuntime viewRuntime) {
         return this;
     }
 
     @Override
-    public void remove(GuiHolder guiHolder, GuiViewManager guiViewManager, RenderContext renderContext) {
+    public void remove(GuiHolder guiHolder, ViewRuntime viewRuntime, RenderContext renderContext) {
         for (Component component : children) {
-            component.remove(guiHolder, guiViewManager, renderContext);
+            component.remove(guiHolder, viewRuntime, renderContext);
         }
     }
 
     @Override
-    public void update(GuiViewManager viewManager, GuiHolder guiHolder, RenderContext context) {
+    public void update(ViewRuntime viewManager, GuiHolder guiHolder, RenderContext context) {
         // TODO
 //        if (!(context instanceof RenderContextImpl renderContext)) return;
 //
