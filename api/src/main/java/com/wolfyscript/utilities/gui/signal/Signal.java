@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.gui.signal;
 
-import com.wolfyscript.utilities.gui.SignalledObject;
+import com.wolfyscript.utilities.gui.Effect;
 
 import java.util.function.Function;
 
@@ -67,6 +67,6 @@ public interface Signal<V> {
      */
     V get();
 
-    void linkTo(SignalledObject signalledObject);
+    void linkTo(Effect effect);
 
 }

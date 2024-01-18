@@ -19,12 +19,12 @@
 package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.SignalledObject;
+import com.wolfyscript.utilities.gui.Effect;
 import com.wolfyscript.utilities.gui.signal.Signal;
 
 import java.util.List;
 
-public interface Animation<F extends AnimationFrame> extends SignalledObject {
+public interface Animation<F extends AnimationFrame> extends Effect {
 
     List<F> frames();
 

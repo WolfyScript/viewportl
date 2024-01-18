@@ -25,7 +25,7 @@ import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.Component;
 import com.wolfyscript.utilities.gui.Position;
 import com.wolfyscript.utilities.gui.Positionable;
-import com.wolfyscript.utilities.gui.SignalledObject;
+import com.wolfyscript.utilities.gui.Effect;
 
 import java.util.Objects;
 
@@ -40,7 +40,7 @@ import java.util.Objects;
  * Duplicate code may occur, but it can be put into static methods.
  * </p>
  */
-public abstract class AbstractComponentImpl implements Component, SignalledObject, Positionable {
+public abstract class AbstractComponentImpl implements Component, Effect, Positionable {
 
     private final NamespacedKey type;
     private final String internalID;

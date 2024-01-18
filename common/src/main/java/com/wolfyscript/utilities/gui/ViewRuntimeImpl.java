@@ -17,7 +17,7 @@ public class GuiViewManagerImpl implements GuiViewManager {
     private final long id;
     private final Map<Integer, Component> leaveNodes = new HashMap<>();
     private final Map<UUID, RenderContext> viewerContexts = new HashMap<>();
-    private final Set<SignalledObject> updatedSignalsSinceLastUpdate = new HashSet<>();
+    private final Set<Effect> updatedSignalsSinceLastUpdate = new HashSet<>();
     private boolean blockedByInteraction = false;
 
     private final WolfyUtils wolfyUtils;
@@ -110,7 +110,7 @@ public class GuiViewManagerImpl implements GuiViewManager {
         return Optional.ofNullable(leaveNodes.get(slot));
     }
 
-    void updateObjects(Set<SignalledObject> objects) {
+    void updateObjects(Set<Effect> objects) {
         if (blockedByInteraction) {
             updatedSignalsSinceLastUpdate.addAll(objects);
             return;
@@ -128,14 +128,14 @@ public class GuiViewManagerImpl implements GuiViewManager {
         updatedSignalsSinceLastUpdate.clear();
     }
 
-    void updateSignals(Set<SignalledObject> objects, RenderContext context) {
-        for (SignalledObject signalledObject : objects) {
-            if (signalledObject instanceof AbstractComponentImpl component) {
+    void updateSignals(Set<Effect> objects, RenderContext context) {
+        for (Effect effect : objects) {
+            if (effect instanceof AbstractComponentImpl component) {
                 context.enterNode(component);
-                signalledObject.update(this, context.holder(), context);
+                effect.update(this, context.holder(), context);
                 updateLeaveNodes(component, context.currentOffset() + component.position().slot());
             } else {
-                signalledObject.update(this, context.holder(), context);
+                effect.update(this, context.holder(), context);
             }
         }
     }

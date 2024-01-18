@@ -26,7 +26,7 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
                     int frame = frameIndex.get();
                     if (frames().size() <= frame) {
                         task.cancel();
-                        if (owner() instanceof SignalledObject signalledOwner) {
+                        if (owner() instanceof Effect signalledOwner) {
                             signalledOwner.update(viewManager, guiHolder, context); // Last frame should be the original again!
                         }
                         return;

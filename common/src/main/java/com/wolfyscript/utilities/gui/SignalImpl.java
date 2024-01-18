@@ -13,8 +13,8 @@ public class SignalImpl<MT> implements Signal<MT> {
     private final String key;
     private final Class<MT> messageValueType;
     private MT value;
-    private final GuiViewManager viewManager;
-    private final Set<SignalledObject> linkedItems = new HashSet<>();
+
+    private final Set<Effect> linkedItems = new HashSet<>();
 
     public SignalImpl(String key, GuiViewManager viewManager, Class<MT> messageValueType, Supplier<MT> defaultValueFunction) {
         this.key = key;
@@ -24,7 +24,7 @@ public class SignalImpl<MT> implements Signal<MT> {
     }
 
     @Override
-    public void linkTo(SignalledObject item) {
+    public void linkTo(Effect item) { // TODO: Rethink this, move it out of the signal
         linkedItems.add(item);
     }
 
