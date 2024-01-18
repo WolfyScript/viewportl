@@ -8,22 +8,25 @@ import com.wolfyscript.utilities.gui.callback.InteractionCallback;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class RouterBuilderImpl implements RouterBuilder {
 
     private final String route;
     private final WolfyUtils wolfyUtils;
+    private final ReactiveSource reactiveSource;
     private final Map<String, RouterBuilder> subRouteBuilders = new HashMap<>();
     private WindowBuilder windowBuilder = null;
     private InteractionCallback interactionCallback = (guiHolder, interactionDetails) -> InteractionResult.def();
 
     @JsonCreator
     RouterBuilderImpl(@JsonProperty("route") String route,
-                      @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils) {
+                      @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils,
+                      @JacksonInject("reactiveSrc") ReactiveSource reactiveSource) {
         this.route = route;
         this.wolfyUtils = wolfyUtils;
+        this.reactiveSource = reactiveSource;
     }
 
     @JsonSetter("window")
@@ -46,18 +49,23 @@ public final class RouterBuilderImpl implements RouterBuilder {
     }
 
     @Override
-    public RouterBuilder route(String s, Consumer<RouterBuilder> consumer) {
-        consumer.accept(subRouteBuilders.computeIfAbsent(s, s1 -> new RouterBuilderImpl(s, wolfyUtils)));
+    public RouterBuilder route(String s, BiConsumer<ReactiveSource, RouterBuilder> consumer) {
+        consumer.accept(reactiveSource, subRouteBuilders.computeIfAbsent(s, s1 -> new RouterBuilderImpl(s, wolfyUtils, reactiveSource)));
         return this;
     }
 
     @Override
-    public RouterBuilder window(Consumer<WindowBuilder> consumer) {
-        if (this.windowBuilder == null) {
-            this.windowBuilder = new WindowBuilderImpl("", wolfyUtils);
-        }
-        consumer.accept(windowBuilder);
+    public RouterBuilder window(BiConsumer<ReactiveSource, WindowBuilder> consumer) {
+        consumer.accept(reactiveSource, window());
         return this;
+    }
+
+    @Override
+    public WindowBuilder window() {
+        if (this.windowBuilder == null) {
+            this.windowBuilder = new WindowBuilderImpl("", wolfyUtils, reactiveSource);
+        }
+        return windowBuilder;
     }
 
     public Router create(Router parent) {
@@ -69,5 +77,4 @@ public final class RouterBuilderImpl implements RouterBuilder {
                 interactionCallback
         );
     }
-
 }

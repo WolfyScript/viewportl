@@ -1,18 +1,15 @@
 package com.wolfyscript.utilities.gui.example;
 
 import com.wolfyscript.utilities.gui.GuiAPIManager;
-import com.wolfyscript.utilities.gui.GuiViewManager;
 import com.wolfyscript.utilities.gui.InteractionResult;
+import com.wolfyscript.utilities.gui.ReactiveSource;
 import com.wolfyscript.utilities.gui.WindowBuilder;
 import com.wolfyscript.utilities.gui.components.ButtonBuilder;
 import com.wolfyscript.utilities.gui.signal.Signal;
-import com.wolfyscript.utilities.gui.signal.Store;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.WeakHashMap;
 
 /**
  * A Counter GUI Example, that allows the viewer:
@@ -29,8 +26,6 @@ import java.util.WeakHashMap;
  * Those parts are automatically updated when the count changes.
  */
 public class CounterExample {
-
-    private static final Map<GuiViewManager, CounterStore> counterStores = new WeakHashMap<>();
 
     /**
      * Stores the count value so that it persists when the GUI is closed.
@@ -49,7 +44,7 @@ public class CounterExample {
     }
 
     public static void register(GuiAPIManager manager) {
-        manager.registerGuiFromFiles("example_counter", builder -> builder.window(CounterExample::mainMenu));
+        manager.registerGuiFromFiles("example_counter", (reactiveSrc, router) -> router.window(CounterExample::mainMenu));
     }
 
     /**
@@ -57,32 +52,34 @@ public class CounterExample {
      * You can have everything in one function, or split into different functions, like I did here.
      * If you only have a single inventory it isn't helping a lot, but for multi-window GUIs this makes it a lot cleaner.
      *
-     * @param builder The WindowBuilder to use for the main menu
+     * @param window The WindowBuilder to use for the main menu
      */
-    static void mainMenu(WindowBuilder builder) {
-        builder.size(9 * 3).construct((renderer) -> {
-            // This is only called upon creation of the component. So this is not called when the signal is updated!
+    static void mainMenu(ReactiveSource reactiveSrc, WindowBuilder window) {
+        // This is only called upon creation of the component. So this is not called when the signal is updated!
 
-            // Use signals that provide a simple value storage & synchronisation. Signals are not persistent and will get destroyed when the GUI is closed!
-            Signal<Integer> countSignal = renderer.signal("count_signal", Integer.class, () -> 0);
+        // Use signals that provide a simple value storage & synchronisation. Signals are not persistent and will get destroyed when the GUI is closed!
+        Signal<Integer> countSignal = reactiveSrc.createSignal(viewManager -> 0);
 
-            // Optionally, sync your data with the gui using custom data stores. This makes it possible to store persistent data.
-            CounterStore counterStore = counterStores.computeIfAbsent(renderer.viewManager(), guiViewManager -> new CounterStore());
-            Store<Integer> count = renderer.syncStore("count", Integer.class, counterStore::getCount, counterStore::setCount);
+        // Optionally, sync your data with the gui using custom data stores. This makes it possible to store persistent data.
+        Signal<Integer> count = reactiveSrc.createStore(guiViewManager -> new CounterStore(), CounterStore::getCount, CounterStore::setCount);
+        count.tagName("count");
 
-            renderer.addIntervalTask(() -> {
-                count.update(integer -> ++integer); // Updates the count periodically (every second increases it by 1)
-            }, 20);
+        window.size(9 * 3);
 
-            renderer.titleSignals(count)
-                    .render("count_down", ButtonBuilder.class, bb -> countDownButton(bb, count))
-                    // Sometimes we want to render components dependent on signals
-                    .renderWhen(() -> count.get() != 0, "reset", ButtonBuilder.class, bb -> resetButton(bb, count))
-                    // The state of a component is only reconstructed if the slot it is positioned at changes.
-                    // Here the slot will always have the same type of component, so the state is created only once.
-                    .render("count_up", ButtonBuilder.class, bb -> countUpButton(bb, count))
-                    .render("counter", ButtonBuilder.class, bb -> bb.icon(ib -> ib.updateOnSignals(count)));
-        });
+        window.addIntervalTask(() -> {
+            count.update(integer -> ++integer); // Updates the count periodically (every second increases it by 1)
+        }, 20);
+
+        window.titleSignals(count);
+
+        window
+                .component("count_down", ButtonBuilder.class, bb -> countDownButton(bb, count))
+                // Sometimes we want to render components dependent on signals
+                .conditionalComponent(() -> count.get() != 0, "reset", ButtonBuilder.class, bb -> resetButton(bb, count))
+                // The state of a component is only reconstructed if the slot it is positioned at changes.
+                // Here the slot will always have the same type of component, so the state is created only once.
+                .component("count_up", ButtonBuilder.class, bb -> countUpButton(bb, count))
+                .component("counter", ButtonBuilder.class, bb -> bb.icon(ib -> ib.updateOnSignals(count)));
     }
 
     /**
@@ -102,8 +99,10 @@ public class CounterExample {
         }).animation(animationBuilder -> animationBuilder
                 // Here we specify the frames to render after each other
                 // So it first renders the cyan_concrete for a tick, then lime_concrete for a tick
-                .frame(frame -> frame.duration(1).stack("cyan_concrete", conf -> {}))
-                .frame(frame -> frame.duration(1).stack("lime_concrete", conf -> {}))
+                .frame(frame -> frame.duration(1).stack("cyan_concrete", conf -> {
+                }))
+                .frame(frame -> frame.duration(1).stack("lime_concrete", conf -> {
+                }))
         );
     }
 

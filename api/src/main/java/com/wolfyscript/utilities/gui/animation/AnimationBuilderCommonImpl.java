@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.gui.animation;
 
-import com.wolfyscript.utilities.gui.DynamicConstructor;
+import com.wolfyscript.utilities.gui.ReactiveSource;
 import com.wolfyscript.utilities.gui.signal.Signal;
 
 import java.util.ArrayList;
@@ -28,13 +28,13 @@ import java.util.function.Supplier;
 
 public abstract class AnimationBuilderCommonImpl<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> implements AnimationBuilder<F, FB> {
 
-    protected final DynamicConstructor dynamicConstructor;
+    protected final ReactiveSource reactiveSource;
     protected final List<FB> frameBuilders = new ArrayList<>();
     protected final Supplier<FB> frameBuilderSupplier;
     protected Signal<?> updateSignal;
 
-    public AnimationBuilderCommonImpl(DynamicConstructor dynamicConstructor, Supplier<FB> frameBuilderSupplier) {
-        this.dynamicConstructor = dynamicConstructor;
+    public AnimationBuilderCommonImpl(ReactiveSource reactiveSource, Supplier<FB> frameBuilderSupplier) {
+        this.reactiveSource = reactiveSource;
         this.frameBuilderSupplier = frameBuilderSupplier;
     }
 

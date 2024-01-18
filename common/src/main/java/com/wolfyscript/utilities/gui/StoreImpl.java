@@ -3,48 +3,47 @@ package com.wolfyscript.utilities.gui;
 import com.wolfyscript.utilities.gui.signal.Store;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-public class StoreImpl<V> implements Store<V> {
+public class StoreImpl<S, V> implements Store<V> {
 
-    private final String key;
-    private final Class<V> messageValueType;
-    private final GuiViewManager viewManager;
-    private final Supplier<V> getValue;
-    private final Consumer<V> setValue;
-    private final Set<SignalledObject> linkedItems = new HashSet<>();
+    private final long id;
+    private final ViewRuntime viewManager;
+    private final Function<S, V> getter;
+    private final BiConsumer<S, V> setter;
+    private final Set<Effect> linkedItems = new HashSet<>();
+    private final S store;
+    private String tagName;
 
-    public StoreImpl(String key, GuiViewManager viewManager, Class<V> messageValueType, Supplier<V> getValue, Consumer<V> setValue) {
-        this.key = key;
-        this.messageValueType = messageValueType;
+    public StoreImpl(ViewRuntime viewManager, S store, Function<S, V> getter, BiConsumer<S, V> setter) {
+        this.id = SignalImpl.COUNTER++;
         this.viewManager = viewManager;
-        this.getValue = getValue;
-        this.setValue = setValue;
+        this.getter = getter;
+        this.setter = setter;
+        this.store = store;
     }
 
     @Override
-    public void linkTo(SignalledObject item) {
+    public void linkTo(Effect item) {
         linkedItems.add(item);
     }
 
     @Override
-    public String key() {
-        return this.key;
+    public void tagName(String tagName) {
+        this.tagName = tagName;
     }
 
     @Override
-    public Class<V> valueType() {
-        return this.messageValueType;
+    public String tagName() {
+        return tagName == null || tagName.isBlank() ? ("internal_" + id) : tagName;
     }
 
     @Override
     public void set(V newValue) {
-        setValue.accept(newValue);
-        ((GuiViewManagerImpl) viewManager).updateObjects(linkedItems);
+        setter.accept(store, newValue);
+        ((ViewRuntimeImpl) viewManager).updateObjects(linkedItems);
     }
 
     @Override
@@ -54,19 +53,7 @@ public class StoreImpl<V> implements Store<V> {
 
     @Override
     public V get() {
-        return getValue.get();
+        return getter.apply(store);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        StoreImpl<?> signal = (StoreImpl<?>) o;
-        return Objects.equals(key, signal.key) && Objects.equals(messageValueType, signal.messageValueType);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(key, messageValueType);
-    }
 }

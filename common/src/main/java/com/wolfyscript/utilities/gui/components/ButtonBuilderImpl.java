@@ -27,8 +27,8 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
     private InteractionCallback interactionCallback = (guiHolder, interactionDetails) -> InteractionResult.cancel(true);
     private Function<GuiHolder, Optional<Sound>> soundFunction = holder -> Optional.of(Sound.sound(Key.key("minecraft:ui.button.click"), Sound.Source.MASTER, 0.25f, 1));;
     private final IconBuilderImpl iconBuilder;
-    private final DynamicConstructor dynamicConstructor;
     private AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> animationBuilder;
+    private final ReactiveSource reactiveSource;
 
     /**
      * Constructor used for non-config setups using Guice injection.
@@ -37,21 +37,21 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
      * @param wolfyUtils The wolfyutils that this button belongs to.
      */
     @Inject
-    private ButtonBuilderImpl(String id, WolfyUtils wolfyUtils, Position position, DynamicConstructor dynamicConstructor) {
+    private ButtonBuilderImpl(String id, WolfyUtils wolfyUtils, Position position, ReactiveSource reactiveSource) {
         super(id, wolfyUtils, position);
         this.iconBuilder = new IconBuilderImpl(wolfyUtils);
-        this.dynamicConstructor = dynamicConstructor;
+        this.reactiveSource = reactiveSource;
     }
 
     @JsonCreator
     public ButtonBuilderImpl(@JsonProperty("id") String id,
                              @JsonProperty("icon") IconBuilderImpl iconBuilder,
-                             @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils,
                              @JsonProperty("position") Position position,
-                             @JsonProperty("dynamicConstructor") DynamicConstructor dynamicConstructor) {
+                             @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils,
+                             @JacksonInject("reactiveSrc") ReactiveSource reactiveSource) {
         super(id, wolfyUtils, position);
         this.iconBuilder = iconBuilder;
-        this.dynamicConstructor = dynamicConstructor;
+        this.reactiveSource = reactiveSource;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
 
     @Override
     public ButtonBuilder animation(Consumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild) {
-        AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> builder = new AnimationBuilderImpl<>(dynamicConstructor, () -> new ButtonAnimationFrameBuilderImpl(getWolfyUtils()));
+        AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> builder = new AnimationBuilderImpl<>(reactiveSource, () -> new ButtonAnimationFrameBuilderImpl(getWolfyUtils()));
         animationBuild.accept(builder);
         this.animationBuilder = builder;
         return this;
@@ -137,7 +137,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
         @Override
         public IconBuilder updateOnSignals(Signal<?>... signals) {
             this.tagResolvers.addAll(Arrays.stream(signals)
-                    .map(signal -> TagResolver.resolver(signal.key(), (argumentQueue, context) -> Tag.inserting(net.kyori.adventure.text.Component.text(String.valueOf(signal.get())))))
+                    .map(signal -> TagResolver.resolver(signal.tagName(), (argumentQueue, context) -> Tag.inserting(net.kyori.adventure.text.Component.text(String.valueOf(signal.get())))))
                     .toList());
             this.signals.clear();
             this.signals.addAll(List.of(signals));

@@ -20,7 +20,6 @@ package com.wolfyscript.utilities.gui.components;
 
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
 import com.wolfyscript.utilities.gui.callback.RenderCallback;
-import com.wolfyscript.utilities.gui.StateSelector;
 
 /**
  * <p>
@@ -30,7 +29,6 @@ import com.wolfyscript.utilities.gui.StateSelector;
  * <p>
  * These States are used to draw the proper icons and textures of the GUI and handle the interactions and data manipulation.
  * <br>
- * Buttons like ToggleButtons use two states, and can sync it to the provided state using the {@link StateSelector}.
  * </p>
  */
 public interface ButtonState {

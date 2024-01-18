@@ -31,20 +31,9 @@ import java.util.function.Function;
  */
 public interface Signal<V> {
 
-    /**
-     * The key of this Signal.
-     * Must be unique in the path of the component, meaning no parent nor child can create a Signal with the same key!
-     *
-     * @return The key of this Signal.
-     */
-    String key();
+    void tagName(String tagName);
 
-    /**
-     * The type of the value that this signal tracks.
-     *
-     * @return The value type of this signal.
-     */
-    Class<V> valueType();
+    String tagName();
 
     /**
      * Sets the tracked value to a new value and causes a re-render.

@@ -52,6 +52,8 @@ public interface ComponentBuilder<COMPONENT extends Component, PARENT extends Co
 
     Position position();
 
+    ComponentBuilder<COMPONENT, PARENT> position(Position position);
+
     /**
      * Gets the signals that this component builder uses inside the parent construction consumer.
      *

@@ -1,26 +1,25 @@
 package com.wolfyscript.utilities.gui;
 
-import com.wolfyscript.utilities.gui.signal.Signal;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-public class SignalImpl<MT> implements Signal<MT> {
+public class SignalImpl<MT> implements com.wolfyscript.utilities.gui.signal.Signal<MT> {
 
-    private final String key;
-    private final Class<MT> messageValueType;
+    static long COUNTER = 0;
+
+    private final long id;
+    private String tagName;
+    private ViewRuntimeImpl viewManager = null;
     private MT value;
 
     private final Set<Effect> linkedItems = new HashSet<>();
 
-    public SignalImpl(String key, GuiViewManager viewManager, Class<MT> messageValueType, Supplier<MT> defaultValueFunction) {
-        this.key = key;
-        this.messageValueType = messageValueType;
-        this.value = defaultValueFunction.get();
-        this.viewManager = viewManager;
+    public SignalImpl(ViewRuntimeImpl viewRuntime, MT value) {
+        this.viewManager = viewRuntime;
+        this.id = COUNTER++;
+        this.value = value;
     }
 
     @Override
@@ -29,24 +28,32 @@ public class SignalImpl<MT> implements Signal<MT> {
     }
 
     @Override
-    public String key() {
-        return this.key;
+    public void tagName(String tagName) {
+        this.tagName = tagName;
     }
 
     @Override
-    public Class<MT> valueType() {
-        return messageValueType;
+    public String tagName() {
+        return tagName == null || tagName.isBlank() ? ("internal_" + id) : tagName;
+    }
+
+    public long id() {
+        return this.id;
     }
 
     @Override
     public void set(MT newValue) {
-        this.value = newValue;
-        ((GuiViewManagerImpl) viewManager).updateObjects(linkedItems);
+        if (viewManager != null) {
+            value = newValue;
+            viewManager.updateObjects(linkedItems);
+        }
     }
 
     @Override
     public void update(Function<MT, MT> function) {
-        set(function.apply(value));
+        if (viewManager != null) {
+            set(function.apply(value));
+        }
     }
 
     @Override
@@ -59,12 +66,12 @@ public class SignalImpl<MT> implements Signal<MT> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SignalImpl<?> signal = (SignalImpl<?>) o;
-        return Objects.equals(key, signal.key) && Objects.equals(messageValueType, signal.messageValueType);
+        return Objects.equals(id, signal.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, messageValueType);
+        return Objects.hash(id);
     }
 
 }

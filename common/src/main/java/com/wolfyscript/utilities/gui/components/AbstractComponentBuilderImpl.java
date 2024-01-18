@@ -39,7 +39,7 @@ public abstract class AbstractComponentBuilderImpl<OWNER extends Component, PARE
     private final NamespacedKey type;
     private final String id;
     @JsonProperty("position")
-    private final Position position;
+    private Position position;
     @JsonIgnore
     private final Set<Signal<?>> signals = new HashSet<>();
     private final WolfyUtils wolfyUtils;
@@ -59,6 +59,12 @@ public abstract class AbstractComponentBuilderImpl<OWNER extends Component, PARE
     @Override
     public Position position() {
         return position;
+    }
+
+    @Override
+    public ComponentBuilder<OWNER, PARENT> position(Position position) {
+        this.position = position;
+        return this;
     }
 
     protected void addSignals(Collection<Signal<?>> signals) {

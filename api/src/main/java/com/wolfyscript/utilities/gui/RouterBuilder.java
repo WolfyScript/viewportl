@@ -20,15 +20,18 @@ package com.wolfyscript.utilities.gui;
 
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface RouterBuilder {
 
     RouterBuilder interact(InteractionCallback interactionCallback);
 
-    RouterBuilder route(String path, Consumer<RouterBuilder> subRouteBuilder);
+    RouterBuilder route(String path, BiConsumer<ReactiveSource, RouterBuilder> subRouteBuilder);
 
-    RouterBuilder window(Consumer<WindowBuilder> windowBuilder);
+    RouterBuilder window(BiConsumer<ReactiveSource, WindowBuilder> windowBuilder);
+
+    WindowBuilder window();
 
     Router create(Router parent);
 
