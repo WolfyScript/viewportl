@@ -9,7 +9,6 @@ import com.wolfyscript.utilities.platform.scheduler.Task;
 import com.wolfyscript.utilities.tuple.Pair;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 @KeyedStaticId(key = "window")
 public final class WindowImpl implements Window {
@@ -17,14 +16,12 @@ public final class WindowImpl implements Window {
     private final String id;
     private final Router router;
     private final WolfyUtils wolfyUtils;
-    private final Consumer<WindowDynamicConstructor> rendererConstructor;
     private final Integer size;
     private final WindowType type;
     private String staticTitle = null;
-    private SerializableSupplier<net.kyori.adventure.text.Component> dynamicTitle;
+    private final SerializableSupplier<net.kyori.adventure.text.Component> dynamicTitle;
     private final InteractionCallback interactionCallback;
-    final Map<Component, Position> componentsToRender;
-    final Map<ComponentBuilder<?, ?>, Position> nonRenderedComponents;
+    final Collection<Component> componentsToRender;
 
     // Intervalls
     final List<Pair<Runnable, Long>> intervalRunnables = new ArrayList<>();
@@ -35,61 +32,30 @@ public final class WindowImpl implements Window {
                Integer size,
                WindowType type,
                String staticTitle,
+               SerializableSupplier<net.kyori.adventure.text.Component> dynamicTitle,
                InteractionCallback interactionCallback,
-               Map<ComponentBuilder<?, ?>, Position> nonRenderedComponents,
-               Consumer<WindowDynamicConstructor> rendererConstructor) {
+               Collection<Component> components) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(interactionCallback);
         Preconditions.checkArgument(size != null || type != null, "Either type or size must be specified!");
         this.id = id;
         this.router = router;
         this.wolfyUtils = router.getWolfyUtils();
-        this.rendererConstructor = rendererConstructor;
         this.size = size;
         this.type = type;
         this.staticTitle = staticTitle;
         this.interactionCallback = interactionCallback;
-        this.componentsToRender = new HashMap<>();
-        this.nonRenderedComponents = nonRenderedComponents;
-        this.dynamicTitle = null;
-    }
-
-    public WindowImpl(WindowImpl staticWindow) {
-        this.id = staticWindow.id;
-        this.router = staticWindow.router;
-        this.wolfyUtils = staticWindow.router.getWolfyUtils();
-        this.rendererConstructor = staticWindow.rendererConstructor;
-        this.size = staticWindow.size;
-        this.type = staticWindow.type;
-        this.staticTitle = staticWindow.staticTitle;
-        this.dynamicTitle = staticWindow.dynamicTitle;
-        this.interactionCallback = staticWindow.interactionCallback;
-        this.componentsToRender = new HashMap<>(staticWindow.componentsToRender);
-        this.nonRenderedComponents = new HashMap<>(staticWindow.nonRenderedComponents);
-    }
-
-    public WindowImpl dynamicCopy(Map<Component, Position> dynamicComponents,
-                                  Map<ComponentBuilder<?, ?>, Position> nonRenderedComponents,
-                                  SerializableSupplier<net.kyori.adventure.text.Component> dynamicTitle,
-                                  List<Pair<Runnable, Long>> intervalRunnables) {
-        WindowImpl copy = new WindowImpl(this);
-        copy.componentsToRender.putAll(dynamicComponents);
-        copy.nonRenderedComponents.putAll(nonRenderedComponents);
-        copy.dynamicTitle = dynamicTitle;
-        copy.intervalRunnables.addAll(intervalRunnables);
-        return copy;
+        this.componentsToRender = components;
+        this.dynamicTitle = dynamicTitle;
     }
 
     @Override
-    public Window construct(GuiHolder holder, GuiViewManager viewManager) {
-        var rendererBuilder = new WindowDynamicConstructorImpl(wolfyUtils, holder, this);
-        rendererConstructor.accept(rendererBuilder);
-        rendererBuilder.usedSignals.forEach((s, signal) -> signal.update(o -> o));
-        return rendererBuilder.create(this);
+    public Window construct(GuiHolder holder, ViewRuntime viewManager) {
+        return this;
     }
 
     @Override
-    public void open(GuiViewManager guiViewManager) {
+    public void open(ViewRuntime viewRuntime) {
         for (Task intervalTask : intervalTasks) {
             intervalTask.cancel();
         }
@@ -103,7 +69,7 @@ public final class WindowImpl implements Window {
     }
 
     @Override
-    public void close(GuiViewManager guiViewManager) {
+    public void close(ViewRuntime viewRuntime) {
         for (Task intervalTask : intervalTasks) {
             intervalTask.cancel();
         }
@@ -111,16 +77,15 @@ public final class WindowImpl implements Window {
     }
 
     @Override
-    public void render(GuiHolder guiHolder, GuiViewManager viewManager, RenderContext context) {
+    public void render(GuiHolder guiHolder, ViewRuntime viewManager, RenderContext context) {
         if (dynamicTitle != null) {
             context.updateTitle(guiHolder, dynamicTitle.get());
         }
 
-        for (Map.Entry<Component, Position> entry : componentsToRender.entrySet()) {
-            var position = entry.getValue();
-            var component = entry.getKey();
+        for (Component component : componentsToRender) {
+            var position = component.position();
             if (position == null) continue;
-            ((GuiViewManagerImpl) guiHolder.getViewManager()).updateLeaveNodes(component, position.slot());
+            ((ViewRuntimeImpl) guiHolder.getViewManager()).updateLeaveNodes(component, position.slot());
             context.enterNode(component);
             if (component.construct(guiHolder, viewManager) instanceof Effect effect) {
                 effect.update(viewManager, guiHolder, context);
@@ -136,17 +101,12 @@ public final class WindowImpl implements Window {
 
     @Override
     public String getID() {
-        return null;
+        return id;
     }
 
     @Override
     public Router router() {
         return router;
-    }
-
-    @Override
-    public RenderContext createContext(GuiViewManager viewManager, UUID player) {
-        return getWolfyUtils().getCore().platform().guiUtils().createRenderContext(this, viewManager, player);
     }
 
     @Override

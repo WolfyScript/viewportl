@@ -22,27 +22,17 @@ import com.wolfyscript.utilities.WolfyUtils;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public interface Window extends Interactable, Renderable {
 
-    /**
-     * Creates the context of this window. The context keeps track of the inventory
-     * and view for the rendering.
-     *
-     * @param viewManager The view manager to open.
-     * @param uuid The uuid to open the Window for.
-     */
-    RenderContext createContext(GuiViewManager viewManager, UUID uuid);
+    void open(ViewRuntime viewManager);
 
-    void open(GuiViewManager viewManager);
+    void close(ViewRuntime viewManager);
 
-    void close(GuiViewManager viewManager);
+    Window construct(GuiHolder holder, ViewRuntime viewManager);
 
-    Window construct(GuiHolder holder, GuiViewManager viewManager);
-
-    void render(GuiHolder holder, GuiViewManager viewManager, RenderContext context);
+    void render(GuiHolder holder, ViewRuntime viewManager, RenderContext context);
 
     /**
      * Gets the type that is configured for this Window.<br>
