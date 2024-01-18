@@ -1,10 +1,7 @@
 package com.wolfyscript.utilities.gui;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.InjectableValues;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -21,7 +18,9 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -31,13 +30,14 @@ public class GuiAPIManagerImpl implements GuiAPIManager {
 
     private final WolfyUtils wolfyUtils;
     private final BiMap<String, Router> clustersMap = HashBiMap.create();
+    private final BiMap<String, Function<ViewRuntime, RouterBuilder>> entriesMap = HashBiMap.create();
 
     private File guiDataSubFolder;
     private String guiResourceDir;
 
-    private final Long2ObjectMap<GuiViewManager> VIEW_MANAGERS = new Long2ObjectOpenHashMap<>();
-    private final Multimap<String, Long> CACHED_VIEW_MANAGERS = MultimapBuilder.hashKeys().hashSetValues().build();
-    private final Multimap<UUID, Long> VIEW_MANAGERS_PER_PLAYER = MultimapBuilder.hashKeys().hashSetValues().build();
+    private final Long2ObjectMap<ViewRuntime> VIEW_RUNTIMES = new Long2ObjectOpenHashMap<>();
+    private final Multimap<String, Long> CACHED_VIEW_RUNTIMES = MultimapBuilder.hashKeys().hashSetValues().build();
+    private final Multimap<UUID, Long> VIEW_RUNTIMES_PER_PLAYER = MultimapBuilder.hashKeys().hashSetValues().build();
 
     public GuiAPIManagerImpl(WolfyUtils wolfyUtils) {
         this.wolfyUtils = wolfyUtils;
@@ -54,94 +54,105 @@ public class GuiAPIManagerImpl implements GuiAPIManager {
     }
 
     @Override
-    public Stream<GuiViewManager> getViewManagersFor(UUID uuid) {
-        return VIEW_MANAGERS_PER_PLAYER.get(uuid).stream().map(id -> VIEW_MANAGERS.get(id));
+    public Stream<ViewRuntime> getViewManagersFor(UUID uuid) {
+        return VIEW_RUNTIMES_PER_PLAYER.get(uuid).stream().map(id -> VIEW_RUNTIMES.get(id));
     }
 
     @Override
-    public Stream<GuiViewManager> getViewManagersFor(UUID uuid, String guiID) {
-        Collection<Long> ids = CACHED_VIEW_MANAGERS.get(guiID);
-        return VIEW_MANAGERS_PER_PLAYER.get(uuid).stream()
+    public Stream<ViewRuntime> getViewManagersFor(UUID uuid, String guiID) {
+        Collection<Long> ids = CACHED_VIEW_RUNTIMES.get(guiID);
+        return VIEW_RUNTIMES_PER_PLAYER.get(uuid).stream()
                 .filter(ids::contains)
-                .map(id -> VIEW_MANAGERS.get(id));
+                .map(id -> VIEW_RUNTIMES.get(id));
     }
 
     @Override
-    public void registerGui(String id, Consumer<RouterBuilder> consumer) {
-        RouterBuilder builder = new RouterBuilderImpl(id, wolfyUtils);
-        consumer.accept(builder);
-        registerGui(id, builder.create(null));
+    public void registerGui(String id, BiConsumer<ReactiveSource, RouterBuilder> consumer) {
+        // TODO: maybe wrap in an extra object?
+        registerGui(id, (viewManager) -> {
+            ReactiveSource reactiveSource = new ReactiveSourceImpl((ViewRuntimeImpl) viewManager);
+
+            RouterBuilder builder = new RouterBuilderImpl(id, wolfyUtils, reactiveSource);
+            consumer.accept(reactiveSource, builder);
+            return builder;
+        });
     }
 
     @Override
-    public GuiViewManager createView(String clusterID, UUID... uuids) {
-        return getGui(clusterID).map(cluster -> {
+    public void createViewAndThen(String guiId, Consumer<ViewRuntime> callback, UUID... uuids) {
+        getGui(guiId).ifPresent(constructor -> {
             Set<UUID> viewers = Set.of(uuids);
-            Collection<Long> viewManagers = CACHED_VIEW_MANAGERS.get(clusterID);
-            return viewManagers.stream()
-                    .map(id -> VIEW_MANAGERS.get(id))
+            Collection<Long> viewManagersForID = CACHED_VIEW_RUNTIMES.get(guiId);
+
+            viewManagersForID.stream()
+                    .map(id -> VIEW_RUNTIMES.get(id))
                     .filter(viewManager -> viewManager.getViewers().equals(viewers))
                     .findFirst()
-                    .orElseGet(() -> {
-                        GuiViewManagerImpl viewManager = new GuiViewManagerImpl(wolfyUtils, cluster, viewers);
-                        viewManagers.add(viewManager.getId());
-                        VIEW_MANAGERS.put(viewManager.getId(), viewManager);
-                        for (UUID viewer : viewers) {
-                            VIEW_MANAGERS_PER_PLAYER.put(viewer, viewManager.getId());
-                        }
-                        return viewManager;
+                    .ifPresentOrElse(callback, () -> {
+                        // Construct the new view manager async, so it doesn't affect the main thread!
+                        wolfyUtils.getCore().platform().scheduler().asyncTask(wolfyUtils, () -> {
+                            ViewRuntimeImpl viewManager = new ViewRuntimeImpl(wolfyUtils, constructor, viewers);
+
+                            synchronized (VIEW_RUNTIMES) {
+                                viewManagersForID.add(viewManager.getId());
+                                VIEW_RUNTIMES.put(viewManager.getId(), viewManager);
+                            }
+                            synchronized (VIEW_RUNTIMES_PER_PLAYER) {
+                                for (UUID viewer : viewers) {
+                                    VIEW_RUNTIMES_PER_PLAYER.put(viewer, viewManager.getId());
+                                }
+                            }
+                            callback.accept(viewManager);
+                        });
                     });
-        }).orElse(null);
+        });
     }
 
-    protected void registerGui(String id, Router router) {
-        Preconditions.checkArgument(!clustersMap.containsKey(router.getID()), "A cluster with the id '" + router.getID() + "' is already registered!");
-        clustersMap.put(id, router);
-    }
-
-    @Override
-    public GuiViewManager createViewAndOpen(String guiId, UUID... players) {
-        GuiViewManager handler = createView(guiId, players);
-        handler.openNew();
-        return handler;
+    protected void registerGui(String id, Function<ViewRuntime, RouterBuilder> constructor) {
+        Preconditions.checkArgument(!clustersMap.containsKey(id), "A cluster with the id '" + id + "' is already registered!");
+        entriesMap.put(id, constructor);
     }
 
     @Override
-    public Optional<Router> getGui(String id) {
-        return Optional.ofNullable(clustersMap.get(id));
+    public void createViewAndOpen(String guiId, UUID... players) {
+        createViewAndThen(guiId, ViewRuntime::open, players);
     }
 
     @Override
-    public void registerGuiFromFiles(String id, Consumer<RouterBuilder> consumer) {
+    public Optional<Function<ViewRuntime, RouterBuilder>> getGui(String id) {
+        return Optional.ofNullable(entriesMap.get(id));
+    }
+
+    @Override
+    public void registerGuiFromFiles(String id, BiConsumer<ReactiveSource, RouterBuilder> consumer) {
         HoconMapper mapper = wolfyUtils.getJacksonMapperUtil().getGlobalMapper(HoconMapper.class);
-        try {
-            wolfyUtils.exportResources(guiResourceDir + "/" + id, new File(guiDataSubFolder, "/includes/" + id), true, GUI_FILE_PATTERN);
+        wolfyUtils.exportResources(guiResourceDir + "/" + id, new File(guiDataSubFolder, "/includes/" + id), true, GUI_FILE_PATTERN);
 
-            File file = new File(guiDataSubFolder, id + "/entry.conf"); // Look for user-override
-            if (!file.exists()) {
-                file = new File(guiDataSubFolder, "includes/" + id + "/entry.conf"); // Fall back to includes version
-                if (!file.exists() || !file.isFile()) throw new IllegalArgumentException("Cannot find gui index file! Expected: " + file.getPath());
+        registerGui(id, viewManager -> {
+            try {
+                File file = new File(guiDataSubFolder, id + "/entry.conf"); // Look for user-override
+                if (!file.exists()) {
+                    file = new File(guiDataSubFolder, "includes/" + id + "/entry.conf"); // Fall back to includes version
+                    if (!file.exists() || !file.isFile())
+                        throw new IllegalArgumentException("Cannot find gui index file! Expected: " + file.getPath());
+                }
+
+                ReactiveSource reactiveSource = new ReactiveSourceImpl((ViewRuntimeImpl) viewManager);
+                var injectableValues = new InjectableValues.Std();
+                injectableValues.addValue("parent", null);
+                injectableValues.addValue(WolfyUtils.class, wolfyUtils);
+                injectableValues.addValue("wolfyUtils", wolfyUtils);
+                injectableValues.addValue("reactiveSrc", reactiveSource);
+                injectableValues.addValue(ReactiveSource.class, reactiveSource);
+
+                RouterBuilder builder = mapper.readerFor(new TypeReference<RouterBuilderImpl>() {
+                }).with(injectableValues).readValue(file);
+                consumer.accept(reactiveSource, builder);
+                return builder;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-
-            CustomInjectableValues injectableValues = new CustomInjectableValues();
-            injectableValues.addValue("parent", null);
-            injectableValues.addValue(WolfyUtils.class, wolfyUtils);
-            injectableValues.addValue("wolfyUtils", wolfyUtils);
-
-            RouterBuilder builder = mapper.readerFor(new TypeReference<RouterBuilderImpl>() {}).with(injectableValues).readValue(file);
-            consumer.accept(builder);
-            registerGui(id, builder.create(null));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static class CustomInjectableValues extends InjectableValues.Std {
-
-        @Override
-        public Object findInjectableValue(Object valueId, DeserializationContext ctxt, BeanProperty forProperty, Object beanInstance) throws JsonMappingException {
-            return super.findInjectableValue(valueId, ctxt, forProperty, beanInstance);
-        }
+        });
     }
 
 }

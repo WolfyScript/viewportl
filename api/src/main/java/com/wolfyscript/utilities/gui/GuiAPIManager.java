@@ -20,7 +20,10 @@ package com.wolfyscript.utilities.gui;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -37,7 +40,7 @@ public interface GuiAPIManager {
      * @param id The unique id of the router to register.
      * @param routerBuilderConsumer The consumer that provides the new builder.
      */
-    void registerGui(String guiID, Consumer<RouterBuilder> routerBuilderConsumer);
+    void registerGui(String guiID, BiConsumer<ReactiveSource, RouterBuilder> routerBuilderConsumer);
 
     /**
      * Registers a new router that it loads from the specified gui data directory.
@@ -46,7 +49,7 @@ public interface GuiAPIManager {
      * @param id The unique id of the router to register.
      * @param routerBuilderConsumer The function to manipulate the new builder.
      */
-    void registerGuiFromFiles(String guiID, Consumer<RouterBuilder> routerBuilderConsumer);
+    void registerGuiFromFiles(String guiID, BiConsumer<ReactiveSource, RouterBuilder> routerBuilderConsumer);
 
     /**
      * Gets the registered router with the specified id.<br>
@@ -54,26 +57,32 @@ public interface GuiAPIManager {
      * @param id The id of the router.
      * @return The registered router only if the id matches; otherwise empty Optional.
      */
-    Optional<Router> getGui(String id);
+    Optional<Function<ViewRuntime, RouterBuilder>> getGui(String id);
 
     /**
-     * Creates a new view for the specified viewers, with the specified cluster as its root.<br>
-     * This gets the registered cluster using {@link #getGui(String)}.
+     * Creates a new view for the specified viewers, with the specified GUI.
+     * <p>
+     *     The view is build async, so care should be taken to not access any main-thread objects (e.g. Entities, World, etc.).<br>
+     *     When such data is required inside the GUI use {@link ReactiveSource#resourceSync(BiFunction)}!
+     * </p>
+     * <p>
+     *     The callback is run right after the creation (or retrieval) of the view manager.<br>
+     *     <b>That means the callback may be ASYNC!</b>
+     * </p>
      *
-     * @param clusterId The id of the root cluster.
+     * @param guiId The id of the gui.
+     * @param callback The callback, that is run right after the view manager has been created. <b>May be Async!</b>
      * @param viewers The viewers of this view.
-     * @return The newly created view.
      */
-    GuiViewManager createView(String guiId, UUID... viewers);
+    void createViewAndThen(String guiId, Consumer<ViewRuntime> callback, UUID... viewers);
 
     /**
-     * Same as {@link #createView(String, UUID...)} and opens the entry menu right after the creation of the view.
+     * Creates (or gets the existing ViewManager) and opens the entry menu right after the creation of the view.
      *
-     * @param clusterID The id of the root cluster.
+     * @param guiID The id of the gui.
      * @param viewers The viewers of this view.
-     * @return The newly created view.
      */
-    GuiViewManager createViewAndOpen(String guiID, UUID... viewers);
+    void createViewAndOpen(String guiID, UUID... viewers);
 
     Stream<ViewRuntime> getViewManagersFor(UUID uuid);
 
