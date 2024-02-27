@@ -21,13 +21,22 @@ plugins {
     `java-library`
     `maven-publish`
     id("wolfyutils.common-conventions")
+    kotlin("jvm") version "1.9.22"
 }
 
 dependencies {
     api(project(":api"))
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.named<ProcessResources>("processResources") {
     expand(project.properties)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+repositories {
+    mavenCentral()
+}
+kotlin {
+    jvmToolchain(17)
 }

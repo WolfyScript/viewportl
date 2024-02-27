@@ -21,4 +21,14 @@ plugins {
     `java-library`
     `maven-publish`
     id("wolfyutils.common-conventions")
+    kotlin("jvm") version "1.9.22"
+}
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+}
+repositories {
+    mavenCentral()
+}
+kotlin {
+    jvmToolchain(17)
 }
