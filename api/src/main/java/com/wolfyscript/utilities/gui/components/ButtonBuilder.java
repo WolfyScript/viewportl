@@ -27,6 +27,7 @@ import com.wolfyscript.utilities.gui.functions.SerializableFunction;
 import com.wolfyscript.utilities.gui.signal.Signal;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 import net.kyori.adventure.sound.Sound;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -52,7 +53,7 @@ public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
 
     ButtonBuilder animation(Consumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild);
 
-    Button create(Component parent);
+    @NotNull Button create(Component parent);
 
     /**
      * Provides methods to create an icon for Buttons.

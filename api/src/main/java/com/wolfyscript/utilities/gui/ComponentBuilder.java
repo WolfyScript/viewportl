@@ -29,6 +29,7 @@ import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.gui.signal.Signal;
 import com.wolfyscript.utilities.config.jackson.KeyedTypeIdResolver;
 import com.wolfyscript.utilities.config.jackson.KeyedTypeResolver;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -61,6 +62,7 @@ public interface ComponentBuilder<COMPONENT extends Component, PARENT extends Co
      */
     Set<Signal<?>> signals();
 
-    COMPONENT create(PARENT parent);
+    @NotNull
+    COMPONENT create(Component parent);
 
 }

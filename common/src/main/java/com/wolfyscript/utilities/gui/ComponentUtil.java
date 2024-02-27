@@ -32,7 +32,7 @@ public class ComponentUtil {
         return COMPONENT_COUNTER++;
     }
 
-    static <B extends ComponentBuilder<? extends Component, Component>> Pair<NamespacedKey, Class<B>> getBuilderType(WolfyUtils wolfyUtils, String id, Class<B> builderType) {
+    public static <B extends ComponentBuilder<? extends Component, Component>> Pair<NamespacedKey, Class<B>> getBuilderType(WolfyUtils wolfyUtils, String id, Class<B> builderType) {
         RegistryGUIComponentBuilders registry = wolfyUtils.getRegistries().getGuiComponentBuilders();
         NamespacedKey key = registry.getKey(builderType);
         Preconditions.checkArgument(key != null, "Failed to create component '%s'! Cannot find builder '%s' in registry!", id, builderType.getName());

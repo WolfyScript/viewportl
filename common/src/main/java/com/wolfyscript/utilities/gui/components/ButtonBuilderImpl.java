@@ -15,6 +15,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -83,7 +84,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
     }
 
     @Override
-    public Button create(Component parent) {
+    public @NotNull Button create(Component parent) {
         ButtonImpl button = new ButtonImpl(getWolfyUtils(), id(), parent, iconBuilder.create(), soundFunction, interactionCallback, position(), animationBuilder);
         for (Signal<?> signal : iconBuilder.signals) {
             signal.linkTo(button);

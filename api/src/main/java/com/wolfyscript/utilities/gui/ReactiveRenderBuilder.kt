@@ -15,21 +15,27 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui
 
-package com.wolfyscript.utilities.gui;
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
 
-import java.util.function.Consumer;
+interface ReactiveRenderBuilder {
 
-public interface ReactiveRenderBuilder {
+    fun <B : ComponentBuilder<out Component, Component>> component(
+        id: String,
+        builderType: Class<B>,
+        builderConsumer: ReceiverConsumer<B>
+    ): ReactiveResult
 
-    <B extends ComponentBuilder<? extends Component, Component>> ReactiveResult render(String id, Class<B> builderType, Consumer<B> builderConsumer);
-
-    <B extends ComponentBuilder<? extends Component, Component>> ReactiveResult renderAt(Position position, String id, Class<B> builderType, Consumer<B> builderConsumer);
+    fun <B : ComponentBuilder<out Component, Component>> component(
+        position: Position,
+        id: String,
+        builderType: Class<B>,
+        builderConsumer: ReceiverConsumer<B>
+    ): ReactiveResult
 
     interface ReactiveResult {
-
-        Component construct();
-
+        fun construct(): Component?
     }
 
 }

@@ -6,6 +6,7 @@ import com.wolfyscript.utilities.gui.ReactiveSource;
 import com.wolfyscript.utilities.gui.WindowBuilder;
 import com.wolfyscript.utilities.gui.components.ButtonBuilder;
 import com.wolfyscript.utilities.gui.signal.Signal;
+import kotlin.Unit;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 
@@ -44,7 +45,9 @@ public class CounterExample {
     }
 
     public static void register(GuiAPIManager manager) {
-        manager.registerGuiFromFiles("example_counter", (reactiveSrc, router) -> router.window(CounterExample::mainMenu));
+        manager.registerGuiFromFiles("example_counter", (reactiveSrc, router) -> router.window((windowBuilder, reactiveSource) -> {
+            mainMenu(windowBuilder, reactiveSrc);
+        }));
     }
 
     /**
@@ -54,7 +57,7 @@ public class CounterExample {
      *
      * @param window The WindowBuilder to use for the main menu
      */
-    static void mainMenu(ReactiveSource reactiveSrc, WindowBuilder window) {
+    static void mainMenu(WindowBuilder window, ReactiveSource reactiveSrc) {
         // This is only called upon creation of the component. So this is not called when the signal is updated!
 
         // Use signals that provide a simple value storage & synchronisation. Signals are not persistent and will get destroyed when the GUI is closed!

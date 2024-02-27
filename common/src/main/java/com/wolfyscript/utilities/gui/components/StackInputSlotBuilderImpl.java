@@ -13,6 +13,7 @@ import com.wolfyscript.utilities.gui.InteractionResult;
 import com.wolfyscript.utilities.gui.Position;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
 import com.wolfyscript.utilities.gui.signal.Signal;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
@@ -47,7 +48,7 @@ public class StackInputSlotBuilderImpl extends AbstractComponentBuilderImpl<Stac
     }
 
     @Override
-    public StackInputSlot create(Component component) {
+    public @NotNull StackInputSlot create(Component component) {
         return new StackInputSlotImpl(id(), getWolfyUtils(), component, onValueChange, interactionCallback, valueSignal, position());
     }
 }

@@ -1,80 +1,74 @@
-package com.wolfyscript.utilities.gui;
+package com.wolfyscript.utilities.gui
 
-import com.fasterxml.jackson.annotation.*;
-import com.google.common.base.Preconditions;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
+import com.fasterxml.jackson.annotation.*
+import com.google.common.base.Preconditions
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public final class RouterBuilderImpl implements RouterBuilder {
-
-    private final String route;
-    private final WolfyUtils wolfyUtils;
-    private final ReactiveSource reactiveSource;
-    private final Map<String, RouterBuilder> subRouteBuilders = new HashMap<>();
-    private WindowBuilder windowBuilder = null;
-    private InteractionCallback interactionCallback = (guiHolder, interactionDetails) -> InteractionResult.def();
-
-    @JsonCreator
-    RouterBuilderImpl(@JsonProperty("route") String route,
-                      @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils,
-                      @JacksonInject("reactiveSrc") ReactiveSource reactiveSource) {
-        this.route = route;
-        this.wolfyUtils = wolfyUtils;
-        this.reactiveSource = reactiveSource;
-    }
+class RouterBuilderImpl @JsonCreator internal constructor(
+    @param:JsonProperty("route") private val route: String,
+    @param:JacksonInject("wolfyUtils") private val wolfyUtils: WolfyUtils,
+    @param:JacksonInject("reactiveSrc") private val reactiveSource: ReactiveSource
+) : RouterBuilder {
+    private val subRouteBuilders: MutableMap<String, RouterBuilder> = HashMap()
+    private var windowBuilder: WindowBuilder? = null
+    private var interactionCallback =
+        InteractionCallback { guiHolder: GuiHolder?, interactionDetails: InteractionDetails? -> InteractionResult.def() }
 
     @JsonSetter("window")
-    private void readWindow(WindowBuilderImpl windowBuilder) {
-        this.windowBuilder = windowBuilder;
+    private fun readWindow(windowBuilder: WindowBuilderImpl) {
+        this.windowBuilder = windowBuilder
     }
 
     @JsonSetter("routes")
-    private void readRoutes(List<RouterBuilderImpl> routes) {
-        for (RouterBuilderImpl subRouter : routes) {
-            subRouteBuilders.put(subRouter.route, subRouter);
+    private fun readRoutes(routes: List<RouterBuilderImpl>) {
+        for (subRouter in routes) {
+            subRouteBuilders[subRouter.route] = subRouter
         }
     }
 
-    @Override
-    public RouterBuilder interact(InteractionCallback interactionCallback) {
-        Preconditions.checkArgument(interactionCallback != null);
-        this.interactionCallback = interactionCallback;
-        return this;
+    override fun interact(interactionCallback: InteractionCallback): RouterBuilder {
+        Preconditions.checkArgument(interactionCallback != null)
+        this.interactionCallback = interactionCallback
+        return this
     }
 
-    @Override
-    public RouterBuilder route(String s, BiConsumer<ReactiveSource, RouterBuilder> consumer) {
-        consumer.accept(reactiveSource, subRouteBuilders.computeIfAbsent(s, s1 -> new RouterBuilderImpl(s, wolfyUtils, reactiveSource)));
-        return this;
-    }
-
-    @Override
-    public RouterBuilder window(BiConsumer<ReactiveSource, WindowBuilder> consumer) {
-        consumer.accept(reactiveSource, window());
-        return this;
-    }
-
-    @Override
-    public WindowBuilder window() {
-        if (this.windowBuilder == null) {
-            this.windowBuilder = new WindowBuilderImpl("", wolfyUtils, reactiveSource);
+    override fun route(path: String, subRouteBuilder: ReceiverBiConsumer<RouterBuilder, ReactiveSource>): RouterBuilder {
+        with(subRouteBuilder) {
+            subRouteBuilders.computeIfAbsent(path) { _: String? ->
+                RouterBuilderImpl(
+                    path,
+                    wolfyUtils,
+                    reactiveSource
+                )
+            }.consume(reactiveSource)
         }
-        return windowBuilder;
+        return this
     }
 
-    public Router create(Router parent) {
-        return new RouterImpl(
-                route,
-                wolfyUtils,
-                windowBuilder,
-                parent,
-                interactionCallback
-        );
+    override fun window(windowBuilder: ReceiverBiConsumer<WindowBuilder, ReactiveSource>): RouterBuilder {
+        with(windowBuilder) {
+            window().consume(reactiveSource)
+        }
+        return this
+    }
+
+    override fun window(): WindowBuilder {
+        if (windowBuilder == null) {
+            windowBuilder = WindowBuilderImpl("", wolfyUtils, reactiveSource)
+        }
+        return windowBuilder!!
+    }
+
+    override fun create(parent: Router): Router {
+        return RouterImpl(
+            route,
+            wolfyUtils,
+            windowBuilder,
+            parent,
+            interactionCallback
+        )
     }
 }

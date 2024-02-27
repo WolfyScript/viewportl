@@ -15,22 +15,9 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.utilities.gui
 
-import com.wolfyscript.utilities.gui.callback.InteractionCallback
-import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
-import java.util.function.BiConsumer
+package com.wolfyscript.utilities.gui.functions
 
-interface RouterBuilder {
-
-    fun interact(interactionCallback: InteractionCallback): RouterBuilder
-
-    fun route(path: String, subRouteBuilder: ReceiverBiConsumer<RouterBuilder, ReactiveSource>): RouterBuilder
-
-    fun window(windowBuilder: ReceiverBiConsumer<WindowBuilder, ReactiveSource>): RouterBuilder
-
-    fun window(): WindowBuilder
-
-    fun create(parent: Router): Router
-
+fun interface ReceiverBiConsumer<T, U> {
+    fun T.consume(value: U)
 }

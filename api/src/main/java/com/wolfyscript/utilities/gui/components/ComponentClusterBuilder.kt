@@ -15,19 +15,24 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.components
 
-package com.wolfyscript.utilities.gui.components;
+import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.ComponentBuilder
+import com.wolfyscript.utilities.gui.Position
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
 
-import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.ComponentBuilder;
-import com.wolfyscript.utilities.gui.Position;
+interface ComponentClusterBuilder : ComponentBuilder<ComponentCluster, Component> {
+    fun <B : ComponentBuilder<out Component?, Component?>> component(
+        id: String,
+        builderType: Class<B>,
+        builderConsumer: ReceiverConsumer<B>
+    ): ComponentClusterBuilder
 
-import java.util.function.Consumer;
-
-public interface ComponentClusterBuilder extends ComponentBuilder<ComponentCluster, Component> {
-
-    <B extends ComponentBuilder<? extends com.wolfyscript.utilities.gui.Component, com.wolfyscript.utilities.gui.Component>> ComponentClusterBuilder render(String id, Class<B> builderType, Consumer<B> builderConsumer);
-
-    <B extends ComponentBuilder<? extends com.wolfyscript.utilities.gui.Component, com.wolfyscript.utilities.gui.Component>> ComponentClusterBuilder renderAt(Position position, String id, Class<B> builderType, Consumer<B> builderConsumer);
-
+    fun <B : ComponentBuilder<out Component?, Component?>> component(
+        position: Position,
+        id: String,
+        builderType: Class<B>,
+        builderConsumer: ReceiverConsumer<B>
+    ): ComponentClusterBuilder
 }
