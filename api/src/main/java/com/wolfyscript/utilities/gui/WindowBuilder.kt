@@ -200,4 +200,7 @@ interface WindowBuilder {
     ): WindowBuilder
 
     fun create(parent: Router): Window
+
 }
+
+inline fun <reified B : ComponentBuilder<out Component?, Component?>> WindowBuilder.component(id: String, builderConsumer: SignalableReceiverConsumer<B>) : WindowBuilder  = component(id, B::class.java, builderConsumer)
