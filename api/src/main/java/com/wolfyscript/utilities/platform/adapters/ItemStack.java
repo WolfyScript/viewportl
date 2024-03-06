@@ -19,9 +19,10 @@
 package com.wolfyscript.utilities.platform.adapters;
 
 import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.data.DataHolder;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 
-public interface ItemStack {
+public interface ItemStack extends DataHolder {
 
     /**
      * The id representing the item of this ItemStack.<br>
