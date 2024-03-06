@@ -26,7 +26,6 @@ plugins {
 
 dependencies {
     api(project(":api"))
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.named<ProcessResources>("processResources") {
