@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.world.items.data;
 
-public interface Enchantments {
+public interface Enchantments extends TooltipApplicable {
 
     int levelFor(String enchantment);
 

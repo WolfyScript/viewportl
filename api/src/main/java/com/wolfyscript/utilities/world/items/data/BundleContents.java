@@ -18,4 +18,12 @@
 
 package com.wolfyscript.utilities.world.items.data;
 
-public interface Unbreakable extends TooltipApplicable { }
+import com.wolfyscript.utilities.platform.adapters.ItemStack;
+
+import java.util.List;
+
+public interface BundleContents {
+
+    List<ItemStack> contents();
+
+}

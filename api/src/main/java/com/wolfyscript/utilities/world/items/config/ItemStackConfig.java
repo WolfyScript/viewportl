@@ -16,6 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.world.items.data;
+package com.wolfyscript.utilities.world.items.config;
 
-public interface Unbreakable extends TooltipApplicable { }
+public interface ItemStackConfig {
+
+
+
+}

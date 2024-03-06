@@ -18,4 +18,7 @@
 
 package com.wolfyscript.utilities.world.items.data;
 
-public interface Unbreakable extends TooltipApplicable { }
+public interface CanPlaceOn extends TooltipApplicable {
+
+    // TODO
+}
