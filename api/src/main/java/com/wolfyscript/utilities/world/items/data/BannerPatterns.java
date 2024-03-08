@@ -18,8 +18,21 @@
 
 package com.wolfyscript.utilities.world.items.data;
 
+import com.wolfyscript.utilities.NamespacedKey;
+import com.wolfyscript.utilities.world.items.DyeColor;
+
+import java.util.List;
+
 public interface BannerPatterns {
 
-    // TODO
+     List<Layer> layers();
+
+     interface Layer {
+
+         NamespacedKey shape();
+
+         DyeColor color();
+
+     }
 
 }
