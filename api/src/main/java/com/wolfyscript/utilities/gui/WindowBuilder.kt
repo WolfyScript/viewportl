@@ -20,6 +20,7 @@ package com.wolfyscript.utilities.gui
 import com.wolfyscript.utilities.config.jackson.KeyedBaseType
 import com.wolfyscript.utilities.gui.ReactiveRenderBuilder.ReactiveResult
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilder
 import com.wolfyscript.utilities.gui.functions.*
 import com.wolfyscript.utilities.gui.signal.Signal
 import java.util.function.Consumer
@@ -29,7 +30,7 @@ import java.util.function.Consumer
  *
  */
 @KeyedBaseType(baseType = ComponentBuilder::class)
-interface WindowBuilder {
+interface WindowBuilder : ChildComponentsBuilder<WindowBuilder>, ConditionalChildComponentBuilder<WindowBuilder> {
     /**
      * The size of the inventory.<br></br>
      * This only applies when the type is not specified.<br></br>
@@ -123,84 +124,6 @@ interface WindowBuilder {
      */
     fun reactive(reactiveFunction: SignalableReceiverFunction<ReactiveRenderBuilder, ReactiveResult?>): WindowBuilder
 
-    /**
-     *
-     *
-     * Renders the specified component whenever the condition is met.<br></br>
-     * Any signal used inside the condition will cause it to update when the signal is updated.
-     *
-     *
-     *
-     * The specified component is constructed upon invocation of this method and simply rendered/removed whenever the condition changes.<br></br>
-     * Further updates to the components need to be handled by using signals.
-     *
-     *
-     * @param condition       The condition that is reactive to signals used inside it.
-     * @param id              The id of the component to render.
-     * @param builderType     The type of builder to use.
-     * @param builderConsumer The consumer to configure the builder.
-     * @param <B>             The type of the Component Builder
-     * @return This builder for chaining
-    </B> */
-    fun <B : ComponentBuilder<out Component?, Component?>> conditionalComponent(
-        condition: SerializableSupplier<Boolean>,
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
-    ): WindowBuilder
-
-    fun <BV : ComponentBuilder<out Component?, Component?>, BI : ComponentBuilder<out Component?, Component?>> renderWhenElse(
-        condition: SerializableSupplier<Boolean>,
-        builderValidType: Class<BV>,
-        builderValidConsumer: Consumer<BV>,
-        builderInvalidType: Class<BI>,
-        builderInvalidConsumer: SignalableReceiverConsumer<BI>
-    ): WindowBuilder
-
-    /**
-     *
-     *
-     * Renders the specified component with the given id.
-     *
-     *
-     * @param id              The id of the component to render
-     * @param builderType     The type of the builder to use
-     * @param builderConsumer The consumer to configure the builder
-     * @param <B>             The type of the component builder
-     * @return This Builder for chaining
-    </B> */
-    fun <B : ComponentBuilder<out Component?, Component?>> component(
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
-    ): WindowBuilder
-
-    /**
-     * Renders the specified component at the given position.
-     * This is useful if the position wasn't specified by a config file
-     *
-     * @param position
-     * @param id
-     * @param builderType
-     * @param builderConsumer
-     * @return
-     * @param <B>
-    </B> */
-    fun <B : ComponentBuilder<out Component?, Component?>> component(
-        position: Position,
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
-    ): WindowBuilder
-
-    fun <B : ComponentBuilder<out Component?, Component?>> component(
-        position: Position,
-        builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
-    ): WindowBuilder
-
     fun create(parent: Router): Window
 
 }
-
-inline fun <reified B : ComponentBuilder<out Component?, Component?>> WindowBuilder.component(id: String, builderConsumer: SignalableReceiverConsumer<B>) : WindowBuilder  = component(id, B::class.java, builderConsumer)
