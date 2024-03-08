@@ -17,22 +17,8 @@
  */
 package com.wolfyscript.utilities.gui.components
 
+import com.wolfyscript.utilities.gui.ChildComponentsBuilder
 import com.wolfyscript.utilities.gui.Component
 import com.wolfyscript.utilities.gui.ComponentBuilder
-import com.wolfyscript.utilities.gui.Position
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
 
-interface ComponentClusterBuilder : ComponentBuilder<ComponentCluster, Component> {
-    fun <B : ComponentBuilder<out Component?, Component?>> component(
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: ReceiverConsumer<B>
-    ): ComponentClusterBuilder
-
-    fun <B : ComponentBuilder<out Component?, Component?>> component(
-        position: Position,
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: ReceiverConsumer<B>
-    ): ComponentClusterBuilder
-}
+interface ComponentClusterBuilder : ComponentBuilder<ComponentCluster, Component>, ChildComponentsBuilder<ComponentClusterBuilder>, ConditionalChildComponentBuilder<ComponentClusterBuilder>
