@@ -22,7 +22,9 @@ import com.wolfyscript.utilities.NamespacedKey;
 
 public interface Enchantment {
 
-    int level();
+    int maxLevel();
+
+    int minLevel();
 
     NamespacedKey key();
 
