@@ -41,9 +41,9 @@ import com.wolfyscript.utilities.world.items.data.IntangibleProjectiles
 import com.wolfyscript.utilities.world.items.data.ItemLore
 import com.wolfyscript.utilities.world.items.data.LodestoneTracker
 import com.wolfyscript.utilities.world.items.data.MapDecorations
+import com.wolfyscript.utilities.world.items.data.MapInfo
 import com.wolfyscript.utilities.world.items.data.PotionContents
 import com.wolfyscript.utilities.world.items.data.Profile
-import com.wolfyscript.utilities.world.items.data.ShieldBannerBaseColor
 import com.wolfyscript.utilities.world.items.data.SuspiciousStew
 import com.wolfyscript.utilities.world.items.data.Trim
 import com.wolfyscript.utilities.world.items.data.Unbreakable
@@ -88,6 +88,8 @@ interface Keys {
     fun mapDecorations() : DataKey<MapDecorations>
 
     fun mapId() : DataKey<Int>
+
+    fun mapInfo() : DataKey<MapInfo>
 
     fun customModelData() : DataKey<Int>
 
