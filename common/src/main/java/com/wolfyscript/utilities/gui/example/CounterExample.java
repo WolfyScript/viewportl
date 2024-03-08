@@ -6,7 +6,6 @@ import com.wolfyscript.utilities.gui.ReactiveSource;
 import com.wolfyscript.utilities.gui.WindowBuilder;
 import com.wolfyscript.utilities.gui.components.ButtonBuilder;
 import com.wolfyscript.utilities.gui.signal.Signal;
-import kotlin.Unit;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 
@@ -75,14 +74,15 @@ public class CounterExample {
 
         window.titleSignals(count);
 
-        window
-                .component("count_down", ButtonBuilder.class, bb -> countDownButton(bb, count))
-                // Sometimes we want to render components dependent on signals
-                .conditionalComponent(() -> count.get() != 0, "reset", ButtonBuilder.class, bb -> resetButton(bb, count))
-                // The state of a component is only reconstructed if the slot it is positioned at changes.
-                // Here the slot will always have the same type of component, so the state is created only once.
-                .component("count_up", ButtonBuilder.class, bb -> countUpButton(bb, count))
-                .component("counter", ButtonBuilder.class, bb -> bb.icon(ib -> ib.updateOnSignals(count)));
+        window.button("count_down", bb -> countDownButton(bb, count));
+        // Sometimes we want to render components dependent on signals
+        window.whenever(() -> count.get() != 0)
+                .then(builder -> builder.button("reset", bb -> resetButton(bb, count)))
+                .elseNone();
+        // The state of a component is only reconstructed if the slot it is positioned at changes.
+        // Here the slot will always have the same type of component, so the state is created only once.
+        window.button("count_up", bb -> countUpButton(bb, count))
+                .button("counter", bb -> bb.icon(ib -> ib.updateOnSignals(count)));
     }
 
     /**
