@@ -17,22 +17,7 @@
  */
 package com.wolfyscript.utilities.gui
 
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
-
-interface ReactiveRenderBuilder {
-
-    fun <B : ComponentBuilder<out Component, Component>> component(
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: ReceiverConsumer<B>
-    ): ReactiveResult
-
-    fun <B : ComponentBuilder<out Component, Component>> component(
-        position: Position,
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: ReceiverConsumer<B>
-    ): ReactiveResult
+interface ReactiveRenderBuilder : ChildComponentsBuilder<ReactiveRenderBuilder.ReactiveResult> {
 
     interface ReactiveResult {
         fun construct(): Component?
