@@ -123,7 +123,7 @@ interface Keys {
 
     fun noteBlockSound() : DataKey<NamespacedKey>
 
-    fun baseColor() : DataKey<ShieldBannerBaseColor>
+    fun baseColor() : DataKey<DyedColor>
 
     fun bannerPatterns() : DataKey<BannerPatterns>
 
