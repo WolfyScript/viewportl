@@ -9,6 +9,7 @@ import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.config.jackson.KeyedBaseType
 import com.wolfyscript.utilities.gui.ReactiveRenderBuilder.ReactiveResult
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilder
 import com.wolfyscript.utilities.gui.functions.*
 import com.wolfyscript.utilities.gui.signal.Signal
 import com.wolfyscript.utilities.tuple.Pair
@@ -165,7 +166,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         return this
     }
 
-    override fun <B : ComponentBuilder<out Component?, Component?>> conditionalComponent(
+    fun <B : ComponentBuilder<out Component, Component>> conditionalComponent(
         condition: SerializableSupplier<Boolean>,
         id: String,
         builderType: Class<B>,
@@ -174,7 +175,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         val builderTypeInfo = ComponentUtil.getBuilderType(
             wolfyUtils, id, builderType
         )
-        val builder = findExistingComponentBuilder(id, builderTypeInfo.value, builderTypeInfo.key)
+        val builder = findExistingComponentBuilder(0, builderTypeInfo.value, builderTypeInfo.key)
             .orElseThrow {
                 IllegalStateException(
                     String.format(
@@ -225,7 +226,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         return this
     }
 
-    override fun <BV : ComponentBuilder<out Component?, Component?>, BI : ComponentBuilder<out Component?, Component?>> renderWhenElse(
+    fun <BV : ComponentBuilder<out Component?, Component?>, BI : ComponentBuilder<out Component?, Component?>> renderWhenElse(
         serializableSupplier: SerializableSupplier<Boolean>,
         validBuilderType: Class<BV>,
         validBuilder: Consumer<BV>,
@@ -235,71 +236,28 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         return this
     }
 
-    override fun <B : ComponentBuilder<out Component?, Component?>> component(
-        id: String,
+    override fun <B : ComponentBuilder<out Component, Component>> component(
+        id: String?,
         builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
+        builderConsumer: ReceiverConsumer<B>
     ): WindowBuilder {
-        val builderTypeInfo = ComponentUtil.getBuilderType(
-            wolfyUtils, id, builderType
-        )
-        val builder = findExistingComponentBuilder(id, builderTypeInfo.value, builderTypeInfo.key).orElseThrow {
-            IllegalStateException(
-                String.format("Failed to link to component '%s'! Cannot find existing placement", id)
-            )
+        val numericId = getOrCreateNumericId(id)
+        val builderTypeInfo = ComponentUtil.getBuilderType(wolfyUtils, id ?: "internal_${id}", builderType)
+        val builder: B = findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
+            val builder = instantiateNewBuilder(numericId, Position(Position.Type.RELATIVE, 0) /* TODO */, builderTypeInfo)
+            with(builderConsumer) { builder.consume() }
+            componentRenderSet.add(builder)
+            builder
         }
-        val injector = Guice.createInjector(Stage.PRODUCTION, Module { binder: Binder ->
-            binder.bind(WolfyUtils::class.java).toInstance(wolfyUtils)
-            binder.bind(String::class.java).toInstance(id)
-        })
-        injector.injectMembers(builder)
-
         with(builderConsumer) { builder.consume() }
-        componentRenderSet.add(builder!!)
         return this
     }
 
-    override fun <B : ComponentBuilder<out Component?, Component?>> component(
-        position: Position,
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
-    ): WindowBuilder {
-        val builderTypeInfo = ComponentUtil.getBuilderType(
-            wolfyUtils, id, builderType
-        )
-        findExistingComponentBuilder<B>(id, builderTypeInfo.value, builderTypeInfo.key).ifPresentOrElse(
-            { with(builderConsumer) { it.consume() } },
-            {
-                val builder = instantiateNewBuilder(id, position, builderTypeInfo)
-                with(builderConsumer) { builder.consume() }
-                componentRenderSet.add(builder)
-            })
-        return this
-    }
-
-    override fun <B : ComponentBuilder<out Component?, Component?>> component(
-        position: Position,
-        builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
-    ): WindowBuilder {
-        val builderTypeInfo = ComponentUtil.getBuilderType(
-            wolfyUtils, id, builderType
-        )
-        val builder = instantiateNewBuilder(id, position, builderTypeInfo)
-        with(builderConsumer) { builder.consume() }
-        componentRenderSet.add(builder)
-        return this
-    }
-
-    private fun <B : ComponentBuilder<out Component?, Component?>> instantiateNewBuilder(
-        id: String,
+    private fun <B : ComponentBuilder<out Component, Component>> instantiateNewBuilder(
+        numericId: Long,
         position: Position,
         builderTypeInfo: Pair<NamespacedKey, Class<B>>
     ): B {
-        val numericId = ComponentUtil.nextId()
-        componentIdAliases[id] = numericId
-
         val injector = Guice.createInjector(Stage.PRODUCTION, Module { binder: Binder ->
             binder.bind(WolfyUtils::class.java).toInstance(wolfyUtils)
             binder.bind(Long::class.java).toInstance(numericId)
@@ -312,24 +270,24 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         return builder
     }
 
-    private fun <B : ComponentBuilder<out Component?, Component?>> findExistingComponentBuilder(
-        id: String,
-        builderImplType: Class<B>,
-        builderKey: NamespacedKey
-    ): Optional<B> {
-        if (!componentIdAliases.containsKey(id)) return Optional.empty() // If there is no alias yet, then it wasn't created yet!
-
-        return findExistingComponentBuilder(componentIdAliases[id]!!, builderImplType, builderKey)
+    private fun getOrCreateNumericId(namedId: String? = null): Long {
+        if (namedId != null) {
+            if (componentIdAliases.containsKey(namedId)) return componentIdAliases[namedId]!!
+            val numericId = ComponentUtil.nextId()
+            componentIdAliases[namedId] = numericId
+            return numericId
+        }
+        return ComponentUtil.nextId()
     }
 
-    private fun <B : ComponentBuilder<out Component?, Component?>> findExistingComponentBuilder(
+    private fun <B : ComponentBuilder<out Component, Component>> findExistingComponentBuilder(
         id: Long,
         builderImplType: Class<B>,
         builderKey: NamespacedKey
     ): Optional<B> {
         val componentBuilder = componentBuilderMap[id] ?: return Optional.empty()
         if (componentBuilder.type != builderKey) {
-            return Optional.empty()
+            throw IllegalArgumentException("Incompatible Component Builder Type! Expected type '$builderKey' but existing builder is of type '${componentBuilder.type}'!")
         }
         return Optional.of(builderImplType.cast(componentBuilder))
     }
@@ -372,5 +330,9 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
             interactionCallback,
             components
         )
+    }
+
+    override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<WindowBuilder> {
+        TODO("Not yet implemented")
     }
 }
