@@ -28,7 +28,7 @@ public class ComponentUtil {
 
     private static long COMPONENT_COUNTER = 0;
 
-    static long nextId() {
+    public static long nextId() {
         return COMPONENT_COUNTER++;
     }
 
