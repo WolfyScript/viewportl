@@ -62,7 +62,7 @@ class RouterBuilderImpl @JsonCreator internal constructor(
         return windowBuilder!!
     }
 
-    override fun create(parent: Router): Router {
+    override fun create(parent: Router?): Router {
         return RouterImpl(
             route,
             wolfyUtils,

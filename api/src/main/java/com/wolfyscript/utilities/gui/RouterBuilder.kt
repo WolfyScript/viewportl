@@ -31,6 +31,6 @@ interface RouterBuilder {
 
     fun window(): WindowBuilder
 
-    fun create(parent: Router): Router
+    fun create(parent: Router?): Router
 
 }
