@@ -23,6 +23,8 @@ interface DataHolder {
 
     fun data(): DataComponentMap
 
-    fun <T> get(key: ReceiverFunction<Keys, DataKey<T>>): T?
+    fun <T> get(key: ReceiverFunction<Keys, DataKey<T>>): T? {
+        return data().get(key)
+    }
 
 }
