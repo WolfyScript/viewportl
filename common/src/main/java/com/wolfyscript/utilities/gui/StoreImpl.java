@@ -1,5 +1,7 @@
 package com.wolfyscript.utilities.gui;
 
+import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer;
+import com.wolfyscript.utilities.gui.functions.ReceiverFunction;
 import com.wolfyscript.utilities.gui.signal.Store;
 
 import java.util.HashSet;
@@ -11,13 +13,13 @@ public class StoreImpl<S, V> implements Store<V> {
 
     private final long id;
     private final ViewRuntime viewManager;
-    private final Function<S, V> getter;
-    private final BiConsumer<S, V> setter;
+    private final ReceiverFunction<S, V> getter;
+    private final ReceiverBiConsumer<S, V> setter;
     private final Set<Effect> linkedItems = new HashSet<>();
     private final S store;
     private String tagName;
 
-    public StoreImpl(ViewRuntime viewManager, S store, Function<S, V> getter, BiConsumer<S, V> setter) {
+    public StoreImpl(ViewRuntime viewManager, S store, ReceiverFunction<S, V> getter, ReceiverBiConsumer<S, V> setter) {
         this.id = SignalImpl.COUNTER++;
         this.viewManager = viewManager;
         this.getter = getter;
@@ -42,7 +44,7 @@ public class StoreImpl<S, V> implements Store<V> {
 
     @Override
     public void set(V newValue) {
-        setter.accept(store, newValue);
+        setter.consume(store, newValue);
         ((ViewRuntimeImpl) viewManager).updateObjects(linkedItems);
     }
 

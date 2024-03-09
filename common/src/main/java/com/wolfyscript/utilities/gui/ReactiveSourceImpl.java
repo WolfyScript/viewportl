@@ -18,15 +18,15 @@
 
 package com.wolfyscript.utilities.gui;
 
+import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer;
+import com.wolfyscript.utilities.gui.functions.ReceiverFunction;
 import com.wolfyscript.utilities.gui.functions.SerializableRunnable;
 import com.wolfyscript.utilities.gui.signal.Signal;
 import com.wolfyscript.utilities.platform.Platform;
 import org.apache.commons.lang3.function.TriFunction;
 
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class ReactiveSourceImpl implements ReactiveSource {
 
@@ -42,12 +42,12 @@ public class ReactiveSourceImpl implements ReactiveSource {
     }
 
     @Override
-    public <T> Signal<T> createSignal(Function<ViewRuntime, T> defaultValueProvider) {
+    public <T> Signal<T> createSignal(ReceiverFunction<ViewRuntime, T> defaultValueProvider) {
         return new SignalImpl<>(viewRuntime, defaultValueProvider.apply(viewRuntime));
     }
 
     @Override
-    public <S, T> Signal<T> createStore(Function<ViewRuntime, S> storeProvider, Function<S, T> getter, BiConsumer<S, T> setter) {
+    public <S, T> Signal<T> createStore(ReceiverFunction<ViewRuntime, S> storeProvider, ReceiverFunction<S, T> getter, ReceiverBiConsumer<S, T> setter) {
         return new StoreImpl<>(viewRuntime, storeProvider.apply(viewRuntime), getter, setter);
     }
 

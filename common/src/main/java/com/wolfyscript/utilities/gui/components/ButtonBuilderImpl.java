@@ -8,6 +8,7 @@ import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.*;
 import com.wolfyscript.utilities.gui.animation.*;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.functions.SerializableFunction;
 import com.wolfyscript.utilities.gui.signal.Signal;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
@@ -56,8 +57,8 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
     }
 
     @Override
-    public ButtonBuilder icon(Consumer<IconBuilder> consumer) {
-        consumer.accept(iconBuilder);
+    public ButtonBuilder icon(ReceiverConsumer<IconBuilder> consumer) {
+        consumer.consume(iconBuilder);
         return this;
     }
 
@@ -76,9 +77,9 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
     }
 
     @Override
-    public ButtonBuilder animation(Consumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild) {
+    public ButtonBuilder animation(ReceiverConsumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild) {
         AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> builder = new AnimationBuilderImpl<>(reactiveSource, () -> new ButtonAnimationFrameBuilderImpl(getWolfyUtils()));
-        animationBuild.accept(builder);
+        animationBuild.consume(builder);
         this.animationBuilder = builder;
         return this;
     }

@@ -3,13 +3,9 @@ package com.wolfyscript.utilities.gui.animation;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.ItemHelper;
 import com.wolfyscript.utilities.gui.ItemHelperImpl;
-import com.wolfyscript.utilities.gui.components.ButtonBuilder;
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.functions.SerializableFunction;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
-import com.wolfyscript.utilities.platform.world.items.Items;
-
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class ButtonAnimationFrameBuilderImpl implements ButtonAnimationFrameBuilder {
 
@@ -25,9 +21,9 @@ public class ButtonAnimationFrameBuilderImpl implements ButtonAnimationFrameBuil
     }
 
     @Override
-    public ButtonAnimationFrameBuilder stack(String itemId, Consumer<ItemStackConfig> config) {
+    public ButtonAnimationFrameBuilder stack(String itemId, ReceiverConsumer<ItemStackConfig> config) {
         this.stack = wolfyUtils.getCore().platform().items().createStackConfig(wolfyUtils, itemId);
-        config.accept(stack);
+        config.consume(stack);
         return this;
     }
 

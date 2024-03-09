@@ -19,11 +19,11 @@
 package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.ReactiveSource;
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.signal.Signal;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class AnimationBuilderCommonImpl<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> implements AnimationBuilder<F, FB> {
@@ -45,9 +45,9 @@ public abstract class AnimationBuilderCommonImpl<F extends AnimationFrame, FB ex
     }
 
     @Override
-    public AnimationBuilderCommonImpl<F, FB> frame(Consumer<FB> frameBuild) {
+    public AnimationBuilderCommonImpl<F, FB> frame(ReceiverConsumer<FB> frameBuild) {
         var frameBuilder = frameBuilderSupplier.get();
-        frameBuild.accept(frameBuilder);
+        frameBuild.consume(frameBuilder);
         frameBuilders.add(frameBuilder);
         return this;
     }

@@ -23,6 +23,7 @@ import com.wolfyscript.utilities.gui.animation.AnimationBuilder;
 import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrame;
 import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.functions.SerializableFunction;
 import com.wolfyscript.utilities.gui.signal.Signal;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
@@ -45,13 +46,13 @@ public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
      * @param icon The consumer that provides the {@link IconBuilder}
      * @return This builder instance for chaining.
      */
-    ButtonBuilder icon(Consumer<IconBuilder> icon);
+    ButtonBuilder icon(ReceiverConsumer<IconBuilder> icon);
 
     ButtonBuilder interact(InteractionCallback interactionCallback);
 
     ButtonBuilder sound(Function<GuiHolder, Optional<Sound>> soundFunction);
 
-    ButtonBuilder animation(Consumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild);
+    ButtonBuilder animation(ReceiverConsumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild);
 
     @NotNull Button create(Component parent);
 

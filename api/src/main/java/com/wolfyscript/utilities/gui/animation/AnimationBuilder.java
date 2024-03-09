@@ -19,9 +19,8 @@
 package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.Component;
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.signal.Signal;
-
-import java.util.function.Consumer;
 
 public interface AnimationBuilder<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> {
 
@@ -31,7 +30,7 @@ public interface AnimationBuilder<F extends AnimationFrame, FB extends Animation
      * @param frameBuild
      * @return
      */
-    AnimationBuilderCommonImpl<F, FB> frame(Consumer<FB> frameBuild);
+    AnimationBuilderCommonImpl<F, FB> frame(ReceiverConsumer<FB> frameBuild);
 
     /**
      * Optional: Can be used to manually start the animation.

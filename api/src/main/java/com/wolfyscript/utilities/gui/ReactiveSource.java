@@ -18,6 +18,8 @@
 
 package com.wolfyscript.utilities.gui;
 
+import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer;
+import com.wolfyscript.utilities.gui.functions.ReceiverFunction;
 import com.wolfyscript.utilities.gui.functions.SerializableRunnable;
 import com.wolfyscript.utilities.gui.signal.Signal;
 import com.wolfyscript.utilities.platform.Platform;
@@ -30,7 +32,7 @@ public interface ReactiveSource {
 
     <T> Signal<T> createSignal(T defaultValue);
 
-    <T> Signal<T> createSignal(Function<ViewRuntime, T> defaultValueProvider);
+    <T> Signal<T> createSignal(ReceiverFunction<ViewRuntime, T> defaultValueProvider);
 
     /**
      * Creates a Signal with a value, which is stored externally of the GUI.
@@ -42,7 +44,7 @@ public interface ReactiveSource {
      * @param <S>
      * @param <T> The type of the value
      */
-    <S, T> Signal<T> createStore(Function<ViewRuntime, S> storeProvider, Function<S, T> supplier, BiConsumer<S, T> consumer);
+    <S, T> Signal<T> createStore(ReceiverFunction<ViewRuntime, S> storeProvider, ReceiverFunction<S, T> supplier, ReceiverBiConsumer<S, T> consumer);
 
     /**
      * Must be used to fetch data from the main Minecraft thread (i.e. Entities, World, etc.).

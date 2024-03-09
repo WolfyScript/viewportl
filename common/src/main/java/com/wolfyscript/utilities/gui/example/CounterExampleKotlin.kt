@@ -1,9 +1,9 @@
 package com.wolfyscript.utilities.gui.example
 
-import com.wolfyscript.utilities.gui.*
-import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder
-import com.wolfyscript.utilities.gui.components.ButtonBuilder.IconBuilder
-import com.wolfyscript.utilities.world.items.ItemStackConfig
+import com.wolfyscript.utilities.gui.GuiAPIManager
+import com.wolfyscript.utilities.gui.InteractionResult
+import com.wolfyscript.utilities.gui.ReactiveSource
+import com.wolfyscript.utilities.gui.RouterBuilder
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import java.util.*
@@ -29,32 +29,24 @@ fun registerExampleCounter(manager: GuiAPIManager) {
             // This is only called upon creation of the component. So this is not called when the signal is updated!
 
             // Use signals that provide a simple value storage & synchronisation. Signals are not persistent and will get destroyed when the GUI is closed!
-            val countSignal = reactiveSrc.createSignal { viewManager: ViewRuntime? -> 0 }
+            val countSignal = reactiveSrc.createSignal { 0 }
 
             // Optionally, sync your data with the gui using custom data stores. This makes it possible to store persistent data.
-            val count = reactiveSrc.createStore({ _: ViewRuntime? -> CounterStore() },
-                { store -> store.count },
-                { store, count -> store.count = count })
-
+            val count = reactiveSrc.createStore({ CounterStore() }, { count }, { count -> this.count = count })
             count.tagName("count")
 
             size(9 * 3)
-
-            addIntervalTask({
-                count.update { value ->
-                    val newValue = value + 1
-                    newValue
-                } // Updates the count periodically (every second increases it by 1)
-            }, 20)
-
             titleSignals(count)
+
+            // Update the count periodically (every second increases it by 1)
+            addIntervalTask(
+                { count.update { value -> value + 1 } },
+                20
+            )
 
             button("count_down") {
                 interact { _, _ ->
-                    count.update { old ->
-                        val old = old - 1
-                        return@update old
-                    }
+                    count.update { old -> old - 1 }
                     InteractionResult.cancel(true)
                 }
             }
@@ -87,20 +79,23 @@ fun registerExampleCounter(manager: GuiAPIManager) {
                     }
                     InteractionResult.cancel(true)
                 }
-                animation { animationBuilder ->
-                    animationBuilder // Here we specify the frames to render after each other
-                        // So it first renders the cyan_concrete for a tick, then lime_concrete for a tick
-                        .frame { frame: ButtonAnimationFrameBuilder ->
-                            frame.duration(1).stack("cyan_concrete") { conf: ItemStackConfig? -> }
-                        }
-                        .frame { frame: ButtonAnimationFrameBuilder ->
-                            frame.duration(1).stack("lime_concrete") { conf: ItemStackConfig? -> }
-                        }
+                animation {
+                    // Here we specify the frames to render after each other
+                    // So it first renders the cyan_concrete for a tick, then lime_concrete for a tick
+                    frame {
+                        duration(1)
+                        stack("cyan_concrete") { }
+                    }
+
+                    frame {
+                        duration(1)
+                        stack("lime_concrete") { }
+                    }
                 }
             }
 
             button("counter") {
-                icon { ib: IconBuilder -> ib.updateOnSignals(count) }
+                icon { updateOnSignals(count) }
             }
         }
     }
