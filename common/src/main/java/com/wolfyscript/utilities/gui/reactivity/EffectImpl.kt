@@ -16,14 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.gui.functions;
+package com.wolfyscript.utilities.gui.reactivity
 
-import com.wolfyscript.utilities.gui.signal.Signal;
+import com.wolfyscript.utilities.gui.Effect
 
-import java.io.Serializable;
-import java.util.Collection;
+class EffectImpl(val id: NodeId) : Effect {
 
-/**
- * This represents an interface that is Serializable and contains information about the used {@link Signal}s inside of the closure.
- */
-public interface SignalledSerializable extends Serializable { }
+}

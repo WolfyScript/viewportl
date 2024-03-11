@@ -30,7 +30,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
     private Function<GuiHolder, Optional<Sound>> soundFunction = holder -> Optional.of(Sound.sound(Key.key("minecraft:ui.button.click"), Sound.Source.MASTER, 0.25f, 1));;
     private final IconBuilderImpl iconBuilder;
     private AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> animationBuilder;
-    private final ReactiveSource reactiveSource;
+    private final BuildContext context;
 
     /**
      * Constructor used for non-config setups using Guice injection.
@@ -39,10 +39,10 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
      * @param wolfyUtils The wolfyutils that this button belongs to.
      */
     @Inject
-    private ButtonBuilderImpl(String id, WolfyUtils wolfyUtils, Position position, ReactiveSource reactiveSource) {
+    private ButtonBuilderImpl(String id, WolfyUtils wolfyUtils, Position position, BuildContext buildContext) {
         super(id, wolfyUtils, position);
         this.iconBuilder = new IconBuilderImpl(wolfyUtils);
-        this.reactiveSource = reactiveSource;
+        this.context = buildContext;
     }
 
     @JsonCreator
@@ -50,10 +50,10 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
                              @JsonProperty("icon") IconBuilderImpl iconBuilder,
                              @JsonProperty("position") Position position,
                              @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils,
-                             @JacksonInject("reactiveSrc") ReactiveSource reactiveSource) {
+                             @JacksonInject("context") BuildContext context) {
         super(id, wolfyUtils, position);
         this.iconBuilder = iconBuilder;
-        this.reactiveSource = reactiveSource;
+        this.context = context;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
 
     @Override
     public ButtonBuilder animation(ReceiverConsumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild) {
-        AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> builder = new AnimationBuilderImpl<>(reactiveSource, () -> new ButtonAnimationFrameBuilderImpl(getWolfyUtils()));
+        AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> builder = new AnimationBuilderImpl<>(context, () -> new ButtonAnimationFrameBuilderImpl(getWolfyUtils()));
         animationBuild.consume(builder);
         this.animationBuilder = builder;
         return this;
@@ -86,11 +86,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
 
     @Override
     public @NotNull Button create(Component parent) {
-        ButtonImpl button = new ButtonImpl(getWolfyUtils(), id(), parent, iconBuilder.create(), soundFunction, interactionCallback, position(), animationBuilder);
-        for (Signal<?> signal : iconBuilder.signals) {
-            signal.linkTo(button);
-        }
-        return button;
+        return new ButtonImpl(getWolfyUtils(), id(), parent, iconBuilder.create(), soundFunction, interactionCallback, position(), animationBuilder);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -98,7 +94,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
 
         private WolfyUtils wolfyUtils;
         private ItemStackConfig staticStackConfig;
-        private final ItemHelper itemHelper = new ItemHelperImpl(wolfyUtils);
+        private final ItemHelper itemHelper;
         private final List<TagResolver> tagResolvers = new ArrayList<>();
         final Set<Signal<?>> signals = new HashSet<>();
 
@@ -106,6 +102,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
         private IconBuilderImpl(@JacksonInject("wolfyUtils") WolfyUtils wolfyUtils) {
             // Used for non-config setups
             this.wolfyUtils = wolfyUtils;
+            this.itemHelper = new ItemHelperImpl(wolfyUtils);
         }
 
         /**
@@ -116,6 +113,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
         @JsonCreator
         public IconBuilderImpl(@JsonProperty("stack") ItemStackConfig staticStackConfig) {
             this.staticStackConfig = staticStackConfig;
+            this.itemHelper = new ItemHelperImpl(wolfyUtils);
         }
 
         @JsonSetter("stack")

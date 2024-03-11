@@ -70,10 +70,10 @@ public class GuiAPIManagerImpl implements GuiAPIManager {
     public void registerGui(String id, BiConsumer<ReactiveSource, RouterBuilder> consumer) {
         // TODO: maybe wrap in an extra object?
         registerGui(id, (viewManager) -> {
-            ReactiveSource reactiveSource = new ReactiveSourceImpl((ViewRuntimeImpl) viewManager);
+            BuildContext buildContext = new BuildContext(((ViewRuntimeImpl) viewManager).getReactiveSource(), wolfyUtils);
 
-            RouterBuilder builder = new RouterBuilderImpl(id, wolfyUtils, reactiveSource);
-            consumer.accept(reactiveSource, builder);
+            RouterBuilder builder = new RouterBuilderImpl(id, wolfyUtils, buildContext);
+            consumer.accept(buildContext.getReactiveSource(), builder);
             return builder;
         });
     }
@@ -137,17 +137,17 @@ public class GuiAPIManagerImpl implements GuiAPIManager {
                         throw new IllegalArgumentException("Cannot find gui index file! Expected: " + file.getPath());
                 }
 
-                ReactiveSource reactiveSource = new ReactiveSourceImpl((ViewRuntimeImpl) viewManager);
+                BuildContext context = new BuildContext(((ViewRuntimeImpl) viewManager).getReactiveSource(), wolfyUtils);
                 var injectableValues = new InjectableValues.Std();
                 injectableValues.addValue("parent", null);
                 injectableValues.addValue(WolfyUtils.class, wolfyUtils);
                 injectableValues.addValue("wolfyUtils", wolfyUtils);
-                injectableValues.addValue("reactiveSrc", reactiveSource);
-                injectableValues.addValue(ReactiveSource.class, reactiveSource);
+                injectableValues.addValue("context", context);
+                injectableValues.addValue(BuildContext.class, context);
 
                 RouterBuilder builder = mapper.readerFor(new TypeReference<RouterBuilderImpl>() {
                 }).with(injectableValues).readValue(file);
-                consumer.accept(reactiveSource, builder);
+                consumer.accept(context.getReactiveSource(), builder);
                 return builder;
             } catch (IOException e) {
                 throw new RuntimeException(e);

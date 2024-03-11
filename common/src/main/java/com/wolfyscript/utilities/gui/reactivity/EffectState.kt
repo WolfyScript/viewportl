@@ -15,15 +15,24 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.reactivity
 
-package com.wolfyscript.utilities.gui.functions;
+import com.wolfyscript.utilities.gui.GuiHolder
+import com.wolfyscript.utilities.gui.ViewRuntime
+import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+import com.wolfyscript.utilities.gui.functions.SignalableReceiverFunction
+import java.util.function.Consumer
 
-import com.wolfyscript.utilities.gui.signal.Signal;
+class EffectState<T>(
+    private val fn: SignalableReceiverFunction<T?, T>
+) : AnyComputation<T> {
 
-import java.io.Serializable;
-import java.util.Collection;
+    override fun run(runtime: ViewRuntime, holder: GuiHolder, value: T?, apply: Consumer<T?>): Boolean {
+        val newValue = with(fn) { value?.apply() }
 
-/**
- * This represents an interface that is Serializable and contains information about the used {@link Signal}s inside of the closure.
- */
-public interface SignalledSerializable extends Serializable { }
+        apply.accept(newValue)
+
+        return true
+    }
+
+}

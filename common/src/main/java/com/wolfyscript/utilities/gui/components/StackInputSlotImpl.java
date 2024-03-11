@@ -30,16 +30,10 @@ public class StackInputSlotImpl extends AbstractComponentImpl implements Interac
             return interactionCallback.interact(holder, details);
         };
         this.value = value;
-        value.linkTo(this);
     }
 
     @Override
-    public StackInputSlot construct(GuiHolder holder, ViewRuntime viewRuntime) {
-        return this;
-    }
-
-    @Override
-    public void update(ViewRuntime viewManager, GuiHolder guiHolder, RenderContext renderContext) {
+    public void render(ViewRuntime runtime, GuiHolder guiHolder, RenderContext renderContext) {
         renderContext.renderStack(position(), value.get());
         ((ViewRuntimeImpl) guiHolder.getViewManager()).updateLeaveNodes(this, renderContext.currentOffset() + position().slot());
     }

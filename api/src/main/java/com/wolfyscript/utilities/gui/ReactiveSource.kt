@@ -15,24 +15,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui
 
-package com.wolfyscript.utilities.gui;
+import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
+import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+import com.wolfyscript.utilities.gui.functions.SignalableReceiverBiConsumer
+import com.wolfyscript.utilities.gui.functions.SignalableReceiverFunction
+import com.wolfyscript.utilities.gui.signal.Signal
+import com.wolfyscript.utilities.platform.Platform
+import org.apache.commons.lang3.function.TriFunction
+import java.util.*
+import java.util.function.BiFunction
 
-import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer;
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction;
-import com.wolfyscript.utilities.gui.functions.SerializableRunnable;
-import com.wolfyscript.utilities.gui.signal.Signal;
-import com.wolfyscript.utilities.platform.Platform;
-import org.apache.commons.lang3.function.TriFunction;
+interface ReactiveSource {
 
-import java.util.Optional;
-import java.util.function.*;
+    fun <T> createSignal(defaultValue: T): Signal<T>
 
-public interface ReactiveSource {
-
-    <T> Signal<T> createSignal(T defaultValue);
-
-    <T> Signal<T> createSignal(ReceiverFunction<ViewRuntime, T> defaultValueProvider);
+    fun <T> createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime, T>): Signal<T>
 
     /**
      * Creates a Signal with a value, which is stored externally of the GUI.
@@ -43,41 +42,59 @@ public interface ReactiveSource {
      * @return The signal
      * @param <S>
      * @param <T> The type of the value
-     */
-    <S, T> Signal<T> createStore(ReceiverFunction<ViewRuntime, S> storeProvider, ReceiverFunction<S, T> supplier, ReceiverBiConsumer<S, T> consumer);
+    </T></S> */
+    fun <S, T> createStore(
+        storeProvider: ReceiverFunction<ViewRuntime, S>,
+        supplier: ReceiverFunction<S, T>,
+        consumer: ReceiverBiConsumer<S, T>
+    ): Signal<T>
 
     /**
      * Must be used to fetch data from the main Minecraft thread (i.e. Entities, World, etc.).
      * This is because the GUI is run async on a different thread!
-     * <p>
-     *     After creation, it runs the specified function on the main thread and fetches the data.
-     *     The signal gets updated when the data is available.
-     *     When the signal value is requested before the data is available it returns an empty Optional.
-     * </p>
+     *
+     *
+     * After creation, it runs the specified function on the main thread and fetches the data.
+     * The signal gets updated when the data is available.
+     * When the signal value is requested before the data is available it returns an empty Optional.
+     *
      *
      * @param fetch The function to run on the main thread.
      * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
      * @param <T> The type of the value
-     */
-    <T> Signal<Optional<T>> resourceSync(BiFunction<Platform, ViewRuntime, T> fetch);
+    </T> */
+    fun <T> resourceSync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>>
 
-    <I, T> Signal<Optional<T>> resourceSync(Signal<I> input, TriFunction<Platform, ViewRuntime, I, T> fetch);
+    fun <I, T> resourceSync(
+        input: Signal<I>,
+        fetch: TriFunction<Platform, ViewRuntime, I, T>
+    ): Signal<Optional<T>>
 
     /**
      * May be used to fetch data async.
      *
-     * <p>
-     *     After creation, it runs the specified function async and fetches the data.
-     *     The signal gets updated when the data is available.
-     *     When the signal value is requested before the data is available it returns an empty Optional.
-     * </p>
+     *
+     *
+     * After creation, it runs the specified function async and fetches the data.
+     * The signal gets updated when the data is available.
+     * When the signal value is requested before the data is available it returns an empty Optional.
+     *
      *
      * @param fetch The function to run async
      * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
      * @param <T> The type of the value
-     */
-    <T> Signal<Optional<T>> resourceAsync(BiFunction<Platform, ViewRuntime, T> fetch);
+    </T> */
+    fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>>
 
-    Effect createEffect(SerializableRunnable effect);
+    fun createEffect(effect: SignalableReceiverFunction<*, Unit>): Effect {
+        return createEffect(effect)
+    }
 
+    @Suppress("INAPPLICABLE_JVM_NAME")
+    @JvmName("createTypedEffect")
+    fun <T> createEffect(effect: SignalableReceiverFunction<T?, T>): Effect {
+        return createEffect(emptyList(), effect)
+    }
+
+    fun <T> createEffect(additionalSignals: List<Signal<*>>, effect: SignalableReceiverFunction<T?, T>): Effect
 }

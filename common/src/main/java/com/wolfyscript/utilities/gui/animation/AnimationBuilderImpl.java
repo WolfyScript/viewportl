@@ -1,5 +1,6 @@
 package com.wolfyscript.utilities.gui.animation;
 
+import com.wolfyscript.utilities.gui.BuildContext;
 import com.wolfyscript.utilities.gui.Component;
 import com.wolfyscript.utilities.gui.ReactiveSource;
 
@@ -7,8 +8,8 @@ import java.util.function.Supplier;
 
 public class AnimationBuilderImpl<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> extends AnimationBuilderCommonImpl<F, FB> {
 
-    public AnimationBuilderImpl(ReactiveSource reactiveSource, Supplier<FB> frameBuilderSupplier) {
-        super(reactiveSource, frameBuilderSupplier);
+    public AnimationBuilderImpl(BuildContext context, Supplier<FB> frameBuilderSupplier) {
+        super(context.getReactiveSource(), frameBuilderSupplier);
     }
 
     @Override

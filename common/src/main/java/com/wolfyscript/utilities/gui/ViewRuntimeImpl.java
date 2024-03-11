@@ -15,8 +15,6 @@ public class ViewRuntimeImpl implements ViewRuntime {
     private final long id;
     private final Map<Integer, Component> leaveNodes = new HashMap<>();
     private final Map<UUID, RenderContext> viewerContexts = new HashMap<>();
-    private final Set<Effect> updatedSignalsSinceLastUpdate = new HashSet<>();
-    private boolean blockedByInteraction = false;
 
     private final WolfyUtils wolfyUtils;
     private final Router router;
@@ -27,13 +25,20 @@ public class ViewRuntimeImpl implements ViewRuntime {
     private TextInputCallback textInputCallback;
     private TextInputTabCompleteCallback textInputTabCompleteCallback;
 
+    private final ReactiveSourceImpl reactiveSource;
+
     protected ViewRuntimeImpl(WolfyUtils wolfyUtils, Function<ViewRuntime, RouterBuilder> rootRouter, Set<UUID> viewers) {
         this.wolfyUtils = wolfyUtils;
+        this.reactiveSource = new ReactiveSourceImpl(this);
         this.router = rootRouter.apply(this).create(null);
 
         this.history = new ArrayDeque<>();
         this.viewers = viewers;
         id = NEXT_ID++;
+    }
+
+    public ReactiveSourceImpl getReactiveSource() {
+        return reactiveSource;
     }
 
     @Override
@@ -85,48 +90,8 @@ public class ViewRuntimeImpl implements ViewRuntime {
         return id;
     }
 
-    @Override
-    synchronized public void blockedByInteraction() {
-        this.blockedByInteraction = true;
-    }
-
-    @Override
-    synchronized public void unblockedByInteraction() {
-        this.blockedByInteraction = false;
-    }
-
     public Optional<Component> getLeaveNode(int slot) {
         return Optional.ofNullable(leaveNodes.get(slot));
-    }
-
-    void updateObjects(Set<Effect> objects) {
-        if (blockedByInteraction) {
-            updatedSignalsSinceLastUpdate.addAll(objects);
-            return;
-        }
-        getCurrentMenu().ifPresent(window -> {
-            for (UUID viewer : getViewers()) {
-                getRenderContext(viewer).ifPresent(context -> updateSignals(objects, context));
-            }
-        });
-    }
-
-    @Override
-    public void updateSignalQueue(RenderContext context) {
-        updateSignals(updatedSignalsSinceLastUpdate, context);
-        updatedSignalsSinceLastUpdate.clear();
-    }
-
-    void updateSignals(Set<Effect> objects, RenderContext context) {
-        for (Effect effect : objects) {
-            if (effect instanceof AbstractComponentImpl component) {
-                context.enterNode(component);
-                effect.update(this, context.holder(), context);
-                updateLeaveNodes(component, context.currentOffset() + component.position().slot());
-            } else {
-                effect.update(this, context.holder(), context);
-            }
-        }
     }
 
     public void updateLeaveNodes(Component state, int... slots) {
@@ -175,7 +140,6 @@ public class ViewRuntimeImpl implements ViewRuntime {
 
     @Override
     public void openNew(String... path) {
-        unblockedByInteraction();
         Window window = getRouter().open(this, path);
         setCurrentRoot(window);
         for (UUID viewer : getViewers()) {

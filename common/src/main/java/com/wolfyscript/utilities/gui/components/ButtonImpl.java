@@ -24,7 +24,9 @@ public class ButtonImpl extends AbstractComponentImpl implements Button {
     private final Function<GuiHolder, Optional<Sound>> soundFunction;
     private final Animation<ButtonAnimationFrame> animation;
 
-    ButtonImpl(WolfyUtils wolfyUtils, String id, Component parent,
+    ButtonImpl(WolfyUtils wolfyUtils,
+               String id,
+               Component parent,
                ButtonIcon icon,
                Function<GuiHolder, Optional<Sound>> soundFunction,
                InteractionCallback interactionCallback,
@@ -73,18 +75,13 @@ public class ButtonImpl extends AbstractComponentImpl implements Button {
     }
 
     @Override
-    public Button construct(GuiHolder holder, ViewRuntime viewRuntime) {
-        return this;
-    }
-
-    @Override
     public void remove(GuiHolder guiHolder, ViewRuntime viewRuntime, RenderContext renderContext) {
         renderContext.renderStack(position(), null);
         //((GuiViewManagerImpl) guiHolder.getViewManager()).updateLeaveNodes(null, renderContext.currentOffset() + position().slot());
     }
 
     @Override
-    public void update(ViewRuntime viewManager, GuiHolder guiHolder, RenderContext renderContext) {
+    public void render(ViewRuntime viewRuntime, GuiHolder guiHolder, RenderContext renderContext) {
         renderContext.renderStack(position(), icon().getStack(), renderContext.createContext(guiHolder, icon().getResolvers()));
     }
 

@@ -10,11 +10,9 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
 
     AnimationImpl(Component owner, List<? extends AnimationFrameBuilder<F>> animationFrameBuilders, Signal<?> updateSignal) {
         super(owner, animationFrameBuilders, updateSignal);
-        updateSignal.linkTo(this);
     }
 
-    @Override
-    public void update(ViewRuntime viewManager, GuiHolder guiHolder, RenderContext context) {
+    public void render(ViewRuntime viewManager, GuiHolder guiHolder, RenderContext context) {
         context.enterNode(owner());
 
         AtomicInteger frameDelay = new AtomicInteger(0);
@@ -27,7 +25,7 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
                     if (frames().size() <= frame) {
                         task.cancel();
                         if (owner() instanceof Effect signalledOwner) {
-                            signalledOwner.update(viewManager, guiHolder, context); // Last frame should be the original again!
+                            // TODO
                         }
                         return;
                     }

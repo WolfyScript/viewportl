@@ -56,6 +56,4 @@ public interface Signal<V> {
      */
     V get();
 
-    void linkTo(Effect effect);
-
 }

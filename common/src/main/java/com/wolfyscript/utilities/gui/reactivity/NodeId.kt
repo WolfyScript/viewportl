@@ -16,14 +16,33 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.gui.functions;
+package com.wolfyscript.utilities.gui.reactivity
 
-import com.wolfyscript.utilities.gui.signal.Signal;
+import com.wolfyscript.utilities.gui.ViewRuntimeImpl
+import java.util.function.Function
 
-import java.io.Serializable;
-import java.util.Collection;
+class NodeId(val id: Long, val runtime: ViewRuntimeImpl) {
 
-/**
- * This represents an interface that is Serializable and contains information about the used {@link Signal}s inside of the closure.
- */
-public interface SignalledSerializable extends Serializable { }
+    fun <V> update(updateFn: Function<V, V>) {
+        val node: Node<V>? = runtime.reactiveSource.node(this)
+        if (node != null) {
+            node.value?.let { updateFn.apply(it) }
+
+
+            node.mark(Node.State.DIRTY)
+        }
+
+    }
+
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is NodeId) return false
+        if (other.id == id) return true
+        return false
+    }
+
+}

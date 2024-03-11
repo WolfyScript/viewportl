@@ -15,15 +15,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.reactivity
 
-package com.wolfyscript.utilities.gui.functions;
+import com.wolfyscript.utilities.gui.GuiHolder
+import com.wolfyscript.utilities.gui.ViewRuntime
+import java.util.function.Consumer
 
-import com.wolfyscript.utilities.gui.signal.Signal;
+interface AnyComputation<T> {
 
-import java.io.Serializable;
-import java.util.Collection;
+    fun run(runtime: ViewRuntime, holder: GuiHolder, value: T?, apply: Consumer<T?>) : Boolean
 
-/**
- * This represents an interface that is Serializable and contains information about the used {@link Signal}s inside of the closure.
- */
-public interface SignalledSerializable extends Serializable { }
+}

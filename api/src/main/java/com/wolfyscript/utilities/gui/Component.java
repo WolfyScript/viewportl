@@ -58,9 +58,9 @@ public interface Component extends Keyed {
      */
     Component parent();
 
-    Component construct(GuiHolder holder, ViewRuntime viewManager);
-
     void remove(GuiHolder holder, ViewRuntime viewManager, RenderContext context);
+
+    void render(ViewRuntime viewRuntime, GuiHolder holder, RenderContext context);
 
     /**
      * Gets the width of this Component in slot count.

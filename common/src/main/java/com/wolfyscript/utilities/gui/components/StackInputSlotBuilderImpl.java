@@ -49,6 +49,10 @@ public class StackInputSlotBuilderImpl extends AbstractComponentBuilderImpl<Stac
 
     @Override
     public @NotNull StackInputSlot create(Component component) {
+
+
+
+
         return new StackInputSlotImpl(id(), getWolfyUtils(), component, onValueChange, interactionCallback, valueSignal, position());
     }
 }

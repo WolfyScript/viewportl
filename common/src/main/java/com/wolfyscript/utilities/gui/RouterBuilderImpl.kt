@@ -10,12 +10,12 @@ import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
 class RouterBuilderImpl @JsonCreator internal constructor(
     @param:JsonProperty("route") private val route: String,
     @param:JacksonInject("wolfyUtils") private val wolfyUtils: WolfyUtils,
-    @param:JacksonInject("reactiveSrc") private val reactiveSource: ReactiveSource
+    @param:JacksonInject("context") private val context: BuildContext
 ) : RouterBuilder {
     private val subRouteBuilders: MutableMap<String, RouterBuilder> = HashMap()
     private var windowBuilder: WindowBuilder? = null
     private var interactionCallback =
-        InteractionCallback { guiHolder: GuiHolder?, interactionDetails: InteractionDetails? -> InteractionResult.def() }
+        InteractionCallback { _, _ -> InteractionResult.def() }
 
     @JsonSetter("window")
     private fun readWindow(windowBuilder: WindowBuilderImpl) {
@@ -41,23 +41,23 @@ class RouterBuilderImpl @JsonCreator internal constructor(
                 RouterBuilderImpl(
                     path,
                     wolfyUtils,
-                    reactiveSource
+                    context
                 )
-            }.consume(reactiveSource)
+            }.consume(context.reactiveSource)
         }
         return this
     }
 
     override fun window(windowBuilder: ReceiverBiConsumer<WindowBuilder, ReactiveSource>): RouterBuilder {
         with(windowBuilder) {
-            window().consume(reactiveSource)
+            window().consume(context.reactiveSource)
         }
         return this
     }
 
     override fun window(): WindowBuilder {
         if (windowBuilder == null) {
-            windowBuilder = WindowBuilderImpl("", wolfyUtils, reactiveSource)
+            windowBuilder = WindowBuilderImpl("", wolfyUtils, context)
         }
         return windowBuilder!!
     }

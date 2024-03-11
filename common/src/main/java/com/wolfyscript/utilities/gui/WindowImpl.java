@@ -87,9 +87,7 @@ public final class WindowImpl implements Window {
             if (position == null) continue;
             ((ViewRuntimeImpl) guiHolder.getViewManager()).updateLeaveNodes(component, position.slot());
             context.enterNode(component);
-            if (component.construct(guiHolder, viewManager) instanceof Effect effect) {
-                effect.update(viewManager, guiHolder, context);
-            }
+            component.render(viewManager, guiHolder, context);
             context.exitNode();
         }
     }
