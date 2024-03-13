@@ -20,10 +20,9 @@ package com.wolfyscript.utilities.gui.components;
 
 import com.wolfyscript.utilities.platform.adapters.ItemStack;
 import com.wolfyscript.utilities.gui.*;
-import com.wolfyscript.utilities.gui.signal.Signal;
 
 public interface StackInputSlot extends Component, Interactable {
 
-    Signal<ItemStack> signal();
+    ItemStack value();
 
 }

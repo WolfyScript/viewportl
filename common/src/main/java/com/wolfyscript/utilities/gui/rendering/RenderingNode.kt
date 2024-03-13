@@ -15,12 +15,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.rendering
 
-package com.wolfyscript.utilities.gui.signal;
+import com.wolfyscript.utilities.gui.Component
 
-public interface Store<V> extends Signal<V> {
-
-
-
+class RenderingNode(val id: Long, val component: Component) {
 
 }

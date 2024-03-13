@@ -18,10 +18,9 @@
 
 package com.wolfyscript.utilities.gui.functions;
 
-import com.wolfyscript.utilities.gui.signal.Signal;
+import com.wolfyscript.utilities.gui.reactivity.Signal;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 /**
  * This represents an interface that is Serializable and contains information about the used {@link Signal}s inside of the closure.

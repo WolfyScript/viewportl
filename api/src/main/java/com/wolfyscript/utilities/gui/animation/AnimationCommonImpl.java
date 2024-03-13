@@ -19,7 +19,7 @@
 package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.signal.Signal;
+import com.wolfyscript.utilities.gui.reactivity.Signal;
 
 import java.util.List;
 

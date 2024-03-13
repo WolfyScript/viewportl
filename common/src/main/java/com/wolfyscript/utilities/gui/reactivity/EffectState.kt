@@ -17,17 +17,15 @@
  */
 package com.wolfyscript.utilities.gui.reactivity
 
-import com.wolfyscript.utilities.gui.GuiHolder
 import com.wolfyscript.utilities.gui.ViewRuntime
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
 import com.wolfyscript.utilities.gui.functions.SignalableReceiverFunction
 import java.util.function.Consumer
 
 class EffectState<T>(
     private val fn: SignalableReceiverFunction<T?, T>
-) : AnyComputation<T> {
+) : AnyComputation<T?> {
 
-    override fun run(runtime: ViewRuntime, holder: GuiHolder, value: T?, apply: Consumer<T?>): Boolean {
+    override fun run(runtime: ViewRuntime, value: T?, apply: Consumer<T?>): Boolean {
         val newValue = with(fn) { value?.apply() }
 
         apply.accept(newValue)

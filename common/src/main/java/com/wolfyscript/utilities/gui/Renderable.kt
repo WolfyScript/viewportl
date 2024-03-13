@@ -15,22 +15,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.wolfyscript.utilities.gui
 
-import com.wolfyscript.utilities.gui.callback.InteractionCallback
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
-import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
+interface Renderable {
 
-interface RouterBuilder : ReactiveSource {
+    fun remove(viewRuntimeImpl: ViewRuntimeImpl, nodeId: Long, parentNode: Long)
 
-    fun interact(interactionCallback: InteractionCallback): RouterBuilder
-
-    fun route(path: String, subRouteBuilder: ReceiverConsumer<RouterBuilder>): RouterBuilder
-
-    fun window(windowBuilder: ReceiverConsumer<WindowBuilder>): RouterBuilder
-
-    fun window(): WindowBuilder
-
-    fun create(parent: Router?): Router
+    fun insert(viewRuntimeImpl: ViewRuntimeImpl, parentNode: Long)
 
 }

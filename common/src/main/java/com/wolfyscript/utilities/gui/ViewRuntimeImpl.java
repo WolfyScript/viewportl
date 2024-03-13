@@ -3,7 +3,8 @@ package com.wolfyscript.utilities.gui;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.callback.TextInputCallback;
 import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback;
-import com.wolfyscript.utilities.gui.components.AbstractComponentImpl;
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSourceImpl;
+import com.wolfyscript.utilities.gui.rendering.RenderingGraph;
 
 import java.util.*;
 import java.util.function.Function;
@@ -13,7 +14,7 @@ public class ViewRuntimeImpl implements ViewRuntime {
     private static long NEXT_ID = Long.MIN_VALUE;
 
     private final long id;
-    private final Map<Integer, Component> leaveNodes = new HashMap<>();
+    private final RenderingGraph renderingGraph;
     private final Map<UUID, RenderContext> viewerContexts = new HashMap<>();
 
     private final WolfyUtils wolfyUtils;
@@ -29,12 +30,17 @@ public class ViewRuntimeImpl implements ViewRuntime {
 
     protected ViewRuntimeImpl(WolfyUtils wolfyUtils, Function<ViewRuntime, RouterBuilder> rootRouter, Set<UUID> viewers) {
         this.wolfyUtils = wolfyUtils;
+        this.renderingGraph = new RenderingGraph();
         this.reactiveSource = new ReactiveSourceImpl(this);
         this.router = rootRouter.apply(this).create(null);
 
         this.history = new ArrayDeque<>();
         this.viewers = viewers;
         id = NEXT_ID++;
+    }
+
+    public RenderingGraph getRenderingGraph() {
+        return renderingGraph;
     }
 
     public ReactiveSourceImpl getReactiveSource() {
@@ -88,24 +94,6 @@ public class ViewRuntimeImpl implements ViewRuntime {
 
     public long getId() {
         return id;
-    }
-
-    public Optional<Component> getLeaveNode(int slot) {
-        return Optional.ofNullable(leaveNodes.get(slot));
-    }
-
-    public void updateLeaveNodes(Component state, int... slots) {
-        for (int slot : slots) {
-            updateLeaveNodes(state, slot);
-        }
-    }
-
-    public void updateLeaveNodes(Component state, int slot) {
-        if (state == null) {
-            leaveNodes.remove(slot);
-        } else {
-            leaveNodes.put(slot, state);
-        }
     }
 
     @Override

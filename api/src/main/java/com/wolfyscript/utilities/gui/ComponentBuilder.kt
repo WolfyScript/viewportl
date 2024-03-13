@@ -15,54 +15,46 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui
 
-package com.wolfyscript.utilities.gui;
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
+import com.fasterxml.jackson.databind.annotation.JsonTypeResolver
+import com.wolfyscript.utilities.Keyed
+import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.utilities.config.jackson.KeyedTypeIdResolver
+import com.wolfyscript.utilities.config.jackson.KeyedTypeResolver
+import com.wolfyscript.utilities.gui.reactivity.Signal
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
-import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
-import com.wolfyscript.utilities.Keyed;
-import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.gui.signal.Signal;
-import com.wolfyscript.utilities.config.jackson.KeyedTypeIdResolver;
-import com.wolfyscript.utilities.config.jackson.KeyedTypeResolver;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Set;
-
-
-@JsonTypeResolver(KeyedTypeResolver.class)
-@JsonTypeIdResolver(KeyedTypeIdResolver.class)
+@JsonTypeResolver(KeyedTypeResolver::class)
+@JsonTypeIdResolver(
+    KeyedTypeIdResolver::class
+)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
-@JsonPropertyOrder(value = { "type" })
+@JsonPropertyOrder(value = ["type"])
 @JsonIgnoreProperties(ignoreUnknown = true)
-public interface ComponentBuilder<COMPONENT extends Component, PARENT extends Component> extends Keyed {
-
+interface ComponentBuilder<COMPONENT : Component?, PARENT : Component?> : Keyed {
     @JsonIgnore
-    @Override
-    NamespacedKey getNamespacedKey();
+    override fun getNamespacedKey(): NamespacedKey
 
-    default NamespacedKey getType() {
-        return getNamespacedKey();
-    }
+    val type: NamespacedKey
+        get() = namespacedKey
 
-    String id();
+    fun id(): String
 
-    Position position();
+    fun position(): Position?
 
-    ComponentBuilder<COMPONENT, PARENT> position(Position position);
+    fun position(position: Position): ComponentBuilder<COMPONENT, PARENT>
 
     /**
      * Gets the signals that this component builder uses inside the parent construction consumer.
      *
      * @return The signals used in this builder.
      */
-    Set<Signal<?>> signals();
+    fun signals(): Set<Signal<*>>
 
-    @NotNull
-    COMPONENT create(Component parent);
-
+    fun create(parent: Component?): COMPONENT
 }

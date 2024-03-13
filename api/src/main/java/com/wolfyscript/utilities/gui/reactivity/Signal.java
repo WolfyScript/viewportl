@@ -16,9 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.gui.signal;
-
-import com.wolfyscript.utilities.gui.Effect;
+package com.wolfyscript.utilities.gui.reactivity;
 
 import java.util.function.Function;
 

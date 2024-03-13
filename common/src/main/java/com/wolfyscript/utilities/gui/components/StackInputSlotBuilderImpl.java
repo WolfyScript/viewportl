@@ -12,7 +12,7 @@ import com.wolfyscript.utilities.gui.ComponentBuilderSettings;
 import com.wolfyscript.utilities.gui.InteractionResult;
 import com.wolfyscript.utilities.gui.Position;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-import com.wolfyscript.utilities.gui.signal.Signal;
+import com.wolfyscript.utilities.gui.reactivity.Signal;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -53,6 +53,6 @@ public class StackInputSlotBuilderImpl extends AbstractComponentBuilderImpl<Stac
 
 
 
-        return new StackInputSlotImpl(id(), getWolfyUtils(), component, onValueChange, interactionCallback, valueSignal, position());
+        return new StackInputSlotImpl(id(), wolfyUtils, component, onValueChange, interactionCallback, valueSignal.get(), position());
     }
 }

@@ -15,22 +15,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.utilities.gui
 
-import com.wolfyscript.utilities.gui.callback.InteractionCallback
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
-import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
+package com.wolfyscript.utilities.gui.reactivity
 
-interface RouterBuilder : ReactiveSource {
+import com.wolfyscript.utilities.gui.ViewRuntime
+import java.util.function.Consumer
+import java.util.function.Function
 
-    fun interact(interactionCallback: InteractionCallback): RouterBuilder
+class MemoState<T>(private val fn: Function<T?, Pair<T?, Boolean>>) : AnyComputation<T?> {
 
-    fun route(path: String, subRouteBuilder: ReceiverConsumer<RouterBuilder>): RouterBuilder
-
-    fun window(windowBuilder: ReceiverConsumer<WindowBuilder>): RouterBuilder
-
-    fun window(): WindowBuilder
-
-    fun create(parent: Router?): Router
-
+    override fun run(runtime: ViewRuntime, value: T?, apply: Consumer<T?>): Boolean {
+        val (newValue, different) = fn.apply(value)
+        apply.accept(newValue)
+        return different
+    }
 }

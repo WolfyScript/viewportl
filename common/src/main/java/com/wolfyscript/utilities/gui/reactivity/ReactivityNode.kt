@@ -18,15 +18,17 @@
 
 package com.wolfyscript.utilities.gui.reactivity
 
-class Node<V>(
+import com.wolfyscript.utilities.gui.ViewRuntime
+
+class ReactivityNode<V>(
     val id: NodeId,
-    var value: V,
-    val type: Type
+    var value: V?,
+    val type: Type<V>
 ) {
 
     private var state: State = State.CLEAN
-    private val sources: MutableSet<Node<*>> = mutableSetOf()
-    private val subscribers: MutableSet<Node<*>> = mutableSetOf()
+    private val sources: MutableSet<ReactivityNode<*>> = mutableSetOf()
+    private val subscribers: MutableSet<ReactivityNode<*>> = mutableSetOf()
 
     fun mark(state: State) {
         this.state = state
@@ -36,11 +38,11 @@ class Node<V>(
         return state
     }
 
-    fun update() {
-
+    fun update(viewRuntime: ViewRuntime) : Boolean {
+        return type.runUpdate(viewRuntime, this);
     }
 
-    fun subscribe(source: Node<*>) {
+    fun subscribe(source: ReactivityNode<*>) {
         source.subscribers.add(this)
         sources.add(source)
     }
@@ -50,23 +52,31 @@ class Node<V>(
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other is Node<*>) {
+        if (other is ReactivityNode<*>) {
             return id == other.id
         }
         return false
     }
 
-    interface Type {
+    interface Type<T> {
 
-        interface Signal : Type
+        fun runUpdate(runtime: ViewRuntime, reactivityNode: ReactivityNode<T>) : Boolean = true
 
-        interface Effect : Type {
+        interface Signal<T> : Type<T>
 
-            fun computation(): AnyComputation<*>
+        interface Effect<T> : Type<T> {
+
+            override fun runUpdate(runtime: ViewRuntime, reactivityNode: ReactivityNode<T>): Boolean {
+                return computation().run(runtime, reactivityNode.value) { reactivityNode.value = it }
+            }
+
+            fun computation(): AnyComputation<T?>
 
         }
 
-        interface Memo : Type {
+        interface Memo<T> : Type<T> {
+
+            fun computation(): AnyComputation<T?>
 
         }
 

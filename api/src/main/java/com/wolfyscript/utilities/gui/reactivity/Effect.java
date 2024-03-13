@@ -16,8 +16,8 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.gui;
+package com.wolfyscript.utilities.gui.reactivity;
 
-public interface Renderable {
+public interface Effect {
 
 }

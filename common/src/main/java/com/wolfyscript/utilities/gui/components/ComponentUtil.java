@@ -16,11 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.gui;
+package com.wolfyscript.utilities.gui.components;
 
 import com.google.common.base.Preconditions;
 import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.WolfyUtils;
+import com.wolfyscript.utilities.gui.Component;
+import com.wolfyscript.utilities.gui.ComponentBuilder;
 import com.wolfyscript.utilities.registry.RegistryGUIComponentBuilders;
 import com.wolfyscript.utilities.tuple.Pair;
 

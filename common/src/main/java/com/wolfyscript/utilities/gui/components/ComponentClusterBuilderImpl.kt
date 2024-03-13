@@ -4,18 +4,12 @@ import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSetter
-import com.google.inject.Binder
-import com.google.inject.Guice
 import com.google.inject.Inject
-import com.google.inject.Module
-import com.google.inject.Stage
 import com.wolfyscript.utilities.KeyedStaticId
-import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.gui.*
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
 import com.wolfyscript.utilities.gui.functions.SerializableSupplier
-import com.wolfyscript.utilities.tuple.Pair
 import java.util.*
 
 @KeyedStaticId(key = "cluster")
@@ -23,7 +17,7 @@ import java.util.*
 class ComponentClusterBuilderImpl @Inject @JsonCreator constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,
-    @JsonProperty("position") position: Position?,
+    @JsonProperty("position") position: Position,
     @JacksonInject("context") private val context: BuildContext
 ) : AbstractComponentBuilderImpl<ComponentCluster, Component>(id, wolfyUtils, position), ComponentClusterBuilder {
     private val componentRenderSet: MutableSet<Long> = HashSet()
@@ -35,7 +29,7 @@ class ComponentClusterBuilderImpl @Inject @JsonCreator constructor(
         }
     }
 
-    override fun create(parent: Component): ComponentCluster {
+    override fun create(parent: Component?): ComponentCluster {
         val staticComponents: MutableList<Component> = ArrayList()
         val build = ComponentClusterImpl(id(), wolfyUtils, parent, position(), staticComponents)
 

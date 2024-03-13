@@ -15,23 +15,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.utilities.gui
+package com.wolfyscript.utilities.gui.reactivity
 
+import com.wolfyscript.utilities.gui.ViewRuntime
 import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
 import com.wolfyscript.utilities.gui.functions.ReceiverFunction
-import com.wolfyscript.utilities.gui.functions.SignalableReceiverBiConsumer
 import com.wolfyscript.utilities.gui.functions.SignalableReceiverFunction
-import com.wolfyscript.utilities.gui.signal.Signal
 import com.wolfyscript.utilities.platform.Platform
 import org.apache.commons.lang3.function.TriFunction
 import java.util.*
 import java.util.function.BiFunction
+import java.util.function.Function
 
 interface ReactiveSource {
 
-    fun <T> createSignal(defaultValue: T): Signal<T>
+    fun <T : Any> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime, T?>): Signal<T>
 
-    fun <T> createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime, T>): Signal<T>
+    fun <T : Any> createMemo(fn: Function<T?, T?>) : Memo<T>
 
     /**
      * Creates a Signal with a value, which is stored externally of the GUI.
@@ -97,4 +97,12 @@ interface ReactiveSource {
     }
 
     fun <T> createEffect(additionalSignals: List<Signal<*>>, effect: SignalableReceiverFunction<T?, T>): Effect
+}
+
+inline fun <reified T : Any> ReactiveSource.createSignal(defaultValue: T? = null): Signal<T> {
+    return createSignal(T::class.java) { defaultValue }
+}
+
+inline fun <reified T : Any> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime, T?>): Signal<T> {
+    return createSignal(T::class.java, defaultValueProvider)
 }

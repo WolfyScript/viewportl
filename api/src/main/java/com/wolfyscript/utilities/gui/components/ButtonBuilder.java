@@ -25,7 +25,7 @@ import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.functions.SerializableFunction;
-import com.wolfyscript.utilities.gui.signal.Signal;
+import com.wolfyscript.utilities.gui.reactivity.Signal;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 import net.kyori.adventure.sound.Sound;
 import org.jetbrains.annotations.NotNull;

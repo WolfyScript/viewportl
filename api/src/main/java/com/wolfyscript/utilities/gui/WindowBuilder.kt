@@ -22,15 +22,15 @@ import com.wolfyscript.utilities.gui.ReactiveRenderBuilder.ReactiveResult
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
 import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilder
 import com.wolfyscript.utilities.gui.functions.*
-import com.wolfyscript.utilities.gui.signal.Signal
-import java.util.function.Consumer
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
+import com.wolfyscript.utilities.gui.reactivity.Signal
 
 /**
  * Builder used to create Window Menus.<br></br>
  *
  */
 @KeyedBaseType(baseType = ComponentBuilder::class)
-interface WindowBuilder : ChildComponentsBuilder<WindowBuilder>, ConditionalChildComponentBuilder<WindowBuilder> {
+interface WindowBuilder : ReactiveSource, ChildComponentsBuilder<WindowBuilder>, ConditionalChildComponentBuilder<WindowBuilder> {
     /**
      * The size of the inventory.<br></br>
      * This only applies when the type is not specified.<br></br>

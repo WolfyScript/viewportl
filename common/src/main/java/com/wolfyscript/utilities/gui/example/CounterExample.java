@@ -2,10 +2,9 @@ package com.wolfyscript.utilities.gui.example;
 
 import com.wolfyscript.utilities.gui.GuiAPIManager;
 import com.wolfyscript.utilities.gui.InteractionResult;
-import com.wolfyscript.utilities.gui.ReactiveSource;
 import com.wolfyscript.utilities.gui.WindowBuilder;
 import com.wolfyscript.utilities.gui.components.ButtonBuilder;
-import com.wolfyscript.utilities.gui.signal.Signal;
+import com.wolfyscript.utilities.gui.reactivity.Signal;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 
@@ -44,9 +43,7 @@ public class CounterExample {
     }
 
     public static void register(GuiAPIManager manager) {
-        manager.registerGuiFromFiles("example_counter", (reactiveSrc, router) -> router.window((windowBuilder, reactiveSource) -> {
-            mainMenu(windowBuilder, reactiveSrc);
-        }));
+        manager.registerGuiFromFiles("example_counter", router -> router.window(CounterExample::mainMenu));
     }
 
     /**
@@ -56,14 +53,14 @@ public class CounterExample {
      *
      * @param window The WindowBuilder to use for the main menu
      */
-    static void mainMenu(WindowBuilder window, ReactiveSource reactiveSrc) {
+    static void mainMenu(WindowBuilder window) {
         // This is only called upon creation of the component. So this is not called when the signal is updated!
 
         // Use signals that provide a simple value storage & synchronisation. Signals are not persistent and will get destroyed when the GUI is closed!
-        Signal<Integer> countSignal = reactiveSrc.createSignal(viewManager -> 0);
+        Signal<Integer> countSignal = window.createSignal(Integer.class, r -> 0);
 
         // Optionally, sync your data with the gui using custom data stores. This makes it possible to store persistent data.
-        Signal<Integer> count = reactiveSrc.createStore(guiViewManager -> new CounterStore(), CounterStore::getCount, CounterStore::setCount);
+        Signal<Integer> count = window.createStore(guiViewManager -> new CounterStore(), CounterStore::getCount, CounterStore::setCount);
         count.tagName("count");
 
         window.size(9 * 3);

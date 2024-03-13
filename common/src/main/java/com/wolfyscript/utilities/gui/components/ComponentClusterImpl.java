@@ -3,6 +3,7 @@ package com.wolfyscript.utilities.gui.components;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.List;
@@ -50,29 +51,6 @@ public class ComponentClusterImpl extends AbstractComponentImpl implements Compo
     }
 
     @Override
-    public void remove(GuiHolder guiHolder, ViewRuntime viewRuntime, RenderContext renderContext) {
-        for (Component component : children) {
-            component.remove(guiHolder, viewRuntime, renderContext);
-        }
-    }
-
-    @Override
-    public void render(ViewRuntime viewRuntime, GuiHolder guiHolder, RenderContext context) {
-        // TODO
-//        if (!(context instanceof RenderContextImpl renderContext)) return;
-//
-//        for (Component component : children) {
-//            var childPos = component.position();
-//            ((GuiViewManagerImpl) guiHolder.getViewManager()).updateLeaveNodes(component, childPos.slot());
-//            renderContext.enterNode(component);
-//            if (component.construct(guiHolder, viewManager) instanceof SignalledObject signalledObject) {
-//                signalledObject.update(viewManager, guiHolder, renderContext);
-//            }
-//            renderContext.exitNode();
-//        }
-    }
-
-    @Override
     public int width() {
         return width;
     }
@@ -82,4 +60,20 @@ public class ComponentClusterImpl extends AbstractComponentImpl implements Compo
         return height;
     }
 
+    @Override
+    public void remove(@NotNull ViewRuntimeImpl viewRuntimeImpl, long nodeId, long parentNode) {
+        viewRuntimeImpl.getRenderingGraph().removeNode(nodeId);
+    }
+
+    @Override
+    public void insert(@NotNull ViewRuntimeImpl viewRuntimeImpl, long parentNode) {
+        long id = viewRuntimeImpl.getRenderingGraph().addNode(this);
+        viewRuntimeImpl.getRenderingGraph().insertNodeChild(id, parentNode);
+
+        for (Component child : children) {
+            if (child instanceof Renderable renderable) {
+                renderable.insert(viewRuntimeImpl, id);
+            }
+        }
+    }
 }

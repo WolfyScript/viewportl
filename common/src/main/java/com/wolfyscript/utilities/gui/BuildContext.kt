@@ -24,10 +24,12 @@ import com.google.inject.Module
 import com.google.inject.Stage
 import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.gui.components.ComponentUtil
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSourceImpl
 import com.wolfyscript.utilities.tuple.Pair
 import java.util.*
 
-class BuildContext(val reactiveSource: ReactiveSourceImpl, private val wolfyUtils: WolfyUtils) {
+class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveSourceImpl, val wolfyUtils: WolfyUtils) {
 
     private val componentIdAliases: MutableMap<String, Long> = HashMap()
     private val componentBuilderMap: MutableMap<Long, ComponentBuilder<*, *>> = HashMap()

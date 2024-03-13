@@ -12,6 +12,7 @@ import com.wolfyscript.utilities.world.items.ItemStackConfig;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -75,14 +76,14 @@ public class ButtonImpl extends AbstractComponentImpl implements Button {
     }
 
     @Override
-    public void remove(GuiHolder guiHolder, ViewRuntime viewRuntime, RenderContext renderContext) {
-        renderContext.renderStack(position(), null);
-        //((GuiViewManagerImpl) guiHolder.getViewManager()).updateLeaveNodes(null, renderContext.currentOffset() + position().slot());
+    public void insert(@NotNull ViewRuntimeImpl viewRuntimeImpl, long parentNode) {
+        long id = viewRuntimeImpl.getRenderingGraph().addNode(this);
+        viewRuntimeImpl.getRenderingGraph().insertNodeChild(id, parentNode);
     }
 
     @Override
-    public void render(ViewRuntime viewRuntime, GuiHolder guiHolder, RenderContext renderContext) {
-        renderContext.renderStack(position(), icon().getStack(), renderContext.createContext(guiHolder, icon().getResolvers()));
+    public void remove(@NotNull ViewRuntimeImpl viewRuntimeImpl, long nodeId, long parentNode) {
+        viewRuntimeImpl.getRenderingGraph().removeNode(nodeId);
     }
 
     public static class DynamicIcon implements ButtonIcon {

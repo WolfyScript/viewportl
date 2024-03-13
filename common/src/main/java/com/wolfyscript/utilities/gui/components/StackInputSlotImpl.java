@@ -5,7 +5,7 @@ import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.platform.adapters.ItemStack;
 import com.wolfyscript.utilities.gui.*;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-import com.wolfyscript.utilities.gui.signal.Signal;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
@@ -14,9 +14,9 @@ public class StackInputSlotImpl extends AbstractComponentImpl implements Interac
 
     private final Consumer<ItemStack> onValueChange;
     private final InteractionCallback interactionCallback;
-    private final Signal<ItemStack> value;
+    private final ItemStack value;
 
-    public StackInputSlotImpl(String internalID, WolfyUtils wolfyUtils, Component parent, Consumer<ItemStack> onValueChange, InteractionCallback interactionCallback, Signal<ItemStack> value, Position position) {
+    public StackInputSlotImpl(String internalID, WolfyUtils wolfyUtils, Component parent, Consumer<ItemStack> onValueChange, InteractionCallback interactionCallback, ItemStack value, Position position) {
         super(internalID, wolfyUtils, parent, position);
         this.onValueChange = onValueChange;
         this.interactionCallback = (holder, details) -> {
@@ -33,18 +33,6 @@ public class StackInputSlotImpl extends AbstractComponentImpl implements Interac
     }
 
     @Override
-    public void render(ViewRuntime runtime, GuiHolder guiHolder, RenderContext renderContext) {
-        renderContext.renderStack(position(), value.get());
-        ((ViewRuntimeImpl) guiHolder.getViewManager()).updateLeaveNodes(this, renderContext.currentOffset() + position().slot());
-    }
-
-    @Override
-    public void remove(GuiHolder guiHolder, ViewRuntime viewRuntime, RenderContext renderContext) {
-        renderContext.renderStack(position(), null);
-        ((ViewRuntimeImpl) guiHolder.getViewManager()).updateLeaveNodes(null, renderContext.currentOffset() + position().slot());
-    }
-
-    @Override
     public int width() {
         return 1;
     }
@@ -52,10 +40,6 @@ public class StackInputSlotImpl extends AbstractComponentImpl implements Interac
     @Override
     public int height() {
         return 1;
-    }
-
-    public Signal<ItemStack> getValue() {
-        return value;
     }
 
     @Override
@@ -69,7 +53,18 @@ public class StackInputSlotImpl extends AbstractComponentImpl implements Interac
     }
 
     @Override
-    public Signal<ItemStack> signal() {
+    public ItemStack value() {
         return value;
+    }
+
+    @Override
+    public void remove(@NotNull ViewRuntimeImpl viewRuntimeImpl, long nodeId, long parentNode) {
+        viewRuntimeImpl.getRenderingGraph().removeNode(nodeId);
+    }
+
+    @Override
+    public void insert(@NotNull ViewRuntimeImpl viewRuntimeImpl, long parentNode) {
+        long id = viewRuntimeImpl.getRenderingGraph().addNode(this);
+        viewRuntimeImpl.getRenderingGraph().insertNodeChild(id, parentNode);
     }
 }

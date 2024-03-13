@@ -18,16 +18,10 @@
 
 package com.wolfyscript.utilities.gui.reactivity;
 
-import com.wolfyscript.utilities.gui.Effect;
 import com.wolfyscript.utilities.gui.ViewRuntime;
-import com.wolfyscript.utilities.gui.ViewRuntimeImpl;
 import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer;
 import com.wolfyscript.utilities.gui.functions.ReceiverFunction;
-import com.wolfyscript.utilities.gui.reactivity.SignalImpl;
-import com.wolfyscript.utilities.gui.signal.Store;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Function;
 
 public class StoreImpl<S, V> implements Store<V> {

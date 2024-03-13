@@ -2,17 +2,20 @@ package com.wolfyscript.utilities.gui
 
 import com.fasterxml.jackson.annotation.*
 import com.google.common.base.Preconditions
-import com.google.inject.*
+import com.google.inject.Inject
 import com.wolfyscript.utilities.KeyedStaticId
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.config.jackson.KeyedBaseType
 import com.wolfyscript.utilities.gui.ReactiveRenderBuilder.ReactiveResult
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.components.ComponentUtil
 import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilder
 import com.wolfyscript.utilities.gui.functions.*
 import com.wolfyscript.utilities.gui.reactivity.AnyComputation
 import com.wolfyscript.utilities.gui.reactivity.EffectImpl
-import com.wolfyscript.utilities.gui.signal.Signal
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
+import com.wolfyscript.utilities.gui.reactivity.Signal
+import com.wolfyscript.utilities.gui.rendering.RenderingNode
 import com.wolfyscript.utilities.tuple.Pair
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
@@ -23,14 +26,14 @@ import java.util.function.Consumer
 @KeyedBaseType(baseType = ComponentBuilder::class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 class WindowBuilderImpl @Inject @JsonCreator constructor(
-    @param:JsonProperty("id") private val id: String,
-    @param:JacksonInject("wolfyUtils") private val wolfyUtils: WolfyUtils,
+    @JsonProperty("id") private val id: String,
+    @JacksonInject("wolfyUtils") private val wolfyUtils: WolfyUtils,
     @JacksonInject("context") private val context: BuildContext
-) : WindowBuilder {
+) : WindowBuilder, ReactiveSource by context.reactiveSource {
+
     private var size: Int = 0
     private var type: WindowType? = null
-    private var interactionCallback =
-        InteractionCallback { guiHolder: GuiHolder?, interactionDetails: InteractionDetails? -> InteractionResult.def() }
+    private var interactionCallback = InteractionCallback { _, _ -> InteractionResult.def() }
 
     /**
      * Components
@@ -40,7 +43,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
     /**
      * Tasks
      */
-    protected var intervalRunnables: MutableList<Pair<Runnable, Long>> = ArrayList()
+    private var intervalRunnables: MutableList<Pair<Runnable, Long>> = ArrayList()
 
     /**
      * Title data
@@ -103,7 +106,8 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
                 TagResolver.resolver(signal.tagName()) { _, _ ->
                     Tag.inserting(net.kyori.adventure.text.Component.text(signal.get().toString()))
                 }
-            }.toList())
+            }.toList()
+        )
         titleSignals.addAll(Arrays.stream(signals).toList())
         return this
     }
@@ -114,123 +118,37 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
     }
 
     override fun reactive(reactiveFunction: SignalableReceiverFunction<ReactiveRenderBuilder, ReactiveResult?>): WindowBuilder {
-        context.reactiveSource.createCustomEffect(emptyList(), null, object : AnyComputation<Component> {
+        val builder = ReactiveRenderBuilderImpl(wolfyUtils, context)
+        val component = with(reactiveFunction) { builder.apply() }?.construct()
+
+        context.reactiveSource.createCustomEffect(emptyList(), null, object : AnyComputation<Long?> {
 
             override fun run(
                 runtime: ViewRuntime,
-                holder: GuiHolder,
-                value: Component?,
-                apply: Consumer<Component?>
-            ): Boolean {
-                val previousComponent: Component? = value;
-
-                val builder = ReactiveRenderBuilderImpl(
-                    wolfyUtils,
-                    HashMap() /* TODO: ((WindowImpl) guiHolder.getCurrentWindow()).nonRenderedComponents */
-                )
-
-                val result = with(reactiveFunction) { builder.apply() }
-
-                val component = if (result == null) null else result.construct()!!
-                if (value == component) return true
-
-                (runtime as ViewRuntimeImpl).getRenderContext(holder.player.uuid()).ifPresent {
-
-                    previousComponent?.remove(holder, runtime, it)
-
-                    apply.accept(component)
-                    if (component == null) {
-                        return@ifPresent
-                    }
-
-                    it.enterNode(component)
-                    component.executeForAllSlots(
-                        component.offset() + component.position().slot(),
-                        Consumer { internalSlot: Int? ->
-                            runtime.updateLeaveNodes(
-                                component,
-                                internalSlot!!
-                            )
-                        })
-                    component.render(runtime, holder, it)
-                    it.exitNode()
-                }
-
-                return true
-            }
-        })
-        return this
-    }
-
-    fun <B : ComponentBuilder<out Component, Component>> conditionalComponent(
-        condition: SerializableSupplier<Boolean>,
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
-    ): WindowBuilder {
-        val builderTypeInfo = ComponentUtil.getBuilderType(
-            wolfyUtils, id, builderType
-        )
-        val builder = context.findExistingComponentBuilder(0, builderTypeInfo.value, builderTypeInfo.key)
-            .orElseThrow {
-                IllegalStateException(
-                    String.format(
-                        "Failed to link to component '%s'! Cannot find existing placement",
-                        id
-                    )
-                )
-            }
-
-        with(builderConsumer) { builder.consume() }
-        val component = builder.create(null)
-
-        val effect = context.reactiveSource.createCustomEffect(emptyList(), false, object : AnyComputation<Boolean> {
-
-            override fun run(
-                runtime: ViewRuntime,
-                holder: GuiHolder,
-                value: Boolean?,
-                apply: Consumer<Boolean?>
+                value: Long?,
+                apply: Consumer<Long?>
             ): Boolean {
                 runtime as ViewRuntimeImpl
-                val result = condition.get()
-                if (result != value) {
-                    apply.accept(result)
-                    runtime.getRenderContext(holder.player.uuid()).ifPresent { context ->
-                        if (result) {
-                            context.enterNode(component)
-                            component.render(runtime, holder, context)
-                            component.executeForAllSlots(
-                                component.offset() + component.position().slot()
-                            ) { slot2: Int? ->
-                                runtime.updateLeaveNodes(
-                                    component,
-                                    slot2!!
-                                )
-                            }
-                            context.exitNode()
-                        } else {
-                            component.executeForAllSlots(
-                                component.offset() + component.position().slot()
-                            ) { slot2: Int? ->
-                                context.setStack(slot2!!, null)
-                                runtime.updateLeaveNodes(null, slot2)
-                            }
-                        }
-                    }
+                val graph = runtime.renderingGraph
+                val previousNode: RenderingNode? = value?.let { graph.getNode(it) }
+                if (previousNode?.component == component) return false
+
+                val previousComponent = previousNode?.component
+                if (previousComponent is Renderable) {
+                    previousComponent.remove(runtime, previousNode.id, 0)
                 }
+
+                if (component == null) {
+                    apply.accept(null)
+                    return true
+                }
+
+                val id = runtime.renderingGraph.addNode(component)
+                apply.accept(id)
 
                 return true
             }
         })
-
-        val effectNode = context.reactiveSource.untypedNode((effect as EffectImpl).id)
-        condition.getNodeIds().forEach {
-            val node = context.reactiveSource.untypedNode(it)
-            if (node != null) {
-                effectNode?.subscribe(node)
-            }
-        }
         return this
     }
 
@@ -242,10 +160,10 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         val numericId = context.getOrCreateNumericId(id)
         val builderTypeInfo = ComponentUtil.getBuilderType(wolfyUtils, id ?: "internal_${id}", builderType)
         val builder: B = context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-            val builderId = context.instantiateNewBuilder(numericId, Position(Position.Type.RELATIVE, 0) /* TODO */, builderTypeInfo)
-            componentRenderSet.add(builderId)
-            context.getBuilder(builderId, builderTypeInfo.value)
-        }
+                val builderId = context.instantiateNewBuilder(numericId, Position(Position.Type.RELATIVE, 0) /* TODO */, builderTypeInfo)
+                componentRenderSet.add(builderId)
+                context.getBuilder(builderId, builderTypeInfo.value)
+            }
         with(builderConsumer) { builder.consume() }
         return this
     }
@@ -258,19 +176,27 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
                 )
             }
         }
-        if (titleFunction != null) {
-            val effect = context.reactiveSource.createCustomEffect(titleSignals.toList(), null, object : AnyComputation<Any> {
 
-                override fun run(runtime: ViewRuntime, holder: GuiHolder, value: Any?, apply: Consumer<Any?>): Boolean {
-                    (runtime as ViewRuntimeImpl).getRenderContext(holder.player.uuid()).ifPresent {
-                        it.updateTitle(
-                            holder,
-                            titleFunction!!.get()
-                        )
-                    }
-                    return true
-                }
-            })
+        conditionals.forEach { it.build(null) }
+
+        val components = componentRenderSet.stream()
+            .map { componentBuilder -> context.getBuilder(componentBuilder)?.create(null) as Component }
+            .toList()
+
+        val window = WindowImpl(
+            parent.id + "/" + id,
+            parent,
+            size,
+            type,
+            titleFunction?.get() ?: net.kyori.adventure.text.Component.empty(),
+            interactionCallback,
+            components
+        )
+
+        if (titleFunction != null) {
+            val effect = context.reactiveSource.createEffect() {
+                window.title(titleFunction!!.get())
+            }
             val effectNode = context.reactiveSource.untypedNode((effect as EffectImpl).id)
             titleFunction!!.getNodeIds().forEach {
                 val node = context.reactiveSource.untypedNode(it)
@@ -280,20 +206,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
             }
         }
 
-        val components = componentRenderSet.stream()
-            .map { componentBuilder -> context.getBuilder(componentBuilder)?.create(null) as Component }
-            .toList()
-
-        return WindowImpl(
-            parent.id + "/" + id,
-            parent,
-            size,
-            type,
-            staticTitle,
-            titleFunction,
-            interactionCallback,
-            components
-        )
+        return window
     }
 
     override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<WindowBuilder> {

@@ -10,7 +10,7 @@ import com.wolfyscript.utilities.gui.animation.*;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.functions.SerializableFunction;
-import com.wolfyscript.utilities.gui.signal.Signal;
+import com.wolfyscript.utilities.gui.reactivity.Signal;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -78,7 +78,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
 
     @Override
     public ButtonBuilder animation(ReceiverConsumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild) {
-        AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> builder = new AnimationBuilderImpl<>(context, () -> new ButtonAnimationFrameBuilderImpl(getWolfyUtils()));
+        AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> builder = new AnimationBuilderImpl<>(context, () -> new ButtonAnimationFrameBuilderImpl(wolfyUtils));
         animationBuild.consume(builder);
         this.animationBuilder = builder;
         return this;
@@ -86,7 +86,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
 
     @Override
     public @NotNull Button create(Component parent) {
-        return new ButtonImpl(getWolfyUtils(), id(), parent, iconBuilder.create(), soundFunction, interactionCallback, position(), animationBuilder);
+        return new ButtonImpl(wolfyUtils, id(), parent, iconBuilder.create(), soundFunction, interactionCallback, position(), animationBuilder);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

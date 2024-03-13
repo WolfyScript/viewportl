@@ -18,8 +18,6 @@
 
 package com.wolfyscript.utilities.gui.reactivity
 
-import com.wolfyscript.utilities.gui.Effect
-
 class EffectImpl(val id: NodeId) : Effect {
 
 }

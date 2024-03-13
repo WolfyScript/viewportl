@@ -15,74 +15,46 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.components
 
-package com.wolfyscript.utilities.gui.components;
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.config.jackson.KeyedBaseType
+import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.ComponentBuilder
+import com.wolfyscript.utilities.gui.Position
+import com.wolfyscript.utilities.gui.reactivity.Signal
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.ComponentBuilder;
-import com.wolfyscript.utilities.gui.Position;
-import com.wolfyscript.utilities.gui.signal.Signal;
-import com.wolfyscript.utilities.config.jackson.KeyedBaseType;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-@KeyedBaseType(baseType = ComponentBuilder.class)
-public abstract class AbstractComponentBuilderImpl<OWNER extends Component, PARENT extends Component> implements ComponentBuilder<OWNER, PARENT> {
-
+@KeyedBaseType(baseType = ComponentBuilder::class)
+abstract class AbstractComponentBuilderImpl<OWNER : Component?, PARENT : Component?> protected constructor(
+    private val id: String,
+    @JvmField protected val wolfyUtils: WolfyUtils,
+    @field:JsonProperty("position") private var position: Position
+) : ComponentBuilder<OWNER, PARENT> {
     @JsonProperty("type")
-    private final NamespacedKey type;
-    private final String id;
-    @JsonProperty("position")
-    private Position position;
+    override val type: NamespacedKey = wolfyUtils.identifiers.getNamespaced(javaClass)
+
     @JsonIgnore
-    private final Set<Signal<?>> signals = new HashSet<>();
-    private final WolfyUtils wolfyUtils;
+    private val signals: MutableSet<Signal<*>> = HashSet()
 
-    protected AbstractComponentBuilderImpl(String id, WolfyUtils wolfyUtils, Position position) {
-        this.type = wolfyUtils.getIdentifiers().getNamespaced(getClass());
-        this.id = id;
-        this.wolfyUtils = wolfyUtils;
-        this.position = position;
+    override fun id(): String = id
+
+    override fun position(): Position? = position
+
+    override fun position(position: Position): ComponentBuilder<OWNER, PARENT> {
+        this.position = position
+        return this
     }
 
-    @Override
-    public String id() {
-        return id;
+    protected fun addSignals(signals: Collection<Signal<*>>) {
+        this.signals.addAll(signals)
     }
 
-    @Override
-    public Position position() {
-        return position;
+    override fun signals(): Set<Signal<*>> {
+        return signals
     }
 
-    @Override
-    public ComponentBuilder<OWNER, PARENT> position(Position position) {
-        this.position = position;
-        return this;
-    }
-
-    protected void addSignals(Collection<Signal<?>> signals) {
-        this.signals.addAll(signals);
-    }
-
-    @Override
-    public Set<Signal<?>> signals() {
-        return signals;
-    }
-
-    protected WolfyUtils getWolfyUtils() {
-        return wolfyUtils;
-    }
-
-    @Override
-    public NamespacedKey getNamespacedKey() {
-        return type;
-    }
-
+    override fun getNamespacedKey(): NamespacedKey = type
 }

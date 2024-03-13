@@ -17,12 +17,11 @@
  */
 package com.wolfyscript.utilities.gui.reactivity
 
-import com.wolfyscript.utilities.gui.GuiHolder
 import com.wolfyscript.utilities.gui.ViewRuntime
 import java.util.function.Consumer
 
 interface AnyComputation<T> {
 
-    fun run(runtime: ViewRuntime, holder: GuiHolder, value: T?, apply: Consumer<T?>) : Boolean
+    fun run(runtime: ViewRuntime, value: T?, apply: Consumer<T?>) : Boolean
 
 }

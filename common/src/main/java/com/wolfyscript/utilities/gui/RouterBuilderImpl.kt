@@ -4,14 +4,15 @@ import com.fasterxml.jackson.annotation.*
 import com.google.common.base.Preconditions
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
-import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class RouterBuilderImpl @JsonCreator internal constructor(
     @param:JsonProperty("route") private val route: String,
     @param:JacksonInject("wolfyUtils") private val wolfyUtils: WolfyUtils,
     @param:JacksonInject("context") private val context: BuildContext
-) : RouterBuilder {
+) : RouterBuilder, ReactiveSource by context.reactiveSource {
     private val subRouteBuilders: MutableMap<String, RouterBuilder> = HashMap()
     private var windowBuilder: WindowBuilder? = null
     private var interactionCallback =
@@ -35,7 +36,7 @@ class RouterBuilderImpl @JsonCreator internal constructor(
         return this
     }
 
-    override fun route(path: String, subRouteBuilder: ReceiverBiConsumer<RouterBuilder, ReactiveSource>): RouterBuilder {
+    override fun route(path: String, subRouteBuilder: ReceiverConsumer<RouterBuilder>): RouterBuilder {
         with(subRouteBuilder) {
             subRouteBuilders.computeIfAbsent(path) { _: String? ->
                 RouterBuilderImpl(
@@ -43,14 +44,14 @@ class RouterBuilderImpl @JsonCreator internal constructor(
                     wolfyUtils,
                     context
                 )
-            }.consume(context.reactiveSource)
+            }.consume()
         }
         return this
     }
 
-    override fun window(windowBuilder: ReceiverBiConsumer<WindowBuilder, ReactiveSource>): RouterBuilder {
+    override fun window(windowBuilder: ReceiverConsumer<WindowBuilder>): RouterBuilder {
         with(windowBuilder) {
-            window().consume(context.reactiveSource)
+            window().consume()
         }
         return this
     }

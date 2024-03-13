@@ -2,8 +2,7 @@ package com.wolfyscript.utilities.gui.example
 
 import com.wolfyscript.utilities.gui.GuiAPIManager
 import com.wolfyscript.utilities.gui.InteractionResult
-import com.wolfyscript.utilities.gui.ReactiveSource
-import com.wolfyscript.utilities.gui.RouterBuilder
+import com.wolfyscript.utilities.gui.reactivity.createSignal
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import java.util.*
@@ -24,15 +23,15 @@ import java.util.*
  * Those parts are automatically updated when the count changes.
  */
 fun registerExampleCounter(manager: GuiAPIManager) {
-    manager.registerGuiFromFiles("example_counter") { reactiveSrc: ReactiveSource, router: RouterBuilder ->
-        router.window {
+    manager.registerGuiFromFiles("example_counter") {
+        window {
             // This is only called upon creation of the component. So this is not called when the signal is updated!
 
             // Use signals that provide a simple value storage & synchronisation. Signals are not persistent and will get destroyed when the GUI is closed!
-            val countSignal = reactiveSrc.createSignal { 0 }
+            val countSignal = createSignal { 0 }
 
             // Optionally, sync your data with the gui using custom data stores. This makes it possible to store persistent data.
-            val count = reactiveSrc.createStore({ CounterStore() }, { count }, { count -> this.count = count })
+            val count = createSignal(0) // TODO: Rethink Stores & Signal lifetime!
             count.tagName("count")
 
             size(9 * 3)
@@ -68,15 +67,12 @@ fun registerExampleCounter(manager: GuiAPIManager) {
                         )
                     }
                 }
-            } orElse { }
+            }
             // The state of a component is only reconstructed if the slot it is positioned at changes.
             // Here the slot will always have the same type of component, so the state is created only once.
             button("count_up") {
                 interact { _, _ ->
-                    count.update { old ->
-                        val old = old + 1
-                        old
-                    }
+                    count.update { old -> old + 1 }
                     InteractionResult.cancel(true)
                 }
                 animation {

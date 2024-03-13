@@ -24,12 +24,12 @@ import java.util.function.Function
 class NodeId(val id: Long, val runtime: ViewRuntimeImpl) {
 
     fun <V> update(updateFn: Function<V, V>) {
-        val node: Node<V>? = runtime.reactiveSource.node(this)
-        if (node != null) {
-            node.value?.let { updateFn.apply(it) }
+        val reactivityNode: ReactivityNode<V>? = runtime.reactiveSource.node(this)
+        if (reactivityNode != null) {
+            reactivityNode.value?.let { updateFn.apply(it) }
 
 
-            node.mark(Node.State.DIRTY)
+            reactivityNode.mark(ReactivityNode.State.DIRTY)
         }
 
     }

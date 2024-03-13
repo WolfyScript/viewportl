@@ -18,11 +18,13 @@
 
 package com.wolfyscript.utilities.gui.reactivity
 
-import com.wolfyscript.utilities.gui.signal.Signal
 import java.util.*
 import java.util.function.Function
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
 
-class SignalImpl<MT>(private val id: NodeId, private var value: MT) : Signal<MT> {
+class SignalImpl<MT : Any>(private val id: NodeId, private val type: KClass<MT>) :
+    Signal<MT> {
     private var tagName: String? = null
 
     override fun tagName(tagName: String) {
@@ -38,16 +40,19 @@ class SignalImpl<MT>(private val id: NodeId, private var value: MT) : Signal<MT>
     }
 
     override fun set(newValue: MT) {
-        value = newValue
+        id.runtime.reactiveSource.setValue(id, type, newValue)
     }
 
     override fun update(function: Function<MT, MT>) {
 
-        set(function.apply(value))
     }
 
-    override fun get(): MT {
-        return value
+    override fun get(): MT? {
+        val reactivityNode: ReactivityNode<*>? = id.runtime.reactiveSource.untypedNode(id)
+        if (type.isInstance(reactivityNode?.value)) {
+            return type.safeCast(reactivityNode?.value)
+        }
+        return null
     }
 
     override fun equals(other: Any?): Boolean {

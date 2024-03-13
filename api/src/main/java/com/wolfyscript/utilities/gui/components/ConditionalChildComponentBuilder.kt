@@ -46,13 +46,13 @@ interface ConditionalChildComponentBuilder<T> {
 
     interface When<T> {
 
-        infix fun then(builder: ReceiverConsumer<ComponentClusterBuilder>) : Else<T>
+        infix fun then(builderConsumer: ReceiverConsumer<ComponentClusterBuilder>) : Else<T>
 
     }
 
     interface Else<T> {
 
-        infix fun orElse(builder: ReceiverConsumer<ComponentClusterBuilder>) : T
+        infix fun orElse(builderConsumer: ReceiverConsumer<ComponentClusterBuilder>) : T
 
         fun elseNone() : T
 
