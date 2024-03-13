@@ -10,6 +10,7 @@ import com.wolfyscript.utilities.gui.ReactiveRenderBuilder.ReactiveResult
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
 import com.wolfyscript.utilities.gui.components.ComponentUtil
 import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilder
+import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilderImpl
 import com.wolfyscript.utilities.gui.functions.*
 import com.wolfyscript.utilities.gui.reactivity.AnyComputation
 import com.wolfyscript.utilities.gui.reactivity.EffectImpl
@@ -39,6 +40,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
      * Components
      */
     private val componentRenderSet: MutableSet<Long> = HashSet()
+    private val conditionals: MutableList<ConditionalChildComponentBuilderImpl<WindowBuilder>> = mutableListOf()
 
     /**
      * Tasks
@@ -210,6 +212,8 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
     }
 
     override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<WindowBuilder> {
-        TODO("Not yet implemented")
+        val builder: ConditionalChildComponentBuilderImpl<WindowBuilder> = ConditionalChildComponentBuilderImpl(this, context)
+        conditionals.add(builder)
+        return builder.whenever(condition)
     }
 }
