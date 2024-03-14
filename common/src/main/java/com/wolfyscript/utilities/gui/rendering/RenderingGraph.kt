@@ -21,6 +21,7 @@ package com.wolfyscript.utilities.gui.rendering
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
 import com.wolfyscript.utilities.gui.Component
+import java.util.Collections
 
 class RenderingGraph {
 
@@ -51,6 +52,10 @@ class RenderingGraph {
         return nodes[id]
     }
 
+    fun children(id: Long) : Set<Long> {
+        return Collections.unmodifiableSet(children[id])
+    }
+
     fun removeNode(nodeId: Long) {
         nodes.remove(nodeId)
         parents.remove(nodeId)
@@ -61,6 +66,4 @@ class RenderingGraph {
         }
         children.removeAll(nodeId)
     }
-
-
 }

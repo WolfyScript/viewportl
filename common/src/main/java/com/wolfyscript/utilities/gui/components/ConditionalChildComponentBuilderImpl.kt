@@ -23,7 +23,7 @@ import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
 import com.wolfyscript.utilities.gui.functions.SerializableSupplier
 import com.wolfyscript.utilities.gui.functions.getNodeIds
 import com.wolfyscript.utilities.gui.reactivity.*
-import java.util.function.Consumer
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 
 class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val context: BuildContext) :
     ConditionalChildComponentBuilder<T> {
@@ -94,11 +94,7 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
             )
             val builder: ComponentClusterBuilder =
                 context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-                    val builderId = context.instantiateNewBuilder(
-                        numericId,
-                        Position(Position.Type.RELATIVE, 0) /* TODO */,
-                        builderTypeInfo
-                    )
+                    val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.static(), builderTypeInfo)
                     componentBuilder = builderId
                     context.getBuilder(builderId, builderTypeInfo.value)
                 }
@@ -124,10 +120,18 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
 
         override fun orElse(builderConsumer: ReceiverConsumer<ComponentClusterBuilder>): T {
             val numericId = context.getOrCreateNumericId()
-            val builderTypeInfo = ComponentUtil.getBuilderType(context.wolfyUtils, "internal_${numericId}", ComponentClusterBuilder::class.java)
+            val builderTypeInfo = ComponentUtil.getBuilderType(
+                context.wolfyUtils,
+                "internal_${numericId}",
+                ComponentClusterBuilder::class.java
+            )
             val builder: ComponentClusterBuilder =
                 context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-                    val builderId = context.instantiateNewBuilder(numericId, Position(Position.Type.RELATIVE, 0) /* TODO */, builderTypeInfo)
+                    val builderId = context.instantiateNewBuilder(
+                        numericId,
+                        PropertyPosition.static(),
+                        builderTypeInfo
+                    )
                     componentBuilder = builderId
                     context.getBuilder(builderId, builderTypeInfo.value)
                 }

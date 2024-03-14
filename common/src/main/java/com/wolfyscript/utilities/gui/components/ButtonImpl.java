@@ -8,6 +8,8 @@ import com.wolfyscript.utilities.gui.animation.AnimationBuilder;
 import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrame;
 import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition;
+import com.wolfyscript.utilities.gui.rendering.RenderProperties;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.sound.Sound;
@@ -31,9 +33,9 @@ public class ButtonImpl extends AbstractComponentImpl implements Button {
                ButtonIcon icon,
                Function<GuiHolder, Optional<Sound>> soundFunction,
                InteractionCallback interactionCallback,
-               Position position,
+               RenderProperties properties,
                AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> animation) {
-        super(id, wolfyUtils, parent, position);
+        super(id, wolfyUtils, parent, properties);
         this.icon = icon;
         this.interactionCallback = interactionCallback;
         this.soundFunction = soundFunction;
@@ -41,7 +43,7 @@ public class ButtonImpl extends AbstractComponentImpl implements Button {
     }
 
     private ButtonImpl(ButtonImpl button) {
-        super(button.getID(), button.getWolfyUtils(), button.parent(), button.position());
+        super(button.getID(), button.getWolfyUtils(), button.parent(), button.properties());
         this.interactionCallback = button.interactionCallback;
         this.icon = button.icon;
         this.soundFunction = button.soundFunction;

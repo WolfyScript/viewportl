@@ -4,6 +4,7 @@ import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.gui.ReactiveRenderBuilder.ReactiveResult
 import com.wolfyscript.utilities.gui.components.ComponentUtil
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import java.util.*
 
 class ReactiveRenderBuilderImpl(
@@ -21,7 +22,7 @@ class ReactiveRenderBuilderImpl(
         val numericId = context.getOrCreateNumericId(id)
         val builderTypeInfo = ComponentUtil.getBuilderType(wolfyUtils, id ?: "internal_${id}", builderType)
         val builder: B = context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-            val builderId = context.instantiateNewBuilder(numericId, Position(Position.Type.RELATIVE, 0) /* TODO */, builderTypeInfo)
+            val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.static(), builderTypeInfo)
             componentRenderSet.add(builderId)
             context.getBuilder(builderId, builderTypeInfo.value)
         }

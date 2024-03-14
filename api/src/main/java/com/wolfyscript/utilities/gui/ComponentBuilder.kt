@@ -28,6 +28,7 @@ import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.config.jackson.KeyedTypeIdResolver
 import com.wolfyscript.utilities.config.jackson.KeyedTypeResolver
 import com.wolfyscript.utilities.gui.reactivity.Signal
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 
 @JsonTypeResolver(KeyedTypeResolver::class)
 @JsonTypeIdResolver(
@@ -38,16 +39,16 @@ import com.wolfyscript.utilities.gui.reactivity.Signal
 @JsonIgnoreProperties(ignoreUnknown = true)
 interface ComponentBuilder<COMPONENT : Component?, PARENT : Component?> : Keyed {
     @JsonIgnore
-    override fun getNamespacedKey(): NamespacedKey
+    override fun key(): NamespacedKey
 
     val type: NamespacedKey
-        get() = namespacedKey
+        get() = key()
 
     fun id(): String
 
-    fun position(): Position?
+    fun position(): PropertyPosition?
 
-    fun position(position: Position): ComponentBuilder<COMPONENT, PARENT>
+    fun position(position: PropertyPosition): ComponentBuilder<COMPONENT, PARENT>
 
     /**
      * Gets the signals that this component builder uses inside the parent construction consumer.

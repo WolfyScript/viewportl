@@ -3,6 +3,7 @@ package com.wolfyscript.utilities.gui.animation;
 import com.wolfyscript.utilities.gui.*;
 import com.wolfyscript.utilities.gui.reactivity.Effect;
 import com.wolfyscript.utilities.gui.reactivity.Signal;
+import com.wolfyscript.utilities.gui.rendering.RenderContext;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,7 +15,6 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
     }
 
     public void render(ViewRuntime viewManager, GuiHolder guiHolder, RenderContext context) {
-        context.enterNode(owner());
 
         AtomicInteger frameDelay = new AtomicInteger(0);
         AtomicInteger frameIndex = new AtomicInteger(0);
@@ -41,7 +41,5 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
                 })
                 .interval(1)
                 .build();
-
-        context.exitNode();
     }
 }

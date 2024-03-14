@@ -16,28 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.gui.components;
+package com.wolfyscript.utilities.gui.rendering
 
-import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.Interactable;
-import com.wolfyscript.utilities.gui.rendering.Positionable;
+import com.wolfyscript.utilities.gui.Component
 
-/**
- * A simple button that has an icon (ItemStack) and an interaction callback.
- * It always has a 1x1 size, because it occupies a single slot.
- *
- */
-public interface Button extends Component, Interactable {
+interface ComponentInteractionHandler<C: Component> {
 
-    @Override
-    default int width() {
-        return 1;
-    }
+    fun interact(component: C)
 
-    @Override
-    default int height() {
-        return 1;
-    }
-
-    ButtonIcon icon();
 }

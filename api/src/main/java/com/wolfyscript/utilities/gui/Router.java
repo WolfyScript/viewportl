@@ -46,11 +46,4 @@ public interface Router extends Interactable {
 
     Window open(ViewRuntime viewManager, String... path);
 
-    /**
-     * Opens this component for the specified view and player.<br>
-     *
-     * @param viewManager The view manager to open.
-     * @param uuid The uuid to open the Window for.
-     */
-    RenderContext createContext(ViewRuntime viewManager, Deque<String> path, UUID uuid);
 }

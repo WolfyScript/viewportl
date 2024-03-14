@@ -82,7 +82,7 @@ public class KeyedTypeIdResolver extends TypeIdResolverBase {
 
     private String getKey(Object value) {
         if (value instanceof Keyed keyed) {
-            return keyed.getNamespacedKey().toString();
+            return keyed.key().toString();
         }
         throw new IllegalArgumentException(String.format("Object %s is not of type Keyed!", value.getClass().getName()));
     }

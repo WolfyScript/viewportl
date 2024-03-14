@@ -23,18 +23,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.WolfyUtils;
-
-import java.util.function.Consumer;
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition;
+import com.wolfyscript.utilities.gui.rendering.RenderProperties;
 
 public interface Component extends Keyed {
 
     @JsonIgnore
     @Override
-    NamespacedKey getNamespacedKey();
+    NamespacedKey key();
 
     @JsonGetter("type")
     default NamespacedKey type() {
-        return getNamespacedKey();
+        return key();
     }
 
     /**
@@ -72,24 +72,6 @@ public interface Component extends Keyed {
      */
     int height();
 
-    Position position();
-
-    default int offset() {
-        Component parent = parent();
-        int totalOffset = 0;
-        while(parent != null && parent.position().type() != Position.Type.ABSOLUTE) {
-            totalOffset += parent.position().slot();
-            parent = parent.parent();
-        }
-        return totalOffset;
-    }
-
-    default void executeForAllSlots(int positionSlot, Consumer<Integer> slotFunction) {
-        for (int i = 0; i < height(); i++) {
-            for (int j = 0; j < width(); j++) {
-                slotFunction.accept(positionSlot + j + i * (9 - width()));
-            }
-        }
-    }
+    RenderProperties properties();
 
 }

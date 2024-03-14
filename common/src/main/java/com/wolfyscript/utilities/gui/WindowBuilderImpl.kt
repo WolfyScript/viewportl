@@ -16,6 +16,7 @@ import com.wolfyscript.utilities.gui.reactivity.AnyComputation
 import com.wolfyscript.utilities.gui.reactivity.EffectImpl
 import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
 import com.wolfyscript.utilities.gui.reactivity.Signal
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import com.wolfyscript.utilities.gui.rendering.RenderingNode
 import com.wolfyscript.utilities.tuple.Pair
 import net.kyori.adventure.text.minimessage.tag.Tag
@@ -162,7 +163,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         val numericId = context.getOrCreateNumericId(id)
         val builderTypeInfo = ComponentUtil.getBuilderType(wolfyUtils, id ?: "internal_${id}", builderType)
         val builder: B = context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-                val builderId = context.instantiateNewBuilder(numericId, Position(Position.Type.RELATIVE, 0) /* TODO */, builderTypeInfo)
+                val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.static(), builderTypeInfo)
                 componentRenderSet.add(builderId)
                 context.getBuilder(builderId, builderTypeInfo.value)
             }

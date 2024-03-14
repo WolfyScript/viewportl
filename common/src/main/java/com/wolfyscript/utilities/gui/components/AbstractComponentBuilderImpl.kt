@@ -24,14 +24,14 @@ import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.config.jackson.KeyedBaseType
 import com.wolfyscript.utilities.gui.Component
 import com.wolfyscript.utilities.gui.ComponentBuilder
-import com.wolfyscript.utilities.gui.Position
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import com.wolfyscript.utilities.gui.reactivity.Signal
 
 @KeyedBaseType(baseType = ComponentBuilder::class)
 abstract class AbstractComponentBuilderImpl<OWNER : Component?, PARENT : Component?> protected constructor(
     private val id: String,
     @JvmField protected val wolfyUtils: WolfyUtils,
-    @field:JsonProperty("position") private var position: Position
+    @field:JsonProperty("position") private var position: PropertyPosition
 ) : ComponentBuilder<OWNER, PARENT> {
     @JsonProperty("type")
     override val type: NamespacedKey = wolfyUtils.identifiers.getNamespaced(javaClass)
@@ -41,9 +41,9 @@ abstract class AbstractComponentBuilderImpl<OWNER : Component?, PARENT : Compone
 
     override fun id(): String = id
 
-    override fun position(): Position? = position
+    override fun position(): PropertyPosition? = position
 
-    override fun position(position: Position): ComponentBuilder<OWNER, PARENT> {
+    override fun position(position: PropertyPosition): ComponentBuilder<OWNER, PARENT> {
         this.position = position
         return this
     }
@@ -56,5 +56,5 @@ abstract class AbstractComponentBuilderImpl<OWNER : Component?, PARENT : Compone
         return signals
     }
 
-    override fun getNamespacedKey(): NamespacedKey = type
+    override fun key(): NamespacedKey = type
 }

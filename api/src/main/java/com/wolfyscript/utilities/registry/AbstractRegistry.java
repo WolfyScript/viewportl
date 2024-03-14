@@ -80,7 +80,7 @@ public abstract class AbstractRegistry<M extends Map<NamespacedKey, V>, V extend
 
     @Override
     public void register(V value) {
-        register(value.getNamespacedKey(), value);
+        register(value.key(), value);
     }
 
     @NotNull

@@ -4,6 +4,7 @@ import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.callback.TextInputCallback;
 import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback;
 import com.wolfyscript.utilities.gui.reactivity.ReactiveSourceImpl;
+import com.wolfyscript.utilities.gui.rendering.Renderer;
 import com.wolfyscript.utilities.gui.rendering.RenderingGraph;
 
 import java.util.*;
@@ -15,7 +16,7 @@ public class ViewRuntimeImpl implements ViewRuntime {
 
     private final long id;
     private final RenderingGraph renderingGraph;
-    private final Map<UUID, RenderContext> viewerContexts = new HashMap<>();
+    private final Renderer renderer;
 
     private final WolfyUtils wolfyUtils;
     private final Router router;
@@ -32,6 +33,7 @@ public class ViewRuntimeImpl implements ViewRuntime {
         this.wolfyUtils = wolfyUtils;
         this.renderingGraph = new RenderingGraph();
         this.reactiveSource = new ReactiveSourceImpl(this);
+        this.renderer = wolfyUtils.getCore().platform().guiUtils().createRenderer(this);
         this.router = rootRouter.apply(this).create(null);
 
         this.history = new ArrayDeque<>();
@@ -97,11 +99,6 @@ public class ViewRuntimeImpl implements ViewRuntime {
     }
 
     @Override
-    public Optional<RenderContext> getRenderContext(UUID viewer) {
-        return Optional.ofNullable(viewerContexts.get(viewer));
-    }
-
-    @Override
     public Optional<TextInputCallback> textInputCallback() {
         return Optional.ofNullable(textInputCallback);
     }
@@ -131,10 +128,7 @@ public class ViewRuntimeImpl implements ViewRuntime {
         Window window = getRouter().open(this, path);
         setCurrentRoot(window);
         for (UUID viewer : getViewers()) {
-            RenderContext context = wolfyUtils.getCore().platform().guiUtils().createRenderContext(window, this, viewer);
-            viewerContexts.put(viewer, context);
             wolfyUtils.getCore().platform().scheduler().syncTask(wolfyUtils, () -> {
-                context.openAndRenderMenuFor(this, viewer);
             });
         }
     }

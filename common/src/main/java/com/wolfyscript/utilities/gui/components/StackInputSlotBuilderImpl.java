@@ -10,7 +10,7 @@ import com.wolfyscript.utilities.platform.adapters.ItemStack;
 import com.wolfyscript.utilities.gui.Component;
 import com.wolfyscript.utilities.gui.ComponentBuilderSettings;
 import com.wolfyscript.utilities.gui.InteractionResult;
-import com.wolfyscript.utilities.gui.Position;
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
 import com.wolfyscript.utilities.gui.reactivity.Signal;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class StackInputSlotBuilderImpl extends AbstractComponentBuilderImpl<Stac
     private Signal<ItemStack> valueSignal;
 
     @JsonCreator
-    protected StackInputSlotBuilderImpl(@JsonProperty("id") String id, @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils, @JsonProperty("position") Position position) {
+    protected StackInputSlotBuilderImpl(@JsonProperty("id") String id, @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils, @JsonProperty("position") PropertyPosition position) {
         super(id, wolfyUtils, position);
     }
 
@@ -53,6 +53,6 @@ public class StackInputSlotBuilderImpl extends AbstractComponentBuilderImpl<Stac
 
 
 
-        return new StackInputSlotImpl(id(), wolfyUtils, component, onValueChange, interactionCallback, valueSignal.get(), position());
+        return new StackInputSlotImpl(id(), wolfyUtils, component, onValueChange, interactionCallback, valueSignal.get(), null /* TODO */);
     }
 }

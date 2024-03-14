@@ -2,6 +2,8 @@ package com.wolfyscript.utilities.gui.components;
 
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.WolfyUtils;
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition;
+import com.wolfyscript.utilities.gui.rendering.RenderProperties;
 import com.wolfyscript.utilities.platform.adapters.ItemStack;
 import com.wolfyscript.utilities.gui.*;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
@@ -16,8 +18,8 @@ public class StackInputSlotImpl extends AbstractComponentImpl implements Interac
     private final InteractionCallback interactionCallback;
     private final ItemStack value;
 
-    public StackInputSlotImpl(String internalID, WolfyUtils wolfyUtils, Component parent, Consumer<ItemStack> onValueChange, InteractionCallback interactionCallback, ItemStack value, Position position) {
-        super(internalID, wolfyUtils, parent, position);
+    public StackInputSlotImpl(String internalID, WolfyUtils wolfyUtils, Component parent, Consumer<ItemStack> onValueChange, InteractionCallback interactionCallback, ItemStack value, RenderProperties properties) {
+        super(internalID, wolfyUtils, parent, properties);
         this.onValueChange = onValueChange;
         this.interactionCallback = (holder, details) -> {
             // TODO

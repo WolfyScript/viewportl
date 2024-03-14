@@ -26,6 +26,7 @@ import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.gui.components.ComponentUtil
 import com.wolfyscript.utilities.gui.reactivity.ReactiveSourceImpl
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import com.wolfyscript.utilities.tuple.Pair
 import java.util.*
 
@@ -46,11 +47,11 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveSourceI
         return Optional.of(builderImplType.cast(componentBuilder))
     }
 
-    fun <B : ComponentBuilder<out Component, Component>> instantiateNewBuilder(numericId: Long, position: Position, builderTypeInfo: Pair<NamespacedKey, Class<B>>): Long {
+    fun <B : ComponentBuilder<out Component, Component>> instantiateNewBuilder(numericId: Long, position: PropertyPosition, builderTypeInfo: Pair<NamespacedKey, Class<B>>): Long {
         val injector = Guice.createInjector(Stage.PRODUCTION, Module { binder: Binder ->
             binder.bind(WolfyUtils::class.java).toInstance(wolfyUtils)
             binder.bind(Long::class.java).toInstance(numericId)
-            binder.bind(Position::class.java).toInstance(position)
+            binder.bind(PropertyPosition::class.java).toInstance(position)
             binder.bind(BuildContext::class.java).toInstance(this)
         })
 

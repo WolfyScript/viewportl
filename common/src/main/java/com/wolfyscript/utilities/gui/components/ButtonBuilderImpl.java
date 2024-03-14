@@ -11,6 +11,7 @@ import com.wolfyscript.utilities.gui.callback.InteractionCallback;
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.functions.SerializableFunction;
 import com.wolfyscript.utilities.gui.reactivity.Signal;
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -39,7 +40,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
      * @param wolfyUtils The wolfyutils that this button belongs to.
      */
     @Inject
-    private ButtonBuilderImpl(String id, WolfyUtils wolfyUtils, Position position, BuildContext buildContext) {
+    private ButtonBuilderImpl(String id, WolfyUtils wolfyUtils, PropertyPosition position, BuildContext buildContext) {
         super(id, wolfyUtils, position);
         this.iconBuilder = new IconBuilderImpl(wolfyUtils);
         this.context = buildContext;
@@ -48,7 +49,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
     @JsonCreator
     public ButtonBuilderImpl(@JsonProperty("id") String id,
                              @JsonProperty("icon") IconBuilderImpl iconBuilder,
-                             @JsonProperty("position") Position position,
+                             @JsonProperty("position") PropertyPosition position,
                              @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils,
                              @JacksonInject("context") BuildContext context) {
         super(id, wolfyUtils, position);
@@ -86,7 +87,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
 
     @Override
     public @NotNull Button create(Component parent) {
-        return new ButtonImpl(wolfyUtils, id(), parent, iconBuilder.create(), soundFunction, interactionCallback, position(), animationBuilder);
+        return new ButtonImpl(wolfyUtils, id(), parent, iconBuilder.create(), soundFunction, interactionCallback, null /* TODO */, animationBuilder);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

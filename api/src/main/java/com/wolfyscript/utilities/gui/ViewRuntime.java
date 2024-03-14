@@ -21,6 +21,7 @@ package com.wolfyscript.utilities.gui;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.callback.TextInputCallback;
 import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback;
+import com.wolfyscript.utilities.gui.rendering.RenderContext;
 
 import java.util.Optional;
 import java.util.Set;
@@ -89,8 +90,6 @@ public interface ViewRuntime {
      * @return The API instance of this manager.
      */
     WolfyUtils getWolfyUtils();
-
-    Optional<RenderContext> getRenderContext(UUID viewer);
 
     Optional<TextInputCallback> textInputCallback();
 

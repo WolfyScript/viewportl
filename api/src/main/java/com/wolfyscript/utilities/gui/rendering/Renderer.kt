@@ -15,29 +15,16 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.rendering
 
-package com.wolfyscript.utilities.gui.components;
+import com.wolfyscript.utilities.gui.Component
 
-import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.Interactable;
-import com.wolfyscript.utilities.gui.rendering.Positionable;
+interface Renderer<C: RenderContext> {
 
-/**
- * A simple button that has an icon (ItemStack) and an interaction callback.
- * It always has a 1x1 size, because it occupies a single slot.
- *
- */
-public interface Button extends Component, Interactable {
+    fun render()
 
-    @Override
-    default int width() {
-        return 1;
-    }
+    fun update()
 
-    @Override
-    default int height() {
-        return 1;
-    }
+    fun renderComponent(component: Component, context: C)
 
-    ButtonIcon icon();
 }

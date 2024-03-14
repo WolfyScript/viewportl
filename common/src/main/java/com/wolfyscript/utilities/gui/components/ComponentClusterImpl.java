@@ -3,6 +3,8 @@ package com.wolfyscript.utilities.gui.components;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.*;
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition;
+import com.wolfyscript.utilities.gui.rendering.RenderProperties;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -17,26 +19,17 @@ public class ComponentClusterImpl extends AbstractComponentImpl implements Compo
     private int height;
     private final List<Component> children;
 
-    public ComponentClusterImpl(String internalID, WolfyUtils wolfyUtils, Component parent, Position position, List<Component> children) {
-        super(internalID, wolfyUtils, parent, position);
+    public ComponentClusterImpl(String internalID, WolfyUtils wolfyUtils, Component parent, RenderProperties properties, List<Component> children) {
+        super(internalID, wolfyUtils, parent, properties);
         this.children = children;
 
         int topLeft = 54;
-        int bottomRight = 0;
-
-        for (Component child : this.children) {
-            if (child.position().type() == Position.Type.RELATIVE) {
-                // Only take relative positions into account
-                topLeft = Math.min(child.position().slot(), topLeft);
-                bottomRight = Math.max(child.position().slot(), bottomRight);
-            }
-        }
-        this.width = Math.abs((topLeft % 9) - (bottomRight % 9)) + 1;
-        this.height = Math.abs((topLeft / 9) - (bottomRight / 9)) + 1;
+        this.width = 1;
+        this.height = Math.abs((topLeft / 9)) + 1;
     }
 
     public ComponentClusterImpl(ComponentClusterImpl staticComponent) {
-        super(staticComponent.getID(), staticComponent.getWolfyUtils(), staticComponent.parent(), staticComponent.position());
+        super(staticComponent.getID(), staticComponent.getWolfyUtils(), staticComponent.parent(), staticComponent.properties());
         this.children = staticComponent.children;
     }
 

@@ -15,86 +15,85 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.components
 
-package com.wolfyscript.utilities.gui.components;
-
-import com.google.common.base.Preconditions;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.Position;
-import com.wolfyscript.utilities.gui.Positionable;
-import com.wolfyscript.utilities.gui.Renderable;
-import com.wolfyscript.utilities.gui.reactivity.Effect;
-
-import java.util.Objects;
+import com.google.common.base.Preconditions
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.Renderable
+import com.wolfyscript.utilities.gui.reactivity.Effect
+import com.wolfyscript.utilities.gui.rendering.Positionable
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
+import com.wolfyscript.utilities.gui.rendering.RenderProperties
+import java.util.*
 
 /**
- * <p>
+ *
+ *
  * Contains the common properties of all Components.
  * It makes it easier to create custom components.
- * </p>
- * <p>
+ *
+ *
+ *
  * Additional functionality should be implemented on a per-component basis without further inheritance, to make it easier to expand/change in the future.
  * Instead, use interfaces (that are already there for the platform independent API) and implement them for each component.
  * Duplicate code may occur, but it can be put into static methods.
- * </p>
+ *
  */
-public abstract class AbstractComponentImpl implements Component, Effect, Positionable, Renderable {
+abstract class AbstractComponentImpl(
+    internalID: String,
+    wolfyUtils: WolfyUtils,
+    parent: Component,
+    properties: RenderProperties
+) : Component, Effect, Renderable {
 
-    private final NamespacedKey type;
-    private final String internalID;
-    private final WolfyUtils wolfyUtils;
-    private final Component parent;
-    private final Position position;
+    private val type: NamespacedKey
+    private val internalID: String
+    private val wolfyUtils: WolfyUtils
+    private val parent: Component
+    private val properties: RenderProperties
 
-    public AbstractComponentImpl(String internalID, WolfyUtils wolfyUtils, Component parent, Position position) {
-        Preconditions.checkNotNull(internalID);
-        Preconditions.checkNotNull(wolfyUtils);
-        this.type = wolfyUtils.getIdentifiers().getNamespaced(getClass());
-        Preconditions.checkNotNull(type, "Missing type key! One must be provided to the Component using the annotation: %s", KeyedStaticId.class.getName());
-        this.internalID = internalID;
-        this.wolfyUtils = wolfyUtils;
-        this.parent = parent;
-        this.position = position;
+    init {
+        Preconditions.checkNotNull(internalID)
+        Preconditions.checkNotNull(wolfyUtils)
+        this.type = wolfyUtils.identifiers.getNamespaced(javaClass)
+        Preconditions.checkNotNull(type, "Missing type key! One must be provided to the Component using the annotation: ${KeyedStaticId::class.java.name}")
+        this.internalID = internalID
+        this.wolfyUtils = wolfyUtils
+        this.parent = parent
+        this.properties = properties
     }
 
-    @Override
-    public NamespacedKey getNamespacedKey() {
-        return type;
+    override fun key(): NamespacedKey {
+        return type
     }
 
-    @Override
-    public String getID() {
-        return internalID;
+    override fun getID(): String {
+        return internalID
     }
 
-    @Override
-    public WolfyUtils getWolfyUtils() {
-        return wolfyUtils;
+    override fun getWolfyUtils(): WolfyUtils {
+        return wolfyUtils
     }
 
-    @Override
-    public Component parent() {
-        return parent;
+    override fun parent(): Component {
+        return parent
     }
 
-    @Override
-    public Position position() {
-        return position;
+    override fun properties(): RenderProperties {
+        return properties
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AbstractComponentImpl that = (AbstractComponentImpl) o;
-        return Objects.equals(type, that.type) && Objects.equals(internalID, that.internalID);
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val that = o as AbstractComponentImpl
+        return type == that.type && internalID == that.internalID
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, internalID);
+    override fun hashCode(): Int {
+        return Objects.hash(type, internalID)
     }
 }

@@ -75,7 +75,7 @@ public abstract class NBTTagConfig implements Keyed {
 
     @JsonIgnore
     @Override
-    public NamespacedKey getNamespacedKey() {
+    public NamespacedKey key() {
         return type;
     }
 
