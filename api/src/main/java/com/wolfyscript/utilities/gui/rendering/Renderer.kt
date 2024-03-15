@@ -17,14 +17,20 @@
  */
 package com.wolfyscript.utilities.gui.rendering
 
-import com.wolfyscript.utilities.gui.Component
-
 interface Renderer<C: RenderContext> {
 
     fun render()
 
-    fun update()
+    /**
+     * Called whenever the render graph is updated.
+     * @param information info about the update (e.g. which nodes changed).
+     */
+    fun update(information: UpdateInformation)
 
-    fun renderComponent(component: Component, context: C)
+    interface UpdateInformation {
+
+        fun nodes() : List<Long>
+
+    }
 
 }
