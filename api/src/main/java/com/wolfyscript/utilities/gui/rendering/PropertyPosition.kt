@@ -30,43 +30,50 @@ import java.io.IOException
 @OptionalValueSerializer(serializer = PropertyPosition.ValueSerializer::class)
 interface PropertyPosition {
 
-    interface Static : PropertyPosition
+    fun slotOffset() : Int?
 
-    interface Relative : PropertyPosition {
+    fun left(): Int?
 
-        fun left(): Int?
+    fun right(): Int?
 
-        fun right(): Int?
+    fun top(): Int?
 
-        fun top(): Int?
+    fun bottom(): Int?
 
-        fun bottom(): Int?
+    /**
+     * Default Positioning that places the component into the next available free slot/space
+     */
+    class Static internal constructor() : PropertyPosition {
 
+        override fun slotOffset(): Int? = null
+
+        override fun left(): Int? = null
+
+        override fun right(): Int? = null
+
+        override fun top(): Int? = null
+
+        override fun bottom(): Int? = null
     }
 
-    interface Fixed : PropertyPosition {
+    /**
+     * Specifies the displacement from the default positioning.
+     */
+    interface Relative : PropertyPosition
 
-        fun left(): Int?
+    /**
+     *
+     */
+    interface Fixed : PropertyPosition
 
-        fun right(): Int?
+    /**
+     *
+     */
+    interface Absolute : PropertyPosition
 
-        fun top(): Int?
 
-        fun bottom(): Int?
 
-    }
 
-    interface Absolute : PropertyPosition {
-
-        fun left(): Int?
-
-        fun right(): Int?
-
-        fun top(): Int?
-
-        fun bottom(): Int?
-
-    }
 
     class ValueDeserializer :
         com.wolfyscript.utilities.config.jackson.ValueDeserializer<PropertyPosition>(PropertyPosition::class.java) {
@@ -97,7 +104,7 @@ interface PropertyPosition {
     companion object {
 
         fun static(): PropertyPosition {
-            return object : Static {}
+            return Static()
         }
 
         fun fixed(): PropertyPosition {
