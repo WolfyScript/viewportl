@@ -56,6 +56,10 @@ class RenderingGraph {
         return Collections.unmodifiableSet(children[id])
     }
 
+    fun parent(id: Long) : Long? {
+        return parents[id]
+    }
+
     fun removeNode(nodeId: Long) {
         nodes.remove(nodeId)
         parents.remove(nodeId)
