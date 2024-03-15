@@ -19,11 +19,14 @@
 package com.wolfyscript.utilities.gui.rendering
 
 class RelativeTypeImpl(
+    private val slotOffset: Int? = null,
     private val left: Int? = null,
     private val right: Int? = null,
     private val top: Int? = null,
     private val bottom: Int? = null,
 ) : PropertyPosition.Relative {
+
+    override fun slotOffset(): Int? = slotOffset
 
     override fun left(): Int? = left
 
@@ -36,11 +39,14 @@ class RelativeTypeImpl(
 }
 
 class AbsoluteTypeImpl(
+    private val slotOffset: Int? = null,
     private val left: Int? = null,
     private val right: Int? = null,
     private val top: Int? = null,
     private val bottom: Int? = null,
 ) : PropertyPosition.Absolute {
+
+    override fun slotOffset(): Int? = slotOffset
 
     override fun left(): Int? = left
 
@@ -53,11 +59,14 @@ class AbsoluteTypeImpl(
 }
 
 class FixedTypeImpl(
+    private val slotOffset: Int? = null,
     private val left: Int? = null,
     private val right: Int? = null,
     private val top: Int? = null,
     private val bottom: Int? = null,
 ) : PropertyPosition.Fixed {
+
+    override fun slotOffset(): Int? = slotOffset
 
     override fun left(): Int? = left
 
