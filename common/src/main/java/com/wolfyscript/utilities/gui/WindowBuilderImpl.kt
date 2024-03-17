@@ -88,7 +88,8 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
     @JsonSetter("placement")
     private fun setPlacement(componentBuilders: List<ComponentBuilder<*, *>>) {
         for (componentBuilder in componentBuilders) {
-            context.registerBuilder(componentBuilder)
+            val id = context.registerBuilder(componentBuilder)
+            componentRenderSet.add(id)
         }
     }
 
@@ -197,7 +198,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         )
 
         if (titleFunction != null) {
-            val effect = context.reactiveSource.createEffect() {
+            val effect = context.reactiveSource.createEffect<Unit> {
                 window.title(titleFunction!!.get())
             }
             val effectNode = context.reactiveSource.untypedNode((effect as EffectImpl).id)
