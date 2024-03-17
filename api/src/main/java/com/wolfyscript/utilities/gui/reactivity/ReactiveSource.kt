@@ -20,6 +20,7 @@ package com.wolfyscript.utilities.gui.reactivity
 import com.wolfyscript.utilities.gui.ViewRuntime
 import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
 import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+import com.wolfyscript.utilities.gui.functions.SerializableRunnable
 import com.wolfyscript.utilities.gui.functions.SignalableReceiverFunction
 import com.wolfyscript.utilities.platform.Platform
 import org.apache.commons.lang3.function.TriFunction
@@ -86,12 +87,12 @@ interface ReactiveSource {
     </T> */
     fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>>
 
-    fun createEffect(effect: SignalableReceiverFunction<*, Unit>): Effect {
-        return createEffect(effect)
+    fun createEffect(effect: SerializableRunnable): Effect {
+        return createEffect<Unit> {
+            effect.run()
+        }
     }
 
-    @Suppress("INAPPLICABLE_JVM_NAME")
-    @JvmName("createTypedEffect")
     fun <T> createEffect(effect: SignalableReceiverFunction<T?, T>): Effect {
         return createEffect(emptyList(), effect)
     }
