@@ -12,6 +12,7 @@ import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.functions.SerializableFunction;
 import com.wolfyscript.utilities.gui.reactivity.Signal;
 import com.wolfyscript.utilities.gui.rendering.PropertyPosition;
+import com.wolfyscript.utilities.gui.rendering.RenderPropertiesImpl;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -87,7 +88,7 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
 
     @Override
     public @NotNull Button create(Component parent) {
-        return new ButtonImpl(wolfyUtils, id(), parent, iconBuilder.create(), soundFunction, interactionCallback, null /* TODO */, animationBuilder);
+        return new ButtonImpl(wolfyUtils, id(), parent, iconBuilder.create(), soundFunction, interactionCallback, new RenderPropertiesImpl(new PropertyPosition.Static()), animationBuilder);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
