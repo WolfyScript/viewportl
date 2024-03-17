@@ -28,7 +28,8 @@ class ComponentClusterBuilderImpl @Inject @JsonCreator constructor(
     @JsonSetter("placement")
     private fun setPlacement(componentBuilders: List<ComponentBuilder<*, Component>>) {
         for (componentBuilder in componentBuilders) {
-            context.registerBuilder(componentBuilder)
+            val id = context.registerBuilder(componentBuilder)
+            componentRenderSet.add(id)
         }
     }
 
