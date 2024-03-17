@@ -24,8 +24,6 @@ import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.gui.Component
 import com.wolfyscript.utilities.gui.Renderable
 import com.wolfyscript.utilities.gui.reactivity.Effect
-import com.wolfyscript.utilities.gui.rendering.Positionable
-import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import com.wolfyscript.utilities.gui.rendering.RenderProperties
 import java.util.*
 
@@ -45,14 +43,14 @@ import java.util.*
 abstract class AbstractComponentImpl(
     internalID: String,
     wolfyUtils: WolfyUtils,
-    parent: Component,
+    parent: Component?,
     properties: RenderProperties
 ) : Component, Effect, Renderable {
 
     private val type: NamespacedKey
     private val internalID: String
     private val wolfyUtils: WolfyUtils
-    private val parent: Component
+    private val parent: Component?
     private val properties: RenderProperties
 
     init {
@@ -78,7 +76,7 @@ abstract class AbstractComponentImpl(
         return wolfyUtils
     }
 
-    override fun parent(): Component {
+    override fun parent(): Component? {
         return parent
     }
 
