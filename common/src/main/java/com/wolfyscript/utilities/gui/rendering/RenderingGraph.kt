@@ -37,13 +37,13 @@ class RenderingGraph {
     }
 
     fun insertComponentAt(component: Component, insertAt: Long) {
-        if (!nodes.containsKey(insertAt)) return
+        if (insertAt != 0L && !nodes.containsKey(insertAt)) return
         val id = addNode(component)
         insertNodeChild(id, insertAt)
     }
 
     fun insertNodeChild(nodeId: Long, parent: Long) {
-        if(!nodes.containsKey(nodeId) || !nodes.containsKey(parent)) return
+        if(!nodes.containsKey(nodeId) || (!nodes.containsKey(parent) && parent != 0L)) return
         children[parent].add(nodeId)
         parents[nodeId] = parent
     }
