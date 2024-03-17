@@ -23,6 +23,7 @@ class ComponentClusterBuilderImpl @Inject @JsonCreator constructor(
     @JacksonInject("context") private val context: BuildContext
 ) : AbstractComponentBuilderImpl<ComponentCluster, Component>(id, wolfyUtils, position), ComponentClusterBuilder {
     private val componentRenderSet: MutableSet<Long> = HashSet()
+    private val conditionals: MutableList<ConditionalChildComponentBuilderImpl<ComponentClusterBuilder>> = mutableListOf()
 
     @JsonSetter("placement")
     private fun setPlacement(componentBuilders: List<ComponentBuilder<*, Component>>) {
@@ -60,7 +61,9 @@ class ComponentClusterBuilderImpl @Inject @JsonCreator constructor(
     }
 
     override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<ComponentClusterBuilder> {
-        TODO("Not yet implemented")
+        val builder: ConditionalChildComponentBuilderImpl<ComponentClusterBuilder> = ConditionalChildComponentBuilderImpl(this, context)
+        conditionals.add(builder)
+        return builder.whenever(condition)
     }
 
 }
