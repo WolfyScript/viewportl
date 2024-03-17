@@ -11,6 +11,7 @@ import com.wolfyscript.utilities.gui.*
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
 import com.wolfyscript.utilities.gui.functions.SerializableSupplier
 import com.wolfyscript.utilities.gui.rendering.PropertyPosition
+import com.wolfyscript.utilities.gui.rendering.RenderPropertiesImpl
 import java.util.*
 
 @KeyedStaticId(key = "cluster")
@@ -32,7 +33,7 @@ class ComponentClusterBuilderImpl @Inject @JsonCreator constructor(
 
     override fun create(parent: Component?): ComponentCluster {
         val staticComponents: MutableList<Component> = ArrayList()
-        val build = ComponentClusterImpl(id(), wolfyUtils, parent, null/* TODO */, staticComponents)
+        val build = ComponentClusterImpl(id(), wolfyUtils, parent, RenderPropertiesImpl(PropertyPosition.static()), staticComponents)
 
         componentRenderSet.map { context.getBuilder(it)?.create(build) }.forEach {
             if (it != null) {
