@@ -50,16 +50,16 @@ public final class RouterImpl implements Router {
     }
 
     @Override
-    public Window open(ViewRuntime viewManager, String... path) {
+    public Window open(ViewRuntime runtime, String... path) {
         if (path == null || path.length == 0) {
             Window window1 = getWindow().orElseThrow(() -> new IllegalArgumentException(String.format("Path not found for router '%s'", id)));
-            window1.open(viewManager);
+            window1.open(runtime);
             return window1;
         } else {
             Router subRoute = subRoutes.get(path[0]);
             if (subRoute != null) {
                 String[] subPath = Arrays.copyOfRange(path, 1, path.length);
-                return subRoute.open(viewManager, subPath);
+                return subRoute.open(runtime, subPath);
             }
         }
         return null;
