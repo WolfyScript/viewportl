@@ -17,7 +17,11 @@
  */
 package com.wolfyscript.utilities.gui.rendering
 
+import com.wolfyscript.utilities.gui.Window
+
 interface Renderer<C: RenderContext> {
+
+    fun changeWindow(window: Window)
 
     fun render()
 
