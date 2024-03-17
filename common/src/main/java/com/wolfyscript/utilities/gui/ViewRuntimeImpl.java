@@ -127,10 +127,8 @@ public class ViewRuntimeImpl implements ViewRuntime {
     public void openNew(String... path) {
         Window window = getRouter().open(this, path);
         setCurrentRoot(window);
-        for (UUID viewer : getViewers()) {
-            wolfyUtils.getCore().platform().scheduler().syncTask(wolfyUtils, () -> {
-            });
-        }
+        renderer.changeWindow(window);
+        wolfyUtils.getCore().platform().scheduler().syncTask(wolfyUtils, renderer::render);
     }
 
     @Override
