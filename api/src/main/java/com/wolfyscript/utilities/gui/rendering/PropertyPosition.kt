@@ -20,6 +20,7 @@ package com.wolfyscript.utilities.gui.rendering
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.wolfyscript.utilities.config.jackson.OptionalValueDeserializer
@@ -30,59 +31,51 @@ import java.io.IOException
 @OptionalValueSerializer(serializer = PropertyPosition.ValueSerializer::class)
 interface PropertyPosition {
 
-    fun slotOffset() : Int?
+    fun slotPositioning() : SlotPositioning? = null
 
-    fun left(): Int?
-
-    fun right(): Int?
-
-    fun top(): Int?
-
-    fun bottom(): Int?
+    fun pixelPositioning() : PixelPositioning? = null
 
     /**
-     * Default Positioning that places the component into the next available free slot/space
+     * Used for positioning components primarily inside the inventory GUI
      */
-    class Static internal constructor() : PropertyPosition {
-
-        override fun slotOffset(): Int? = null
-
-        override fun left(): Int? = null
-
-        override fun right(): Int? = null
-
-        override fun top(): Int? = null
-
-        override fun bottom(): Int? = null
+    interface SlotPositioning {
+        fun slot() : Int
     }
 
-    /**
-     * Specifies the displacement from the default positioning.
-     */
-    interface Relative : PropertyPosition
+    interface PixelPositioning {
 
-    /**
-     *
-     */
-    interface Fixed : PropertyPosition
+        fun left(): Int?
 
-    /**
-     *
-     */
-    interface Absolute : PropertyPosition
+        fun right(): Int?
 
+        fun top(): Int?
 
+        fun bottom(): Int?
 
+        fun type() : Type
 
+        enum class Type {
+            /**
+             * Default Positioning that places the component into the next available free slot/space
+             */
+            DEFAULT,
+            /**
+             * Specifies the displacement from the default positioning.
+             */
+            RELATIVE,
+            FIXED
+        }
+
+    }
 
     class ValueDeserializer :
         com.wolfyscript.utilities.config.jackson.ValueDeserializer<PropertyPosition>(PropertyPosition::class.java) {
         @Throws(IOException::class, JsonProcessingException::class)
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): PropertyPosition {
-            if (p.isExpectedStartArrayToken) {
-                return relative()
+            if (p.currentToken() == JsonToken.VALUE_NUMBER_INT) {
+                return PropertyPositionImpl(slotPositioning = PropertyPositionImpl.PropertySlotPositionImpl(p.valueAsInt))
             }
-            return relative()
+            return PropertyPositionImpl()
         }
     }
 
@@ -94,7 +87,8 @@ interface PropertyPosition {
             generator: JsonGenerator,
             provider: SerializerProvider
         ): Boolean {
-            if (targetObject is Relative) {
+            if (targetObject.slotPositioning() != null) {
+                generator.writeNumber(targetObject.slotPositioning()!!.slot())
                 return true
             }
             return false
@@ -103,20 +97,13 @@ interface PropertyPosition {
 
     companion object {
 
-        fun static(): PropertyPosition {
-            return Static()
+        fun slot(slot: Int) : PropertyPosition {
+            return PropertyPositionImpl(slotPositioning = PropertyPositionImpl.PropertySlotPositionImpl(slot))
         }
 
-        fun fixed(): PropertyPosition {
-            return FixedTypeImpl()
+        fun def() : PropertyPosition {
+            return PropertyPositionImpl()
         }
 
-        fun relative(): PropertyPosition {
-            return RelativeTypeImpl()
-        }
-
-        fun absolute(): PropertyPosition {
-            return AbsoluteTypeImpl()
-        }
     }
 }

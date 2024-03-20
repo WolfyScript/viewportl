@@ -18,62 +18,38 @@
 
 package com.wolfyscript.utilities.gui.rendering
 
-class RelativeTypeImpl(
-    private val slotOffset: Int? = null,
-    private val left: Int? = null,
-    private val right: Int? = null,
-    private val top: Int? = null,
-    private val bottom: Int? = null,
-) : PropertyPosition.Relative {
+internal class PropertyPositionImpl(
+    private val slotPositioning: PropertyPosition.SlotPositioning? = null,
+    private val pixelPositionImpl: PropertyPixelPositionImpl? = null
+) : PropertyPosition {
 
-    override fun slotOffset(): Int? = slotOffset
+    override fun slotPositioning(): PropertyPosition.SlotPositioning? = slotPositioning
 
-    override fun left(): Int? = left
+    override fun pixelPositioning(): PropertyPosition.PixelPositioning? = pixelPositionImpl
 
-    override fun right(): Int? = right
+    class PropertySlotPositionImpl(private val slot: Int) : PropertyPosition.SlotPositioning {
 
-    override fun top(): Int? = top
+        override fun slot() : Int = slot
 
-    override fun bottom(): Int? = bottom
+    }
 
-}
+    class PropertyPixelPositionImpl(
+        private val left: Int? = null,
+        private val right: Int? = null,
+        private val top: Int? = null,
+        private val bottom: Int? = null,
+        private val type: PropertyPosition.PixelPositioning.Type = PropertyPosition.PixelPositioning.Type.DEFAULT
+    ) : PropertyPosition.PixelPositioning {
 
-class AbsoluteTypeImpl(
-    private val slotOffset: Int? = null,
-    private val left: Int? = null,
-    private val right: Int? = null,
-    private val top: Int? = null,
-    private val bottom: Int? = null,
-) : PropertyPosition.Absolute {
+        override fun left(): Int? = left
 
-    override fun slotOffset(): Int? = slotOffset
+        override fun right(): Int? = right
 
-    override fun left(): Int? = left
+        override fun top(): Int? = top
 
-    override fun right(): Int? = right
+        override fun bottom(): Int? = bottom
 
-    override fun top(): Int? = top
+        override fun type(): PropertyPosition.PixelPositioning.Type = type
 
-    override fun bottom(): Int? = bottom
-
-}
-
-class FixedTypeImpl(
-    private val slotOffset: Int? = null,
-    private val left: Int? = null,
-    private val right: Int? = null,
-    private val top: Int? = null,
-    private val bottom: Int? = null,
-) : PropertyPosition.Fixed {
-
-    override fun slotOffset(): Int? = slotOffset
-
-    override fun left(): Int? = left
-
-    override fun right(): Int? = right
-
-    override fun top(): Int? = top
-
-    override fun bottom(): Int? = bottom
-
+    }
 }

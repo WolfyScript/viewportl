@@ -49,6 +49,7 @@ abstract class AbstractComponentImpl(
 
     private val type: NamespacedKey
     private val internalID: String
+    var nodeId: Long? = null
     private val wolfyUtils: WolfyUtils
     private val parent: Component?
     private val properties: RenderProperties
@@ -70,6 +71,10 @@ abstract class AbstractComponentImpl(
 
     override fun getID(): String {
         return internalID
+    }
+
+    override fun nodeId(): Long {
+        return nodeId ?: -1
     }
 
     override fun getWolfyUtils(): WolfyUtils {
