@@ -16,13 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.platform.world.items;
+package com.wolfyscript.utilities.gui.interaction;
 
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.world.items.ItemStackConfig;
+import com.wolfyscript.utilities.gui.InteractionResult;
 
-public interface Items {
+public interface InteractionDetails {
 
-    ItemStackConfig createStackConfig(WolfyUtils wolfyUtils, String itemId);
+    boolean isCancelled();
+
+    InteractionResult.ResultType getResultType();
+
 
 }
