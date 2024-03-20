@@ -110,7 +110,7 @@ public class CounterExample {
         bb.interact((guiHolder, interactionDetails) -> {
             count.set(0); // The set method changes the value of the signal and prompts the listener of the signal to re-render.
             return InteractionResult.cancel(true);
-        }).sound(holder -> Optional.of(Sound.sound(Key.key("minecraft:entity.dragon_fireball.explode"), Sound.Source.MASTER, 0.25f, 1)));
+        }).sound(() -> Optional.of(Sound.sound(Key.key("minecraft:entity.dragon_fireball.explode"), Sound.Source.MASTER, 0.25f, 1)));
     }
 
 }

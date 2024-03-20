@@ -3,6 +3,8 @@ package com.wolfyscript.utilities.gui;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.callback.TextInputCallback;
 import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback;
+import com.wolfyscript.utilities.gui.interaction.InteractionHandler;
+import com.wolfyscript.utilities.gui.model.UpdateInformation;
 import com.wolfyscript.utilities.gui.reactivity.ReactiveSourceImpl;
 import com.wolfyscript.utilities.gui.rendering.Renderer;
 import com.wolfyscript.utilities.gui.rendering.RenderingGraph;
@@ -16,7 +18,8 @@ public class ViewRuntimeImpl implements ViewRuntime {
 
     private final long id;
     private final RenderingGraph renderingGraph;
-    private final Renderer renderer;
+    private final Renderer<?> renderer;
+    private final InteractionHandler interactionHandler;
 
     private final WolfyUtils wolfyUtils;
     private final Router router;
@@ -31,14 +34,19 @@ public class ViewRuntimeImpl implements ViewRuntime {
 
     protected ViewRuntimeImpl(WolfyUtils wolfyUtils, Function<ViewRuntime, RouterBuilder> rootRouter, Set<UUID> viewers) {
         this.wolfyUtils = wolfyUtils;
-        this.renderingGraph = new RenderingGraph();
+        this.renderingGraph = new RenderingGraph(this);
         this.reactiveSource = new ReactiveSourceImpl(this);
         this.renderer = wolfyUtils.getCore().platform().guiUtils().createRenderer(this);
+        this.interactionHandler = wolfyUtils.getCore().platform().guiUtils().createInteractionHandler(this);
         this.router = rootRouter.apply(this).create(null);
 
         this.history = new ArrayDeque<>();
         this.viewers = viewers;
         id = NEXT_ID++;
+    }
+
+    public InteractionHandler getInteractionHandler() {
+        return interactionHandler;
     }
 
     public RenderingGraph getRenderingGraph() {
@@ -47,6 +55,11 @@ public class ViewRuntimeImpl implements ViewRuntime {
 
     public ReactiveSourceImpl getReactiveSource() {
         return reactiveSource;
+    }
+
+    public void incomingUpdate(UpdateInformation information) {
+        interactionHandler.update(information);
+        renderer.update(information);
     }
 
     @Override
@@ -59,7 +72,12 @@ public class ViewRuntimeImpl implements ViewRuntime {
         if (history.isEmpty()) {
             openNew();
         } else {
-            getCurrentMenu().ifPresent(window -> window.open(this));
+            getCurrentMenu().ifPresent(window -> {
+                renderer.changeWindow(window);
+                interactionHandler.init(window);
+                window.open(this);
+                setCurrentRoot(window);
+            });
         }
     }
 
@@ -128,6 +146,7 @@ public class ViewRuntimeImpl implements ViewRuntime {
         Window window = getRouter().open(this, path);
         setCurrentRoot(window);
         renderer.changeWindow(window);
+        interactionHandler.init(window);
         wolfyUtils.getCore().platform().scheduler().syncTask(wolfyUtils, renderer::render);
     }
 

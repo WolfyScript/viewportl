@@ -21,18 +21,24 @@ package com.wolfyscript.utilities.gui.rendering
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
 import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.ViewRuntimeImpl
+import com.wolfyscript.utilities.gui.components.AbstractComponentImpl
+import com.wolfyscript.utilities.gui.model.UpdateInformation
 import java.util.Collections
 
-class RenderingGraph {
+class RenderingGraph(private val runtime: ViewRuntimeImpl) {
 
     private var nodeCount: Long = 0
     private val nodes: MutableMap<Long, RenderingNode> = mutableMapOf()
-    private val children: SetMultimap<Long, Long> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf<Long>() }
+    private val children: SetMultimap<Long, Long> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
     private val parents: MutableMap<Long, Long> = mutableMapOf()
 
     fun addNode(component: Component) : Long {
         val id = ++nodeCount
         nodes[id] = RenderingNode(id, component)
+        if (component is AbstractComponentImpl) {
+            component.nodeId = id
+        }
         return id
     }
 
@@ -44,8 +50,17 @@ class RenderingGraph {
 
     fun insertNodeChild(nodeId: Long, parent: Long) {
         if(!nodes.containsKey(nodeId) || (!nodes.containsKey(parent) && parent != 0L)) return
-        children[parent].add(nodeId)
+        val siblings = children[parent]
+        val previousSibling = siblings.lastOrNull()
+        siblings.add(nodeId)
         parents[nodeId] = parent
+
+        runtime.incomingUpdate(object : UpdateInformation{
+
+            override fun added(): List<Pair<Long?, Long>> {
+                return listOf(Pair(previousSibling, nodeId))
+            }
+        })
     }
 
     fun getNode(id: Long) : RenderingNode? {
@@ -61,8 +76,20 @@ class RenderingGraph {
     }
 
     fun removeNode(nodeId: Long) {
+        runtime.incomingUpdate(object : UpdateInformation{
+
+            override fun removed(): List<Long> {
+                return listOf(nodeId)
+            }
+
+        })
+
         nodes.remove(nodeId)
-        parents.remove(nodeId)
+        val parent = parents.remove(nodeId)
+        if (parent != null) {
+            children[parent].remove(nodeId)
+        }
+
 
         // Recursively remove child nodes
         for (child in children[nodeId]) {

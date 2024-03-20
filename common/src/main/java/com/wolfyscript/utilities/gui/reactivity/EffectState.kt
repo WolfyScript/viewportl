@@ -26,7 +26,7 @@ class EffectState<T>(
 ) : AnyComputation<T?> {
 
     override fun run(runtime: ViewRuntime, value: T?, apply: Consumer<T?>): Boolean {
-        val newValue = with(fn) { value?.apply() }
+        val newValue = with(fn) { value.apply() }
 
         apply.accept(newValue)
 

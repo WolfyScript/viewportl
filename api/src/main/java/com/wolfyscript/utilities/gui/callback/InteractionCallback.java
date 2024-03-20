@@ -18,13 +18,13 @@
 
 package com.wolfyscript.utilities.gui.callback;
 
-import com.wolfyscript.utilities.gui.GuiHolder;
-import com.wolfyscript.utilities.gui.InteractionDetails;
+import com.wolfyscript.utilities.gui.ViewRuntime;
+import com.wolfyscript.utilities.gui.interaction.InteractionDetails;
 import com.wolfyscript.utilities.gui.InteractionResult;
 
 @FunctionalInterface
 public interface InteractionCallback {
 
-    InteractionResult interact(GuiHolder holder, InteractionDetails details);
+    InteractionResult interact(ViewRuntime runtime, InteractionDetails details);
 
 }

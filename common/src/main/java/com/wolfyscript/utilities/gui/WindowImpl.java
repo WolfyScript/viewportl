@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
+import com.wolfyscript.utilities.gui.interaction.InteractionDetails;
 import com.wolfyscript.utilities.platform.scheduler.Task;
 import com.wolfyscript.utilities.tuple.Pair;
 

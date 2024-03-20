@@ -30,9 +30,9 @@ import java.util.function.Function
 
 interface ReactiveSource {
 
-    fun <T : Any> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime, T?>): Signal<T>
+    fun <T : Any> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime, T>): Signal<T>
 
-    fun <T : Any> createMemo(fn: Function<T?, T?>) : Memo<T>
+    fun <T : Any> createMemo(valueType: Class<T>, fn: Function<T?, T?>) : Memo<T>
 
     /**
      * Creates a Signal with a value, which is stored externally of the GUI.
@@ -100,10 +100,14 @@ interface ReactiveSource {
     fun <T> createEffect(additionalSignals: List<Signal<*>>, effect: SignalableReceiverFunction<T?, T>): Effect
 }
 
-inline fun <reified T : Any> ReactiveSource.createSignal(defaultValue: T? = null): Signal<T> {
+inline fun <reified T: Any> ReactiveSource.createMemo(fn: Function<T?, T?>) : Memo<T> {
+    return createMemo(T::class.java, fn)
+}
+
+inline fun <reified T : Any> ReactiveSource.createSignal(defaultValue: T): Signal<T> {
     return createSignal(T::class.java) { defaultValue }
 }
 
-inline fun <reified T : Any> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime, T?>): Signal<T> {
+inline fun <reified T : Any> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime, T>): Signal<T> {
     return createSignal(T::class.java, defaultValueProvider)
 }

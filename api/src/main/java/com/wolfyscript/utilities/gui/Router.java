@@ -19,9 +19,9 @@
 package com.wolfyscript.utilities.gui;
 
 import com.wolfyscript.utilities.WolfyUtils;
-import java.util.Deque;
+import com.wolfyscript.utilities.gui.interaction.Interactable;
+
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * <p>

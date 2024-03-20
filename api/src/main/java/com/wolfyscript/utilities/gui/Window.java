@@ -19,6 +19,8 @@
 package com.wolfyscript.utilities.gui;
 
 import com.wolfyscript.utilities.WolfyUtils;
+import com.wolfyscript.utilities.gui.interaction.Interactable;
+
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;

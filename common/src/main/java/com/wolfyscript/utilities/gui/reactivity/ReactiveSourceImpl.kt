@@ -17,6 +17,8 @@
  */
 package com.wolfyscript.utilities.gui.reactivity
 
+import com.google.common.collect.Multimaps
+import com.google.common.collect.SetMultimap
 import com.wolfyscript.utilities.gui.ViewRuntime
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
 import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
@@ -34,8 +36,8 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
     private val nodes: MutableMap<NodeId, ReactivityNode<*>> = Object2ObjectOpenHashMap()
     private val rootNodes: MutableMap<NodeId, ReactivityNode<*>> = Object2ObjectOpenHashMap()
-    private val nodeSubscribers: MutableMap<NodeId, MutableSet<NodeId>> = Object2ObjectOpenHashMap()
-    private val nodeSources: MutableMap<NodeId, MutableSet<NodeId>> = Object2ObjectOpenHashMap()
+    private val nodeSubscribers: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
+    private val nodeSources: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
     private val pendingEffects: MutableList<NodeId> = ArrayList()
 
     private fun markClean(nodeId: NodeId) {
@@ -55,18 +57,32 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         val currentNode = nodes[node] ?: return
         currentNode.mark(ReactivityNode.State.DIRTY)
 
-        val children = nodeSubscribers[node]!!
+        val children = nodeSubscribers[node]
         val stack: ArrayDeque<Iterator<NodeId>> = ArrayDeque(children.size)
         stack.push(children.iterator())
 
         while (stack.isNotEmpty()) {
-            val childIterator = stack.poll()
+            val childIterator = stack.first()
             val (iterResult, iter) = iterateChildren(childIterator)
             when (iterResult) {
                 IterResult.CONTINUE -> continue
                 IterResult.NEW -> iter?.let { stack.push(it) }
                 IterResult.EMPTY -> stack.pop()
             }
+        }
+    }
+
+    private fun printTree() {
+        println("------- Graph -------")
+        rootNodes.keys.forEach { printTree("", it) }
+        println("---------------------")
+    }
+
+    private fun printTree(prefix: String, nodeId: NodeId) {
+        println("$prefix${nodes[nodeId]}")
+
+        nodeSubscribers[nodeId].forEach {
+            printTree("$prefix  ", it)
         }
     }
 
@@ -95,7 +111,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
             }
             //////////
 
-            val childsChildren = nodeSubscribers[child]!!
+            val childsChildren = nodeSubscribers[child]
 
             if (childsChildren.isNotEmpty()) {
                 if (childsChildren.size == 1) {
@@ -114,11 +130,12 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         for (pendingEffect in pendingEffects) {
             updateIfNecessary(pendingEffect)
         }
+        pendingEffects.clear()
     }
 
     private fun updateIfNecessary(nodeId: NodeId) {
         if (currentNodeState(nodeId) == ReactivityNode.State.CHECK) {
-            for (source in nodeSources[nodeId]!!) {
+            for (source in nodeSources[nodeId]) {
                 updateIfNecessary(source)
 
                 if (currentNodeState(nodeId) >= ReactivityNode.State.DIRTY) {
@@ -138,7 +155,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
         // Mark the subscribers (children) dirty
         if (node.update(viewRuntime)) {
-            for (subscriber in nodeSubscribers[nodeId]!!) {
+            for (subscriber in nodeSubscribers[nodeId]) {
                 nodes[subscriber]?.mark(ReactivityNode.State.DIRTY)
             }
         }
@@ -151,8 +168,8 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
     }
 
     fun disposeNode(nodeId: NodeId) {
-        nodeSources.remove(nodeId)
-        nodeSubscribers.remove(nodeId)
+        nodeSources.removeAll(nodeId)
+        nodeSubscribers.removeAll(nodeId)
         nodes.remove(nodeId)
     }
 
@@ -188,11 +205,13 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
     inline fun <reified V: Any> setValue(nodeId: NodeId, value: V?) {
         val reactivityNode = node<ReactivityNode<V>>(nodeId)
         reactivityNode?.value = value
+        markDirty(nodeId)
     }
 
     fun <T: Any> setValue(nodeId: NodeId, valueType: KClass<T>, value: T?) {
         val reactivityNode = node<ReactivityNode<T>>(nodeId)
         reactivityNode?.value = value
+        markDirty(nodeId)
     }
 
     private fun <V> createNode(
@@ -213,13 +232,13 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
     override fun <T : Any> createSignal(
         valueType: Class<T>,
-        defaultValueProvider: ReceiverFunction<ViewRuntime, T?>
+        defaultValueProvider: ReceiverFunction<ViewRuntime, T>
     ): Signal<T> {
         val id = createNode(object : ReactivityNode.Type.Signal<T> {}, with(defaultValueProvider) {viewRuntime.apply()})
         return SignalImpl(id, valueType.kotlin)
     }
 
-    override fun <T : Any> createMemo(fn: Function<T?, T?>): Memo<T> {
+    override fun <T : Any> createMemo(valueType: Class<T>, fn: Function<T?, T?>): Memo<T> {
         val reactivityNodeId = createNode(object : ReactivityNode.Type.Memo<T> {
 
             override fun computation(): AnyComputation<T?> = MemoState {
@@ -229,7 +248,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
         }, null)
 
-        return MemoImpl(reactivityNodeId, null)
+        return MemoImpl(reactivityNodeId, valueType.kotlin)
     }
 
     override fun <S, T> createStore(
@@ -278,5 +297,10 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         effect: SignalableReceiverFunction<T?, T>
     ): Effect {
         return createCustomEffect(additionalSignals, null as T?, EffectState(effect))
+    }
+
+    fun subscribe(node: NodeId, to: NodeId) {
+        nodeSubscribers[to].add(node)
+        nodeSources[node].add(to)
     }
 }

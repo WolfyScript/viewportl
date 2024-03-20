@@ -12,10 +12,8 @@ import com.wolfyscript.utilities.gui.components.ComponentUtil
 import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilder
 import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilderImpl
 import com.wolfyscript.utilities.gui.functions.*
-import com.wolfyscript.utilities.gui.reactivity.AnyComputation
-import com.wolfyscript.utilities.gui.reactivity.EffectImpl
-import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
-import com.wolfyscript.utilities.gui.reactivity.Signal
+import com.wolfyscript.utilities.gui.model.UpdateInformation
+import com.wolfyscript.utilities.gui.reactivity.*
 import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import com.wolfyscript.utilities.gui.rendering.RenderingNode
 import com.wolfyscript.utilities.tuple.Pair
@@ -88,8 +86,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
     @JsonSetter("placement")
     private fun setPlacement(componentBuilders: List<ComponentBuilder<*, *>>) {
         for (componentBuilder in componentBuilders) {
-            val id = context.registerBuilder(componentBuilder)
-            componentRenderSet.add(id)
+            context.registerBuilder(componentBuilder)
         }
     }
 
@@ -164,12 +161,20 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         val numericId = context.getOrCreateNumericId(id)
         val builderTypeInfo = ComponentUtil.getBuilderType(wolfyUtils, id ?: "internal_${id}", builderType)
         val builder: B = context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-                val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.static(), builderTypeInfo)
-                componentRenderSet.add(builderId)
+                val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.def(), builderTypeInfo)
                 context.getBuilder(builderId, builderTypeInfo.value)
             }
+        if (!componentRenderSet.contains(numericId)) {
+            componentRenderSet.add(numericId)
+        }
         with(builderConsumer) { builder.consume() }
         return this
+    }
+
+    override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<WindowBuilder> {
+        val builder: ConditionalChildComponentBuilderImpl<WindowBuilder> = ConditionalChildComponentBuilderImpl(this, context)
+        conditionals.add(builder)
+        return builder.whenever(condition)
     }
 
     override fun create(parent: Router): Window {
@@ -198,8 +203,12 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         )
 
         if (titleFunction != null) {
+            val runtime = context.runtime as ViewRuntimeImpl
             val effect = context.reactiveSource.createEffect<Unit> {
                 window.title(titleFunction!!.get())
+                runtime.incomingUpdate(object : UpdateInformation{
+                    override fun updateTitle(): Boolean = true
+                })
             }
             val effectNode = context.reactiveSource.untypedNode((effect as EffectImpl).id)
             titleFunction!!.getNodeIds().forEach {
@@ -208,14 +217,15 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
                     effectNode?.subscribe(node)
                 }
             }
+            titleSignals.forEach {
+                it as SignalImpl
+                val node = context.reactiveSource.untypedNode(it.id())
+                if (node != null) {
+                    effectNode?.subscribe(node)
+                }
+            }
         }
 
         return window
-    }
-
-    override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<WindowBuilder> {
-        val builder: ConditionalChildComponentBuilderImpl<WindowBuilder> = ConditionalChildComponentBuilderImpl(this, context)
-        conditionals.add(builder)
-        return builder.whenever(condition)
     }
 }

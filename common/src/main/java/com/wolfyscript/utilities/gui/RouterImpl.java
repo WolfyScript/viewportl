@@ -24,11 +24,10 @@ import com.google.common.collect.HashBiMap;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
+import com.wolfyscript.utilities.gui.interaction.InteractionDetails;
 
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.Optional;
-import java.util.UUID;
 
 @KeyedStaticId(key = "router")
 public final class RouterImpl implements Router {

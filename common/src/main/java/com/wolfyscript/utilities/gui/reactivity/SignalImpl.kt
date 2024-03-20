@@ -44,7 +44,12 @@ class SignalImpl<MT : Any>(private val id: NodeId, private val type: KClass<MT>)
     }
 
     override fun update(function: Function<MT, MT>) {
-
+        val node = id.runtime.reactiveSource.node<ReactivityNode<MT>>(id)
+        if (node != null) {
+            node.value?.let {
+                id.runtime.reactiveSource.setValue(id, type, function.apply(it))
+            }
+        }
     }
 
     override fun get(): MT? {

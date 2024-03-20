@@ -28,12 +28,14 @@ class NodeId(val id: Long, val runtime: ViewRuntimeImpl) {
         if (reactivityNode != null) {
             reactivityNode.value?.let { updateFn.apply(it) }
 
-
             reactivityNode.mark(ReactivityNode.State.DIRTY)
         }
 
     }
 
+    override fun toString(): String {
+        return id.toString()
+    }
 
     override fun hashCode(): Int {
         return id.hashCode()

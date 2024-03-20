@@ -18,6 +18,7 @@
 package com.wolfyscript.utilities.gui.rendering
 
 import com.wolfyscript.utilities.gui.Window
+import com.wolfyscript.utilities.gui.model.UpdateInformation
 
 interface Renderer<C: RenderContext> {
 
@@ -30,11 +31,5 @@ interface Renderer<C: RenderContext> {
      * @param information info about the update (e.g. which nodes changed).
      */
     fun update(information: UpdateInformation)
-
-    interface UpdateInformation {
-
-        fun nodes() : List<Long>
-
-    }
 
 }

@@ -16,8 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.gui;
+package com.wolfyscript.utilities.gui.interaction;
 
+import com.wolfyscript.utilities.gui.GuiHolder;
+import com.wolfyscript.utilities.gui.InteractionResult;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
 
 public interface Interactable {

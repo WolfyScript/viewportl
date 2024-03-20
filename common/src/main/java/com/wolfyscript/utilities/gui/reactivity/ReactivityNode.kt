@@ -27,8 +27,6 @@ class ReactivityNode<V>(
 ) {
 
     private var state: State = State.CLEAN
-    private val sources: MutableSet<ReactivityNode<*>> = mutableSetOf()
-    private val subscribers: MutableSet<ReactivityNode<*>> = mutableSetOf()
 
     fun mark(state: State) {
         this.state = state
@@ -43,8 +41,11 @@ class ReactivityNode<V>(
     }
 
     fun subscribe(source: ReactivityNode<*>) {
-        source.subscribers.add(this)
-        sources.add(source)
+        id.runtime.reactiveSource.subscribe(id, source.id)
+    }
+
+    override fun toString(): String {
+        return "{${id} (${type}): ${value}}"
     }
 
     override fun hashCode(): Int {
@@ -67,7 +68,8 @@ class ReactivityNode<V>(
         interface Effect<T> : Type<T> {
 
             override fun runUpdate(runtime: ViewRuntime, reactivityNode: ReactivityNode<T>): Boolean {
-                return computation().run(runtime, reactivityNode.value) { reactivityNode.value = it }
+                computation().run(runtime, reactivityNode.value) { reactivityNode.value = it }
+                return true
             }
 
             fun computation(): AnyComputation<T?>
@@ -75,6 +77,10 @@ class ReactivityNode<V>(
         }
 
         interface Memo<T> : Type<T> {
+
+            override fun runUpdate(runtime: ViewRuntime, reactivityNode: ReactivityNode<T>): Boolean {
+                return computation().run(runtime, reactivityNode.value) { reactivityNode.value = it }
+            }
 
             fun computation(): AnyComputation<T?>
 

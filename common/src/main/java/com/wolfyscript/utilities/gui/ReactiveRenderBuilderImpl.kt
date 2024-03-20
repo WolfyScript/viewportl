@@ -22,7 +22,7 @@ class ReactiveRenderBuilderImpl(
         val numericId = context.getOrCreateNumericId(id)
         val builderTypeInfo = ComponentUtil.getBuilderType(wolfyUtils, id ?: "internal_${id}", builderType)
         val builder: B = context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-            val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.static(), builderTypeInfo)
+            val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.def(), builderTypeInfo)
             componentRenderSet.add(builderId)
             context.getBuilder(builderId, builderTypeInfo.value)
         }

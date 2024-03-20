@@ -15,17 +15,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.platform.world.items
 
-package com.wolfyscript.utilities.platform.gui;
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.world.items.ItemStackConfig
 
-import com.wolfyscript.utilities.gui.ViewRuntime;
-import com.wolfyscript.utilities.gui.interaction.InteractionHandler;
-import com.wolfyscript.utilities.gui.rendering.Renderer;
-
-public interface GuiUtils {
-
-    Renderer<?> createRenderer(ViewRuntime runtime);
-
-    InteractionHandler createInteractionHandler(ViewRuntime runtime);
-
+interface Items {
+    fun createStackConfig(wolfyUtils: WolfyUtils, itemId: String): ItemStackConfig
 }

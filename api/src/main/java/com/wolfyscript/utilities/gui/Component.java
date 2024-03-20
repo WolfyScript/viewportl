@@ -44,6 +44,8 @@ public interface Component extends Keyed {
      */
     String getID();
 
+    long nodeId();
+
     /**
      * Gets the global WolfyUtils instance, this component belongs to.
      *

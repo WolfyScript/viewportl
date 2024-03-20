@@ -18,6 +18,7 @@
 
 package com.wolfyscript.utilities.gui.components;
 
+import com.wolfyscript.utilities.gui.interaction.Interactable;
 import com.wolfyscript.utilities.platform.adapters.ItemStack;
 import com.wolfyscript.utilities.gui.*;
 

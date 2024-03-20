@@ -15,7 +15,7 @@ class ComponentClusterImpl(
     wolfyUtils: WolfyUtils,
     parent: Component?,
     properties: RenderProperties,
-    private val children: List<Component>
+    private val children: MutableList<Component>
 ) : AbstractComponentImpl(
     internalID, wolfyUtils, parent, properties
 ), ComponentCluster {

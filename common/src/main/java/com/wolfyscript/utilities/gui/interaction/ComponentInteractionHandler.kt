@@ -16,12 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.gui.rendering
+package com.wolfyscript.utilities.gui.interaction
 
 import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.InteractionResult
+import com.wolfyscript.utilities.gui.ViewRuntime
 
 interface ComponentInteractionHandler<C: Component> {
 
-    fun interact(component: C)
+    fun interact(runtime: ViewRuntime, component: C, details: InteractionDetails) : InteractionResult
 
 }

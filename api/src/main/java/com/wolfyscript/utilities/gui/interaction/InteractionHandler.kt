@@ -16,16 +16,18 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.platform.gui;
+package com.wolfyscript.utilities.gui.interaction
 
-import com.wolfyscript.utilities.gui.ViewRuntime;
-import com.wolfyscript.utilities.gui.interaction.InteractionHandler;
-import com.wolfyscript.utilities.gui.rendering.Renderer;
+import com.wolfyscript.utilities.gui.InteractionResult
+import com.wolfyscript.utilities.gui.Window
+import com.wolfyscript.utilities.gui.model.UpdateInformation
 
-public interface GuiUtils {
+interface InteractionHandler {
 
-    Renderer<?> createRenderer(ViewRuntime runtime);
+    fun init(window: Window)
 
-    InteractionHandler createInteractionHandler(ViewRuntime runtime);
+    fun update(info: UpdateInformation)
+
+    fun onInteract(details: InteractionDetails) : InteractionResult
 
 }

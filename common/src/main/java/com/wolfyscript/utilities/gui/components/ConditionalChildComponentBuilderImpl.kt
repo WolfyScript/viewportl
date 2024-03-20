@@ -18,11 +18,17 @@
 
 package com.wolfyscript.utilities.gui.components
 
-import com.wolfyscript.utilities.gui.*
+import com.wolfyscript.utilities.gui.BuildContext
+import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.Renderable
+import com.wolfyscript.utilities.gui.ViewRuntimeImpl
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
 import com.wolfyscript.utilities.gui.functions.SerializableSupplier
 import com.wolfyscript.utilities.gui.functions.getNodeIds
-import com.wolfyscript.utilities.gui.reactivity.*
+import com.wolfyscript.utilities.gui.reactivity.EffectImpl
+import com.wolfyscript.utilities.gui.reactivity.Memo
+import com.wolfyscript.utilities.gui.reactivity.MemoImpl
+import com.wolfyscript.utilities.gui.reactivity.createMemo
 import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 
 class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val context: BuildContext) :
@@ -53,16 +59,29 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
             runtime as ViewRuntimeImpl
             val graph = runtime.renderingGraph
             val previousNode = this?.let { graph.getNode(it) }
-
             val previousComponent = previousNode?.component
-            if (previousComponent is Renderable) {
-                previousComponent.remove(runtime, previousNode.id, 0)
-            }
 
+            val parentNodeId = (parent as? AbstractComponentImpl)?.nodeId ?: 0
+
+            if (previousComponent is Renderable) {
+                previousComponent.remove(runtime, previousNode.id, parentNodeId)
+            }
             val result = conditionMemo.get() ?: false
             when {
-                result -> graph.addNode(whenComponent)
-                elseComponent != null -> graph.addNode(elseComponent)
+                result -> {
+                    if (whenComponent is Renderable) {
+                        whenComponent.insert(runtime, parentNodeId)
+                    }
+                    whenComponent.nodeId()
+                }
+
+                elseComponent != null -> {
+                    if (elseComponent is Renderable) {
+                        elseComponent.insert(runtime, parentNodeId)
+                    }
+                    elseComponent.nodeId()
+                }
+
                 else -> -1
             }
         }
@@ -94,7 +113,7 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
             )
             val builder: ComponentClusterBuilder =
                 context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-                    val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.static(), builderTypeInfo)
+                    val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.def(), builderTypeInfo)
                     componentBuilder = builderId
                     context.getBuilder(builderId, builderTypeInfo.value)
                 }
@@ -129,7 +148,7 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
                 context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
                     val builderId = context.instantiateNewBuilder(
                         numericId,
-                        PropertyPosition.static(),
+                        PropertyPosition.def(),
                         builderTypeInfo
                     )
                     componentBuilder = builderId

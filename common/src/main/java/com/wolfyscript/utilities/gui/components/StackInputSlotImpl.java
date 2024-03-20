@@ -2,7 +2,8 @@ package com.wolfyscript.utilities.gui.components;
 
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.rendering.PropertyPosition;
+import com.wolfyscript.utilities.gui.interaction.Interactable;
+import com.wolfyscript.utilities.gui.interaction.InteractionDetails;
 import com.wolfyscript.utilities.gui.rendering.RenderProperties;
 import com.wolfyscript.utilities.platform.adapters.ItemStack;
 import com.wolfyscript.utilities.gui.*;
@@ -46,7 +47,7 @@ public class StackInputSlotImpl extends AbstractComponentImpl implements Interac
 
     @Override
     public InteractionResult interact(GuiHolder guiHolder, InteractionDetails interactionDetails) {
-        return interactionCallback.interact(guiHolder, interactionDetails);
+        return InteractionResult.cancel(true);//interactionCallback.interact(guiHolder, interactionDetails);
     }
 
     @Override
