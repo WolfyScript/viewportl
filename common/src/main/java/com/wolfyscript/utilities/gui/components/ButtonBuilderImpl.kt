@@ -1,38 +1,51 @@
-package com.wolfyscript.utilities.gui.components;
+package com.wolfyscript.utilities.gui.components
 
-import com.fasterxml.jackson.annotation.*;
-import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.*;
-import com.wolfyscript.utilities.gui.animation.*;
-import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
-import com.wolfyscript.utilities.gui.functions.SerializableFunction;
-import com.wolfyscript.utilities.gui.reactivity.Signal;
-import com.wolfyscript.utilities.gui.rendering.PropertyPosition;
-import com.wolfyscript.utilities.gui.rendering.RenderPropertiesImpl;
-import com.wolfyscript.utilities.world.items.ItemStackConfig;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import com.fasterxml.jackson.annotation.*
+import com.google.common.base.Preconditions
+import com.google.inject.Inject
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.gui.*
+import com.wolfyscript.utilities.gui.animation.*
+import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.components.ButtonBuilder.IconBuilder
+import com.wolfyscript.utilities.gui.components.ButtonImpl.DynamicIcon
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.functions.SerializableFunction
+import com.wolfyscript.utilities.gui.model.UpdateInformation
+import com.wolfyscript.utilities.gui.reactivity.EffectImpl
+import com.wolfyscript.utilities.gui.reactivity.Signal
+import com.wolfyscript.utilities.gui.reactivity.SignalImpl
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition.Companion.def
+import com.wolfyscript.utilities.gui.rendering.RenderPropertiesImpl
+import com.wolfyscript.utilities.world.items.ItemStackConfig
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.Context
+import net.kyori.adventure.text.minimessage.tag.Tag
+import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import java.util.*
+import java.util.function.Consumer
+import java.util.function.Supplier
 
 @KeyedStaticId(key = "button")
-@ComponentBuilderSettings(base = ButtonBuilder.class, component = Button.class)
-public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Component> implements ButtonBuilder {
+@ComponentBuilderSettings(base = ButtonBuilder::class, component = Button::class)
+class ButtonBuilderImpl : AbstractComponentBuilderImpl<Button, com.wolfyscript.utilities.gui.Component>, ButtonBuilder {
 
-    private InteractionCallback interactionCallback = (guiHolder, interactionDetails) -> InteractionResult.cancel(true);
-    private Function<GuiHolder, Optional<Sound>> soundFunction = holder -> Optional.of(Sound.sound(Key.key("minecraft:ui.button.click"), Sound.Source.MASTER, 0.25f, 1));;
-    private final IconBuilderImpl iconBuilder;
-    private AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> animationBuilder;
-    private final BuildContext context;
+    private var interactionCallback = InteractionCallback { _, _ ->
+        InteractionResult.cancel(true)
+    }
+
+    private var soundFunction = Supplier {
+        Optional.of(Sound.sound(Key.key("minecraft:ui.button.click"), Sound.Source.MASTER, 0.25f, 1f))
+    }
+
+    private val iconBuilder: IconBuilderImpl
+    private var animationBuilder: AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>? = null
+    private val context: BuildContext
 
     /**
      * Constructor used for non-config setups using Guice injection.
@@ -41,70 +54,81 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
      * @param wolfyUtils The wolfyutils that this button belongs to.
      */
     @Inject
-    private ButtonBuilderImpl(String id, WolfyUtils wolfyUtils, PropertyPosition position, BuildContext buildContext) {
-        super(id, wolfyUtils, position);
-        this.iconBuilder = new IconBuilderImpl(wolfyUtils);
-        this.context = buildContext;
+    private constructor(
+        id: String,
+        wolfyUtils: WolfyUtils,
+        position: PropertyPosition,
+        buildContext: BuildContext
+    ) : super(id, wolfyUtils, position) {
+        this.context = buildContext
+        this.iconBuilder = IconBuilderImpl(wolfyUtils, context)
     }
 
     @JsonCreator
-    public ButtonBuilderImpl(@JsonProperty("id") String id,
-                             @JsonProperty("icon") IconBuilderImpl iconBuilder,
-                             @JsonProperty("position") PropertyPosition position,
-                             @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils,
-                             @JacksonInject("context") BuildContext context) {
-        super(id, wolfyUtils, position);
-        this.iconBuilder = iconBuilder;
-        this.context = context;
+    constructor(
+        @JsonProperty("id") id: String?,
+        @JsonProperty("icon") iconBuilder: IconBuilderImpl,
+        @JsonProperty("position") position: PropertyPosition?,
+        @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils?,
+        @JacksonInject("context") context: BuildContext
+    ) : super(id!!, wolfyUtils!!, position!!) {
+        this.iconBuilder = iconBuilder
+        this.context = context
     }
 
-    @Override
-    public ButtonBuilder icon(ReceiverConsumer<IconBuilder> consumer) {
-        consumer.consume(iconBuilder);
-        return this;
+    override fun icon(consumer: ReceiverConsumer<IconBuilder>): ButtonBuilder {
+        with(consumer) { iconBuilder.consume() }
+        return this
     }
 
-    @Override
-    public ButtonBuilder interact(InteractionCallback interactionCallback) {
-        Preconditions.checkArgument(interactionCallback != null, "InteractionCallback must be non-null!");
-        this.interactionCallback = interactionCallback;
-        return this;
+    override fun interact(interactionCallback: InteractionCallback): ButtonBuilder {
+        Preconditions.checkArgument(interactionCallback != null, "InteractionCallback must be non-null!")
+        this.interactionCallback = interactionCallback
+        return this
     }
 
-    @Override
-    public ButtonBuilder sound(Function<GuiHolder, Optional<Sound>> soundFunction) {
-        Preconditions.checkArgument(soundFunction != null, "Sound function must be non-null!");
-        this.soundFunction = soundFunction;
-        return this;
+    override fun sound(soundFunction: Supplier<Optional<Sound>>): ButtonBuilder {
+        Preconditions.checkArgument(soundFunction != null, "Sound function must be non-null!")
+        this.soundFunction = soundFunction
+        return this
     }
 
-    @Override
-    public ButtonBuilder animation(ReceiverConsumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild) {
-        AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> builder = new AnimationBuilderImpl<>(context, () -> new ButtonAnimationFrameBuilderImpl(wolfyUtils));
-        animationBuild.consume(builder);
-        this.animationBuilder = builder;
-        return this;
+    override fun animation(animationBuild: ReceiverConsumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>>): ButtonBuilder {
+        val builder: AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> =
+            AnimationBuilderImpl(context) { ButtonAnimationFrameBuilderImpl(wolfyUtils) }
+        with(animationBuild) { builder.consume() }
+        this.animationBuilder = builder
+        return this
     }
 
-    @Override
-    public @NotNull Button create(Component parent) {
-        return new ButtonImpl(wolfyUtils, id(), parent, iconBuilder.create(), soundFunction, interactionCallback, new RenderPropertiesImpl(new PropertyPosition.Static()), animationBuilder);
+    override fun create(parent: com.wolfyscript.utilities.gui.Component?): Button {
+        return ButtonImpl(
+            wolfyUtils,
+            id(),
+            parent,
+            iconBuilder,
+            soundFunction,
+            interactionCallback,
+            position()?.let { RenderPropertiesImpl(it) } ?: RenderPropertiesImpl(def()),
+            animationBuilder
+        )
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class IconBuilderImpl implements IconBuilder {
-
-        private WolfyUtils wolfyUtils;
-        private ItemStackConfig staticStackConfig;
-        private final ItemHelper itemHelper;
-        private final List<TagResolver> tagResolvers = new ArrayList<>();
-        final Set<Signal<?>> signals = new HashSet<>();
+    class IconBuilderImpl : IconBuilder {
+        private val wolfyUtils: WolfyUtils
+        private val context: BuildContext
+        private var staticStackConfig: ItemStackConfig? = null
+        private val itemHelper: ItemHelper
+        private val tagResolvers: MutableList<TagResolver> = ArrayList()
+        private val signals: MutableSet<Signal<*>> = HashSet()
 
         @Inject
-        private IconBuilderImpl(@JacksonInject("wolfyUtils") WolfyUtils wolfyUtils) {
+        internal constructor(wolfyUtils: WolfyUtils, context: BuildContext) {
             // Used for non-config setups
-            this.wolfyUtils = wolfyUtils;
-            this.itemHelper = new ItemHelperImpl(wolfyUtils);
+            this.wolfyUtils = wolfyUtils
+            this.itemHelper = ItemHelperImpl(wolfyUtils)
+            this.context = context
         }
 
         /**
@@ -113,51 +137,67 @@ public class ButtonBuilderImpl extends AbstractComponentBuilderImpl<Button, Comp
          * @param staticStackConfig The necessary stack config.
          */
         @JsonCreator
-        public IconBuilderImpl(@JsonProperty("stack") ItemStackConfig staticStackConfig) {
-            this.staticStackConfig = staticStackConfig;
-            this.itemHelper = new ItemHelperImpl(wolfyUtils);
+        constructor(@JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils, @JacksonInject("context") context: BuildContext, @JsonProperty("stack") staticStackConfig: ItemStackConfig?) {
+            this.wolfyUtils = wolfyUtils
+            this.context = context
+            this.staticStackConfig = staticStackConfig
+            this.itemHelper = ItemHelperImpl(wolfyUtils)
         }
 
         @JsonSetter("stack")
-        private void setStack(ItemStackConfig config) {
-            this.staticStackConfig = config;
+        private fun setStack(config: ItemStackConfig) {
+            this.staticStackConfig = config
         }
 
-        @Override
-        public IconBuilder stack(String itemId, Consumer<ItemStackConfig> configure) {
-            this.staticStackConfig = wolfyUtils.getCore().platform().items().createStackConfig(wolfyUtils, itemId);
-            configure.accept(staticStackConfig);
-            return this;
+        override fun stack(itemId: String, configure: Consumer<ItemStackConfig>): IconBuilder {
+            this.staticStackConfig = wolfyUtils.core.platform().items().createStackConfig(wolfyUtils, itemId)
+            configure.accept(staticStackConfig!!)
+            return this
         }
 
-        @Override
-        public IconBuilder stack(SerializableFunction<ItemHelper, ItemStackConfig> stackConfigSupplier) {
+        override fun stack(stackConfigSupplier: SerializableFunction<ItemHelper, ItemStackConfig>): IconBuilder {
             // TODO
-            return this;
+            return this
         }
 
-        @Override
-        public IconBuilder updateOnSignals(Signal<?>... signals) {
-            this.tagResolvers.addAll(Arrays.stream(signals)
-                    .map(signal -> TagResolver.resolver(signal.tagName(), (argumentQueue, context) -> Tag.inserting(net.kyori.adventure.text.Component.text(String.valueOf(signal.get())))))
-                    .toList());
-            this.signals.clear();
-            this.signals.addAll(List.of(signals));
-            return this;
+        override fun updateOnSignals(vararg signals: Signal<*>): IconBuilder {
+            tagResolvers.addAll(
+                Arrays.stream(signals)
+                    .map { signal: Signal<*> ->
+                        TagResolver.resolver(signal.tagName()) { _, _ ->
+                            Tag.inserting(
+                                Component.text(signal.get().toString())
+                            )
+                        }
+                    }
+                    .toList())
+            this.signals.clear()
+            this.signals.addAll(listOf(*signals))
+            return this
         }
 
-        public IconBuilder addTagResolver(TagResolver... tagResolvers) {
-            this.tagResolvers.add(TagResolver.resolver(tagResolvers));
-            return this;
+        fun addTagResolver(vararg tagResolvers: TagResolver): IconBuilder {
+            this.tagResolvers.add(TagResolver.resolver(*tagResolvers))
+            return this
         }
 
-        @Override
-        public ButtonIcon create() {
-            return new ButtonImpl.DynamicIcon(staticStackConfig, TagResolver.resolver(tagResolvers));
+        override fun create(button: Button): ButtonIcon {
+            val runtime = context.runtime as ViewRuntimeImpl
+            val effect = context.reactiveSource.createEffect<Unit> {
+                runtime.incomingUpdate(object : UpdateInformation {
+                    override fun updated(): List<Long> = listOf(button.nodeId())
+                })
+            }
+            val effectNode = context.reactiveSource.untypedNode((effect as EffectImpl).id)
+            signals.forEach {
+                it as SignalImpl
+                val node = context.reactiveSource.untypedNode(it.id())
+                if (node != null) {
+                    effectNode?.subscribe(node)
+                }
+            }
+
+            return DynamicIcon(staticStackConfig, TagResolver.resolver(tagResolvers))
         }
-
-
-
     }
-
 }
