@@ -15,46 +15,45 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.components
 
-package com.wolfyscript.utilities.gui.components;
-
-import com.wolfyscript.utilities.gui.*;
-import com.wolfyscript.utilities.gui.animation.AnimationBuilder;
-import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrame;
-import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder;
-import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
-import com.wolfyscript.utilities.gui.functions.SerializableFunction;
-import com.wolfyscript.utilities.gui.reactivity.Signal;
-import com.wolfyscript.utilities.world.items.ItemStackConfig;
-import net.kyori.adventure.sound.Sound;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.ComponentBuilder
+import com.wolfyscript.utilities.gui.ItemHelper
+import com.wolfyscript.utilities.gui.animation.AnimationBuilder
+import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrame
+import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder
+import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.functions.SerializableFunction
+import com.wolfyscript.utilities.gui.reactivity.Signal
+import com.wolfyscript.utilities.world.items.ItemStackConfig
+import net.kyori.adventure.sound.Sound
+import java.util.*
+import java.util.function.Consumer
+import java.util.function.Supplier
 
 /**
- * Builder to create a {@link Button} instance.
+ * Builder to create a [Button] instance.
  *
  */
-public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
+interface ButtonBuilder : ComponentBuilder<Button, Component> {
 
     /**
-     * Creates a new {@link IconBuilder} to create the icon of the button.
+     * Creates a new [IconBuilder] to create the icon of the button.
      *
-     * @param icon The consumer that provides the {@link IconBuilder}
+     * @param icon The consumer that provides the [IconBuilder]
      * @return This builder instance for chaining.
      */
-    ButtonBuilder icon(ReceiverConsumer<IconBuilder> icon);
+    fun icon(icon: ReceiverConsumer<IconBuilder>): ButtonBuilder
 
-    ButtonBuilder interact(InteractionCallback interactionCallback);
+    fun interact(interactionCallback: InteractionCallback): ButtonBuilder
 
-    ButtonBuilder sound(Function<GuiHolder, Optional<Sound>> soundFunction);
+    fun sound(soundFunction: Supplier<Optional<Sound>>): ButtonBuilder
 
-    ButtonBuilder animation(ReceiverConsumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>> animationBuild);
+    fun animation(animationBuild: ReceiverConsumer<AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>>): ButtonBuilder
 
-    @NotNull Button create(Component parent);
+    override fun create(parent: Component?): Button
 
     /**
      * Provides methods to create an icon for Buttons.
@@ -62,16 +61,12 @@ public interface ButtonBuilder extends ComponentBuilder<Button, Component> {
      * By default, all icons are static to improve performance.
      */
     interface IconBuilder {
+        fun stack(itemId: String, configure: Consumer<ItemStackConfig>): IconBuilder
 
-        IconBuilder stack(String itemId, Consumer<ItemStackConfig> configure);
+        fun stack(stackConfigSupplier: SerializableFunction<ItemHelper, ItemStackConfig>): IconBuilder
 
-        IconBuilder stack(SerializableFunction<ItemHelper, ItemStackConfig> stackConfigSupplier);
+        fun updateOnSignals(vararg signals: Signal<*>): IconBuilder
 
-        IconBuilder updateOnSignals(Signal<?>... signals);
-
-        ButtonIcon create();
+        fun create(button: Button): ButtonIcon
     }
-
-
-
 }
