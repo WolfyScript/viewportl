@@ -18,10 +18,17 @@
 
 package com.wolfyscript.utilities.gui.reactivity
 
-class MemoImpl<V>(val id: NodeId, private var value: V?) : Memo<V>{
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
+
+class MemoImpl<V : Any>(val id: NodeId, private val type: KClass<V>) : Memo<V>{
 
     override fun get(): V? {
-        return value
+        val reactivityNode: ReactivityNode<*>? = id.runtime.reactiveSource.untypedNode(id)
+        if (type.isInstance(reactivityNode?.value)) {
+            return type.safeCast(reactivityNode?.value)
+        }
+        return null
     }
 
 }
