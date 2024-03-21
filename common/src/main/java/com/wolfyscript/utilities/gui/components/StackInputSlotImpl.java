@@ -46,11 +46,6 @@ public class StackInputSlotImpl extends AbstractComponentImpl implements Interac
     }
 
     @Override
-    public InteractionResult interact(GuiHolder guiHolder, InteractionDetails interactionDetails) {
-        return InteractionResult.cancel(true);//interactionCallback.interact(guiHolder, interactionDetails);
-    }
-
-    @Override
     public InteractionCallback interactCallback() {
         return interactionCallback;
     }

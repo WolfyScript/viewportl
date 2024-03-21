@@ -55,14 +55,6 @@ public class ButtonImpl extends AbstractComponentImpl implements Button {
     }
 
     @Override
-    public InteractionResult interact(GuiHolder guiHolder, InteractionDetails interactionDetails) {
-        if (animation != null) {
-            animation.updateSignal().update(o -> o);
-        }
-        return InteractionResult.cancel(true);//interactionCallback.interact(guiHolder, interactionDetails);
-    }
-
-    @Override
     public Optional<Sound> sound() {
         return soundFunction.get();
     }

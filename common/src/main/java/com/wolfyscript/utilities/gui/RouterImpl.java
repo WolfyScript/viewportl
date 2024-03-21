@@ -90,11 +90,6 @@ public final class RouterImpl implements Router {
     }
 
     @Override
-    public InteractionResult interact(GuiHolder guiHolder, InteractionDetails interactionDetails) {
-        return InteractionResult.cancel(false);
-    }
-
-    @Override
     public InteractionCallback interactCallback() {
         return interactionCallback;
     }

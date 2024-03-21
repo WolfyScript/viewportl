@@ -95,11 +95,6 @@ public final class WindowImpl implements Window {
     }
 
     @Override
-    public InteractionResult interact(GuiHolder holder, InteractionDetails interactionDetails) {
-        return null;
-    }
-
-    @Override
     public InteractionCallback interactCallback() {
         return interactionCallback;
     }
