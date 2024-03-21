@@ -90,11 +90,10 @@ class RenderingGraph(private val runtime: ViewRuntimeImpl) {
             children[parent].remove(nodeId)
         }
 
-
         // Recursively remove child nodes
-        for (child in children[nodeId]) {
+        val removedChildren = children.removeAll(nodeId)
+        for (child in removedChildren) {
             removeNode(child)
         }
-        children.removeAll(nodeId)
     }
 }
