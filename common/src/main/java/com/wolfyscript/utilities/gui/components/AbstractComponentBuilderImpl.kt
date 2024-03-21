@@ -19,6 +19,7 @@ package com.wolfyscript.utilities.gui.components
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSetter
 import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.config.jackson.KeyedBaseType
@@ -43,6 +44,10 @@ abstract class AbstractComponentBuilderImpl<OWNER : Component?, PARENT : Compone
 
     override fun position(): PropertyPosition? = position
 
+    /**
+     *
+     */
+    @JsonSetter("position")
     override fun position(position: PropertyPosition): ComponentBuilder<OWNER, PARENT> {
         this.position = position
         return this

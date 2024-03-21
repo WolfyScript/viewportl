@@ -71,11 +71,15 @@ interface PropertyPosition {
     class ValueDeserializer :
         com.wolfyscript.utilities.config.jackson.ValueDeserializer<PropertyPosition>(PropertyPosition::class.java) {
         @Throws(IOException::class, JsonProcessingException::class)
-        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): PropertyPosition {
-            if (p.currentToken() == JsonToken.VALUE_NUMBER_INT) {
-                return PropertyPositionImpl(slotPositioning = PropertyPositionImpl.PropertySlotPositionImpl(p.valueAsInt))
+        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): PropertyPosition? {
+            return when {
+                p.currentToken == JsonToken.VALUE_NUMBER_INT -> PropertyPositionImpl(slotPositioning = PropertyPositionImpl.PropertySlotPositionImpl(p.valueAsInt))
+                p.isExpectedStartArrayToken -> {
+                    // TODO: Use array for quick configuration
+                    null
+                }
+                else -> null
             }
-            return PropertyPositionImpl()
         }
     }
 
