@@ -68,27 +68,36 @@ public class ViewRuntimeImpl implements ViewRuntime {
     }
 
     @Override
+    public void openNew(String... path) {
+        open(getRouter().open(this, path));
+    }
+
+    @Override
     public void open() {
         if (history.isEmpty()) {
+            getCurrentMenu().ifPresent(window -> window.close(this));
             openNew();
         } else {
-            getCurrentMenu().ifPresent(window -> {
-                renderer.changeWindow(window);
-                interactionHandler.init(window);
-                window.open(this);
-                setCurrentRoot(window);
-            });
+            getCurrentMenu().ifPresent(this::open);
         }
+    }
+
+    private void open(Window window) {
+        setCurrentRoot(window);
+        renderer.changeWindow(window);
+        interactionHandler.init(window);
+        wolfyUtils.getCore().platform().scheduler().syncTask(wolfyUtils, renderer::render);
     }
 
     @Override
     public void openPrevious() {
         history.poll(); // Remove active current menu
-        setCurrentRoot(history.peek());
+        var window = history.peek();
+        getCurrentMenu().ifPresent(w -> w.close(this));
+        open(window);
     }
 
     public void setCurrentRoot(Window currentRoot) {
-        getCurrentMenu().ifPresent(window -> window.close(this));
         this.currentRoot = currentRoot;
     }
 
@@ -139,15 +148,6 @@ public class ViewRuntimeImpl implements ViewRuntime {
     @Override
     public long id() {
         return id;
-    }
-
-    @Override
-    public void openNew(String... path) {
-        Window window = getRouter().open(this, path);
-        setCurrentRoot(window);
-        renderer.changeWindow(window);
-        interactionHandler.init(window);
-        wolfyUtils.getCore().platform().scheduler().syncTask(wolfyUtils, renderer::render);
     }
 
     @Override
