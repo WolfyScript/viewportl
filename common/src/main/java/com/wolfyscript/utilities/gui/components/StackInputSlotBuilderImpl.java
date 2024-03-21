@@ -26,8 +26,8 @@ public class StackInputSlotBuilderImpl extends AbstractComponentBuilderImpl<Stac
     private Signal<ItemStack> valueSignal;
 
     @JsonCreator
-    protected StackInputSlotBuilderImpl(@JsonProperty("id") String id, @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils, @JsonProperty("position") PropertyPosition position) {
-        super(id, wolfyUtils, position);
+    protected StackInputSlotBuilderImpl(@JsonProperty("id") String id, @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils) {
+        super(id, wolfyUtils);
     }
 
     @Override

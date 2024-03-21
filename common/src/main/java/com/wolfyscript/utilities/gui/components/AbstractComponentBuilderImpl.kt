@@ -32,8 +32,9 @@ import com.wolfyscript.utilities.gui.reactivity.Signal
 abstract class AbstractComponentBuilderImpl<OWNER : Component?, PARENT : Component?> protected constructor(
     private val id: String,
     @JvmField protected val wolfyUtils: WolfyUtils,
-    @field:JsonProperty("position") private var position: PropertyPosition
 ) : ComponentBuilder<OWNER, PARENT> {
+
+    private var position: PropertyPosition = PropertyPosition.def()
     @JsonProperty("type")
     override val type: NamespacedKey = wolfyUtils.identifiers.getNamespaced(javaClass)
 

@@ -22,9 +22,8 @@ import com.wolfyscript.utilities.gui.rendering.RenderPropertiesImpl
 class ComponentGroupBuilderImpl @Inject @JsonCreator constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,
-    @JsonProperty("position") position: PropertyPosition,
     @JacksonInject("context") private val context: BuildContext
-) : AbstractComponentBuilderImpl<ComponentGroup, Component>(id, wolfyUtils, position), ComponentGroupBuilder {
+) : AbstractComponentBuilderImpl<ComponentGroup, Component>(id, wolfyUtils), ComponentGroupBuilder {
     private val componentRenderSet: MutableSet<Long> = HashSet()
     private val conditionals: MutableList<ConditionalChildComponentBuilderImpl<ComponentGroupBuilder>> =
         mutableListOf()

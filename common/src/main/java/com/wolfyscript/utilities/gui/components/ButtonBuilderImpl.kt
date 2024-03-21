@@ -57,9 +57,8 @@ class ButtonBuilderImpl : AbstractComponentBuilderImpl<Button, com.wolfyscript.u
     private constructor(
         id: String,
         wolfyUtils: WolfyUtils,
-        position: PropertyPosition,
         buildContext: BuildContext
-    ) : super(id, wolfyUtils, position) {
+    ) : super(id, wolfyUtils) {
         this.context = buildContext
         this.iconBuilder = IconBuilderImpl(wolfyUtils, context)
     }
@@ -68,10 +67,9 @@ class ButtonBuilderImpl : AbstractComponentBuilderImpl<Button, com.wolfyscript.u
     constructor(
         @JsonProperty("id") id: String?,
         @JsonProperty("icon") iconBuilder: IconBuilderImpl,
-        @JsonProperty("position") position: PropertyPosition?,
         @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils?,
         @JacksonInject("context") context: BuildContext
-    ) : super(id!!, wolfyUtils!!, position!!) {
+    ) : super(id!!, wolfyUtils!!) {
         this.iconBuilder = iconBuilder
         this.context = context
     }
