@@ -44,7 +44,6 @@ fun registerExampleCounter(manager: GuiAPIManager) {
             )
 
             button("count_down") {
-                position(PropertyPosition.slot(22))
                 interact { _, _ ->
                     count.update { old -> old - 1 }
                     InteractionResult.cancel(true)
@@ -53,7 +52,6 @@ fun registerExampleCounter(manager: GuiAPIManager) {
             // Sometimes we want to render components dependent on signals
             whenever { count.get() != 0 } then {
                 button("reset") {
-                    position(PropertyPosition.slot(10))
                     interact { _, _ ->
                         count.set(0) // The set method changes the value of the signal and prompts the listener of the signal to re-render.
                         InteractionResult.cancel(true)
@@ -73,7 +71,6 @@ fun registerExampleCounter(manager: GuiAPIManager) {
             // The state of a component is only reconstructed if the slot it is positioned at changes.
             // Here the slot will always have the same type of component, so the state is created only once.
             button("count_up") {
-                position(PropertyPosition.slot(4))
                 interact { _, _ ->
                     count.update { old -> old + 1 }
                     InteractionResult.cancel(true)
@@ -94,7 +91,6 @@ fun registerExampleCounter(manager: GuiAPIManager) {
             }
 
             button("counter") {
-                position(PropertyPosition.slot(13))
                 icon { updateOnSignals(count) }
             }
         }
