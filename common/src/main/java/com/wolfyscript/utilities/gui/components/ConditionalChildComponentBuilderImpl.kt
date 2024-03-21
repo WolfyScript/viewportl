@@ -104,14 +104,14 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
 
         private var componentBuilder: Long? = null
 
-        override fun then(builderConsumer: ReceiverConsumer<ComponentClusterBuilder>): ConditionalChildComponentBuilder.Else<T> {
+        override fun then(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>): ConditionalChildComponentBuilder.Else<T> {
             val numericId = context.getOrCreateNumericId()
             val builderTypeInfo = ComponentUtil.getBuilderType(
                 context.wolfyUtils,
                 "internal_${numericId}",
-                ComponentClusterBuilder::class.java
+                ComponentGroupBuilder::class.java
             )
-            val builder: ComponentClusterBuilder =
+            val builder: ComponentGroupBuilder =
                 context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
                     val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.def(), builderTypeInfo)
                     componentBuilder = builderId
@@ -137,14 +137,14 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
 
         private var componentBuilder: Long? = null
 
-        override fun orElse(builderConsumer: ReceiverConsumer<ComponentClusterBuilder>): T {
+        override fun orElse(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>): T {
             val numericId = context.getOrCreateNumericId()
             val builderTypeInfo = ComponentUtil.getBuilderType(
                 context.wolfyUtils,
                 "internal_${numericId}",
-                ComponentClusterBuilder::class.java
+                ComponentGroupBuilder::class.java
             )
-            val builder: ComponentClusterBuilder =
+            val builder: ComponentGroupBuilder =
                 context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
                     val builderId = context.instantiateNewBuilder(
                         numericId,

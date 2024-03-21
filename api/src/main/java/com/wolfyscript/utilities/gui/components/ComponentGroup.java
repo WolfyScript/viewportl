@@ -23,7 +23,7 @@ import com.wolfyscript.utilities.gui.Component;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ComponentCluster extends Component {
+public interface ComponentGroup extends Component {
 
     /**
      * The children of this Component; or an empty Set if there are no children.

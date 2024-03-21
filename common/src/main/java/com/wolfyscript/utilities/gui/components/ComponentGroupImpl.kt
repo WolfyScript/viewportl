@@ -10,7 +10,7 @@ import java.util.*
 import kotlin.math.abs
 
 @KeyedStaticId(key = "cluster")
-class ComponentClusterImpl(
+class ComponentGroupImpl(
     internalID: String,
     wolfyUtils: WolfyUtils,
     parent: Component?,
@@ -18,7 +18,7 @@ class ComponentClusterImpl(
     private val children: MutableList<Component>
 ) : AbstractComponentImpl(
     internalID, wolfyUtils, parent, properties
-), ComponentCluster {
+), ComponentGroup {
     private val width: Int
     private val height: Int
 

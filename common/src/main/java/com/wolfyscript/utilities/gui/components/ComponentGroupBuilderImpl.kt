@@ -18,15 +18,15 @@ import com.wolfyscript.utilities.gui.rendering.PropertyPosition.Companion.def
 import com.wolfyscript.utilities.gui.rendering.RenderPropertiesImpl
 
 @KeyedStaticId(key = "cluster")
-@ComponentBuilderSettings(base = ComponentClusterBuilder::class, component = ComponentCluster::class)
-class ComponentClusterBuilderImpl @Inject @JsonCreator constructor(
+@ComponentBuilderSettings(base = ComponentGroupBuilder::class, component = ComponentGroup::class)
+class ComponentGroupBuilderImpl @Inject @JsonCreator constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,
     @JsonProperty("position") position: PropertyPosition,
     @JacksonInject("context") private val context: BuildContext
-) : AbstractComponentBuilderImpl<ComponentCluster, Component>(id, wolfyUtils, position), ComponentClusterBuilder {
+) : AbstractComponentBuilderImpl<ComponentGroup, Component>(id, wolfyUtils, position), ComponentGroupBuilder {
     private val componentRenderSet: MutableSet<Long> = HashSet()
-    private val conditionals: MutableList<ConditionalChildComponentBuilderImpl<ComponentClusterBuilder>> =
+    private val conditionals: MutableList<ConditionalChildComponentBuilderImpl<ComponentGroupBuilder>> =
         mutableListOf()
 
     @JsonSetter("placement")
@@ -40,7 +40,7 @@ class ComponentClusterBuilderImpl @Inject @JsonCreator constructor(
         id: String?,
         builderType: Class<B>,
         builderConsumer: ReceiverConsumer<B>
-    ): ComponentClusterBuilder {
+    ): ComponentGroupBuilder {
         val numericId = context.getOrCreateNumericId(id)
         val builderTypeInfo = ComponentUtil.getBuilderType(wolfyUtils, id ?: "internal_${id}", builderType)
         val builder =
@@ -55,16 +55,16 @@ class ComponentClusterBuilderImpl @Inject @JsonCreator constructor(
         return this
     }
 
-    override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<ComponentClusterBuilder> {
-        val builder: ConditionalChildComponentBuilderImpl<ComponentClusterBuilder> =
+    override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<ComponentGroupBuilder> {
+        val builder: ConditionalChildComponentBuilderImpl<ComponentGroupBuilder> =
             ConditionalChildComponentBuilderImpl(this, context)
         conditionals.add(builder)
         return builder.whenever(condition)
     }
 
-    override fun create(parent: Component?): ComponentCluster {
+    override fun create(parent: Component?): ComponentGroup {
         val staticComponents: MutableList<Component> = ArrayList()
-        val build = ComponentClusterImpl(
+        val build = ComponentGroupImpl(
             id(),
             wolfyUtils,
             parent,
