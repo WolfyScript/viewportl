@@ -41,17 +41,12 @@ class ComponentGroupBuilderImpl @Inject @JsonCreator constructor(
         builderType: Class<B>,
         builderConsumer: ReceiverConsumer<B>
     ): ComponentGroupBuilder {
-        val numericId = context.getOrCreateNumericId(id)
-        val builderTypeInfo = ComponentUtil.getBuilderType(wolfyUtils, id ?: "internal_${id}", builderType)
-        val builder =
-            context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-                val builderId = context.instantiateNewBuilder(numericId, def(), builderTypeInfo)
-                return@orElseGet context.getBuilder(builderId, builderTypeInfo.value)
+        val builder = context.getOrCreateComponentBuilder(id, builderType) {
+            if (!componentRenderSet.contains(it)) {
+                componentRenderSet.add(it)
             }
-        if (!componentRenderSet.contains(numericId)) {
-            componentRenderSet.add(numericId)
         }
-        with(builderConsumer) { builder?.consume() }
+        with(builderConsumer) { builder.consume() }
         return this
     }
 

@@ -8,13 +8,11 @@ import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.config.jackson.KeyedBaseType
 import com.wolfyscript.utilities.gui.ReactiveRenderBuilder.ReactiveResult
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
-import com.wolfyscript.utilities.gui.components.ComponentUtil
 import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilder
 import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilderImpl
 import com.wolfyscript.utilities.gui.functions.*
 import com.wolfyscript.utilities.gui.model.UpdateInformation
 import com.wolfyscript.utilities.gui.reactivity.*
-import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import com.wolfyscript.utilities.gui.rendering.RenderingNode
 import com.wolfyscript.utilities.tuple.Pair
 import net.kyori.adventure.text.minimessage.tag.Tag
@@ -158,14 +156,10 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         builderType: Class<B>,
         builderConsumer: ReceiverConsumer<B>
     ): WindowBuilder {
-        val numericId = context.getOrCreateNumericId(id)
-        val builderTypeInfo = ComponentUtil.getBuilderType(wolfyUtils, id ?: "internal_${id}", builderType)
-        val builder: B = context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-                val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.def(), builderTypeInfo)
-                context.getBuilder(builderId, builderTypeInfo.value)
+        val builder = context.getOrCreateComponentBuilder(id, builderType) {
+            if (!componentRenderSet.contains(it)) {
+                componentRenderSet.add(it)
             }
-        if (!componentRenderSet.contains(numericId)) {
-            componentRenderSet.add(numericId)
         }
         with(builderConsumer) { builder.consume() }
         return this

@@ -105,18 +105,9 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
         private var componentBuilder: Long? = null
 
         override fun then(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>): ConditionalChildComponentBuilder.Else<T> {
-            val numericId = context.getOrCreateNumericId()
-            val builderTypeInfo = ComponentUtil.getBuilderType(
-                context.wolfyUtils,
-                "internal_${numericId}",
-                ComponentGroupBuilder::class.java
-            )
-            val builder: ComponentGroupBuilder =
-                context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-                    val builderId = context.instantiateNewBuilder(numericId, PropertyPosition.def(), builderTypeInfo)
-                    componentBuilder = builderId
-                    context.getBuilder(builderId, builderTypeInfo.value)
-                }
+            val builder: ComponentGroupBuilder = context.getOrCreateComponentBuilder(null, ComponentGroupBuilder::class.java) {
+                componentBuilder = it
+            }
             with(builderConsumer) { builder.consume() }
 
             if (elseImpl == null) {
@@ -138,22 +129,9 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
         private var componentBuilder: Long? = null
 
         override fun orElse(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>): T {
-            val numericId = context.getOrCreateNumericId()
-            val builderTypeInfo = ComponentUtil.getBuilderType(
-                context.wolfyUtils,
-                "internal_${numericId}",
-                ComponentGroupBuilder::class.java
-            )
-            val builder: ComponentGroupBuilder =
-                context.findExistingComponentBuilder(numericId, builderTypeInfo.value, builderTypeInfo.key).orElseGet {
-                    val builderId = context.instantiateNewBuilder(
-                        numericId,
-                        PropertyPosition.def(),
-                        builderTypeInfo
-                    )
-                    componentBuilder = builderId
-                    context.getBuilder(builderId, builderTypeInfo.value)
-                }
+            val builder: ComponentGroupBuilder = context.getOrCreateComponentBuilder(null, ComponentGroupBuilder::class.java) {
+                componentBuilder = it
+            }
             with(builderConsumer) { builder.consume() }
             return owner
         }
