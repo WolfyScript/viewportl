@@ -18,4 +18,13 @@
 
 package com.wolfyscript.utilities.gui.reactivity
 
-interface Memo<V> : SignalGet<V>
+interface SignalGet<T> {
+
+    /**
+     * Gets the current value.
+     *
+     * @return The current value.
+     */
+    fun get(): T
+
+}

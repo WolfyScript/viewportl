@@ -27,11 +27,7 @@ import java.util.function.Function;
  *
  * @param <V> The value type this Signal holds. Can be any Object.
  */
-public interface Signal<V> {
-
-    void tagName(String tagName);
-
-    String tagName();
+public interface Signal<V> extends SignalTaggable, SignalGet<V> {
 
     /**
      * Sets the tracked value to a new value and causes a re-render.
@@ -46,12 +42,5 @@ public interface Signal<V> {
      * @param updateFunction The function to update the value.
      */
     void update(Function<V, V> updateFunction);
-
-    /**
-     * Gets the current value.
-     *
-     * @return The current value.
-     */
-    V get();
 
 }

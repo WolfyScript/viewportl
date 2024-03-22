@@ -18,4 +18,10 @@
 
 package com.wolfyscript.utilities.gui.reactivity
 
-interface Memo<V> : SignalGet<V>
+interface SignalTaggable {
+
+    fun tagName(tagName: String)
+
+    fun tagName(): String?
+
+}
