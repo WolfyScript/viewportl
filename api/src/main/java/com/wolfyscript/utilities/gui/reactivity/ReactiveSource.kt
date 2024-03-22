@@ -30,6 +30,8 @@ import java.util.function.Function
 
 interface ReactiveSource {
 
+    fun createTrigger() : Trigger
+
     fun <T : Any> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime, T>): Signal<T>
 
     fun <T : Any> createMemo(valueType: Class<T>, fn: Function<T?, T?>) : Memo<T>
