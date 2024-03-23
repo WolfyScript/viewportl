@@ -102,8 +102,10 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
     override fun titleSignals(vararg signals: Signal<*>): WindowBuilder {
         titleTagResolvers.addAll(
             Arrays.stream(signals).map { signal: Signal<*> ->
-                TagResolver.resolver(signal.tagName()) { _, _ ->
-                    Tag.inserting(net.kyori.adventure.text.Component.text(signal.get().toString()))
+                signal.tagName()?.let {
+                    TagResolver.resolver(it) { _, _ ->
+                        Tag.inserting(net.kyori.adventure.text.Component.text(signal.get().toString()))
+                    }
                 }
             }.toList()
         )

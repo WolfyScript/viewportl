@@ -162,10 +162,12 @@ class ButtonBuilderImpl : AbstractComponentBuilderImpl<Button, com.wolfyscript.u
             tagResolvers.addAll(
                 Arrays.stream(signals)
                     .map { signal: Signal<*> ->
-                        TagResolver.resolver(signal.tagName()) { _, _ ->
-                            Tag.inserting(
-                                Component.text(signal.get().toString())
-                            )
+                        signal.tagName()?.let {
+                            TagResolver.resolver(it) { _, _ ->
+                                Tag.inserting(
+                                    Component.text(signal.get().toString())
+                                )
+                            }
                         }
                     }
                     .toList())
