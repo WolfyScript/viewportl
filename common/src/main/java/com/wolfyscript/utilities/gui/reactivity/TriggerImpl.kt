@@ -18,10 +18,14 @@
 
 package com.wolfyscript.utilities.gui.reactivity
 
-interface Trigger {
+class TriggerImpl(val id: NodeId) : Trigger {
 
-    fun track()
+    override fun track() {
+        id.runtime.reactiveSource.subscribe(id)
+    }
 
-    fun update()
-
+    override fun update() {
+        id.runtime.reactiveSource.markDirty(id)
+        id.runtime.reactiveSource.runEffects()
+    }
 }
