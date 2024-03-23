@@ -18,15 +18,14 @@
 
 package com.wolfyscript.utilities.gui.reactivity
 
-import com.wolfyscript.utilities.gui.ViewRuntime
+import com.wolfyscript.utilities.gui.ViewRuntimeImpl
 
 class ReactivityNode<V>(
     val id: NodeId,
     var value: V?,
-    val type: Type<V>
-) {
-
+    val type: Type<V>,
     private var state: State = State.CLEAN
+) {
 
     fun mark(state: State) {
         this.state = state
@@ -36,12 +35,12 @@ class ReactivityNode<V>(
         return state
     }
 
-    fun update(viewRuntime: ViewRuntime) : Boolean {
+    fun update(viewRuntime: ViewRuntimeImpl) : Boolean {
         return type.runUpdate(viewRuntime, this);
     }
 
-    fun subscribe(source: ReactivityNode<*>) {
-        id.runtime.reactiveSource.subscribe(id, source.id)
+    fun subscribe() {
+        id.runtime.reactiveSource.subscribe(id)
     }
 
     override fun toString(): String {
@@ -61,14 +60,19 @@ class ReactivityNode<V>(
 
     interface Type<T> {
 
-        fun runUpdate(runtime: ViewRuntime, reactivityNode: ReactivityNode<T>) : Boolean = true
+        fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>) : Boolean = true
+
+        interface Trigger : Type<Any>
 
         interface Signal<T> : Type<T>
 
         interface Effect<T> : Type<T> {
 
-            override fun runUpdate(runtime: ViewRuntime, reactivityNode: ReactivityNode<T>): Boolean {
-                computation().run(runtime, reactivityNode.value) { reactivityNode.value = it }
+            override fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>): Boolean {
+                runtime.reactiveSource.runWithObserver(reactivityNode.id) {
+                    runtime.reactiveSource.cleanupSourcesFor(reactivityNode.id)
+                    computation().run(runtime, reactivityNode.value) { reactivityNode.value = it }
+                }
                 return true
             }
 
@@ -78,8 +82,13 @@ class ReactivityNode<V>(
 
         interface Memo<T> : Type<T> {
 
-            override fun runUpdate(runtime: ViewRuntime, reactivityNode: ReactivityNode<T>): Boolean {
-                return computation().run(runtime, reactivityNode.value) { reactivityNode.value = it }
+            override fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>): Boolean {
+                var changed = false
+                runtime.reactiveSource.runWithObserver(reactivityNode.id) {
+                    runtime.reactiveSource.cleanupSourcesFor(reactivityNode.id)
+                    changed = computation().run(runtime, reactivityNode.value) { reactivityNode.value = it }
+                }
+                return changed
             }
 
             fun computation(): AnyComputation<T?>

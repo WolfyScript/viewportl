@@ -24,12 +24,10 @@ import com.wolfyscript.utilities.gui.Renderable
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
 import com.wolfyscript.utilities.gui.functions.SerializableSupplier
-import com.wolfyscript.utilities.gui.functions.getNodeIds
 import com.wolfyscript.utilities.gui.reactivity.EffectImpl
 import com.wolfyscript.utilities.gui.reactivity.Memo
 import com.wolfyscript.utilities.gui.reactivity.MemoImpl
 import com.wolfyscript.utilities.gui.reactivity.createMemo
-import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 
 class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val context: BuildContext) :
     ConditionalChildComponentBuilder<T> {
@@ -55,7 +53,7 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
 
         val runtime = context.runtime
 
-        val effect = context.reactiveSource.createEffect<Long> {
+        context.reactiveSource.createEffect<Long> {
             runtime as ViewRuntimeImpl
             val graph = runtime.renderingGraph
             val previousNode = this?.let { graph.getNode(it) }
@@ -86,18 +84,6 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
             }
         }
 
-        val conditionNode = context.reactiveSource.untypedNode((conditionMemo as MemoImpl).id)
-        val effectNode = context.reactiveSource.untypedNode((effect as EffectImpl).id)
-
-        condition?.getNodeIds()?.forEach {
-            val node = context.reactiveSource.untypedNode(it)
-            if (node != null) {
-                conditionNode?.subscribe(node)
-            }
-        }
-        if (conditionNode != null) {
-            effectNode?.subscribe(conditionNode)
-        }
     }
 
     inner class WhenImpl : ConditionalChildComponentBuilder.When<T> {

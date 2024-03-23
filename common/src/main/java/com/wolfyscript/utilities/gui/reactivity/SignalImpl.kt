@@ -23,8 +23,7 @@ import java.util.function.Function
 import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
 
-class SignalImpl<MT : Any>(private val id: NodeId, private val type: KClass<MT>) :
-    Signal<MT> {
+class SignalImpl<MT : Any>(private val id: NodeId, private val type: KClass<MT>) : Signal<MT> {
     private var tagName: String? = null
 
     override fun tagName(tagName: String) {
@@ -53,9 +52,10 @@ class SignalImpl<MT : Any>(private val id: NodeId, private val type: KClass<MT>)
     }
 
     override fun get(): MT? {
-        val reactivityNode: ReactivityNode<*>? = id.runtime.reactiveSource.untypedNode(id)
-        if (type.isInstance(reactivityNode?.value)) {
-            return type.safeCast(reactivityNode?.value)
+        id.runtime.reactiveSource.subscribe(id)
+        val value = id.runtime.reactiveSource.getValue<Any>(id)
+        if (type.isInstance(value)) {
+            return type.safeCast(value)
         }
         return null
     }

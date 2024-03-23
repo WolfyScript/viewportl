@@ -24,9 +24,10 @@ import kotlin.reflect.safeCast
 class MemoImpl<V : Any>(val id: NodeId, private val type: KClass<V>) : Memo<V>{
 
     override fun get(): V? {
-        val reactivityNode: ReactivityNode<*>? = id.runtime.reactiveSource.untypedNode(id)
-        if (type.isInstance(reactivityNode?.value)) {
-            return type.safeCast(reactivityNode?.value)
+        id.runtime.reactiveSource.subscribe(id)
+        val value = id.runtime.reactiveSource.getValue<Any>(id)
+        if (type.isInstance(value)) {
+            return type.safeCast(value)
         }
         return null
     }

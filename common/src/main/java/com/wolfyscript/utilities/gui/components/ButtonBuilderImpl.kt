@@ -183,20 +183,11 @@ class ButtonBuilderImpl : AbstractComponentBuilderImpl<Button, com.wolfyscript.u
 
         override fun create(button: Button): ButtonIcon {
             val runtime = context.runtime as ViewRuntimeImpl
-            val effect = context.reactiveSource.createEffect<Unit> {
+            context.reactiveSource.createEffect<Unit> {
                 runtime.incomingUpdate(object : UpdateInformation {
                     override fun updated(): List<Long> = listOf(button.nodeId())
                 })
             }
-            val effectNode = context.reactiveSource.untypedNode((effect as EffectImpl).id)
-            signals.forEach {
-                it as SignalImpl
-                val node = context.reactiveSource.untypedNode(it.id())
-                if (node != null) {
-                    effectNode?.subscribe(node)
-                }
-            }
-
             return DynamicIcon(staticStackConfig, TagResolver.resolver(tagResolvers))
         }
     }

@@ -34,10 +34,15 @@ public class ViewRuntimeImpl implements ViewRuntime {
 
     protected ViewRuntimeImpl(WolfyUtils wolfyUtils, Function<ViewRuntime, RouterBuilder> rootRouter, Set<UUID> viewers) {
         this.wolfyUtils = wolfyUtils;
+        // Create rendering & reactivity trees
         this.renderingGraph = new RenderingGraph(this);
         this.reactiveSource = new ReactiveSourceImpl(this);
+
+        // Create platform specific handlers that handle rendering and interaction
         this.renderer = wolfyUtils.getCore().platform().guiUtils().createRenderer(this);
         this.interactionHandler = wolfyUtils.getCore().platform().guiUtils().createInteractionHandler(this);
+
+        // Build the components and init the rendering tree
         this.router = rootRouter.apply(this).create(null);
 
         this.history = new ArrayDeque<>();
@@ -84,9 +89,15 @@ public class ViewRuntimeImpl implements ViewRuntime {
 
     private void open(Window window) {
         setCurrentRoot(window);
+
+
         renderer.changeWindow(window);
         interactionHandler.init(window);
-        wolfyUtils.getCore().platform().scheduler().syncTask(wolfyUtils, renderer::render);
+
+        wolfyUtils.getCore().platform().scheduler().syncTask(wolfyUtils, () -> {
+            renderer.render();
+            reactiveSource.owner$common().update();
+        });
     }
 
     @Override

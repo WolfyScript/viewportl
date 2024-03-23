@@ -122,7 +122,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         val builder = ReactiveRenderBuilderImpl(wolfyUtils, context)
         val component = with(reactiveFunction) { builder.apply() }?.construct()
 
-        context.reactiveSource.createCustomEffect(emptyList(), null, object : AnyComputation<Long?> {
+        context.reactiveSource.createCustomEffect(null, object : AnyComputation<Long?> {
 
             override fun run(
                 runtime: ViewRuntime,
@@ -200,25 +200,11 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
 
         if (titleFunction != null) {
             val runtime = context.runtime as ViewRuntimeImpl
-            val effect = context.reactiveSource.createEffect<Unit> {
+            context.reactiveSource.createEffect<Unit> {
                 window.title(titleFunction!!.get())
                 runtime.incomingUpdate(object : UpdateInformation{
                     override fun updateTitle(): Boolean = true
                 })
-            }
-            val effectNode = context.reactiveSource.untypedNode((effect as EffectImpl).id)
-            titleFunction!!.getNodeIds().forEach {
-                val node = context.reactiveSource.untypedNode(it)
-                if (node != null) {
-                    effectNode?.subscribe(node)
-                }
-            }
-            titleSignals.forEach {
-                it as SignalImpl
-                val node = context.reactiveSource.untypedNode(it.id())
-                if (node != null) {
-                    effectNode?.subscribe(node)
-                }
             }
         }
 
