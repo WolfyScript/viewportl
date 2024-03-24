@@ -37,22 +37,6 @@ interface ReactiveSource {
     fun <T : Any> createMemo(valueType: Class<T>, fn: Function<T?, T?>) : Memo<T>
 
     /**
-     * Creates a Signal with a value, which is stored externally of the GUI.
-     *
-     * @param storeProvider The data storage where the data exists
-     * @param supplier The value getter
-     * @param consumer The value setter
-     * @return The signal
-     * @param <S>
-     * @param <T> The type of the value
-    </T></S> */
-    fun <S, T> createStore(
-        storeProvider: ReceiverFunction<ViewRuntime, S>,
-        supplier: ReceiverFunction<S, T>,
-        consumer: ReceiverBiConsumer<S, T>
-    ): Signal<T>
-
-    /**
      * Must be used to fetch data from the main Minecraft thread (i.e. Entities, World, etc.).
      * This is because the GUI is run async on a different thread!
      *

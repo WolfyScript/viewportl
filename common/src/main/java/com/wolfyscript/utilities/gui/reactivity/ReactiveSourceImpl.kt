@@ -265,14 +265,6 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         return MemoImpl(reactivityNodeId, valueType.kotlin)
     }
 
-    override fun <S, T> createStore(
-        storeProvider: ReceiverFunction<ViewRuntime, S>,
-        supplier: ReceiverFunction<S, T>,
-        consumer: ReceiverBiConsumer<S, T>
-    ): Signal<T> {
-        TODO("Not yet implemented!")
-    }
-
     override fun <T> resourceSync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>> {
         TODO("Not yet implemented!")
     }
@@ -300,13 +292,6 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         pendingEffects.add(id)
 
         return EffectImpl(id)
-    }
-
-    override fun <T> createEffect(
-        additionalSignals: List<Signal<*>>,
-        effect: SignalableReceiverFunction<T?, T>
-    ): Effect {
-        return createCustomEffect(null as T?, EffectState(effect))
     }
 
     fun subscribe(node: NodeId) {
