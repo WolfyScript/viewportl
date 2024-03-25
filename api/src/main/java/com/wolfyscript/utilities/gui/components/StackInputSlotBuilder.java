@@ -22,15 +22,15 @@ import com.wolfyscript.utilities.platform.adapters.ItemStack;
 import com.wolfyscript.utilities.gui.Component;
 import com.wolfyscript.utilities.gui.ComponentBuilder;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-import com.wolfyscript.utilities.gui.reactivity.Signal;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public interface StackInputSlotBuilder extends ComponentBuilder<StackInputSlot, Component> {
 
     StackInputSlotBuilder onValueChange(Consumer<ItemStack> onValueChange);
 
-    StackInputSlotBuilder value(Signal<ItemStack> valueSignal);
+    StackInputSlotBuilder value(Supplier<ItemStack> stackSupplier);
 
     StackInputSlotBuilder interact(InteractionCallback interactionCallback);
 

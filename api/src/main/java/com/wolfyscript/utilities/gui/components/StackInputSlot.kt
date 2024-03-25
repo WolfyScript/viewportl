@@ -15,15 +15,16 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.components
 
-package com.wolfyscript.utilities.gui.components;
+import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.interaction.Interactable
+import com.wolfyscript.utilities.platform.adapters.ItemStack
 
-import com.wolfyscript.utilities.gui.interaction.Interactable;
-import com.wolfyscript.utilities.platform.adapters.ItemStack;
-import com.wolfyscript.utilities.gui.*;
+interface StackInputSlot : Component, Interactable {
 
-public interface StackInputSlot extends Component, Interactable {
+    fun value(): ItemStack?
 
-    ItemStack value();
+    fun value(stack: ItemStack?)
 
 }
