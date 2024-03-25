@@ -1,58 +1,61 @@
-package com.wolfyscript.utilities.gui.components;
+package com.wolfyscript.utilities.gui.components
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Preconditions;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.platform.adapters.ItemStack;
-import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.ComponentBuilderSettings;
-import com.wolfyscript.utilities.gui.InteractionResult;
-import com.wolfyscript.utilities.gui.rendering.PropertyPosition;
-import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-import com.wolfyscript.utilities.gui.reactivity.Signal;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
+import com.fasterxml.jackson.annotation.JacksonInject
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.gui.*
+import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition.Companion.def
+import com.wolfyscript.utilities.gui.rendering.RenderPropertiesImpl
+import com.wolfyscript.utilities.platform.adapters.ItemStack
+import java.util.function.Consumer
+import java.util.function.Supplier
 
 @KeyedStaticId(key = "stack_input_slot")
-@ComponentBuilderSettings(base = StackInputSlotBuilder.class, component = StackInputSlot.class)
-public class StackInputSlotBuilderImpl extends AbstractComponentBuilderImpl<StackInputSlot, Component> implements StackInputSlotBuilder {
+@ComponentBuilderSettings(base = StackInputSlotBuilder::class, component = StackInputSlot::class)
+class StackInputSlotBuilderImpl @JsonCreator protected constructor(
+    @JsonProperty("id") id: String,
+    @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,
+    @JacksonInject("context") private val context: BuildContext
+) : AbstractComponentBuilderImpl<StackInputSlot?, Component?>(
+    id, wolfyUtils
+), StackInputSlotBuilder {
+    private var interactionCallback = InteractionCallback { _, _ -> InteractionResult.cancel(false) }
+    private var onValueChange: Consumer<ItemStack?>? = null
+    private var valueSupplier: Supplier<ItemStack?>? = null
 
-    private InteractionCallback interactionCallback = (guiHolder, interactionDetails) -> InteractionResult.cancel(false);
-    private Consumer<ItemStack> onValueChange;
-    private Signal<ItemStack> valueSignal;
-
-    @JsonCreator
-    protected StackInputSlotBuilderImpl(@JsonProperty("id") String id, @JacksonInject("wolfyUtils") WolfyUtils wolfyUtils) {
-        super(id, wolfyUtils);
+    override fun onValueChange(onValueChange: Consumer<ItemStack?>): StackInputSlotBuilder {
+        this.onValueChange = onValueChange
+        return this
     }
 
-    @Override
-    public StackInputSlotBuilder onValueChange(Consumer<ItemStack> onValueChange) {
-        this.onValueChange = onValueChange;
-        return this;
+    override fun interact(interactionCallback: InteractionCallback): StackInputSlotBuilder {
+        this.interactionCallback = interactionCallback
+        return this
     }
 
-    public StackInputSlotBuilder interact(InteractionCallback interactionCallback) {
-        Preconditions.checkArgument(interactionCallback != null, "InteractionCallback must be non-null!");
-        this.interactionCallback = interactionCallback;
-        return this;
+    override fun value(stackSupplier: Supplier<ItemStack?>): StackInputSlotBuilder {
+        this.valueSupplier = stackSupplier
+        return this
     }
 
-    public StackInputSlotBuilder value(Signal<ItemStack> valueSignal) {
-        this.valueSignal = valueSignal;
-        return this;
-    }
+    override fun create(parent: Component?): StackInputSlot {
+        val slot: StackInputSlot = StackInputSlotImpl(
+            id(),
+            wolfyUtils,
+            parent,
+            onValueChange,
+            interactionCallback,
+            valueSupplier,
+            position()?.let { RenderPropertiesImpl(it) } ?: RenderPropertiesImpl(def()),
+        )
 
-    @Override
-    public @NotNull StackInputSlot create(Component component) {
+        context.reactiveSource.createEffect<Unit> {
+            slot.value(valueSupplier?.get())
+        }
 
-
-
-
-        return new StackInputSlotImpl(id(), wolfyUtils, component, onValueChange, interactionCallback, valueSignal.get(), null /* TODO */);
+        return slot
     }
 }
