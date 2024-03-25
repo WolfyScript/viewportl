@@ -21,13 +21,14 @@ package com.wolfyscript.utilities.gui;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.callback.TextInputCallback;
 import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback;
+import com.wolfyscript.utilities.gui.rendering.RenderContext;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 /**
- * The GuiViewManager, as the name suggests, manages a view of the GUI for one or more players.<br>
+ * The {@link ViewRuntime}, as the name suggests, manages a view of the GUI for one or more players.<br>
  * It contains the custom Data object that stores all the required data of this view.<br>
  *
  * The view is immutable, so you need to create a new view each time you need to add a viewer or change the root.
@@ -89,14 +90,6 @@ public interface ViewRuntime {
      * @return The API instance of this manager.
      */
     WolfyUtils getWolfyUtils();
-
-    Optional<RenderContext> getRenderContext(UUID viewer);
-
-    void blockedByInteraction();
-
-    void unblockedByInteraction();
-
-    void updateSignalQueue(RenderContext context);
 
     Optional<TextInputCallback> textInputCallback();
 

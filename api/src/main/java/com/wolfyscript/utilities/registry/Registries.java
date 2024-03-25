@@ -29,6 +29,8 @@ import com.wolfyscript.utilities.eval.operator.Operator;
 import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.kyori.adventure.text.renderer.ComponentRenderer;
 import org.jetbrains.annotations.NotNull;
 
 /**

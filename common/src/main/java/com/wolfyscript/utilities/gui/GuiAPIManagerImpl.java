@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.wolfyscript.jackson.dataformat.hocon.HoconMapper;
 import com.wolfyscript.utilities.WolfyUtils;
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
@@ -18,7 +19,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -67,13 +67,13 @@ public class GuiAPIManagerImpl implements GuiAPIManager {
     }
 
     @Override
-    public void registerGui(String id, BiConsumer<ReactiveSource, RouterBuilder> consumer) {
+    public void registerGui(String id, ReceiverConsumer<RouterBuilder> consumer) {
         // TODO: maybe wrap in an extra object?
         registerGui(id, (viewManager) -> {
-            ReactiveSource reactiveSource = new ReactiveSourceImpl((ViewRuntimeImpl) viewManager);
+            BuildContext buildContext = new BuildContext(viewManager, ((ViewRuntimeImpl) viewManager).getReactiveSource(), wolfyUtils);
 
-            RouterBuilder builder = new RouterBuilderImpl(id, wolfyUtils, reactiveSource);
-            consumer.accept(reactiveSource, builder);
+            RouterBuilder builder = new RouterBuilderImpl(id, wolfyUtils, buildContext);
+            consumer.consume(builder);
             return builder;
         });
     }
@@ -94,12 +94,12 @@ public class GuiAPIManagerImpl implements GuiAPIManager {
                             ViewRuntimeImpl viewManager = new ViewRuntimeImpl(wolfyUtils, constructor, viewers);
 
                             synchronized (VIEW_RUNTIMES) {
-                                viewManagersForID.add(viewManager.getId());
-                                VIEW_RUNTIMES.put(viewManager.getId(), viewManager);
+                                viewManagersForID.add(viewManager.id);
+                                VIEW_RUNTIMES.put(viewManager.id, viewManager);
                             }
                             synchronized (VIEW_RUNTIMES_PER_PLAYER) {
                                 for (UUID viewer : viewers) {
-                                    VIEW_RUNTIMES_PER_PLAYER.put(viewer, viewManager.getId());
+                                    VIEW_RUNTIMES_PER_PLAYER.put(viewer, viewManager.id);
                                 }
                             }
                             callback.accept(viewManager);
@@ -124,7 +124,7 @@ public class GuiAPIManagerImpl implements GuiAPIManager {
     }
 
     @Override
-    public void registerGuiFromFiles(String id, BiConsumer<ReactiveSource, RouterBuilder> consumer) {
+    public void registerGuiFromFiles(String id, ReceiverConsumer< RouterBuilder> consumer) {
         HoconMapper mapper = wolfyUtils.getJacksonMapperUtil().getGlobalMapper(HoconMapper.class);
         wolfyUtils.exportResources(guiResourceDir + "/" + id, new File(guiDataSubFolder, "/includes/" + id), true, GUI_FILE_PATTERN);
 
@@ -137,17 +137,17 @@ public class GuiAPIManagerImpl implements GuiAPIManager {
                         throw new IllegalArgumentException("Cannot find gui index file! Expected: " + file.getPath());
                 }
 
-                ReactiveSource reactiveSource = new ReactiveSourceImpl((ViewRuntimeImpl) viewManager);
+                BuildContext context = new BuildContext(viewManager, ((ViewRuntimeImpl) viewManager).getReactiveSource(), wolfyUtils);
                 var injectableValues = new InjectableValues.Std();
                 injectableValues.addValue("parent", null);
                 injectableValues.addValue(WolfyUtils.class, wolfyUtils);
                 injectableValues.addValue("wolfyUtils", wolfyUtils);
-                injectableValues.addValue("reactiveSrc", reactiveSource);
-                injectableValues.addValue(ReactiveSource.class, reactiveSource);
+                injectableValues.addValue("context", context);
+                injectableValues.addValue(BuildContext.class, context);
 
                 RouterBuilder builder = mapper.readerFor(new TypeReference<RouterBuilderImpl>() {
                 }).with(injectableValues).readValue(file);
-                consumer.accept(reactiveSource, builder);
+                consumer.consume(builder);
                 return builder;
             } catch (IOException e) {
                 throw new RuntimeException(e);

@@ -42,7 +42,7 @@ public abstract class AbstractValueProvider<V> implements ValueProvider<V> {
 
     @JsonIgnore
     @Override
-    public NamespacedKey getNamespacedKey() {
+    public NamespacedKey key() {
         return key;
     }
 }

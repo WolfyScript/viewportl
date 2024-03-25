@@ -19,9 +19,9 @@
 package com.wolfyscript.utilities.gui;
 
 import com.wolfyscript.utilities.WolfyUtils;
-import java.util.Deque;
+import com.wolfyscript.utilities.gui.interaction.Interactable;
+
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * <p>
@@ -46,11 +46,4 @@ public interface Router extends Interactable {
 
     Window open(ViewRuntime viewManager, String... path);
 
-    /**
-     * Opens this component for the specified view and player.<br>
-     *
-     * @param viewManager The view manager to open.
-     * @param uuid The uuid to open the Window for.
-     */
-    RenderContext createContext(ViewRuntime viewManager, Deque<String> path, UUID uuid);
 }

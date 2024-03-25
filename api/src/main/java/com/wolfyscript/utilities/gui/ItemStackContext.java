@@ -30,6 +30,4 @@ public interface ItemStackContext {
 
     EvalContext evalContext();
 
-    GuiHolder holder();
-
 }

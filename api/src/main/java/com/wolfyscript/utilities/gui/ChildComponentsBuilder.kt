@@ -19,14 +19,14 @@
 package com.wolfyscript.utilities.gui
 
 import com.wolfyscript.utilities.gui.components.ButtonBuilder
-import com.wolfyscript.utilities.gui.components.ComponentClusterBuilder
+import com.wolfyscript.utilities.gui.components.ComponentGroupBuilder
 import com.wolfyscript.utilities.gui.components.StackInputSlotBuilder
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
 
 interface ChildComponentsBuilder<out T> {
 
-    fun group(id: String? = null, builder: ReceiverConsumer<ComponentClusterBuilder>): T {
-        return component(id, ComponentClusterBuilder::class.java, builder)
+    fun group(id: String? = null, builder: ReceiverConsumer<ComponentGroupBuilder>): T {
+        return component(id, ComponentGroupBuilder::class.java, builder)
     }
 
     fun button(id: String? = null, builder: ReceiverConsumer<ButtonBuilder>) : T {

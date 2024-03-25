@@ -4,18 +4,19 @@ import com.fasterxml.jackson.annotation.*
 import com.google.common.base.Preconditions
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
-import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class RouterBuilderImpl @JsonCreator internal constructor(
     @param:JsonProperty("route") private val route: String,
     @param:JacksonInject("wolfyUtils") private val wolfyUtils: WolfyUtils,
-    @param:JacksonInject("reactiveSrc") private val reactiveSource: ReactiveSource
-) : RouterBuilder {
+    @param:JacksonInject("context") private val context: BuildContext
+) : RouterBuilder, ReactiveSource by context.reactiveSource {
     private val subRouteBuilders: MutableMap<String, RouterBuilder> = HashMap()
     private var windowBuilder: WindowBuilder? = null
     private var interactionCallback =
-        InteractionCallback { guiHolder: GuiHolder?, interactionDetails: InteractionDetails? -> InteractionResult.def() }
+        InteractionCallback { _, _ -> InteractionResult.def() }
 
     @JsonSetter("window")
     private fun readWindow(windowBuilder: WindowBuilderImpl) {
@@ -35,29 +36,29 @@ class RouterBuilderImpl @JsonCreator internal constructor(
         return this
     }
 
-    override fun route(path: String, subRouteBuilder: ReceiverBiConsumer<RouterBuilder, ReactiveSource>): RouterBuilder {
+    override fun route(path: String, subRouteBuilder: ReceiverConsumer<RouterBuilder>): RouterBuilder {
         with(subRouteBuilder) {
             subRouteBuilders.computeIfAbsent(path) { _: String? ->
                 RouterBuilderImpl(
                     path,
                     wolfyUtils,
-                    reactiveSource
+                    context
                 )
-            }.consume(reactiveSource)
+            }.consume()
         }
         return this
     }
 
-    override fun window(windowBuilder: ReceiverBiConsumer<WindowBuilder, ReactiveSource>): RouterBuilder {
+    override fun window(windowBuilder: ReceiverConsumer<WindowBuilder>): RouterBuilder {
         with(windowBuilder) {
-            window().consume(reactiveSource)
+            window().consume()
         }
         return this
     }
 
     override fun window(): WindowBuilder {
         if (windowBuilder == null) {
-            windowBuilder = WindowBuilderImpl("", wolfyUtils, reactiveSource)
+            windowBuilder = WindowBuilderImpl("", wolfyUtils, context)
         }
         return windowBuilder!!
     }

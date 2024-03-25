@@ -18,16 +18,16 @@
 package com.wolfyscript.utilities.gui
 
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
-import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
-import java.util.function.BiConsumer
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
 
-interface RouterBuilder {
+interface RouterBuilder : ReactiveSource {
 
     fun interact(interactionCallback: InteractionCallback): RouterBuilder
 
-    fun route(path: String, subRouteBuilder: ReceiverBiConsumer<RouterBuilder, ReactiveSource>): RouterBuilder
+    fun route(path: String, subRouteBuilder: ReceiverConsumer<RouterBuilder>): RouterBuilder
 
-    fun window(windowBuilder: ReceiverBiConsumer<WindowBuilder, ReactiveSource>): RouterBuilder
+    fun window(windowBuilder: ReceiverConsumer<WindowBuilder>): RouterBuilder
 
     fun window(): WindowBuilder
 

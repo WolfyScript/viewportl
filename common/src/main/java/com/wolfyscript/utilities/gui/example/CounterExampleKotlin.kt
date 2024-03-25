@@ -2,8 +2,8 @@ package com.wolfyscript.utilities.gui.example
 
 import com.wolfyscript.utilities.gui.GuiAPIManager
 import com.wolfyscript.utilities.gui.InteractionResult
-import com.wolfyscript.utilities.gui.ReactiveSource
-import com.wolfyscript.utilities.gui.RouterBuilder
+import com.wolfyscript.utilities.gui.reactivity.createSignal
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import java.util.*
@@ -24,15 +24,14 @@ import java.util.*
  * Those parts are automatically updated when the count changes.
  */
 fun registerExampleCounter(manager: GuiAPIManager) {
-    manager.registerGuiFromFiles("example_counter") { reactiveSrc: ReactiveSource, router: RouterBuilder ->
-        router.window {
-            // This is only called upon creation of the component. So this is not called when the signal is updated!
-
-            // Use signals that provide a simple value storage & synchronisation. Signals are not persistent and will get destroyed when the GUI is closed!
-            val countSignal = reactiveSrc.createSignal { 0 }
-
-            // Optionally, sync your data with the gui using custom data stores. This makes it possible to store persistent data.
-            val count = reactiveSrc.createStore({ CounterStore() }, { count }, { count -> this.count = count })
+    manager.registerGuiFromFiles("example_counter") {
+        /**
+         * Everything in this section is called **async** and only once per runtime initiation.
+         * It constructs the component tree and reactive graph as specified.
+         **/
+        window {
+            // Use signals that provide a simple value storage & synchronisation. Signals do not store the value themselves.
+            val count = createSignal(0)
             count.tagName("count")
 
             size(9 * 3)
@@ -52,6 +51,7 @@ fun registerExampleCounter(manager: GuiAPIManager) {
             }
             // Sometimes we want to render components dependent on signals
             whenever { count.get() != 0 } then {
+                // This section is run just once up on the initial construction too, not when the condition changes
                 button("reset") {
                     interact { _, _ ->
                         count.set(0) // The set method changes the value of the signal and prompts the listener of the signal to re-render.
@@ -68,15 +68,10 @@ fun registerExampleCounter(manager: GuiAPIManager) {
                         )
                     }
                 }
-            } orElse { }
-            // The state of a component is only reconstructed if the slot it is positioned at changes.
-            // Here the slot will always have the same type of component, so the state is created only once.
+            }
             button("count_up") {
                 interact { _, _ ->
-                    count.update { old ->
-                        val old = old + 1
-                        old
-                    }
+                    count.update { old -> old + 1 }
                     InteractionResult.cancel(true)
                 }
                 animation {
@@ -99,11 +94,4 @@ fun registerExampleCounter(manager: GuiAPIManager) {
             }
         }
     }
-}
-
-/**
- * Stores the count value so that it persists when the GUI is closed.
- */
-private class CounterStore {
-    var count: Int = 0
 }
