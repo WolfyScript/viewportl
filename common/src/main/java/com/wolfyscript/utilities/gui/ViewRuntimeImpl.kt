@@ -1,176 +1,136 @@
-package com.wolfyscript.utilities.gui;
+package com.wolfyscript.utilities.gui
 
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.callback.TextInputCallback;
-import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback;
-import com.wolfyscript.utilities.gui.interaction.InteractionHandler;
-import com.wolfyscript.utilities.gui.model.UpdateInformation;
-import com.wolfyscript.utilities.gui.reactivity.ReactiveSourceImpl;
-import com.wolfyscript.utilities.gui.rendering.Renderer;
-import com.wolfyscript.utilities.gui.rendering.RenderingGraph;
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.gui.callback.TextInputCallback
+import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback
+import com.wolfyscript.utilities.gui.interaction.InteractionHandler
+import com.wolfyscript.utilities.gui.model.UpdateInformation
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSourceImpl
+import com.wolfyscript.utilities.gui.rendering.Renderer
+import com.wolfyscript.utilities.gui.rendering.RenderingGraph
+import java.util.*
+import java.util.function.Function
 
-import java.util.*;
-import java.util.function.Function;
+class ViewRuntimeImpl(
+    private val wolfyUtils: WolfyUtils,
+    rootRouter: Function<ViewRuntime?, RouterBuilder>,
+    private val viewers: Set<UUID>
+) : ViewRuntime {
+    @JvmField
+    val id: Long = NEXT_ID++
 
-public class ViewRuntimeImpl implements ViewRuntime {
+    // Create rendering & reactivity trees
+    val renderingGraph: RenderingGraph = RenderingGraph(this)
+    val reactiveSource: ReactiveSourceImpl = ReactiveSourceImpl(this)
 
-    private static long NEXT_ID = Long.MIN_VALUE;
+    // Create platform specific handlers that handle rendering and interaction
+    val renderer: Renderer<*> = wolfyUtils.core.platform().guiUtils().createRenderer(this)
 
-    private final long id;
-    private final RenderingGraph renderingGraph;
-    private final Renderer<?> renderer;
-    private final InteractionHandler interactionHandler;
+    val interactionHandler: InteractionHandler = wolfyUtils.core.platform().guiUtils().createInteractionHandler(this)
+    // Build the components and init the rendering tree
+    private val router = rootRouter.apply(this).create(null)
 
-    private final WolfyUtils wolfyUtils;
-    private final Router router;
-    private Window currentRoot;
-    private final Deque<Window> history;
-    private final Set<UUID> viewers;
+    private var currentRoot: Window? = null
 
-    private TextInputCallback textInputCallback;
-    private TextInputTabCompleteCallback textInputTabCompleteCallback;
+    private val history: Deque<Window> = ArrayDeque()
+    private var textInputCallback: TextInputCallback? = null
 
-    private final ReactiveSourceImpl reactiveSource;
+    private var textInputTabCompleteCallback: TextInputTabCompleteCallback? = null
 
-    protected ViewRuntimeImpl(WolfyUtils wolfyUtils, Function<ViewRuntime, RouterBuilder> rootRouter, Set<UUID> viewers) {
-        this.wolfyUtils = wolfyUtils;
-        // Create rendering & reactivity trees
-        this.renderingGraph = new RenderingGraph(this);
-        this.reactiveSource = new ReactiveSourceImpl(this);
-
-        // Create platform specific handlers that handle rendering and interaction
-        this.renderer = wolfyUtils.getCore().platform().guiUtils().createRenderer(this);
-        this.interactionHandler = wolfyUtils.getCore().platform().guiUtils().createInteractionHandler(this);
-
-        // Build the components and init the rendering tree
-        this.router = rootRouter.apply(this).create(null);
-
-        this.history = new ArrayDeque<>();
-        this.viewers = viewers;
-        id = NEXT_ID++;
+    fun incomingUpdate(information: UpdateInformation?) {
+        interactionHandler.update(information!!)
+        renderer.update(information)
     }
 
-    public InteractionHandler getInteractionHandler() {
-        return interactionHandler;
+    override fun openNew() {
+        openNew(*emptyArray())
     }
 
-    public RenderingGraph getRenderingGraph() {
-        return renderingGraph;
+    override fun openNew(vararg path: String) {
+        open(getRouter().open(this, *path))
     }
 
-    public ReactiveSourceImpl getReactiveSource() {
-        return reactiveSource;
-    }
-
-    public void incomingUpdate(UpdateInformation information) {
-        interactionHandler.update(information);
-        renderer.update(information);
-    }
-
-    @Override
-    public void openNew() {
-        openNew(new String[0]);
-    }
-
-    @Override
-    public void openNew(String... path) {
-        open(getRouter().open(this, path));
-    }
-
-    @Override
-    public void open() {
+    override fun open() {
         if (history.isEmpty()) {
-            getCurrentMenu().ifPresent(window -> window.close(this));
-            openNew();
+            currentMenu.ifPresent { window: Window -> window.close(this) }
+            openNew()
         } else {
-            getCurrentMenu().ifPresent(this::open);
+            currentMenu.ifPresent { window: Window -> this.open(window) }
         }
     }
 
-    private void open(Window window) {
-        setCurrentRoot(window);
+    private fun open(window: Window) {
+        setCurrentRoot(window)
 
 
-        renderer.changeWindow(window);
-        interactionHandler.init(window);
+        renderer.changeWindow(window)
+        interactionHandler.init(window)
 
-        wolfyUtils.getCore().platform().scheduler().syncTask(wolfyUtils, () -> {
-            renderer.render();
-            reactiveSource.owner$common().update();
-        });
+        wolfyUtils.core.platform().scheduler().syncTask(wolfyUtils) {
+            renderer.render()
+            reactiveSource.owner()?.update()
+        }
     }
 
-    @Override
-    public void openPrevious() {
-        history.poll(); // Remove active current menu
-        var window = history.peek();
-        getCurrentMenu().ifPresent(w -> w.close(this));
-        open(window);
+    override fun openPrevious() {
+        history.poll() // Remove active current menu
+        val window = history.peek()
+        currentMenu.ifPresent { w: Window -> w.close(this) }
+        open(window)
     }
 
-    public void setCurrentRoot(Window currentRoot) {
-        this.currentRoot = currentRoot;
+    fun setCurrentRoot(currentRoot: Window?) {
+        this.currentRoot = currentRoot
     }
 
-    @Override
-    public Optional<Window> getCurrentMenu() {
-        return Optional.ofNullable(currentRoot);
+    override fun getCurrentMenu(): Optional<Window> {
+        return Optional.ofNullable(currentRoot)
     }
 
-    @Override
-    public WolfyUtils getWolfyUtils() {
-        return wolfyUtils;
+    override fun getWolfyUtils(): WolfyUtils {
+        return wolfyUtils
     }
 
-    @Override
-    public Router getRouter() {
-        return router;
+    override fun getRouter(): Router {
+        return router
     }
 
-    @Override
-    public Set<UUID> getViewers() {
-        return Set.copyOf(viewers);
+    override fun getViewers(): Set<UUID> {
+        return java.util.Set.copyOf(viewers)
     }
 
-    public long getId() {
-        return id;
+    override fun textInputCallback(): Optional<TextInputCallback> {
+        return Optional.ofNullable(textInputCallback)
     }
 
-    @Override
-    public Optional<TextInputCallback> textInputCallback() {
-        return Optional.ofNullable(textInputCallback);
+    override fun setTextInputCallback(textInputCallback: TextInputCallback) {
+        this.textInputCallback = textInputCallback
     }
 
-    @Override
-    public void setTextInputCallback(TextInputCallback textInputCallback) {
-        this.textInputCallback = textInputCallback;
+    override fun textInputTabCompleteCallback(): Optional<TextInputTabCompleteCallback> {
+        return Optional.ofNullable(textInputTabCompleteCallback)
     }
 
-    @Override
-    public Optional<TextInputTabCompleteCallback> textInputTabCompleteCallback() {
-        return Optional.ofNullable(textInputTabCompleteCallback);
+    override fun setTextInputTabCompleteCallback(textInputTabCompleteCallback: TextInputTabCompleteCallback) {
+        this.textInputTabCompleteCallback = textInputTabCompleteCallback
     }
 
-    @Override
-    public void setTextInputTabCompleteCallback(TextInputTabCompleteCallback textInputTabCompleteCallback) {
-        this.textInputTabCompleteCallback = textInputTabCompleteCallback;
+    override fun id(): Long {
+        return id
     }
 
-    @Override
-    public long id() {
-        return id;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as ViewRuntimeImpl
+        return id == that.id
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ViewRuntimeImpl that = (ViewRuntimeImpl) o;
-        return id == that.id;
+    override fun hashCode(): Int {
+        return Objects.hash(id)
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    companion object {
+        private var NEXT_ID = Long.MIN_VALUE
     }
 }
