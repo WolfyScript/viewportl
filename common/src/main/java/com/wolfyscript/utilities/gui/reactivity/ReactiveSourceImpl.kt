@@ -34,8 +34,8 @@ import kotlin.reflect.KClass
 
 class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
 
-    private var owner: NodeId
-    var observer: NodeId? = null
+    private var owner: NodeId?
+    private var observer: NodeId? = null
 
     // Graph
     private val nodes: MutableMap<NodeId, ReactivityNode<*>> = Object2ObjectOpenHashMap()
@@ -51,8 +51,8 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         owner = createNode(object : ReactivityNode.Type.Trigger {}, null)
     }
 
-    internal fun owner(): Trigger {
-        return TriggerImpl(owner)
+    internal fun owner(): Trigger? {
+        return owner?.let { TriggerImpl(it) }
     }
 
     private fun markClean(nodeId: NodeId) {
@@ -252,6 +252,24 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         return SignalImpl(id, valueType.kotlin)
     }
 
+    override fun <T> createEffect(effect: ReceiverFunction<T?, T>): Effect {
+        return createCustomEffect(null, EffectState(effect))
+    }
+
+    fun <T> createCustomEffect(value: T?, effect: AnyComputation<T?>): Effect {
+        val id = createNode(
+            object : ReactivityNode.Type.Effect<T> {
+                override fun computation(): AnyComputation<T?> = effect
+            },
+            value,
+            ReactivityNode.State.DIRTY
+        )
+
+        pendingEffects.add(id)
+
+        return EffectImpl(id)
+    }
+
     override fun <T : Any> createMemo(valueType: Class<T>, fn: Function<T?, T?>): Memo<T> {
         val reactivityNodeId = createNode(object : ReactivityNode.Type.Memo<T> {
 
@@ -278,20 +296,6 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
     override fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>> {
         TODO("Not yet implemented!")
-    }
-
-    fun <T> createCustomEffect(value: T?, effect: AnyComputation<T?>): Effect {
-        val id = createNode(
-            object : ReactivityNode.Type.Effect<T> {
-                override fun computation(): AnyComputation<T?> = effect
-            },
-            value,
-            ReactivityNode.State.DIRTY
-        )
-
-        pendingEffects.add(id)
-
-        return EffectImpl(id)
     }
 
     fun subscribe(node: NodeId) {

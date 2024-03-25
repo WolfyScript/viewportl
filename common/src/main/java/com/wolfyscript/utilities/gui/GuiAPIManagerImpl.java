@@ -94,12 +94,12 @@ public class GuiAPIManagerImpl implements GuiAPIManager {
                             ViewRuntimeImpl viewManager = new ViewRuntimeImpl(wolfyUtils, constructor, viewers);
 
                             synchronized (VIEW_RUNTIMES) {
-                                viewManagersForID.add(viewManager.getId());
-                                VIEW_RUNTIMES.put(viewManager.getId(), viewManager);
+                                viewManagersForID.add(viewManager.id);
+                                VIEW_RUNTIMES.put(viewManager.id, viewManager);
                             }
                             synchronized (VIEW_RUNTIMES_PER_PLAYER) {
                                 for (UUID viewer : viewers) {
-                                    VIEW_RUNTIMES_PER_PLAYER.put(viewer, viewManager.getId());
+                                    VIEW_RUNTIMES_PER_PLAYER.put(viewer, viewManager.id);
                                 }
                             }
                             callback.accept(viewManager);

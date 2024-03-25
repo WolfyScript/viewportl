@@ -18,11 +18,11 @@
 package com.wolfyscript.utilities.gui.reactivity
 
 import com.wolfyscript.utilities.gui.ViewRuntime
-import com.wolfyscript.utilities.gui.functions.SignalableReceiverFunction
+import com.wolfyscript.utilities.gui.functions.ReceiverFunction
 import java.util.function.Consumer
 
 class EffectState<T>(
-    private val fn: SignalableReceiverFunction<T?, T>
+    private val fn: ReceiverFunction<T?, T>
 ) : AnyComputation<T?> {
 
     override fun run(runtime: ViewRuntime, value: T?, apply: Consumer<T?>): Boolean {
