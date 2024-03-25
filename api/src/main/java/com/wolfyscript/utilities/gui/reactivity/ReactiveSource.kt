@@ -30,10 +30,51 @@ import java.util.function.Function
 
 interface ReactiveSource {
 
+    /**
+     * Creates a trigger that can be tracked, and notify its subscribers.
+     * It does not contain a value, so it is for cases where a simple update notification and no value is required.
+     *
+     * To track the trigger inside an Effect/Memo you need to call the [Trigger.track] method inside it.<br>
+     * To notify subscribers call the [Trigger.update] method.
+     *
+     */
     fun createTrigger() : Trigger
 
+    /**
+     * Creates a Signal that holds a value of the specified [valueType].
+     * The [defaultValueProvider] needs to provide a Non-null default value.
+     *
+     * When [Signal] values are accessed inside a [Memo]/[Effect] it subscribes to that [Signal].
+     * Then when the value of the [Signal] is updated the [Memo]/[Effect] is updated too.
+     */
     fun <T : Any> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime, T>): Signal<T>
 
+    /**
+     * Creates an [Effect] that reruns when a [Signal]/[Memo] used inside it is updated.
+     *
+     */
+    fun createEffect(effect: Runnable): Effect {
+        return createEffect<Unit> {
+            effect.run()
+        }
+    }
+
+    /**
+     * Creates an [Effect] that reruns when a [Signal]/[Memo] used inside it is updated.
+     *
+     * This type of [Effect] allows to use the value of the previous execution, and return the new value.<br>
+     * When no value is required use the type [Unit]
+     */
+    fun <T> createEffect(effect: ReceiverFunction<T?, T>): Effect
+
+    /**
+     * Creates a Memo, that holds a value of the specified [valueType].
+     *
+     * It is a combination of an [Effect] and [Signal]. It keeps track of the value of the previous execution of [fn]
+     * and other [Effects][Effect]/[Memos][Memo] can subscribe to it.
+     *
+     * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
+     */
     fun <T : Any> createMemo(valueType: Class<T>, fn: Function<T?, T?>) : Memo<T>
 
     /**
@@ -73,19 +114,16 @@ interface ReactiveSource {
     </T> */
     fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>>
 
-    fun createEffect(effect: SerializableRunnable): Effect {
-        return createEffect<Unit> {
-            effect.run()
-        }
-    }
-
-    fun <T> createEffect(effect: SignalableReceiverFunction<T?, T>): Effect {
-        return createEffect(emptyList(), effect)
-    }
-
-    fun <T> createEffect(additionalSignals: List<Signal<*>>, effect: SignalableReceiverFunction<T?, T>): Effect
 }
 
+/**
+ * Creates a Memo, that holds a value of the specified type [T].
+ *
+ * It is a combination of an [Effect] and [Signal]. It keeps track of the value of the previous execution of [fn]
+ * and other [Effects][Effect]/[Memos][Memo] can subscribe to it.
+ *
+ * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
+ */
 inline fun <reified T: Any> ReactiveSource.createMemo(fn: Function<T?, T?>) : Memo<T> {
     return createMemo(T::class.java, fn)
 }
