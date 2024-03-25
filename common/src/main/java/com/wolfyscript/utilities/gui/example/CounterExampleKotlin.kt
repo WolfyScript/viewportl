@@ -51,6 +51,7 @@ fun registerExampleCounter(manager: GuiAPIManager) {
             }
             // Sometimes we want to render components dependent on signals
             whenever { count.get() != 0 } then {
+                // This section is run just once up on the initial construction too, not when the condition changes
                 button("reset") {
                     interact { _, _ ->
                         count.set(0) // The set method changes the value of the signal and prompts the listener of the signal to re-render.

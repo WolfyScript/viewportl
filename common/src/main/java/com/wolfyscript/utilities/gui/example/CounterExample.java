@@ -57,10 +57,7 @@ public class CounterExample {
         // This is only called upon creation of the component. So this is not called when the signal is updated!
 
         // Use signals that provide a simple value storage & synchronisation. Signals are not persistent and will get destroyed when the GUI is closed!
-        Signal<Integer> countSignal = window.createSignal(Integer.class, r -> 0);
-
-        // Optionally, sync your data with the gui using custom data stores. This makes it possible to store persistent data.
-        Signal<Integer> count = window.createStore(guiViewManager -> new CounterStore(), CounterStore::getCount, CounterStore::setCount);
+        Signal<Integer> count = window.createSignal(Integer.class, r -> 0);
         count.tagName("count");
 
         window.size(9 * 3);
