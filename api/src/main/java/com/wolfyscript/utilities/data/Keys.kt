@@ -19,37 +19,9 @@ package com.wolfyscript.utilities.data
 
 import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.platform.adapters.ItemStack
-import com.wolfyscript.utilities.world.items.data.AttributeModifiers
-import com.wolfyscript.utilities.world.items.data.BannerPatterns
-import com.wolfyscript.utilities.world.items.data.Bees
-import com.wolfyscript.utilities.world.items.data.BlockEntityData
-import com.wolfyscript.utilities.world.items.data.BlockState
-import com.wolfyscript.utilities.world.items.data.BucketEntityData
-import com.wolfyscript.utilities.world.items.data.CanBreak
-import com.wolfyscript.utilities.world.items.data.CanPlaceOn
-import com.wolfyscript.utilities.world.items.data.ChargedProjectiles
-import com.wolfyscript.utilities.world.items.data.Container
-import com.wolfyscript.utilities.world.items.data.ContainerLoot
-import com.wolfyscript.utilities.world.items.data.DebugStickState
-import com.wolfyscript.utilities.world.items.data.DyedColor
-import com.wolfyscript.utilities.world.items.data.Enchantments
-import com.wolfyscript.utilities.world.items.data.EntityData
-import com.wolfyscript.utilities.world.items.data.FireworkExplosion
-import com.wolfyscript.utilities.world.items.data.Fireworks
-import com.wolfyscript.utilities.world.items.data.HideAdditionalTooltip
-import com.wolfyscript.utilities.world.items.data.IntangibleProjectiles
-import com.wolfyscript.utilities.world.items.data.ItemLore
-import com.wolfyscript.utilities.world.items.data.LodestoneTracker
-import com.wolfyscript.utilities.world.items.data.MapDecorations
-import com.wolfyscript.utilities.world.items.data.MapInfo
-import com.wolfyscript.utilities.world.items.data.PotionContents
-import com.wolfyscript.utilities.world.items.data.Profile
-import com.wolfyscript.utilities.world.items.data.SuspiciousStew
-import com.wolfyscript.utilities.world.items.data.Trim
-import com.wolfyscript.utilities.world.items.data.Unbreakable
-import com.wolfyscript.utilities.world.items.data.WrittenBookContents
+import com.wolfyscript.utilities.world.items.DyeColor
+import com.wolfyscript.utilities.world.items.data.*
 import net.kyori.adventure.text.Component
-import javax.xml.crypto.Data
 
 interface Keys {
 
@@ -125,7 +97,7 @@ interface Keys {
 
     fun noteBlockSound() : DataKey<NamespacedKey>
 
-    fun baseColor() : DataKey<DyedColor>
+    fun baseColor() : DataKey<DyeColor>
 
     fun bannerPatterns() : DataKey<BannerPatterns>
 
