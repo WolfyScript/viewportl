@@ -18,7 +18,14 @@
 
 package com.wolfyscript.utilities.world.items.data;
 
+import com.wolfyscript.utilities.NamespacedKey;
+
+import java.util.List;
+
 public interface CanPlaceOn extends TooltipApplicable {
 
-    // TODO
+    // TODO: Other predicates
+
+    List<NamespacedKey> blocks();
+
 }
