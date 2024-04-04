@@ -51,6 +51,6 @@ interface WolfyCore {
 
     val registries: Registries
 
-    fun platform(): Platform
+    val platform: Platform
 
 }
