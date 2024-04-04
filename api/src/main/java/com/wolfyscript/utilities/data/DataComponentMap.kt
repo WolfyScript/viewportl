@@ -17,8 +17,6 @@
  */
 package com.wolfyscript.utilities.data
 
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
-
 /**
  * A DataComponentMap contains the data applied to an ItemStack.<br></br>
  * Each data is associated with a unique key, and can be fetched and replaced.<br></br>
@@ -38,9 +36,9 @@ interface DataComponentMap<H : DataHolder<H>> {
      *
      * @return The data associated with the key; null otherwise.
      */
-    fun <T : Any> get(key: ReceiverFunction<Keys, DataKey<T,H>>): T?
+    fun <T : Any> get(key: DataKey<T,H>): T?
 
-    fun <T : Any> getOrDefault(key: ReceiverFunction<Keys, DataKey<T,H>>, def: T): T {
+    fun <T : Any> getOrDefault(key: DataKey<T,H>, def: T): T {
         val value: T? = this.get(key)
         return value ?: def
     }

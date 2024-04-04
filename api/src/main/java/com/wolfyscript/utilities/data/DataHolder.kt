@@ -17,13 +17,11 @@
  */
 package com.wolfyscript.utilities.data
 
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
-
 interface DataHolder<H : DataHolder<H>> {
 
     fun data(): DataComponentMap<H>
 
-    fun <T : Any> get(key: ReceiverFunction<Keys, DataKey<T, H>>): T? {
+    fun <T : Any> get(key: DataKey<T, H>): T? {
         return data().get(key)
     }
 
