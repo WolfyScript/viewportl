@@ -33,10 +33,11 @@ interface WolfyCore {
 
         protected var INSTANCE: WolfyCore? = null
 
-        internal fun instance() : WolfyCore {
-            if (INSTANCE == null) throw IllegalStateException("Trying to access WolfyCore before it was initialised!")
-            return INSTANCE!!
-        }
+        internal val instance: WolfyCore
+            get() {
+                if (INSTANCE == null) throw IllegalStateException("Trying to access WolfyCore before it was initialised!")
+                return INSTANCE!!
+            }
 
     }
 
