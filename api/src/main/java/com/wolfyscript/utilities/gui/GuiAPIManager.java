@@ -18,9 +18,11 @@
 
 package com.wolfyscript.utilities.gui;
 
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSource;
+
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -40,7 +42,7 @@ public interface GuiAPIManager {
      * @param id The unique id of the router to register.
      * @param routerBuilderConsumer The consumer that provides the new builder.
      */
-    void registerGui(String guiID, BiConsumer<ReactiveSource, RouterBuilder> routerBuilderConsumer);
+    void registerGui(String guiID, ReceiverConsumer<RouterBuilder> routerBuilderConsumer);
 
     /**
      * Registers a new router that it loads from the specified gui data directory.
@@ -49,7 +51,7 @@ public interface GuiAPIManager {
      * @param id The unique id of the router to register.
      * @param routerBuilderConsumer The function to manipulate the new builder.
      */
-    void registerGuiFromFiles(String guiID, BiConsumer<ReactiveSource, RouterBuilder> routerBuilderConsumer);
+    void registerGuiFromFiles(String guiID, ReceiverConsumer<RouterBuilder> routerBuilderConsumer);
 
     /**
      * Gets the registered router with the specified id.<br>

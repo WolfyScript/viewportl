@@ -19,13 +19,13 @@
 package com.wolfyscript.utilities.platform.gui;
 
 import com.wolfyscript.utilities.gui.ViewRuntime;
-import com.wolfyscript.utilities.gui.RenderContext;
-import com.wolfyscript.utilities.gui.Window;
-
-import java.util.UUID;
+import com.wolfyscript.utilities.gui.interaction.InteractionHandler;
+import com.wolfyscript.utilities.gui.rendering.Renderer;
 
 public interface GuiUtils {
 
-    RenderContext createRenderContext(Window window, ViewRuntime viewManager, UUID viewer);
+    Renderer<?> createRenderer(ViewRuntime runtime);
+
+    InteractionHandler createInteractionHandler(ViewRuntime runtime);
 
 }

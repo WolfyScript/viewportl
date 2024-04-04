@@ -93,7 +93,7 @@ public abstract class AbstractTypeRegistry<M extends Map<NamespacedKey, Class<? 
 
     @Override
     public void register(V value) {
-        register(value.getNamespacedKey(), (Class<? extends V>) value.getClass());
+        register(value.key(), (Class<? extends V>) value.getClass());
     }
 
     @NotNull

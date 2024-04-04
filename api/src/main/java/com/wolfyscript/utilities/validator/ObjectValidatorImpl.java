@@ -127,7 +127,7 @@ class ObjectValidatorImpl<T_VALUE> implements Validator<T_VALUE> {
     }
 
     @Override
-    public NamespacedKey getNamespacedKey() {
+    public NamespacedKey key() {
         return key;
     }
 

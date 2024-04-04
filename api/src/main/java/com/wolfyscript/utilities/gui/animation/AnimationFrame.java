@@ -20,7 +20,7 @@ package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.GuiHolder;
 import com.wolfyscript.utilities.gui.ViewRuntime;
-import com.wolfyscript.utilities.gui.RenderContext;
+import com.wolfyscript.utilities.gui.rendering.RenderContext;
 
 public interface AnimationFrame {
 

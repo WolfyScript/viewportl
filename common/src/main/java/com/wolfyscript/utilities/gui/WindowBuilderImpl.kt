@@ -2,19 +2,20 @@ package com.wolfyscript.utilities.gui
 
 import com.fasterxml.jackson.annotation.*
 import com.google.common.base.Preconditions
-import com.google.inject.*
+import com.google.inject.Inject
 import com.wolfyscript.utilities.KeyedStaticId
-import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.config.jackson.KeyedBaseType
 import com.wolfyscript.utilities.gui.ReactiveRenderBuilder.ReactiveResult
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilder
+import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilderImpl
 import com.wolfyscript.utilities.gui.functions.*
-import com.wolfyscript.utilities.gui.signal.Signal
+import com.wolfyscript.utilities.gui.model.UpdateInformation
+import com.wolfyscript.utilities.gui.reactivity.*
+import com.wolfyscript.utilities.gui.rendering.RenderingNode
 import com.wolfyscript.utilities.tuple.Pair
-import net.kyori.adventure.text.minimessage.Context
 import net.kyori.adventure.text.minimessage.tag.Tag
-import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import java.util.*
 import java.util.function.Consumer
@@ -23,26 +24,25 @@ import java.util.function.Consumer
 @KeyedBaseType(baseType = ComponentBuilder::class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 class WindowBuilderImpl @Inject @JsonCreator constructor(
-    @param:JsonProperty("id") private val id: String,
-    @param:JacksonInject("wolfyUtils") private val wolfyUtils: WolfyUtils,
-    @param:JacksonInject("reactiveSrc") private val reactiveSource: ReactiveSource
-) : WindowBuilder {
+    @JsonProperty("id") private val id: String,
+    @JacksonInject("wolfyUtils") private val wolfyUtils: WolfyUtils,
+    @JacksonInject("context") private val context: BuildContext
+) : WindowBuilder, ReactiveSource by context.reactiveSource {
+
     private var size: Int = 0
     private var type: WindowType? = null
-    private var interactionCallback =
-        InteractionCallback { guiHolder: GuiHolder?, interactionDetails: InteractionDetails? -> InteractionResult.def() }
+    private var interactionCallback = InteractionCallback { _, _ -> InteractionResult.def() }
 
     /**
      * Components
      */
-    private val componentIdAliases: MutableMap<String, Long> = HashMap()
-    private val componentBuilderMap: MutableMap<Long, ComponentBuilder<*, *>> = HashMap()
-    val componentRenderSet: MutableSet<ComponentBuilder<*, *>> = HashSet()
+    private val componentRenderSet: MutableSet<Long> = HashSet()
+    private val conditionals: MutableList<ConditionalChildComponentBuilderImpl<WindowBuilder>> = mutableListOf()
 
     /**
      * Tasks
      */
-    protected var intervalRunnables: MutableList<Pair<Runnable, Long>> = ArrayList()
+    private var intervalRunnables: MutableList<Pair<Runnable, Long>> = ArrayList()
 
     /**
      * Title data
@@ -76,18 +76,15 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         return this
     }
 
-    override fun title(title: String): WindowBuilder {
-        this.staticTitle = title
+    override fun title(staticTitle: String): WindowBuilder {
+        this.staticTitle = staticTitle
         return this
     }
 
     @JsonSetter("placement")
     private fun setPlacement(componentBuilders: List<ComponentBuilder<*, *>>) {
         for (componentBuilder in componentBuilders) {
-            val numericId = ComponentUtil.nextId()
-            componentIdAliases[componentBuilder.id()] = numericId
-            wolfyUtils.logger.info("Load component builder from config: " + componentBuilder.id() + "  (" + numericId + ")")
-            componentBuilderMap[numericId] = componentBuilder
+            context.registerBuilder(componentBuilder)
         }
     }
 
@@ -105,272 +102,112 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
     override fun titleSignals(vararg signals: Signal<*>): WindowBuilder {
         titleTagResolvers.addAll(
             Arrays.stream(signals).map { signal: Signal<*> ->
-                TagResolver.resolver(signal.tagName()) { argumentQueue: ArgumentQueue?, context: Context? ->
-                    Tag.inserting(net.kyori.adventure.text.Component.text(signal.get().toString()))
+                signal.tagName()?.let {
+                    TagResolver.resolver(it) { _, _ ->
+                        Tag.inserting(net.kyori.adventure.text.Component.text(signal.get().toString()))
+                    }
                 }
-            }
-                .toList())
+            }.toList()
+        )
         titleSignals.addAll(Arrays.stream(signals).toList())
         return this
     }
 
-    override fun addIntervalTask(runnable: Runnable, l: Long): WindowBuilder {
-        intervalRunnables.add(Pair(runnable, l))
+    override fun addIntervalTask(runnable: Runnable, intervalInTicks: Long): WindowBuilder {
+        intervalRunnables.add(Pair(runnable, intervalInTicks))
         return this
     }
 
     override fun reactive(reactiveFunction: SignalableReceiverFunction<ReactiveRenderBuilder, ReactiveResult?>): WindowBuilder {
-        val effect: Effect = object : Effect {
-            private var previousComponent: Component? = null
+        val builder = ReactiveRenderBuilderImpl(wolfyUtils, context)
+        val component = with(reactiveFunction) { builder.apply() }?.construct()
 
-            override fun update(guiViewManager: ViewRuntime, guiHolder: GuiHolder, context: RenderContext) {
-                val builder = ReactiveRenderBuilderImpl(
-                    wolfyUtils,
-                    HashMap() /* TODO: ((WindowImpl) guiHolder.getCurrentWindow()).nonRenderedComponents */
-                )
+        context.reactiveSource.createCustomEffect(null, object : AnyComputation<Long?> {
 
-                val result = with(reactiveFunction) { builder.apply() }
+            override fun run(
+                runtime: ViewRuntime,
+                value: Long?,
+                apply: Consumer<Long?>
+            ): Boolean {
+                runtime as ViewRuntimeImpl
+                val graph = runtime.renderingGraph
+                val previousNode: RenderingNode? = value?.let { graph.getNode(it) }
+                if (previousNode?.component == component) return false
 
-                val component = if (result == null) null else result.construct()!!
-                    .construct(guiHolder, guiViewManager)
-                if (previousComponent == component) return
-
-                if (previousComponent != null) {
-                    previousComponent!!.remove(guiHolder, guiViewManager, context)
+                val previousComponent = previousNode?.component
+                if (previousComponent is Renderable) {
+                    previousComponent.remove(runtime, previousNode.id, 0)
                 }
 
-                previousComponent = component
                 if (component == null) {
-                    return
+                    apply.accept(null)
+                    return true
                 }
 
-                context.enterNode(component)
-                component.executeForAllSlots(
-                    component.offset() + component.position().slot(),
-                    Consumer { internalSlot: Int? ->
-                        (guiHolder.viewManager as ViewRuntimeImpl).updateLeaveNodes(
-                            component,
-                            internalSlot!!
-                        )
-                    })
-                if (component is Effect) {
-                    component.update(guiViewManager, guiHolder, context)
-                }
-                context.exitNode()
+                val id = runtime.renderingGraph.addNode(component)
+                apply.accept(id)
+
+                return true
             }
-        }
-        for (signal in reactiveFunction.signalsUsed) {
-            signal.linkTo(effect)
-        }
-        return this
-    }
-
-    override fun <B : ComponentBuilder<out Component?, Component?>> conditionalComponent(
-        condition: SerializableSupplier<Boolean>,
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
-    ): WindowBuilder {
-        val builderTypeInfo = ComponentUtil.getBuilderType(
-            wolfyUtils, id, builderType
-        )
-        val builder = findExistingComponentBuilder(id, builderTypeInfo.value, builderTypeInfo.key)
-            .orElseThrow {
-                IllegalStateException(
-                    String.format(
-                        "Failed to link to component '%s'! Cannot find existing placement",
-                        id
-                    )
-                )
-            }
-
-        with(builderConsumer) { builder.consume() }
-        val component = builder.create(null)!!
-
-        val effect: Effect = object : Effect {
-            private val previousResult: MutableMap<Long, Boolean> = HashMap()
-
-            override fun update(guiViewManager: ViewRuntime, guiHolder: GuiHolder, context: RenderContext) {
-                val result = condition.get()
-                if (result != previousResult.getOrDefault(guiViewManager.id(), false)) {
-                    previousResult[guiViewManager.id()] = result
-                    if (result) {
-                        context.enterNode(component)
-                        val signalledObject = component.construct(guiHolder, guiViewManager)
-                        if (signalledObject is Effect) {
-                            signalledObject.update(guiViewManager, guiHolder, context)
-                        }
-                        component.executeForAllSlots(
-                            component.offset() + component.position().slot()
-                        ) { slot2: Int? ->
-                            (guiHolder.viewManager as ViewRuntimeImpl).updateLeaveNodes(
-                                component,
-                                slot2!!
-                            )
-                        }
-                        context.exitNode()
-                    } else {
-                        component.executeForAllSlots(component.offset() + component.position().slot()) { slot2: Int? ->
-                            context.setStack(slot2!!, null)
-                            (guiHolder.viewManager as ViewRuntimeImpl).updateLeaveNodes(null, slot2)
-                        }
-                    }
-                }
-            }
-        }
-
-        for (signal in condition.signalsUsed) {
-            signal.linkTo(effect)
-        }
-        return this
-    }
-
-    override fun <BV : ComponentBuilder<out Component?, Component?>, BI : ComponentBuilder<out Component?, Component?>> renderWhenElse(
-        serializableSupplier: SerializableSupplier<Boolean>,
-        validBuilderType: Class<BV>,
-        validBuilder: Consumer<BV>,
-        invalidBuilderType: Class<BI>,
-        invalidBuilder: SignalableReceiverConsumer<BI>
-    ): WindowBuilder {
-        return this
-    }
-
-    override fun <B : ComponentBuilder<out Component?, Component?>> component(
-        id: String,
-        builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
-    ): WindowBuilder {
-        val builderTypeInfo = ComponentUtil.getBuilderType(
-            wolfyUtils, id, builderType
-        )
-        val builder = findExistingComponentBuilder(id, builderTypeInfo.value, builderTypeInfo.key).orElseThrow {
-            IllegalStateException(
-                String.format("Failed to link to component '%s'! Cannot find existing placement", id)
-            )
-        }
-        val injector = Guice.createInjector(Stage.PRODUCTION, Module { binder: Binder ->
-            binder.bind(WolfyUtils::class.java).toInstance(wolfyUtils)
-            binder.bind(String::class.java).toInstance(id)
         })
-        injector.injectMembers(builder)
-
-        with(builderConsumer) { builder.consume() }
-        componentRenderSet.add(builder!!)
         return this
     }
 
-    override fun <B : ComponentBuilder<out Component?, Component?>> component(
-        position: Position,
-        id: String,
+    override fun <B : ComponentBuilder<out Component, Component>> component(
+        id: String?,
         builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
+        builderConsumer: ReceiverConsumer<B>
     ): WindowBuilder {
-        val builderTypeInfo = ComponentUtil.getBuilderType(
-            wolfyUtils, id, builderType
-        )
-        findExistingComponentBuilder<B>(id, builderTypeInfo.value, builderTypeInfo.key).ifPresentOrElse(
-            { with(builderConsumer) { it.consume() } },
-            {
-                val builder = instantiateNewBuilder(id, position, builderTypeInfo)
-                with(builderConsumer) { builder.consume() }
-                componentRenderSet.add(builder)
-            })
-        return this
-    }
-
-    override fun <B : ComponentBuilder<out Component?, Component?>> component(
-        position: Position,
-        builderType: Class<B>,
-        builderConsumer: SignalableReceiverConsumer<B>
-    ): WindowBuilder {
-        val builderTypeInfo = ComponentUtil.getBuilderType(
-            wolfyUtils, id, builderType
-        )
-        val builder = instantiateNewBuilder(id, position, builderTypeInfo)
-        with(builderConsumer) { builder.consume() }
-        componentRenderSet.add(builder)
-        return this
-    }
-
-    private fun <B : ComponentBuilder<out Component?, Component?>> instantiateNewBuilder(
-        id: String,
-        position: Position,
-        builderTypeInfo: Pair<NamespacedKey, Class<B>>
-    ): B {
-        val numericId = ComponentUtil.nextId()
-        componentIdAliases[id] = numericId
-
-        val injector = Guice.createInjector(Stage.PRODUCTION, Module { binder: Binder ->
-            binder.bind(WolfyUtils::class.java).toInstance(wolfyUtils)
-            binder.bind(Long::class.java).toInstance(numericId)
-            binder.bind(Position::class.java).toInstance(position)
-            binder.bind(ReactiveSource::class.java).toInstance(reactiveSource)
-        })
-
-        val builder = injector.getInstance(builderTypeInfo.value)
-        componentBuilderMap[numericId] = builder!!
-        return builder
-    }
-
-    private fun <B : ComponentBuilder<out Component?, Component?>> findExistingComponentBuilder(
-        id: String,
-        builderImplType: Class<B>,
-        builderKey: NamespacedKey
-    ): Optional<B> {
-        if (!componentIdAliases.containsKey(id)) return Optional.empty() // If there is no alias yet, then it wasn't created yet!
-
-        return findExistingComponentBuilder(componentIdAliases[id]!!, builderImplType, builderKey)
-    }
-
-    private fun <B : ComponentBuilder<out Component?, Component?>> findExistingComponentBuilder(
-        id: Long,
-        builderImplType: Class<B>,
-        builderKey: NamespacedKey
-    ): Optional<B> {
-        val componentBuilder = componentBuilderMap[id] ?: return Optional.empty()
-        if (componentBuilder.type != builderKey) {
-            return Optional.empty()
+        val builder = context.getOrCreateComponentBuilder(id, builderType) {
+            if (!componentRenderSet.contains(it)) {
+                componentRenderSet.add(it)
+            }
         }
-        return Optional.of(builderImplType.cast(componentBuilder))
+        with(builderConsumer) { builder.consume() }
+        return this
+    }
+
+    override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<WindowBuilder> {
+        val builder: ConditionalChildComponentBuilderImpl<WindowBuilder> = ConditionalChildComponentBuilderImpl(this, context)
+        conditionals.add(builder)
+        return builder.whenever(condition)
     }
 
     override fun create(parent: Router): Window {
-        if (titleFunction == null && !titleTagResolvers.isEmpty()) {
+        if (titleFunction == null && titleTagResolvers.isNotEmpty()) {
             titleFunction = SerializableSupplier {
                 wolfyUtils.chat.miniMessage.deserialize(
                     staticTitle!!, TagResolver.resolver(titleTagResolvers)
                 )
             }
         }
-        if (titleFunction != null) {
-            val signalledObject =
-                Effect { viewManager: ViewRuntime?, guiHolder: GuiHolder?, renderContext: RenderContext ->
-                    renderContext.updateTitle(
-                        guiHolder,
-                        titleFunction!!.get()
-                    )
-                }
-            for (signal in titleFunction!!.signalsUsed) {
-                signal.linkTo(signalledObject)
-            }
-            for (signal in titleSignals) {
-                signal.linkTo(signalledObject)
-            }
-        }
+
+        conditionals.forEach { it.build(null) }
 
         val components = componentRenderSet.stream()
-            .map { componentBuilder -> componentBuilder.create(null) as Component }
+            .map { componentBuilder -> context.getBuilder(componentBuilder)?.create(null) as Component }
             .toList()
 
-        return WindowImpl(
+        val window = WindowImpl(
             parent.id + "/" + id,
             parent,
             size,
             type,
-            staticTitle,
-            titleFunction,
+            titleFunction?.get() ?: net.kyori.adventure.text.Component.empty(),
             interactionCallback,
             components
         )
+
+        if (titleFunction != null) {
+            val runtime = context.runtime as ViewRuntimeImpl
+            context.reactiveSource.createEffect<Unit> {
+                window.title(titleFunction!!.get())
+                runtime.incomingUpdate(object : UpdateInformation{
+                    override fun updateTitle(): Boolean = true
+                })
+            }
+        }
+
+        return window
     }
 }

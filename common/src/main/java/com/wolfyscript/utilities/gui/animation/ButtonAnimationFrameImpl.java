@@ -2,8 +2,7 @@ package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.GuiHolder;
 import com.wolfyscript.utilities.gui.ViewRuntime;
-import com.wolfyscript.utilities.gui.RenderContext;
-import com.wolfyscript.utilities.gui.components.Button;
+import com.wolfyscript.utilities.gui.rendering.RenderContext;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 
 public class ButtonAnimationFrameImpl implements ButtonAnimationFrame {
@@ -29,12 +28,13 @@ public class ButtonAnimationFrameImpl implements ButtonAnimationFrame {
     }
 
     @Override
+    public void render(ViewRuntime viewManager, GuiHolder holder, RenderContext context) {
+
+    }
+
+    @Override
     public ItemStackConfig stack() {
         return stack;
     }
 
-    @Override
-    public void render(ViewRuntime viewRuntime, GuiHolder guiHolder, RenderContext renderContext) {
-        renderContext.renderStack(animation.owner().position(), stack, renderContext.createContext(guiHolder, ((Button) animation.owner()).icon().getResolvers()));
-    }
 }

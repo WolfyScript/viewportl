@@ -19,20 +19,17 @@
 package com.wolfyscript.utilities.gui;
 
 import com.wolfyscript.utilities.WolfyUtils;
+import com.wolfyscript.utilities.gui.interaction.Interactable;
+
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
-public interface Window extends Interactable, Renderable {
+public interface Window extends Interactable {
 
     void open(ViewRuntime viewManager);
 
     void close(ViewRuntime viewManager);
-
-    Window construct(GuiHolder holder, ViewRuntime viewManager);
-
-    void render(GuiHolder holder, ViewRuntime viewManager, RenderContext context);
 
     /**
      * Gets the type that is configured for this Window.<br>
@@ -53,12 +50,11 @@ public interface Window extends Interactable, Renderable {
     Optional<Integer> getSize();
 
     /**
-     * Creates the title of this window for the specified holder.
+     * Returns the current title of this window.
      *
-     * @param holder The holder to create the title for.
      * @return The title component.
      */
-    net.kyori.adventure.text.Component createTitle(GuiHolder holder);
+    net.kyori.adventure.text.Component title();
 
     /**
      * The children of this Component; or an empty Set if there are no children.
@@ -126,13 +122,5 @@ public interface Window extends Interactable, Renderable {
      * @return The height in slots.
      */
     int height();
-
-    default void executeForAllSlots(int positionSlot, Consumer<Integer> slotFunction) {
-        for (int i = 0; i < height(); i++) {
-            for (int j = 0; j < width(); j++) {
-                slotFunction.accept(positionSlot + j + i * (9 - width()));
-            }
-        }
-    }
 
 }

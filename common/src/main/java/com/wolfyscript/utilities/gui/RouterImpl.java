@@ -24,11 +24,10 @@ import com.google.common.collect.HashBiMap;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
+import com.wolfyscript.utilities.gui.interaction.InteractionDetails;
 
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.Optional;
-import java.util.UUID;
 
 @KeyedStaticId(key = "router")
 public final class RouterImpl implements Router {
@@ -50,21 +49,16 @@ public final class RouterImpl implements Router {
     }
 
     @Override
-    public RenderContext createContext(ViewRuntime viewRuntime, Deque<String> path, UUID uuid) {
-        return null;
-    }
-
-    @Override
-    public Window open(ViewRuntime viewManager, String... path) {
+    public Window open(ViewRuntime runtime, String... path) {
         if (path == null || path.length == 0) {
             Window window1 = getWindow().orElseThrow(() -> new IllegalArgumentException(String.format("Path not found for router '%s'", id)));
-            window1.open(viewManager);
+            window1.open(runtime);
             return window1;
         } else {
             Router subRoute = subRoutes.get(path[0]);
             if (subRoute != null) {
                 String[] subPath = Arrays.copyOfRange(path, 1, path.length);
-                return subRoute.open(viewManager, subPath);
+                return subRoute.open(runtime, subPath);
             }
         }
         return null;
@@ -93,11 +87,6 @@ public final class RouterImpl implements Router {
     @Override
     public Optional<Window> getWindow() {
         return Optional.ofNullable(window);
-    }
-
-    @Override
-    public InteractionResult interact(GuiHolder guiHolder, InteractionDetails interactionDetails) {
-        return InteractionResult.cancel(false);
     }
 
     @Override

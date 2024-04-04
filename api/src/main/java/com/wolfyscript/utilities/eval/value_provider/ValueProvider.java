@@ -63,7 +63,7 @@ public interface ValueProvider<V> extends Keyed {
 
     @JsonGetter("key")
     @Override
-    NamespacedKey getNamespacedKey();
+    NamespacedKey key();
 
     class ValueDeserializer extends com.wolfyscript.utilities.config.jackson.ValueDeserializer<ValueProvider<?>> {
 

@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.wolfyscript.utilities.KeyedStaticId;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-import com.wolfyscript.utilities.gui.functions.SerializableSupplier;
+import com.wolfyscript.utilities.gui.interaction.InteractionDetails;
 import com.wolfyscript.utilities.platform.scheduler.Task;
 import com.wolfyscript.utilities.tuple.Pair;
 
@@ -18,8 +18,7 @@ public final class WindowImpl implements Window {
     private final WolfyUtils wolfyUtils;
     private final Integer size;
     private final WindowType type;
-    private String staticTitle = null;
-    private final SerializableSupplier<net.kyori.adventure.text.Component> dynamicTitle;
+    private net.kyori.adventure.text.Component title;
     private final InteractionCallback interactionCallback;
     final Collection<Component> componentsToRender;
 
@@ -31,8 +30,7 @@ public final class WindowImpl implements Window {
                Router router,
                Integer size,
                WindowType type,
-               String staticTitle,
-               SerializableSupplier<net.kyori.adventure.text.Component> dynamicTitle,
+               net.kyori.adventure.text.Component title,
                InteractionCallback interactionCallback,
                Collection<Component> components) {
         Preconditions.checkNotNull(id);
@@ -43,15 +41,9 @@ public final class WindowImpl implements Window {
         this.wolfyUtils = router.getWolfyUtils();
         this.size = size;
         this.type = type;
-        this.staticTitle = staticTitle;
         this.interactionCallback = interactionCallback;
         this.componentsToRender = components;
-        this.dynamicTitle = dynamicTitle;
-    }
-
-    @Override
-    public Window construct(GuiHolder holder, ViewRuntime viewManager) {
-        return this;
+        this.title = title;
     }
 
     @Override
@@ -66,6 +58,14 @@ public final class WindowImpl implements Window {
                     .delay(1).execute(intervalRunnable.getKey()).build();
             intervalTasks.add(task);
         }
+
+        // Build graph
+        ViewRuntimeImpl runtime = (ViewRuntimeImpl) viewRuntime;
+        for (Component component : componentsToRender) {
+            if (component instanceof Renderable renderable) {
+                renderable.insert(runtime, 0);
+            }
+        }
     }
 
     @Override
@@ -74,24 +74,9 @@ public final class WindowImpl implements Window {
             intervalTask.cancel();
         }
         intervalTasks.clear();
-    }
 
-    @Override
-    public void render(GuiHolder guiHolder, ViewRuntime viewManager, RenderContext context) {
-        if (dynamicTitle != null) {
-            context.updateTitle(guiHolder, dynamicTitle.get());
-        }
-
-        for (Component component : componentsToRender) {
-            var position = component.position();
-            if (position == null) continue;
-            ((ViewRuntimeImpl) guiHolder.getViewManager()).updateLeaveNodes(component, position.slot());
-            context.enterNode(component);
-            if (component.construct(guiHolder, viewManager) instanceof Effect effect) {
-                effect.update(viewManager, guiHolder, context);
-            }
-            context.exitNode();
-        }
+        ViewRuntimeImpl runtime = (ViewRuntimeImpl) viewRuntime;
+        runtime.getRenderingGraph().removeNode(0);
     }
 
     @Override
@@ -107,11 +92,6 @@ public final class WindowImpl implements Window {
     @Override
     public Router router() {
         return router;
-    }
-
-    @Override
-    public InteractionResult interact(GuiHolder holder, InteractionDetails interactionDetails) {
-        return null;
     }
 
     @Override
@@ -139,13 +119,12 @@ public final class WindowImpl implements Window {
         return Optional.ofNullable(type);
     }
 
-    @Override
-    public net.kyori.adventure.text.Component createTitle(GuiHolder holder) {
-        return wolfyUtils.getChat().getMiniMessage().deserialize(staticTitle);
+    public net.kyori.adventure.text.Component title() {
+        return title;
     }
 
-    public String getStaticTitle() {
-        return staticTitle;
+    public void title(net.kyori.adventure.text.Component title) {
+        this.title = title;
     }
 
     @Override

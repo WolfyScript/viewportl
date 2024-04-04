@@ -32,5 +32,5 @@ public interface Keyed {
      *
      * @return The NamespacedKey of the object.
      */
-    NamespacedKey getNamespacedKey();
+    NamespacedKey key();
 }

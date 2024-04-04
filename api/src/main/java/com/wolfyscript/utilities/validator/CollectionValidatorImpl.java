@@ -49,7 +49,7 @@ class CollectionValidatorImpl<T_VALUE> implements Validator<Collection<T_VALUE>>
     }
 
     @Override
-    public NamespacedKey getNamespacedKey() {
+    public NamespacedKey key() {
         return key;
     }
 

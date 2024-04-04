@@ -19,15 +19,17 @@
 package com.wolfyscript.utilities.gui.components;
 
 import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.Interactable;
-import com.wolfyscript.utilities.gui.Positionable;
+import com.wolfyscript.utilities.gui.interaction.Interactable;
+import net.kyori.adventure.sound.Sound;
+
+import java.util.Optional;
 
 /**
  * A simple button that has an icon (ItemStack) and an interaction callback.
  * It always has a 1x1 size, because it occupies a single slot.
  *
  */
-public interface Button extends Component, Interactable, Positionable {
+public interface Button extends Component, Interactable {
 
     @Override
     default int width() {
@@ -38,6 +40,8 @@ public interface Button extends Component, Interactable, Positionable {
     default int height() {
         return 1;
     }
+
+    Optional<Sound> sound();
 
     ButtonIcon icon();
 }

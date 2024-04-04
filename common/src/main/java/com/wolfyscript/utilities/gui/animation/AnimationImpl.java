@@ -1,7 +1,9 @@
 package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.*;
-import com.wolfyscript.utilities.gui.signal.Signal;
+import com.wolfyscript.utilities.gui.reactivity.Effect;
+import com.wolfyscript.utilities.gui.reactivity.Signal;
+import com.wolfyscript.utilities.gui.rendering.RenderContext;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,12 +12,9 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
 
     AnimationImpl(Component owner, List<? extends AnimationFrameBuilder<F>> animationFrameBuilders, Signal<?> updateSignal) {
         super(owner, animationFrameBuilders, updateSignal);
-        updateSignal.linkTo(this);
     }
 
-    @Override
-    public void update(ViewRuntime viewManager, GuiHolder guiHolder, RenderContext context) {
-        context.enterNode(owner());
+    public void render(ViewRuntime viewManager, GuiHolder guiHolder, RenderContext context) {
 
         AtomicInteger frameDelay = new AtomicInteger(0);
         AtomicInteger frameIndex = new AtomicInteger(0);
@@ -27,7 +26,7 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
                     if (frames().size() <= frame) {
                         task.cancel();
                         if (owner() instanceof Effect signalledOwner) {
-                            signalledOwner.update(viewManager, guiHolder, context); // Last frame should be the original again!
+                            // TODO
                         }
                         return;
                     }
@@ -42,7 +41,5 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
                 })
                 .interval(1)
                 .build();
-
-        context.exitNode();
     }
 }
