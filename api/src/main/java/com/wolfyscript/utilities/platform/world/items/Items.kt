@@ -25,5 +25,5 @@ interface Items {
 
     fun createStackConfig(wolfyUtils: WolfyUtils, itemId: String): ItemStackConfig
 
-    fun dataKeyProvider(): DataKeyBuilderProvider?
+    fun dataKeyBuilderProvider(): DataKeyBuilderProvider
 }
