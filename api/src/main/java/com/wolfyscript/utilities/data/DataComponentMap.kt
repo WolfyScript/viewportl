@@ -45,11 +45,11 @@ interface DataComponentMap<H : DataHolder<H>> {
         return value ?: def
     }
 
-    fun <T : Any> set(key: ReceiverFunction<Keys, DataKey<T, H>>, data: T)
+    fun <T : Any> set(key: DataKey<T, H>, data: T)
 
-    fun remove(key: ReceiverFunction<Keys, DataKey<*, H>>) : Boolean
+    fun remove(key: DataKey<*, H>) : Boolean
 
-    fun has(key: ReceiverFunction<Keys, DataKey<*, H>>): Boolean
+    fun has(key: DataKey<*, H>): Boolean
 
     fun keySet(): Set<DataKey<*, H>>
 
