@@ -18,8 +18,12 @@
 package com.wolfyscript.utilities.platform.world.items
 
 import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.data.DataKeyBuilderProvider
 import com.wolfyscript.utilities.world.items.ItemStackConfig
 
 interface Items {
+
     fun createStackConfig(wolfyUtils: WolfyUtils, itemId: String): ItemStackConfig
+
+    fun dataKeyProvider(): DataKeyBuilderProvider?
 }
