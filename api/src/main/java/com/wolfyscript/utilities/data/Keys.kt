@@ -177,17 +177,17 @@ interface Keys {
         // ***********
 
         fun <T : Any> register(type: KClass<T>, key: NamespacedKey): DataKey<T, ItemStack> {
-            return WolfyCore.instance().platform().items().dataKeyProvider().getKeyBuilder(type, key).build()
+            return WolfyCore.instance().platform().items().dataKeyBuilderProvider.getKeyBuilder(type, key).build()
         }
 
         fun <T : Any> register(type: KClass<T>, key: String): DataKey<T, ItemStack> {
-            return WolfyCore.instance().platform().items().dataKeyProvider()
+            return WolfyCore.instance().platform().items().dataKeyBuilderProvider
                 .getKeyBuilder(type, WolfyCore.instance().wolfyUtils.identifiers.getNamespaced("minecraft", key))
                 .build()
         }
 
         fun <T : Any> register(type: KClass<T>, namespace: String, key: String): DataKey<T, ItemStack> {
-            return WolfyCore.instance().platform().items().dataKeyProvider()
+            return WolfyCore.instance().platform().items().dataKeyBuilderProvider
                 .getKeyBuilder(type, WolfyCore.instance().wolfyUtils.identifiers.getNamespaced(namespace, key)).build()
         }
 
