@@ -148,7 +148,7 @@ class ButtonBuilderImpl : AbstractComponentBuilderImpl<Button, com.wolfyscript.u
         }
 
         override fun stack(itemId: String, configure: Consumer<ItemStackConfig>): IconBuilder {
-            this.staticStackConfig = wolfyUtils.core.platform().items().createStackConfig(wolfyUtils, itemId)
+            this.staticStackConfig = wolfyUtils.core.platform.items.createStackConfig(wolfyUtils, itemId)
             configure.accept(staticStackConfig!!)
             return this
         }

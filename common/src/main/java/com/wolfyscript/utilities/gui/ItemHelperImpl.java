@@ -32,11 +32,11 @@ public class ItemHelperImpl implements ItemHelper {
 
     @Override
     public ItemStackConfig create(String itemId) {
-        return wolfyUtils.getCore().platform().items().createStackConfig(wolfyUtils, itemId);
+        return wolfyUtils.getCore().getPlatform().getItems().createStackConfig(wolfyUtils, itemId);
     }
 
     @Override
     public Items items() {
-        return wolfyUtils.getCore().platform().items();
+        return wolfyUtils.getCore().getPlatform().getItems();
     }
 }

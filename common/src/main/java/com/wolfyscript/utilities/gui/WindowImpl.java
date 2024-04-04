@@ -53,7 +53,7 @@ public final class WindowImpl implements Window {
         }
         intervalTasks.clear();
         for (Pair<Runnable, Long> intervalRunnable : intervalRunnables) {
-            Task task = wolfyUtils.getCore().platform().scheduler().task(wolfyUtils)
+            Task task = wolfyUtils.getCore().getPlatform().getScheduler().task(wolfyUtils)
                     .interval(intervalRunnable.getValue())
                     .delay(1).execute(intervalRunnable.getKey()).build();
             intervalTasks.add(task);

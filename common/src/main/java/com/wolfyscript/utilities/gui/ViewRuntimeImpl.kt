@@ -24,9 +24,9 @@ class ViewRuntimeImpl(
     val reactiveSource: ReactiveSourceImpl = ReactiveSourceImpl(this)
 
     // Create platform specific handlers that handle rendering and interaction
-    val renderer: Renderer<*> = wolfyUtils.core.platform().guiUtils().createRenderer(this)
+    val renderer: Renderer<*> = wolfyUtils.core.platform.guiUtils.createRenderer(this)
 
-    val interactionHandler: InteractionHandler = wolfyUtils.core.platform().guiUtils().createInteractionHandler(this)
+    val interactionHandler: InteractionHandler = wolfyUtils.core.platform.guiUtils.createInteractionHandler(this)
     // Build the components and init the rendering tree
     private val router = rootRouter.apply(this).create(null)
 
@@ -66,7 +66,7 @@ class ViewRuntimeImpl(
         renderer.changeWindow(window)
         interactionHandler.init(window)
 
-        wolfyUtils.core.platform().scheduler().syncTask(wolfyUtils) {
+        wolfyUtils.core.platform.scheduler.syncTask(wolfyUtils) {
             renderer.render()
             reactiveSource.owner()?.update()
         }

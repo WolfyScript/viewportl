@@ -18,7 +18,7 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
 
         AtomicInteger frameDelay = new AtomicInteger(0);
         AtomicInteger frameIndex = new AtomicInteger(0);
-        viewManager.getWolfyUtils().getCore().platform().scheduler()
+        viewManager.getWolfyUtils().getCore().getPlatform().getScheduler()
                 .task(viewManager.getWolfyUtils())
                 .execute(task -> {
                     int delay = frameDelay.getAndIncrement();

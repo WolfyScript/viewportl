@@ -15,21 +15,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.platform
 
-package com.wolfyscript.utilities.platform;
+import com.wolfyscript.utilities.platform.gui.GuiUtils
+import com.wolfyscript.utilities.platform.scheduler.Scheduler
+import com.wolfyscript.utilities.platform.world.items.Items
 
-import com.wolfyscript.utilities.platform.gui.GuiUtils;
-import com.wolfyscript.utilities.platform.scheduler.Scheduler;
-import com.wolfyscript.utilities.platform.world.items.Items;
+interface Platform {
+    val scheduler: Scheduler
 
-public interface Platform {
+    val items: Items
 
-    Scheduler scheduler();
+    val audiences: Audiences
 
-    Items items();
-
-    Audiences adventure();
-
-    GuiUtils guiUtils();
-
+    val guiUtils: GuiUtils
 }
