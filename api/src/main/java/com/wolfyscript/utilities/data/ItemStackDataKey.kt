@@ -28,7 +28,7 @@ class ItemStackDataKey<T : Any> internal constructor(
         }
     }
 
-    override fun getNamespacedKey(): NamespacedKey = key
+    override fun key(): NamespacedKey = key
 
     class BuilderImpl<T : Any>(override val valueType: KClass<T>, private val key: NamespacedKey) : DataKey.Builder<T, ItemStack> {
 
