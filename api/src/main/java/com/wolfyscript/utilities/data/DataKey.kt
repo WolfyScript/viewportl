@@ -15,16 +15,28 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.data
 
-package com.wolfyscript.utilities.data;
+import com.wolfyscript.utilities.Keyed
+import com.wolfyscript.utilities.gui.functions.ReceiverBiFunction
+import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+import kotlin.reflect.KClass
 
-public interface DataKey<T> {
+interface DataKey<T: Any, V : DataHolder<V>> : Keyed {
 
+    fun readFrom(source: V) : T?
 
-    interface Builder {
+    fun writeTo(value: T, target: V)
 
-        Builder type();
+    interface Builder<T : Any, V: DataHolder<V>> {
+
+        val valueType: KClass<T>
+
+        fun reader(readerFn: ReceiverFunction<V, T?>) : Builder<T, V>
+
+        fun writer(writerFn: ReceiverBiFunction<V, T, V>) : Builder<T, V>
+
+        fun build() : DataKey<T, V>
 
     }
-
 }

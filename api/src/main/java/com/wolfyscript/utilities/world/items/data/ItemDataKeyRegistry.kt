@@ -16,25 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.world.items.data;
+package com.wolfyscript.utilities.world.items.data
 
-public enum ShieldBannerBaseColor {
+import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.utilities.data.DataKey
+import com.wolfyscript.utilities.platform.adapters.ItemStack
+import com.wolfyscript.utilities.registry.Registries
+import com.wolfyscript.utilities.registry.RegistrySimple
 
-    WHITE,
-    ORANGE,
-    MAGENTA,
-    LIGHT_BLUE,
-    YELLOW,
-    LIME,
-    PINK,
-    GRAY,
-    LIGHT_GRAY,
-    CYAN,
-    PURPLE,
-    BLUE,
-    BROWN,
-    GREEN,
-    RED,
-    BLACK
+class ItemDataKeyRegistry(key: NamespacedKey, registries: Registries) : RegistrySimple<DataKey<*, ItemStack>>(key, registries)
 
-}

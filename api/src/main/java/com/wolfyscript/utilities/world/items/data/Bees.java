@@ -20,6 +20,10 @@ package com.wolfyscript.utilities.world.items.data;
 
 public interface Bees {
 
+    int entityCount();
+
+
+
     // TODO
 
 }

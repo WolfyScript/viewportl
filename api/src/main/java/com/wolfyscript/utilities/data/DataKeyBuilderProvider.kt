@@ -15,16 +15,15 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.wolfyscript.utilities.data
 
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.utilities.platform.adapters.ItemStack
+import kotlin.reflect.KClass
 
-interface DataHolder<H : DataHolder<H>> {
+interface DataKeyBuilderProvider {
 
-    fun data(): DataComponentMap<H>
-
-    fun <T : Any> get(key: ReceiverFunction<Keys, DataKey<T, H>>): T? {
-        return data().get(key)
-    }
+    fun <T : Any> getKeyBuilder(type: KClass<T>, key: NamespacedKey) : DataKey.Builder<T, ItemStack>
 
 }

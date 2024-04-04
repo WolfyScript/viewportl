@@ -15,11 +15,24 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.world.items.data
 
-package com.wolfyscript.utilities.world.items.data;
+import java.net.URL
+import java.util.*
 
-public interface Profile {
+interface Profile {
 
-    // TODO
+    var id: UUID?
+    var name: String?
+    var textures: Textures
 
+    fun isComplete() : Boolean
+
+    interface Textures {
+
+        var skin: URL?
+        var cape: URL?
+
+        fun isEmpty() : Boolean
+    }
 }

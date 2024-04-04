@@ -18,8 +18,16 @@
 
 package com.wolfyscript.utilities.world.items.data;
 
+import net.kyori.adventure.text.Component;
+
+import java.util.List;
+
 public interface WrittenBookContents {
 
-    // TODO
+    List<Component> pages();
+
+    Component title();
+
+    String author();
 
 }

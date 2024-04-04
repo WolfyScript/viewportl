@@ -15,17 +15,16 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.world.items.enchanting
 
-package com.wolfyscript.utilities.world.items.enchanting;
+import com.wolfyscript.utilities.NamespacedKey
 
-import com.wolfyscript.utilities.NamespacedKey;
+interface Enchantment {
 
-public interface Enchantment {
+    fun maxLevel(): Int
 
-    int maxLevel();
+    fun minLevel(): Int
 
-    int minLevel();
-
-    NamespacedKey key();
+    fun key(): NamespacedKey
 
 }

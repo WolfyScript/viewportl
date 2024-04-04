@@ -19,10 +19,13 @@
 package com.wolfyscript.utilities.platform.world.items;
 
 import com.wolfyscript.utilities.WolfyUtils;
+import com.wolfyscript.utilities.data.DataKeyBuilderProvider;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 
 public interface Items {
 
     ItemStackConfig createStackConfig(WolfyUtils wolfyUtils, String itemId);
+
+    DataKeyBuilderProvider dataKeyProvider();
 
 }

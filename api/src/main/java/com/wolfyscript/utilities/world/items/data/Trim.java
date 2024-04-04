@@ -18,8 +18,12 @@
 
 package com.wolfyscript.utilities.world.items.data;
 
+import com.wolfyscript.utilities.NamespacedKey;
+
 public interface Trim extends TooltipApplicable {
 
-    // TODO
+    NamespacedKey pattern();
+
+    NamespacedKey material();
 
 }

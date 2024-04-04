@@ -22,7 +22,7 @@ import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.data.DataHolder;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 
-public interface ItemStack extends DataHolder {
+public interface ItemStack extends DataHolder<ItemStack> {
 
     /**
      * The id representing the item of this ItemStack.<br>

@@ -15,16 +15,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.utilities.data
 
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+package com.wolfyscript.utilities.gui.functions
 
-interface DataHolder<H : DataHolder<H>> {
+fun interface ReceiverBiFunction<T, U, V> {
 
-    fun data(): DataComponentMap<H>
-
-    fun <T : Any> get(key: ReceiverFunction<Keys, DataKey<T, H>>): T? {
-        return data().get(key)
-    }
+    fun T.apply(value: U) : V
 
 }

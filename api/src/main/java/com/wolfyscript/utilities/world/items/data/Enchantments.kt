@@ -17,19 +17,12 @@
  */
 package com.wolfyscript.utilities.world.items.data
 
-import com.wolfyscript.utilities.data.Immutable
 import com.wolfyscript.utilities.world.items.enchanting.Enchantment
 
-interface Enchantments : TooltipApplicable, Immutable<Enchantments.Mutable?> {
+interface Enchantments : TooltipApplicable {
 
-    fun level(enchantment: Enchantment?): Int?
+    fun level(enchantment: Enchantment): Int?
 
-    interface Mutable {
-
-        fun level(enchantment: Enchantment?) : Int?
-
-        fun set(enchantment: Enchantment?, level: Int)
-
-    }
+    fun set(enchantment: Enchantment, level: Int)
 
 }

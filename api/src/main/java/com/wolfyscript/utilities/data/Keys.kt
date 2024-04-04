@@ -18,103 +18,95 @@
 package com.wolfyscript.utilities.data
 
 import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.utilities.WolfyCore
 import com.wolfyscript.utilities.platform.adapters.ItemStack
 import com.wolfyscript.utilities.world.items.DyeColor
+import com.wolfyscript.utilities.world.items.MapColor
 import com.wolfyscript.utilities.world.items.data.*
 import net.kyori.adventure.text.Component
+import kotlin.reflect.KClass
 
 interface Keys {
 
-    fun customData() // TODO
+    companion object {
+        val DAMAGE = register<Int>("damage")
+        val REPAIR_COST = register<Int>("repair_cost")
+        val UNBREAKABLE = register<Unbreakable>("unbreakable")
+        val ENCHANTMENTS = register<Enchantments>("enchantments")
+        val STORED_ENCHANTMENTS = register<Enchantments>("stored_enchantments")
+        val CUSTOM_NAME = register<Component>("custom_name")
+        val ITEM_LORE = register<ItemLore>("item_lore")
+        val CAN_BREAK = register<CanBreak>("can_break")
+        val CAN_PLACE_ON = register<CanPlaceOn>("can_place_on")
+        val DYED_COLOR = register<DyedColor>("dyed_color")
+        val ATTRIBUTE_MODIFIERS = register<AttributeModifiers>("attribute_modifiers")
+        val CHARGED_PROJECTILES = register<ChargedProjectiles>("charged_projectiles")
+        val INTANGIBLE_PROJECTILES = register<IntangibleProjectiles>("intangible_projectiles")
+        val MAP_COLOR = register<MapColor>("map_color")
+        val MAP_DECORATIONS = register<MapDecorations>("map_decorations")
+        val MAP_ID = register<Int>("map_id")
+        val MAP_INFO = register<MapInfo>("map_info")
+        val CUSTOM_MODEL_DATA = register<Int>("custom_model_data")
+        val POTION_CONTENTS = register<PotionContents>("potion_contents")
+        val WRITABLE_BOOK_CONTENTS = register<WriteableBookContents>("writable_book_contents")
+        val WRITTEN_BOOK_CONTENTS = register<WrittenBookContents>("written_book_contents")
+        val TRIM = register<Trim>("trim")
+        val SUSPICIOUS_STEW = register<SuspiciousStew>("suspicious_stew")
+        val HIDE_ADDITIONAL_TOOLTIP = register<HideAdditionalTooltip>("hide_additional_tooltip")
+        val DEBUG_STICK_STATE = register<DebugStickState>("debug_stick_state")
+        val ENTITY_DATA = register<EntityData>("entity_data")
+        val BUCKET_ENTITY_DATA = register<BucketEntityData>("bucket_entity_data")
+        val INSTRUMENT = register<NamespacedKey>("instrument")
+        val RECIPES = register<List<NamespacedKey>>("recipes")
+        val LODESTONE_TRACKER = register<LodestoneTracker>("lodestone_tracker")
+        val FIREWORKS_EXPLOSION = register<FireworkExplosion>("firework_explosion")
+        val FIREWORKS = register<Fireworks>("fireworks")
+        val PROFILE = register<Profile>("profile")
+        val NOTE_BLOCK_SOUND = register<NamespacedKey>("note_block_sound")
+        val BASE_COLOR = register<DyeColor>("base_color")
+        val BANNER_PATTERNS = register<BannerPatterns>("banner_patterns")
+        val POT_DECORATIONS = register<List<NamespacedKey>>("pot_decorations")
+        val CONTAINER = register<Container>("container")
+        val BEES = register<Bees>("bees")
+        val LOCK = register<String>("lock")
+        val CONTAINER_LOOT = register<ContainerLoot>("container_loot")
+        val BLOCK_ENTITY_DATA = register<BlockEntityData>("block_entity_data")
+        val BLOCK_STATE = register<BlockState>("block_state")
+        val ENCHANTMENT_GLINT_OVERRIDE = register<Boolean>("enchantment_glint_override")
 
-    fun damage(): DataKey<Int>
+        /****************
+         * EXPERIMENTAL
+         ****************/
 
-    fun repairCost(): DataKey<Int>
+        val BUNDLE_CONTENTS = register<BundleContents>("bundle_contents")
 
-    fun unbreakable(): DataKey<Unbreakable>
+        // 1.20.5+
+        // TODO
 
-    fun enchantments(): DataKey<Enchantments>
+        // 1.21+
+        // TODO
 
-    fun storedEnchantments(): DataKey<Enchantments>
+        // ***********
 
-    fun customName(): DataKey<Component>
+        private val ids = WolfyCore.instance().wolfyUtils.identifiers
 
-    fun itemLore(): DataKey<ItemLore>
+        fun <T : Any> register(type: KClass<T>, key: NamespacedKey): DataKey<T, ItemStack> {
+            return WolfyCore.instance().platform().items().dataKeyProvider().getKeyBuilder(type, key).build()
+        }
 
-    fun canBreak() : DataKey<CanBreak>
+        fun <T : Any> register(type: KClass<T>, key: String): DataKey<T, ItemStack> {
+            return WolfyCore.instance().platform().items().dataKeyProvider()
+                .getKeyBuilder(type, ids.getNamespaced("minecraft", key)).build()
+        }
 
-    fun canPlaceOn() : DataKey<CanPlaceOn>
+        fun <T : Any> register(type: KClass<T>, namespace: String, key: String): DataKey<T, ItemStack> {
+            return WolfyCore.instance().platform().items().dataKeyProvider()
+                .getKeyBuilder(type, ids.getNamespaced(namespace, key)).build()
+        }
 
-    fun dyedColor() : DataKey<DyedColor>
-
-    fun attributeModifiers() : DataKey<AttributeModifiers>
-
-    fun chargedProjectiles() : DataKey<ChargedProjectiles>
-
-    fun intangibleProjectile() : DataKey<IntangibleProjectiles>
-
-    fun bundleContents() : DataKey<List<ItemStack>>
-
-    fun mapColor() : DataKey<Int>
-
-    fun mapDecorations() : DataKey<MapDecorations>
-
-    fun mapId() : DataKey<Int>
-
-    fun mapInfo() : DataKey<MapInfo>
-
-    fun customModelData() : DataKey<Int>
-
-    fun potionContents() : DataKey<PotionContents>
-
-    fun writableBookContents() : DataKey<WrittenBookContents>
-
-    fun writtenBookContents() : DataKey<WrittenBookContents>
-
-    fun trim() : DataKey<Trim>
-
-    fun suspiciousStew() : DataKey<SuspiciousStew>
-
-    fun hideAdditionalTooltip() : DataKey<HideAdditionalTooltip>
-
-    fun debugStickState() : DataKey<DebugStickState>
-
-    fun entityData() : DataKey<EntityData>
-
-    fun bucketEntityData() : DataKey<BucketEntityData>
-
-    fun instrument() : DataKey<NamespacedKey>
-
-    fun recipes() : DataKey<List<NamespacedKey>>
-
-    fun lodestoneTracker() : DataKey<LodestoneTracker>
-
-    fun fireworkExplosion() : DataKey<FireworkExplosion>
-
-    fun fireworks() : DataKey<Fireworks>
-
-    fun profile() : DataKey<Profile>
-
-    fun noteBlockSound() : DataKey<NamespacedKey>
-
-    fun baseColor() : DataKey<DyeColor>
-
-    fun bannerPatterns() : DataKey<BannerPatterns>
-
-    fun potDecorations() : DataKey<List<NamespacedKey>>
-
-    fun container() : DataKey<Container>
-
-    fun bees() : DataKey<Bees>
-
-    fun lock() : DataKey<String>
-
-    fun containerLoot() : DataKey<ContainerLoot>
-
-    fun blockEntityData() : DataKey<BlockEntityData>
-
-    fun blockState() : DataKey<BlockState>
-
-    fun enchantmentGlintOverride() : DataKey<Boolean>
+        inline fun <reified T : Any> register(key: String): DataKey<T, ItemStack> {
+            return register(T::class, key)
+        }
+    }
 
 }

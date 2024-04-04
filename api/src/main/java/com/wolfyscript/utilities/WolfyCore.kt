@@ -15,31 +15,41 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities
 
-package com.wolfyscript.utilities;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.chat.Chat;
-import com.wolfyscript.utilities.platform.Platform;
-import com.wolfyscript.utilities.registry.Registries;
-import org.reflections.Reflections;
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.wolfyscript.utilities.chat.Chat
+import com.wolfyscript.utilities.platform.Platform
+import com.wolfyscript.utilities.registry.Registries
+import org.reflections.Reflections
 
 /**
  * Represents the core instance of the WolfyUtils plugin.
  *
  */
-public interface WolfyCore {
+interface WolfyCore {
 
-    Chat getChat();
+    companion object {
 
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
+        protected var INSTANCE: WolfyCore? = null
 
-    WolfyUtils getWolfyUtils();
+        internal fun instance() : WolfyCore {
+            if (INSTANCE == null) throw IllegalStateException("Trying to access WolfyCore before it was initialised!")
+            return INSTANCE!!
+        }
 
-    Reflections getReflections();
+    }
 
-    Registries getRegistries();
+    val chat: Chat
 
-    Platform platform();
+    fun <M : ObjectMapper?> applyWolfyUtilsJsonMapperModules(mapper: M): M
+
+    val wolfyUtils: WolfyUtils
+
+    val reflections: Reflections
+
+    val registries: Registries
+
+    fun platform(): Platform
 
 }
