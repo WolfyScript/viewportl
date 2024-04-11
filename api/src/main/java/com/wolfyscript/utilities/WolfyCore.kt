@@ -27,30 +27,39 @@ import org.reflections.Reflections
  * Represents the core instance of the WolfyUtils plugin.
  *
  */
-interface WolfyCore {
+abstract class WolfyCore {
+
+    init {
+        _instance = this
+    }
 
     companion object {
 
-        protected var INSTANCE: WolfyCore? = null
+        private var _instance: WolfyCore? = null
+            set(value) {
+                if (field != null) throw IllegalStateException("Cannot set Instance when it is already set!")
+                field = value
+            }
 
-        internal val instance: WolfyCore
+        @JvmStatic
+        val instance: WolfyCore
             get() {
-                if (INSTANCE == null) throw IllegalStateException("Trying to access WolfyCore before it was initialised!")
-                return INSTANCE!!
+                if (_instance == null) throw IllegalStateException("Trying to access WolfyCore before it was initialised!")
+                return _instance!!
             }
 
     }
 
-    val chat: Chat
+    abstract val chat: Chat
 
-    fun <M : ObjectMapper?> applyWolfyUtilsJsonMapperModules(mapper: M): M
+    abstract fun <M : ObjectMapper?> applyWolfyUtilsJsonMapperModules(mapper: M): M
 
-    val wolfyUtils: WolfyUtils
+    abstract val wolfyUtils: WolfyUtils
 
-    val reflections: Reflections
+    abstract val reflections: Reflections
 
-    val registries: Registries
+    abstract val registries: Registries
 
-    val platform: Platform
+    abstract val platform: Platform
 
 }
