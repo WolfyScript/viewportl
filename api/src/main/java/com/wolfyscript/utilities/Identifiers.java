@@ -36,6 +36,13 @@ public interface Identifiers {
      */
     NamespacedKey getNamespaced(String namespace, String key);
 
+    /**
+     * Creates a NamespacedKey from a Class specified with the {@link KeyedStaticId} annotation.
+     *
+     * @param type The class to get the key from
+     * @return The key the class is linked to
+     * @throws IllegalArgumentException When the Class is not annotated with the {@link KeyedStaticId} annotation, or the key could not be created!
+     */
     default NamespacedKey getNamespaced(Class<?> type) {
         return getNamespaced(KeyedStaticId.KeyBuilder.createKeyString(type));
     }

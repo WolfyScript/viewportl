@@ -33,7 +33,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class LanguageAPI {
+public abstract class Translations {
 
     protected final WolfyUtils api;
 
@@ -41,7 +41,7 @@ public abstract class LanguageAPI {
     private Language activeLanguage;
     private Language fallbackLanguage;
 
-    public LanguageAPI(WolfyUtils api) {
+    public Translations(WolfyUtils api) {
         this.api = api;
         this.activeLanguage = null;
         this.fallbackLanguage = null;

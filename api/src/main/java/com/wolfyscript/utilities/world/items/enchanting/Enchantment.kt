@@ -1,4 +1,3 @@
-
 /*
  *       WolfyUtilities, APIs and Utilities for Minecraft Spigot plugins
  *                      Copyright (C) 2021  WolfyScript
@@ -16,18 +15,16 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.world.items.enchanting
 
-plugins {
-    `java-library`
-    `maven-publish`
-    id("wolfyutils.common-conventions")
-    kotlin("jvm") version "1.9.22"
-}
-dependencies {
-}
-repositories {
-    mavenCentral()
-}
-kotlin {
-    jvmToolchain(17)
+import com.wolfyscript.utilities.NamespacedKey
+
+interface Enchantment {
+
+    fun maxLevel(): Int
+
+    fun minLevel(): Int
+
+    fun key(): NamespacedKey
+
 }

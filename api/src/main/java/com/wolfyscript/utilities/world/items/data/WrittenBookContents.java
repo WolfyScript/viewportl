@@ -16,15 +16,18 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.gui.interaction;
+package com.wolfyscript.utilities.world.items.data;
 
-import com.wolfyscript.utilities.gui.InteractionResult;
+import net.kyori.adventure.text.Component;
 
-public interface InteractionDetails {
+import java.util.List;
 
-    boolean isCancelled();
+public interface WrittenBookContents {
 
-    InteractionResult.ResultType getResultType();
+    List<Component> pages();
 
+    Component title();
+
+    String author();
 
 }

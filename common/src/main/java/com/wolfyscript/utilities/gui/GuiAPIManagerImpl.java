@@ -90,7 +90,7 @@ public class GuiAPIManagerImpl implements GuiAPIManager {
                     .findFirst()
                     .ifPresentOrElse(callback, () -> {
                         // Construct the new view manager async, so it doesn't affect the main thread!
-                        wolfyUtils.getCore().platform().scheduler().asyncTask(wolfyUtils, () -> {
+                        wolfyUtils.getCore().getPlatform().getScheduler().asyncTask(wolfyUtils, () -> {
                             ViewRuntimeImpl viewManager = new ViewRuntimeImpl(wolfyUtils, constructor, viewers);
 
                             synchronized (VIEW_RUNTIMES) {

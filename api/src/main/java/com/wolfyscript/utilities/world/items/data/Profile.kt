@@ -1,4 +1,3 @@
-
 /*
  *       WolfyUtilities, APIs and Utilities for Minecraft Spigot plugins
  *                      Copyright (C) 2021  WolfyScript
@@ -16,18 +15,24 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.world.items.data
 
-plugins {
-    `java-library`
-    `maven-publish`
-    id("wolfyutils.common-conventions")
-    kotlin("jvm") version "1.9.22"
-}
-dependencies {
-}
-repositories {
-    mavenCentral()
-}
-kotlin {
-    jvmToolchain(17)
+import java.net.URL
+import java.util.*
+
+interface Profile {
+
+    var id: UUID?
+    var name: String?
+    var textures: Textures
+
+    fun isComplete() : Boolean
+
+    interface Textures {
+
+        var skin: URL?
+        var cape: URL?
+
+        fun isEmpty() : Boolean
+    }
 }

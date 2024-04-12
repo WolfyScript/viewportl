@@ -1,4 +1,3 @@
-
 /*
  *       WolfyUtilities, APIs and Utilities for Minecraft Spigot plugins
  *                      Copyright (C) 2021  WolfyScript
@@ -17,17 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    `java-library`
-    `maven-publish`
-    id("wolfyutils.common-conventions")
-    kotlin("jvm") version "1.9.22"
-}
-dependencies {
-}
-repositories {
-    mavenCentral()
-}
-kotlin {
-    jvmToolchain(17)
+package com.wolfyscript.utilities.world.items.data;
+
+public interface DyedColor extends TooltipApplicable {
+
+    int rgb();
+
 }

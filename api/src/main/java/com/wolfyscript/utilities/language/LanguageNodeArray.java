@@ -39,7 +39,7 @@ public class LanguageNodeArray extends LanguageNode {
         Iterator<JsonNode> nodeItr = jsonNode.elements();
         while (nodeItr.hasNext()) {
             String value = nodeItr.next().textValue();
-            this.raw.add(language.usesMiniMessageFormat() ? value : chat.getWolfyUtils().getLanguageAPI().convertLegacyToMiniMessage(value));
+            this.raw.add(language.usesMiniMessageFormat() ? value : chat.getWolfyUtils().getTranslations().convertLegacyToMiniMessage(value));
         }
         this.rawLine = raw.stream().reduce("", (s, s2) -> s + " " + s2);
     }

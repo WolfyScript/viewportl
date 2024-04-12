@@ -30,7 +30,7 @@ import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.kyori.adventure.text.renderer.ComponentRenderer;
+import com.wolfyscript.utilities.world.items.data.ItemDataKeyRegistry;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -58,12 +58,15 @@ public abstract class Registries {
     private final TypeRegistry<Operator> operators;
     private final TypeRegistry<NBTTagConfig> nbtTagConfigs;
 
+    private final ItemDataKeyRegistry itemDataKeyRegistry;
+
     public Registries(@NotNull WolfyCore core) {
         this.core = core;
 
         valueProviders = new UniqueTypeRegistrySimple<>(core.getWolfyUtils().getIdentifiers().getSelfNamespaced("value_providers"), this);
         operators = new UniqueTypeRegistrySimple<>(core.getWolfyUtils().getIdentifiers().getSelfNamespaced("operators"), this);
         nbtTagConfigs = new UniqueTypeRegistrySimple<>(core.getWolfyUtils().getIdentifiers().getSelfNamespaced("nbt_configs"), this);
+        itemDataKeyRegistry = new ItemDataKeyRegistry(core.getWolfyUtils().getIdentifiers().getSelfNamespaced("data_components/item"), this);
     }
 
     protected void indexTypedRegistry(@NotNull Registry<?> registry) {
@@ -118,4 +121,8 @@ public abstract class Registries {
     public abstract TypeRegistry<Component> getGuiComponents();
 
     public abstract RegistryGUIComponentBuilders getGuiComponentBuilders();
+
+    public ItemDataKeyRegistry getItemDataKeyRegistry() {
+        return itemDataKeyRegistry;
+    }
 }

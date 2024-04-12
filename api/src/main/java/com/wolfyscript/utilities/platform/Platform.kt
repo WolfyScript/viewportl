@@ -1,4 +1,3 @@
-
 /*
  *       WolfyUtilities, APIs and Utilities for Minecraft Spigot plugins
  *                      Copyright (C) 2021  WolfyScript
@@ -16,18 +15,21 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.platform
 
-plugins {
-    `java-library`
-    `maven-publish`
-    id("wolfyutils.common-conventions")
-    kotlin("jvm") version "1.9.22"
-}
-dependencies {
-}
-repositories {
-    mavenCentral()
-}
-kotlin {
-    jvmToolchain(17)
+import com.wolfyscript.utilities.platform.gui.GuiUtils
+import com.wolfyscript.utilities.platform.scheduler.Scheduler
+import com.wolfyscript.utilities.platform.world.items.Items
+
+interface Platform {
+
+    val type: PlatformType
+
+    val scheduler: Scheduler
+
+    val items: Items
+
+    val audiences: Audiences
+
+    val guiUtils: GuiUtils
 }

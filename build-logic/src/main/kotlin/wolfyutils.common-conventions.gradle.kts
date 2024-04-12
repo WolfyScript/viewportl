@@ -30,7 +30,8 @@ repositories {
 
 dependencies {
     api(libs.com.wolfyscript.jackson.dataformat.hocon)
-    testImplementation(libs.org.junit.jupiter.junit.jupiter)
+    implementation(libs.org.jetbrains.kotlin.stdlib)
+
     compileOnly(libs.com.fasterxml.jackson.core.jackson.databind)
     compileOnly(libs.org.reflections.reflections)
     compileOnly(libs.com.google.inject.guice)
@@ -38,11 +39,13 @@ dependencies {
     compileOnly(libs.org.jetbrains.annotations)
     compileOnly(libs.com.mojang.authlib)
     compileOnly(libs.io.netty.netty.all)
-    compileOnly(libs.org.apache.commons.commons.lang3)
-    compileOnly(libs.net.kyori.adventure.api)
-    compileOnly(libs.net.kyori.adventure.text.minimessage)
+    compileOnlyApi(libs.org.apache.commons.commons.lang3)
+    compileOnlyApi(libs.net.kyori.adventure.api)
+    compileOnlyApi(libs.net.kyori.adventure.text.minimessage)
     compileOnly(libs.net.kyori.adventure.platform.api)
     compileOnly(libs.com.google.guava.guava)
+
+    testImplementation(libs.org.junit.jupiter.junit.jupiter)
 }
 
 tasks.withType<JavaCompile>() {

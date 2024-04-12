@@ -16,30 +16,8 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities;
+package com.wolfyscript.utilities.world.items.data;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wolfyscript.utilities.chat.Chat;
-import com.wolfyscript.utilities.platform.Platform;
-import com.wolfyscript.utilities.registry.Registries;
-import org.reflections.Reflections;
-
-/**
- * Represents the core instance of the WolfyUtils plugin.
- *
- */
-public interface WolfyCore {
-
-    Chat getChat();
-
-    <M extends ObjectMapper> M applyWolfyUtilsJsonMapperModules(M mapper);
-
-    WolfyUtils getWolfyUtils();
-
-    Reflections getReflections();
-
-    Registries getRegistries();
-
-    Platform platform();
+public interface HideAdditionalTooltip {
 
 }

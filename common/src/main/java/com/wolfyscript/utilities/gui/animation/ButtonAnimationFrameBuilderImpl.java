@@ -22,7 +22,7 @@ public class ButtonAnimationFrameBuilderImpl implements ButtonAnimationFrameBuil
 
     @Override
     public ButtonAnimationFrameBuilder stack(String itemId, ReceiverConsumer<ItemStackConfig> config) {
-        this.stack = wolfyUtils.getCore().platform().items().createStackConfig(wolfyUtils, itemId);
+        this.stack = wolfyUtils.getCore().getPlatform().getItems().createStackConfig(wolfyUtils, itemId);
         config.consume(stack);
         return this;
     }

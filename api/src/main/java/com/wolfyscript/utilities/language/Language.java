@@ -37,10 +37,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a single Language that can be loaded from a JSON file.<br>
- * You can load and register a language using {@link LanguageAPI#loadLangFile(String)}
+ * You can load and register a language using {@link Translations#loadLangFile(String)}
  *
  * <p>
- * Instead of creating it via the old constructor you need to use the {@link LanguageAPI#loadLangFile(String)} method!
+ * Instead of creating it via the old constructor you need to use the {@link Translations#loadLangFile(String)} method!
  * </p>
  */
 public class Language {
@@ -56,12 +56,12 @@ public class Language {
     private final Map<String, LanguageNode> mappedLangNodes = new ConcurrentHashMap<>();
 
     /**
-     * Used to create (deserialize) the Language from Json. The {@link LanguageAPI} provides the option to load the Language from a file.
+     * Used to create (deserialize) the Language from Json. The {@link Translations} provides the option to load the Language from a file.
      *
      * @param file The file of the language (Only necessary for backwards compatibility!)
      * @param api The api this Language belongs to.
      * @param lang The language name.
-     * @see LanguageAPI#loadLangFile(String)
+     * @see Translations#loadLangFile(String)
      */
     @JsonCreator
     protected Language(@JsonProperty("file") @JacksonInject("file") File file, @JacksonInject("api")  WolfyUtils api, @JsonProperty("lang") @JacksonInject("lang") String lang) {

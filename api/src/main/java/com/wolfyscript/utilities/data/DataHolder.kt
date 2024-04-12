@@ -1,4 +1,3 @@
-
 /*
  *       WolfyUtilities, APIs and Utilities for Minecraft Spigot plugins
  *                      Copyright (C) 2021  WolfyScript
@@ -16,18 +15,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.data
 
-plugins {
-    `java-library`
-    `maven-publish`
-    id("wolfyutils.common-conventions")
-    kotlin("jvm") version "1.9.22"
-}
-dependencies {
-}
-repositories {
-    mavenCentral()
-}
-kotlin {
-    jvmToolchain(17)
+interface DataHolder<H : DataHolder<H>> {
+
+    fun data(): DataComponentMap<H>
+
+    fun <T : Any> get(key: DataKey<T, H>): T? {
+        return data().get(key)
+    }
+
 }

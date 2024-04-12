@@ -1,4 +1,3 @@
-
 /*
  *       WolfyUtilities, APIs and Utilities for Minecraft Spigot plugins
  *                      Copyright (C) 2021  WolfyScript
@@ -16,18 +15,31 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.data
 
-plugins {
-    `java-library`
-    `maven-publish`
-    id("wolfyutils.common-conventions")
-    kotlin("jvm") version "1.9.22"
-}
-dependencies {
-}
-repositories {
-    mavenCentral()
-}
-kotlin {
-    jvmToolchain(17)
+import com.wolfyscript.utilities.Keyed
+import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.utilities.gui.functions.ReceiverBiFunction
+import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+import kotlin.reflect.KClass
+
+class DataKey<T : Any, V : DataHolder<V>>(
+    val type: KClass<T>,
+    private val key: NamespacedKey,
+    private val fetcher: ReceiverFunction<V, T?> = ReceiverFunction { null },
+    private val applier: ReceiverBiFunction<V, T, V> = ReceiverBiFunction { this }
+) : Keyed {
+
+    fun readFrom(source: V): T? {
+        return with(fetcher) { source.apply() }
+    }
+
+    fun writeTo(value: T, target: V) {
+        with(applier) {
+            target.apply(value)
+        }
+    }
+
+    override fun key(): NamespacedKey = key
+
 }

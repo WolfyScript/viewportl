@@ -16,20 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.utilities.platform;
+package com.wolfyscript.utilities.world.items.data;
 
-import com.wolfyscript.utilities.platform.gui.GuiUtils;
-import com.wolfyscript.utilities.platform.scheduler.Scheduler;
-import com.wolfyscript.utilities.platform.world.items.Items;
+public interface Bees {
 
-public interface Platform {
+    int entityCount();
 
-    Scheduler scheduler();
 
-    Items items();
 
-    Audiences adventure();
-
-    GuiUtils guiUtils();
+    // TODO
 
 }

@@ -1,4 +1,3 @@
-
 /*
  *       WolfyUtilities, APIs and Utilities for Minecraft Spigot plugins
  *                      Copyright (C) 2021  WolfyScript
@@ -17,17 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    `java-library`
-    `maven-publish`
-    id("wolfyutils.common-conventions")
-    kotlin("jvm") version "1.9.22"
-}
-dependencies {
-}
-repositories {
-    mavenCentral()
-}
-kotlin {
-    jvmToolchain(17)
+package com.wolfyscript.utilities.data
+
+import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.utilities.platform.adapters.ItemStack
+import kotlin.reflect.KClass
+
+interface DataKeyProvider {
+
+    fun <T : Any> getDataKey(type: KClass<T>, key: NamespacedKey) : DataKey<T, ItemStack>
+
 }
