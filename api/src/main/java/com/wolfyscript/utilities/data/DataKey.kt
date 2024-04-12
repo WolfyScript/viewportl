@@ -18,25 +18,28 @@
 package com.wolfyscript.utilities.data
 
 import com.wolfyscript.utilities.Keyed
+import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.gui.functions.ReceiverBiFunction
 import com.wolfyscript.utilities.gui.functions.ReceiverFunction
 import kotlin.reflect.KClass
 
-interface DataKey<T: Any, V : DataHolder<V>> : Keyed {
+class DataKey<T : Any, V : DataHolder<V>>(
+    val type: KClass<T>,
+    private val key: NamespacedKey,
+    private val fetcher: ReceiverFunction<V, T?> = ReceiverFunction { null },
+    private val applier: ReceiverBiFunction<V, T, V> = ReceiverBiFunction { this }
+) : Keyed {
 
-    fun readFrom(source: V) : T?
-
-    fun writeTo(value: T, target: V)
-
-    interface Builder<T : Any, V: DataHolder<V>> {
-
-        val valueType: KClass<T>
-
-        fun reader(readerFn: ReceiverFunction<V, T?>) : Builder<T, V>
-
-        fun writer(writerFn: ReceiverBiFunction<V, T, V>) : Builder<T, V>
-
-        fun build() : DataKey<T, V>
-
+    fun readFrom(source: V): T? {
+        return with(fetcher) { source.apply() }
     }
+
+    fun writeTo(value: T, target: V) {
+        with(applier) {
+            target.apply(value)
+        }
+    }
+
+    override fun key(): NamespacedKey = key
+
 }

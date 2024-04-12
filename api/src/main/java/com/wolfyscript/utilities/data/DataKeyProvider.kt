@@ -22,8 +22,8 @@ import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.platform.adapters.ItemStack
 import kotlin.reflect.KClass
 
-interface DataKeyBuilderProvider {
+interface DataKeyProvider {
 
-    fun <T : Any> getKeyBuilder(type: KClass<T>, key: NamespacedKey) : DataKey.Builder<T, ItemStack>
+    fun <T : Any> getDataKey(type: KClass<T>, key: NamespacedKey) : DataKey<T, ItemStack>
 
 }
