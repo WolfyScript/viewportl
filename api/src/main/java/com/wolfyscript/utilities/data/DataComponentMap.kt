@@ -18,16 +18,11 @@
 package com.wolfyscript.utilities.data
 
 /**
- * A DataComponentMap contains the data applied to an ItemStack.<br></br>
- * Each data is associated with a unique key, and can be fetched and replaced.<br></br>
+ * A DataComponentMap contains the data applied to a [DataHolder].
+ * Each data component is associated with a unique key, and can be fetched using Keys (e.g. [ItemStack Data Keys][ItemStackDataKeys]).
  *
- *
- * Each data entry is immutable! When changes are required the data needs to be copied, mutated, and reapplied.<br>
- * By default this will try to convert the calls to the platform specific ItemStack APIs.
- *
- * In 1.20.5+ this makes use of the data components as much as the platform allows,
- * when using it on prior versions it will use the platform specific legacy implementations (e.g. ItemMeta on Spigot) instead.
- *
+ * By default, this will try to convert the calls to the platform specific ItemStack APIs.
+ * In 1.20.5+ this makes use of the data components as much as the platform allows (e.g. ItemMeta on Spigot).
  */
 interface DataComponentMap<H : DataHolder<H>> {
 

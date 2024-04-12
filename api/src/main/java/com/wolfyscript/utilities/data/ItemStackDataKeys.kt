@@ -26,7 +26,12 @@ import com.wolfyscript.utilities.world.items.data.*
 import net.kyori.adventure.text.Component
 import kotlin.reflect.KClass
 
-interface Keys {
+/**
+ * A Collection of the default/vanilla [DataKeys][DataKey] that link to Data stored on ItemStacks.
+ *
+ * The data can be fetched, applied, and removed to/from ItemStacks via [ItemStack.data]
+ */
+interface ItemStackDataKeys {
 
     companion object {
         @JvmField
@@ -177,18 +182,17 @@ interface Keys {
         // ***********
 
         fun <T : Any> register(type: KClass<T>, key: NamespacedKey): DataKey<T, ItemStack> {
-            return WolfyCore.instance.platform.items.dataKeyBuilderProvider.getKeyBuilder(type, key).build()
+            return WolfyCore.instance.platform.items.dataKeyProvider.getDataKey(type, key)
         }
 
         fun <T : Any> register(type: KClass<T>, key: String): DataKey<T, ItemStack> {
-            return WolfyCore.instance.platform.items.dataKeyBuilderProvider
-                .getKeyBuilder(type, WolfyCore.instance.wolfyUtils.identifiers.getNamespaced("minecraft", key))
-                .build()
+            return WolfyCore.instance.platform.items.dataKeyProvider
+                .getDataKey(type, WolfyCore.instance.wolfyUtils.identifiers.getNamespaced("minecraft", key))
         }
 
         fun <T : Any> register(type: KClass<T>, namespace: String, key: String): DataKey<T, ItemStack> {
-            return WolfyCore.instance.platform.items.dataKeyBuilderProvider
-                .getKeyBuilder(type, WolfyCore.instance.wolfyUtils.identifiers.getNamespaced(namespace, key)).build()
+            return WolfyCore.instance.platform.items.dataKeyProvider
+                .getDataKey(type, WolfyCore.instance.wolfyUtils.identifiers.getNamespaced(namespace, key))
         }
 
         inline fun <reified T : Any> register(key: String): DataKey<T, ItemStack> {
