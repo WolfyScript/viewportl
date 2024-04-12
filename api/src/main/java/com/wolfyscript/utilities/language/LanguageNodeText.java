@@ -34,7 +34,7 @@ public class LanguageNodeText extends LanguageNode {
         if (language.usesMiniMessageFormat()) {
             this.raw = jsonNode.asText("");
         } else {
-            this.raw = chat.getWolfyUtils().getLanguageAPI().convertLegacyToMiniMessage(jsonNode.asText(""));
+            this.raw = chat.getWolfyUtils().getTranslations().convertLegacyToMiniMessage(jsonNode.asText(""));
         }
     }
 
