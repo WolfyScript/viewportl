@@ -21,6 +21,7 @@ import com.wolfyscript.utilities.config.jackson.KeyedBaseType
 import com.wolfyscript.utilities.gui.ReactiveRenderBuilder.ReactiveResult
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
 import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilder
+import com.wolfyscript.utilities.gui.components.MatchChildComponentBuilder
 import com.wolfyscript.utilities.gui.functions.*
 import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
 import com.wolfyscript.utilities.gui.reactivity.Signal
@@ -30,7 +31,7 @@ import com.wolfyscript.utilities.gui.reactivity.Signal
  *
  */
 @KeyedBaseType(baseType = ComponentBuilder::class)
-interface WindowBuilder : ReactiveSource, ChildComponentsBuilder<WindowBuilder>, ConditionalChildComponentBuilder<WindowBuilder> {
+interface WindowBuilder : ReactiveSource, ChildComponentsBuilder<WindowBuilder>, ConditionalChildComponentBuilder, MatchChildComponentBuilder {
     /**
      * The size of the inventory.<br></br>
      * This only applies when the type is not specified.<br></br>
@@ -106,23 +107,6 @@ interface WindowBuilder : ReactiveSource, ChildComponentsBuilder<WindowBuilder>,
      * @return This builder for chaining
      */
     fun addIntervalTask(runnable: Runnable, intervalInTicks: Long): WindowBuilder
-
-    /**
-     *
-     *
-     * Constructs a reactive function to dynamically render components.<br></br>
-     * This is only recommended for complex methods, like if switches are required.<br></br>
-     * If a simple condition is enough [.conditionalComponent] should be used instead!
-     *
-     *
-     *
-     * The callback is updated whenever a signal used inside it is updated.
-     *
-     *
-     * @param reactiveFunction The function to run on signal updates.
-     * @return This builder for chaining.
-     */
-    fun reactive(reactiveFunction: SignalableReceiverFunction<ReactiveRenderBuilder, ReactiveResult?>): WindowBuilder
 
     fun create(parent: Router): Window
 

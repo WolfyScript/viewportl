@@ -23,83 +23,72 @@ import com.wolfyscript.utilities.gui.Component
 import com.wolfyscript.utilities.gui.Renderable
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
-import com.wolfyscript.utilities.gui.functions.SerializableSupplier
-import com.wolfyscript.utilities.gui.reactivity.EffectImpl
 import com.wolfyscript.utilities.gui.reactivity.Memo
-import com.wolfyscript.utilities.gui.reactivity.MemoImpl
 import com.wolfyscript.utilities.gui.reactivity.createMemo
+import java.util.function.Supplier
 
-class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val context: BuildContext) :
-    ConditionalChildComponentBuilder<T> {
+class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : ConditionalChildComponentBuilder {
 
-    private var condition: SerializableSupplier<Boolean>? = null
-    private var whenImpl: WhenImpl? = null
-    private var elseImpl: ElseImpl? = null
+    private val conditionals: MutableList<Conditional> = mutableListOf()
 
-    override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<T> {
-        if (whenImpl == null) {
-            whenImpl = WhenImpl()
-        }
-        this.condition = condition
-        return whenImpl!!
+    data class Conditional(val condition: Supplier<Boolean>, var whenImpl: WhenImpl? = null, var elseImpl: ElseImpl? = null)
+
+    override fun whenever(condition: Supplier<Boolean>): ConditionalChildComponentBuilder.When {
+        val conditional = Conditional(condition)
+        conditionals.add(conditional)
+        return WhenImpl(conditional)
     }
 
-    fun build(parent: Component?) {
-        val whenComponent = whenImpl?.build(parent) ?: return
-        val elseComponent = elseImpl?.build(parent)
+    override fun buildConditionals(parent: Component?) {
+        for (conditional in conditionals) {
+            val whenComponent = conditional.whenImpl?.build(parent) ?: return
+            val elseComponent = conditional.elseImpl?.build(parent)
+            val conditionMemo: Memo<Boolean> = context.reactiveSource.createMemo { conditional.condition.get() }
+            val runtime = context.runtime
+            context.reactiveSource.createEffect<Long> {
+                runtime as ViewRuntimeImpl
+                val graph = runtime.renderingGraph
+                val previousNode = this?.let { graph.getNode(it) }
+                val previousComponent = previousNode?.component
 
-        if (condition == null) return
-        val conditionMemo: Memo<Boolean> = context.reactiveSource.createMemo { condition!!.get() }
+                val parentNodeId = (parent as? AbstractComponentImpl)?.nodeId ?: 0
 
-        val runtime = context.runtime
-
-        context.reactiveSource.createEffect<Long> {
-            runtime as ViewRuntimeImpl
-            val graph = runtime.renderingGraph
-            val previousNode = this?.let { graph.getNode(it) }
-            val previousComponent = previousNode?.component
-
-            val parentNodeId = (parent as? AbstractComponentImpl)?.nodeId ?: 0
-
-            if (previousComponent is Renderable) {
-                previousComponent.remove(runtime, previousNode.id, parentNodeId)
-            }
-            val result = conditionMemo.get() ?: false
-            when {
-                result -> {
-                    if (whenComponent is Renderable) {
-                        whenComponent.insert(runtime, parentNodeId)
-                    }
-                    whenComponent.nodeId()
+                if (previousComponent is Renderable) {
+                    previousComponent.remove(runtime, previousNode.id, parentNodeId)
                 }
-
-                elseComponent != null -> {
-                    if (elseComponent is Renderable) {
-                        elseComponent.insert(runtime, parentNodeId)
+                val result = conditionMemo.get() ?: false
+                when {
+                    result -> {
+                        if (whenComponent is Renderable) {
+                            whenComponent.insert(runtime, parentNodeId)
+                        }
+                        whenComponent.nodeId()
                     }
-                    elseComponent.nodeId()
-                }
 
-                else -> -1
+                    elseComponent != null -> {
+                        if (elseComponent is Renderable) {
+                            elseComponent.insert(runtime, parentNodeId)
+                        }
+                        elseComponent.nodeId()
+                    }
+
+                    else -> -1
+                }
             }
         }
-
     }
 
-    inner class WhenImpl : ConditionalChildComponentBuilder.When<T> {
+    inner class WhenImpl(private val conditional: Conditional) : ConditionalChildComponentBuilder.When {
 
         private var componentBuilder: Long? = null
 
-        override fun then(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>): ConditionalChildComponentBuilder.Else<T> {
+        override fun then(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>): ConditionalChildComponentBuilder.Else {
             val builder: ComponentGroupBuilder = context.getOrCreateComponentBuilder(null, ComponentGroupBuilder::class.java) {
                 componentBuilder = it
             }
             with(builderConsumer) { builder.consume() }
-
-            if (elseImpl == null) {
-                elseImpl = ElseImpl()
-            }
-            return elseImpl!!
+            conditional.whenImpl = this
+            return ElseImpl(conditional)
         }
 
         fun build(parent: Component?): Component? {
@@ -110,19 +99,17 @@ class ConditionalChildComponentBuilderImpl<T>(private val owner: T, private val 
 
     }
 
-    inner class ElseImpl : ConditionalChildComponentBuilder.Else<T> {
+    inner class ElseImpl(private val conditional: Conditional) : ConditionalChildComponentBuilder.Else {
 
         private var componentBuilder: Long? = null
 
-        override fun orElse(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>): T {
+        override fun orElse(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>) {
             val builder: ComponentGroupBuilder = context.getOrCreateComponentBuilder(null, ComponentGroupBuilder::class.java) {
                 componentBuilder = it
             }
             with(builderConsumer) { builder.consume() }
-            return owner
+            conditional.elseImpl = this
         }
-
-        override fun elseNone(): T = owner
 
         fun build(parent: Component?): Component? {
             return componentBuilder?.let {

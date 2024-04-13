@@ -6,19 +6,20 @@ import com.google.inject.Inject
 import com.wolfyscript.utilities.KeyedStaticId
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.config.jackson.KeyedBaseType
-import com.wolfyscript.utilities.gui.ReactiveRenderBuilder.ReactiveResult
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
 import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilder
 import com.wolfyscript.utilities.gui.components.ConditionalChildComponentBuilderImpl
-import com.wolfyscript.utilities.gui.functions.*
+import com.wolfyscript.utilities.gui.components.MatchChildComponentBuilder
+import com.wolfyscript.utilities.gui.components.MatchChildComponentBuilderImpl
+import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.functions.SerializableSupplier
 import com.wolfyscript.utilities.gui.model.UpdateInformation
-import com.wolfyscript.utilities.gui.reactivity.*
-import com.wolfyscript.utilities.gui.rendering.RenderingNode
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
+import com.wolfyscript.utilities.gui.reactivity.Signal
 import com.wolfyscript.utilities.tuple.Pair
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import java.util.*
-import java.util.function.Consumer
 
 @KeyedStaticId(key = "window")
 @KeyedBaseType(baseType = ComponentBuilder::class)
@@ -27,7 +28,10 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
     @JsonProperty("id") private val id: String,
     @JacksonInject("wolfyUtils") private val wolfyUtils: WolfyUtils,
     @JacksonInject("context") private val context: BuildContext
-) : WindowBuilder, ReactiveSource by context.reactiveSource {
+) : WindowBuilder,
+    ReactiveSource by context.reactiveSource,
+    ConditionalChildComponentBuilder by ConditionalChildComponentBuilderImpl(context),
+    MatchChildComponentBuilder by MatchChildComponentBuilderImpl(context) {
 
     private var size: Int = 0
     private var type: WindowType? = null
@@ -37,7 +41,6 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
      * Components
      */
     private val componentRenderSet: MutableSet<Long> = HashSet()
-    private val conditionals: MutableList<ConditionalChildComponentBuilderImpl<WindowBuilder>> = mutableListOf()
 
     /**
      * Tasks
@@ -118,41 +121,6 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         return this
     }
 
-    override fun reactive(reactiveFunction: SignalableReceiverFunction<ReactiveRenderBuilder, ReactiveResult?>): WindowBuilder {
-        val builder = ReactiveRenderBuilderImpl(wolfyUtils, context)
-        val component = with(reactiveFunction) { builder.apply() }?.construct()
-
-        context.reactiveSource.createCustomEffect(null, object : AnyComputation<Long?> {
-
-            override fun run(
-                runtime: ViewRuntime,
-                value: Long?,
-                apply: Consumer<Long?>
-            ): Boolean {
-                runtime as ViewRuntimeImpl
-                val graph = runtime.renderingGraph
-                val previousNode: RenderingNode? = value?.let { graph.getNode(it) }
-                if (previousNode?.component == component) return false
-
-                val previousComponent = previousNode?.component
-                if (previousComponent is Renderable) {
-                    previousComponent.remove(runtime, previousNode.id, 0)
-                }
-
-                if (component == null) {
-                    apply.accept(null)
-                    return true
-                }
-
-                val id = runtime.renderingGraph.addNode(component)
-                apply.accept(id)
-
-                return true
-            }
-        })
-        return this
-    }
-
     override fun <B : ComponentBuilder<out Component, Component>> component(
         id: String?,
         builderType: Class<B>,
@@ -167,12 +135,6 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
         return this
     }
 
-    override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<WindowBuilder> {
-        val builder: ConditionalChildComponentBuilderImpl<WindowBuilder> = ConditionalChildComponentBuilderImpl(this, context)
-        conditionals.add(builder)
-        return builder.whenever(condition)
-    }
-
     override fun create(parent: Router): Window {
         if (titleFunction == null && titleTagResolvers.isNotEmpty()) {
             titleFunction = SerializableSupplier {
@@ -182,7 +144,8 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
             }
         }
 
-        conditionals.forEach { it.build(null) }
+        buildConditionals(null)
+        buildMatchers(null)
 
         val components = componentRenderSet.stream()
             .map { componentBuilder -> context.getBuilder(componentBuilder)?.create(null) as Component }
@@ -202,7 +165,7 @@ class WindowBuilderImpl @Inject @JsonCreator constructor(
             val runtime = context.runtime as ViewRuntimeImpl
             context.reactiveSource.createEffect<Unit> {
                 window.title(titleFunction!!.get())
-                runtime.incomingUpdate(object : UpdateInformation{
+                runtime.incomingUpdate(object : UpdateInformation {
                     override fun updateTitle(): Boolean = true
                 })
             }

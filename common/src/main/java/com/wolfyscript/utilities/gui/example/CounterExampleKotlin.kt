@@ -3,7 +3,6 @@ package com.wolfyscript.utilities.gui.example
 import com.wolfyscript.utilities.gui.GuiAPIManager
 import com.wolfyscript.utilities.gui.InteractionResult
 import com.wolfyscript.utilities.gui.reactivity.createSignal
-import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import java.util.*

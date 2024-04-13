@@ -18,10 +18,11 @@
 
 package com.wolfyscript.utilities.gui.components
 
+import com.wolfyscript.utilities.gui.Component
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
-import com.wolfyscript.utilities.gui.functions.SerializableSupplier
+import java.util.function.Supplier
 
-interface ConditionalChildComponentBuilder<T> {
+interface ConditionalChildComponentBuilder {
 
     /**
      *
@@ -42,20 +43,20 @@ interface ConditionalChildComponentBuilder<T> {
      * @param <B>             The type of the Component Builder
      * @return This builder for chaining
     </B> */
-    infix fun whenever(condition: SerializableSupplier<Boolean>): When<T>
+    infix fun whenever(condition: Supplier<Boolean>): When
 
-    interface When<T> {
+    interface When {
 
-        infix fun then(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>) : Else<T>
+        infix fun then(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>) : Else
+
+    }
+
+    interface Else {
+
+        infix fun orElse(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>)
 
     }
 
-    interface Else<T> {
-
-        infix fun orElse(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>) : T
-
-        fun elseNone() : T
-
-    }
+    fun buildConditionals(parent: Component?)
 
 }

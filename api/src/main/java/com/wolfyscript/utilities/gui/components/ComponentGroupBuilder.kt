@@ -21,4 +21,4 @@ import com.wolfyscript.utilities.gui.ChildComponentsBuilder
 import com.wolfyscript.utilities.gui.Component
 import com.wolfyscript.utilities.gui.ComponentBuilder
 
-interface ComponentGroupBuilder : ComponentBuilder<ComponentGroup, Component>, ChildComponentsBuilder<ComponentGroupBuilder>, ConditionalChildComponentBuilder<ComponentGroupBuilder>
+interface ComponentGroupBuilder : ComponentBuilder<ComponentGroup, Component>, ChildComponentsBuilder<ComponentGroupBuilder>, ConditionalChildComponentBuilder, MatchChildComponentBuilder

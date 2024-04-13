@@ -70,9 +70,7 @@ public class CounterExample {
 
         window.button("count_down", bb -> countDownButton(bb, count));
         // Sometimes we want to render components dependent on signals
-        window.whenever(() -> count.get() != 0)
-                .then(builder -> builder.button("reset", bb -> resetButton(bb, count)))
-                .elseNone();
+        window.whenever(() -> count.get() != 0).then(builder -> builder.button("reset", bb -> resetButton(bb, count)));
         // The state of a component is only reconstructed if the slot it is positioned at changes.
         // Here the slot will always have the same type of component, so the state is created only once.
         window.button("count_up", bb -> countUpButton(bb, count))

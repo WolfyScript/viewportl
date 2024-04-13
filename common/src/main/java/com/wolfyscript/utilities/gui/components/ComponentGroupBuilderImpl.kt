@@ -12,8 +12,6 @@ import com.wolfyscript.utilities.gui.Component
 import com.wolfyscript.utilities.gui.ComponentBuilder
 import com.wolfyscript.utilities.gui.ComponentBuilderSettings
 import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
-import com.wolfyscript.utilities.gui.functions.SerializableSupplier
-import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import com.wolfyscript.utilities.gui.rendering.PropertyPosition.Companion.def
 import com.wolfyscript.utilities.gui.rendering.RenderPropertiesImpl
 
@@ -23,10 +21,11 @@ class ComponentGroupBuilderImpl @Inject @JsonCreator constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,
     @JacksonInject("context") private val context: BuildContext
-) : AbstractComponentBuilderImpl<ComponentGroup, Component>(id, wolfyUtils), ComponentGroupBuilder {
+) : AbstractComponentBuilderImpl<ComponentGroup, Component>(id, wolfyUtils),
+    ComponentGroupBuilder,
+    ConditionalChildComponentBuilder by ConditionalChildComponentBuilderImpl(context),
+    MatchChildComponentBuilder by MatchChildComponentBuilderImpl(context) {
     private val componentRenderSet: MutableSet<Long> = HashSet()
-    private val conditionals: MutableList<ConditionalChildComponentBuilderImpl<ComponentGroupBuilder>> =
-        mutableListOf()
 
     @JsonSetter("placement")
     private fun setPlacement(componentBuilders: List<ComponentBuilder<*, Component>>) {
@@ -49,13 +48,6 @@ class ComponentGroupBuilderImpl @Inject @JsonCreator constructor(
         return this
     }
 
-    override fun whenever(condition: SerializableSupplier<Boolean>): ConditionalChildComponentBuilder.When<ComponentGroupBuilder> {
-        val builder: ConditionalChildComponentBuilderImpl<ComponentGroupBuilder> =
-            ConditionalChildComponentBuilderImpl(this, context)
-        conditionals.add(builder)
-        return builder.whenever(condition)
-    }
-
     override fun create(parent: Component?): ComponentGroup {
         val staticComponents: MutableList<Component> = ArrayList()
         val build = ComponentGroupImpl(
@@ -64,6 +56,9 @@ class ComponentGroupBuilderImpl @Inject @JsonCreator constructor(
             parent,
             position()?.let { RenderPropertiesImpl(it) } ?: RenderPropertiesImpl(def()),
             staticComponents)
+
+        buildConditionals(parent)
+        buildMatchers(parent)
 
         componentRenderSet.map { context.getBuilder(it)?.create(build) }.forEach {
             if (it != null) {
