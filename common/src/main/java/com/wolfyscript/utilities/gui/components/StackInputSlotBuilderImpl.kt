@@ -15,7 +15,7 @@ import java.util.function.Supplier
 
 @KeyedStaticId(key = "stack_input_slot")
 @ComponentBuilderSettings(base = StackInputSlotBuilder::class, component = StackInputSlot::class)
-class StackInputSlotBuilderImpl @JsonCreator protected constructor(
+class StackInputSlotBuilderImpl @JsonCreator constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,
     @JacksonInject("context") private val context: BuildContext
@@ -48,12 +48,13 @@ class StackInputSlotBuilderImpl @JsonCreator protected constructor(
             parent,
             onValueChange,
             interactionCallback,
-            valueSupplier,
             position()?.let { RenderPropertiesImpl(it) } ?: RenderPropertiesImpl(def()),
         )
 
-        context.reactiveSource.createEffect<Unit> {
-            slot.value(valueSupplier?.get())
+        if (valueSupplier != null) {
+            context.reactiveSource.createEffect<Unit> {
+                slot.value = valueSupplier!!.get()
+            }
         }
 
         return slot
