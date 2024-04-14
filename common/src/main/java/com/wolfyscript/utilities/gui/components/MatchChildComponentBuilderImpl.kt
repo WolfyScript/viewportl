@@ -31,7 +31,11 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
 
     private val matchers: MutableList<Matcher<*>> = mutableListOf()
 
-    inner class Matcher<V : Any>(val valueType: KClass<V>, val value: Supplier<V?>, val cases: MutableList<Case<V>> = mutableListOf()) {
+    inner class Matcher<V : Any>(
+        val valueType: KClass<V>,
+        val value: Supplier<V?>,
+        val cases: MutableList<Case<V>> = mutableListOf()
+    ) {
 
         fun build(parent: Component?) {
             val valueMemo = context.reactiveSource.createMemo(valueType.java) { value.get() }
@@ -56,22 +60,28 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
 
                 val value = valueMemo.get()
 
-                val component = cases.first {
-                    with (it.first) {
+                return@createEffect cases.find {
+                    with(it.first) {
                         value.apply()
                     }
-                }.second
-                if (component is Renderable) {
-                    component.insert(runtime, parentNodeId)
-                }
-                return@createEffect component.nodeId()
+                }?.second?.let {
+                    if (it is Renderable) {
+                        it.insert(runtime, parentNodeId)
+                        return@createEffect it.nodeId()
+                    }
+                    return@createEffect -1
+                } ?: -1
             }
         }
     }
 
     class Case<V>(val condition: ReceiverFunction<V?, Boolean>, val builder: Long)
 
-    override fun <V : Any> match(valueType: KClass<V>, value: Supplier<V?>, cases: ReceiverConsumer<MatchChildComponentBuilder.Cases<V>>) {
+    override fun <V : Any> match(
+        valueType: KClass<V>,
+        value: Supplier<V?>,
+        cases: ReceiverConsumer<MatchChildComponentBuilder.Cases<V>>
+    ) {
         val matcher = Matcher(valueType, value)
         matchers.add(matcher)
         val casesImpl = CasesImpl(matcher)
@@ -93,9 +103,10 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
             builderConsumer: ReceiverConsumer<ComponentGroupBuilder>
         ) {
             var id = -1L
-            val builder: ComponentGroupBuilder = context.getOrCreateComponentBuilder(null, ComponentGroupBuilder::class.java) {
-                id = it
-            }
+            val builder: ComponentGroupBuilder =
+                context.getOrCreateComponentBuilder(null, ComponentGroupBuilder::class.java) {
+                    id = it
+                }
             with(builderConsumer) {
                 builder.consume()
             }
