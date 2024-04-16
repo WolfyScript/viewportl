@@ -20,8 +20,8 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("wolfyutils.common-conventions")
-    kotlin("jvm") version "1.9.22"
+    id("wolfyutils.common.conventions")
+    id("wolfyutils.kotlinmodule")
 }
 
 dependencies {

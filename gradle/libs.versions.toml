@@ -17,8 +17,14 @@ jetbrains-annotations = "23.0.0"
 junit-jupiter = "5.8.2"
 reflections = "0.10.2"
 
+# Spigot Impl dependencies
+papermc = "1.20.4-R0.1-SNAPSHOT"
+bstats-bukkit = "3.0.0"
+item-nbt-api = "2.11.3"
+nbt-data-api = "2.11.3"
+
 [libraries]
-org-jetbrains-kotlin-stdlib = {module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin-stdlib"}
+org-jetbrains-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin-stdlib" }
 com-fasterxml-jackson-core-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson-databind" }
 com-google-guava-guava = { module = "com.google.guava:guava", version.ref = "guava" }
 com-google-inject-guice = { module = "com.google.inject:guice", version.ref = "guice" }
@@ -33,3 +39,10 @@ org-apache-commons-commons-lang3 = { module = "org.apache.commons:commons-lang3"
 org-jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 org-junit-jupiter-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 org-reflections-reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
+
+# Spigot Impl dependencies
+io-papermc-paper = { module = "io.papermc.paper:paper-api", version.ref = "papermc" }
+org-bstats-bukkit = { module = "org.bstats:bstats-bukkit", version.ref = "bstats-bukkit" }
+de-tr7zw-item-nbt-api = { module = "de.tr7zw:item-nbt-api", version.ref = "item-nbt-api" }
+de-tr7zw-nbt-data-api = { module = "de.tr7zw:nbt-data-api", version.ref = "nbt-data-api" }
+net-kyori-adventure-platform-bukkit = { module = "net.kyori:adventure-platform-bukkit", version.ref = "adventure-platform-api" }

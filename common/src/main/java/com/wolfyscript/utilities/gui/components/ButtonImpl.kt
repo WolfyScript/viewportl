@@ -1,99 +1,86 @@
-package com.wolfyscript.utilities.gui.components;
+package com.wolfyscript.utilities.gui.components
 
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.*;
-import com.wolfyscript.utilities.gui.animation.Animation;
-import com.wolfyscript.utilities.gui.animation.AnimationBuilder;
-import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrame;
-import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder;
-import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-import com.wolfyscript.utilities.gui.interaction.InteractionDetails;
-import com.wolfyscript.utilities.gui.rendering.RenderProperties;
-import com.wolfyscript.utilities.world.items.ItemStackConfig;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
-import java.util.function.Supplier;
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.ViewRuntimeImpl
+import com.wolfyscript.utilities.gui.animation.Animation
+import com.wolfyscript.utilities.gui.animation.AnimationBuilder
+import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrame
+import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder
+import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.components.ButtonBuilderImpl.IconBuilderImpl
+import com.wolfyscript.utilities.gui.rendering.RenderProperties
+import com.wolfyscript.utilities.world.items.ItemStackConfig
+import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import java.util.*
+import java.util.function.Supplier
 
 @KeyedStaticId(key = "button")
-public class ButtonImpl extends AbstractComponentImpl implements Button {
+class ButtonImpl : AbstractComponentImpl, Button {
+    private val interactionCallback: InteractionCallback
+    private val icon: ButtonIcon
+    private val soundFunction: Supplier<Optional<Sound>>
+    private val animation: Animation<ButtonAnimationFrame>?
 
-    private final InteractionCallback interactionCallback;
-    private final ButtonIcon icon;
-    private final Supplier<Optional<Sound>> soundFunction;
-    private final Animation<ButtonAnimationFrame> animation;
-
-    ButtonImpl(WolfyUtils wolfyUtils,
-               String id,
-               Component parent,
-               ButtonBuilderImpl.IconBuilderImpl icon,
-               Supplier<Optional<Sound>> soundFunction,
-               InteractionCallback interactionCallback,
-               RenderProperties properties,
-               AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder> animation) {
-        super(id, wolfyUtils, parent, properties);
-        this.icon = icon.create(this);
-        this.interactionCallback = interactionCallback;
-        this.soundFunction = soundFunction;
-        this.animation = animation != null ? animation.build(this) : null;
+    internal constructor(
+        wolfyUtils: WolfyUtils?,
+        id: String?,
+        parent: Component?,
+        icon: IconBuilderImpl,
+        soundFunction: Supplier<Optional<Sound>>,
+        interactionCallback: InteractionCallback,
+        properties: RenderProperties?,
+        animation: AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>?
+    ) : super(id!!, wolfyUtils!!, parent, properties!!) {
+        this.icon = icon.create(this)
+        this.interactionCallback = interactionCallback
+        this.soundFunction = soundFunction
+        this.animation = animation?.build(this)
     }
 
-    private ButtonImpl(ButtonImpl button) {
-        super(button.getID(), button.getWolfyUtils(), button.parent(), button.properties());
-        this.interactionCallback = button.interactionCallback;
-        this.icon = button.icon;
-        this.soundFunction = button.soundFunction;
-        this.animation = button.animation; // TODO: Properly copy
+    private constructor(button: ButtonImpl) : super(
+        button.id,
+        button.wolfyUtils,
+        button.parent(),
+        button.properties()
+    ) {
+        this.interactionCallback = button.interactionCallback
+        this.icon = button.icon
+        this.soundFunction = button.soundFunction
+        this.animation = button.animation // TODO: Properly copy
     }
 
-    @Override
-    public ButtonIcon icon() {
-        return icon;
+    override fun icon(): ButtonIcon {
+        return icon
     }
 
-    @Override
-    public Optional<Sound> sound() {
-        return soundFunction.get();
+    override fun sound(): Optional<Sound> {
+        return soundFunction.get()
     }
 
-    @Override
-    public InteractionCallback interactCallback() {
-        return interactionCallback;
+    override fun interactCallback(): InteractionCallback {
+        return interactionCallback
     }
 
-    @Override
-    public void insert(@NotNull ViewRuntimeImpl viewRuntimeImpl, long parentNode) {
-        long id = viewRuntimeImpl.getRenderingGraph().addNode(this);
-        viewRuntimeImpl.getRenderingGraph().insertNodeChild(id, parentNode);
+    override fun insert(viewRuntimeImpl: ViewRuntimeImpl, parentNode: Long) {
+        val id = viewRuntimeImpl.renderingGraph.addNode(this)
+        viewRuntimeImpl.renderingGraph.insertNodeChild(id, parentNode)
     }
 
-    @Override
-    public void remove(@NotNull ViewRuntimeImpl viewRuntimeImpl, long nodeId, long parentNode) {
-        viewRuntimeImpl.getRenderingGraph().removeNode(nodeId);
+    override fun remove(viewRuntimeImpl: ViewRuntimeImpl, nodeId: Long, parentNode: Long) {
+        viewRuntimeImpl.renderingGraph.removeNode(nodeId)
     }
 
-    public static class DynamicIcon implements ButtonIcon {
-
-        private final ItemStackConfig config;
-        private final TagResolver resolvers;
-
-        DynamicIcon(ItemStackConfig config, TagResolver resolvers) {
-            this.config = config;
-            this.resolvers = resolvers;
+    class DynamicIcon internal constructor(private val config: ItemStackConfig, private val resolvers: TagResolver) :
+        ButtonIcon {
+        override fun getStack(): ItemStackConfig {
+            return config
         }
 
-        @Override
-        public ItemStackConfig getStack() {
-            return config;
+        override fun getResolvers(): TagResolver {
+            return resolvers
         }
-
-        public TagResolver getResolvers() {
-            return resolvers;
-        }
-
     }
-
 }
