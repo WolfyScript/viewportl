@@ -20,6 +20,12 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 }
 
+
+tasks.named<ProcessResources>("processResources") {
+    expand(project.properties)
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
 description = "core"
 repositories {
     mavenCentral()
