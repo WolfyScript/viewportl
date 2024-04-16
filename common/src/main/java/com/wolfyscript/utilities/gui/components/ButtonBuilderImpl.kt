@@ -188,7 +188,7 @@ class ButtonBuilderImpl : AbstractComponentBuilderImpl<Button, com.wolfyscript.u
                     override fun updated(): List<Long> = listOf(button.nodeId())
                 })
             }
-            return DynamicIcon(staticStackConfig, TagResolver.resolver(tagResolvers))
+            return DynamicIcon(staticStackConfig ?: wolfyUtils.core.platform.items.createStackConfig(wolfyUtils, "air"), TagResolver.resolver(tagResolvers))
         }
     }
 }

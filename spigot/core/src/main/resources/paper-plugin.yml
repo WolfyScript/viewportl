@@ -1,0 +1,68 @@
+name: WolfyUtilities
+version: '${project.version}'
+main: com.wolfyscript.utilities.paper.WolfyCorePaperBootstrap
+api-version: '1.19' # This config was introduced in 1.19, so it can only be loaded on 1.19+ servers!
+authors: [ WolfyScript ]
+load: STARTUP
+
+libraries:
+  - "com.google.inject:guice:5.1.0"
+  - "org.apache.commons:commons-lang3:3.12.0"
+  - "${libs.it.unimi.dsi.fastutil.get()}"
+  - "${libs.com.google.inject.guice.get()}"
+  - "${libs.org.jetbrains.kotlin.stdlib.get()}"
+
+dependencies:
+  - name: Magic
+    required: false
+  - name: LWC
+    required: false
+  - name: PlotSquared
+    required: false
+  - name: WorldGuard
+    required: false
+  - name: MythicMobs
+    required: false
+  - name: MMOItems
+    required: false
+  - name: mcMMO
+    required: false
+  - name: Oraxen
+    required: false
+  - name: ItemsAdder
+    required: false
+  - name: PlaceholderAPI
+    required: false
+  - name: eco
+    required: false
+  - name: SCore
+    required: false
+  - name: Denizen
+    required: false
+
+load-before:
+  - name: CustomCrafting
+    bootstrap: true
+  - name: ChatColor
+    bootstrap: false
+  - name: ChatColor2
+    bootstrap: false
+  - name: StackableItems
+    bootstrap: false
+  - name: DiSky
+    bootstrap: false
+  - name: EpicWorldGenerator
+    bootstrap: false
+
+load-after:
+  - name: zAuctionHouseV3
+    bootstrap: false
+  - name: BungeeChat
+    bootstrap: false
+  - name: SCore
+    bootstrap: false
+
+permissions:
+  wolfyutilities.command.query_debug:
+    default: op
+    description: "Command to debug NBT querries on the item in the hand"
