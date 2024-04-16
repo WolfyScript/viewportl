@@ -7,18 +7,17 @@ load: STARTUP
 
 libraries:
   - "org.apache.commons:commons-lang3:3.12.0"
-  - "${libs.guice.get()}"
-  - "${libs.reflections.get()}"
-  - "${libs.fastutil.get()}"
-  - "${libs.typesafe.config.get()}"
-  - "${libs.jackson.annotations.get()}"
-  - "${libs.jackson.core.get()}"
-  - "${libs.jackson.databind.get()}"
-  - "${libs.javassist.get()}"
-  - "${libs.adventure.api.get()}"
-  - "${libs.adventure.minimessage.get()}"
-  - "${libs.adventure.platform.bukkit.get()}"
-  - "${libs.kotlin.stdlib.sdk.get()}"
+  - "${libs.com.google.inject.guice.get()}"
+  - "${libs.org.reflections.reflections.get()}"
+  - "${libs.it.unimi.dsi.fastutil.get()}"
+  - "${libs.com.typesafe.config.get()}"
+  - "${libs.com.fasterxml.jackson.core.jackson.annotations.get()}"
+  - "${libs.com.fasterxml.jackson.core.jackson.core.get()}"
+  - "${libs.com.fasterxml.jackson.core.jackson.databind.get()}"
+  - "${libs.net.kyori.adventure.api.get()}"
+  - "${libs.net.kyori.adventure.text.minimessage.get()}"
+  - "${libs.net.kyori.adventure.platform.bukkit.get()}"
+  - "${libs.org.jetbrains.kotlin.stdlib.get()}"
 
 loadbefore:
   - ChatColor

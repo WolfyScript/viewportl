@@ -1,7 +1,6 @@
 plugins {
     `java-library`
     `maven-publish`
-//    id("com.jfrog.artifactory")
 }
 
 val libs = extensions.getByType(org.gradle.accessors.dm.LibrariesForLibs::class)
