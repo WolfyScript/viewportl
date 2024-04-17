@@ -17,6 +17,9 @@ dependencies {
     implementation(project(":spigot:plugin-compatibility"))
     implementation(project(":spigot:nmsutil"))
 
+    api(libs.org.bstats.bukkit)
+    api(libs.de.tr7zw.item.nbt.api)
+
     testImplementation(project(":spigot:core"))
 }
 
@@ -88,9 +91,9 @@ tasks.named<ShadowJar>("shadowJar") {
     dependencies {
         include(project(":api"))
         include(project(":common"))
-//        include(dependency(apis.dataformat.hocon.get().toString()))
-//        include(dependency("${libs.bstats.get().group}:.*"))
-//        include(dependency("${libs.nbtapi.api.get().group}:.*"))
+        include(dependency(libs.com.wolfyscript.jackson.dataformat.hocon.get().toString()))
+        include(dependency("${libs.org.bstats.bukkit.get().group}:.*"))
+        include(dependency(libs.de.tr7zw.item.nbt.api.get().toString()))
         include(project(":spigot:core"))
         include(project(":spigot:plugin-compatibility"))
         include(project(":spigot:nmsutil"))
@@ -98,7 +101,6 @@ tasks.named<ShadowJar>("shadowJar") {
 
     // Always required to be shaded and relocated!
     relocate("org.bstats", "com.wolfyscript.utilities.bukkit.metrics")
-
     relocate("de.tr7zw.changeme.nbtapi", "com.wolfyscript.lib.de.tr7zw.nbtapi")
 }
 
