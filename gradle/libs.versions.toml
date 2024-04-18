@@ -2,7 +2,7 @@
 
 [versions]
 kotlin-stdlib = "1.9.22"
-jackson = "2.13.4.1"
+jackson = "2.15.4"
 guava = "31.1-jre"
 guice = "5.1.0"
 authlib = "1.5.21"
