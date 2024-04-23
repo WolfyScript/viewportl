@@ -1,5 +1,6 @@
 plugins {
     id("wolfyutils.spigot.conventions")
+    id("wolfyutils.kotlinmodule")
 }
 
 dependencies {
@@ -14,10 +15,12 @@ dependencies {
     compileOnly("com.github.oraxen:oraxen:1.152.0")
     compileOnly("io.lumine:MythicLib:1.1.5")
     compileOnly("net.Indyuce:MMOItems-API:6.9.2-SNAPSHOT")
-    compileOnly("io.lumine.xikage:MythicMobs:4.12.0")
-    compileOnly("io.lumine.mythic.mythicmobs:MythicMobs-Bukkit:5.0.1")
+    compileOnly("io.lumine:Mythic-Dist:5.6.1")
     compileOnly("com.google.inject:guice:5.1.0")
     compileOnly(project(":spigot:core"))
 }
 
 description = "plugin-compatibility"
+repositories {
+    mavenCentral()
+}
