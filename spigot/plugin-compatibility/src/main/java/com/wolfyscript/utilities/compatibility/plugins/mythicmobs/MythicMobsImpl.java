@@ -21,9 +21,8 @@ package com.wolfyscript.utilities.compatibility.plugins.mythicmobs;
 import com.google.inject.Inject;
 import com.wolfyscript.utilities.spigot.WolfyCoreSpigot;
 import com.wolfyscript.utilities.bukkit.compatibility.plugins.MythicMobsIntegration;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import io.lumine.mythic.bukkit.BukkitAdapter;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import com.wolfyscript.utilities.bukkit.annotations.WUPluginIntegration;
 import com.wolfyscript.utilities.bukkit.compatibility.PluginIntegrationAbstract;
 import org.bukkit.Location;
@@ -49,9 +48,6 @@ public class MythicMobsImpl extends PluginIntegrationAbstract implements MythicM
 
     @Override
     public void spawnMob(String mobName, Location location, int mobLevel) {
-        MythicMob mythicMob = MythicMobs.inst().getMobManager().getMythicMob(mobName);
-        if(mythicMob != null) {
-            mythicMob.spawn(BukkitAdapter.adapt(location), mobLevel);
-        }
+        MythicBukkit.inst().getMobManager().getMythicMob(mobName).ifPresent(mythicMob -> mythicMob.spawn(BukkitAdapter.adapt(location), mobLevel));
     }
 }
