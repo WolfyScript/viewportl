@@ -18,11 +18,9 @@
 
 package com.wolfyscript.utilities.eval.value_provider;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.eval.context.EvalContext;
 
 public abstract class ValueProviderVariable<V> extends AbstractValueProvider<V> {
@@ -38,8 +36,8 @@ public abstract class ValueProviderVariable<V> extends AbstractValueProvider<V> 
         this.variable = variable;
     }
 
-    protected ValueProviderVariable(@JacksonInject WolfyUtils wolfyUtils, Class<V> typeClass, String variable) {
-        super(wolfyUtils);
+    protected ValueProviderVariable(Class<V> typeClass, String variable) {
+        super();
         this.typeClass = typeClass;
         this.variable = variable;
     }

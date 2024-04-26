@@ -15,48 +15,37 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer
+import com.wolfyscript.utilities.eval.context.EvalContext
+import java.io.IOException
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer;
-import java.io.IOException;
-
-@OptionalValueSerializer(serializer = ValueProviderDoubleConst.ValueSerializer.class)
+@OptionalValueSerializer(serializer = ValueProviderDoubleConst.ValueSerializer::class)
 @KeyedStaticId(key = "double/const")
-public class ValueProviderDoubleConst extends AbstractValueProvider<Double> implements ValueProviderDouble {
-
-    private final double value;
-
-    @JsonCreator
-    public ValueProviderDoubleConst(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") double value) {
-        super(wolfyUtils);
-        this.value = value;
+class ValueProviderDoubleConst @JsonCreator constructor(
+    @param:JsonProperty("value") override val value: Double
+) : AbstractValueProvider<Double?>(), ValueProviderDouble {
+    override fun getValue(context: EvalContext?): Double {
+        return value
     }
 
-    @Override
-    public Double getValue(EvalContext context) {
-        return value;
-    }
-
-    public static class ValueSerializer extends com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderDoubleConst> {
-
-        public ValueSerializer() {
-            super(ValueProviderDoubleConst.class);
-        }
-
-        @Override
-        public boolean serialize(ValueProviderDoubleConst valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
-            generator.writeString(valueProvider.getValue() + "d");
-            return true;
+    class ValueSerializer : com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderDoubleConst>(
+        ValueProviderDoubleConst::class.java
+    ) {
+        @Throws(IOException::class)
+        override fun serialize(
+            valueProvider: ValueProviderDoubleConst,
+            generator: JsonGenerator,
+            provider: SerializerProvider
+        ): Boolean {
+            generator.writeString("${valueProvider.value}d")
+            return true
         }
     }
-
 }

@@ -15,37 +15,32 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers
 
-package com.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers;
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.wolfyscript.utilities.WolfyCore
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.bukkit.compatibility.plugins.PlaceholderAPIIntegration
+import com.wolfyscript.utilities.bukkit.eval.context.EvalContextPlayer
+import com.wolfyscript.utilities.eval.context.EvalContext
+import com.wolfyscript.utilities.eval.value_provider.AbstractValueProvider
+import com.wolfyscript.utilities.spigot.WolfyCoreSpigot
+import org.bukkit.entity.Player
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.bukkit.WolfyUtilsBukkit;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.bukkit.compatibility.plugins.PlaceholderAPIIntegration;
-import com.wolfyscript.utilities.bukkit.eval.context.EvalContextPlayer;
-import com.wolfyscript.utilities.eval.value_provider.AbstractValueProvider;
-
-public abstract class ValueProviderPlaceholderAPI<V> extends AbstractValueProvider<V> {
-
-    @JsonProperty("value")
-    protected final String value;
-
-    protected ValueProviderPlaceholderAPI(WolfyUtils wolfyUtils, String value) {
-        super(wolfyUtils);
-        this.value = value;
-    }
-
-    protected String getPlaceholderValue(EvalContext context) {
-        if (context instanceof EvalContextPlayer playerContext) {
-            var player = playerContext.getPlayer();
-            var integration = ((WolfyUtilsBukkit) wolfyUtils).getCore().getCompatibilityManager().getPlugins().getIntegration(PlaceholderAPIIntegration.KEY, PlaceholderAPIIntegration.class);
-            if (player != null && integration != null) {
-                String result = integration.setPlaceholders(player, value);
-                return integration.setBracketPlaceholders(player, result);
+abstract class ValueProviderPlaceholderAPI<V> protected constructor(
+    @field:JsonProperty("value") val placeholder: String
+) : AbstractValueProvider<V>() {
+    protected fun getPlaceholderValue(context: EvalContext?): String {
+        if (context is EvalContextPlayer) {
+            context.player?.let { player ->
+                val integration: PlaceholderAPIIntegration? = (WolfyCore.instance as WolfyCoreSpigot).compatibilityManager.getPlugins()
+                    .getIntegration(PlaceholderAPIIntegration.KEY, PlaceholderAPIIntegration::class.java)
+                if (integration != null) {
+                    val result = integration.setPlaceholders(player, placeholder)
+                    return integration.setBracketPlaceholders(player, result)
+                }
             }
         }
-        return "";
+        return ""
     }
 }

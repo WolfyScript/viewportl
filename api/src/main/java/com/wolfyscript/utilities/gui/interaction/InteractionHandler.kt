@@ -18,7 +18,6 @@
 
 package com.wolfyscript.utilities.gui.interaction
 
-import com.wolfyscript.utilities.gui.InteractionResult
 import com.wolfyscript.utilities.gui.Window
 import com.wolfyscript.utilities.gui.model.UpdateInformation
 

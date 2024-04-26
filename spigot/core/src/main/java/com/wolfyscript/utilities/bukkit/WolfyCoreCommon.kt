@@ -49,7 +49,6 @@ import com.wolfyscript.utilities.bukkit.world.particles.timer.TimerRandom
 import com.wolfyscript.utilities.config.jackson.*
 import com.wolfyscript.utilities.eval.operator.*
 import com.wolfyscript.utilities.eval.value_provider.*
-import com.wolfyscript.utilities.gui.ComponentBuilder
 import com.wolfyscript.utilities.gui.components.*
 import com.wolfyscript.utilities.nbt.*
 import com.wolfyscript.utilities.versioning.ServerVersion
@@ -164,6 +163,8 @@ abstract class WolfyCoreCommon(@JvmField val plugin: WolfyCoreCommonBootstrap) :
 
         // Register implementation types to use for de/serialization
         module.addAbstractTypeMapping(ItemStackConfig::class.java, BukkitItemStackConfig::class.java)
+
+        module.addAbstractTypeMapping(ButtonIcon::class.java, ButtonImpl.DynamicIcon::class.java)
 
         // Add module to WU Modules and register it to the old JacksonUtil.
         jsonMapperModules.add(module)
@@ -338,37 +339,26 @@ abstract class WolfyCoreCommon(@JvmField val plugin: WolfyCoreCommonBootstrap) :
         nbtQueryNodes.register(QueryNodeListCompound::class.java)
 
         // Register GUI things
-        val guiComponents = registries.guiComponents
-        guiComponents.register(ButtonImpl::class.java)
-        guiComponents.register(StackInputSlotImpl::class.java)
-        guiComponents.register(ComponentGroupImpl::class.java)
-
-        val guiComponentBuilders = registries.guiComponentBuilders
-        guiComponentBuilders.register(ButtonBuilderImpl::class.java)
-        guiComponentBuilders.register(StackInputSlotBuilderImpl::class.java)
-        guiComponentBuilders.register(ComponentGroupBuilderImpl::class.java)
+        val guiComponentBuilders = registries.guiComponentTypes
+        guiComponentBuilders.register(ButtonImpl::class.java)
+        guiComponentBuilders.register(StackInputSlotImpl::class.java)
+        guiComponentBuilders.register(ComponentGroupImpl::class.java)
+        guiComponentBuilders.register(OutletImpl::class.java)
 
         // Register the Registries to resolve type references in JSON
         KeyedTypeIdResolver.registerTypeRegistry(CustomItemData::class.java, registries.customItemDataTypeRegistry)
         KeyedTypeIdResolver.registerTypeRegistry(Meta::class.java, nbtChecks)
-        KeyedTypeIdResolver.registerTypeRegistry(
-            Animator::class.java, particleAnimators
-        )
+        KeyedTypeIdResolver.registerTypeRegistry(Animator::class.java, particleAnimators)
         KeyedTypeIdResolver.registerTypeRegistry(Shape::class.java, particleShapes)
         KeyedTypeIdResolver.registerTypeRegistry(Timer::class.java, particleTimers)
-        KeyedTypeIdResolver.registerTypeRegistry(Action::class.java as Class<Action<*>>, customItemActions)
-        KeyedTypeIdResolver.registerTypeRegistry(Event::class.java as Class<Event<*>>, customItemEvents)
+        KeyedTypeIdResolver.registerTypeRegistry(Action::class.java, customItemActions)
+        KeyedTypeIdResolver.registerTypeRegistry(Event::class.java, customItemEvents)
         KeyedTypeIdResolver.registerTypeRegistry(Operator::class.java, operators)
-        KeyedTypeIdResolver.registerTypeRegistry(ValueProvider::class.java as Class<ValueProvider<*>?>, valueProviders)
-        KeyedTypeIdResolver.registerTypeRegistry(QueryNode::class.java as Class<QueryNode<*>>, nbtQueryNodes)
+        KeyedTypeIdResolver.registerTypeRegistry(ValueProvider::class.java, valueProviders)
+        KeyedTypeIdResolver.registerTypeRegistry(QueryNode::class.java, nbtQueryNodes)
         KeyedTypeIdResolver.registerTypeRegistry(CustomBlockData::class.java, customBlockData)
-        KeyedTypeIdResolver.registerTypeRegistry(
-            CustomPlayerData::class.java, registries.customPlayerData
-        )
-        KeyedTypeIdResolver.registerTypeRegistry(
-            ComponentBuilder::class.java as Class<ComponentBuilder<*, *>>,
-            guiComponentBuilders
-        )
+        KeyedTypeIdResolver.registerTypeRegistry(CustomPlayerData::class.java, registries.customPlayerData)
+        KeyedTypeIdResolver.registerTypeRegistry(com.wolfyscript.utilities.gui.components.Component::class.java, registries.guiComponentTypes)
     }
 
     open fun enable() {

@@ -18,8 +18,7 @@
 
 package com.wolfyscript.utilities.gui.interaction
 
-import com.wolfyscript.utilities.gui.Component
-import com.wolfyscript.utilities.gui.InteractionResult
+import com.wolfyscript.utilities.gui.components.Component
 import com.wolfyscript.utilities.gui.ViewRuntime
 
 interface ComponentInteractionHandler<C: Component> {

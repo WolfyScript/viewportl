@@ -3,8 +3,8 @@ package com.wolfyscript.utilities.gui.animation;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.gui.ItemHelper;
 import com.wolfyscript.utilities.gui.ItemHelperImpl;
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
-import com.wolfyscript.utilities.gui.functions.SerializableFunction;
+import com.wolfyscript.utilities.functions.ReceiverConsumer;
+import com.wolfyscript.utilities.functions.ReceiverFunction;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 
 public class ButtonAnimationFrameBuilderImpl implements ButtonAnimationFrameBuilder {
@@ -28,7 +28,7 @@ public class ButtonAnimationFrameBuilderImpl implements ButtonAnimationFrameBuil
     }
 
     @Override
-    public ButtonAnimationFrameBuilder stack(SerializableFunction<ItemHelper, ItemStackConfig> config) {
+    public ButtonAnimationFrameBuilder stack(ReceiverFunction<ItemHelper, ItemStackConfig> config) {
         // TODO
         return this;
     }

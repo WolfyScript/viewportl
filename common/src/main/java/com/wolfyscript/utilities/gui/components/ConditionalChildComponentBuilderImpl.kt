@@ -19,10 +19,8 @@
 package com.wolfyscript.utilities.gui.components
 
 import com.wolfyscript.utilities.gui.BuildContext
-import com.wolfyscript.utilities.gui.Component
-import com.wolfyscript.utilities.gui.Renderable
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
+import com.wolfyscript.utilities.functions.ReceiverConsumer
 import com.wolfyscript.utilities.gui.reactivity.Memo
 import com.wolfyscript.utilities.gui.reactivity.createMemo
 import java.util.function.Supplier
@@ -31,7 +29,11 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
 
     private val conditionals: MutableList<Conditional> = mutableListOf()
 
-    data class Conditional(val condition: Supplier<Boolean>, var whenImpl: WhenImpl? = null, var elseImpl: ElseImpl? = null)
+    data class Conditional(
+        val condition: Supplier<Boolean>,
+        var whenImpl: WhenImpl? = null,
+        var elseImpl: ElseImpl? = null
+    )
 
     override fun whenever(condition: Supplier<Boolean>): ConditionalChildComponentBuilder.When {
         val conditional = Conditional(condition)
@@ -41,8 +43,6 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
 
     override fun buildConditionals(parent: Component?) {
         for (conditional in conditionals) {
-            val whenComponent = conditional.whenImpl?.build(parent) ?: return
-            val elseComponent = conditional.elseImpl?.build(parent)
             val conditionMemo: Memo<Boolean> = context.reactiveSource.createMemo { conditional.condition.get() }
             val runtime = context.runtime
             context.reactiveSource.createEffect<Long> {
@@ -51,25 +51,24 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
                 val previousNode = this?.let { graph.getNode(it) }
                 val previousComponent = previousNode?.component
 
-                val parentNodeId = (parent as? AbstractComponentImpl)?.nodeId ?: 0
+                val parentNodeId = (parent as? AbstractComponentImpl<*>)?.nodeId ?: 0
 
-                if (previousComponent is Renderable) {
-                    previousComponent.remove(runtime, previousNode.id, parentNodeId)
-                }
+                previousComponent?.remove(runtime, previousNode.id, parentNodeId)
+
                 val result = conditionMemo.get() ?: false
                 when {
                     result -> {
-                        if (whenComponent is Renderable) {
-                            whenComponent.insert(runtime, parentNodeId)
-                        }
-                        whenComponent.nodeId()
+                        conditional.whenImpl?.build(parent)?.let {
+                            it.insert(runtime, parentNodeId)
+                            it.nodeId()
+                        } ?: -1
                     }
 
-                    elseComponent != null -> {
-                        if (elseComponent is Renderable) {
-                            elseComponent.insert(runtime, parentNodeId)
-                        }
-                        elseComponent.nodeId()
+                    conditional.elseImpl != null -> {
+                        conditional.elseImpl?.build(parent)?.let {
+                            it.insert(runtime, parentNodeId)
+                            it.nodeId()
+                        } ?: -1
                     }
 
                     else -> -1
@@ -80,20 +79,19 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
 
     inner class WhenImpl(private val conditional: Conditional) : ConditionalChildComponentBuilder.When {
 
-        private var componentBuilder: Long? = null
+        private var builderConsumer: ReceiverConsumer<ComponentGroup>? = null
 
-        override fun then(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>): ConditionalChildComponentBuilder.Else {
-            val builder: ComponentGroupBuilder = context.getOrCreateComponentBuilder(null, ComponentGroupBuilder::class.java) {
-                componentBuilder = it
-            }
-            with(builderConsumer) { builder.consume() }
+        override fun then(builderConsumer: ReceiverConsumer<ComponentGroup>): ConditionalChildComponentBuilder.Else {
+            this.builderConsumer = builderConsumer
             conditional.whenImpl = this
             return ElseImpl(conditional)
         }
 
         fun build(parent: Component?): Component? {
-            return componentBuilder?.let {
-                context.getBuilder(it)?.create(parent)
+            val builder = context.getOrCreateComponent(null, ComponentGroup::class.java)
+            return builderConsumer?.let {
+                with(builderConsumer!!) { builder.consume() }
+                builder
             }
         }
 
@@ -101,23 +99,21 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
 
     inner class ElseImpl(private val conditional: Conditional) : ConditionalChildComponentBuilder.Else {
 
-        private var componentBuilder: Long? = null
+        private var builderConsumer: ReceiverConsumer<ComponentGroup>? = null
 
-        override fun orElse(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>) {
-            val builder: ComponentGroupBuilder = context.getOrCreateComponentBuilder(null, ComponentGroupBuilder::class.java) {
-                componentBuilder = it
-            }
-            with(builderConsumer) { builder.consume() }
+        override fun orElse(builderConsumer: ReceiverConsumer<ComponentGroup>) {
+            this.builderConsumer = builderConsumer
             conditional.elseImpl = this
         }
 
         fun build(parent: Component?): Component? {
-            return componentBuilder?.let {
-                context.getBuilder(it)?.create(parent)
+            val builder = context.getOrCreateComponent(null, ComponentGroup::class.java)
+            return builderConsumer?.let {
+                with(builderConsumer!!) { builder.consume() }
+                builder
             }
         }
 
     }
-
 
 }

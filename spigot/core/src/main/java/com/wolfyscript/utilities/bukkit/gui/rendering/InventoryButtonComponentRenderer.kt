@@ -15,15 +15,14 @@ class InventoryButtonComponentRenderer : ComponentRenderer<Button, InvGUIRenderC
 
     override fun render(context: InvGUIRenderContext, component: Button) {
 
-        context.renderer.renderStack(context.currentOffset(), component.icon().stack, object: ItemStackContext {
+        context.renderer.renderStack(context.currentOffset(), component.icon.stack, object : ItemStackContext {
 
-            override fun resolvers(): TagResolver = component.icon().resolvers
+            override fun resolvers(): TagResolver = component.icon.resolvers
 
             override fun miniMessage(): MiniMessage = context.renderer.runtime.wolfyUtils.chat.miniMessage
 
             override fun evalContext(): EvalContext = EvalContext()
 
         })
-
     }
 }

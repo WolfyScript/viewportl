@@ -19,6 +19,7 @@ package com.wolfyscript.utilities.gui.rendering
 
 import com.wolfyscript.utilities.gui.Window
 import com.wolfyscript.utilities.gui.model.UpdateInformation
+import net.kyori.adventure.text.Component
 
 interface Renderer<C: RenderContext> {
 
@@ -31,5 +32,7 @@ interface Renderer<C: RenderContext> {
      * @param information info about the update (e.g. which nodes changed).
      */
     fun update(information: UpdateInformation)
+
+    fun updateTitle(component: Component?)
 
 }

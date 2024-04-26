@@ -19,6 +19,7 @@ import org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask
  */
 plugins {
     id("com.jfrog.artifactory") version "5.+"
+    kotlin("jvm") version "1.9.23"
 }
 
 tasks.withType<ArtifactoryTask> {
@@ -41,4 +42,13 @@ artifactory {
         }
     }
 
+}
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+}
+repositories {
+    mavenCentral()
+}
+kotlin {
+    jvmToolchain(8)
 }

@@ -18,8 +18,6 @@
 
 package com.wolfyscript.utilities.gui.interaction
 
-import com.wolfyscript.utilities.gui.InteractionResult
-
 interface InteractionDetails {
 
     fun isCancelled(): Boolean

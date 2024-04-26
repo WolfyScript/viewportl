@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.utilities.gui.rendering
 
-import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.components.Component
 
 class RenderingNode(val id: Long, val component: Component) {
 

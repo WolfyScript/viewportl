@@ -1,7 +1,7 @@
 package com.wolfyscript.utilities.bukkit.gui;
 
-import com.wolfyscript.utilities.gui.ClickType;
-import com.wolfyscript.utilities.gui.InteractionResult;
+import com.wolfyscript.utilities.gui.interaction.ClickType;
+import com.wolfyscript.utilities.gui.interaction.InteractionResult;
 import com.wolfyscript.utilities.gui.interaction.ClickInteractionDetails;
 import org.bukkit.event.inventory.InventoryClickEvent;
 

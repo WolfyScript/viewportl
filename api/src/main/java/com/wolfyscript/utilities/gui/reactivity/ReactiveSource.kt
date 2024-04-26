@@ -18,10 +18,7 @@
 package com.wolfyscript.utilities.gui.reactivity
 
 import com.wolfyscript.utilities.gui.ViewRuntime
-import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
-import com.wolfyscript.utilities.gui.functions.SerializableRunnable
-import com.wolfyscript.utilities.gui.functions.SignalableReceiverFunction
+import com.wolfyscript.utilities.functions.ReceiverFunction
 import com.wolfyscript.utilities.platform.Platform
 import org.apache.commons.lang3.function.TriFunction
 import java.util.*

@@ -27,7 +27,7 @@ import java.util.function.Function;
  *
  * @param <V> The value type this Signal holds. Can be any Object.
  */
-public interface Signal<V> extends SignalTaggable, SignalGet<V> {
+public interface Signal<V> extends SignalTaggable, SignalLike<V> {
 
     /**
      * Sets the tracked value to a new value and causes a re-render.

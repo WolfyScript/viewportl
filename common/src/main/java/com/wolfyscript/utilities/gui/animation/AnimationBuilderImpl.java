@@ -1,7 +1,7 @@
 package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.BuildContext;
-import com.wolfyscript.utilities.gui.Component;
+import com.wolfyscript.utilities.gui.components.Component;
 
 import java.util.function.Supplier;
 

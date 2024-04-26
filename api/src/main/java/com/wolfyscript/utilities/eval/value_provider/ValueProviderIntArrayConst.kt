@@ -15,29 +15,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
-
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.eval.context.EvalContext
 
 @KeyedStaticId(key = "int/array/const")
-public class ValueProviderIntArrayConst extends AbstractValueProvider<int[]> {
+class ValueProviderIntArrayConst @JsonCreator constructor(
+    @param:JsonProperty("value") override val value: IntArray
+) : AbstractValueProvider<IntArray>() {
 
-    private final int[] value;
-
-    @JsonCreator
-    public ValueProviderIntArrayConst(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") int[] value) {
-        super(wolfyUtils);
-        this.value = value;
+    override fun getValue(context: EvalContext?): IntArray {
+        return value
     }
 
-    @Override
-    public int[] getValue(EvalContext context) {
-        return value;
-    }
 }

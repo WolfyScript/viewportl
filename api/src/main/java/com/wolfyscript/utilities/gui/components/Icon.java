@@ -18,7 +18,6 @@
 
 package com.wolfyscript.utilities.gui.components;
 
-import com.wolfyscript.utilities.gui.Component;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 
 public interface Icon extends Component {

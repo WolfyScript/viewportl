@@ -20,7 +20,7 @@ package com.wolfyscript.utilities.gui.rendering
 
 interface RenderProperties {
 
-    fun position() : PropertyPosition
+    var position : PropertyPosition
 
     fun width() : PropertyWidth
 

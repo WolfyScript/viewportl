@@ -15,47 +15,37 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer
+import com.wolfyscript.utilities.eval.context.EvalContext
+import java.io.IOException
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer;
-import java.io.IOException;
-
-@OptionalValueSerializer(serializer = ValueProviderFloatConst.ValueSerializer.class)
+@OptionalValueSerializer(serializer = ValueProviderFloatConst.ValueSerializer::class)
 @KeyedStaticId(key = "float/const")
-public class ValueProviderFloatConst extends AbstractValueProvider<Float> implements ValueProviderFloat {
-
-    private final float value;
-
-    @JsonCreator
-    public ValueProviderFloatConst(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") float value) {
-        super(wolfyUtils);
-        this.value = value;
+class ValueProviderFloatConst @JsonCreator constructor(
+    @param:JsonProperty("value") override val value: Float
+) : AbstractValueProvider<Float>(), ValueProviderFloat {
+    override fun getValue(context: EvalContext?): Float {
+        return value
     }
 
-    @Override
-    public Float getValue(EvalContext context) {
-        return value;
-    }
-
-    public static class ValueSerializer extends com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderFloatConst> {
-
-        public ValueSerializer() {
-            super(ValueProviderFloatConst.class);
-        }
-
-        @Override
-        public boolean serialize(ValueProviderFloatConst valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
-            generator.writeString(valueProvider.getValue() + "f");
-            return true;
+    class ValueSerializer : com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderFloatConst>(
+        ValueProviderFloatConst::class.java
+    ) {
+        @Throws(IOException::class)
+        override fun serialize(
+            valueProvider: ValueProviderFloatConst,
+            generator: JsonGenerator,
+            provider: SerializerProvider
+        ): Boolean {
+            generator.writeString(valueProvider.value.toString() + "f")
+            return true
         }
     }
 }

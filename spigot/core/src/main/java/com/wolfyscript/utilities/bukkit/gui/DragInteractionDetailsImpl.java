@@ -1,7 +1,7 @@
 package com.wolfyscript.utilities.bukkit.gui;
 
-import com.wolfyscript.utilities.gui.DragType;
-import com.wolfyscript.utilities.gui.InteractionResult;
+import com.wolfyscript.utilities.gui.interaction.DragType;
+import com.wolfyscript.utilities.gui.interaction.InteractionResult;
 import java.util.Set;
 
 import com.wolfyscript.utilities.gui.interaction.DragInteractionDetails;

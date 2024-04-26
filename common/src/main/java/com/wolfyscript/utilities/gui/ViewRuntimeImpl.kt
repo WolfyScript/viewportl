@@ -12,9 +12,9 @@ import java.util.*
 import java.util.function.Function
 
 class ViewRuntimeImpl(
-    private val wolfyUtils: WolfyUtils,
-    rootRouter: Function<ViewRuntime?, RouterBuilder>,
-    private val viewers: Set<UUID>
+    override val wolfyUtils: WolfyUtils,
+    rootRouter: Function<ViewRuntime, Window>,
+    override val viewers: Set<UUID>,
 ) : ViewRuntime {
     @JvmField
     val id: Long = NEXT_ID++
@@ -28,9 +28,9 @@ class ViewRuntimeImpl(
 
     val interactionHandler: InteractionHandler = wolfyUtils.core.platform.guiUtils.createInteractionHandler(this)
     // Build the components and init the rendering tree
-    private val router = rootRouter.apply(this).create(null)
-
-    private var currentRoot: Window? = null
+    private var currentRoot: Window? = rootRouter.apply(this)
+    override val currentMenu: Window?
+        get() = currentRoot
 
     private val history: Deque<Window> = ArrayDeque()
     private var textInputCallback: TextInputCallback? = null
@@ -47,21 +47,20 @@ class ViewRuntimeImpl(
     }
 
     override fun openNew(vararg path: String) {
-        open(getRouter().open(this, *path))
+        currentMenu?.apply { open(this) }
     }
 
     override fun open() {
         if (history.isEmpty()) {
-            currentMenu.ifPresent { window: Window -> window.close(this) }
+            currentMenu?.close()
             openNew()
         } else {
-            currentMenu.ifPresent { window: Window -> this.open(window) }
+            currentMenu?.let { open(it) }
         }
     }
 
     private fun open(window: Window) {
         setCurrentRoot(window)
-
 
         renderer.changeWindow(window)
         interactionHandler.init(window)
@@ -75,7 +74,7 @@ class ViewRuntimeImpl(
     override fun openPrevious() {
         history.poll() // Remove active current menu
         val window = history.peek()
-        currentMenu.ifPresent { w: Window -> w.close(this) }
+        currentMenu?.close()
         open(window)
     }
 
@@ -83,20 +82,8 @@ class ViewRuntimeImpl(
         this.currentRoot = currentRoot
     }
 
-    override fun getCurrentMenu(): Optional<Window> {
+    fun getCurrentMenu(): Optional<Window> {
         return Optional.ofNullable(currentRoot)
-    }
-
-    override fun getWolfyUtils(): WolfyUtils {
-        return wolfyUtils
-    }
-
-    override fun getRouter(): Router {
-        return router
-    }
-
-    override fun getViewers(): Set<UUID> {
-        return java.util.Set.copyOf(viewers)
     }
 
     override fun textInputCallback(): Optional<TextInputCallback> {

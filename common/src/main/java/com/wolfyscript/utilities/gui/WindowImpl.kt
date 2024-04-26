@@ -1,140 +1,82 @@
-package com.wolfyscript.utilities.gui;
+package com.wolfyscript.utilities.gui
 
-import com.google.common.base.Preconditions;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.callback.InteractionCallback;
-import com.wolfyscript.utilities.gui.interaction.InteractionDetails;
-import com.wolfyscript.utilities.platform.scheduler.Task;
-import com.wolfyscript.utilities.tuple.Pair;
-
-import java.util.*;
+import com.fasterxml.jackson.annotation.JacksonInject
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.common.base.Preconditions
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.functions.ReceiverFunction
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
+import com.wolfyscript.utilities.gui.router.Router
+import com.wolfyscript.utilities.gui.router.RouterImpl
+import com.wolfyscript.utilities.platform.scheduler.Task
+import com.wolfyscript.utilities.tuple.Pair
+import net.kyori.adventure.text.Component
 
 @KeyedStaticId(key = "window")
-public final class WindowImpl implements Window {
-
-    private final String id;
-    private final Router router;
-    private final WolfyUtils wolfyUtils;
-    private final Integer size;
-    private final WindowType type;
-    private net.kyori.adventure.text.Component title;
-    private final InteractionCallback interactionCallback;
-    final Collection<Component> componentsToRender;
+class WindowImpl internal constructor(
+    @JsonProperty("id") override val id: String,
+    @JsonProperty("size") override var size: Int?,
+    @JsonProperty("type") override val type: WindowType? = null,
+    @JacksonInject("wolfyutils") override val wolfyUtils: WolfyUtils,
+    @JacksonInject("context") private val context: BuildContext,
+) :
+    Window,
+    ReactiveSource by context.reactiveSource {
+    override var title: Component? = null
+    override val router: Router = RouterImpl(wolfyUtils, context, this)
+    override var resourcePath: String? = null
 
     // Intervalls
-    final List<Pair<Runnable, Long>> intervalRunnables = new ArrayList<>();
-    final List<Task> intervalTasks = new ArrayList<>();
+    val intervalRunnables: List<Pair<Runnable, Long>> = ArrayList()
+    val intervalTasks: MutableList<Task> = ArrayList()
 
-    WindowImpl(String id,
-               Router router,
-               Integer size,
-               WindowType type,
-               net.kyori.adventure.text.Component title,
-               InteractionCallback interactionCallback,
-               Collection<Component> components) {
-        Preconditions.checkNotNull(id);
-        Preconditions.checkNotNull(interactionCallback);
-        Preconditions.checkArgument(size != null || type != null, "Either type or size must be specified!");
-        this.id = id;
-        this.router = router;
-        this.wolfyUtils = router.getWolfyUtils();
-        this.size = size;
-        this.type = type;
-        this.interactionCallback = interactionCallback;
-        this.componentsToRender = components;
-        this.title = title;
+    init {
+        Preconditions.checkArgument(size != null || type != null, "Either type or size must be specified!")
     }
 
-    @Override
-    public void open(ViewRuntime viewRuntime) {
-        for (Task intervalTask : intervalTasks) {
-            intervalTask.cancel();
-        }
-        intervalTasks.clear();
-        for (Pair<Runnable, Long> intervalRunnable : intervalRunnables) {
-            Task task = wolfyUtils.getCore().getPlatform().getScheduler().task(wolfyUtils)
-                    .interval(intervalRunnable.getValue())
-                    .delay(1).execute(intervalRunnable.getKey()).build();
-            intervalTasks.add(task);
-        }
+    override fun title(titleUpdate: ReceiverFunction<Component?, Component?>) {
+        context.reactiveSource.createEffect<Unit> {
+            title = with(titleUpdate) { title.apply() }
 
-        // Build graph
-        ViewRuntimeImpl runtime = (ViewRuntimeImpl) viewRuntime;
-        for (Component component : componentsToRender) {
-            if (component instanceof Renderable renderable) {
-                renderable.insert(runtime, 0);
-            }
+            (context.runtime as ViewRuntimeImpl).renderer.updateTitle(title)
         }
     }
 
-    @Override
-    public void close(ViewRuntime viewRuntime) {
-        for (Task intervalTask : intervalTasks) {
-            intervalTask.cancel();
+    override fun open() {
+        for (intervalTask in intervalTasks) {
+            intervalTask.cancel()
         }
-        intervalTasks.clear();
-
-        ViewRuntimeImpl runtime = (ViewRuntimeImpl) viewRuntime;
-        runtime.getRenderingGraph().removeNode(0);
+        intervalTasks.clear()
+        for (intervalRunnable in intervalRunnables) {
+            val task = wolfyUtils.core.platform.scheduler.task(wolfyUtils)
+                .interval(intervalRunnable.value)
+                .delay(1).execute(intervalRunnable.key).build()
+            intervalTasks.add(task)
+        }
+        router.open()
     }
 
-    @Override
-    public WolfyUtils getWolfyUtils() {
-        return wolfyUtils;
+    override fun close() {
+        for (intervalTask in intervalTasks) {
+            intervalTask.cancel()
+        }
+        intervalTasks.clear()
+
+//        (context.runtime as ViewRuntimeImpl).renderingGraph.removeNode(0)
     }
 
-    @Override
-    public String getID() {
-        return id;
+    override fun routes(routerConfiguration: ReceiverConsumer<Router>) {
+        with(routerConfiguration) { router.consume() }
     }
 
-    @Override
-    public Router router() {
-        return router;
+    override fun width(): Int {
+        return size?.div(height()) ?: 9
     }
 
-    @Override
-    public InteractionCallback interactCallback() {
-        return interactionCallback;
-    }
-
-    @Override
-    public Set<? extends Component> childComponents() {
-        return Set.of();
-    }
-
-    @Override
-    public Optional<Component> getChild(String id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Integer> getSize() {
-        return Optional.ofNullable(size);
-    }
-
-    @Override
-    public Optional<WindowType> getType() {
-        return Optional.ofNullable(type);
-    }
-
-    public net.kyori.adventure.text.Component title() {
-        return title;
-    }
-
-    public void title(net.kyori.adventure.text.Component title) {
-        this.title = title;
-    }
-
-    @Override
-    public int width() {
-        return size / height();
-    }
-
-    @Override
-    public int height() {
-        return size / 9;
+    override fun height(): Int {
+        return size?.div(9) ?: 1
     }
 
 }

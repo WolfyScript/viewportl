@@ -15,33 +15,31 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.components
 
-package com.wolfyscript.utilities.gui.components;
-
-import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.interaction.Interactable;
-import net.kyori.adventure.sound.Sound;
-
-import java.util.Optional;
+import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import net.kyori.adventure.sound.Sound
 
 /**
  * A simple button that has an icon (ItemStack) and an interaction callback.
  * It always has a 1x1 size, because it occupies a single slot.
  *
  */
-public interface Button extends Component, Interactable {
-
-    @Override
-    default int width() {
-        return 1;
+interface Button : Component {
+    override fun width(): Int {
+        return 1
     }
 
-    @Override
-    default int height() {
-        return 1;
+    override fun height(): Int {
+        return 1
     }
 
-    Optional<Sound> sound();
+    var sound: Sound?
 
-    ButtonIcon icon();
+    var icon: ButtonIcon
+
+    var onClick: InteractionCallback
+
+    fun icon(iconConsumer: ReceiverConsumer<ButtonIcon>)
 }

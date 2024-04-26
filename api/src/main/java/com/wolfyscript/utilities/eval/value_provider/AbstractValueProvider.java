@@ -18,26 +18,21 @@
 
 package com.wolfyscript.utilities.eval.value_provider;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.WolfyUtils;
+import com.wolfyscript.utilities.WolfyCore;
 
 public abstract class AbstractValueProvider<V> implements ValueProvider<V> {
 
-    @JsonIgnore
-    protected WolfyUtils wolfyUtils;
     @JsonIgnore
     protected final NamespacedKey key;
 
     protected AbstractValueProvider(NamespacedKey key) {
         this.key = key;
-        this.wolfyUtils = null;
     }
 
-    protected AbstractValueProvider(@JacksonInject WolfyUtils wolfyUtils) {
-        this.key = wolfyUtils.getIdentifiers().getNamespaced(getClass());
-        this.wolfyUtils = wolfyUtils;
+    protected AbstractValueProvider() {
+        this.key = WolfyCore.getInstance().getWolfyUtils().getIdentifiers().getNamespaced(getClass());
     }
 
     @JsonIgnore

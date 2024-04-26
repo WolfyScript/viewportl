@@ -18,8 +18,6 @@
 
 package com.wolfyscript.utilities.gui.interaction;
 
-import com.wolfyscript.utilities.gui.ClickType;
-
 public interface ClickInteractionDetails extends InteractionDetails {
 
     boolean isShift();

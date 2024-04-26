@@ -4,6 +4,7 @@ import org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask
 plugins {
     id("wolfyutils.spigot.conventions")
     id("com.github.johnrengelman.shadow") version ("8.1.1")
+    kotlin("jvm")
 }
 
 description = "nmsutil"
@@ -23,6 +24,7 @@ dependencies {
     compileOnly("net.kyori:adventure-api:4.14.0")
     compileOnly("net.kyori:adventure-platform-bukkit:4.1.2")
     compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 subprojects.forEach {
@@ -48,4 +50,10 @@ tasks {
             }
         }
     }
+}
+repositories {
+    mavenCentral()
+}
+kotlin {
+    jvmToolchain(17)
 }

@@ -15,48 +15,39 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer
+import com.wolfyscript.utilities.eval.context.EvalContext
+import java.io.IOException
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer;
-import java.io.IOException;
-
-@OptionalValueSerializer(serializer = ValueProviderShortConst.ValueSerializer.class)
+@OptionalValueSerializer(serializer = ValueProviderShortConst.ValueSerializer::class)
 @KeyedStaticId(key = "short/const")
-public class ValueProviderShortConst extends AbstractValueProvider<Short> implements ValueProviderShort {
-
-    private final short value;
-
-    @JsonCreator
-    public ValueProviderShortConst(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") short value) {
-        super(wolfyUtils);
-        this.value = value;
+class ValueProviderShortConst @JsonCreator constructor(
+    @param:JsonProperty(
+        "value"
+    ) override val value: Short
+) : AbstractValueProvider<Short>(), ValueProviderShort {
+    override fun getValue(context: EvalContext?): Short {
+        return value
     }
 
-    @Override
-    public Short getValue(EvalContext context) {
-        return value;
-    }
-
-    public static class ValueSerializer extends com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderShortConst> {
-
-        public ValueSerializer() {
-            super(ValueProviderShortConst.class);
-        }
-
-        @Override
-        public boolean serialize(ValueProviderShortConst valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
-            generator.writeString(valueProvider.getValue() + "s");
-            return true;
+    class ValueSerializer : com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderShortConst>(
+        ValueProviderShortConst::class.java
+    ) {
+        @Throws(IOException::class)
+        override fun serialize(
+            valueProvider: ValueProviderShortConst,
+            generator: JsonGenerator,
+            provider: SerializerProvider
+        ): Boolean {
+            generator.writeString("${valueProvider.value}s")
+            return true
         }
     }
-
 }

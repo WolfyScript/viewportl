@@ -15,139 +15,139 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
+import com.fasterxml.jackson.annotation.*
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.core.JsonToken
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
+import com.fasterxml.jackson.databind.annotation.JsonTypeResolver
+import com.wolfyscript.utilities.Keyed
+import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.utilities.config.jackson.*
+import com.wolfyscript.utilities.eval.context.EvalContext
+import java.io.IOException
+import java.util.regex.Pattern
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
-import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
-import com.wolfyscript.utilities.Keyed;
-import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.config.jackson.KeyedTypeIdResolver;
-import com.wolfyscript.utilities.config.jackson.KeyedTypeResolver;
-import com.wolfyscript.utilities.config.jackson.OptionalValueDeserializer;
-import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer;
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-@JsonTypeResolver(KeyedTypeResolver.class)
-@JsonTypeIdResolver(KeyedTypeIdResolver.class)
-@OptionalValueDeserializer(deserializer = ValueProvider.ValueDeserializer.class)
-@OptionalValueSerializer(serializer = ValueProvider.ValueSerializer.class)
+@JsonTypeResolver(KeyedTypeResolver::class)
+@JsonTypeIdResolver(
+    KeyedTypeIdResolver::class
+)
+@OptionalValueDeserializer(deserializer = ValueProvider.ValueDeserializer::class)
+@OptionalValueSerializer(serializer = ValueProvider.ValueSerializer::class)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, property = "key")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@JsonPropertyOrder(value = {"key"})
-public interface ValueProvider<V> extends Keyed {
-
+@JsonPropertyOrder(value = ["key"])
+interface ValueProvider<V> : Keyed {
     @JsonIgnore
-    V getValue(EvalContext context);
+    fun getValue(context: EvalContext?): V
 
-    @JsonIgnore
-    default V getValue() {
-        return getValue(new EvalContext());
-    }
+    @get:JsonIgnore
+    val value: V
+        get() = getValue(EvalContext())
 
     @JsonGetter("key")
-    @Override
-    NamespacedKey key();
+    override fun key(): NamespacedKey
 
-    class ValueDeserializer extends com.wolfyscript.utilities.config.jackson.ValueDeserializer<ValueProvider<?>> {
-
-        private static final Pattern NUM_PATTERN = Pattern.compile("([0-9]+)([bBsSiIlL])|([0-9]?\\.?[0-9])+([fFdD])");
-
-        public ValueDeserializer() {
-            super((Class<ValueProvider<?>>)(Object) ValueProvider.class);
-        }
-
-        @Override
-        public ValueProvider<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            WolfyUtils wolfyUtils = (WolfyUtils) ctxt.findInjectableValue(WolfyUtils.class.getName(), null, null);
+    class ValueDeserializer : com.wolfyscript.utilities.config.jackson.ValueDeserializer<ValueProvider<*>>(ValueProvider::class.java) {
+        @Throws(IOException::class, JsonProcessingException::class)
+        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ValueProvider<*>? {
             if (p.currentToken() == JsonToken.VALUE_STRING) {
-                JsonNode node = p.readValueAsTree();
-                String text = node.asText();
-                if (!text.isBlank()) {
-                    Matcher matcher = NUM_PATTERN.matcher(text);
+                val node = p.readValueAsTree<JsonNode>()
+                val text = node.asText()
+                if (text.isNotBlank()) {
+                    val matcher = NUM_PATTERN.matcher(text)
                     if (matcher.matches()) {
-                        String value;
-                        String id = matcher.group(2);
+                        val value: String
+                        var id = matcher.group(2)
                         if (id != null) {
                             // integer value
-                            value = matcher.group(1);
+                            value = matcher.group(1)
                         } else {
                             // float value
-                            id = matcher.group(4);
-                            value = matcher.group(3);
+                            id = matcher.group(4)
+                            value = matcher.group(3)
                         }
                         try {
-                            return switch (id.charAt(0)) {
-                                case 's', 'S' -> new ValueProviderShortConst(wolfyUtils, Short.parseShort(value));
-                                case 'i', 'I' -> new ValueProviderIntegerConst(wolfyUtils, Integer.parseInt(value));
-                                case 'l', 'L' -> new ValueProviderLongConst(wolfyUtils, Long.parseLong(value));
-                                case 'f', 'F' -> new ValueProviderFloatConst(wolfyUtils, Float.parseFloat(value));
-                                case 'd', 'D' -> new ValueProviderDoubleConst(wolfyUtils, Double.parseDouble(value));
-                                default -> new ValueProviderStringConst(wolfyUtils, text);
-                            };
-                        } catch (NumberFormatException e) {
+                            return when (id!![0]) {
+                                's', 'S' -> ValueProviderShortConst(value.toShort())
+                                'i', 'I' -> ValueProviderIntegerConst(value.toInt())
+                                'l', 'L' -> ValueProviderLongConst(value.toLong())
+                                'f', 'F' -> ValueProviderFloatConst(value.toFloat())
+                                'd', 'D' -> ValueProviderDoubleConst(value.toDouble())
+                                else -> ValueProviderStringConst(text)
+                            }
+                        } catch (e: NumberFormatException) {
                             // Cannot parse the value. Might a String value!
                         }
                     }
-                    return new ValueProviderStringConst(wolfyUtils, text);
+                    return ValueProviderStringConst(text)
                 }
             } else if (p.currentToken() == JsonToken.VALUE_NUMBER_INT) {
-                return new ValueProviderIntegerConst(wolfyUtils, ctxt.readValue(p, Integer.class));
+                return ValueProviderIntegerConst(ctxt.readValue(p, Int::class.java))
             } else if (p.currentToken() == JsonToken.VALUE_NUMBER_FLOAT) {
-                return new ValueProviderDoubleConst(wolfyUtils, ctxt.readValue(p, Double.class));
+                return ValueProviderDoubleConst(ctxt.readValue(p, Double::class.java))
             }
-            return null;
+            return null
+        }
+
+        companion object {
+            private val NUM_PATTERN: Pattern = Pattern.compile("([0-9]+)([bBsSiIlL])|([0-9]?\\.?[0-9])+([fFdD])")
         }
     }
 
-    class ValueSerializer extends com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProvider<?>> {
+    class ValueSerializer : com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProvider<*>>(ValueProvider::class.java) {
+        @Throws(IOException::class)
+        override fun serialize(
+            valueProvider: ValueProvider<*>,
+            generator: JsonGenerator,
+            provider: SerializerProvider
+        ): Boolean {
+            println("Serialize ValueProvider!")
 
-        public ValueSerializer() {
-            super((Class<ValueProvider<?>>)(Object) ValueProvider.class);
-        }
+            when (valueProvider) {
+                is ValueProviderStringConst -> {
+                    generator.writeString(valueProvider.value)
+                    return true
+                }
 
-        @Override
-        public boolean serialize(ValueProvider<?> valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
-            System.out.println("Serialize ValueProvider!");
-            if (valueProvider instanceof ValueProviderStringConst stringConst) {
-                generator.writeString(stringConst.getValue());
-                return true;
-            } else if (valueProvider instanceof ValueProviderByteConst byteConst) {
-                generator.writeString(byteConst.getValue() + "b");
-                return true;
-            } else if (valueProvider instanceof ValueProviderShortConst shortConst) {
-                generator.writeString(shortConst.getValue().byteValue() + "s");
-                return true;
-            } else if (valueProvider instanceof ValueProviderIntegerConst integerConst) {
-                generator.writeNumber(integerConst.getValue());
-                return true;
-            } else if (valueProvider instanceof ValueProviderLongConst longConst) {
-                generator.writeString(longConst.getValue() + "L");
-                return true;
-            } else if (valueProvider instanceof ValueProviderFloatConst floatConst) {
-                generator.writeString(floatConst.getValue() + "f");
-                return true;
-            } else if (valueProvider instanceof ValueProviderDoubleConst doubleConst) {
-                generator.writeString(doubleConst.getValue() + "d");
-                return true;
+                is ValueProviderByteConst -> {
+                    generator.writeString("${valueProvider.value}b")
+                    return true
+                }
+
+                is ValueProviderShortConst -> {
+                    generator.writeString("${valueProvider.value.toByte()}s")
+                    return true
+                }
+
+                is ValueProviderIntegerConst -> {
+                    generator.writeNumber(valueProvider.value)
+                    return true
+                }
+
+                is ValueProviderLongConst -> {
+                    generator.writeString("${valueProvider.value}L")
+                    return true
+                }
+
+                is ValueProviderFloatConst -> {
+                    generator.writeString("${valueProvider.value}f")
+                    return true
+                }
+
+                is ValueProviderDoubleConst -> {
+                    generator.writeString("${valueProvider.value}d")
+                    return true
+                }
+
+                else -> return false
             }
-            return false;
         }
     }
 }

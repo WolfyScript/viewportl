@@ -15,35 +15,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui
 
-package com.wolfyscript.utilities.gui;
+import com.wolfyscript.utilities.platform.adapters.Player
 
-import com.wolfyscript.utilities.platform.adapters.Player;
+class GuiHolderImpl(
+    override val currentWindow: Window,
+    override val viewManager: ViewRuntime,
+    override val player: Player?
+) : GuiHolder {
 
-public class GuiHolderImpl implements GuiHolder {
-
-    protected final Window currentWindow;
-    protected final ViewRuntime viewManager;
-    protected final Player player;
-
-    public GuiHolderImpl(Window currentWindow, ViewRuntime viewManager, Player player) {
-        this.currentWindow = currentWindow;
-        this.viewManager = viewManager;
-        this.player = player;
-    }
-
-    @Override
-    public Window getCurrentWindow() {
-        return currentWindow;
-    }
-
-    @Override
-    public ViewRuntime getViewManager() {
-        return viewManager;
-    }
-
-    @Override
-    public Player getPlayer() {
-        return player;
-    }
 }

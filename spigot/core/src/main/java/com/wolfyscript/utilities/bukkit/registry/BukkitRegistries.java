@@ -35,10 +35,10 @@ import com.wolfyscript.utilities.bukkit.world.particles.ParticleEffect;
 import com.wolfyscript.utilities.bukkit.world.particles.animators.Animator;
 import com.wolfyscript.utilities.bukkit.world.particles.shapes.Shape;
 import com.wolfyscript.utilities.bukkit.world.particles.timer.Timer;
-import com.wolfyscript.utilities.gui.Component;
+import com.wolfyscript.utilities.gui.components.Component;
 import com.wolfyscript.utilities.registry.Registries;
 import com.wolfyscript.utilities.registry.Registry;
-import com.wolfyscript.utilities.registry.RegistryGUIComponentBuilders;
+import com.wolfyscript.utilities.registry.RegistryGUIComponentTypes;
 import com.wolfyscript.utilities.registry.RegistrySimple;
 import com.wolfyscript.utilities.registry.TypeRegistry;
 import com.wolfyscript.utilities.registry.UniqueTypeRegistrySimple;
@@ -88,7 +88,7 @@ public class BukkitRegistries extends Registries {
     private final TypeRegistry<Event<?>> customItemEvents;
 
     private final TypeRegistry<Component> guiComponents;
-    private final RegistryGUIComponentBuilders guiComponentBuilders;
+    private final RegistryGUIComponentTypes guiComponentBuilders;
 
     private final TypeRegistry<CustomBlockData> customBlockData;
     private final TypeRegistry<CustomPlayerData> customPlayerData;
@@ -224,12 +224,7 @@ public class BukkitRegistries extends Registries {
     }
 
     @Override
-    public TypeRegistry<Component> getGuiComponents() {
-        return guiComponents;
-    }
-
-    @Override
-    public RegistryGUIComponentBuilders getGuiComponentBuilders() {
+    public RegistryGUIComponentTypes getGuiComponentTypes() {
         return guiComponentBuilders;
     }
 

@@ -19,7 +19,7 @@
 package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.reactivity.ReactiveSource;
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
+import com.wolfyscript.utilities.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.reactivity.Signal;
 
 import java.util.ArrayList;

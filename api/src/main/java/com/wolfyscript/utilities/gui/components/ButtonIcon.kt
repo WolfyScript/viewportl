@@ -15,17 +15,26 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.components
 
-package com.wolfyscript.utilities.gui.components;
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.reactivity.SignalGet
+import com.wolfyscript.utilities.world.items.ItemStackConfig
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import java.util.function.Supplier
 
-import com.wolfyscript.utilities.world.items.ItemStackConfig;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+interface ButtonIcon {
 
-public interface ButtonIcon {
+    var stack: ItemStackConfig
 
-    ItemStackConfig getStack();
+    fun stack(stackSupplier: Supplier<ItemStackConfig>)
 
-    TagResolver getResolvers();
+    fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>)
 
+    var resolvers: TagResolver
+
+    fun resolvers(resolverSupplier: Supplier<TagResolver>)
+
+    fun finalize() { }
 
 }

@@ -10,8 +10,8 @@ import com.wolfyscript.utilities.bukkit.world.items.toBukkit
 import com.wolfyscript.utilities.bukkit.world.items.toWrapper
 import com.wolfyscript.utilities.data.DataKey
 import com.wolfyscript.utilities.data.DataKeyProvider
-import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+import com.wolfyscript.utilities.functions.ReceiverBiConsumer
+import com.wolfyscript.utilities.functions.ReceiverFunction
 import com.wolfyscript.utilities.platform.adapters.ItemStack
 import com.wolfyscript.utilities.versioning.MinecraftVersion
 import com.wolfyscript.utilities.versioning.ServerVersion

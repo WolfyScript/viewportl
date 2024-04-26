@@ -15,20 +15,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
-
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.wolfyscript.utilities.KeyedStaticId
 
 @KeyedStaticId(value = "wolfyutilities:short/var")
-public class ValueProviderShortVar extends ValueProviderVariable<Short> implements ValueProviderShort {
-
-    @JsonCreator
-    public ValueProviderShortVar(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("var") String name) {
-        super(wolfyUtils, Short.class, name);
-    }
-}
+class ValueProviderShortVar @JsonCreator constructor(@JsonProperty("var") name: String) : ValueProviderVariable<Short>(Short::class.java, name), ValueProviderShort

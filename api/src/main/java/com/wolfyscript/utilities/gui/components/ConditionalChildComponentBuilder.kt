@@ -18,8 +18,7 @@
 
 package com.wolfyscript.utilities.gui.components
 
-import com.wolfyscript.utilities.gui.Component
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
+import com.wolfyscript.utilities.functions.ReceiverConsumer
 import java.util.function.Supplier
 
 interface ConditionalChildComponentBuilder {
@@ -47,13 +46,13 @@ interface ConditionalChildComponentBuilder {
 
     interface When {
 
-        infix fun then(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>) : Else
+        infix fun then(builderConsumer: ReceiverConsumer<ComponentGroup>) : Else
 
     }
 
     interface Else {
 
-        infix fun orElse(builderConsumer: ReceiverConsumer<ComponentGroupBuilder>)
+        infix fun orElse(builderConsumer: ReceiverConsumer<ComponentGroup>)
 
     }
 

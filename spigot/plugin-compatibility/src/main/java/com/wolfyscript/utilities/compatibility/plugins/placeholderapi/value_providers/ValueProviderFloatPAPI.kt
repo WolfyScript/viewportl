@@ -15,34 +15,26 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers
 
-package com.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers;
-
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.bukkit.BukkitNamespacedKey;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.eval.context.EvalContext
 
 @KeyedStaticId(key = "float/papi")
-public class ValueProviderFloatPAPI extends ValueProviderPlaceholderAPI<Float> {
+class ValueProviderFloatPAPI @JsonCreator protected constructor(@JsonProperty("value") value: String) :
+    ValueProviderPlaceholderAPI<Float>(
+        value
+    ) {
 
-    @JsonCreator
-    protected ValueProviderFloatPAPI(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") String value) {
-        super(wolfyUtils, value);
-    }
-
-    @Override
-    public Float getValue(EvalContext context) {
-        String result = getPlaceholderValue(context);
-        if (result.isBlank()) return Float.NaN;
-        try {
-            return Float.valueOf(result);
-        } catch (NumberFormatException ex) {
-            return 0f;
+    override fun getValue(context: EvalContext?): Float {
+        val result = getPlaceholderValue(context)
+        if (result.isBlank()) return Float.NaN
+        return try {
+            result.toFloat()
+        } catch (ex: NumberFormatException) {
+            0f
         }
     }
-
 }

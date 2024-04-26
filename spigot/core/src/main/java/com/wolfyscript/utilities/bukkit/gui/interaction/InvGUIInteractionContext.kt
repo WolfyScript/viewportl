@@ -1,9 +1,7 @@
 package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.utilities.bukkit.gui.rendering.InventoryGUIRenderer
-import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.components.Component
 import com.wolfyscript.utilities.gui.interaction.InteractionHandler
-import com.wolfyscript.utilities.gui.rendering.RenderContext
 
 class InvGUIInteractionContext (val interactionHandler: InteractionHandler) {
     private var currentNode: Component? = null

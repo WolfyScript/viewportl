@@ -1,6 +1,6 @@
 package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.utilities.gui.InteractionResult
+import com.wolfyscript.utilities.gui.interaction.InteractionResult
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
 import com.wolfyscript.utilities.gui.Window
 import com.wolfyscript.utilities.gui.components.Button
@@ -45,7 +45,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
     }
 
     private fun calculatePosition(node: RenderingNode, context: InvGUIInteractionContext) : Int {
-        val staticPos = node.component.properties().position().slotPositioning()?.slot() ?: (context.currentOffset() + 1)
+        val staticPos = node.component.properties.position.slotPositioning()?.slot() ?: (context.currentOffset() + 1)
         context.setSlotOffset(staticPos)
 
         cachedProperties[node.id] = CachedNodeInteractProperties(staticPos, mutableListOf(staticPos))
@@ -57,6 +57,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
             is ClickInteractionDetails -> {
                 val node = slotNodes[details.slot]?.let { runtime.renderingGraph.getNode(it) }
                 if (node != null) {
+                    // TODO: Make extensible
                     return when (val component = node.component) {
                         is StackInputSlot -> {
                             InventoryStackSlotInteractionHandler().interact(runtime, component, details)
@@ -83,7 +84,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
         // Nodes that got added
         for ((sibling, addedNode) in info.added()) {
             runtime.renderingGraph.getNode(addedNode)?.let { node ->
-                val slotPositioning = if (node.component.properties().position().slotPositioning() == null) {
+                val slotPositioning = if (node.component.properties.position.slotPositioning() == null) {
                     // Get offset from parent TODO
                     0
                 } else {

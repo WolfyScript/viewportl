@@ -15,47 +15,38 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer
+import com.wolfyscript.utilities.eval.context.EvalContext
+import java.io.IOException
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer;
-import java.io.IOException;
-
-@OptionalValueSerializer(serializer = ValueProviderStringConst.ValueSerializer.class)
+@OptionalValueSerializer(serializer = ValueProviderStringConst.ValueSerializer::class)
 @KeyedStaticId(key = "string/const")
-public class ValueProviderStringConst extends AbstractValueProvider<String> {
+class ValueProviderStringConst @JsonCreator constructor(
+    @param:JsonProperty("value") override val value: String
+) : AbstractValueProvider<String>() {
 
-    private final String value;
-
-    @JsonCreator
-    public ValueProviderStringConst(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") String value) {
-        super(wolfyUtils);
-        this.value = value;
+    override fun getValue(context: EvalContext?): String {
+        return value
     }
 
-    @Override
-    public String getValue(EvalContext context) {
-        return value;
-    }
-
-    public static class ValueSerializer extends com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderStringConst> {
-
-        public ValueSerializer() {
-            super(ValueProviderStringConst.class);
-        }
-
-        @Override
-        public boolean serialize(ValueProviderStringConst valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
-            generator.writeString(valueProvider.getValue());
-            return true;
+    class ValueSerializer : com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderStringConst>(ValueProviderStringConst::class.java) {
+        @Throws(IOException::class)
+        override fun serialize(
+            valueProvider: ValueProviderStringConst,
+            generator: JsonGenerator,
+            provider: SerializerProvider
+        ): Boolean {
+            generator.writeString(valueProvider.value)
+            return true
         }
     }
 }
+
+

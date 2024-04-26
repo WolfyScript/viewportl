@@ -1,6 +1,6 @@
 package com.wolfyscript.utilities.bukkit.gui.rendering
 
-import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.components.Component
 import com.wolfyscript.utilities.gui.rendering.RenderContext
 
 class InvGUIRenderContext(val renderer: InventoryGUIRenderer) : RenderContext {

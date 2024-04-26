@@ -22,9 +22,12 @@ import com.google.common.base.Preconditions
 import com.google.inject.Binder
 import com.google.inject.Guice
 import com.google.inject.Module
+import com.google.inject.Provider
 import com.google.inject.Stage
+import com.google.inject.util.Providers
 import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.gui.components.Component
 import com.wolfyscript.utilities.gui.reactivity.ReactiveSourceImpl
 import com.wolfyscript.utilities.tuple.Pair
 import java.util.function.Consumer
@@ -40,9 +43,9 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveSourceI
     }
 
     private val componentIdAliases: MutableMap<String, Long> = HashMap()
-    private val componentBuilderMap: MutableMap<Long, ComponentBuilder<*, *>> = HashMap()
+    private val componentMap: MutableMap<Long, Component> = HashMap()
 
-    fun <B : ComponentBuilder<out Component, Component>> getOrCreateComponentBuilder(
+    fun <B : Component> getOrCreateComponent(
         alias: String? = null,
         type: Class<B>,
         getId: Consumer<Long> = Consumer{ }
@@ -50,13 +53,13 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveSourceI
         val id = getOrCreateNumericId(alias)
         val (builderKey, implType) = getBuilderType(alias ?: "internal_${id}", type)
 
-        val componentBuilder = componentBuilderMap[id]
-        if (componentBuilder != null) {
-            if (componentBuilder.type != builderKey) {
-                throw IllegalArgumentException("Incompatible Component Builder Type! Expected type '$builderKey' but existing builder is of type '${componentBuilder.type}'!")
+        val component = componentMap[id]
+        if (component != null) {
+            if (component.type() != builderKey) {
+                throw IllegalArgumentException("Incompatible Component Builder Type! Expected type '$builderKey' but existing builder is of type '${component.type()}'!")
             }
         }
-        val builder = implType.cast(componentBuilder) ?: run {
+        val builder = implType.cast(component) ?: run {
             val builderId = instantiateNewBuilder(id, Pair(builderKey, implType))
             getBuilder(builderId, implType) ?: throw IllegalStateException("Created builder $builderId of type '${type}' (impl: ${implType}), but it still wasn't available!")
         }
@@ -64,15 +67,16 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveSourceI
         return builder
     }
 
-    private fun <B : ComponentBuilder<out Component, Component>> instantiateNewBuilder(numericId: Long, builderTypeInfo: Pair<NamespacedKey, Class<B>>): Long {
+    private fun <B : Component> instantiateNewBuilder(numericId: Long, builderTypeInfo: Pair<NamespacedKey, Class<B>>): Long {
         val injector = Guice.createInjector(Stage.PRODUCTION, Module { binder: Binder ->
             binder.bind(WolfyUtils::class.java).toInstance(wolfyUtils)
             binder.bind(Long::class.java).toInstance(numericId)
             binder.bind(BuildContext::class.java).toInstance(this)
+            binder.bind(Component::class.java).toProvider(Providers.of(null))
         })
 
         val builder = injector.getInstance(builderTypeInfo.value)
-        componentBuilderMap[numericId] = builder!!
+        componentMap[numericId] = builder!!
         return numericId
     }
 
@@ -86,11 +90,11 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveSourceI
         return nextId()
     }
 
-    private fun <B : ComponentBuilder<out Component, Component>> getBuilderType(
+    private fun <B : Component> getBuilderType(
         id: String?,
         builderType: Class<B>
     ): kotlin.Pair<NamespacedKey, Class<B>> {
-        val registry = runtime.wolfyUtils.registries.guiComponentBuilders
+        val registry = runtime.wolfyUtils.registries.guiComponentTypes
         val key = registry.getKey(builderType)
         Preconditions.checkArgument(key != null, "Failed to create component '%s'! Cannot find builder '%s' in registry!", id, builderType.name)
         val builderImplType = registry[key] as Class<B> // We can be sure that the cast is valid, because the key is only non-null if and only if the type matches!
@@ -98,16 +102,18 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveSourceI
         return kotlin.Pair(key, builderImplType)
     }
 
-    fun registerBuilder(componentBuilder: ComponentBuilder<*,*>) : Long {
+    fun registerComponent(component: Component) : Long {
         val numericId = nextId()
-        componentIdAliases[componentBuilder.id()] = numericId
-        wolfyUtils.logger.fine("Register Component Builder: " + componentBuilder.id() + "  (" + numericId + ")")
-        componentBuilderMap[numericId] = componentBuilder
+        component.id?.let {
+            componentIdAliases[it] = numericId
+        }
+        wolfyUtils.logger.fine("Register Component Builder: " + component.id + "  (" + numericId + ")")
+        componentMap[numericId] = component
         return numericId
     }
 
-    fun getBuilder(id: Long) : ComponentBuilder<*,*>? {
-        return componentBuilderMap[id]
+    fun getBuilder(id: Long) : Component? {
+        return componentMap[id]
     }
 
     fun <B> getBuilder(id: Long, builderType: Class<B>) : B? {

@@ -62,9 +62,9 @@ class ReactivityNode<V>(
 
         fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>) : Boolean = true
 
-        interface Trigger : Type<Any>
+        class Trigger : Type<Any>
 
-        interface Signal<T> : Type<T>
+        class Signal<T> : Type<T>
 
         interface Effect<T> : Type<T> {
 
@@ -98,8 +98,19 @@ class ReactivityNode<V>(
     }
 
     enum class State {
+        /**
+         * Node is clean, it does not need to be updated
+         */
         CLEAN,
+
+        /**
+         * Node may have changed, needs to be checked
+         */
         CHECK,
+
+        /**
+         * Node has changed, needs to update
+         */
         DIRTY,
 
         DIRTY_MARKED

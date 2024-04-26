@@ -21,10 +21,11 @@ import com.google.common.base.Preconditions
 import com.wolfyscript.utilities.KeyedStaticId
 import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.gui.Component
-import com.wolfyscript.utilities.gui.Renderable
+import com.wolfyscript.utilities.functions.ReceiverConsumer
 import com.wolfyscript.utilities.gui.reactivity.Effect
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import com.wolfyscript.utilities.gui.rendering.RenderProperties
+import com.wolfyscript.utilities.gui.rendering.RenderPropertiesImpl
 import java.util.*
 
 /**
@@ -40,63 +41,42 @@ import java.util.*
  * Duplicate code may occur, but it can be put into static methods.
  *
  */
-abstract class AbstractComponentImpl(
-    internalID: String,
-    wolfyUtils: WolfyUtils,
-    parent: Component?,
-    properties: RenderProperties
-) : Component, Effect, Renderable {
+abstract class AbstractComponentImpl<C : Component>(
+    override val id: String,
+    final override val wolfyUtils: WolfyUtils,
+    override val parent: Component?
+) : Component, Effect {
 
-    private val type: NamespacedKey
-    private val internalID: String
+    private val type: NamespacedKey = wolfyUtils.identifiers.getNamespaced(javaClass)
     var nodeId: Long? = null
-    private val wolfyUtils: WolfyUtils
-    private val parent: Component?
-    private val properties: RenderProperties
+    override var properties: RenderProperties = RenderPropertiesImpl(PropertyPosition.def())
 
     init {
-        Preconditions.checkNotNull(internalID)
-        Preconditions.checkNotNull(wolfyUtils)
-        this.type = wolfyUtils.identifiers.getNamespaced(javaClass)
         Preconditions.checkNotNull(type, "Missing type key! One must be provided to the Component using the annotation: ${KeyedStaticId::class.java.name}")
-        this.internalID = internalID
-        this.wolfyUtils = wolfyUtils
-        this.parent = parent
-        this.properties = properties
     }
 
     override fun key(): NamespacedKey {
         return type
     }
 
-    override fun getID(): String {
-        return internalID
-    }
-
     override fun nodeId(): Long {
         return nodeId ?: -1
     }
 
-    override fun getWolfyUtils(): WolfyUtils {
-        return wolfyUtils
-    }
-
-    override fun parent(): Component? {
-        return parent
-    }
-
-    override fun properties(): RenderProperties {
-        return properties
+    override fun properties(config: ReceiverConsumer<RenderProperties>) {
+        with(config) {
+            properties.consume()
+        }
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
-        val that = other as AbstractComponentImpl
-        return type == that.type && internalID == that.internalID
+        val that = other as AbstractComponentImpl<C>
+        return type == that.type && id == that.id
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(type, internalID)
+        return Objects.hash(type, id)
     }
 }

@@ -19,11 +19,9 @@
 package com.wolfyscript.utilities.gui.components
 
 import com.wolfyscript.utilities.gui.BuildContext
-import com.wolfyscript.utilities.gui.Component
-import com.wolfyscript.utilities.gui.Renderable
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.functions.ReceiverFunction
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
@@ -39,11 +37,6 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
 
         fun build(parent: Component?) {
             val valueMemo = context.reactiveSource.createMemo(valueType.java) { value.get() }
-            val cases = cases.mapNotNull { case ->
-                context.getBuilder(case.builder)?.let {
-                    Pair(case.condition, it.create(parent)!!)
-                }
-            }
 
             val runtime = context.runtime
             context.reactiveSource.createEffect<Long> {
@@ -52,30 +45,32 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
                 val previousNode = this?.let { graph.getNode(it) }
                 val previousComponent = previousNode?.component
 
-                val parentNodeId = (parent as? AbstractComponentImpl)?.nodeId ?: 0
+                val parentNodeId = (parent as? AbstractComponentImpl<*>)?.nodeId ?: 0
 
-                if (previousComponent is Renderable) {
-                    previousComponent.remove(runtime, previousNode.id, parentNodeId)
-                }
+                previousComponent?.remove(runtime, previousNode.id, parentNodeId)
 
                 val value = valueMemo.get()
 
                 return@createEffect cases.find {
-                    with(it.first) {
+                    with(it.condition) {
                         value.apply()
                     }
-                }?.second?.let {
-                    if (it is Renderable) {
-                        it.insert(runtime, parentNodeId)
-                        return@createEffect it.nodeId()
+                }?.builderConsumer?.let { builderConsumer ->
+                    val builder = context.getOrCreateComponent(null, ComponentGroup::class.java)
+                    return@let with(builderConsumer) {
+                        builder.consume()
+                        builder.let {
+                            val comp = it
+                            comp.insert(runtime, parentNodeId)
+                            comp.nodeId()
+                        }
                     }
-                    return@createEffect -1
                 } ?: -1
             }
         }
     }
 
-    class Case<V>(val condition: ReceiverFunction<V?, Boolean>, val builder: Long)
+    class Case<V>(val condition: ReceiverFunction<V?, Boolean>, val builderConsumer: ReceiverConsumer<ComponentGroup>)
 
     override fun <V : Any> match(
         valueType: KClass<V>,
@@ -100,20 +95,11 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
 
         override fun case(
             condition: ReceiverFunction<V?, Boolean>,
-            builderConsumer: ReceiverConsumer<ComponentGroupBuilder>
+            builderConsumer: ReceiverConsumer<ComponentGroup>
         ) {
-            var id = -1L
-            val builder: ComponentGroupBuilder =
-                context.getOrCreateComponentBuilder(null, ComponentGroupBuilder::class.java) {
-                    id = it
-                }
-            with(builderConsumer) {
-                builder.consume()
-            }
-            matcher.cases.add(Case(condition, id))
+            matcher.cases.add(Case(condition, builderConsumer))
         }
 
     }
-
 
 }

@@ -15,34 +15,26 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers
 
-package com.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers;
-
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.bukkit.BukkitNamespacedKey;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.eval.context.EvalContext
 
 @KeyedStaticId(key = "int/papi")
-public class ValueProviderIntegerPAPI extends ValueProviderPlaceholderAPI<Integer> {
+class ValueProviderIntegerPAPI @JsonCreator protected constructor(@JsonProperty("value") value: String) :
+    ValueProviderPlaceholderAPI<Int>(
+        value
+    ) {
 
-    @JsonCreator
-    protected ValueProviderIntegerPAPI(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") String value) {
-        super(wolfyUtils, value);
-    }
-
-    @Override
-    public Integer getValue(EvalContext context) {
-        String result = getPlaceholderValue(context);
-        if (result.isBlank()) return 0;
-        try {
-            return Integer.valueOf(result);
-        } catch (NumberFormatException ex) {
-            return 0;
+    override fun getValue(context: EvalContext?): Int {
+        val result = getPlaceholderValue(context)
+        if (result.isBlank()) return 0
+        return try {
+            result.toInt()
+        } catch (ex: NumberFormatException) {
+            0
         }
     }
-
 }

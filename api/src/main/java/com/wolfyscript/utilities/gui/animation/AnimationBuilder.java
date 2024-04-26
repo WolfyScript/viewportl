@@ -18,8 +18,8 @@
 
 package com.wolfyscript.utilities.gui.animation;
 
-import com.wolfyscript.utilities.gui.Component;
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
+import com.wolfyscript.utilities.gui.components.Component;
+import com.wolfyscript.utilities.functions.ReceiverConsumer;
 import com.wolfyscript.utilities.gui.reactivity.Signal;
 
 public interface AnimationBuilder<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> {

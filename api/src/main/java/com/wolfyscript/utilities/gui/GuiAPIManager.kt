@@ -15,68 +15,64 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui
 
-package com.wolfyscript.utilities.gui;
-
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
-import com.wolfyscript.utilities.gui.reactivity.ReactiveSource;
-
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import java.util.*
+import java.util.function.Consumer
+import java.util.function.Function
+import java.util.stream.Stream
 
 /**
- * Handles the general GUI API and acts as an entry point to the whole creation of {@link Router}s and {@link ViewRuntime}s.<br>
- * It stores all the registered {@link Router}s and allows to register new clusters via builders.<br>
- * Additionally, it stores the {@link ViewRuntime}s that handle the views for players.
+ * Handles the general GUI API and acts as an entry point to the whole creation of [Router]s and [ViewRuntime]s.<br></br>
+ * It stores all the registered [Router]s and allows to register new clusters via builders.<br></br>
+ * Additionally, it stores the [ViewRuntime]s that handle the views for players.
  */
-public interface GuiAPIManager {
-
+interface GuiAPIManager {
     /**
-     * Registers a new router under the given id.<br>
-     * The builder consumer provides the newly constructed {@link RouterBuilder}, which can then be used inside that consumer.<br>
+     * Registers a new window with the specified id.<br></br>
+     * The consumer provides the newly constructed [Window], which can then be configured.<br></br>
      *
-     * @param id The unique id of the router to register.
-     * @param routerBuilderConsumer The consumer that provides the new builder.
+     * @param key The unique id of the window
+     * @param windowConsumer The consumer that provides the new window
      */
-    void registerGui(String guiID, ReceiverConsumer<RouterBuilder> routerBuilderConsumer);
+    fun registerGui(key: String, windowConsumer: ReceiverConsumer<Window>)
 
     /**
      * Registers a new router that it loads from the specified gui data directory.
-     * The consumer function provides that newly constructed {@link RouterBuilder}, which can be used to manipulate the builder.
+     * The consumer function provides that newly constructed [Window], which can be configured
      *
-     * @param id The unique id of the router to register.
-     * @param routerBuilderConsumer The function to manipulate the new builder.
+     * @param id The unique id of the window
+     * @param windowConsumer The function to configure the window
      */
-    void registerGuiFromFiles(String guiID, ReceiverConsumer<RouterBuilder> routerBuilderConsumer);
+    fun registerGuiFromFiles(key: String, windowConsumer: ReceiverConsumer<Window>)
 
     /**
-     * Gets the registered router with the specified id.<br>
+     * Gets the registered router with the specified id.<br></br>
      *
      * @param id The id of the router.
      * @return The registered router only if the id matches; otherwise empty Optional.
      */
-    Optional<Function<ViewRuntime, RouterBuilder>> getGui(String id);
+    fun getGui(id: String): Optional<Function<ViewRuntime, Window>>
 
     /**
      * Creates a new view for the specified viewers, with the specified GUI.
-     * <p>
-     *     The view is build async, so care should be taken to not access any main-thread objects (e.g. Entities, World, etc.).<br>
-     *     When such data is required inside the GUI use {@link ReactiveSource#resourceSync(BiFunction)}!
-     * </p>
-     * <p>
-     *     The callback is run right after the creation (or retrieval) of the view manager.<br>
-     *     <b>That means the callback may be ASYNC!</b>
-     * </p>
+     *
+     *
+     * The view is build async, so care should be taken to not access any main-thread objects (e.g. Entities, World, etc.).<br></br>
+     * When such data is required inside the GUI use [ReactiveSource.resourceSync]!
+     *
+     *
+     *
+     * The callback is run right after the creation (or retrieval) of the view manager.<br></br>
+     * **That means the callback may be ASYNC!**
+     *
      *
      * @param guiId The id of the gui.
-     * @param callback The callback, that is run right after the view manager has been created. <b>May be Async!</b>
+     * @param callback The callback, that is run right after the view manager has been created. **May be Async!**
      * @param viewers The viewers of this view.
      */
-    void createViewAndThen(String guiId, Consumer<ViewRuntime> callback, UUID... viewers);
+    fun createViewAndThen(guiId: String, callback: Consumer<ViewRuntime>, vararg viewers: UUID)
 
     /**
      * Creates (or gets the existing ViewManager) and opens the entry menu right after the creation of the view.
@@ -84,10 +80,9 @@ public interface GuiAPIManager {
      * @param guiID The id of the gui.
      * @param viewers The viewers of this view.
      */
-    void createViewAndOpen(String guiID, UUID... viewers);
+    fun createViewAndOpen(guiID: String, vararg viewers: UUID)
 
-    Stream<ViewRuntime> getViewManagersFor(UUID uuid);
+    fun getViewManagersFor(uuid: UUID): Stream<ViewRuntime>
 
-    Stream<ViewRuntime> getViewManagersFor(UUID uuid, String guiID);
-
+    fun getViewManagersFor(uuid: UUID, guiID: String): Stream<ViewRuntime>
 }

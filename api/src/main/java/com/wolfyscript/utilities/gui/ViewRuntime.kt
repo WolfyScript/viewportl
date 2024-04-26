@@ -15,28 +15,24 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui
 
-package com.wolfyscript.utilities.gui;
-
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.callback.TextInputCallback;
-import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback;
-import com.wolfyscript.utilities.gui.rendering.RenderContext;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.gui.callback.TextInputCallback
+import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback
+import com.wolfyscript.utilities.gui.router.Router
+import java.util.*
 
 /**
- * The {@link ViewRuntime}, as the name suggests, manages a view of the GUI for one or more players.<br>
- * It contains the custom Data object that stores all the required data of this view.<br>
+ * The [ViewRuntime], as the name suggests, manages a view of the GUI for one or more players.<br></br>
+ * It contains the custom Data object that stores all the required data of this view.<br></br>
  *
  * The view is immutable, so you need to create a new view each time you need to add a viewer or change the root.
  *
  */
-public interface ViewRuntime {
+interface ViewRuntime {
 
-    long id();
+    fun id(): Long
 
     /**
      * Opens a new menu under the specific path.
@@ -44,37 +40,30 @@ public interface ViewRuntime {
      *
      * @param path The path to the menu to open.
      */
-    void openNew(String... path);
+    fun openNew(vararg path: String)
 
     /**
      * Opens the entry menu of this root cluster.
      */
-    void openNew();
+    fun openNew()
 
     /**
-     * Opens the currently active menu without updating the history.<br>
+     * Opens the currently active menu without updating the history.<br></br>
      * In case there is no active menu it opens the entry of the root cluster.
      */
-    void open();
+    fun open()
 
     /**
      * Goes back to the previously opened menu and opens it.
      */
-    void openPrevious();
-
-    /**
-     * The router of this view manager.
-     *
-     * @return The root cluster of this view manager.
-     */
-    Router getRouter();
+    fun openPrevious()
 
     /**
      * Gets the currently active menu.
      *
      * @return The currently active menu.
      */
-    Optional<Window> getCurrentMenu();
+    val currentMenu: Window?
 
     /**
      * Gets the viewers that are handled by this view manager.
@@ -82,21 +71,20 @@ public interface ViewRuntime {
      *
      * @return A Set of the viewers, that are handled by this manager.
      */
-    Set<UUID> getViewers();
+    val viewers: Set<UUID>
 
     /**
      * The API instance this manager belongs to.
      *
      * @return The API instance of this manager.
      */
-    WolfyUtils getWolfyUtils();
+    val wolfyUtils: WolfyUtils
 
-    Optional<TextInputCallback> textInputCallback();
+    fun textInputCallback(): Optional<TextInputCallback>
 
-    void setTextInputCallback(TextInputCallback inputCallback);
+    fun setTextInputCallback(inputCallback: TextInputCallback)
 
-    Optional<TextInputTabCompleteCallback> textInputTabCompleteCallback();
+    fun textInputTabCompleteCallback(): Optional<TextInputTabCompleteCallback>
 
-    void setTextInputTabCompleteCallback(TextInputTabCompleteCallback textInputTabCompleteCallback);
-
+    fun setTextInputTabCompleteCallback(textInputTabCompleteCallback: TextInputTabCompleteCallback)
 }

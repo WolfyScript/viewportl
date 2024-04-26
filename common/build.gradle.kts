@@ -36,6 +36,3 @@ tasks.named<ProcessResources>("processResources") {
 repositories {
     mavenCentral()
 }
-kotlin {
-    jvmToolchain(17)
-}

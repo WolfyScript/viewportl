@@ -19,15 +19,15 @@
 package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.ItemHelper;
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
-import com.wolfyscript.utilities.gui.functions.SerializableFunction;
+import com.wolfyscript.utilities.functions.ReceiverConsumer;
+import com.wolfyscript.utilities.functions.ReceiverFunction;
 import com.wolfyscript.utilities.world.items.ItemStackConfig;
 
 public interface ButtonAnimationFrameBuilder extends AnimationFrameBuilder<ButtonAnimationFrame> {
 
     ButtonAnimationFrameBuilder stack(String itemId, ReceiverConsumer<ItemStackConfig> config);
 
-    ButtonAnimationFrameBuilder stack(SerializableFunction<ItemHelper, ItemStackConfig> config);
+    ButtonAnimationFrameBuilder stack(ReceiverFunction<ItemHelper, ItemStackConfig> config);
 
     @Override
     ButtonAnimationFrameBuilder duration(int duration);

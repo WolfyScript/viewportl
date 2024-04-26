@@ -18,10 +18,9 @@
 
 package com.wolfyscript.utilities.gui.components
 
-import com.wolfyscript.utilities.gui.Component
 import com.wolfyscript.utilities.gui.components.MatchChildComponentBuilder.Cases
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.functions.ReceiverFunction
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
@@ -35,9 +34,9 @@ interface MatchChildComponentBuilder {
 
     interface Cases<V : Any> {
 
-        fun case(condition: ReceiverFunction<V?, Boolean>, builderConsumer: ReceiverConsumer<ComponentGroupBuilder>)
+        fun case(condition: ReceiverFunction<V?, Boolean>, builderConsumer: ReceiverConsumer<ComponentGroup>)
 
-        fun select(condition: ReceiverFunction<V?, Boolean>, builderConsumer: ReceiverConsumer<ComponentGroupBuilder>) {
+        fun select(condition: ReceiverFunction<V?, Boolean>, builderConsumer: ReceiverConsumer<ComponentGroup>) {
             case(condition, builderConsumer)
         }
 

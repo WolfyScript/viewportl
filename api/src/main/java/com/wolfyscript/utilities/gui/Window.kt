@@ -15,112 +15,82 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui
 
-package com.wolfyscript.utilities.gui;
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.functions.ReceiverFunction
+import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
+import com.wolfyscript.utilities.gui.router.Router
+import net.kyori.adventure.text.Component
 
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.interaction.Interactable;
+interface Window : ReactiveSource {
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Set;
+    fun open()
 
-public interface Window extends Interactable {
-
-    void open(ViewRuntime viewManager);
-
-    void close(ViewRuntime viewManager);
+    fun close()
 
     /**
-     * Gets the type that is configured for this Window.<br>
-     * <b>When this is empty, then {@link #getSize()} will return the specified size.</b>
+     * Gets the type that is configured for this Window.<br></br>
+     * **When this is empty, then [.getSize] will return the specified size.**
      *
      * @return The specified type; or empty Optional when no type is configured.
-     * @see #getSize()
+     * @see .getSize
      */
-    Optional<WindowType> getType();
+    val type: WindowType?
 
     /**
-     * Gets the size that is configured for this Window.<br>
+     * Gets the size that is configured for this Window.<br></br>
      *
-     * <b>When this is empty, then {@link #getType()} will return the specified type.</b>
+     * **When this is empty, then [.getType] will return the specified type.**
      *
      * @return The specified size: or empty Optional when no size is configured.
      */
-    Optional<Integer> getSize();
+    var size: Int?
 
     /**
      * Returns the current title of this window.
-     *
-     * @return The title component.
      */
-    net.kyori.adventure.text.Component title();
+    var title: Component?
 
-    /**
-     * The children of this Component; or an empty Set if there are no children.
-     *
-     * @return The child Components of this Component.
-     */
-    Set<? extends Component> childComponents();
+    fun title(titleUpdate: ReceiverFunction<Component?, Component?>)
 
-    /**
-     * Gets the child at the relative path from this Component.<br>
-     * When the path is null or empty then it returns this Component instead.
-     *
-     * @param path The path to the child Component.
-     * @return The child at the specified path; or this Component when the path is null or empty.
-     */
-    default Optional<? extends Component> getChild(String... path) {
-        if (path == null || path.length == 0) return Optional.empty();
-        return getChild(path[0]).flatMap(component -> {
-            if (component instanceof Window window) {
-                return window.getChild(Arrays.copyOfRange(path, 1, path.length));
-            }
-            return Optional.empty();
-        });
-    }
-
-    /**
-     * Gets the direct child Component, or an empty Optional when it wasn't found.
-     *
-     * @param id The id of the child Component.
-     * @return The child Component; or empty Component.
-     */
-    Optional<? extends Component> getChild(String id);
+    var resourcePath: String?
 
     /**
      * Gets the unique id (in context of the parent) of this component.
      *
      * @return The id of this component.
      */
-    String getID();
+    val id: String?
 
     /**
      * Gets the global WolfyUtils instance, this component belongs to.
      *
      * @return The WolfyUtils API instance.
      */
-    WolfyUtils getWolfyUtils();
+    val wolfyUtils: WolfyUtils
 
     /**
      * The parent of this Component, or null if it is a root Component.
      *
      * @return The parent; or null if root Component.
      */
-    Router router();
+    val router: Router
+
+    fun routes(routerConfiguration: ReceiverConsumer<Router>)
 
     /**
      * Gets the width of this Component in slot count.
      *
      * @return The width in slots.
      */
-    int width();
+    fun width(): Int
 
     /**
      * Gets the width of this Component in slot count.
      *
      * @return The height in slots.
      */
-    int height();
-
+    fun height(): Int
 }

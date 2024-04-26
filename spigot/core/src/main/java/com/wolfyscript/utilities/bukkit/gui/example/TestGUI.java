@@ -3,6 +3,7 @@ package com.wolfyscript.utilities.bukkit.gui.example;
 import com.wolfyscript.utilities.WolfyCore;
 import com.wolfyscript.utilities.gui.GuiAPIManager;
 import com.wolfyscript.utilities.gui.example.CounterExampleKotlinKt;
+import com.wolfyscript.utilities.gui.example.StackEditorExampleKotlinKt;
 
 public class TestGUI {
 
@@ -15,7 +16,7 @@ public class TestGUI {
     public void initWithConfig() {
         GuiAPIManager manager = core.getWolfyUtils().getGuiManager();
         CounterExampleKotlinKt.registerExampleCounter(manager);
-        KtStackEditorExampleKt.register(manager);
+        StackEditorExampleKotlinKt.register(manager);
     }
 
 

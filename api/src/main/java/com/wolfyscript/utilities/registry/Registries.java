@@ -23,7 +23,6 @@ import com.wolfyscript.utilities.Keyed;
 import com.wolfyscript.utilities.NamespacedKey;
 import com.wolfyscript.utilities.WolfyCore;
 import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.Component;
 import com.wolfyscript.utilities.nbt.NBTTagConfig;
 import com.wolfyscript.utilities.eval.operator.Operator;
 import com.wolfyscript.utilities.eval.value_provider.ValueProvider;
@@ -118,9 +117,7 @@ public abstract class Registries {
         return nbtTagConfigs;
     }
 
-    public abstract TypeRegistry<Component> getGuiComponents();
-
-    public abstract RegistryGUIComponentBuilders getGuiComponentBuilders();
+    public abstract RegistryGUIComponentTypes getGuiComponentTypes();
 
     public ItemDataKeyRegistry getItemDataKeyRegistry() {
         return itemDataKeyRegistry;

@@ -20,7 +20,7 @@ package com.wolfyscript.utilities.gui.rendering
 
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
-import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.components.Component
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
 import com.wolfyscript.utilities.gui.components.AbstractComponentImpl
 import com.wolfyscript.utilities.gui.model.UpdateInformation
@@ -36,7 +36,7 @@ class RenderingGraph(private val runtime: ViewRuntimeImpl) {
     fun addNode(component: Component) : Long {
         val id = ++nodeCount
         nodes[id] = RenderingNode(id, component)
-        if (component is AbstractComponentImpl) {
+        if (component is AbstractComponentImpl<*>) {
             component.nodeId = id
         }
         return id

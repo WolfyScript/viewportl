@@ -1,86 +1,101 @@
 package com.wolfyscript.utilities.gui.components
 
+import com.fasterxml.jackson.annotation.JacksonInject
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.inject.Inject
 import com.wolfyscript.utilities.KeyedStaticId
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.BuildContext
+import com.wolfyscript.utilities.gui.ViewRuntime
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
 import com.wolfyscript.utilities.gui.animation.Animation
-import com.wolfyscript.utilities.gui.animation.AnimationBuilder
 import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrame
-import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrameBuilder
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
-import com.wolfyscript.utilities.gui.components.ButtonBuilderImpl.IconBuilderImpl
-import com.wolfyscript.utilities.gui.rendering.RenderProperties
+import com.wolfyscript.utilities.gui.interaction.InteractionResult
+import com.wolfyscript.utilities.gui.model.UpdateInformation
+import com.wolfyscript.utilities.gui.reactivity.SignalGet
+import com.wolfyscript.utilities.gui.reactivity.createMemo
+import com.wolfyscript.utilities.gui.reactivity.createSignal
 import com.wolfyscript.utilities.world.items.ItemStackConfig
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import java.util.*
 import java.util.function.Supplier
+import javax.annotation.Nullable
 
+@ComponentImplementation(base = Button::class)
 @KeyedStaticId(key = "button")
-class ButtonImpl : AbstractComponentImpl, Button {
-    private val interactionCallback: InteractionCallback
-    private val icon: ButtonIcon
-    private val soundFunction: Supplier<Optional<Sound>>
-    private val animation: Animation<ButtonAnimationFrame>?
+class ButtonImpl @JsonCreator @Inject constructor(
+    @JsonProperty("id") id: String,
+    @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,
+    @JacksonInject("context") private val context: BuildContext,
+    @Nullable @JacksonInject("parent") parent: Component? = null,
+) : AbstractComponentImpl<Button>(id, wolfyUtils, parent), Button {
 
-    internal constructor(
-        wolfyUtils: WolfyUtils?,
-        id: String?,
-        parent: Component?,
-        icon: IconBuilderImpl,
-        soundFunction: Supplier<Optional<Sound>>,
-        interactionCallback: InteractionCallback,
-        properties: RenderProperties?,
-        animation: AnimationBuilder<ButtonAnimationFrame, ButtonAnimationFrameBuilder>?
-    ) : super(id!!, wolfyUtils!!, parent, properties!!) {
-        this.icon = icon.create(this)
-        this.interactionCallback = interactionCallback
-        this.soundFunction = soundFunction
-        this.animation = animation?.build(this)
+    private val animation: Animation<ButtonAnimationFrame>? = null
+
+    override var icon: ButtonIcon = DynamicIcon(wolfyUtils, context, this)
+    override var onClick: InteractionCallback = InteractionCallback { _, _ ->
+        InteractionResult.cancel(true)
     }
 
-    private constructor(button: ButtonImpl) : super(
-        button.id,
-        button.wolfyUtils,
-        button.parent(),
-        button.properties()
-    ) {
-        this.interactionCallback = button.interactionCallback
-        this.icon = button.icon
-        this.soundFunction = button.soundFunction
-        this.animation = button.animation // TODO: Properly copy
+    override fun icon(iconConsumer: ReceiverConsumer<ButtonIcon>) {
+        with(iconConsumer) {
+            icon.consume()
+        }
     }
 
-    override fun icon(): ButtonIcon {
-        return icon
+    override var sound: Sound? = Sound.sound(Key.key("minecraft:ui.button.click"), Sound.Source.MASTER, 0.25f, 1f)
+
+    override fun insert(runtime: ViewRuntime, parentNode: Long) {
+        runtime as ViewRuntimeImpl
+        val id = runtime.renderingGraph.addNode(this)
+        runtime.renderingGraph.insertNodeChild(id, parentNode)
     }
 
-    override fun sound(): Optional<Sound> {
-        return soundFunction.get()
+    override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
+        (runtime as ViewRuntimeImpl).renderingGraph.removeNode(nodeId)
     }
 
-    override fun interactCallback(): InteractionCallback {
-        return interactionCallback
+    override fun finalize() {
+        icon.finalize()
     }
 
-    override fun insert(viewRuntimeImpl: ViewRuntimeImpl, parentNode: Long) {
-        val id = viewRuntimeImpl.renderingGraph.addNode(this)
-        viewRuntimeImpl.renderingGraph.insertNodeChild(id, parentNode)
-    }
+    class DynamicIcon internal constructor(
+        @JacksonInject("wolfyUtils") private val wolfyUtils: WolfyUtils,
+        @JacksonInject("context") private val context: BuildContext,
+        @JacksonInject("button") private val button: Button,
+    ) : ButtonIcon {
 
-    override fun remove(viewRuntimeImpl: ViewRuntimeImpl, nodeId: Long, parentNode: Long) {
-        viewRuntimeImpl.renderingGraph.removeNode(nodeId)
-    }
+        override var stack: ItemStackConfig = wolfyUtils.core.platform.items.createStackConfig(wolfyUtils, "air")
+        override var resolvers: TagResolver = TagResolver.empty()
 
-    class DynamicIcon internal constructor(private val config: ItemStackConfig, private val resolvers: TagResolver) :
-        ButtonIcon {
-        override fun getStack(): ItemStackConfig {
-            return config
+        override fun stack(stackSupplier: Supplier<ItemStackConfig>) {
+            stack = stackSupplier.get()
         }
 
-        override fun getResolvers(): TagResolver {
-            return resolvers
+        override fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>) {
+            context.reactiveSource.createEffect<Unit> {
+                val newStack = wolfyUtils.core.platform.items.createStackConfig(wolfyUtils, itemId)
+                with(stackConfig) { newStack.consume() }
+                stack = newStack
+
+                (context.runtime as ViewRuntimeImpl).incomingUpdate(object : UpdateInformation {
+                    override fun updated(): List<Long> = listOf(button.nodeId())
+                })
+            }
+        }
+
+        override fun resolvers(resolverSupplier: Supplier<TagResolver>) {
+            context.reactiveSource.createEffect<Unit> {
+                resolvers = resolverSupplier.get()
+
+                (context.runtime as ViewRuntimeImpl).incomingUpdate(object : UpdateInformation {
+                    override fun updated(): List<Long> = listOf(button.nodeId())
+                })
+            }
         }
     }
 }

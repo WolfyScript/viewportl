@@ -15,36 +15,27 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
-
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.eval.operator.BoolOperator;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.eval.context.EvalContext
+import com.wolfyscript.utilities.eval.operator.BoolOperator
 
 @KeyedStaticId(key = "conditioned")
-public class ValueProviderConditioned<V> extends AbstractValueProvider<V> {
-
-    private final BoolOperator condition;
-    @JsonProperty("then")
-    private final ValueProvider<V> thenValue;
-    @JsonProperty("else")
-    private final ValueProvider<V> elseValue;
-
-    @JsonCreator
-    public ValueProviderConditioned(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("condition") BoolOperator condition, @JsonProperty("then") ValueProvider<V> thenValue, @JsonProperty("else") ValueProvider<V> elseValue) {
-        super(wolfyUtils);
-        this.condition = condition;
-        this.thenValue = thenValue;
-        this.elseValue = elseValue;
-    }
-
-    @Override
-    public V getValue(EvalContext context) {
-        return condition.evaluate(context) ? thenValue.getValue() : elseValue.getValue();
+class ValueProviderConditioned<V> @JsonCreator constructor(
+    @param:JsonProperty(
+        "condition"
+    ) private val condition: BoolOperator,
+    @field:JsonProperty("then") @param:JsonProperty("then") private val thenValue: ValueProvider<V>,
+    @field:JsonProperty(
+        "else"
+    ) @param:JsonProperty(
+        "else"
+    ) private val elseValue: ValueProvider<V>
+) : AbstractValueProvider<V>() {
+    override fun getValue(context: EvalContext?): V {
+        return if (condition.evaluate(context)) thenValue.value else elseValue.value
     }
 }

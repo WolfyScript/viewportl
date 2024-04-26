@@ -15,29 +15,19 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers
 
-package com.wolfyscript.utilities.compatibility.plugins.placeholderapi.value_providers;
-
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.bukkit.BukkitNamespacedKey;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.eval.context.EvalContext
 
 @KeyedStaticId(key = "string/papi")
-public class ValueProviderStringPAPI extends ValueProviderPlaceholderAPI<String> {
-
-
-    @JsonCreator
-    protected ValueProviderStringPAPI(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") String value) {
-        super(wolfyUtils, value);
+class ValueProviderStringPAPI @JsonCreator protected constructor(@JsonProperty("value") value: String) :
+    ValueProviderPlaceholderAPI<String>(
+        value
+    ) {
+    override fun getValue(context: EvalContext?): String {
+        return getPlaceholderValue(context)
     }
-
-    @Override
-    public String getValue(EvalContext context) {
-        return getPlaceholderValue(context);
-    }
-
 }

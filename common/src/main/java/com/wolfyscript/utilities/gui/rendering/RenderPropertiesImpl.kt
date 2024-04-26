@@ -18,9 +18,7 @@
 
 package com.wolfyscript.utilities.gui.rendering
 
-class RenderPropertiesImpl(private val position: PropertyPosition) : RenderProperties {
-
-    override fun position(): PropertyPosition = position
+class RenderPropertiesImpl(override var position: PropertyPosition) : RenderProperties {
 
     override fun width(): PropertyWidth {
         TODO("Not yet implemented")

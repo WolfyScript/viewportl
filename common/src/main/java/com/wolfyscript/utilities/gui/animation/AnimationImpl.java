@@ -1,6 +1,7 @@
 package com.wolfyscript.utilities.gui.animation;
 
 import com.wolfyscript.utilities.gui.*;
+import com.wolfyscript.utilities.gui.components.Component;
 import com.wolfyscript.utilities.gui.reactivity.Effect;
 import com.wolfyscript.utilities.gui.reactivity.Signal;
 import com.wolfyscript.utilities.gui.rendering.RenderContext;
@@ -25,7 +26,7 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
                     int frame = frameIndex.get();
                     if (frames().size() <= frame) {
                         task.cancel();
-                        if (owner() instanceof Effect signalledOwner) {
+                        if (owner() instanceof Effect) {
                             // TODO
                         }
                         return;

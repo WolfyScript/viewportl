@@ -1,158 +1,132 @@
-package com.wolfyscript.utilities.gui;
+package com.wolfyscript.utilities.gui
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.InjectableValues;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
-import com.wolfyscript.jackson.dataformat.hocon.HoconMapper;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.gui.functions.ReceiverConsumer;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import com.fasterxml.jackson.databind.InjectableValues
+import com.google.common.base.Preconditions
+import com.google.common.collect.BiMap
+import com.google.common.collect.HashBiMap
+import com.google.common.collect.Multimap
+import com.google.common.collect.MultimapBuilder
+import com.wolfyscript.jackson.dataformat.hocon.HoconMapper
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.router.Router
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import java.io.File
+import java.io.IOException
+import java.util.*
+import java.util.function.Consumer
+import java.util.function.Function
+import java.util.regex.Pattern
+import java.util.stream.Stream
+import kotlin.collections.set
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
+class GuiAPIManagerImpl(private val wolfyUtils: WolfyUtils) : GuiAPIManager {
+    private val clustersMap: BiMap<String, Router> = HashBiMap.create()
+    private val entriesMap: BiMap<String, Function<ViewRuntime, Window>> = HashBiMap.create()
 
-public class GuiAPIManagerImpl implements GuiAPIManager {
+    private var guiDataSubFolder: File
 
-    private static final Pattern GUI_FILE_PATTERN = Pattern.compile(".*\\.(conf|json)");
+    private val VIEW_RUNTIMES: Long2ObjectMap<ViewRuntime> = Long2ObjectOpenHashMap()
+    private val CACHED_VIEW_RUNTIMES: Multimap<String, Long> = MultimapBuilder.hashKeys().hashSetValues().build()
+    private val VIEW_RUNTIMES_PER_PLAYER: Multimap<UUID, Long> = MultimapBuilder.hashKeys().hashSetValues().build()
 
-    private final WolfyUtils wolfyUtils;
-    private final BiMap<String, Router> clustersMap = HashBiMap.create();
-    private final BiMap<String, Function<ViewRuntime, RouterBuilder>> entriesMap = HashBiMap.create();
-
-    private File guiDataSubFolder;
-    private String guiResourceDir;
-
-    private final Long2ObjectMap<ViewRuntime> VIEW_RUNTIMES = new Long2ObjectOpenHashMap<>();
-    private final Multimap<String, Long> CACHED_VIEW_RUNTIMES = MultimapBuilder.hashKeys().hashSetValues().build();
-    private final Multimap<UUID, Long> VIEW_RUNTIMES_PER_PLAYER = MultimapBuilder.hashKeys().hashSetValues().build();
-
-    public GuiAPIManagerImpl(WolfyUtils wolfyUtils) {
-        this.wolfyUtils = wolfyUtils;
-        this.guiDataSubFolder = new File(wolfyUtils.getDataFolder(), "gui");
-        this.guiResourceDir = "com/wolfyscript/utilities/gui/example"; // TODO: Customization
+    init {
+        this.guiDataSubFolder = File(wolfyUtils.dataFolder, "gui")
+        // TODO: Customization
     }
 
-    public void setGuiResourceDir(String path) {
-        this.guiResourceDir = path;
+    override fun getViewManagersFor(uuid: UUID): Stream<ViewRuntime> {
+        return VIEW_RUNTIMES_PER_PLAYER[uuid].stream().map { VIEW_RUNTIMES[it] }
     }
 
-    public void setGuiDataDir(File dir) {
-        this.guiDataSubFolder = dir;
+    override fun getViewManagersFor(uuid: UUID, guiID: String): Stream<ViewRuntime> {
+        val ids = CACHED_VIEW_RUNTIMES[guiID]
+        return VIEW_RUNTIMES_PER_PLAYER[uuid].stream()
+            .filter { ids.contains(it) }
+            .map { VIEW_RUNTIMES[it] }
     }
 
-    @Override
-    public Stream<ViewRuntime> getViewManagersFor(UUID uuid) {
-        return VIEW_RUNTIMES_PER_PLAYER.get(uuid).stream().map(id -> VIEW_RUNTIMES.get(id));
-    }
-
-    @Override
-    public Stream<ViewRuntime> getViewManagersFor(UUID uuid, String guiID) {
-        Collection<Long> ids = CACHED_VIEW_RUNTIMES.get(guiID);
-        return VIEW_RUNTIMES_PER_PLAYER.get(uuid).stream()
-                .filter(ids::contains)
-                .map(id -> VIEW_RUNTIMES.get(id));
-    }
-
-    @Override
-    public void registerGui(String id, ReceiverConsumer<RouterBuilder> consumer) {
+    override fun registerGui(key: String, windowConsumer: ReceiverConsumer<Window>) {
         // TODO: maybe wrap in an extra object?
-        registerGui(id, (viewManager) -> {
-            BuildContext buildContext = new BuildContext(viewManager, ((ViewRuntimeImpl) viewManager).getReactiveSource(), wolfyUtils);
-
-            RouterBuilder builder = new RouterBuilderImpl(id, wolfyUtils, buildContext);
-            consumer.consume(builder);
-            return builder;
-        });
+        registerGui(key) { runtime ->
+            val buildContext = BuildContext(runtime, (runtime as ViewRuntimeImpl).reactiveSource, wolfyUtils)
+            val window: Window = WindowImpl(key, 54, null, wolfyUtils, buildContext)
+            with(windowConsumer) { window.consume() }
+            window
+        }
     }
 
-    @Override
-    public void createViewAndThen(String guiId, Consumer<ViewRuntime> callback, UUID... uuids) {
-        getGui(guiId).ifPresent(constructor -> {
-            Set<UUID> viewers = Set.of(uuids);
-            Collection<Long> viewManagersForID = CACHED_VIEW_RUNTIMES.get(guiId);
-
-            viewManagersForID.stream()
-                    .map(id -> VIEW_RUNTIMES.get(id))
-                    .filter(viewManager -> viewManager.getViewers().equals(viewers))
-                    .findFirst()
-                    .ifPresentOrElse(callback, () -> {
-                        // Construct the new view manager async, so it doesn't affect the main thread!
-                        wolfyUtils.getCore().getPlatform().getScheduler().asyncTask(wolfyUtils, () -> {
-                            ViewRuntimeImpl viewManager = new ViewRuntimeImpl(wolfyUtils, constructor, viewers);
-
-                            synchronized (VIEW_RUNTIMES) {
-                                viewManagersForID.add(viewManager.id);
-                                VIEW_RUNTIMES.put(viewManager.id, viewManager);
-                            }
-                            synchronized (VIEW_RUNTIMES_PER_PLAYER) {
-                                for (UUID viewer : viewers) {
-                                    VIEW_RUNTIMES_PER_PLAYER.put(viewer, viewManager.id);
-                                }
-                            }
-                            callback.accept(viewManager);
-                        });
-                    });
-        });
+    override fun createViewAndThen(guiId: String, callback: Consumer<ViewRuntime>, vararg viewers: UUID) {
+        getGui(guiId).ifPresent { constructor ->
+            val viewerSet = mutableSetOf(*viewers)
+            val viewManagersForID = CACHED_VIEW_RUNTIMES[guiId]
+            val runtime = viewManagersForID.map { VIEW_RUNTIMES[it] }.firstOrNull { it.viewers == viewerSet }
+            if (runtime != null) {
+                callback.accept(runtime)
+            } else {
+                // Construct the new view manager async, so it doesn't affect the main thread!
+                wolfyUtils.core.platform.scheduler.asyncTask(wolfyUtils) {
+                    val viewManager = ViewRuntimeImpl(wolfyUtils, constructor, viewerSet)
+                    synchronized(VIEW_RUNTIMES) {
+                        viewManagersForID.add(viewManager.id)
+                        VIEW_RUNTIMES.put(viewManager.id, viewManager)
+                    }
+                    synchronized(VIEW_RUNTIMES_PER_PLAYER) {
+                        for (viewer in viewerSet) {
+                            VIEW_RUNTIMES_PER_PLAYER.put(viewer, viewManager.id)
+                        }
+                    }
+                    callback.accept(viewManager)
+                }
+            }
+        }
     }
 
-    protected void registerGui(String id, Function<ViewRuntime, RouterBuilder> constructor) {
-        Preconditions.checkArgument(!clustersMap.containsKey(id), "A cluster with the id '" + id + "' is already registered!");
-        entriesMap.put(id, constructor);
+    protected fun registerGui(id: String, constructor: Function<ViewRuntime, Window>) {
+        Preconditions.checkArgument(!clustersMap.containsKey(id), "A cluster with the id '$id' is already registered!")
+        entriesMap[id] = constructor
     }
 
-    @Override
-    public void createViewAndOpen(String guiId, UUID... players) {
-        createViewAndThen(guiId, ViewRuntime::open, players);
+    override fun createViewAndOpen(guiID: String, vararg viewers: UUID) {
+        createViewAndThen(guiID, { it.open() }, *viewers)
     }
 
-    @Override
-    public Optional<Function<ViewRuntime, RouterBuilder>> getGui(String id) {
-        return Optional.ofNullable(entriesMap.get(id));
+    override fun getGui(id: String): Optional<Function<ViewRuntime, Window>> {
+        return Optional.ofNullable(
+            entriesMap[id]
+        )
     }
 
-    @Override
-    public void registerGuiFromFiles(String id, ReceiverConsumer< RouterBuilder> consumer) {
-        HoconMapper mapper = wolfyUtils.getJacksonMapperUtil().getGlobalMapper(HoconMapper.class);
-        wolfyUtils.exportResources(guiResourceDir + "/" + id, new File(guiDataSubFolder, "/includes/" + id), true, GUI_FILE_PATTERN);
+    override fun registerGuiFromFiles(key: String, windowConsumer: ReceiverConsumer<Window>) {
+        val mapper = wolfyUtils.jacksonMapperUtil.getGlobalMapper(HoconMapper::class.java)
 
-        registerGui(id, viewManager -> {
+        registerGui(key) { runtime ->
             try {
-                File file = new File(guiDataSubFolder, id + "/entry.conf"); // Look for user-override
+                var file = File(guiDataSubFolder, "$key/entry.conf") // Look for user-override
                 if (!file.exists()) {
-                    file = new File(guiDataSubFolder, "includes/" + id + "/entry.conf"); // Fall back to includes version
-                    if (!file.exists() || !file.isFile())
-                        throw new IllegalArgumentException("Cannot find gui index file! Expected: " + file.getPath());
+                    file = File(guiDataSubFolder, "includes/$key/entry.conf") // Fall back to includes version
+                    require(!(!file.exists() || !file.isFile)) { "Cannot find gui index file! Expected: " + file.path }
                 }
 
-                BuildContext context = new BuildContext(viewManager, ((ViewRuntimeImpl) viewManager).getReactiveSource(), wolfyUtils);
-                var injectableValues = new InjectableValues.Std();
-                injectableValues.addValue("parent", null);
-                injectableValues.addValue(WolfyUtils.class, wolfyUtils);
-                injectableValues.addValue("wolfyUtils", wolfyUtils);
-                injectableValues.addValue("context", context);
-                injectableValues.addValue(BuildContext.class, context);
+                val context = BuildContext(runtime, (runtime as ViewRuntimeImpl).reactiveSource, wolfyUtils)
+                val injectableValues = InjectableValues.Std()
+                injectableValues.addValue("parent", null)
+                injectableValues.addValue(WolfyUtils::class.java, wolfyUtils)
+                injectableValues.addValue("wolfyUtils", wolfyUtils)
+                injectableValues.addValue("context", context)
+                injectableValues.addValue(BuildContext::class.java, context)
 
-                RouterBuilder builder = mapper.readerFor(new TypeReference<RouterBuilderImpl>() {
-                }).with(injectableValues).readValue(file);
-                consumer.consume(builder);
-                return builder;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                val window = mapper.readerFor(Window::class.java).with(injectableValues).readValue<Window>(file)
+                with(windowConsumer) { window.consume() }
+                return@registerGui window
+            } catch (e: IOException) {
+                throw RuntimeException(e)
             }
-        });
+        }
     }
 
+    companion object {
+        private val GUI_FILE_PATTERN: Pattern = Pattern.compile(".*\\.(conf|json)")
+    }
 }

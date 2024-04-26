@@ -8,6 +8,7 @@ import com.wolfyscript.utilities.bukkit.world.items.BukkitItemStackConfig
 import com.wolfyscript.utilities.gui.*
 import com.wolfyscript.utilities.gui.components.Button
 import com.wolfyscript.utilities.gui.components.ComponentGroup
+import com.wolfyscript.utilities.gui.components.Outlet
 import com.wolfyscript.utilities.gui.components.StackInputSlot
 import com.wolfyscript.utilities.gui.model.UpdateInformation
 import com.wolfyscript.utilities.gui.rendering.Renderer
@@ -16,6 +17,7 @@ import com.wolfyscript.utilities.platform.adapters.ItemStack
 import com.wolfyscript.utilities.versioning.MinecraftVersion
 import com.wolfyscript.utilities.versioning.ServerVersion
 import com.wolfyscript.utilities.world.items.ItemStackConfig
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.event.inventory.InventoryType
@@ -30,24 +32,26 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
     override fun changeWindow(window: Window) {
         val guiHolder: GuiHolder = GuiHolderImpl(window, runtime, null)
         val holder = BukkitInventoryGuiHolder(runtime, guiHolder)
-        val title: net.kyori.adventure.text.Component = window.title()
+        val title: Component? = window.title
 
         inventory = if (window.wolfyUtils.core.platform.type.isPaper()) {
             // Paper has direct Adventure support, so use it for better titles!
-            getInventoryType(window).map { inventoryType: InventoryType? ->
-                Bukkit.createInventory(holder, inventoryType!!, title)
-            }.orElseGet {
-                Bukkit.createInventory(holder, window.size.orElseThrow {
-                    IllegalStateException("Invalid window type/size definition.")
-                }, title)
+            getInventoryType(window)?.let { inventoryType ->
+                title?.let { Bukkit.createInventory(holder, inventoryType, it) } ?: Bukkit.createInventory(holder, inventoryType)
+            } ?: run {
+                if (title != null) {
+                    return@run Bukkit.createInventory(holder, window.size ?: throw IllegalStateException("Invalid window type/size definition."), title)
+                }
+                return@run Bukkit.createInventory(holder, window.size ?: throw IllegalStateException("Invalid window type/size definition."))
             }
         } else {
-            getInventoryType(window).map { inventoryType: InventoryType? ->
-                Bukkit.createInventory(holder, inventoryType!!, BukkitComponentSerializer.legacy().serialize(title))
-            }.orElseGet {
-                Bukkit.createInventory(holder, window.size.orElseThrow {
-                    IllegalStateException("Invalid window type/size definition.")
-                }, BukkitComponentSerializer.legacy().serialize(title))
+            getInventoryType(window)?.let { inventoryType ->
+                title?.let { Bukkit.createInventory(holder, inventoryType, BukkitComponentSerializer.legacy().serialize(it)) } ?: Bukkit.createInventory(holder, inventoryType)
+            } ?: run {
+                if (title != null) {
+                    return@run Bukkit.createInventory(holder, window.size ?: throw IllegalStateException("Invalid window type/size definition."), BukkitComponentSerializer.legacy().serialize(title))
+                }
+                return@run Bukkit.createInventory(holder, window.size ?: throw IllegalStateException("Invalid window type/size definition."))
             }
         }
         holder.setActiveInventory(inventory)
@@ -60,7 +64,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
         cachedProperties[0] = CachedNodeRenderProperties(0, mutableSetOf(0))
         context.setSlotOffset(0)
 
-        renderChildren(0, context)
+        renderChildren(0, context) // TODO: Debug!! No children can be found. Probably because of router changes!
 
         runtime.viewers.forEach {
             Bukkit.getPlayer(it)?.openInventory(inventory!!)
@@ -81,6 +85,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
             when (val component = it.component) {
                 is Button -> InventoryButtonComponentRenderer().render(context, component)
                 is ComponentGroup -> InventoryGroupComponentRenderer().render(context, component)
+                is Outlet -> component.component?.apply { InventoryGroupComponentRenderer().render(context, this) }
                 is StackInputSlot -> {}
             }
             cachedProperties[child] = CachedNodeRenderProperties(position, mutableSetOf(position))
@@ -92,7 +97,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
     }
 
     private fun calculatePosition(node: RenderingNode, context: InvGUIRenderContext): Int {
-        val staticPos = node.component.properties().position().slotPositioning()?.slot() ?: (context.currentOffset() + 1)
+        val staticPos = node.component.properties.position.slotPositioning()?.slot() ?: (context.currentOffset() + 1)
         context.setSlotOffset(staticPos)
 
         cachedProperties[node.id] = CachedNodeRenderProperties(staticPos, mutableSetOf(staticPos))
@@ -100,19 +105,10 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
     }
 
     override fun update(information: UpdateInformation) {
-
-        if (information.updateTitle()) {
-            runtime.viewers.forEach { viewer ->
-                runtime.currentMenu.ifPresent {
-                    updateTitle(viewer, it.title())
-                }
-            }
-        }
-
         val context = InvGUIRenderContext(this)
         for ((_, addedNode) in information.added()) {
             runtime.renderingGraph.getNode(addedNode)?.let { node ->
-                val slotPositioning = if (node.component.properties().position().slotPositioning() == null) {
+                val slotPositioning = if (node.component.properties.position.slotPositioning() == null) {
                     // Get offset from parent TODO
                     0
                 } else {
@@ -126,7 +122,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
 
         for (updated in information.updated()) {
             runtime.renderingGraph.getNode(updated)?.let { node ->
-                val slotPositioning = if (node.component.properties().position().slotPositioning() == null) {
+                val slotPositioning = if (node.component.properties.position.slotPositioning() == null) {
                     // Get offset from parent TODO
                     0
                 } else {
@@ -160,8 +156,8 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
         }
     }
 
-    private fun getInventoryType(window: Window): Optional<InventoryType> {
-        return window.type.map { type: WindowType? ->
+    private fun getInventoryType(window: Window): InventoryType? {
+        return window.type?.let { type: WindowType? ->
             when (type) {
                 WindowType.CUSTOM -> InventoryType.CHEST
                 WindowType.HOPPER -> InventoryType.HOPPER
@@ -172,16 +168,23 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
         }
     }
 
+    override fun updateTitle(component: Component?) {
+        inventory?.viewers?.forEach {
+            updateTitle(it.uniqueId, component)
+        }
+    }
+
     private fun updateTitle(
         player: UUID,
-        component: net.kyori.adventure.text.Component
+        component: Component?
     ) {
         Bukkit.getPlayer(player)?.let { bukkitPlayer ->
             if (ServerVersion.isAfterOrEq(MinecraftVersion.of(1, 20, 0))) {
-                bukkitPlayer.openInventory.title =
-                    net.kyori.adventure.platform.bukkit.BukkitComponentSerializer.legacy().serialize(
-                        component
-                    )
+                if (component == null) {
+                    bukkitPlayer.openInventory.title = bukkitPlayer.openInventory.originalTitle
+                } else {
+                    bukkitPlayer.openInventory.title = net.kyori.adventure.platform.bukkit.BukkitComponentSerializer.legacy().serialize(component)
+                }
             } else {
                 InventoryUpdate.updateInventory(
                     (runtime.wolfyUtils.core as WolfyCoreCommon).wolfyUtils.plugin,
@@ -204,7 +207,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
             )
         }
 
-        inventory!!.setItem(i, itemStackConfig.constructItemStack().bukkitRef)
+        inventory!!.setItem(i, itemStackConfig.constructItemStack()?.bukkitRef)
     }
 
     fun renderStack(position: Int, itemStack: ItemStack?) {
@@ -236,11 +239,11 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
                 null,
                 runtime.wolfyUtils.chat.miniMessage,
                 itemStackContext.resolvers()
-            ).bukkitRef
+            )?.bukkitRef
         )
     }
 
-    fun setNativeStack(i: Int, itemStack: org.bukkit.inventory.ItemStack?) {
+    private fun setNativeStack(i: Int, itemStack: org.bukkit.inventory.ItemStack?) {
         //checkIfSlotInBounds(i);
         if (itemStack == null) {
             inventory!!.setItem(i, null)

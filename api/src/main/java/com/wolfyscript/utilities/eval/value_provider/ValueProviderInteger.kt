@@ -15,13 +15,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
+import com.wolfyscript.utilities.eval.context.EvalContext
 
-import com.wolfyscript.utilities.eval.context.EvalContext;
-
-public interface ValueProviderInteger extends ValueProvider<Integer> {
-
-    @Override
-    Integer getValue(EvalContext context);
+interface ValueProviderInteger : ValueProvider<Int> {
+    override fun getValue(context: EvalContext?): Int
 }

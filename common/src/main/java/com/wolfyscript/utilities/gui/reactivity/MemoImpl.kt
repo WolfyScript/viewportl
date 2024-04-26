@@ -25,6 +25,10 @@ class MemoImpl<V : Any>(val id: NodeId, private val type: KClass<V>) : Memo<V>{
 
     override fun get(): V? {
         id.runtime.reactiveSource.subscribe(id)
+        return getNoTracking()
+    }
+
+    override fun getNoTracking(): V? {
         val value = id.runtime.reactiveSource.getValue<Any>(id)
         if (type.isInstance(value)) {
             return type.safeCast(value)

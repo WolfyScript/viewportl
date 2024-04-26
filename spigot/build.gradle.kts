@@ -6,6 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.wolfyscript.devtools.docker.run") version "2.0-SNAPSHOT"
     id("com.wolfyscript.devtools.docker.minecraft_servers") version "2.0-SNAPSHOT"
+    kotlin("jvm")
 }
 
 description = "wolfyutils-spigot"
@@ -21,6 +22,7 @@ dependencies {
     api(libs.de.tr7zw.item.nbt.api)
 
     testImplementation(project(":spigot:core"))
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.named<ProcessResources>("processResources") {
@@ -106,4 +108,10 @@ tasks.named<ShadowJar>("shadowJar") {
 
 tasks.named("test") {
     dependsOn.add(tasks.named("shadowJar"))
+}
+repositories {
+    mavenCentral()
+}
+kotlin {
+    jvmToolchain(17)
 }

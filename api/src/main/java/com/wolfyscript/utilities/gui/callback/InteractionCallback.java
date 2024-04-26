@@ -20,7 +20,7 @@ package com.wolfyscript.utilities.gui.callback;
 
 import com.wolfyscript.utilities.gui.ViewRuntime;
 import com.wolfyscript.utilities.gui.interaction.InteractionDetails;
-import com.wolfyscript.utilities.gui.InteractionResult;
+import com.wolfyscript.utilities.gui.interaction.InteractionResult;
 
 @FunctionalInterface
 public interface InteractionCallback {

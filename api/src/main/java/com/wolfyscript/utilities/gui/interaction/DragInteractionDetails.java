@@ -18,8 +18,6 @@
 
 package com.wolfyscript.utilities.gui.interaction;
 
-import com.wolfyscript.utilities.gui.DragType;
-
 import java.util.Set;
 
 public interface DragInteractionDetails extends InteractionDetails {

@@ -27,4 +27,6 @@ interface SignalGet<T> {
      */
     fun get(): T?
 
+    fun getNoTracking(): T?
+
 }

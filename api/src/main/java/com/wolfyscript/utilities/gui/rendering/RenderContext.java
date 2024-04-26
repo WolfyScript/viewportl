@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.gui.rendering;
 
-import com.wolfyscript.utilities.gui.*;
+import com.wolfyscript.utilities.gui.components.Component;
 
 /**
  * The data that contains all the information needed to render the Menu.

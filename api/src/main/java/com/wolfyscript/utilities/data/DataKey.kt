@@ -19,8 +19,8 @@ package com.wolfyscript.utilities.data
 
 import com.wolfyscript.utilities.Keyed
 import com.wolfyscript.utilities.NamespacedKey
-import com.wolfyscript.utilities.gui.functions.ReceiverBiFunction
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
+import com.wolfyscript.utilities.functions.ReceiverBiFunction
+import com.wolfyscript.utilities.functions.ReceiverFunction
 import kotlin.reflect.KClass
 
 class DataKey<T : Any, V : DataHolder<V>>(

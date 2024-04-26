@@ -35,7 +35,7 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
         }
         runtime.wolfyUtils.core.platform.scheduler.syncTask(runtime.wolfyUtils) {
             runtime.reactiveSource.runEffects()
-            runtime.currentMenu.ifPresent {
+            runtime.currentMenu?.apply {
 
             }
         }
@@ -65,11 +65,7 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
         // TODO: Close Window
         if (currentWindow() == null) return
         if (event.inventory.holder == this) {
-            guiHolder.viewManager.currentMenu.ifPresent { window: Window ->
-                window.close(
-                    guiHolder.viewManager
-                )
-            }
+            guiHolder.viewManager.currentMenu?.apply { close() }
         }
     }
 

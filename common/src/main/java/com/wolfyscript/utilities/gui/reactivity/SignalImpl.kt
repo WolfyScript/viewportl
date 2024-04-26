@@ -53,6 +53,10 @@ class SignalImpl<MT : Any>(private val id: NodeId, private val type: KClass<MT>)
 
     override fun get(): MT? {
         id.runtime.reactiveSource.subscribe(id)
+        return getNoTracking()
+    }
+
+    override fun getNoTracking(): MT? {
         val value = id.runtime.reactiveSource.getValue<Any>(id)
         if (type.isInstance(value)) {
             return type.safeCast(value)

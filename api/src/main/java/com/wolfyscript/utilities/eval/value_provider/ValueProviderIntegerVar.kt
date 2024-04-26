@@ -15,19 +15,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
-
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.wolfyscript.utilities.KeyedStaticId
 
 @KeyedStaticId(key = "int/var")
-public class ValueProviderIntegerVar extends ValueProviderVariable<Integer> implements ValueProviderInteger {
-
-    public ValueProviderIntegerVar(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("var") String variable) {
-        super(wolfyUtils, Integer.class, variable);
-    }
-
-}
+class ValueProviderIntegerVar(@JsonProperty("var") variable: String) : ValueProviderVariable<Int>(Int::class.java, variable), ValueProviderInteger

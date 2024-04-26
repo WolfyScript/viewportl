@@ -17,13 +17,12 @@
  */
 package com.wolfyscript.utilities.gui.reactivity
 
+import com.google.common.collect.ListMultimap
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
 import com.wolfyscript.utilities.gui.ViewRuntime
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
-import com.wolfyscript.utilities.gui.functions.ReceiverBiConsumer
-import com.wolfyscript.utilities.gui.functions.ReceiverFunction
-import com.wolfyscript.utilities.gui.functions.SignalableReceiverFunction
+import com.wolfyscript.utilities.functions.ReceiverFunction
 import com.wolfyscript.utilities.platform.Platform
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import org.apache.commons.lang3.function.TriFunction
@@ -40,19 +39,80 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
     // Graph
     private val nodes: MutableMap<NodeId, ReactivityNode<*>> = Object2ObjectOpenHashMap()
     private val rootNodes: MutableMap<NodeId, ReactivityNode<*>> = Object2ObjectOpenHashMap()
-    private val nodeSubscribers: SetMultimap<NodeId, NodeId> =
-        Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
+    private val nodeSubscribers: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
     private val nodeSources: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
+
+    // Owners and Properties
+    private val nodeProperties: ListMultimap<NodeId, ScopeProperty> = Multimaps.newListMultimap(mutableMapOf()) { mutableListOf() }
+    private val nodeOwners: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
 
     // Effects that need to be updated
     private val pendingEffects: MutableList<NodeId> = ArrayList()
 
     init {
-        owner = createNode(object : ReactivityNode.Type.Trigger {}, null)
+        owner = createNode(ReactivityNode.Type.Trigger(), null)
+    }
+
+    private fun addNewScopeProperty(property: ScopeProperty) {
+        if (owner != null) {
+            nodeProperties[owner].add(property)
+
+            property.toNodeId()?.let {
+                nodeOwners[it].add(owner)
+            }
+        }
+    }
+
+    fun runWithOwner(owner: NodeId, fn: Runnable) {
+        val prevOwner = this.owner
+        val prevObserver = observer
+
+        this.owner = owner
+        observer = owner
+
+        fn.run()
+
+        this.owner = prevOwner
+        observer = prevObserver
+    }
+
+    fun renderState() {
+        val logger = viewRuntime.wolfyUtils.logger
+
+        logger.info("-------- [Reactive Graph] --------")
+        logger.info("Pending: $pendingEffects")
+        logger.info("Nodes: ")
+        for (node in nodes) {
+            logger.info("  ${node.key}: ${node.value.type.javaClass.name} = ${node.value.value}")
+            val subs = nodeSubscribers[node.key]
+            if (subs.isNotEmpty()) {
+                logger.info("    Subscribers: $subs")
+            }
+            val sources = nodeSources[node.key]
+            if (sources.isNotEmpty()) {
+                logger.info("    Sources: $sources")
+            }
+            val owners = nodeOwners[node.key]
+            if (owners.isNotEmpty()) {
+                logger.info("    Owners: $owners")
+            }
+            val properties = nodeProperties[node.key]
+            if (properties.isNotEmpty()) {
+                logger.info("    Properties: ${properties.map { it.toNodeId() }}")
+            }
+        }
+        logger.info("")
     }
 
     internal fun owner(): Trigger? {
-        return owner?.let { TriggerImpl(it) }
+        if (owner != null) {
+            nodes[owner]?.let {
+                if (it.type is ReactivityNode.Type.Trigger) {
+                    return TriggerImpl(it.id)
+                }
+            }
+        }
+        return null
     }
 
     private fun markClean(nodeId: NodeId) {
@@ -85,6 +145,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
                 IterResult.EMPTY -> stack.pop()
             }
         }
+        renderState()
     }
 
     private fun iterateChildren(childIterator: Iterator<NodeId>): Pair<IterResult, Iterator<NodeId>?> {
@@ -132,10 +193,12 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
     }
 
     fun runEffects() {
-        for (pendingEffect in pendingEffects) {
+        val copy = pendingEffects.toList()
+        pendingEffects.clear()
+        for (pendingEffect in copy) {
             updateIfNecessary(pendingEffect)
         }
-        pendingEffects.clear()
+        renderState()
     }
 
     fun updateIfNecessary(nodeId: NodeId) {
@@ -150,6 +213,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         }
 
         if (currentNodeState(nodeId) >= ReactivityNode.State.DIRTY) {
+            cleanupNode(nodeId)
             update(nodeId)
         }
         markClean(nodeId)
@@ -166,6 +230,28 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
             }
         }
         markClean(nodeId)
+    }
+
+    fun cleanupNode(id: NodeId) {
+        for (property in nodeProperties.removeAll(id)) {
+            cleanupProperty(property)
+        }
+    }
+
+    private fun cleanupProperty(property: ScopeProperty) {
+        property.toNodeId()?.let { nodeId ->
+            // Clean child properties
+            nodeProperties.removeAll(nodeId).forEach { cleanupProperty(it) }
+
+            // Subscribers should no longer listen to this now removed node
+            nodeSubscribers.removeAll(nodeId).forEach { subscriber ->
+                nodeSources[subscriber].remove(nodeId)
+            }
+            // Remove all tracked sources
+            nodeSources.removeAll(nodeId)
+            // Remove the node
+            nodes.remove(nodeId)
+        }
     }
 
     fun cleanupSourcesFor(id: NodeId) {
@@ -239,7 +325,8 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
     }
 
     override fun createTrigger(): Trigger {
-        val id = createNode(object : ReactivityNode.Type.Trigger {}, null)
+        val id = createNode(ReactivityNode.Type.Trigger(), null)
+        addNewScopeProperty(ScopeProperty.Trigger(id))
         return TriggerImpl(id)
     }
 
@@ -247,8 +334,8 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         valueType: Class<T>,
         defaultValueProvider: ReceiverFunction<ViewRuntime, T>
     ): Signal<T> {
-        val id =
-            createNode(object : ReactivityNode.Type.Signal<T> {}, with(defaultValueProvider) { viewRuntime.apply() })
+        val id = createNode(ReactivityNode.Type.Signal(), with(defaultValueProvider) { viewRuntime.apply() })
+        addNewScopeProperty(ScopeProperty.Signal(id))
         return SignalImpl(id, valueType.kotlin)
     }
 
@@ -264,8 +351,11 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
             value,
             ReactivityNode.State.DIRTY
         )
+        addNewScopeProperty(ScopeProperty.Effect(id))
 
-        pendingEffects.add(id)
+        viewRuntime.wolfyUtils.core.platform.scheduler.syncTask(viewRuntime.wolfyUtils) { // TODO: Is there a better way to schedule them?
+            updateIfNecessary(id)
+        }
 
         return EffectImpl(id)
     }
@@ -279,19 +369,19 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
             }
 
         }, null, ReactivityNode.State.DIRTY)
-
+        addNewScopeProperty(ScopeProperty.Effect(reactivityNodeId))
         return MemoImpl(reactivityNodeId, valueType.kotlin)
     }
 
     override fun <T> resourceSync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>> {
-        TODO("Not yet implemented!")
+        TODO("Not yet implemented")
     }
 
     override fun <I, T> resourceSync(
         input: Signal<I>,
         fetch: TriFunction<Platform, ViewRuntime, I, T>
     ): Signal<Optional<T>> {
-        TODO("Not yet implemented!")
+        TODO("Not yet implemented")
     }
 
     override fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>> {

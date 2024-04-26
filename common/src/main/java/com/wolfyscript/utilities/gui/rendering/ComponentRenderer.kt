@@ -19,7 +19,7 @@
 package com.wolfyscript.utilities.gui.rendering
 
 import com.wolfyscript.utilities.Keyed
-import com.wolfyscript.utilities.gui.Component
+import com.wolfyscript.utilities.gui.components.Component
 
 interface ComponentRenderer<C: Component, X: RenderContext> : Keyed {
 

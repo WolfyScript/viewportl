@@ -1,11 +1,17 @@
 package com.wolfyscript.utilities.gui.example
 
+import com.wolfyscript.utilities.eval.value_provider.provider
 import com.wolfyscript.utilities.gui.GuiAPIManager
-import com.wolfyscript.utilities.gui.InteractionResult
+import com.wolfyscript.utilities.gui.interaction.InteractionResult
+import com.wolfyscript.utilities.gui.callback.InteractionCallback
 import com.wolfyscript.utilities.gui.reactivity.createSignal
+import com.wolfyscript.utilities.gui.rendering.PropertyPosition
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-import java.util.*
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 
 /**
  * A Counter GUI Example, that allows the viewer:
@@ -23,74 +29,105 @@ import java.util.*
  * Those parts are automatically updated when the count changes.
  */
 fun registerExampleCounter(manager: GuiAPIManager) {
-    manager.registerGuiFromFiles("example_counter") {
+    manager.registerGui("example_counter") {
         /**
-         * Everything in this section is called **async** and only once per runtime initiation.
+         * Everything in this section is called **async** and only once.
          * It constructs the component tree and reactive graph as specified.
          **/
-        window {
-            // Use signals that provide a simple value storage & synchronisation. Signals do not store the value themselves.
-            val count = createSignal(0)
-            count.tagName("count")
+        resourcePath = "com/wolfyscript/utilities/gui/example/example_counter"
+        size = 9 * 3
 
-            size(9 * 3)
-            titleSignals(count)
+        routes {
+            route({ this / "user" / "id" * Int::class }, {
+                //configuredBy("main_menu.conf")
+                // Called when the path matches, but only once, when the route was changed
 
-            // Update the count periodically (every second increases it by 1)
-            addIntervalTask(
-                { count.update { value -> value + 1 } },
-                20
-            )
+                // Use signals that provide a simple value storage & synchronisation.
+                val count = createSignal(0)
+                count.tagName("count")
 
-            button("count_down") {
-                interact { _, _ ->
-                    count.update { old -> old - 1 }
-                    InteractionResult.cancel(true)
+                title { // Update the title with the Count
+                    Component.text("Counter: ").decorate(TextDecoration.BOLD)
+                        .append(Component.text(count.get() ?: 0).color(NamedTextColor.BLUE))
                 }
-            }
-            // Sometimes we want to render components dependent on signals
-            whenever { count.get() != 0 } then {
-                // This section is run just once up on the initial construction too, not when the condition changes
-                button("reset") {
-                    interact { _, _ ->
-                        count.set(0) // The set method changes the value of the signal and prompts the listener of the signal to re-render.
+
+                // Update the count periodically (every second increases it by 1)
+//                addIntervalTask(
+//                    { count.update { value -> value + 1 } },
+//                    20
+//                )
+
+                button("count_up") {
+                    properties {
+                        position = PropertyPosition.slot(4)
+                    }
+                    icon{
+                        stack("green_concrete") {
+                            name = "<green><b>Count Up".provider()
+                        }
+                    }
+
+                    onClick = InteractionCallback { _, _ ->
+                        count.update { old -> old + 1 }
                         InteractionResult.cancel(true)
                     }
-                    sound {
-                        Optional.of(
-                            Sound.sound(
-                                Key.key("minecraft:entity.dragon_fireball.explode"),
-                                Sound.Source.MASTER,
-                                0.25f,
-                                1f
-                            )
+                }
+
+                button("counter") {
+                    properties {
+                        position = PropertyPosition.slot(13)
+                    }
+                    icon {
+                        stack("redstone") {
+                            name = "<!italic>Clicked <b><count></b> times!".provider()
+                        }
+                        resolvers {
+                            Placeholder.parsed("count", (count.get() ?: 0).toString())
+                        }
+                    }
+                }
+
+                button("count_down") {
+                    properties {
+                        position = PropertyPosition.slot(22)
+                    }
+                    icon {
+                        stack("red_concrete") {
+                            name = "<red><b>Count Down".provider()
+                        }
+                    }
+
+                    onClick = InteractionCallback { _, _ ->
+                        count.update { old -> old - 1 }
+                        InteractionResult.cancel(true)
+                    }
+                }
+                // Sometimes we want to render components dependent on signals
+                whenever { count.get() != 0 } then {
+                    // This section is run just once up on the initial construction too, not when the condition changes
+                    button("reset") {
+                        properties {
+                            position = PropertyPosition.slot(10)
+                        }
+                        icon {
+                            stack("tnt") {
+                                name = "<b><red>Reset Clicks!".provider()
+                            }
+                        }
+
+                        onClick = InteractionCallback { _, _ ->
+                            count.set(0) // The set method changes the value of the signal and prompts the listener of the signal to re-render.
+                            InteractionResult.cancel(true)
+                        }
+                        sound = Sound.sound(
+                            Key.key("minecraft:entity.dragon_fireball.explode"),
+                            Sound.Source.MASTER,
+                            0.25f,
+                            1f
                         )
                     }
                 }
-            }
-            button("count_up") {
-                interact { _, _ ->
-                    count.update { old -> old + 1 }
-                    InteractionResult.cancel(true)
-                }
-                animation {
-                    // Here we specify the frames to render after each other
-                    // So it first renders the cyan_concrete for a tick, then lime_concrete for a tick
-                    frame {
-                        duration(1)
-                        stack("cyan_concrete") { }
-                    }
-
-                    frame {
-                        duration(1)
-                        stack("lime_concrete") { }
-                    }
-                }
-            }
-
-            button("counter") {
-                icon { updateOnSignals(count) }
-            }
+            })
         }
     }
 }

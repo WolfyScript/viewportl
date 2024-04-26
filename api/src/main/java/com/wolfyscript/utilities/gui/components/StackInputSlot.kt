@@ -17,15 +17,16 @@
  */
 package com.wolfyscript.utilities.gui.components
 
-import com.wolfyscript.utilities.gui.Component
-import com.wolfyscript.utilities.gui.interaction.Interactable
+import com.wolfyscript.utilities.gui.callback.InteractionCallback
 import com.wolfyscript.utilities.platform.adapters.ItemStack
 import java.util.function.Consumer
 
-interface StackInputSlot : Component, Interactable {
+interface StackInputSlot : Component {
 
     var value: ItemStack?
 
-    val onValueChange: Consumer<ItemStack?>?
+    var onValueChange: Consumer<ItemStack?>?
+
+    var onClick: InteractionCallback?
 
 }

@@ -15,22 +15,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui.components
 
-package com.wolfyscript.utilities.gui.components;
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import java.util.*
 
-import com.wolfyscript.utilities.gui.Component;
-
-import java.util.Optional;
-import java.util.Set;
-
-public interface ComponentGroup extends Component {
-
+interface ComponentGroup : Component, Configurable, ChildComponentsBuilder<ComponentGroup>, ConditionalChildComponentBuilder, MatchChildComponentBuilder {
     /**
      * The children of this Component; or an empty Set if there are no children.
      *
      * @return The child Components of this Component.
      */
-    Set<? extends Component> childComponents();
+    fun childComponents(): Set<Component>
 
     /**
      * Gets the direct child Component, or an empty Optional when it wasn't found.
@@ -38,7 +34,19 @@ public interface ComponentGroup extends Component {
      * @param id The id of the child Component.
      * @return The child Component; or empty Component.
      */
-    Optional<? extends Component> getChild(String id);
+    fun getChild(id: String?): Optional<out Component?>?
 
+    fun outlet(outletConfig: ReceiverConsumer<Outlet>)
+
+    fun findNextOutlet() : Outlet? {
+        for (childComponent in childComponents()) {
+            if (childComponent is Outlet) return childComponent
+            if (childComponent is ComponentGroup) {
+                val outlet = childComponent.findNextOutlet()
+                if (outlet != null) return outlet
+            }
+        }
+        return null
+    }
 
 }

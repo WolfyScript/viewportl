@@ -1,24 +1,31 @@
 package com.wolfyscript.utilities.gui.components
 
+import com.fasterxml.jackson.annotation.JacksonInject
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.inject.Inject
 import com.wolfyscript.utilities.KeyedStaticId
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.gui.Component
-import com.wolfyscript.utilities.gui.Renderable
-import com.wolfyscript.utilities.gui.ViewRuntimeImpl
-import com.wolfyscript.utilities.gui.rendering.RenderProperties
+import com.wolfyscript.utilities.gui.*
+import com.wolfyscript.utilities.functions.ReceiverConsumer
 import java.util.*
 import kotlin.math.abs
 
+@ComponentImplementation(base = ComponentGroup::class)
 @KeyedStaticId(key = "cluster")
-class ComponentGroupImpl(
-    internalID: String,
-    wolfyUtils: WolfyUtils,
-    parent: Component?,
-    properties: RenderProperties,
-    private val children: MutableList<Component>
-) : AbstractComponentImpl(
-    internalID, wolfyUtils, parent, properties
-), ComponentGroup {
+class ComponentGroupImpl @JsonCreator @Inject constructor(
+    @JsonProperty("id") id: String,
+    @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,
+    @JacksonInject("context") private val context: BuildContext,
+    @javax.annotation.Nullable @JacksonInject("parent") parent: Component? = null,
+) :
+    AbstractComponentImpl<ComponentGroup>(id, wolfyUtils, parent),
+    ComponentGroup,
+    ConditionalChildComponentBuilder by ConditionalChildComponentBuilderImpl(context),
+    MatchChildComponentBuilder by MatchChildComponentBuilderImpl(context)
+{
+
+    private val children: MutableList<Component> = mutableListOf()
     private val width: Int
     private val height: Int
 
@@ -32,8 +39,16 @@ class ComponentGroupImpl(
         return HashSet(children)
     }
 
-    override fun getChild(id: String): Optional<out Component> {
+    override fun getChild(id: String?): Optional<out Component> {
         return Optional.empty()
+    }
+
+    override fun outlet(outletConfig: ReceiverConsumer<Outlet>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun configuredBy(filePath: String) {
+        TODO("Not yet implemented")
     }
 
     override fun width(): Int {
@@ -44,18 +59,33 @@ class ComponentGroupImpl(
         return height
     }
 
-    override fun remove(viewRuntimeImpl: ViewRuntimeImpl, nodeId: Long, parentNode: Long) {
-        viewRuntimeImpl.renderingGraph.removeNode(nodeId)
+    override fun <B : Component> component(
+        id: String?,
+        type: Class<B>,
+        configurator: ReceiverConsumer<B>
+    ) {
+        val component = context.getOrCreateComponent(id, type)
+        children.add(component)
+        with(configurator) { component.consume() }
+        component.finalize()
     }
 
-    override fun insert(viewRuntimeImpl: ViewRuntimeImpl, parentNode: Long) {
-        val id = viewRuntimeImpl.renderingGraph.addNode(this)
-        viewRuntimeImpl.renderingGraph.insertNodeChild(id, parentNode)
+    override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
+        (runtime as ViewRuntimeImpl).renderingGraph.removeNode(nodeId)
+    }
+
+    override fun insert(runtime: ViewRuntime, parentNode: Long) {
+        runtime as ViewRuntimeImpl
+        val id = runtime.renderingGraph.addNode(this)
+        runtime.renderingGraph.insertNodeChild(id, parentNode)
 
         for (child in children) {
-            if (child is Renderable) {
-                child.insert(viewRuntimeImpl, id)
-            }
+            child.insert(runtime, id)
         }
+    }
+
+    override fun finalize() {
+        buildConditionals(parent)
+        buildMatchers(parent)
     }
 }

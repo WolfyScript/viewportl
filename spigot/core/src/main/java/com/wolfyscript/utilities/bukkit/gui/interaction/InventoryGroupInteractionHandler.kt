@@ -1,6 +1,6 @@
 package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.utilities.gui.InteractionResult
+import com.wolfyscript.utilities.gui.interaction.InteractionResult
 import com.wolfyscript.utilities.gui.ViewRuntime
 import com.wolfyscript.utilities.gui.components.ComponentGroup
 import com.wolfyscript.utilities.gui.interaction.ComponentInteractionHandler

@@ -15,48 +15,37 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.eval.value_provider
 
-package com.wolfyscript.utilities.eval.value_provider;
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer
+import com.wolfyscript.utilities.eval.context.EvalContext
+import java.io.IOException
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.wolfyscript.utilities.KeyedStaticId;
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.eval.context.EvalContext;
-import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer;
-import java.io.IOException;
-
-@OptionalValueSerializer(serializer = ValueProviderLongConst.ValueSerializer.class)
+@OptionalValueSerializer(serializer = ValueProviderLongConst.ValueSerializer::class)
 @KeyedStaticId(key = "long/const")
-public class ValueProviderLongConst extends AbstractValueProvider<Long> implements ValueProviderLong {
-
-    private final long value;
-
-    @JsonCreator
-    public ValueProviderLongConst(@JacksonInject WolfyUtils wolfyUtils, @JsonProperty("value") long value) {
-        super(wolfyUtils);
-        this.value = value;
+class ValueProviderLongConst @JsonCreator constructor(
+    @param:JsonProperty("value") override val value: Long
+) : AbstractValueProvider<Long>(), ValueProviderLong {
+    override fun getValue(context: EvalContext?): Long {
+        return value
     }
 
-    @Override
-    public Long getValue(EvalContext context) {
-        return value;
-    }
-
-    public static class ValueSerializer extends com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderLongConst> {
-
-        public ValueSerializer() {
-            super(ValueProviderLongConst.class);
-        }
-
-        @Override
-        public boolean serialize(ValueProviderLongConst valueProvider, JsonGenerator generator, SerializerProvider provider) throws IOException {
-            generator.writeString(valueProvider.getValue() + "L");
-            return true;
+    class ValueSerializer : com.wolfyscript.utilities.config.jackson.ValueSerializer<ValueProviderLongConst>(
+        ValueProviderLongConst::class.java
+    ) {
+        @Throws(IOException::class)
+        override fun serialize(
+            valueProvider: ValueProviderLongConst,
+            generator: JsonGenerator,
+            provider: SerializerProvider
+        ): Boolean {
+            generator.writeString("${valueProvider.value}L")
+            return true
         }
     }
-
 }

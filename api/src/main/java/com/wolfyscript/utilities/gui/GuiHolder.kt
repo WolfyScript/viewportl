@@ -15,17 +15,15 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.gui
 
-package com.wolfyscript.utilities.gui;
+import com.wolfyscript.utilities.platform.adapters.Player
 
-import com.wolfyscript.utilities.platform.adapters.Player;
+interface GuiHolder {
 
-public interface GuiHolder {
+    val viewManager: ViewRuntime
 
-    ViewRuntime getViewManager();
+    val currentWindow: Window
 
-    Player getPlayer();
-
-    Window getCurrentWindow();
-
+    val player: Player?
 }
