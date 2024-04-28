@@ -29,6 +29,7 @@ import org.apache.commons.lang3.function.TriFunction
 import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
+import java.util.logging.Level
 import kotlin.reflect.KClass
 
 class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
@@ -78,6 +79,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
     fun renderState() {
         val logger = viewRuntime.wolfyUtils.logger
+        if (logger.level != Level.FINER) return
 
         logger.info("-------- [Reactive Graph] --------")
         logger.info("Pending: $pendingEffects")
