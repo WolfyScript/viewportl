@@ -6,6 +6,7 @@ import com.wolfyscript.utilities.gui.interaction.InteractionResult
 import com.wolfyscript.utilities.gui.callback.InteractionCallback
 import com.wolfyscript.utilities.gui.reactivity.createSignal
 import com.wolfyscript.utilities.gui.rendering.PropertyPosition
+import com.wolfyscript.utilities.gui.router.ActivePath
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -38,7 +39,36 @@ fun registerExampleCounter(manager: GuiAPIManager) {
         size = 9 * 3
 
         routes {
-            route({ this / "user" / "id" * Int::class }, {
+            route({ }, {
+
+                title { // Update the title with the Count
+                    Component.text("Counter Main Menu").decorate(TextDecoration.BOLD)
+                }
+
+                button("open") {
+                    properties {
+                        position = PropertyPosition.slot(13)
+                    }
+                    icon{
+                        stack("green_concrete") {
+                            name = "<green><b>Open Counter".provider()
+                        }
+                    }
+
+                    onClick = InteractionCallback { _, _ ->
+                        history.update {
+                            val path = ActivePath()
+                            path.push(ActivePath.StaticSection("main"))
+                            it.push(path)
+                            it
+                        }
+                        InteractionResult.cancel(true)
+                    }
+                }
+
+            })
+
+            route({ this / "main" }, {
                 //configuredBy("main_menu.conf")
                 // Called when the path matches, but only once, when the route was changed
 
@@ -51,11 +81,29 @@ fun registerExampleCounter(manager: GuiAPIManager) {
                         .append(Component.text(count.get() ?: 0).color(NamedTextColor.BLUE))
                 }
 
-                // Update the count periodically (every second increases it by 1)
-//                addIntervalTask(
-//                    { count.update { value -> value + 1 } },
-//                    20
-//                )
+                // Update the count periodically (every second)
+                interval(20) {
+                    count.update { value -> value + 1 }
+                }
+
+                button("back") {
+                    properties {
+                        position = PropertyPosition.slot(0)
+                    }
+                    icon{
+                        stack("barrier") {
+                            name = "<red><b>Back".provider()
+                        }
+                    }
+
+                    onClick = InteractionCallback { _, _ ->
+                        history.update {
+                            it.pop()
+                            it
+                        }
+                        InteractionResult.cancel(true)
+                    }
+                }
 
                 button("count_up") {
                     properties {
