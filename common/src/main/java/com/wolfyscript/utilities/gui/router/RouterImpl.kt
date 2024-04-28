@@ -22,10 +22,8 @@ import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.gui.*
 import com.wolfyscript.utilities.gui.components.ComponentGroup
 import com.wolfyscript.utilities.functions.ReceiverConsumer
-import com.wolfyscript.utilities.gui.reactivity.Memo
-import com.wolfyscript.utilities.gui.reactivity.Signal
-import com.wolfyscript.utilities.gui.reactivity.createMemo
-import com.wolfyscript.utilities.gui.reactivity.createSignal
+import com.wolfyscript.utilities.gui.reactivity.*
+import java.util.*
 
 @KeyedStaticId(key = "router")
 class RouterImpl internal constructor(
@@ -35,7 +33,10 @@ class RouterImpl internal constructor(
 ) : Router {
 
     override val routes: MutableList<Route> = mutableListOf()
-    override val currentPath: Signal<ActivePath> = context.reactiveSource.createSignal(ActivePath())
+    override val history: Signal<Deque<ActivePath>> = context.reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(ActivePath()) })
+    override val currentPath: SignalGet<ActivePath> = context.reactiveSource.createMemo {
+        history.get()?.peek()
+    }
 
     var currentRootComponent: ComponentGroup? = null
 

@@ -20,6 +20,8 @@ package com.wolfyscript.utilities.gui.router
 import com.wolfyscript.utilities.gui.components.ComponentGroup
 import com.wolfyscript.utilities.functions.ReceiverConsumer
 import com.wolfyscript.utilities.gui.reactivity.Signal
+import com.wolfyscript.utilities.gui.reactivity.SignalGet
+import java.util.Deque
 
 /**
  *
@@ -27,7 +29,8 @@ import com.wolfyscript.utilities.gui.reactivity.Signal
 interface Router {
 
     val routes: List<Route>
-    val currentPath: Signal<ActivePath>
+    val currentPath: SignalGet<ActivePath>
+    val history : Signal<Deque<ActivePath>>
 
     fun open()
 
