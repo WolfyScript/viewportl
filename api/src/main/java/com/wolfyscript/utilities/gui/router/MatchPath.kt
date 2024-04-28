@@ -22,7 +22,7 @@ import kotlin.reflect.KClass
 
 class MatchPath {
 
-    private val path: MutableList<Section> = mutableListOf()
+    private val path: MutableList<SectionMatcher> = mutableListOf()
 
     operator fun div(section: String) : MatchPath {
         path.add(StaticMatcher(section))
@@ -47,21 +47,38 @@ class MatchPath {
     }
 
     fun matches(activePath: ActivePath) : Boolean {
+        for ((index, section) in activePath.withIndex()) {
+            if (index >= path.size) return false
+            val matcher = path[index]
+            if (!matcher.matches(section)) return false
+        }
         return true
     }
 
     data class ParamMatcher<T: Any>(
         override val name: String,
         val type: Class<T>
-    ) : Section
+    ) : SectionMatcher {
+        override fun matches(section: ActivePath.Section) : Boolean {
+            if (section !is ActivePath.Param<*>) return false
+            if (type != section.value.javaClass) return false
+            return true
+        }
+    }
 
     data class StaticMatcher(
         override val name: String
-    ) : Section
+    ) : SectionMatcher {
+        override fun matches(section: ActivePath.Section) : Boolean {
+            return section is ActivePath.StaticSection && section.name == name
+        }
+    }
 
-    interface Section {
+    interface SectionMatcher {
 
         val name: String
+
+        fun matches(section: ActivePath.Section) : Boolean
 
     }
 
