@@ -29,6 +29,15 @@ interface ComponentGroup : Component, Configurable, ChildComponentsBuilder<Compo
     fun childComponents(): Set<Component>
 
     /**
+     * Adds a task that is run periodically while the Window is open.
+     *
+     * @param runnable The task to run, may update signals
+     * @param intervalInTicks The interval for the task in ticks
+     * @return This builder for chaining
+     */
+    fun interval(intervalInTicks: Long, runnable: Runnable)
+
+    /**
      * Gets the direct child Component, or an empty Optional when it wasn't found.
      *
      * @param id The id of the child Component.

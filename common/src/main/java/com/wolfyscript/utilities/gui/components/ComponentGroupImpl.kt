@@ -8,6 +8,7 @@ import com.wolfyscript.utilities.KeyedStaticId
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.gui.*
 import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.platform.scheduler.Task
 import java.util.*
 import kotlin.math.abs
 
@@ -29,6 +30,9 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
     private val width: Int
     private val height: Int
 
+    private val intervalRunnables: MutableList<Pair<Runnable, Long>> = ArrayList()
+    private val intervalTasks: MutableList<Task> = ArrayList()
+
     init {
         val topLeft = 54
         this.width = 1
@@ -37,6 +41,10 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
 
     override fun childComponents(): Set<Component> {
         return HashSet(children)
+    }
+
+    override fun interval(intervalInTicks: Long, runnable: Runnable) {
+        intervalRunnables.add(Pair(runnable, intervalInTicks))
     }
 
     override fun getChild(id: String?): Optional<out Component> {
@@ -71,6 +79,11 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
     }
 
     override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
+        for (intervalTask in intervalTasks) {
+            intervalTask.cancel()
+        }
+        intervalTasks.clear()
+
         (runtime as ViewRuntimeImpl).renderingGraph.removeNode(nodeId)
     }
 
@@ -81,6 +94,23 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
 
         for (child in children) {
             child.insert(runtime, id)
+        }
+
+        // start intervals after the component has been constructed
+        for (intervalTask in intervalTasks) {
+            intervalTask.cancel()
+        }
+        intervalTasks.clear()
+        for (intervalRunnable in intervalRunnables) {
+            val task = wolfyUtils.core.platform.scheduler.task(wolfyUtils)
+                .interval(intervalRunnable.second)
+                .delay(1)
+                .execute(Runnable {
+                    intervalRunnable.first.run()
+                    context.reactiveSource.runEffects()
+                })
+                .build()
+            intervalTasks.add(task)
         }
     }
 
