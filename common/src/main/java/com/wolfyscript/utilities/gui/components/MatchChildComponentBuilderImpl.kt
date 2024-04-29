@@ -39,19 +39,11 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
             val valueMemo = context.reactiveSource.createMemo(valueType.java) { value.get() }
 
             val runtime = context.runtime
-            context.reactiveSource.createEffect<Long> {
+            context.reactiveSource.createEffect<Unit> {
                 runtime as ViewRuntimeImpl
-                val graph = runtime.renderingGraph
-                val previousNode = this?.let { graph.getNode(it) }
-                val previousComponent = previousNode?.component
-
                 val parentNodeId = (parent as? AbstractComponentImpl<*>)?.nodeId ?: 0
-
-                previousComponent?.remove(runtime, previousNode.id, parentNodeId)
-
                 val value = valueMemo.get()
-
-                return@createEffect cases.find {
+                val id = cases.find {
                     with(it.condition) {
                         value.apply()
                     }
@@ -66,6 +58,13 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
                         }
                     }
                 } ?: -1
+
+                context.reactiveSource.createCleanup {
+                    val graph = runtime.renderingGraph
+                    val previousNode = graph.getNode(id)
+                    val previousComponent = previousNode?.component
+                    previousComponent?.remove(runtime, previousNode.id, parentNodeId)
+                }
             }
         }
     }

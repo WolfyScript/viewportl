@@ -45,18 +45,12 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
         for (conditional in conditionals) {
             val conditionMemo: Memo<Boolean> = context.reactiveSource.createMemo { conditional.condition.get() }
             val runtime = context.runtime
-            context.reactiveSource.createEffect<Long> {
+            context.reactiveSource.createEffect<Unit> {
                 runtime as ViewRuntimeImpl
-                val graph = runtime.renderingGraph
-                val previousNode = this?.let { graph.getNode(it) }
-                val previousComponent = previousNode?.component
-
                 val parentNodeId = (parent as? AbstractComponentImpl<*>)?.nodeId ?: 0
 
-                previousComponent?.remove(runtime, previousNode.id, parentNodeId)
-
                 val result = conditionMemo.get() ?: false
-                when {
+                val id = when {
                     result -> {
                         conditional.whenImpl?.build(parent)?.let {
                             it.insert(runtime, parentNodeId)
@@ -72,6 +66,14 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
                     }
 
                     else -> -1
+                }
+
+                // Clean previous component before update and when disposed
+                context.reactiveSource.createCleanup {
+                    val graph = runtime.renderingGraph
+                    val previousNode = graph.getNode(id)
+                    val previousComponent = previousNode?.component
+                    previousComponent?.remove(runtime, previousNode.id, parentNodeId)
                 }
             }
         }
