@@ -18,6 +18,7 @@
 package com.wolfyscript.utilities.gui.reactivity
 
 import com.google.common.collect.ListMultimap
+import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
 import com.wolfyscript.utilities.gui.ViewRuntime
@@ -46,6 +47,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
     // Owners and Properties
     private val nodeProperties: ListMultimap<NodeId, ScopeProperty> = Multimaps.newListMultimap(mutableMapOf()) { mutableListOf() }
     private val nodeOwners: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
+    private val cleanups: Multimap<NodeId, Cleanup> = Multimaps.newListMultimap(mutableMapOf()) { mutableListOf() }
 
     // Effects that need to be updated
     private val pendingEffects: MutableList<NodeId> = ArrayList()
@@ -235,6 +237,12 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
     }
 
     fun cleanupNode(id: NodeId) {
+        val prevObserver = observer
+        for (cleanup in cleanups.removeAll(id)) {
+            cleanup.run()
+        }
+        observer = prevObserver
+
         for (property in nodeProperties.removeAll(id)) {
             cleanupProperty(property)
         }
@@ -242,6 +250,10 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
     private fun cleanupProperty(property: ScopeProperty) {
         property.toNodeId()?.let { nodeId ->
+            for (cleanup in cleanups.removeAll(nodeId)) {
+                cleanup.run()
+            }
+
             // Clean child properties
             nodeProperties.removeAll(nodeId).forEach { cleanupProperty(it) }
 
@@ -373,6 +385,12 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         }, null, ReactivityNode.State.DIRTY)
         addNewScopeProperty(ScopeProperty.Effect(reactivityNodeId))
         return MemoImpl(reactivityNodeId, valueType.kotlin)
+    }
+
+    override fun createCleanup(cleanup: Cleanup) {
+        if (owner != null) {
+            cleanups.put(owner, cleanup)
+        }
     }
 
     override fun <T> resourceSync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>> {

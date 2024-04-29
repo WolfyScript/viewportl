@@ -75,6 +75,11 @@ interface ReactiveSource {
     fun <T : Any> createMemo(valueType: Class<T>, fn: Function<T?, T?>) : Memo<T>
 
     /**
+     * Creates a function that is run when the current owner is removed.
+     */
+    fun createCleanup(cleanup: Cleanup)
+
+    /**
      * Must be used to fetch data from the main Minecraft thread (i.e. Entities, World, etc.).
      * This is because the GUI is run async on a different thread!
      *
