@@ -6,10 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.inject.Inject
 import com.wolfyscript.utilities.KeyedStaticId
 import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.functions.ReceiverBiFunction
+import com.wolfyscript.utilities.functions.ReceiverConsumer
 import com.wolfyscript.utilities.gui.BuildContext
 import com.wolfyscript.utilities.gui.ViewRuntime
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
-import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.interaction.ClickInteractionDetails
+import com.wolfyscript.utilities.gui.interaction.ClickType
 import com.wolfyscript.utilities.platform.adapters.ItemStack
 import java.util.function.Consumer
 import javax.annotation.Nullable
@@ -26,7 +29,9 @@ class StackInputSlotImpl @JsonCreator @Inject constructor(
 ), StackInputSlot {
 
     override var onValueChange: Consumer<ItemStack?>? = null
-    override var onClick: InteractionCallback? = null
+    override var onClick: ReceiverConsumer<ClickInteractionDetails>? = null
+    override var acceptStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null
+    override var canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null
     override var value: ItemStack? = null
 
     override fun width(): Int {

@@ -17,7 +17,10 @@
  */
 package com.wolfyscript.utilities.gui.components
 
-import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.functions.ReceiverBiFunction
+import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.interaction.ClickInteractionDetails
+import com.wolfyscript.utilities.gui.interaction.ClickType
 import com.wolfyscript.utilities.platform.adapters.ItemStack
 import java.util.function.Consumer
 
@@ -27,6 +30,14 @@ interface StackInputSlot : Component {
 
     var onValueChange: Consumer<ItemStack?>?
 
-    var onClick: InteractionCallback?
+    var onClick: ReceiverConsumer<ClickInteractionDetails>?
+
+    var acceptStack : ReceiverBiFunction<ClickType, ItemStack, Boolean>?
+
+    var canPickUpStack : ReceiverBiFunction<ClickType, ItemStack, Boolean>?
+
+    fun onClick(fn: ReceiverConsumer<ClickInteractionDetails>) { onClick = fn }
+
+    fun acceptStack(fn: ReceiverBiFunction<ClickType, ItemStack, Boolean>) { acceptStack = fn }
 
 }
