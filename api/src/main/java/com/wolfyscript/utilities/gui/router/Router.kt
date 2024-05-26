@@ -34,6 +34,12 @@ interface Router {
 
     fun open()
 
+    fun openPrevious()
+
+    fun openRoute(path: ReceiverConsumer<ActivePath>)
+
+    fun openSubRoute(path: ReceiverConsumer<ActivePath>)
+
     fun route(pathConfig: ReceiverConsumer<MatchPath>, viewConfig: ReceiverConsumer<ComponentGroup>, routeConfig: ReceiverConsumer<Route>? = null)
 
 }

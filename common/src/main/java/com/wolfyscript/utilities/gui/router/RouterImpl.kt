@@ -44,6 +44,37 @@ class RouterImpl internal constructor(
         currentRootComponent?.insert(context.runtime as ViewRuntimeImpl, 0)
     }
 
+    override fun openPrevious() {
+        history.update {
+            it.pop()
+            it
+        }
+    }
+
+    override fun openRoute(path: ReceiverConsumer<ActivePath>) {
+        history.update {
+            history.get()?.apply {
+                val newPath = ActivePath()
+                with(path) { newPath.consume() }
+                if (newPath != it.peek()) {
+                    it.push(newPath)
+                }
+            }
+        }
+    }
+
+    override fun openSubRoute(path: ReceiverConsumer<ActivePath>) {
+        history.update {
+            history.get()?.apply {
+                val copy = it.peek().copy()
+                with(path) { copy.consume() }
+                if (copy != it.peek()) {
+                    it.push(copy)
+                }
+            }
+        }
+    }
+
     init {
         val selectedRoute: Memo<Route> = context.reactiveSource.createMemo {
             currentPath.get()?.let { path ->
