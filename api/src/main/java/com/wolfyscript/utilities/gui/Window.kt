@@ -20,6 +20,8 @@ package com.wolfyscript.utilities.gui
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.functions.ReceiverConsumer
 import com.wolfyscript.utilities.functions.ReceiverFunction
+import com.wolfyscript.utilities.gui.callback.TextInputCallback
+import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback
 import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
 import com.wolfyscript.utilities.gui.router.Router
 import net.kyori.adventure.text.Component
@@ -93,4 +95,8 @@ interface Window : ReactiveSource {
      * @return The height in slots.
      */
     fun height(): Int
+
+    fun onTextInput(inputCallback: TextInputCallback?)
+
+    fun onTextInputTabComplete(textInputTabCompleteCallback: TextInputTabCompleteCallback?)
 }

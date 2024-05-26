@@ -33,9 +33,6 @@ class ViewRuntimeImpl(
         get() = currentRoot
 
     private val history: Deque<Window> = ArrayDeque()
-    private var textInputCallback: TextInputCallback? = null
-
-    private var textInputTabCompleteCallback: TextInputTabCompleteCallback? = null
 
     fun incomingUpdate(information: UpdateInformation?) {
         interactionHandler.update(information!!)
@@ -84,22 +81,6 @@ class ViewRuntimeImpl(
 
     fun getCurrentMenu(): Optional<Window> {
         return Optional.ofNullable(currentRoot)
-    }
-
-    override fun textInputCallback(): Optional<TextInputCallback> {
-        return Optional.ofNullable(textInputCallback)
-    }
-
-    override fun setTextInputCallback(textInputCallback: TextInputCallback) {
-        this.textInputCallback = textInputCallback
-    }
-
-    override fun textInputTabCompleteCallback(): Optional<TextInputTabCompleteCallback> {
-        return Optional.ofNullable(textInputTabCompleteCallback)
-    }
-
-    override fun setTextInputTabCompleteCallback(textInputTabCompleteCallback: TextInputTabCompleteCallback) {
-        this.textInputTabCompleteCallback = textInputTabCompleteCallback
     }
 
     override fun id(): Long {

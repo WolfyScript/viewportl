@@ -80,11 +80,4 @@ interface ViewRuntime {
      */
     val wolfyUtils: WolfyUtils
 
-    fun textInputCallback(): Optional<TextInputCallback>
-
-    fun setTextInputCallback(inputCallback: TextInputCallback)
-
-    fun textInputTabCompleteCallback(): Optional<TextInputTabCompleteCallback>
-
-    fun setTextInputTabCompleteCallback(textInputTabCompleteCallback: TextInputTabCompleteCallback)
 }

@@ -7,6 +7,8 @@ import com.wolfyscript.utilities.KeyedStaticId
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.functions.ReceiverConsumer
 import com.wolfyscript.utilities.functions.ReceiverFunction
+import com.wolfyscript.utilities.gui.callback.TextInputCallback
+import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback
 import com.wolfyscript.utilities.gui.reactivity.ReactiveSource
 import com.wolfyscript.utilities.gui.router.Router
 import com.wolfyscript.utilities.gui.router.RouterImpl
@@ -27,6 +29,9 @@ class WindowImpl internal constructor(
     override var title: Component? = null
     override val router: Router = RouterImpl(wolfyUtils, context, this)
     override var resourcePath: String? = null
+
+    var textInputCallback: TextInputCallback? = null
+    var textInputTabCompleteCallback: TextInputTabCompleteCallback? = null
 
     // Intervalls
     val intervalRunnables: List<Pair<Runnable, Long>> = ArrayList()
@@ -77,6 +82,14 @@ class WindowImpl internal constructor(
 
     override fun height(): Int {
         return size?.div(9) ?: 1
+    }
+
+    override fun onTextInput(inputCallback: TextInputCallback?) {
+        this.textInputCallback = inputCallback
+    }
+
+    override fun onTextInputTabComplete(textInputTabCompleteCallback: TextInputTabCompleteCallback?) {
+        this.textInputTabCompleteCallback = textInputTabCompleteCallback
     }
 
 }
