@@ -3,12 +3,9 @@ package com.wolfyscript.utilities.gui.example
 import com.wolfyscript.utilities.eval.value_provider.provider
 import com.wolfyscript.utilities.gui.GuiAPIManager
 import com.wolfyscript.utilities.gui.Window
-import com.wolfyscript.utilities.gui.callback.InteractionCallback
 import com.wolfyscript.utilities.gui.components.ComponentGroup
-import com.wolfyscript.utilities.gui.interaction.InteractionResult
 import com.wolfyscript.utilities.gui.reactivity.createSignal
 import com.wolfyscript.utilities.gui.rendering.PropertyPosition
-import com.wolfyscript.utilities.gui.router.ActivePath
 import com.wolfyscript.utilities.gui.router.Router
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -63,14 +60,8 @@ fun ComponentGroup.counterMainMenu(window: Window, router: Router) {
             }
         }
 
-        onClick = InteractionCallback { _, _ ->
-            router.history.update {
-                val path = ActivePath()
-                path.push(ActivePath.StaticSection("main"))
-                it.push(path)
-                it
-            }
-            InteractionResult.cancel(true)
+        onClick {
+            router.openSubRoute { this / "main" }
         }
     }
 }
@@ -103,12 +94,8 @@ fun ComponentGroup.counter(window: Window, router: Router) {
             }
         }
 
-        onClick = InteractionCallback { _, _ ->
-            router.history.update {
-                it.pop()
-                it
-            }
-            InteractionResult.cancel(true)
+        onClick {
+            router.openPrevious()
         }
     }
 
@@ -122,9 +109,8 @@ fun ComponentGroup.counter(window: Window, router: Router) {
             }
         }
 
-        onClick = InteractionCallback { _, _ ->
+        onClick {
             count.update { old -> old + 1 }
-            InteractionResult.cancel(true)
         }
     }
 
@@ -152,9 +138,8 @@ fun ComponentGroup.counter(window: Window, router: Router) {
             }
         }
 
-        onClick = InteractionCallback { _, _ ->
+        onClick {
             count.update { old -> old - 1 }
-            InteractionResult.cancel(true)
         }
     }
     // Sometimes we want to render components dependent on signals
@@ -170,9 +155,8 @@ fun ComponentGroup.counter(window: Window, router: Router) {
                 }
             }
 
-            onClick = InteractionCallback { _, _ ->
+            onClick {
                 count.set(0) // The set method changes the value of the signal and prompts the listener of the signal to re-render.
-                InteractionResult.cancel(true)
             }
             sound = Sound.sound(
                 Key.key("minecraft:entity.dragon_fireball.explode"),

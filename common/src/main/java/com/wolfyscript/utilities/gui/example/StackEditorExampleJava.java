@@ -20,7 +20,7 @@ package com.wolfyscript.utilities.gui.example;
 
 import com.wolfyscript.utilities.data.ItemStackDataKeys;
 import com.wolfyscript.utilities.gui.GuiAPIManager;
-import com.wolfyscript.utilities.gui.interaction.InteractionResult;
+import com.wolfyscript.utilities.gui.Window;
 import com.wolfyscript.utilities.gui.components.ComponentGroup;
 import com.wolfyscript.utilities.gui.components.StackInputSlot;
 import com.wolfyscript.utilities.gui.reactivity.Signal;
@@ -67,24 +67,24 @@ public class StackEditorExampleJava {
                             }).orElse(tabGroup ->
                                     // Whenever the stack is available we can show the selected tab
                                     tabGroup.match(Tab.class, selectedTab::get, cases -> {
-                                        cases.select(value -> value.equals(Tab.DISPLAY_NAME), group -> displayNameTab(group, stackToEdit));
+                                        cases.select(value -> value.equals(Tab.DISPLAY_NAME), group -> displayNameTab(window, group, stackToEdit));
                                         cases.select(value -> value.equals(Tab.LORE), group -> group
                                                 .group("lore_tab", loreTab -> {
                                                     loreTab.button("edit_lore", it -> {
-                                                        it.setOnClick((holder, details) -> {
-                                                            return InteractionResult.cancel(true);
+                                                        it.setOnClick(details -> {
+
                                                         });
                                                     });
                                                     loreTab.button("clear_lore", it -> {
-                                                        it.setOnClick((holder, details) -> {
-                                                            return InteractionResult.cancel(true);
+                                                        it.setOnClick(details -> {
+
                                                         });
                                                     });
                                                 }));
                                     }));
 
                             view.component("stack_slot", StackInputSlot.class, inputSlot -> {
-                                inputSlot.setOnClick((guiHolder, interactionDetails) -> InteractionResult.cancel(false));
+                                inputSlot.setOnClick((interactionDetails) -> {});
                                 inputSlot.setOnValueChange(itemStack -> stackToEdit.update(stackEditorStore -> {
                                     stackEditorStore.setStack(itemStack);
                                     return stackEditorStore;
@@ -92,15 +92,13 @@ public class StackEditorExampleJava {
                                 inputSlot.setValue(stackToEdit.get().getStack());
                             });
                             view.button("display_name_tab_selector", it -> {
-                                it.setOnClick((holder, details) -> {
+                                it.setOnClick((details) -> {
                                     selectedTab.set(Tab.DISPLAY_NAME);
-                                    return InteractionResult.cancel(true);
                                 });
                             });
                             view.button("lore_tab_selector", it -> {
-                                it.setOnClick((holder, details) -> {
+                                it.setOnClick((details) -> {
                                     selectedTab.set(Tab.LORE);
-                                    return InteractionResult.cancel(true);
                                 });
                             });
 
@@ -110,25 +108,24 @@ public class StackEditorExampleJava {
         );
     }
 
-    static void displayNameTab(ComponentGroup reactiveBuilder, Signal<StackEditorStore> stackToEdit) {
+    static void displayNameTab(Window window, ComponentGroup reactiveBuilder, Signal<StackEditorStore> stackToEdit) {
         reactiveBuilder.group("display_name_tab", displayNameClusterBuilder -> {
                     displayNameClusterBuilder.button("set_display_name", button -> {
-                        button.setOnClick((runtime, details) -> {
-                            runtime.setTextInputCallback((p, rn, s, strings) -> {
+                        button.setOnClick((details) -> {
+                            window.onTextInput((p, rn, s, strings) -> {
                                 stackToEdit.update(store -> {
                                     var stack = store.getStack();
                                     if (stack != null) {
-                                        stack.data().set(ItemStackDataKeys.CUSTOM_NAME, runtime.getWolfyUtils().getChat().getMiniMessage().deserialize(s));
+                                        stack.data().set(ItemStackDataKeys.CUSTOM_NAME, rn.getWolfyUtils().getChat().getMiniMessage().deserialize(s));
                                     }
                                     return store;
                                 });
                                 return true;
                             });
-                            return InteractionResult.cancel(true);
                         });
                     });
                     displayNameClusterBuilder.button("reset_display_name", button -> {
-                        button.setOnClick((holder, details) -> {
+                        button.setOnClick(details -> {
                             stackToEdit.update(store -> {
                                 var stack = store.getStack();
                                 if (stack != null) {
@@ -136,7 +133,6 @@ public class StackEditorExampleJava {
                                 }
                                 return store;
                             });
-                            return InteractionResult.cancel(true);
                         });
                     });
                 }

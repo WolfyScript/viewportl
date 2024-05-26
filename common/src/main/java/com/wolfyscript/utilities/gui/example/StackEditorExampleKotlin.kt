@@ -21,8 +21,7 @@ package com.wolfyscript.utilities.gui.example
 import com.wolfyscript.utilities.data.ItemStackDataKeys
 import com.wolfyscript.utilities.eval.value_provider.provider
 import com.wolfyscript.utilities.gui.GuiAPIManager
-import com.wolfyscript.utilities.gui.interaction.InteractionResult
-import com.wolfyscript.utilities.gui.callback.InteractionCallback
+import com.wolfyscript.utilities.gui.Window
 import com.wolfyscript.utilities.gui.components.ComponentGroup
 import com.wolfyscript.utilities.gui.components.match
 import com.wolfyscript.utilities.gui.reactivity.Signal
@@ -49,7 +48,7 @@ private enum class Tab {
     LORE,
 }
 
-fun register(manager: GuiAPIManager) {
+fun registerStackEditor(manager: GuiAPIManager) {
     manager.registerGui("stack_editor") {
         size = 9 * 6
 
@@ -68,7 +67,6 @@ fun register(manager: GuiAPIManager) {
                         position = PropertyPosition.slot(4)
                     }
 
-                    onClick = InteractionCallback { _, _ -> InteractionResult.cancel(false) }
                     onValueChange = Consumer { v ->
                         stackToEdit.update {
                             it.setStack(v)
@@ -88,9 +86,8 @@ fun register(manager: GuiAPIManager) {
                         }
                     }
 
-                    onClick = InteractionCallback { _, _ ->
+                    onClick {
                         selectedTab.set(Tab.DISPLAY_NAME)
-                        InteractionResult.cancel(true)
                     }
                 }
                 button("lore_tab_selector") {
@@ -103,9 +100,8 @@ fun register(manager: GuiAPIManager) {
                         }
                     }
 
-                    onClick = InteractionCallback { _, _ ->
+                    onClick {
                         selectedTab.set(Tab.LORE)
-                        InteractionResult.cancel(true)
                     }
                 }
 
@@ -121,7 +117,7 @@ fun register(manager: GuiAPIManager) {
                     // Called once whenever the condition changes from true to false
                     // Whenever the stack is available we can show the selected tab
                     match({ selectedTab.get() }) {
-                        case({ equals(Tab.DISPLAY_NAME) }) { displayNameTab(stackToEdit) }
+                        case({ equals(Tab.DISPLAY_NAME) }) { displayNameTab(this@registerGui, stackToEdit) }
                         case({ equals(Tab.LORE) }) {
                             group("lore_tab") {
                                 button("edit_lore") {
@@ -133,8 +129,6 @@ fun register(manager: GuiAPIManager) {
                                             name = "<green><b>Edit Lore".provider()
                                         }
                                     }
-
-                                    onClick = InteractionCallback { _, _ -> InteractionResult.cancel(true) }
                                 }
                                 button("clear_lore") {
                                     properties {
@@ -145,8 +139,6 @@ fun register(manager: GuiAPIManager) {
                                             name = "<red><b>Clear Lore".provider()
                                         }
                                     }
-
-                                    onClick = InteractionCallback { _, _ -> InteractionResult.cancel(true) }
                                 }
                             }
                         }
@@ -157,7 +149,7 @@ fun register(manager: GuiAPIManager) {
     }
 }
 
-fun ComponentGroup.displayNameTab(stackToEdit: Signal<StackEditorStore>) {
+fun ComponentGroup.displayNameTab(window: Window, stackToEdit: Signal<StackEditorStore>) {
     group("display_name_tab") {
         button("set_display_name") {
             properties {
@@ -169,16 +161,15 @@ fun ComponentGroup.displayNameTab(stackToEdit: Signal<StackEditorStore>) {
                 }
             }
 
-            onClick = InteractionCallback { runtime, _ ->
-                runtime.setTextInputCallback { _, _, s, _ ->
+            onClick {
+                window.onTextInput { _, _, s, _ ->
                     stackToEdit.update { store ->
                         store?.getStack()?.data()
-                            ?.set(ItemStackDataKeys.CUSTOM_NAME, runtime.wolfyUtils.chat.miniMessage.deserialize(s))
+                            ?.set(ItemStackDataKeys.CUSTOM_NAME, window.wolfyUtils.chat.miniMessage.deserialize(s))
                         store
                     }
                     true
                 }
-                InteractionResult.cancel(true)
             }
         }
         button("reset_display_name") {
@@ -191,12 +182,11 @@ fun ComponentGroup.displayNameTab(stackToEdit: Signal<StackEditorStore>) {
                 }
             }
 
-            onClick = InteractionCallback { _, _ ->
+            onClick {
                 stackToEdit.update { store ->
                     store?.getStack()?.data()?.remove(ItemStackDataKeys.CUSTOM_NAME)
                     store
                 }
-                InteractionResult.cancel(true)
             }
         }
     }
