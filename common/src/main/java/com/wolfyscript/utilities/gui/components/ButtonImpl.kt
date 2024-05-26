@@ -12,12 +12,8 @@ import com.wolfyscript.utilities.gui.ViewRuntime
 import com.wolfyscript.utilities.gui.ViewRuntimeImpl
 import com.wolfyscript.utilities.gui.animation.Animation
 import com.wolfyscript.utilities.gui.animation.ButtonAnimationFrame
-import com.wolfyscript.utilities.gui.callback.InteractionCallback
-import com.wolfyscript.utilities.gui.interaction.InteractionResult
+import com.wolfyscript.utilities.gui.interaction.ClickInteractionDetails
 import com.wolfyscript.utilities.gui.model.UpdateInformation
-import com.wolfyscript.utilities.gui.reactivity.SignalGet
-import com.wolfyscript.utilities.gui.reactivity.createMemo
-import com.wolfyscript.utilities.gui.reactivity.createSignal
 import com.wolfyscript.utilities.world.items.ItemStackConfig
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -37,9 +33,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
     private val animation: Animation<ButtonAnimationFrame>? = null
 
     override var icon: ButtonIcon = DynamicIcon(wolfyUtils, context, this)
-    override var onClick: InteractionCallback = InteractionCallback { _, _ ->
-        InteractionResult.cancel(true)
-    }
+    override var onClick: ReceiverConsumer<ClickInteractionDetails>? = null
 
     override fun icon(iconConsumer: ReceiverConsumer<ButtonIcon>) {
         with(iconConsumer) {

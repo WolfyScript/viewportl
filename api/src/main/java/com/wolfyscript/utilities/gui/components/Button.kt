@@ -17,8 +17,8 @@
  */
 package com.wolfyscript.utilities.gui.components
 
-import com.wolfyscript.utilities.gui.callback.InteractionCallback
 import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.interaction.ClickInteractionDetails
 import net.kyori.adventure.sound.Sound
 
 /**
@@ -39,7 +39,11 @@ interface Button : Component {
 
     var icon: ButtonIcon
 
-    var onClick: InteractionCallback
+    var onClick: ReceiverConsumer<ClickInteractionDetails>?
+
+    fun onClick(consumer: ReceiverConsumer<ClickInteractionDetails>) {
+        onClick = consumer
+    }
 
     fun icon(iconConsumer: ReceiverConsumer<ButtonIcon>)
 }
