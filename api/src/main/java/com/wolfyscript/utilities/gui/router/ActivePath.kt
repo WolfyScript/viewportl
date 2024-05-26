@@ -19,25 +19,83 @@
 package com.wolfyscript.utilities.gui.router
 
 import java.util.*
+import kotlin.reflect.KClass
 
-class ActivePath : Iterable<ActivePath.Section> {
+class ActivePath(private val path: MutableList<Section> = mutableListOf()) : Iterable<ActivePath.Section> {
 
-    private val path: MutableList<Section> = mutableListOf()
+    private val params: MutableMap<String, Param<*>> = LinkedHashMap()
 
-    fun push(section: Section) {
-        path.add(section)
+    fun getParam(key: String): Param<*>? {
+        return params[key]
     }
 
-    fun pop() : Section = path.removeLast()
+    fun push(section: Section) {
+        addSection(section)
+    }
+
+    fun pop() : Section = removeSection()
 
     fun peek() : Section = path.last()
 
+    operator fun div(section: String) : ActivePath {
+        addSection(StaticSection(section))
+        return this
+    }
 
-    interface Section
+    operator fun div(param: Param<*>) : ActivePath {
+        addSection(param)
+        return this
+    }
 
-    class StaticSection(val name: String) : Section
+    operator fun times(param: Class<*>) : ActivePath {
+        return times(param.kotlin)
+    }
 
-    class Param<T: Any>(val name: String, val value: T) : Section
+    operator fun times(param: KClass<*>) : ActivePath {
+        val last = path.last()
+        if (last is StaticSection) {
+            addSection(Param(last.name, param.java))
+        }
+        return this
+    }
+
+    private fun removeSection() : Section {
+        val section = path.removeLast()
+        params.remove(section.name)
+        return section
+    }
+
+    private fun addSection(section: Section) {
+        if (section is Param<*>) {
+            params[section.name] = section
+        }
+        path.add(section)
+    }
+
+    fun copy() : ActivePath {
+        val newPath = ActivePath(path.map { it.copy() }.toMutableList())
+        return newPath
+    }
+
+    interface Section {
+
+        val name: String
+
+        fun copy() : Section
+
+    }
+
+    class StaticSection(override val name: String) : Section {
+        override fun copy(): Section {
+            return this
+        }
+    }
+
+    class Param<T: Any>(override val name: String, val value: T) : Section {
+        override fun copy(): Section {
+            return this
+        }
+    }
 
     override fun iterator(): Iterator<Section> {
         return Collections.unmodifiableList(path).iterator()
