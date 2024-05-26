@@ -46,11 +46,7 @@ public class ItemStackSerialization {
             JsonNode node = p.readValueAsTree();
             if (node.isValueNode()) {
                 //Old Serialization Methods. like Base64 or NMS serialization
-                String value = node.asText();
-                if (!value.startsWith("{")) {
-                    return ((WolfyCoreCommon) WolfyCore.getInstance()).getWolfyUtils().getNmsUtil().getItemUtil().getBase64ItemStack(value);
-                }
-                return value.equals("empty") ? null : ((WolfyCoreCommon) WolfyCore.getInstance()).getWolfyUtils().getNmsUtil().getItemUtil().getJsonItemStack(value);
+                return null;
             }
             var config = new YamlConfiguration();
             //Loads the Map from the JsonNode && Sets the Map to YamlConfig

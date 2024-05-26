@@ -16,7 +16,6 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":spigot:core"))
     implementation(project(":spigot:plugin-compatibility"))
-    implementation(project(":spigot:nmsutil"))
 
     api(libs.org.bstats.bukkit)
     api(libs.de.tr7zw.item.nbt.api)
@@ -82,7 +81,6 @@ minecraftServers {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    dependsOn(project(":spigot:nmsutil").tasks.named("shadowJar"))
     dependsOn(project(":spigot:core").tasks.named("shadowJar"))
     mustRunAfter("jar")
 
@@ -98,7 +96,6 @@ tasks.named<ShadowJar>("shadowJar") {
         include(dependency(libs.de.tr7zw.item.nbt.api.get().toString()))
         include(project(":spigot:core"))
         include(project(":spigot:plugin-compatibility"))
-        include(project(":spigot:nmsutil"))
     }
 
     // Always required to be shaded and relocated!
