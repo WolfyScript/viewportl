@@ -30,12 +30,12 @@ class WindowImpl internal constructor(
     override val router: Router = RouterImpl(wolfyUtils, context, this)
     override var resourcePath: String? = null
 
-    var textInputCallback: TextInputCallback? = null
-    var textInputTabCompleteCallback: TextInputTabCompleteCallback? = null
+    override var onTextInput: TextInputCallback? = null
+    override var onTextInputTabComplete: TextInputTabCompleteCallback? = null
 
     // Intervalls
-    val intervalRunnables: List<Pair<Runnable, Long>> = ArrayList()
-    val intervalTasks: MutableList<Task> = ArrayList()
+    private val intervalRunnables: List<Pair<Runnable, Long>> = ArrayList()
+    private val intervalTasks: MutableList<Task> = ArrayList()
 
     init {
         Preconditions.checkArgument(size != null || type != null, "Either type or size must be specified!")
@@ -85,11 +85,11 @@ class WindowImpl internal constructor(
     }
 
     override fun onTextInput(inputCallback: TextInputCallback?) {
-        this.textInputCallback = inputCallback
+        this.onTextInput = inputCallback
     }
 
     override fun onTextInputTabComplete(textInputTabCompleteCallback: TextInputTabCompleteCallback?) {
-        this.textInputTabCompleteCallback = textInputTabCompleteCallback
+        this.onTextInputTabComplete = textInputTabCompleteCallback
     }
 
 }

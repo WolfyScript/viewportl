@@ -96,6 +96,10 @@ interface Window : ReactiveSource {
      */
     fun height(): Int
 
+    var onTextInput: TextInputCallback?
+
+    var onTextInputTabComplete: TextInputTabCompleteCallback?
+
     fun onTextInput(inputCallback: TextInputCallback?)
 
     fun onTextInputTabComplete(textInputTabCompleteCallback: TextInputTabCompleteCallback?)
