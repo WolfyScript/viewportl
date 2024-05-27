@@ -53,7 +53,7 @@ class RouterImpl internal constructor(
 
     override fun openRoute(path: ReceiverConsumer<ActivePath>) {
         history.update {
-            history.get()?.apply {
+            it?.apply {
                 val newPath = ActivePath()
                 with(path) { newPath.consume() }
                 if (newPath != it.peek()) {
@@ -65,7 +65,7 @@ class RouterImpl internal constructor(
 
     override fun openSubRoute(path: ReceiverConsumer<ActivePath>) {
         history.update {
-            history.get()?.apply {
+            it?.apply {
                 val copy = it.peek().copy()
                 with(path) { copy.consume() }
                 if (copy != it.peek()) {
