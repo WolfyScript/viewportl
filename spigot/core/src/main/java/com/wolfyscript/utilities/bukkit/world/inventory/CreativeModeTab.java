@@ -77,8 +77,6 @@ public enum CreativeModeTab {
     }
 
     public static void init() {
-        WolfyCore.getInstance().getWolfyUtils().getLogger().info("Loading Creative Mode Tabs");
-        ((WolfyCoreCommon) WolfyCore.getInstance()).getWolfyUtils().getNmsUtil().getInventoryUtil().initItemCategories();
         register = false;
     }
 

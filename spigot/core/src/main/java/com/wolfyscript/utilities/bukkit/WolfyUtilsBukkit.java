@@ -3,7 +3,6 @@ package com.wolfyscript.utilities.bukkit;
 import com.wolfyscript.utilities.bukkit.chat.BukkitChat;
 import com.wolfyscript.utilities.bukkit.config.ConfigAPI;
 import com.wolfyscript.utilities.bukkit.language.TranslationsSpigot;
-import com.wolfyscript.utilities.bukkit.network.messages.MessageAPI;
 import com.wolfyscript.utilities.bukkit.world.items.BookUtil;
 import com.wolfyscript.utilities.bukkit.world.items.Items;
 import com.wolfyscript.utilities.Identifiers;
@@ -36,7 +35,6 @@ public class WolfyUtilsBukkit extends WolfyUtils {
     private final Translations translations;
     private final Permissions permissions;
     private final BookUtil bookUtil;
-    private final MessageAPI messageAPI;
     private final Identifiers identifiers;
     private final Items items;
 
@@ -51,7 +49,6 @@ public class WolfyUtilsBukkit extends WolfyUtils {
         this.chat = new BukkitChat(this);
         this.permissions = new Permissions(this);
         this.bookUtil = new BookUtil(this);
-        this.messageAPI = new MessageAPI(this);
         this.dataBasePrefix = getName().toLowerCase(Locale.ROOT) + "_";
         this.configAPI = new ConfigAPI(this);
         this.guiAPIManager = new GuiAPIManagerImpl(this);
@@ -127,10 +124,6 @@ public class WolfyUtilsBukkit extends WolfyUtils {
      */
     public BookUtil getBookUtil() {
         return bookUtil;
-    }
-
-    public MessageAPI getMessageAPI() {
-        return messageAPI;
     }
 
     public Items getItems() {

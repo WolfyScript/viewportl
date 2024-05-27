@@ -27,8 +27,6 @@ import com.wolfyscript.utilities.bukkit.listeners.custom_item.CustomItemDataList
 import com.wolfyscript.utilities.bukkit.listeners.custom_item.CustomItemPlayerListener
 import com.wolfyscript.utilities.bukkit.listeners.custom_item.CustomParticleListener
 import com.wolfyscript.utilities.bukkit.nbt.*
-import com.wolfyscript.utilities.bukkit.network.messages.MessageFactory
-import com.wolfyscript.utilities.bukkit.network.messages.MessageHandler
 import com.wolfyscript.utilities.bukkit.persistent.PersistentStorage
 import com.wolfyscript.utilities.bukkit.persistent.player.CustomPlayerData
 import com.wolfyscript.utilities.bukkit.persistent.player.PlayerParticleEffectData
@@ -95,10 +93,6 @@ abstract class WolfyCoreCommon(@JvmField val plugin: WolfyCoreCommonBootstrap) :
 
     private var config: WUConfig? = null
 
-    val messageHandler: MessageHandler = MessageHandler(this)
-
-    @JvmField
-    val messageFactory: MessageFactory = MessageFactory(this)
     /**
      * The [CompatibilityManagerBukkit], that manages the plugins compatibility features.
      *
