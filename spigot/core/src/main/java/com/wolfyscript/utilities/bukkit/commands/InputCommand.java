@@ -22,8 +22,7 @@ import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.utilities.bukkit.WolfyCoreCommon;
 import com.wolfyscript.utilities.bukkit.adapters.BukkitWrapper;
 import com.wolfyscript.utilities.gui.ViewRuntime;
-import com.wolfyscript.utilities.gui.callback.TextInputCallback;
-import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback;
+import com.wolfyscript.utilities.gui.Window;
 import com.wolfyscript.utilities.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -58,18 +57,18 @@ public final class InputCommand extends Command implements PluginIdentifiableCom
         core.getWolfyUtilsInstanceList().parallelStream()
                 .map(WolfyUtils::getGuiManager)
                 .flatMap(guiAPIManager -> guiAPIManager.getViewManagersFor(player.getUniqueId()))
-                .map(viewManager -> new Pair<>(viewManager, viewManager.textInputCallback()))
-                .filter(pair -> pair.getValue().isPresent())
+                .map(runtime -> new Pair<>(runtime, runtime.getCurrentMenu()))
+                .filter(pair -> pair.getValue() != null && pair.getValue().getOnTextInput() != null)
                 .forEach(pair -> {
-                    ViewRuntime viewManager = pair.getKey();
-                    TextInputCallback textInputCallback = pair.getValue().get();
+                    ViewRuntime runtime = pair.getKey();
+                    Window window = pair.getValue();
                     String text = String.join(" ", args).trim();
 
                     Bukkit.getScheduler().runTask(core.plugin, () -> {
-                        textInputCallback.run(BukkitWrapper.adapt(player), viewManager, text, args);
-                        viewManager.setTextInputCallback(null);
-                        viewManager.setTextInputTabCompleteCallback(null);
-                        viewManager.open();
+                        window.getOnTextInput().run(BukkitWrapper.adapt(player), null, text, args);
+                        window.setOnTextInput(null);
+                        window.setOnTextInputTabComplete(null);
+                        runtime.open();
                     });
                 });
         return true;
@@ -82,13 +81,13 @@ public final class InputCommand extends Command implements PluginIdentifiableCom
             return core.getWolfyUtilsInstanceList().parallelStream()
                     .map(WolfyUtils::getGuiManager)
                     .flatMap(guiAPIManager -> guiAPIManager.getViewManagersFor(player.getUniqueId()))
-                    .map(viewManager -> new Pair<>(viewManager, viewManager.textInputTabCompleteCallback()))
-                    .filter(pair -> pair.getValue().isPresent())
+                    .map(viewManager -> new Pair<>(viewManager, viewManager.getCurrentMenu()))
+                    .filter(pair -> pair.getValue() != null && pair.getValue().getOnTextInputTabComplete() != null)
                     .findFirst()
                     .map(pair -> {
-                        ViewRuntime viewManager = pair.getKey();
-                        TextInputTabCompleteCallback textInputCallback = pair.getValue().get();
-                        return textInputCallback.apply(BukkitWrapper.adapt(player), viewManager, String.join(" ", args).trim(), args);
+                        ViewRuntime runtime = pair.getKey();
+                        Window window = pair.getValue();
+                        return  window.getOnTextInputTabComplete().apply(BukkitWrapper.adapt(player), runtime, String.join(" ", args).trim(), args);
                     }).orElse(List.of());
         }
         return super.tabComplete(sender, alias, args);
