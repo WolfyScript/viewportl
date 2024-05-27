@@ -16,7 +16,7 @@ public class TestGUI {
     public void initWithConfig() {
         GuiAPIManager manager = core.getWolfyUtils().getGuiManager();
         CounterExampleKotlinKt.registerExampleCounter(manager);
-        StackEditorExampleKotlinKt.register(manager);
+        StackEditorExampleKotlinKt.registerStackEditor(manager);
     }
 
 

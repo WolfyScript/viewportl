@@ -108,9 +108,8 @@ public class CounterExampleJava {
             });
         });
 
-        bb.setOnClick((guiHolder, interactionDetails) -> {
+        bb.setOnClick(interactionDetails -> {
             count.update(old -> --old);
-            return InteractionResult.cancel(true);
         });
     }
 
@@ -124,9 +123,8 @@ public class CounterExampleJava {
             });
         });
 
-        bb.setOnClick((guiHolder, interactionDetails) -> {
+        bb.setOnClick(interactionDetails -> {
             count.update(old -> ++old);
-            return InteractionResult.cancel(true);
         });
     }
 
@@ -140,9 +138,8 @@ public class CounterExampleJava {
             });
         });
 
-        bb.setOnClick((guiHolder, interactionDetails) -> {
+        bb.setOnClick(interactionDetails -> {
             count.set(0); // The set method changes the value of the signal and prompts the listener of the signal to re-render.
-            return InteractionResult.cancel(true);
         });
         bb.setSound(Sound.sound(
                 Key.key("minecraft:entity.dragon_fireball.explode"),
