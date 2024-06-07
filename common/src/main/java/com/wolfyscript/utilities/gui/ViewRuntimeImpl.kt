@@ -1,13 +1,11 @@
 package com.wolfyscript.utilities.gui
 
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.gui.callback.TextInputCallback
-import com.wolfyscript.utilities.gui.callback.TextInputTabCompleteCallback
 import com.wolfyscript.utilities.gui.interaction.InteractionHandler
 import com.wolfyscript.utilities.gui.model.UpdateInformation
 import com.wolfyscript.utilities.gui.reactivity.ReactiveSourceImpl
 import com.wolfyscript.utilities.gui.rendering.Renderer
-import com.wolfyscript.utilities.gui.rendering.RenderingGraph
+import com.wolfyscript.utilities.gui.rendering.ModelGraph
 import java.util.*
 import java.util.function.Function
 
@@ -20,7 +18,7 @@ class ViewRuntimeImpl(
     val id: Long = NEXT_ID++
 
     // Create rendering & reactivity trees
-    val renderingGraph: RenderingGraph = RenderingGraph(this)
+    val modelGraph: ModelGraph = ModelGraph(this)
     val reactiveSource: ReactiveSourceImpl = ReactiveSourceImpl(this)
 
     // Create platform specific handlers that handle rendering and interaction

@@ -22,7 +22,6 @@ import java.util.stream.Stream
 import kotlin.collections.set
 
 class GuiAPIManagerImpl(private val wolfyUtils: WolfyUtils) : GuiAPIManager {
-    private val clustersMap: BiMap<String, Router> = HashBiMap.create()
     private val entriesMap: BiMap<String, Function<ViewRuntime, Window>> = HashBiMap.create()
 
     private var guiDataSubFolder: File
@@ -83,8 +82,7 @@ class GuiAPIManagerImpl(private val wolfyUtils: WolfyUtils) : GuiAPIManager {
         }
     }
 
-    protected fun registerGui(id: String, constructor: Function<ViewRuntime, Window>) {
-        Preconditions.checkArgument(!clustersMap.containsKey(id), "A cluster with the id '$id' is already registered!")
+    private fun registerGui(id: String, constructor: Function<ViewRuntime, Window>) {
         entriesMap[id] = constructor
     }
 
@@ -98,35 +96,4 @@ class GuiAPIManagerImpl(private val wolfyUtils: WolfyUtils) : GuiAPIManager {
         )
     }
 
-    override fun registerGuiFromFiles(key: String, windowConsumer: ReceiverConsumer<Window>) {
-        val mapper = wolfyUtils.jacksonMapperUtil.getGlobalMapper(HoconMapper::class.java)
-
-        registerGui(key) { runtime ->
-            try {
-                var file = File(guiDataSubFolder, "$key/entry.conf") // Look for user-override
-                if (!file.exists()) {
-                    file = File(guiDataSubFolder, "includes/$key/entry.conf") // Fall back to includes version
-                    require(!(!file.exists() || !file.isFile)) { "Cannot find gui index file! Expected: " + file.path }
-                }
-
-                val context = BuildContext(runtime, (runtime as ViewRuntimeImpl).reactiveSource, wolfyUtils)
-                val injectableValues = InjectableValues.Std()
-                injectableValues.addValue("parent", null)
-                injectableValues.addValue(WolfyUtils::class.java, wolfyUtils)
-                injectableValues.addValue("wolfyUtils", wolfyUtils)
-                injectableValues.addValue("context", context)
-                injectableValues.addValue(BuildContext::class.java, context)
-
-                val window = mapper.readerFor(Window::class.java).with(injectableValues).readValue<Window>(file)
-                with(windowConsumer) { window.consume() }
-                return@registerGui window
-            } catch (e: IOException) {
-                throw RuntimeException(e)
-            }
-        }
-    }
-
-    companion object {
-        private val GUI_FILE_PATTERN: Pattern = Pattern.compile(".*\\.(conf|json)")
-    }
 }

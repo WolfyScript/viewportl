@@ -37,8 +37,7 @@ class RouterImpl internal constructor(
     override val currentPath: SignalGet<ActivePath> = context.reactiveSource.createMemo {
         history.get()?.peek()
     }
-
-    var currentRootComponent: ComponentGroup? = null
+    private var currentRootComponent: ComponentGroup? = null
 
     override fun open() {
         currentRootComponent?.insert(context.runtime as ViewRuntimeImpl, 0)
@@ -83,9 +82,7 @@ class RouterImpl internal constructor(
         }
 
         context.reactiveSource.createEffect<ComponentGroup?> {
-            this?.remove(context.runtime as ViewRuntimeImpl, this.nodeId(), 0)
-
-            selectedRoute.get()?.let { selectedRoute ->
+            val component = selectedRoute.get()?.let { selectedRoute ->
                 val component = context.getOrCreateComponent(type = ComponentGroup::class.java)
                 with(selectedRoute.view) { component.consume() }
                 component.finalize()
@@ -97,6 +94,13 @@ class RouterImpl internal constructor(
                 }
                 component
             }
+
+            context.reactiveSource.createCleanup {
+                component?.remove(context.runtime as ViewRuntimeImpl, component.nodeId(), 0)
+                currentRootComponent = null
+            }
+
+            return@createEffect component
         }
     }
 

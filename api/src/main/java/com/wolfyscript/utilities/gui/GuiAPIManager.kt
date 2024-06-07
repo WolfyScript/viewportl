@@ -39,15 +39,6 @@ interface GuiAPIManager {
     fun registerGui(key: String, windowConsumer: ReceiverConsumer<Window>)
 
     /**
-     * Registers a new router that it loads from the specified gui data directory.
-     * The consumer function provides that newly constructed [Window], which can be configured
-     *
-     * @param id The unique id of the window
-     * @param windowConsumer The function to configure the window
-     */
-    fun registerGuiFromFiles(key: String, windowConsumer: ReceiverConsumer<Window>)
-
-    /**
      * Gets the registered router with the specified id.<br></br>
      *
      * @param id The id of the router.

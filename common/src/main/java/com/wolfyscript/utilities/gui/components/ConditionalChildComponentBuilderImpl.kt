@@ -70,7 +70,7 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
 
                 // Clean previous component before update and when disposed
                 context.reactiveSource.createCleanup {
-                    val graph = runtime.renderingGraph
+                    val graph = runtime.modelGraph
                     val previousNode = graph.getNode(id)
                     val previousComponent = previousNode?.component
                     previousComponent?.remove(runtime, previousNode.id, parentNodeId)
@@ -90,10 +90,11 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
         }
 
         fun build(parent: Component?): Component? {
-            val builder = context.getOrCreateComponent(null, ComponentGroup::class.java)
+            val component = context.getOrCreateComponent(parent, null, ComponentGroup::class.java)
             return builderConsumer?.let {
-                with(builderConsumer!!) { builder.consume() }
-                builder
+                with(builderConsumer!!) { component.consume() }
+                component.finalize()
+                component
             }
         }
 
@@ -109,10 +110,11 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
         }
 
         fun build(parent: Component?): Component? {
-            val builder = context.getOrCreateComponent(null, ComponentGroup::class.java)
+            val component = context.getOrCreateComponent(parent, null, ComponentGroup::class.java)
             return builderConsumer?.let {
-                with(builderConsumer!!) { builder.consume() }
-                builder
+                with(builderConsumer!!) { component.consume() }
+                component.finalize()
+                component
             }
         }
 

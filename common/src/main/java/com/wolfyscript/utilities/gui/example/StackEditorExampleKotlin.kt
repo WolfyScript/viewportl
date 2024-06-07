@@ -51,6 +51,7 @@ private enum class Tab {
 fun registerStackEditor(manager: GuiAPIManager) {
     manager.registerGui("stack_editor") {
         size = 9 * 6
+        val optionsPos = PropertyPosition.slot(18)
 
         routes {
             route({}, {
@@ -59,7 +60,7 @@ fun registerStackEditor(manager: GuiAPIManager) {
                  from the signals and effects used and only updates the necessary parts at runtime.
                  */
 
-                val stackToEdit = createSignal { StackEditorStore() }
+                val stackToEdit = createSignal(StackEditorStore())
                 val selectedTab = createSignal(Tab.NONE)
 
                 slot("stack_slot") {
@@ -70,10 +71,13 @@ fun registerStackEditor(manager: GuiAPIManager) {
                     onValueChange = Consumer { v ->
                         stackToEdit.update {
                             it.setStack(v)
-                            it
+                            return@update it
                         }
                     }
-                    value = stackToEdit.get()?.getStack()
+                    value = null
+                    createEffect<Unit> {
+                        value = stackToEdit.get()?.getStack()
+                    }
                 }
                 // Tab selectors
                 button("display_name_tab_selector") {
@@ -114,15 +118,26 @@ fun registerStackEditor(manager: GuiAPIManager) {
                     // Called once whenever the condition changes from false to true
                     // Empty component! Perhaps add a note that the item is missing!
                 } orElse {
+                    properties {
+                        position = optionsPos
+                    }
                     // Called once whenever the condition changes from true to false
                     // Whenever the stack is available we can show the selected tab
                     match({ selectedTab.get() }) {
-                        case({ equals(Tab.DISPLAY_NAME) }) { displayNameTab(this@registerGui, stackToEdit) }
-                        case({ equals(Tab.LORE) }) {
+                        case({ this?.equals(Tab.DISPLAY_NAME) ?: false }) {
+                            properties {
+                                position = optionsPos
+                            }
+                            displayNameTab(this@registerGui, stackToEdit)
+                        }
+                        case({ this?.equals(Tab.LORE) ?: false }) {
+                            properties {
+                                position = optionsPos
+                            }
                             group("lore_tab") {
                                 button("edit_lore") {
                                     properties {
-                                        position = PropertyPosition.slot(12)
+                                        position = PropertyPosition.slot(21)
                                     }
                                     icon {
                                         stack("writable_book") {
@@ -132,7 +147,7 @@ fun registerStackEditor(manager: GuiAPIManager) {
                                 }
                                 button("clear_lore") {
                                     properties {
-                                        position = PropertyPosition.slot(14)
+                                        position = PropertyPosition.slot(23)
                                     }
                                     icon {
                                         stack("red_concrete") {
@@ -151,9 +166,12 @@ fun registerStackEditor(manager: GuiAPIManager) {
 
 fun ComponentGroup.displayNameTab(window: Window, stackToEdit: Signal<StackEditorStore>) {
     group("display_name_tab") {
+        properties {
+            position = PropertyPosition.slot(9)
+        }
         button("set_display_name") {
             properties {
-                position = PropertyPosition.slot(12)
+                position = PropertyPosition.slot(21)
             }
             icon {
                 stack("green_concrete") {
@@ -174,7 +192,7 @@ fun ComponentGroup.displayNameTab(window: Window, stackToEdit: Signal<StackEdito
         }
         button("reset_display_name") {
             properties {
-                position = PropertyPosition.slot(14)
+                position = PropertyPosition.slot(23)
             }
             icon {
                 stack("red_concrete") {

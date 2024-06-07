@@ -10,7 +10,7 @@ import com.wolfyscript.utilities.gui.interaction.DragInteractionDetails
 import com.wolfyscript.utilities.gui.interaction.InteractionDetails
 import com.wolfyscript.utilities.gui.interaction.InteractionHandler
 import com.wolfyscript.utilities.gui.model.UpdateInformation
-import com.wolfyscript.utilities.gui.rendering.RenderingNode
+import com.wolfyscript.utilities.gui.rendering.Node
 
 class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : InteractionHandler {
 
@@ -26,36 +26,42 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
     }
 
     private fun initChildren(parent: Long, context: InvGUIInteractionContext) {
-        for (child in runtime.renderingGraph.children(parent)) {
+        for (child in runtime.modelGraph.children(parent)) {
             initChildOf(child, parent, context)
         }
     }
 
     private fun initChildOf(child: Long, parent: Long, context: InvGUIInteractionContext) {
-        runtime.renderingGraph.getNode(child)?.let {
-            val position = calculatePosition(it, context)
+        runtime.modelGraph.getNode(child)?.let {
+            val nextOffset = calculatePosition(it, context)
+            val offset = context.currentOffset()
             // Mark slot to interact with this node
-            slotNodes[position] = child
-            cachedProperties[child] = CachedNodeInteractProperties(position, mutableListOf(position))
+            slotNodes[offset] = child
+            cachedProperties[child] = CachedNodeInteractProperties(offset, mutableListOf(offset))
             // Store the position of this node in the parent, so we can easily clean the slot nodes
-            cachedProperties[parent]?.slots?.add(position)
+            cachedProperties[parent]?.slots?.add(offset)
+            context.setSlotOffset(nextOffset)
 
             initChildren(it.id, context)
         }
     }
 
-    private fun calculatePosition(node: RenderingNode, context: InvGUIInteractionContext) : Int {
-        val staticPos = node.component.properties.position.slotPositioning()?.slot() ?: (context.currentOffset() + 1)
-        context.setSlotOffset(staticPos)
-
-        cachedProperties[node.id] = CachedNodeInteractProperties(staticPos, mutableListOf(staticPos))
-        return staticPos
+    private fun calculatePosition(node: Node, context: InvGUIInteractionContext): Int {
+        val nextOffset = node.component.properties.position.slotPositioning()?.let {
+            context.setSlotOffset(it.slot())
+            return@let it.slot() + 1
+        } ?: run {
+            return context.currentOffset() + 1
+        }
+        val offset = context.currentOffset()
+        cachedProperties[node.id] = CachedNodeInteractProperties(offset, mutableListOf(offset))
+        return nextOffset
     }
 
     override fun onInteract(details: InteractionDetails): InteractionResult {
         when (details) {
             is ClickInteractionDetails -> {
-                val node = slotNodes[details.slot]?.let { runtime.renderingGraph.getNode(it) }
+                val node = slotNodes[details.slot]?.let { runtime.modelGraph.getNode(it) }
                 if (node != null) {
                     // TODO: Make extensible
                     return when (val component = node.component) {
@@ -83,16 +89,20 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
 
         // Nodes that got added
         for ((sibling, addedNode) in info.added()) {
-            runtime.renderingGraph.getNode(addedNode)?.let { node ->
-                val slotPositioning = if (node.component.properties.position.slotPositioning() == null) {
-                    // Get offset from parent TODO
-                    0
+            runtime.modelGraph.getNode(addedNode)?.let { node ->
+                val parent = runtime.modelGraph.parent(node.id)?.let { runtime.modelGraph.getNode(it) }
+                if (parent != null) {
+                    context.setSlotOffset(0)
+                    cachedProperties[parent.id]?.let {
+                        context.setSlotOffset(it.position)
+                    }
+                    val nextOffset = calculatePosition(parent, context)
+                    context.setSlotOffset(nextOffset)
+                    initChildOf(addedNode, parent.id, context)
                 } else {
-                    0
+                    context.setSlotOffset(0)
+                    initChildOf(addedNode, 0, context)
                 }
-                context.setSlotOffset(slotPositioning)
-                val parent = runtime.renderingGraph.parent(addedNode) ?: 0
-                initChildOf(addedNode, parent, context)
             }
         }
 
@@ -103,7 +113,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
 
         // Nodes that got removed
         for (removedNode in info.removed()) {
-            runtime.renderingGraph.getNode(removedNode)?.let {
+            runtime.modelGraph.getNode(removedNode)?.let {
 
                 // Remove node from cache
                 val removedProperties = cachedProperties.remove(removedNode)
@@ -112,7 +122,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
                 }
 
                 // Does it have a parent? if so unlink it
-                val parent = runtime.renderingGraph.parent(removedNode)
+                val parent = runtime.modelGraph.parent(removedNode)
                 if (parent != null) {
                     cachedProperties[parent]?.let { parentProperties ->
                         removedProperties?.slots?.let {

@@ -12,7 +12,7 @@ import com.wolfyscript.utilities.gui.components.Outlet
 import com.wolfyscript.utilities.gui.components.StackInputSlot
 import com.wolfyscript.utilities.gui.model.UpdateInformation
 import com.wolfyscript.utilities.gui.rendering.Renderer
-import com.wolfyscript.utilities.gui.rendering.RenderingNode
+import com.wolfyscript.utilities.gui.rendering.Node
 import com.wolfyscript.utilities.platform.adapters.ItemStack
 import com.wolfyscript.utilities.versioning.MinecraftVersion
 import com.wolfyscript.utilities.versioning.ServerVersion
@@ -64,7 +64,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
         cachedProperties[0] = CachedNodeRenderProperties(0, mutableSetOf(0))
         context.setSlotOffset(0)
 
-        renderChildren(0, context) // TODO: Debug!! No children can be found. Probably because of router changes!
+        renderChildren(0, context)
 
         runtime.viewers.forEach {
             Bukkit.getPlayer(it)?.openInventory(inventory!!)
@@ -72,14 +72,15 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
     }
 
     private fun renderChildren(parent: Long, context: InvGUIRenderContext) {
-        for (child in runtime.renderingGraph.children(parent)) {
+        for (child in runtime.modelGraph.children(parent)) {
             renderChildOf(child, parent, context)
         }
     }
 
     private fun renderChildOf(child: Long, parent: Long, context: InvGUIRenderContext) {
-        runtime.renderingGraph.getNode(child)?.let {
-            val position = calculatePosition(it, context)
+        runtime.modelGraph.getNode(child)?.let {
+            val nextOffset = calculatePosition(it, context)
+            val offset = context.currentOffset()
 
             // Direct rendering to specific component renderer TODO: Make extensible
             when (val component = it.component) {
@@ -88,54 +89,68 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
                 is Outlet -> component.component?.apply { InventoryGroupComponentRenderer().render(context, this) }
                 is StackInputSlot -> {}
             }
-            cachedProperties[child] = CachedNodeRenderProperties(position, mutableSetOf(position))
+            cachedProperties[child] = CachedNodeRenderProperties(offset, mutableSetOf(offset))
             // Store the slots affected by this node, so the slots can be easily cleared
-            cachedProperties[parent]?.slots?.add(position)
+            cachedProperties[parent]?.slots?.add(offset)
+
+            context.setSlotOffset(nextOffset)
 
             renderChildren(it.id, context)
         }
     }
 
-    private fun calculatePosition(node: RenderingNode, context: InvGUIRenderContext): Int {
-        val staticPos = node.component.properties.position.slotPositioning()?.slot() ?: (context.currentOffset() + 1)
-        context.setSlotOffset(staticPos)
-
-        cachedProperties[node.id] = CachedNodeRenderProperties(staticPos, mutableSetOf(staticPos))
-        return staticPos
+    private fun calculatePosition(node: Node, context: InvGUIRenderContext): Int {
+        val nextOffset = node.component.properties.position.slotPositioning()?.let {
+            context.setSlotOffset(it.slot())
+            return@let it.slot() + 1
+        } ?: run {
+            return context.currentOffset() + 1
+        }
+        val offset = context.currentOffset()
+        cachedProperties[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))
+        return nextOffset
     }
 
     override fun update(information: UpdateInformation) {
         val context = InvGUIRenderContext(this)
         for ((_, addedNode) in information.added()) {
-            runtime.renderingGraph.getNode(addedNode)?.let { node ->
-                val slotPositioning = if (node.component.properties.position.slotPositioning() == null) {
-                    // Get offset from parent TODO
-                    0
+            runtime.modelGraph.getNode(addedNode)?.let { node ->
+                val parent = runtime.modelGraph.parent(node.id)?.let { runtime.modelGraph.getNode(it) }
+                if (parent != null) {
+                    context.setSlotOffset(0)
+                    cachedProperties[parent.id]?.let {
+                        context.setSlotOffset(it.position)
+                    }
+                    val nextOffset = calculatePosition(parent, context)
+                    context.setSlotOffset(nextOffset)
+                    renderChildOf(addedNode, parent.id, context)
                 } else {
-                    0
+                    context.setSlotOffset(0)
+                    renderChildOf(addedNode, 0, context)
                 }
-                context.setSlotOffset(slotPositioning)
-                val parent = runtime.renderingGraph.parent(addedNode) ?: 0
-                renderChildOf(addedNode, parent, context)
             }
         }
 
         for (updated in information.updated()) {
-            runtime.renderingGraph.getNode(updated)?.let { node ->
-                val slotPositioning = if (node.component.properties.position.slotPositioning() == null) {
-                    // Get offset from parent TODO
-                    0
+            runtime.modelGraph.getNode(updated)?.let { node ->
+                val parent = runtime.modelGraph.parent(node.id)?.let { runtime.modelGraph.getNode(it) }
+                if (parent != null) {
+                    context.setSlotOffset(0)
+                    cachedProperties[parent.id]?.let {
+                        context.setSlotOffset(it.position)
+                    }
+                    val nextOffset = calculatePosition(parent, context)
+                    context.setSlotOffset(nextOffset)
+                    renderChildOf(updated, parent.id, context)
                 } else {
-                    0
+                    context.setSlotOffset(0)
+                    renderChildOf(updated, 0, context)
                 }
-                context.setSlotOffset(slotPositioning)
-                val parent = runtime.renderingGraph.parent(updated) ?: 0
-                renderChildOf(updated, parent, context)
             }
         }
 
         for (removedNode in information.removed()) {
-            runtime.renderingGraph.getNode(removedNode)?.let {
+            runtime.modelGraph.getNode(removedNode)?.let {
 
                 // Remove node from cache
                 val removedProperties = cachedProperties.remove(removedNode)
@@ -144,7 +159,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
                 }
 
                 // Does it have a parent? if so unlink it
-                val parent = runtime.renderingGraph.parent(removedNode)
+                val parent = runtime.modelGraph.parent(removedNode)
                 if (parent != null) {
                     cachedProperties[parent]?.let { parentProperties ->
                         removedProperties?.slots?.let {

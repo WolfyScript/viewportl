@@ -144,6 +144,9 @@ fun ComponentGroup.counter(window: Window, router: Router) {
     }
     // Sometimes we want to render components dependent on signals
     whenever { count.get() != 0 } then {
+        properties {
+            position = PropertyPosition.slot(10)
+        }
         // This section is run just once up on the initial construction too, not when the condition changes
         button("reset") {
             properties {

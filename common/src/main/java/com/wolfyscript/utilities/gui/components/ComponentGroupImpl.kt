@@ -6,8 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.inject.Inject
 import com.wolfyscript.utilities.KeyedStaticId
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.gui.*
 import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.utilities.gui.BuildContext
+import com.wolfyscript.utilities.gui.ViewRuntime
+import com.wolfyscript.utilities.gui.ViewRuntimeImpl
 import com.wolfyscript.utilities.platform.scheduler.Task
 import java.util.*
 import kotlin.math.abs
@@ -23,8 +25,7 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
     AbstractComponentImpl<ComponentGroup>(id, wolfyUtils, parent),
     ComponentGroup,
     ConditionalChildComponentBuilder by ConditionalChildComponentBuilderImpl(context),
-    MatchChildComponentBuilder by MatchChildComponentBuilderImpl(context)
-{
+    MatchChildComponentBuilder by MatchChildComponentBuilderImpl(context) {
 
     private val children: MutableList<Component> = mutableListOf()
     private val width: Int
@@ -72,7 +73,7 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
         type: Class<B>,
         configurator: ReceiverConsumer<B>
     ) {
-        val component = context.getOrCreateComponent(id, type)
+        val component = context.getOrCreateComponent(this, id, type)
         children.add(component)
         with(configurator) { component.consume() }
         component.finalize()
@@ -84,13 +85,13 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
         }
         intervalTasks.clear()
 
-        (runtime as ViewRuntimeImpl).renderingGraph.removeNode(nodeId)
+        (runtime as ViewRuntimeImpl).modelGraph.removeNode(nodeId)
     }
 
     override fun insert(runtime: ViewRuntime, parentNode: Long) {
         runtime as ViewRuntimeImpl
-        val id = runtime.renderingGraph.addNode(this)
-        runtime.renderingGraph.insertNodeChild(id, parentNode)
+        val id = runtime.modelGraph.addNode(this)
+        runtime.modelGraph.insertNodeAsChildOf(id, parentNode)
 
         for (child in children) {
             child.insert(runtime, id)

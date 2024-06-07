@@ -26,16 +26,16 @@ import com.wolfyscript.utilities.gui.components.AbstractComponentImpl
 import com.wolfyscript.utilities.gui.model.UpdateInformation
 import java.util.Collections
 
-class RenderingGraph(private val runtime: ViewRuntimeImpl) {
+class ModelGraph(private val runtime: ViewRuntimeImpl) {
 
     private var nodeCount: Long = 0
-    private val nodes: MutableMap<Long, RenderingNode> = mutableMapOf()
+    private val nodes: MutableMap<Long, Node> = mutableMapOf()
     private val children: SetMultimap<Long, Long> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
     private val parents: MutableMap<Long, Long> = mutableMapOf()
 
     fun addNode(component: Component) : Long {
         val id = ++nodeCount
-        nodes[id] = RenderingNode(id, component)
+        nodes[id] = Node(id, component)
         if (component is AbstractComponentImpl<*>) {
             component.nodeId = id
         }
@@ -45,10 +45,10 @@ class RenderingGraph(private val runtime: ViewRuntimeImpl) {
     fun insertComponentAt(component: Component, insertAt: Long) {
         if (insertAt != 0L && !nodes.containsKey(insertAt)) return
         val id = addNode(component)
-        insertNodeChild(id, insertAt)
+        insertNodeAsChildOf(id, insertAt)
     }
 
-    fun insertNodeChild(nodeId: Long, parent: Long) {
+    fun insertNodeAsChildOf(nodeId: Long, parent: Long) {
         if(!nodes.containsKey(nodeId) || (!nodes.containsKey(parent) && parent != 0L)) return
         val siblings = children[parent]
         val previousSibling = siblings.lastOrNull()
@@ -63,7 +63,7 @@ class RenderingGraph(private val runtime: ViewRuntimeImpl) {
         })
     }
 
-    fun getNode(id: Long) : RenderingNode? {
+    fun getNode(id: Long) : Node? {
         return nodes[id]
     }
 

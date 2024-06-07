@@ -25,16 +25,16 @@ class InventoryStackSlotInteractionHandler : ComponentInteractionHandler<StackIn
                 with(it) {
                     details.consume()
                 }
-                // TODO: Handle accept stack & more
-                if (details is ClickInteractionDetailsImpl) {
-                    val event: InventoryClickEvent = details.clickEvent
-                    InteractionUtils.applyItemFromInteractionEvent(
-                        event.slot, event, setOf<Int>()
-                    ) { itemStack: ItemStack? ->
-                        component.onValueChange?.accept(
-                            itemStack?.let { ItemStackImpl(runtime.wolfyUtils as WolfyUtilsBukkit, itemStack) }
-                        )
-                    }
+            }
+            // TODO: Handle accept stack & more
+            if (details is ClickInteractionDetailsImpl) {
+                val event: InventoryClickEvent = details.clickEvent
+                InteractionUtils.applyItemFromInteractionEvent(
+                    event.slot, event, setOf<Int>()
+                ) { itemStack: ItemStack? ->
+                    component.onValueChange?.accept(
+                        itemStack?.let { ItemStackImpl(runtime.wolfyUtils as WolfyUtilsBukkit, itemStack) }
+                    )
                 }
             }
         }

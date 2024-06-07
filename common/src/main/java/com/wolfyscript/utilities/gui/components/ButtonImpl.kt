@@ -45,12 +45,12 @@ class ButtonImpl @JsonCreator @Inject constructor(
 
     override fun insert(runtime: ViewRuntime, parentNode: Long) {
         runtime as ViewRuntimeImpl
-        val id = runtime.renderingGraph.addNode(this)
-        runtime.renderingGraph.insertNodeChild(id, parentNode)
+        val id = runtime.modelGraph.addNode(this)
+        runtime.modelGraph.insertNodeAsChildOf(id, parentNode)
     }
 
     override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
-        (runtime as ViewRuntimeImpl).renderingGraph.removeNode(nodeId)
+        (runtime as ViewRuntimeImpl).modelGraph.removeNode(nodeId)
     }
 
     override fun finalize() {

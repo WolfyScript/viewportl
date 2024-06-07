@@ -48,7 +48,7 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
                         value.apply()
                     }
                 }?.builderConsumer?.let { builderConsumer ->
-                    val builder = context.getOrCreateComponent(null, ComponentGroup::class.java)
+                    val builder = context.getOrCreateComponent(parent, null, ComponentGroup::class.java)
                     return@let with(builderConsumer) {
                         builder.consume()
                         builder.let {
@@ -60,7 +60,7 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
                 } ?: -1
 
                 context.reactiveSource.createCleanup {
-                    val graph = runtime.renderingGraph
+                    val graph = runtime.modelGraph
                     val previousNode = graph.getNode(id)
                     val previousComponent = previousNode?.component
                     previousComponent?.remove(runtime, previousNode.id, parentNodeId)
