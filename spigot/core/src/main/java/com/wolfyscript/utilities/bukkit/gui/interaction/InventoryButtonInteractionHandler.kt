@@ -1,11 +1,11 @@
 package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.utilities.gui.interaction.InteractionResult
-import com.wolfyscript.utilities.gui.ViewRuntime
-import com.wolfyscript.utilities.gui.components.Button
-import com.wolfyscript.utilities.gui.interaction.ClickInteractionDetails
-import com.wolfyscript.utilities.gui.interaction.ComponentInteractionHandler
-import com.wolfyscript.utilities.gui.interaction.InteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.InteractionResult
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.components.Button
+import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.ComponentInteractionHandler
+import com.wolfyscript.viewportl.gui.interaction.InteractionDetails
 
 class InventoryButtonInteractionHandler : ComponentInteractionHandler<Button> {
 

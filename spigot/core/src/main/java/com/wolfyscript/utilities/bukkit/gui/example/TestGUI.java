@@ -1,9 +1,9 @@
 package com.wolfyscript.utilities.bukkit.gui.example;
 
 import com.wolfyscript.utilities.WolfyCore;
-import com.wolfyscript.utilities.gui.GuiAPIManager;
-import com.wolfyscript.utilities.gui.example.CounterExampleKotlinKt;
-import com.wolfyscript.utilities.gui.example.StackEditorExampleKotlinKt;
+import com.wolfyscript.viewportl.gui.GuiAPIManager;
+import com.wolfyscript.viewportl.gui.example.CounterExampleKotlinKt;
+import com.wolfyscript.viewportl.gui.example.StackEditorExampleKotlinKt;
 
 public class TestGUI {
 

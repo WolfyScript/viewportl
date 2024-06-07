@@ -1,8 +1,8 @@
 package com.wolfyscript.utilities.bukkit.gui
 
-import com.wolfyscript.utilities.gui.GuiHolder
-import com.wolfyscript.utilities.gui.ViewRuntimeImpl
-import com.wolfyscript.utilities.gui.Window
+import com.wolfyscript.viewportl.gui.GuiHolder
+import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
+import com.wolfyscript.viewportl.gui.Window
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -14,7 +14,7 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
     InventoryHolder {
     private var activeInventory: Inventory? = null
 
-    private fun currentWindow(): Window? {
+    private fun currentWindow(): Window {
         return guiHolder.currentWindow
     }
 

@@ -55,7 +55,7 @@ public abstract class BoolOperator extends Operator {
         }
 
         @Override
-        public BoolOperator deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public BoolOperator deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonNode node = p.readValueAsTree();
             return new BoolOperatorConst((WolfyUtils) ctxt.findInjectableValue(WolfyUtils.class.getName(), null, null), node.asBoolean());
         }

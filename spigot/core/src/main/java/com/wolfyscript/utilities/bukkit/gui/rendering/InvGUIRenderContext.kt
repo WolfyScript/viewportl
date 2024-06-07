@@ -1,9 +1,10 @@
 package com.wolfyscript.utilities.bukkit.gui.rendering
 
-import com.wolfyscript.utilities.gui.components.Component
-import com.wolfyscript.utilities.gui.rendering.RenderContext
+import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
-class InvGUIRenderContext(val renderer: InventoryGUIRenderer) : RenderContext {
+class InvGUIRenderContext(val renderer: InventoryGUIRenderer) :
+    RenderContext {
     private var currentNode: Component? = null
     private var slotOffsetToParent = 0
 

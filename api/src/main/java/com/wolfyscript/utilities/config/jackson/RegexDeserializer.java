@@ -49,7 +49,7 @@ public class RegexDeserializer<T> extends ValueDeserializer<T> {
     }
 
     @Override
-    public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.readValueAsTree();
         if (node.isTextual()) {
             String text = node.asText();

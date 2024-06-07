@@ -1,16 +1,16 @@
 package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.utilities.gui.interaction.InteractionResult
-import com.wolfyscript.utilities.gui.ViewRuntimeImpl
-import com.wolfyscript.utilities.gui.Window
-import com.wolfyscript.utilities.gui.components.Button
-import com.wolfyscript.utilities.gui.components.StackInputSlot
-import com.wolfyscript.utilities.gui.interaction.ClickInteractionDetails
-import com.wolfyscript.utilities.gui.interaction.DragInteractionDetails
-import com.wolfyscript.utilities.gui.interaction.InteractionDetails
-import com.wolfyscript.utilities.gui.interaction.InteractionHandler
-import com.wolfyscript.utilities.gui.model.UpdateInformation
-import com.wolfyscript.utilities.gui.rendering.Node
+import com.wolfyscript.viewportl.gui.interaction.InteractionResult
+import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
+import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.components.Button
+import com.wolfyscript.viewportl.gui.components.StackInputSlot
+import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.InteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
+import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.viewportl.gui.rendering.Node
 
 class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : InteractionHandler {
 

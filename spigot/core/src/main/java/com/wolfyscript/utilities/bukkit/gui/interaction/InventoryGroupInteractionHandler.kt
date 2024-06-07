@@ -1,10 +1,10 @@
 package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.utilities.gui.interaction.InteractionResult
-import com.wolfyscript.utilities.gui.ViewRuntime
-import com.wolfyscript.utilities.gui.components.ComponentGroup
-import com.wolfyscript.utilities.gui.interaction.ComponentInteractionHandler
-import com.wolfyscript.utilities.gui.interaction.InteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.InteractionResult
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.components.ComponentGroup
+import com.wolfyscript.viewportl.gui.interaction.ComponentInteractionHandler
+import com.wolfyscript.viewportl.gui.interaction.InteractionDetails
 
 class InventoryGroupInteractionHandler : ComponentInteractionHandler<ComponentGroup> {
 

@@ -1,15 +1,15 @@
 package com.wolfyscript.utilities.bukkit.gui;
 
-import com.wolfyscript.utilities.gui.interaction.ClickType;
-import com.wolfyscript.utilities.gui.interaction.InteractionResult;
-import com.wolfyscript.utilities.gui.interaction.ClickInteractionDetails;
+import com.wolfyscript.viewportl.gui.interaction.ClickType;
+import com.wolfyscript.viewportl.gui.interaction.InteractionResult;
+import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class ClickInteractionDetailsImpl implements ClickInteractionDetails {
 
     private final InventoryClickEvent clickEvent;
     private final ClickType clickType;
-    private InteractionResult.ResultType resultType;
+    private final InteractionResult.ResultType resultType;
 
     ClickInteractionDetailsImpl(InventoryClickEvent clickEvent) {
         this.clickEvent = clickEvent;

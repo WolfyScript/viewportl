@@ -35,7 +35,7 @@ import com.wolfyscript.utilities.bukkit.world.particles.ParticleEffect;
 import com.wolfyscript.utilities.bukkit.world.particles.animators.Animator;
 import com.wolfyscript.utilities.bukkit.world.particles.shapes.Shape;
 import com.wolfyscript.utilities.bukkit.world.particles.timer.Timer;
-import com.wolfyscript.utilities.gui.components.Component;
+import com.wolfyscript.viewportl.gui.components.Component;
 import com.wolfyscript.utilities.registry.Registries;
 import com.wolfyscript.utilities.registry.Registry;
 import com.wolfyscript.utilities.registry.RegistryGUIComponentTypes;

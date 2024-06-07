@@ -2,8 +2,8 @@ package com.wolfyscript.utilities.bukkit.registry;
 
 import com.google.common.base.Preconditions;
 import com.wolfyscript.utilities.NamespacedKey;
-import com.wolfyscript.utilities.gui.components.Component;
-import com.wolfyscript.utilities.gui.components.ComponentImplementation;
+import com.wolfyscript.viewportl.gui.components.Component;
+import com.wolfyscript.viewportl.gui.components.ComponentImplementation;
 import com.wolfyscript.utilities.registry.Registries;
 import com.wolfyscript.utilities.registry.RegistryGUIComponentTypes;
 import com.wolfyscript.utilities.registry.UniqueTypeRegistrySimple;

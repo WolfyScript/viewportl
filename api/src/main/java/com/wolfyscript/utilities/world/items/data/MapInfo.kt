@@ -18,5 +18,4 @@
 
 package com.wolfyscript.utilities.world.items.data
 
-interface MapInfo {
-}
+interface MapInfo

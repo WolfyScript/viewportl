@@ -1,7 +1,7 @@
 package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.utilities.gui.components.Component
-import com.wolfyscript.utilities.gui.interaction.InteractionHandler
+import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 
 class InvGUIInteractionContext (val interactionHandler: InteractionHandler) {
     private var currentNode: Component? = null

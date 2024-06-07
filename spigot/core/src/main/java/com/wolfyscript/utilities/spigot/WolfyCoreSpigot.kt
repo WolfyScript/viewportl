@@ -14,10 +14,6 @@ class WolfyCoreSpigot(plugin: WolfyCoreSpigotBootstrap?) : WolfyCoreCommon(plugi
 
     override val platform: PlatformImpl = PlatformImpl(this, PlatformType.SPIGOT)
 
-    override fun load() {
-        super.load()
-    }
-
     override fun enable() {
         super.enable()
         platform.init()

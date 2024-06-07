@@ -2,9 +2,9 @@ package com.wolfyscript.utilities.bukkit.gui;
 
 import com.wolfyscript.utilities.bukkit.gui.interaction.InventoryGUIInteractionHandler;
 import com.wolfyscript.utilities.bukkit.gui.rendering.InventoryGUIRenderer;
-import com.wolfyscript.utilities.gui.*;
-import com.wolfyscript.utilities.gui.interaction.InteractionHandler;
-import com.wolfyscript.utilities.gui.rendering.Renderer;
+import com.wolfyscript.viewportl.gui.*;
+import com.wolfyscript.viewportl.gui.interaction.InteractionHandler;
+import com.wolfyscript.viewportl.gui.rendering.Renderer;
 import com.wolfyscript.utilities.platform.gui.GuiUtils;
 
 public class GuiUtilsImpl implements GuiUtils {

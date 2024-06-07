@@ -4,12 +4,12 @@ import com.wolfyscript.utilities.bukkit.WolfyUtilsBukkit
 import com.wolfyscript.utilities.bukkit.adapters.ItemStackImpl
 import com.wolfyscript.utilities.bukkit.gui.ClickInteractionDetailsImpl
 import com.wolfyscript.utilities.bukkit.gui.InteractionUtils
-import com.wolfyscript.utilities.gui.ViewRuntime
-import com.wolfyscript.utilities.gui.components.StackInputSlot
-import com.wolfyscript.utilities.gui.interaction.ClickInteractionDetails
-import com.wolfyscript.utilities.gui.interaction.ComponentInteractionHandler
-import com.wolfyscript.utilities.gui.interaction.InteractionDetails
-import com.wolfyscript.utilities.gui.interaction.InteractionResult
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.components.StackInputSlot
+import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.ComponentInteractionHandler
+import com.wolfyscript.viewportl.gui.interaction.InteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.InteractionResult
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
@@ -31,10 +31,8 @@ class InventoryStackSlotInteractionHandler : ComponentInteractionHandler<StackIn
                 val event: InventoryClickEvent = details.clickEvent
                 InteractionUtils.applyItemFromInteractionEvent(
                     event.slot, event, setOf<Int>()
-                ) { itemStack: ItemStack? ->
-                    component.onValueChange?.accept(
-                        itemStack?.let { ItemStackImpl(runtime.wolfyUtils as WolfyUtilsBukkit, itemStack) }
-                    )
+                ) {
+                    component.onValueChange?.accept(it?.let { ItemStackImpl(runtime.wolfyUtils as WolfyUtilsBukkit, it) })
                 }
             }
         }

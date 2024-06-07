@@ -9,10 +9,6 @@ class WolfyCorePaper(bootstrap: WolfyCorePaperBootstrap?) : WolfyCoreCommon(boot
 
     override val platform: PlatformImpl = PlatformImpl(this, PlatformType.PAPER)
 
-    override fun load() {
-        super.load()
-    }
-
     override fun enable() {
         super.enable()
         platform.init()

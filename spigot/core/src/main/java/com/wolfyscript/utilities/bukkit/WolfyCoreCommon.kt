@@ -47,7 +47,7 @@ import com.wolfyscript.utilities.bukkit.world.particles.timer.TimerRandom
 import com.wolfyscript.utilities.config.jackson.*
 import com.wolfyscript.utilities.eval.operator.*
 import com.wolfyscript.utilities.eval.value_provider.*
-import com.wolfyscript.utilities.gui.components.*
+import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.utilities.nbt.*
 import com.wolfyscript.utilities.versioning.ServerVersion
 import com.wolfyscript.utilities.world.items.ItemStackConfig
@@ -352,7 +352,7 @@ abstract class WolfyCoreCommon(@JvmField val plugin: WolfyCoreCommonBootstrap) :
         KeyedTypeIdResolver.registerTypeRegistry(QueryNode::class.java, nbtQueryNodes)
         KeyedTypeIdResolver.registerTypeRegistry(CustomBlockData::class.java, customBlockData)
         KeyedTypeIdResolver.registerTypeRegistry(CustomPlayerData::class.java, registries.customPlayerData)
-        KeyedTypeIdResolver.registerTypeRegistry(com.wolfyscript.utilities.gui.components.Component::class.java, registries.guiComponentTypes)
+        KeyedTypeIdResolver.registerTypeRegistry(com.wolfyscript.viewportl.gui.components.Component::class.java, registries.guiComponentTypes)
     }
 
     open fun enable() {

@@ -20,7 +20,7 @@ package com.wolfyscript.utilities
 import com.fasterxml.jackson.annotation.JsonIncludeProperties
 import com.wolfyscript.utilities.chat.Chat
 import com.wolfyscript.utilities.config.jackson.MapperUtil
-import com.wolfyscript.utilities.gui.GuiAPIManager
+import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.utilities.language.Translations
 import com.wolfyscript.utilities.registry.Registries
 import java.io.File

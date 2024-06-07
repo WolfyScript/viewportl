@@ -18,7 +18,7 @@
 
 package com.wolfyscript.utilities.registry;
 
-import com.wolfyscript.utilities.gui.components.Component;
+import com.wolfyscript.viewportl.gui.components.Component;
 
 public interface RegistryGUIComponentTypes extends TypeRegistry<Component> {
 

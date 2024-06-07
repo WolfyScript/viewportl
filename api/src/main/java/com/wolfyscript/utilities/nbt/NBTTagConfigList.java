@@ -35,7 +35,7 @@ public abstract class NBTTagConfigList<VAL extends NBTTagConfig> extends NBTTagC
     @JsonIgnore
     private final Class<VAL> elementType;
     @JsonIgnore
-    private List<Element<VAL>> elements;
+    private final List<Element<VAL>> elements;
     private List<VAL> values;
 
     @JsonCreator

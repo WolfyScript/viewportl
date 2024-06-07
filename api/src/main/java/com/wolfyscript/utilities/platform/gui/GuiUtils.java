@@ -18,9 +18,9 @@
 
 package com.wolfyscript.utilities.platform.gui;
 
-import com.wolfyscript.utilities.gui.ViewRuntime;
-import com.wolfyscript.utilities.gui.interaction.InteractionHandler;
-import com.wolfyscript.utilities.gui.rendering.Renderer;
+import com.wolfyscript.viewportl.gui.ViewRuntime;
+import com.wolfyscript.viewportl.gui.interaction.InteractionHandler;
+import com.wolfyscript.viewportl.gui.rendering.Renderer;
 
 public interface GuiUtils {
 

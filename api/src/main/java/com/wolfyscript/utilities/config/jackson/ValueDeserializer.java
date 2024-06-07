@@ -31,7 +31,7 @@ public abstract class ValueDeserializer<T> {
         this.type = type;
     }
 
-    public abstract T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException;
+    public abstract T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException;
 
     public Class<T> getType() {
         return type;

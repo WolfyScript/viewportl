@@ -166,7 +166,7 @@ class BukkitItemStackConfig : ItemStackConfig {
                     } else {
                         meta.lore = lore.map { provider ->
                             BukkitComponentSerializer.legacy().serialize(
-                                miniMsg!!.deserialize(provider.getValue(context)!!, tagResolvers!!)
+                                miniMsg!!.deserialize(provider.getValue(context), tagResolvers!!)
                             )
                         }
                     }
@@ -180,7 +180,7 @@ class BukkitItemStackConfig : ItemStackConfig {
                         )
                     )
                     if (enchant != null) {
-                        meta.addEnchant(enchant, value.getValue(context)!!, true)
+                        meta.addEnchant(enchant, value.getValue(context), true)
                     }
                 }
 

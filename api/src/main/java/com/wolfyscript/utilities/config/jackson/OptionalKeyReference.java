@@ -181,7 +181,7 @@ public @interface OptionalKeyReference {
             }
 
             @Override
-            public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
                 if(p.isExpectedStartObjectToken()) {
                     return defaultDeserializer.deserialize(p, ctxt);
                 }
