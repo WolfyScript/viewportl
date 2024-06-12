@@ -16,19 +16,18 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.interaction
+package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.viewportl.gui.interaction.DragTransaction
+import com.wolfyscript.viewportl.gui.interaction.DragType
 
-interface InteractionHandler {
+class DragTransactionImpl(
+    override val slot : Int,
+    override val inventorySlots: Set<Int>,
+    override val rawSlots: Set<Int>,
+    override val type: DragType,
+) : DragTransaction {
 
-    fun init(window: Window)
-
-    fun update(info: UpdateInformation)
-
-    fun onClick(details: ClickInteractionDetails)
-
-    fun onDrag(details: DragInteractionDetails)
+    override var valid: Boolean = true
 
 }

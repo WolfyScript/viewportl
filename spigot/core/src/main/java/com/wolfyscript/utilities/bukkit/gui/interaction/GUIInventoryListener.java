@@ -18,7 +18,6 @@
 
 package com.wolfyscript.utilities.bukkit.gui.interaction;
 
-import com.wolfyscript.utilities.bukkit.gui.BukkitInventoryGuiHolder;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

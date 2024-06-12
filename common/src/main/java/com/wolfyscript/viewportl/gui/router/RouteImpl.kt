@@ -52,7 +52,7 @@ class RouteImpl(
             }
         }
 
-        context.reactiveSource.createEffect<Unit> {
+        context.reactiveSource.createEffect {
             selectedRoute.get()?.let { selectedRoute ->
                 val component = context.getOrCreateComponent(type = ComponentGroup::class.java)
                 with(selectedRoute.view) { component.consume() }

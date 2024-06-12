@@ -18,17 +18,16 @@
 
 package com.wolfyscript.viewportl.gui.interaction
 
-import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+interface InteractionTransaction {
 
-interface InteractionHandler {
+    var valid: Boolean
 
-    fun init(window: Window)
+    fun validate() {
+        valid = true
+    }
 
-    fun update(info: UpdateInformation)
-
-    fun onClick(details: ClickInteractionDetails)
-
-    fun onDrag(details: DragInteractionDetails)
+    fun invalidate() {
+        valid = false
+    }
 
 }

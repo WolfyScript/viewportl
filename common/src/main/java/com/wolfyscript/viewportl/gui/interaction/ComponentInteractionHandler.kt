@@ -23,6 +23,8 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 
 interface ComponentInteractionHandler<C: Component> {
 
-    fun interact(runtime: ViewRuntime, component: C, details: InteractionDetails) : InteractionResult
+    fun onDrag(runtime: ViewRuntime, component: C, details: DragInteractionDetails, transaction: DragTransaction)
+
+    fun onClick(runtime: ViewRuntime, component: C, details: ClickInteractionDetails, transaction: ClickTransaction)
 
 }

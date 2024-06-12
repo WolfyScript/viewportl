@@ -29,10 +29,12 @@ import com.wolfyscript.utilities.functions.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.BuildContext
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
-import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.ClickType
 import com.wolfyscript.utilities.platform.adapters.ItemStack
+import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 import java.util.function.Consumer
+import java.util.function.Supplier
 import javax.annotation.Nullable
 
 @ComponentImplementation(base = StackInputSlot::class)
@@ -47,10 +49,15 @@ class StackInputSlotImpl @JsonCreator @Inject constructor(
 ), StackInputSlot {
 
     override var onValueChange: Consumer<ItemStack?>? = null
-    override var onClick: ReceiverConsumer<ClickInteractionDetails>? = null
-    override var acceptStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null
+    override var onClick: ReceiverConsumer<ClickTransaction>? = null
+    override var onDrag: ReceiverConsumer<DragTransaction>? = null
     override var canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null
     override var value: ItemStack? = null
+    private var valueFn: Supplier<ItemStack?>? = null
+
+    override fun value(fn: Supplier<ItemStack?>) {
+        valueFn = fn
+    }
 
     override fun width(): Int {
         return 1
@@ -66,7 +73,15 @@ class StackInputSlotImpl @JsonCreator @Inject constructor(
 
     override fun insert(runtime: ViewRuntime, parentNode: Long) {
         runtime as ViewRuntimeImpl
+
+        if (valueFn != null) {
+            runtime.reactiveSource.createEffect {
+                value = valueFn?.get()
+            }
+        }
+
         val id = runtime.modelGraph.addNode(this)
         runtime.modelGraph.insertNodeAsChildOf(id, parentNode)
     }
+
 }

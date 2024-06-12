@@ -39,7 +39,7 @@ class MatchChildComponentBuilderImpl(private val context: BuildContext) : MatchC
             val valueMemo = context.reactiveSource.createMemo(valueType.java) { value.get() }
 
             val runtime = context.runtime
-            context.reactiveSource.createEffect<Unit> {
+            context.reactiveSource.createEffect {
                 runtime as ViewRuntimeImpl
                 val parentNodeId = (parent as? AbstractComponentImpl<*>)?.nodeId ?: 0
                 val value = valueMemo.get()

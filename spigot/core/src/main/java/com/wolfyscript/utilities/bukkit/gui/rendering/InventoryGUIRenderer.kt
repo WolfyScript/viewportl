@@ -2,7 +2,7 @@ package com.wolfyscript.utilities.bukkit.gui.rendering
 
 import com.wolfyscript.utilities.bukkit.WolfyCoreCommon
 import com.wolfyscript.utilities.bukkit.adapters.ItemStackImpl
-import com.wolfyscript.utilities.bukkit.gui.BukkitInventoryGuiHolder
+import com.wolfyscript.utilities.bukkit.gui.interaction.BukkitInventoryGuiHolder
 import com.wolfyscript.utilities.bukkit.nms.inventory.InventoryUpdate
 import com.wolfyscript.utilities.bukkit.world.items.BukkitItemStackConfig
 import com.wolfyscript.viewportl.gui.*

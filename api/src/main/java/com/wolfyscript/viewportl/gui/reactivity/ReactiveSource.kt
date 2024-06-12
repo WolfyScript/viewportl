@@ -50,10 +50,8 @@ interface ReactiveSource {
      * Creates an [Effect] that reruns when a [Signal]/[Memo] used inside it is updated.
      *
      */
-    fun createEffect(effect: Runnable): Effect {
-        return createEffect<Unit> {
-            effect.run()
-        }
+    fun createEffect(effect: ReceiverFunction<Unit?, Unit>): Effect {
+        return createMemoEffect(effect)
     }
 
     /**
@@ -62,7 +60,7 @@ interface ReactiveSource {
      * This type of [Effect] allows to use the value of the previous execution, and return the new value.<br>
      * When no value is required use the type [Unit]
      */
-    fun <T> createEffect(effect: ReceiverFunction<T?, T>): Effect
+    fun <T> createMemoEffect(effect: ReceiverFunction<T?, T>): Effect
 
     /**
      * Creates a Memo, that holds a value of the specified [valueType].

@@ -18,7 +18,7 @@
 package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.utilities.functions.ReceiverConsumer
-import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
 import net.kyori.adventure.sound.Sound
 
 /**
@@ -39,9 +39,9 @@ interface Button : Component {
 
     var icon: ButtonIcon
 
-    var onClick: ReceiverConsumer<ClickInteractionDetails>?
+    var onClick: ReceiverConsumer<ClickTransaction>?
 
-    fun onClick(consumer: ReceiverConsumer<ClickInteractionDetails>) {
+    fun onClick(consumer: ReceiverConsumer<ClickTransaction>) {
         onClick = consumer
     }
 

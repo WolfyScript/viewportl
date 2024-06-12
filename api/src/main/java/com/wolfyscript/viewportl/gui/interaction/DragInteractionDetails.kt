@@ -15,17 +15,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.interaction
 
-package com.wolfyscript.viewportl.gui.interaction;
+import com.wolfyscript.utilities.platform.adapters.ItemStack
+import java.util.function.Consumer
 
-import java.util.Set;
+interface DragInteractionDetails : InteractionDetails {
 
-public interface DragInteractionDetails extends InteractionDetails {
+    val addedStacks : Map<Int, ItemStack>
 
-    Set<Integer> getInventorySlots();
+    val rawSlots: Set<Int>
 
-    Set<Integer> getRawSlots();
+    val inventorySlots: Set<Int>
 
-    DragType getType();
+    val type: DragType
+
+    fun onSlotValueUpdate(slot: Int, consumer: Consumer<ItemStack?>)
+
+    fun callSlotValueUpdate(slot: Int, itemStack: ItemStack?)
 
 }

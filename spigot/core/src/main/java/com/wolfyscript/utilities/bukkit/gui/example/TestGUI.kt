@@ -1,23 +1,17 @@
-package com.wolfyscript.utilities.bukkit.gui.example;
+package com.wolfyscript.utilities.bukkit.gui.example
 
-import com.wolfyscript.utilities.WolfyCore;
-import com.wolfyscript.viewportl.gui.GuiAPIManager;
-import com.wolfyscript.viewportl.gui.example.CounterExampleKotlinKt;
-import com.wolfyscript.viewportl.gui.example.StackEditorExampleKotlinKt;
+import com.wolfyscript.utilities.WolfyCore
+import com.wolfyscript.viewportl.gui.example.CounterExampleKotlin
+import com.wolfyscript.viewportl.gui.example.StackEditorExampleKotlin
+import com.wolfyscript.viewportl.gui.example.StackSlotsExampleKotlin
 
-public class TestGUI {
+class TestGUI(private val core: WolfyCore) {
 
-    private final WolfyCore core;
-
-    public TestGUI(WolfyCore core) {
-        this.core = core;
+    fun initWithConfig() {
+        val manager = core.wolfyUtils.guiManager
+        CounterExampleKotlin.registerExampleCounter(manager)
+        StackEditorExampleKotlin.registerStackEditor(manager)
+        StackSlotsExampleKotlin.registerStackSlotsExample(manager)
     }
-
-    public void initWithConfig() {
-        GuiAPIManager manager = core.getWolfyUtils().getGuiManager();
-        CounterExampleKotlinKt.registerExampleCounter(manager);
-        StackEditorExampleKotlinKt.registerStackEditor(manager);
-    }
-
 
 }

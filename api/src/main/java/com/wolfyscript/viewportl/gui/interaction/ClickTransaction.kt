@@ -18,17 +18,26 @@
 
 package com.wolfyscript.viewportl.gui.interaction
 
-import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.utilities.platform.adapters.ItemStack
 
-interface InteractionHandler {
+interface ClickTransaction : InteractionTransaction {
 
-    fun init(window: Window)
+    val clickType: ClickType
 
-    fun update(info: UpdateInformation)
+    val slot: Int
 
-    fun onClick(details: ClickInteractionDetails)
+    val rawSlot: Int
 
-    fun onDrag(details: DragInteractionDetails)
+    val cursorStack : ItemStack?
+
+    val currentStack : ItemStack?
+
+    val shift: Boolean
+
+    val primary: Boolean
+
+    val secondary: Boolean
+
+    val hotbarIndex: Int
 
 }

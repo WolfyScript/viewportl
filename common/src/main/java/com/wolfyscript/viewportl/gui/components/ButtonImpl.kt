@@ -30,9 +30,9 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.animation.Animation
 import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrame
-import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
 import com.wolfyscript.viewportl.gui.model.UpdateInformation
 import com.wolfyscript.utilities.world.items.ItemStackConfig
+import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
@@ -51,7 +51,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
     private val animation: Animation<ButtonAnimationFrame>? = null
 
     override var icon: ButtonIcon = DynamicIcon(wolfyUtils, context, this)
-    override var onClick: ReceiverConsumer<ClickInteractionDetails>? = null
+    override var onClick: ReceiverConsumer<ClickTransaction>? = null
 
     override fun icon(iconConsumer: ReceiverConsumer<ButtonIcon>) {
         with(iconConsumer) {
@@ -89,7 +89,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
         }
 
         override fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>) {
-            context.reactiveSource.createEffect<Unit> {
+            context.reactiveSource.createEffect {
                 val newStack = wolfyUtils.core.platform.items.createStackConfig(wolfyUtils, itemId)
                 with(stackConfig) { newStack.consume() }
                 stack = newStack
@@ -101,7 +101,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
         }
 
         override fun resolvers(resolverSupplier: Supplier<TagResolver>) {
-            context.reactiveSource.createEffect<Unit> {
+            context.reactiveSource.createEffect {
                 resolvers = resolverSupplier.get()
 
                 (context.runtime as ViewRuntimeImpl).incomingUpdate(object : UpdateInformation {

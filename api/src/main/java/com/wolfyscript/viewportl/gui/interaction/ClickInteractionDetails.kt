@@ -15,23 +15,28 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.interaction
 
-package com.wolfyscript.viewportl.gui.interaction;
+import com.wolfyscript.utilities.platform.adapters.ItemStack
+import java.util.function.Consumer
 
-public interface ClickInteractionDetails extends InteractionDetails {
+interface ClickInteractionDetails : InteractionDetails {
+    val isShift: Boolean
 
-    boolean isShift();
+    val isSecondary: Boolean
 
-    boolean isSecondary();
+    val isPrimary: Boolean
 
-    boolean isPrimary();
+    val slot: Int
 
-    int getSlot();
+    val rawSlot: Int
 
-    int getRawSlot();
+    val hotbarButton: Int
 
-    int getHotbarButton();
+    val clickType: ClickType
 
-    ClickType getClickType();
+    fun onSlotValueUpdate(slot: Int, consumer: Consumer<ItemStack?>)
+
+    fun callSlotValueUpdate(slot: Int, itemStack: ItemStack?)
 
 }

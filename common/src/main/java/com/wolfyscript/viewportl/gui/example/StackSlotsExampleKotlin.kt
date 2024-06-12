@@ -18,53 +18,69 @@
 
 package com.wolfyscript.viewportl.gui.example
 
+import com.wolfyscript.utilities.platform.adapters.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
-import com.wolfyscript.viewportl.gui.components.ComponentGroup
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
-import com.wolfyscript.utilities.platform.adapters.ItemStack
 import java.util.function.Consumer
 
-fun registerStackSlotsExample(manager: GuiAPIManager) {
-    manager.registerGui("stack_editor") {
-        size = 9 * 1
+class StackSlotsExampleKotlin {
 
-        routes {
-            route({}, {
-                /*
-                 This whole construction is only called upon the initiation and creates a reactivity graph
-                 from the signals and effects used and only updates the necessary parts at runtime.
-                 */
+    companion object {
 
-                val stacks = createSignal {
-                    val wolfyUtils = this.wolfyUtils
-                    mutableListOf<ItemStack>().apply {
+        fun registerStackSlotsExample(manager: GuiAPIManager) {
+            manager.registerGui("stack_grid") {
+                size = 9 * 1
+
+                routes {
+                    route({}, {
+                        /*
+                         This whole construction is only called upon the initiation and creates a reactivity graph
+                         from the signals and effects used and only updates the necessary parts at runtime.
+                         */
+
+                        val stacks = createSignal {
+                            val wolfyUtils = this.wolfyUtils
+                            mutableListOf<ItemStack>().apply {
+                                for (i in 0 until 9) {
+                                    wolfyUtils.core.platform.items.createStackConfig(wolfyUtils, "air")
+                                        .constructItemStack()?.let {
+                                        this.add(it)
+                                    }
+                                }
+                            }
+                        }
+
                         for (i in 0 until 9) {
-                            wolfyUtils.core.platform.items.createStackConfig(wolfyUtils, "air").constructItemStack()?.let {
-                                this.add(it)
+                            slot("stack_slot_$i") {
+                                properties {
+                                    position = PropertyPosition.slot(i)
+                                }
+
+                                onClick { }
+
+                                onValueChange = Consumer { v ->
+                                    stacks.update {
+                                        val newStack =
+                                            v ?: this@registerGui.wolfyUtils.core.platform.items.createStackConfig(
+                                                wolfyUtils,
+                                                "air"
+                                            ).constructItemStack()
+                                        if (newStack != null) {
+                                            it[i] = newStack
+                                        }
+                                        it
+                                    }
+                                }
+                                value {
+                                    stacks.get()?.get(i)
+                                }
                             }
                         }
-                    }
+
+                    })
                 }
-
-                slot("stack_slot_0") {
-                    properties {
-                        position = PropertyPosition.slot(0)
-                    }
-
-                    onValueChange = Consumer { v ->
-                        stacks.update {
-                            val newStack = v ?: this@registerGui.wolfyUtils.core.platform.items.createStackConfig(wolfyUtils, "air").constructItemStack()
-                            if (newStack != null) {
-                                it[0] = newStack
-                            }
-                            it
-                        }
-                    }
-                    value = stacks.get()?.get(0)
-                }
-
-            })
+            }
         }
     }
 }

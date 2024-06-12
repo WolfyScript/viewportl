@@ -353,7 +353,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         return SignalImpl(id, valueType.kotlin)
     }
 
-    override fun <T> createEffect(effect: ReceiverFunction<T?, T>): Effect {
+    override fun <T> createMemoEffect(effect: ReceiverFunction<T?, T>): Effect {
         return createCustomEffect(null, EffectState(effect))
     }
 

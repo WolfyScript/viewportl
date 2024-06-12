@@ -19,25 +19,28 @@ package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.utilities.functions.ReceiverBiFunction
 import com.wolfyscript.utilities.functions.ReceiverConsumer
-import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.ClickType
 import com.wolfyscript.utilities.platform.adapters.ItemStack
+import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 import java.util.function.Consumer
+import java.util.function.Supplier
 
 interface StackInputSlot : Component {
 
     var value: ItemStack?
 
+    fun value(fn: Supplier<ItemStack?>)
+
     var onValueChange: Consumer<ItemStack?>?
 
-    var onClick: ReceiverConsumer<ClickInteractionDetails>?
+    var onClick: ReceiverConsumer<ClickTransaction>?
 
-    var acceptStack : ReceiverBiFunction<ClickType, ItemStack, Boolean>?
+    var onDrag: ReceiverConsumer<DragTransaction>?
 
     var canPickUpStack : ReceiverBiFunction<ClickType, ItemStack, Boolean>?
 
-    fun onClick(fn: ReceiverConsumer<ClickInteractionDetails>) { onClick = fn }
+    fun onClick(fn: ReceiverConsumer<ClickTransaction>) { onClick = fn }
 
-    fun acceptStack(fn: ReceiverBiFunction<ClickType, ItemStack, Boolean>) { acceptStack = fn }
 
 }

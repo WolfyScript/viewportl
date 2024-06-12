@@ -16,19 +16,24 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.interaction
+package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.utilities.platform.adapters.ItemStack
+import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.ClickType
 
-interface InteractionHandler {
+class ClickTransactionImpl(
+    override val clickType: ClickType,
+    override val slot: Int,
+    override val rawSlot: Int,
+    override val shift: Boolean,
+    override val primary: Boolean,
+    override val secondary: Boolean,
+    override val hotbarIndex: Int,
+) : ClickTransaction {
 
-    fun init(window: Window)
-
-    fun update(info: UpdateInformation)
-
-    fun onClick(details: ClickInteractionDetails)
-
-    fun onDrag(details: DragInteractionDetails)
+    override var valid: Boolean = true
+    override val cursorStack : ItemStack? = null
+    override val currentStack : ItemStack? = null
 
 }

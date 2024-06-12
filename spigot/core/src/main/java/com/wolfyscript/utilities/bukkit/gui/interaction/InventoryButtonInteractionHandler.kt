@@ -1,28 +1,43 @@
 package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.viewportl.gui.interaction.InteractionResult
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.Button
-import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
-import com.wolfyscript.viewportl.gui.interaction.ComponentInteractionHandler
-import com.wolfyscript.viewportl.gui.interaction.InteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.*
 
 class InventoryButtonInteractionHandler : ComponentInteractionHandler<Button> {
 
-    override fun interact(runtime: ViewRuntime, component: Button, details: InteractionDetails): InteractionResult {
+    private fun playSound(runtime: ViewRuntime, component: Button) {
         component.sound?.let { sound ->
             runtime.viewers.forEach {
                 runtime.wolfyUtils.core.platform.audiences.player(it).playSound(sound)
             }
         }
-        if (details is ClickInteractionDetails) {
-            component.onClick?.let { click ->
-                with(click) {
-                    details.consume()
-                }
+    }
+
+    override fun onClick(
+        runtime: ViewRuntime,
+        component: Button,
+        details: ClickInteractionDetails,
+        transaction: ClickTransaction
+    ) {
+        playSound(runtime, component)
+
+        component.onClick?.let { click ->
+            with(click) {
+                transaction.consume()
             }
         }
-        return InteractionResult.cancel(true)
+
+        details.invalidate() // Never allow to validate it!
+    }
+
+    override fun onDrag(
+        runtime: ViewRuntime,
+        component: Button,
+        details: DragInteractionDetails,
+        transaction: DragTransaction
+    ) {
+        details.invalidate()
     }
 
 }

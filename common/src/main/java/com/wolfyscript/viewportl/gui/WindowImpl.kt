@@ -60,7 +60,7 @@ class WindowImpl internal constructor(
     }
 
     override fun title(titleUpdate: ReceiverFunction<Component?, Component?>) {
-        context.reactiveSource.createEffect<Unit> {
+        context.reactiveSource.createEffect {
             title = with(titleUpdate) { title.apply() }
 
             (context.runtime as ViewRuntimeImpl).renderer.updateTitle(title)

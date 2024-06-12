@@ -81,7 +81,7 @@ class RouterImpl internal constructor(
             }
         }
 
-        context.reactiveSource.createEffect<ComponentGroup?> {
+        context.reactiveSource.createEffect {
             val component = selectedRoute.get()?.let { selectedRoute ->
                 val component = context.getOrCreateComponent(type = ComponentGroup::class.java)
                 with(selectedRoute.view) { component.consume() }
@@ -99,8 +99,6 @@ class RouterImpl internal constructor(
                 component?.remove(context.runtime as ViewRuntimeImpl, component.nodeId(), 0)
                 currentRootComponent = null
             }
-
-            return@createEffect component
         }
     }
 

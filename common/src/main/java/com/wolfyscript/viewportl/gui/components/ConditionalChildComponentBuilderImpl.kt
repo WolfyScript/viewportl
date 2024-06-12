@@ -45,7 +45,7 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
         for (conditional in conditionals) {
             val conditionMemo: Memo<Boolean> = context.reactiveSource.createMemo { conditional.condition.get() }
             val runtime = context.runtime
-            context.reactiveSource.createEffect<Unit> {
+            context.reactiveSource.createEffect {
                 runtime as ViewRuntimeImpl
                 val parentNodeId = (parent as? AbstractComponentImpl<*>)?.nodeId ?: 0
 

@@ -1,9 +1,28 @@
-package com.wolfyscript.utilities.bukkit.gui
+/*
+ *       WolfyUtilities, APIs and Utilities for Minecraft Spigot plugins
+ *                      Copyright (C) 2021  WolfyScript
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
+package com.wolfyscript.utilities.bukkit.gui.interaction
+
+import com.wolfyscript.utilities.bukkit.WolfyUtilsBukkit
+import com.wolfyscript.utilities.bukkit.adapters.ItemStackImpl
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.Window
-import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
@@ -25,18 +44,12 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
     fun onClick(event: InventoryClickEvent) {
         if (currentWindow() == null || event.clickedInventory == null) return
         if (event.clickedInventory!!.holder == this) {
-            val result = runtime.interactionHandler.onInteract(ClickInteractionDetailsImpl(event))
-            if (result.isCancelled) {
-                event.isCancelled = true
-            }
-        } else if (event.action != InventoryAction.COLLECT_TO_CURSOR) {
-            event.isCancelled = false
-            // TODO: Handle bottom inventory clicks
-        }
-        runtime.wolfyUtils.core.platform.scheduler.syncTask(runtime.wolfyUtils) {
-            runtime.reactiveSource.runEffects()
-            runtime.currentMenu?.apply {
+            val details = ClickInteractionDetailsImpl(event)
+            runtime.interactionHandler.onClick(details)
+            event.isCancelled = true
 
+            runtime.wolfyUtils.core.platform.scheduler.syncTask(runtime.wolfyUtils) {
+                runtime.reactiveSource.runEffects()
             }
         }
     }
@@ -50,11 +63,20 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
         }
         if (currentWindow() == null) return
         if (event.inventory.holder == this) {
-            val interactionDetails = DragInteractionDetailsImpl(event)
-            val result = runtime.interactionHandler.onInteract(interactionDetails)
-            if (result.isCancelled) {
+            val interactionDetails = DragInteractionDetailsImpl(runtime.wolfyUtils, event)
+            runtime.interactionHandler.onDrag(interactionDetails)
+            if (!interactionDetails.valid) {
                 event.isCancelled = true
+            } else {
+                runtime.wolfyUtils.core.platform.scheduler.syncTask(runtime.wolfyUtils) {
+                    for (rawSlot in event.rawSlots) {
+                        if (rawSlot < event.inventory.size) {
+                            interactionDetails.callSlotValueUpdate(rawSlot, ItemStackImpl(runtime.wolfyUtils as WolfyUtilsBukkit, event.inventory.getItem(rawSlot)))
+                        }
+                    }
+                }
             }
+
             runtime.wolfyUtils.core.platform.scheduler.syncTask(runtime.wolfyUtils) {
                 runtime.reactiveSource.runEffects()
             }

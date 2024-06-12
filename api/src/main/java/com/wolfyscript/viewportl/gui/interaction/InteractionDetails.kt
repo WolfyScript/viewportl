@@ -20,8 +20,14 @@ package com.wolfyscript.viewportl.gui.interaction
 
 interface InteractionDetails {
 
-    fun isCancelled(): Boolean
+    var valid : Boolean
 
-    fun getResultType(): InteractionResult.ResultType
+    fun invalidate() {
+        valid = false
+    }
+
+    fun validate() {
+        valid = true
+    }
 
 }

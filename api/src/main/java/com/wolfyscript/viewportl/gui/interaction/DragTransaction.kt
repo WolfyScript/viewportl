@@ -18,17 +18,14 @@
 
 package com.wolfyscript.viewportl.gui.interaction
 
-import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+interface DragTransaction : InteractionTransaction {
 
-interface InteractionHandler {
+    val slot : Int
 
-    fun init(window: Window)
+    val inventorySlots: Set<Int>
 
-    fun update(info: UpdateInformation)
+    val rawSlots: Set<Int>
 
-    fun onClick(details: ClickInteractionDetails)
-
-    fun onDrag(details: DragInteractionDetails)
+    val type: DragType
 
 }
