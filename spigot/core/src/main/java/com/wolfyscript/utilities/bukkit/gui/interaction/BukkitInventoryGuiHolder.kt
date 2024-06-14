@@ -43,7 +43,7 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
 
     fun onClick(event: InventoryClickEvent) {
         if (currentWindow() == null || event.clickedInventory == null) return
-        if (event.clickedInventory!!.holder == this) {
+        if (event.view.topInventory.holder == this) {
             val details = ClickInteractionDetailsImpl(event)
             runtime.interactionHandler.onClick(details)
             event.isCancelled = true

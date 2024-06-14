@@ -13,7 +13,7 @@ class ItemStackImpl(private val wolfyUtils: WolfyUtils, bukkitRef: ItemStack?) :
 
     override fun getItem(): NamespacedKey {
         if (getBukkitRef() == null) {
-            throw IllegalStateException()
+            return BukkitNamespacedKey.of("minecraft:air")!!
         }
         return BukkitNamespacedKey.fromBukkit(getBukkitRef()!!.type.key)
     }

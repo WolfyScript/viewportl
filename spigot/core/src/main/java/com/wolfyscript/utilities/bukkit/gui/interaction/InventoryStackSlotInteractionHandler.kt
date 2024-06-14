@@ -40,7 +40,7 @@ class InventoryStackSlotInteractionHandler : ComponentInteractionHandler<StackIn
         }
 
         if (transaction.valid) {
-            details.onSlotValueUpdate(transaction.slot) {
+            details.onSlotValueUpdate(transaction.rawSlot) {
                 component.onValueChange?.accept(it)
                 component.value = it
             }

@@ -1,6 +1,5 @@
 package com.wolfyscript.utilities.bukkit.gui.interaction
 
-import com.wolfyscript.utilities.bukkit.WolfyUtilsBukkit
 import com.wolfyscript.utilities.bukkit.adapters.ItemStackImpl
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.Window
@@ -16,8 +15,9 @@ import com.wolfyscript.viewportl.gui.model.UpdateInformation
 import com.wolfyscript.viewportl.gui.rendering.Node
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
-import java.util.function.BiPredicate
+import org.bukkit.inventory.ItemStack
 
 class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : InteractionHandler {
 
@@ -94,16 +94,18 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
         details as ClickInteractionDetailsImpl
 
         val event = details.clickEvent
-        val topInvSize = runtime.getCurrentMenu().map { it.size ?: 0 }.orElse(0)
-        val clickedSlot = details.rawSlot
+        val clickedTopInv = event.clickedInventory == event.view.topInventory
 
         val originalCursor = event.cursor
         val originalSlotStack = event.currentItem
 
-        var cursor: org.bukkit.inventory.ItemStack? = originalCursor.clone()
-        var slotResult: org.bukkit.inventory.ItemStack? = originalSlotStack?.clone()
+        var cursor: ItemStack? = originalCursor.clone()
+        var slotResult: ItemStack? = originalSlotStack?.clone()
 
-        when (event.action) {
+        testMainClickTransaction(details)
+
+        val action = event.action
+        when (action) {
             // place/collect stack
             InventoryAction.PLACE_ONE -> {
                 if (slotResult == null) {
@@ -188,7 +190,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
             }
 
             InventoryAction.COLLECT_TO_CURSOR -> {
-                testMainClickTransaction(details)
+                details.clickEvent.isCancelled = true
 
                 if (details.valid) { // Only continue to collect items when main component allows it
                     // Clear the slot, it was moved to the cursor
@@ -219,9 +221,44 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
 
             // Moving items between inventories using shift clicking
             InventoryAction.MOVE_TO_OTHER_INVENTORY -> {
-                testMainClickTransaction(details)
-                // TODO
+                details.clickEvent.isCancelled = true
 
+                if (details.valid) { // Only move items when parent transaction is allowed
+                    if (clickedTopInv) {
+                        // Move from Top Inv to Bottom Inv
+                        // So no need to test and update child transactions in bottom inv
+                        if (slotResult != null) {
+                            moveToOtherInventory(
+                                slotResult,
+                                event.view,
+                                event.view.topInventory,
+                                event.view.bottomInventory,
+                                { _, _ -> true }) { _, _ -> }
+                            details.callSlotValueUpdate(event.rawSlot, ItemStackImpl(runtime.wolfyUtils, slotResult))
+
+                            // Apply calculated slot changes
+                            details.clickEvent.currentItem = slotResult
+                        }
+                    } else {
+                        // Move from Bottom Inv to Top Inv
+                        // The slotResult here is sitting in the bottom inventory, so no need to update it
+                        if (slotResult != null) {
+                            moveToOtherInventory(
+                                slotResult,
+                                event.view,
+                                event.view.bottomInventory,
+                                event.view.topInventory,
+                                { index, stack ->
+                                    testChildClickTransaction(index, event.view, details)
+                                }) { rawSlot, stack ->
+                                details.callSlotValueUpdate(rawSlot, ItemStackImpl(runtime.wolfyUtils, stack))
+                            }
+
+                            // Apply calculated slot changes
+                            details.clickEvent.currentItem = slotResult
+                        }
+                    }
+                }
                 return
             }
 
@@ -238,54 +275,60 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
 
             // Hotbar swapping using the number keys
             InventoryAction.HOTBAR_SWAP, InventoryAction.HOTBAR_MOVE_AND_READD -> {
-                val clickedStack = slotResult?.clone()
-                slotResult = event.whoClicked.inventory.getItem(event.hotbarButton)
-                event.whoClicked.inventory.setItem(event.hotbarButton, clickedStack)
+                if (details.valid) {
+                    val clickedStack = slotResult?.clone()
+                    slotResult = event.whoClicked.inventory.getItem(event.hotbarButton)
+                    event.whoClicked.inventory.setItem(event.hotbarButton, clickedStack)
+                }
             }
 
             else -> {
                 /* Click action not handled */
+                return
             }
         }
 
         details.clickEvent.isCancelled = true
 
-        if (clickedSlot < topInvSize) {
-            testMainClickTransaction(details)
-            if (details.valid) {
-                // Apply calculated slot changes
-                details.clickEvent.view.setCursor(cursor)
-                details.clickEvent.currentItem = slotResult
+        if (details.valid) {
+            // Apply calculated slot changes
+            details.clickEvent.view.setCursor(cursor)
+            details.clickEvent.currentItem = slotResult
 
-                // Notify listeners (e.g. components)
-                details.callSlotValueUpdate(event.rawSlot, ItemStackImpl(runtime.wolfyUtils, slotResult))
-            }
+            // Notify listeners (e.g. components)
+            details.callSlotValueUpdate(event.rawSlot, ItemStackImpl(runtime.wolfyUtils, slotResult))
         }
     }
 
     private fun testMainClickTransaction(details: ClickInteractionDetailsImpl) {
+        if (details.clickEvent.clickedInventory == details.clickEvent.view.bottomInventory) {
+            details.validate() // Allow any bottom inventory interaction
+            return
+        }
         // Top inventory clicked
         val node = slotNodes[details.slot]?.let { runtime.modelGraph.getNode(it) }
-        if (node != null) {
-            val transaction = ClickTransactionImpl(
-                details.clickType,
-                details.slot,
-                details.rawSlot,
-                details.isShift,
-                details.isPrimary,
-                details.isSecondary,
-                details.hotbarButton
-            )
-            // Invalidate the action by default
+        if (node == null) {
             details.invalidate()
-            transaction.invalidate()
+            return
+        }
+        val transaction = ClickTransactionImpl(
+            details.clickType,
+            details.slot,
+            details.rawSlot,
+            details.isShift,
+            details.isPrimary,
+            details.isSecondary,
+            details.hotbarButton
+        )
+        // Invalidate the action by default
+        details.invalidate()
+        transaction.invalidate()
 
-            val component = node.component
-            getComponentInteractionHandler(component.javaClass)?.onClick(runtime, component, details, transaction)
+        val component = node.component
+        getComponentInteractionHandler(component.javaClass)?.onClick(runtime, component, details, transaction)
 
-            if (transaction.valid) {
-                details.validate() // Validate it as wished by the transaction
-            }
+        if (transaction.valid) {
+            details.validate() // Validate it as wished by the transaction
         }
     }
 
@@ -319,11 +362,83 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
         return false
     }
 
-    private fun collectToCursor(
-        cursor: org.bukkit.inventory.ItemStack,
+    private fun moveToOtherInventory(
+        stackToMove: ItemStack,
         inventoryView: InventoryView,
-        stackPredicate: (Int, org.bukkit.inventory.ItemStack) -> Boolean,
-        onStackUpdated: (Int, org.bukkit.inventory.ItemStack?) -> Unit
+        moveFrom: Inventory,
+        moveTo: Inventory,
+        stackPredicate: (Int, ItemStack?) -> Boolean,
+        onStackUpdated: (Int, ItemStack?) -> Unit
+    ) {
+        var amount = stackToMove.amount
+        val slotOffset = if (inventoryView.topInventory == moveTo) {
+            0
+        } else {
+            moveFrom.size
+        }
+        val storageSize =
+            moveTo.storageContents.size // Do not include armor, off-hand, etc. to get the proper slot position
+
+        for (i in (storageSize - 1) downTo 0) {
+            if (amount <= 0) {
+                break
+            }
+            val rawSlot = slotOffset + i
+            val slot = inventoryView.convertSlot(rawSlot)
+
+            val stack = moveTo.getItem(slot)
+            if (stack == null || stack.type == Material.AIR) {
+                continue
+            }
+            if (!stackToMove.isSimilar(stack) || !stackPredicate(rawSlot, stack)) {
+                continue
+            }
+
+            val canAdd = (stack.maxStackSize - stack.amount).coerceAtMost(amount)
+            if (canAdd <= 0) {
+                continue
+            }
+
+            // Apply changes
+            amount -= canAdd
+            stack.amount += canAdd
+            onStackUpdated(rawSlot, stack)
+        }
+        if (amount > 0) {
+            // There are still items left to move, look for empty slots
+            for (i in (storageSize - 1) downTo 0) {
+                if (amount <= 0) {
+                    break
+                }
+                val rawSlot = slotOffset + i
+                val slot = inventoryView.convertSlot(rawSlot)
+
+                val stack = moveTo.getItem(slot)
+                if (stack != null && stack.type != Material.AIR) {
+                    continue
+                }
+                if (!stackPredicate(rawSlot, stack)) {
+                    continue
+                }
+
+                // Apply new stack with the maximum amount possible
+                val newStack = stackToMove.clone()
+                newStack.amount = amount.coerceAtMost(stackToMove.maxStackSize)
+                amount -= newStack.amount
+                moveTo.setItem(slot, newStack)
+                onStackUpdated(rawSlot, newStack)
+            }
+        }
+
+        // Update clicked stack
+        stackToMove.amount = amount
+    }
+
+    private fun collectToCursor(
+        cursor: ItemStack,
+        inventoryView: InventoryView,
+        stackPredicate: (Int, ItemStack) -> Boolean,
+        onStackUpdated: (Int, ItemStack?) -> Unit
     ) {
         for (i in 0 until inventoryView.countSlots()) {
             val stack = inventoryView.getItem(i) ?: continue
@@ -347,10 +462,10 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
 
         // Go through each slot that is affected, and call them separately
         // (Sponge allows us to invalidate single slot transactions of the drag event! Keep the same API behaviour on Spigot, but cancel the entire event!)
-        for (slot in details.rawSlots) {
-            if (slot < topInvSize) {
+        for (rawSlot in details.rawSlots) {
+            if (rawSlot < topInvSize) {
                 // Slot is in top inventory
-                val node = slotNodes[slot]?.let { runtime.modelGraph.getNode(it) }
+                val node = slotNodes[rawSlot]?.let { runtime.modelGraph.getNode(it) }
 
                 if (node == null) {
                     details.invalidate() // Cancel the entire event if only one fails!
@@ -358,7 +473,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
                 }
 
                 val transaction = DragTransactionImpl(
-                    slot,
+                    rawSlot,
                     details.inventorySlots,
                     details.rawSlots,
                     details.type
