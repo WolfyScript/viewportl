@@ -27,8 +27,6 @@ import com.wolfyscript.utilities.config.jackson.KeyedTypeIdResolver
 import com.wolfyscript.utilities.config.jackson.KeyedTypeResolver
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.utilities.functions.ReceiverConsumer
-import com.wolfyscript.utilities.functions.ReceiverFunction
-import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 
 
@@ -93,5 +91,5 @@ interface Component : Keyed {
 
     fun insert(runtime: ViewRuntime, parentNode: Long)
 
-    fun finalize() { }
+    fun completeBuild() { }
 }

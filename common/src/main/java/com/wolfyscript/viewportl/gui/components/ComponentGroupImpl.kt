@@ -94,7 +94,7 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
         val component = context.getOrCreateComponent(this, id, type)
         children.add(component)
         with(configurator) { component.consume() }
-        component.finalize()
+        component.completeBuild()
     }
 
     override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
@@ -133,7 +133,7 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
         }
     }
 
-    override fun finalize() {
+    override fun completeBuild() {
         buildConditionals(parent)
         buildMatchers(parent)
     }

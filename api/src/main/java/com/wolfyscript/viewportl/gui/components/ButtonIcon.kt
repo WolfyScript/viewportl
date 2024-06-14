@@ -18,7 +18,6 @@
 package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.utilities.functions.ReceiverConsumer
-import com.wolfyscript.viewportl.gui.reactivity.SignalGet
 import com.wolfyscript.utilities.world.items.ItemStackConfig
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import java.util.function.Supplier
@@ -35,6 +34,6 @@ interface ButtonIcon {
 
     fun resolvers(resolverSupplier: Supplier<TagResolver>)
 
-    fun finalize() { }
+    fun completeBuild() { }
 
 }

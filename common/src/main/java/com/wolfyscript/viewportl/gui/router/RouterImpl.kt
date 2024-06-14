@@ -85,7 +85,7 @@ class RouterImpl internal constructor(
             val component = selectedRoute.get()?.let { selectedRoute ->
                 val component = context.getOrCreateComponent(type = ComponentGroup::class.java)
                 with(selectedRoute.view) { component.consume() }
-                component.finalize()
+                component.completeBuild()
                 currentRootComponent = component
                 component.insert(context.runtime, 0)
 

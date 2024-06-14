@@ -93,7 +93,7 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
             val component = context.getOrCreateComponent(parent, null, ComponentGroup::class.java)
             return builderConsumer?.let {
                 with(builderConsumer!!) { component.consume() }
-                component.finalize()
+                component.completeBuild()
                 component
             }
         }
@@ -113,7 +113,7 @@ class ConditionalChildComponentBuilderImpl(private val context: BuildContext) : 
             val component = context.getOrCreateComponent(parent, null, ComponentGroup::class.java)
             return builderConsumer?.let {
                 with(builderConsumer!!) { component.consume() }
-                component.finalize()
+                component.completeBuild()
                 component
             }
         }

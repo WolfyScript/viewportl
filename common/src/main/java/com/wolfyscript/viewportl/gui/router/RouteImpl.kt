@@ -56,7 +56,7 @@ class RouteImpl(
             selectedRoute.get()?.let { selectedRoute ->
                 val component = context.getOrCreateComponent(type = ComponentGroup::class.java)
                 with(selectedRoute.view) { component.consume() }
-                component.finalize()
+                component.completeBuild()
                 outlet.component = component
 
                 component.findNextOutlet()?.apply {

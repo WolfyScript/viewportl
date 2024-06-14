@@ -71,8 +71,8 @@ class ButtonImpl @JsonCreator @Inject constructor(
         (runtime as ViewRuntimeImpl).modelGraph.removeNode(nodeId)
     }
 
-    override fun finalize() {
-        icon.finalize()
+    override fun completeBuild() {
+        icon.completeBuild()
     }
 
     class DynamicIcon internal constructor(
