@@ -54,21 +54,20 @@ class StackEditorExampleKotlin {
 
         fun registerStackEditor(manager: GuiAPIManager) {
             manager.registerGui("stack_editor") {
+                /*
+                 * This whole construction is only called upon the initiation and creates a reactivity graph
+                 * from the signals and effects used and only updates the necessary parts at runtime.
+                 */
                 size = 9 * 6
                 val optionsPos = PropertyPosition.slot(18)
 
                 routes {
                     route({}, {
-                        /*
-                     This whole construction is only called upon the initiation and creates a reactivity graph
-                     from the signals and effects used and only updates the necessary parts at runtime.
-                     */
-
                         val stackToEdit = createSignal(StackEditorStore())
                         val selectedTab = createSignal(Tab.NONE)
 
                         slot("stack_slot") {
-                            properties {
+                            styles {
                                 position = PropertyPosition.slot(4)
                             }
 
@@ -84,7 +83,7 @@ class StackEditorExampleKotlin {
                         }
                         // Tab selectors
                         button("display_name_tab_selector") {
-                            properties {
+                            styles {
                                 position = PropertyPosition.slot(1)
                             }
                             icon {
@@ -98,7 +97,7 @@ class StackEditorExampleKotlin {
                             }
                         }
                         button("lore_tab_selector") {
-                            properties {
+                            styles {
                                 position = PropertyPosition.slot(2)
                             }
                             icon {
@@ -121,25 +120,25 @@ class StackEditorExampleKotlin {
                             // Called once whenever the condition changes from false to true
                             // Empty component! Perhaps add a note that the item is missing!
                         } orElse {
-                            properties {
+                            styles {
                                 position = optionsPos
                             }
                             // Called once whenever the condition changes from true to false
                             // Whenever the stack is available we can show the selected tab
                             match({ selectedTab.get() }) {
                                 case({ this?.equals(Tab.DISPLAY_NAME) ?: false }) {
-                                    properties {
+                                    styles {
                                         position = optionsPos
                                     }
                                     displayNameTab(this@registerGui, stackToEdit)
                                 }
                                 case({ this?.equals(Tab.LORE) ?: false }) {
-                                    properties {
+                                    styles {
                                         position = optionsPos
                                     }
                                     group("lore_tab") {
                                         button("edit_lore") {
-                                            properties {
+                                            styles {
                                                 position = PropertyPosition.slot(21)
                                             }
                                             icon {
@@ -149,7 +148,7 @@ class StackEditorExampleKotlin {
                                             }
                                         }
                                         button("clear_lore") {
-                                            properties {
+                                            styles {
                                                 position = PropertyPosition.slot(23)
                                             }
                                             icon {
@@ -169,11 +168,11 @@ class StackEditorExampleKotlin {
 
         private fun ComponentGroup.displayNameTab(window: Window, stackToEdit: Signal<StackEditorStore>) {
             group("display_name_tab") {
-                properties {
+                styles {
                     position = PropertyPosition.slot(9)
                 }
                 button("set_display_name") {
-                    properties {
+                    styles {
                         position = PropertyPosition.slot(21)
                     }
                     icon {
@@ -197,7 +196,7 @@ class StackEditorExampleKotlin {
                     }
                 }
                 button("reset_display_name") {
-                    properties {
+                    styles {
                         position = PropertyPosition.slot(23)
                     }
                     icon {
@@ -205,7 +204,6 @@ class StackEditorExampleKotlin {
                             name = "<red><b>Reset Display Name".provider()
                         }
                     }
-
                     onClick {
                         stackToEdit.update { store ->
                             store?.getStack()?.data()?.remove(ItemStackDataKeys.CUSTOM_NAME)

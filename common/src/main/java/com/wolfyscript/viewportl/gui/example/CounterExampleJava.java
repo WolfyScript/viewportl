@@ -22,7 +22,6 @@ import com.wolfyscript.viewportl.gui.GuiAPIManager;
 import com.wolfyscript.viewportl.gui.Window;
 import com.wolfyscript.viewportl.gui.components.Button;
 import com.wolfyscript.viewportl.gui.components.ComponentGroup;
-import com.wolfyscript.viewportl.gui.interaction.InteractionResult;
 import com.wolfyscript.viewportl.gui.reactivity.Signal;
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition;
 import net.kyori.adventure.key.Key;
@@ -117,7 +116,7 @@ public class CounterExampleJava {
      * Since all the components are declared statically as well we can easily move them into their own functions
      **/
     static void countDownButton(Button bb, Signal<Integer> count) {
-        bb.properties(props -> {
+        bb.styles(props -> {
             props.setPosition(PropertyPosition.Companion.slot(22));
         });
         bb.icon(icon -> {
@@ -132,7 +131,7 @@ public class CounterExampleJava {
     }
 
     static void countUpButton(Button bb, Signal<Integer> count) {
-        bb.properties(props -> {
+        bb.styles(props -> {
             props.setPosition(PropertyPosition.Companion.slot(4));
         });
         bb.icon(icon -> {
@@ -147,7 +146,7 @@ public class CounterExampleJava {
     }
 
     static void resetButton(Button bb, Signal<Integer> count) {
-        bb.properties(props -> {
+        bb.styles(props -> {
             props.setPosition(PropertyPosition.Companion.slot(10));
         });
         bb.icon(icon -> {

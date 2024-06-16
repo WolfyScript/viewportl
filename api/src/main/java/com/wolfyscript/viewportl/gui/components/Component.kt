@@ -83,9 +83,9 @@ interface Component : Keyed {
      */
     fun height(): Int
 
-    val properties: RenderProperties
+    val styles: RenderProperties
 
-    fun properties(config: ReceiverConsumer<RenderProperties>)
+    fun styles(config: ReceiverConsumer<RenderProperties>)
 
     fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long)
 

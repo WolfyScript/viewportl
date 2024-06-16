@@ -49,7 +49,7 @@ abstract class AbstractComponentImpl<C : Component>(
 
     private val type: NamespacedKey = wolfyUtils.identifiers.getNamespaced(javaClass)
     var nodeId: Long? = null
-    override var properties: RenderProperties = RenderPropertiesImpl(PropertyPosition.def())
+    override var styles: RenderProperties = RenderPropertiesImpl(PropertyPosition.def())
 
     init {
         Preconditions.checkNotNull(type, "Missing type key! One must be provided to the Component using the annotation: ${KeyedStaticId::class.java.name}")
@@ -63,9 +63,9 @@ abstract class AbstractComponentImpl<C : Component>(
         return nodeId ?: -1
     }
 
-    override fun properties(config: ReceiverConsumer<RenderProperties>) {
+    override fun styles(config: ReceiverConsumer<RenderProperties>) {
         with(config) {
-            properties.consume()
+            styles.consume()
         }
     }
 

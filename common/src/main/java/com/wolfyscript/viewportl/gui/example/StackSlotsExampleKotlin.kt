@@ -53,7 +53,7 @@ class StackSlotsExampleKotlin {
 
                         for (i in 0 until 9) {
                             slot("stack_slot_$i") {
-                                properties {
+                                styles {
                                     position = PropertyPosition.slot(i)
                                 }
 

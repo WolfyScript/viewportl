@@ -27,11 +27,11 @@ import com.google.inject.util.Providers
 import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.viewportl.gui.components.Component
-import com.wolfyscript.viewportl.gui.reactivity.ReactiveSourceImpl
+import com.wolfyscript.viewportl.gui.reactivity.ReactiveGraph
 import com.wolfyscript.utilities.tuple.Pair
 import java.util.function.Consumer
 
-class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveSourceImpl, val wolfyUtils: WolfyUtils) {
+class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, val wolfyUtils: WolfyUtils) {
 
     private companion object {
         private var COMPONENT_COUNTER: Long = 0
@@ -41,7 +41,8 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveSourceI
         }
     }
 
-    private val componentIdAliases: MutableMap<String, Component> = HashMap()
+    // TODO: Do not store Components here! They are handled by the ModelGraph! When removed from the graph the alias is no longer valid!
+    private val componentIdAliases: MutableMap<String, Component> = mutableMapOf()
 
     fun <B : Component> getOrCreateComponent(
         parent: Component? = null,
@@ -71,7 +72,7 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveSourceI
 
     private fun getOrCreateNumericId(namedId: String? = null): Long {
         if (namedId != null && componentIdAliases.containsKey(namedId)) {
-            return componentIdAliases[namedId]!!.nodeId()
+            return componentIdAliases[namedId]?.nodeId() ?: nextId()
         }
         return nextId()
     }

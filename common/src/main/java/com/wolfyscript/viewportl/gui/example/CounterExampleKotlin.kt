@@ -73,7 +73,7 @@ class CounterExampleKotlin {
             }
 
             button("open") {
-                properties {
+                styles {
                     position = PropertyPosition.slot(13)
                 }
                 icon {
@@ -107,7 +107,7 @@ class CounterExampleKotlin {
             }
 
             button("back") {
-                properties {
+                styles {
                     position = PropertyPosition.slot(0)
                 }
                 icon {
@@ -122,7 +122,7 @@ class CounterExampleKotlin {
             }
 
             button("count_up") {
-                properties {
+                styles {
                     position = PropertyPosition.slot(4)
                 }
                 icon {
@@ -137,7 +137,7 @@ class CounterExampleKotlin {
             }
 
             button("counter") {
-                properties {
+                styles {
                     position = PropertyPosition.slot(13)
                 }
                 icon {
@@ -151,7 +151,7 @@ class CounterExampleKotlin {
             }
 
             button("count_down") {
-                properties {
+                styles {
                     position = PropertyPosition.slot(22)
                 }
                 icon {
@@ -166,12 +166,12 @@ class CounterExampleKotlin {
             }
             // Sometimes we want to render components dependent on signals
             whenever { count.get() != 0 } then {
-                properties {
+                styles {
                     position = PropertyPosition.slot(10)
                 }
                 // This section is run just once up on the initial construction too, not when the condition changes
                 button("reset") {
-                    properties {
+                    styles {
                         position = PropertyPosition.slot(10)
                     }
                     icon {

@@ -100,7 +100,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
     }
 
     private fun calculatePosition(node: Node, context: InvGUIRenderContext): Int {
-        val nextOffset = node.component.properties.position.slotPositioning()?.let {
+        val nextOffset = node.component.styles.position.slotPositioning()?.let {
             context.setSlotOffset(it.slot())
             return@let it.slot() + 1
         } ?: run {
