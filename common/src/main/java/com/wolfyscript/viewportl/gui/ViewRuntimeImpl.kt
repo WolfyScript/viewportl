@@ -21,7 +21,7 @@ package com.wolfyscript.viewportl.gui
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.UpdateInformation
-import com.wolfyscript.viewportl.gui.reactivity.ReactiveSourceImpl
+import com.wolfyscript.viewportl.gui.reactivity.ReactiveGraph
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import com.wolfyscript.viewportl.gui.rendering.ModelGraph
 import java.util.*
@@ -37,7 +37,7 @@ class ViewRuntimeImpl(
 
     // Create rendering & reactivity trees
     val modelGraph: ModelGraph = ModelGraph(this)
-    val reactiveSource: ReactiveSourceImpl = ReactiveSourceImpl(this)
+    val reactiveSource: ReactiveGraph = ReactiveGraph(this)
 
     // Create platform specific handlers that handle rendering and interaction
     val renderer: Renderer<*> = wolfyUtils.core.platform.guiUtils.createRenderer(this)

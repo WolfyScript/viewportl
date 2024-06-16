@@ -66,7 +66,7 @@ class ReactivityNode<V>(
 
         class Signal<T> : Type<T>
 
-        interface Effect<T> : Type<T> {
+        class Effect<T>(private val fn: AnyComputation<T?>) : Type<T> {
 
             override fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>): Boolean {
                 runtime.reactiveSource.runWithObserver(reactivityNode.id) {
@@ -76,11 +76,11 @@ class ReactivityNode<V>(
                 return true
             }
 
-            fun computation(): AnyComputation<T?>
+            fun computation(): AnyComputation<T?> = fn
 
         }
 
-        interface Memo<T> : Type<T> {
+        class Memo<T>(private val fn: AnyComputation<T?>) : Type<T> {
 
             override fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>): Boolean {
                 var changed = false
@@ -91,7 +91,7 @@ class ReactivityNode<V>(
                 return changed
             }
 
-            fun computation(): AnyComputation<T?>
+            fun computation(): AnyComputation<T?> = fn
 
         }
 

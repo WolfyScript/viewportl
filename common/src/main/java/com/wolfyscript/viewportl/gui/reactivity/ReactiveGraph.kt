@@ -21,10 +21,14 @@ import com.google.common.collect.ListMultimap
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
 import com.wolfyscript.utilities.functions.ReceiverFunction
 import com.wolfyscript.utilities.platform.Platform
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
+import com.wolfyscript.viewportl.gui.reactivity.properties.EffectProperty
+import com.wolfyscript.viewportl.gui.reactivity.properties.ScopeProperty
+import com.wolfyscript.viewportl.gui.reactivity.properties.SignalProperty
+import com.wolfyscript.viewportl.gui.reactivity.properties.TriggerProperty
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import org.apache.commons.lang3.function.TriFunction
 import java.util.*
@@ -33,14 +37,13 @@ import java.util.function.Function
 import java.util.logging.Level
 import kotlin.reflect.KClass
 
-class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
+class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
 
     private var owner: NodeId?
     private var observer: NodeId? = null
 
     // Graph
     private val nodes: MutableMap<NodeId, ReactivityNode<*>> = Object2ObjectOpenHashMap()
-    private val rootNodes: MutableMap<NodeId, ReactivityNode<*>> = Object2ObjectOpenHashMap()
     private val nodeSubscribers: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
     private val nodeSources: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
 
@@ -50,7 +53,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
     private val cleanups: Multimap<NodeId, Cleanup> = Multimaps.newListMultimap(mutableMapOf()) { mutableListOf() }
 
     // Effects that need to be updated
-    private val pendingEffects: MutableList<NodeId> = ArrayList()
+    private val pendingEffects: MutableSet<NodeId> = mutableSetOf()
 
     init {
         owner = createNode(ReactivityNode.Type.Trigger(), null)
@@ -72,11 +75,29 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
         this.owner = owner
         observer = owner
-
         fn.run()
 
         this.owner = prevOwner
         observer = prevObserver
+    }
+
+    fun runWithObserver(nodeId: NodeId, fn: Runnable) {
+        val previousObserver = observer
+        val previousOwner = owner
+
+        observer = nodeId
+        owner = nodeId
+        fn.run()
+
+        observer = previousObserver
+        owner = previousOwner
+    }
+
+    fun runEffects() {
+        pendingEffects.removeAll {
+            updateIfNecessary(it)
+            true
+        }
     }
 
     fun renderState() {
@@ -85,7 +106,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
         logger.info("-------- [Reactive Graph] --------")
         logger.info("Pending: $pendingEffects")
-        logger.info("Nodes: ")
+        logger.info("Nodes (${nodes.size}): ")
         for (node in nodes) {
             logger.info("  ${node.key}: ${node.value.type.javaClass.name} = ${node.value.value}")
             val subs = nodeSubscribers[node.key]
@@ -130,7 +151,8 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
      * It recursively marks all child nodes as [ReactivityNode.State.CHECK].
      * If a node is already [ReactivityNode.State.DIRTY] then we mark it as visited ([ReactivityNode.State.DIRTY_MARKED]).
      *
-     * We do this like Leptos here. Instead of pushing each and every node onto the stack, we push the iterators of child nodes.
+     * This is very similar to the way the framework Leptos does it.
+     * Instead of pushing each and every node onto the stack, we push the iterators of child nodes.
      */
     fun markDirty(node: NodeId) {
         val currentNode = nodes[node] ?: return
@@ -141,15 +163,13 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         stack.push(children.iterator())
 
         while (stack.isNotEmpty()) {
-            val childIterator = stack.first()
-            val (iterResult, iter) = iterateChildren(childIterator)
+            val (iterResult, iter) = iterateChildren(stack.first())
             when (iterResult) {
                 IterResult.CONTINUE -> continue
                 IterResult.NEW -> iter?.let { stack.push(it) }
                 IterResult.EMPTY -> stack.pop()
             }
         }
-        renderState()
     }
 
     private fun iterateChildren(childIterator: Iterator<NodeId>): Pair<IterResult, Iterator<NodeId>?> {
@@ -168,7 +188,6 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
             mark(childNode, ReactivityNode.State.CHECK)
 
             val childsChildren = nodeSubscribers[child]
-
             if (childsChildren.isNotEmpty()) {
                 if (childsChildren.size == 1) {
                     // No need to iterate over a single element
@@ -180,6 +199,12 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
             break
         }
         return Pair(IterResult.CONTINUE, null)
+    }
+
+    enum class IterResult {
+        CONTINUE,
+        NEW,
+        EMPTY
     }
 
     private fun mark(node: ReactivityNode<*>, state: ReactivityNode.State) {
@@ -196,38 +221,42 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         }
     }
 
-    fun runEffects() {
-        val copy = pendingEffects.toList()
-        pendingEffects.clear()
-        for (pendingEffect in copy) {
-            updateIfNecessary(pendingEffect)
-        }
-        renderState()
-    }
-
+    /**
+     * Updates the Node when it is necessary.
+     *
+     * An update is necessary when any source of the specified node is [ReactivityNode.State.DIRTY].
+     *
+     * The [ReactivityNode.State.DIRTY] state propagates through the Graph from top to bottom.
+     * Therefor this method goes up the Graph, starting at the specified Node, checking recursively if any sources are [ReactivityNode.State.DIRTY].
+     *
+     * Note that a [ReactivityNode.State.DIRTY] state can stop propagating down. For Example when a Memo doesn't change its value.
+     */
     fun updateIfNecessary(nodeId: NodeId) {
         if (currentNodeState(nodeId) == ReactivityNode.State.CHECK) {
+            // When a node is marked CHECK then check its sources for changes
             for (source in nodeSources[nodeId]) {
                 updateIfNecessary(source)
-
                 if (currentNodeState(nodeId) >= ReactivityNode.State.DIRTY) {
+                    // Once one of the sources marks this node dirty it is not necessary to check the other sources
                     break
                 }
             }
         }
 
         if (currentNodeState(nodeId) >= ReactivityNode.State.DIRTY) {
-            cleanupNode(nodeId)
-            update(nodeId)
+            cleanupNode(nodeId) // When dirty clean all properties and values
+            update(nodeId) // Then update the node
         }
         markClean(nodeId)
     }
 
+    /**
+     * Updates the specified node and marks its subscribers [ReactivityNode.State.DIRTY] when the nodes value changed.
+     */
     private fun update(nodeId: NodeId) {
         val node = nodes[nodeId] ?: return
-
         val changed = node.update(viewRuntime)
-        if (changed) {
+        if (changed) { // (signals always true, memos only when their value changed)
             // Mark the subscribers (children) dirty
             for (subscriber in nodeSubscribers[nodeId]) {
                 nodes[subscriber]?.mark(ReactivityNode.State.DIRTY)
@@ -236,7 +265,10 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         markClean(nodeId)
     }
 
-    fun cleanupNode(id: NodeId) {
+    /**
+     * Cleans all properties and runs all cleanups of the specified Node.
+     */
+    private fun cleanupNode(id: NodeId) {
         val prevObserver = observer
         for (cleanup in cleanups.removeAll(id)) {
             cleanup.run()
@@ -248,15 +280,16 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         }
     }
 
+    /**
+     * Cleans the specified property and child properties recursively.
+     */
     private fun cleanupProperty(property: ScopeProperty) {
         property.toNodeId()?.let { nodeId ->
             for (cleanup in cleanups.removeAll(nodeId)) {
                 cleanup.run()
             }
-
             // Clean child properties
             nodeProperties.removeAll(nodeId).forEach { cleanupProperty(it) }
-
             // Subscribers should no longer listen to this now removed node
             nodeSubscribers.removeAll(nodeId).forEach { subscriber ->
                 nodeSources[subscriber].remove(nodeId)
@@ -279,18 +312,6 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         return reactivityNode.state()
     }
 
-    fun disposeNode(nodeId: NodeId) {
-        nodeSources.removeAll(nodeId)
-        nodeSubscribers.removeAll(nodeId)
-        nodes.remove(nodeId)
-    }
-
-    enum class IterResult {
-        CONTINUE,
-        NEW,
-        EMPTY
-    }
-
     fun untypedNode(id: NodeId): ReactivityNode<*>? {
         return nodes[id]
     }
@@ -305,19 +326,16 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
     inline fun <reified V : Any> getValue(nodeId: NodeId): V? {
         updateIfNecessary(nodeId)
-        val reactivityNode = node<ReactivityNode<V>>(nodeId)
-        return reactivityNode?.value
+        return node<ReactivityNode<V>>(nodeId)?.value
     }
 
     inline fun <reified V : Any> setValue(nodeId: NodeId, value: V?) {
-        val reactivityNode = node<ReactivityNode<V>>(nodeId)
-        reactivityNode?.value = value
+        node<ReactivityNode<V>>(nodeId)?.value = value
         markDirty(nodeId)
     }
 
     fun <T : Any> setValue(nodeId: NodeId, valueType: KClass<T>, value: T?) {
-        val reactivityNode = node<ReactivityNode<T>>(nodeId)
-        reactivityNode?.value = value
+        node<ReactivityNode<T>>(nodeId)?.value = value
         markDirty(nodeId)
     }
 
@@ -327,20 +345,13 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         state: ReactivityNode.State = ReactivityNode.State.CLEAN
     ): NodeId {
         val id = NodeId((nodes.size + 1).toLong(), viewRuntime)
-
-        val reactivityNode: ReactivityNode<*> = ReactivityNode(id, initialValue, type, state)
-        nodes[id] = reactivityNode
-
-        if (type is ReactivityNode.Type.Signal) {
-            rootNodes[id] = reactivityNode
-        }
-
+        nodes[id] = ReactivityNode(id, initialValue, type, state)
         return id
     }
 
     override fun createTrigger(): Trigger {
         val id = createNode(ReactivityNode.Type.Trigger(), null)
-        addNewScopeProperty(ScopeProperty.Trigger(id))
+        addNewScopeProperty(TriggerProperty(id))
         return TriggerImpl(id)
     }
 
@@ -349,7 +360,7 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         defaultValueProvider: ReceiverFunction<ViewRuntime, T>
     ): Signal<T> {
         val id = createNode(ReactivityNode.Type.Signal(), with(defaultValueProvider) { viewRuntime.apply() })
-        addNewScopeProperty(ScopeProperty.Signal(id))
+        addNewScopeProperty(SignalProperty(id))
         return SignalImpl(id, valueType.kotlin)
     }
 
@@ -359,13 +370,11 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
 
     fun <T> createCustomEffect(value: T?, effect: AnyComputation<T?>): Effect {
         val id = createNode(
-            object : ReactivityNode.Type.Effect<T> {
-                override fun computation(): AnyComputation<T?> = effect
-            },
+            ReactivityNode.Type.Effect(effect),
             value,
             ReactivityNode.State.DIRTY
         )
-        addNewScopeProperty(ScopeProperty.Effect(id))
+        addNewScopeProperty(EffectProperty(id))
 
         viewRuntime.wolfyUtils.core.platform.scheduler.syncTask(viewRuntime.wolfyUtils) { // TODO: Is there a better way to schedule them?
             updateIfNecessary(id)
@@ -375,15 +384,11 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
     }
 
     override fun <T : Any> createMemo(valueType: Class<T>, fn: Function<T?, T?>): Memo<T> {
-        val reactivityNodeId = createNode(object : ReactivityNode.Type.Memo<T> {
-
-            override fun computation(): AnyComputation<T?> = MemoState {
-                val newValue = fn.apply(it)
-                Pair(newValue, newValue != it)
-            }
-
-        }, null, ReactivityNode.State.DIRTY)
-        addNewScopeProperty(ScopeProperty.Effect(reactivityNodeId))
+        val reactivityNodeId = createNode(ReactivityNode.Type.Memo<T>(MemoState {
+            val newValue = fn.apply(it)
+            Pair(newValue, newValue != it)
+        }), null, ReactivityNode.State.DIRTY)
+        addNewScopeProperty(EffectProperty(reactivityNodeId))
         return MemoImpl(reactivityNodeId, valueType.kotlin)
     }
 
@@ -417,15 +422,4 @@ class ReactiveSourceImpl(private val viewRuntime: ViewRuntimeImpl) : ReactiveSou
         }
     }
 
-    fun runWithObserver(nodeId: NodeId, fn: Runnable) {
-        val previousObserver = observer
-        val previousOwner = owner
-
-        observer = nodeId
-        owner = nodeId
-        fn.run()
-
-        observer = previousObserver
-        owner = previousOwner
-    }
 }

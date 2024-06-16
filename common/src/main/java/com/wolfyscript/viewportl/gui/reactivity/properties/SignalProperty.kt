@@ -16,22 +16,8 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.gui.reactivity.properties
 
-interface ScopeProperty {
+import com.wolfyscript.viewportl.gui.reactivity.NodeId
 
-    fun toNodeId(): NodeId?
-
-    class Trigger(val id: NodeId) : ScopeProperty {
-        override fun toNodeId(): NodeId = id
-    }
-
-    class Signal(val id: NodeId) : ScopeProperty {
-        override fun toNodeId(): NodeId = id
-    }
-
-    class Effect(val id: NodeId) : ScopeProperty {
-        override fun toNodeId(): NodeId = id
-    }
-
-}
+class SignalProperty(id: NodeId) : ScopeProperty(id)

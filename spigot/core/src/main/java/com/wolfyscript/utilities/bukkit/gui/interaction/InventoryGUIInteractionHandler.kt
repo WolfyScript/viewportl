@@ -104,6 +104,10 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
 
         testMainClickTransaction(details)
 
+        if (!details.valid) {
+            return
+        }
+
         val action = event.action
         when (action) {
             // place/collect stack
