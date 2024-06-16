@@ -1,4 +1,4 @@
-rootProject.name = "wolfyutils-parent"
+rootProject.name = "viewportl"
 pluginManagement {
     includeBuild("build-logic") // Include 'plugins build' to define convention plugins.
     repositories {
