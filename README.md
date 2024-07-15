@@ -13,7 +13,7 @@ This repo was previously known as WolfyUtilities, but the GUI API got so advance
 
 ### Still in WIP (Alpha)
 This project is very much still in early alpha!   
-**The API may receive breaking at anytime without notice!**
+**The API may receive breaking changes at anytime without notice!**
 
 ### Planned (TODO)
 These are few of the things planned for the near future.  
