@@ -37,7 +37,6 @@ public abstract class WolfyCoreCommonBootstrap extends JavaPlugin {
         return new Reflections(new ConfigurationBuilder()
                 .forPackage("")
                 .addUrls(ClasspathHelper.forClassLoader())
-                .forPackage("me.wolfyscript", getClassLoader())
                 .forPackage("com.wolfyscript", getClassLoader())
                 .addClassLoaders(getClassLoader())
                 .addScanners(Scanners.values()));
