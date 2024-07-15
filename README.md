@@ -1,78 +1,36 @@
-<div align="center"><img src="https://github.com/WolfyScript/WolfyUtilities/assets/41468455/f6c49bf5-313d-4a1f-856a-e0a212570c04" alt="WolfyUtilities Banner" /></div>
+## Viewportl
+> Previously **WolfyUtils**
 
-## WolfyUtilities
-![bstats_server](https://img.shields.io/bstats/servers/5114?label=Servers)  
-![spigot_down](https://img.shields.io/spiget/downloads/64124?label=Spigot+Downloads)
-![spigot_stars](https://img.shields.io/spiget/stars/64124?label=Spigot+Rating)  
 ![github_commit](https://img.shields.io/github/last-commit/WolfyScript/WolfyUtilities)
 
-Core API that provides an API and Utils for plugins based on Spigot.
+Viewportl is a Minecraft Inventory GUI framework, designed to easily create reactive GUIs.  
+Based on the well-known [Signal reactive system](https://www.solidjs.com/guides/reactivity#how-it-works), popularized by web-frameworks like SolidJS, leptos-rs, etc.
 
-This repository contains the platform independent API and Implementation.  
-For the platform specific internal implementations see:
-- [**Spigot Implementation**](https://github.com/WolfyScript/WolfyUtils-Spigot)
-- [**Sponge Implementation**](https://github.com/WolfyScript/WolfyUtils-Sponge)
+It aims to provide a multi-platform GUI framework to quickly and easily integrate GUIs into any plugin/mod.
 
-## Common API
-The common API is available via Maven.  
-It is currently very spare and does not work on its own!  
-<details>
-<summary>Maven</summary>
+This repo was previously known as WolfyUtilities, but the GUI API got so advanced, that it deserves a separate library.   
+[**Current WolfyUtils Spigot Implementation**](https://github.com/WolfyScript/WolfyUtils-Spigot)
 
-```xml
-<repositories>
-    <repository>
-        <id>wolfyscript-public</id>
-        <url>https://maven.wolfyscript.com/repository/public/</url>
-    </repository>
-</repositories>
-```
+### Still in WIP (Alpha)
+This project is very much still in early alpha!   
+**The API may receive breaking at anytime without notice!**
 
-```xml
-<dependencies>
-    <dependency>
-        <groupId>com.wolfyscript.wolfyutils</groupId>
-        <artifactId>wolfyutilities</artifactId>
-        <version>4.16-SNAPSHOT</version>
-        <scope>provided</scope>
-    </dependency>
-</dependencies>
-```
-</details>
+### Planned (TODO)
+These are few of the things planned for the near future.  
+The list is not complete, and things may be added/removed along the way.
+* [ ] Move utils and platform compatibility to a separate project
+  * Makes this library optional for other plugins, that don't require GUIs
+* [ ] Complete name change
+  * [ ] Rename packages
+  * [ ] Rename strings & other appearances of WolfyUtils
+* [ ] Multi Platform Support
+  * [ ] Spigot
+  * [ ] Sponge
+  * [ ] possibly more in the future
 
-<details>
-<summary>Gradle</summary>
+### Current API Examples
+Examples can be found in the `examples` directory of the `common` implementation.  
+[**-Example Directory-**](https://github.com/WolfyScript/viewportl/tree/master/common/src/main/java/com/wolfyscript/viewportl/gui/example)
 
-#### Kotlin DSL
-
-```kotlin
-repositories {
-    maven("https://maven.wolfyscript.com/repository/public/")
-}
-```
-
-```kotlin
-
-dependencies {
-    implementation("com.wolfyscript.wolfyutils", "wolfyutilities","4.16-SNAPSHOT")
-}
-```
-
-#### Groovy
-```groovy
-repositories {
-    maven { 
-        url "https://maven.wolfyscript.com/repository/public/" 
-    }
-}
-```
-```groovy
-dependencies {
-    implementation "com.wolfyscript.wolfyutils:wolfyutilities:4.16-SNAPSHOT"
-}
-```
-
-</details>
-
-More info about the API can be found in the [Wiki](https://github.com/WolfyScript/WolfyUtilities/wiki).
-<br>
+Both Kotlin and Java examples can be found there.  
+**Note that Kotlin is the recommended for the best Development Experience.**
