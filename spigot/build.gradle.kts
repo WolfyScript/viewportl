@@ -9,7 +9,7 @@ plugins {
     kotlin("jvm")
 }
 
-description = "wolfyutils-spigot"
+description = "viewportl-spigot"
 
 dependencies {
     api(project(":api"))
