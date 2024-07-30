@@ -19,6 +19,7 @@ This project is very much still in early alpha!
 These are few of the things planned for the near future.  
 The list is not complete, and things may be added/removed along the way.
 * [ ] Move utils and platform compatibility to a separate project
+  * See the [scaffolding](https://github.com/WolfyScript/scaffolding) project
   * Makes this library optional for other plugins, that don't require GUIs
 * [ ] Complete name change
   * [ ] Rename packages
@@ -33,4 +34,4 @@ Examples can be found in the `examples` directory of the `common` implementation
 [**-Example Directory-**](https://github.com/WolfyScript/viewportl/tree/master/common/src/main/java/com/wolfyscript/viewportl/gui/example)
 
 Both Kotlin and Java examples can be found there.  
-**Note that Kotlin is the recommended for the best Development Experience.**
+**Note that Kotlin is recommended for the best Development Experience.**
