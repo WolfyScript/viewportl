@@ -20,9 +20,9 @@ package com.wolfyscript.viewportl.common.gui.rendering
 
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
+import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
+import com.wolfyscript.viewportl.common.gui.components.AbstractComponentImpl
 import com.wolfyscript.viewportl.gui.components.Component
-import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
-import com.wolfyscript.viewportl.gui.components.AbstractComponentImpl
 import com.wolfyscript.viewportl.gui.model.UpdateInformation
 import java.util.Collections
 
