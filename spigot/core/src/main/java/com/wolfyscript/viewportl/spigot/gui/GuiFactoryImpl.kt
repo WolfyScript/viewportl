@@ -15,26 +15,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.spigot.gui
 
-package com.wolfyscript.viewportl.spigot.gui;
+import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.factories.GuiFactory
+import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
+import com.wolfyscript.viewportl.gui.rendering.Renderer
+import com.wolfyscript.viewportl.spigot.gui.interaction.InventoryGUIInteractionHandler
+import com.wolfyscript.viewportl.spigot.gui.rendering.InventoryGUIRenderer
 
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl;
-import com.wolfyscript.viewportl.gui.ViewRuntime;
-import com.wolfyscript.viewportl.gui.interaction.InteractionHandler;
-import com.wolfyscript.viewportl.gui.rendering.Renderer;
-import com.wolfyscript.viewportl.gui.factories.GuiFactory;
-import com.wolfyscript.viewportl.spigot.gui.interaction.InventoryGUIInteractionHandler;
-import com.wolfyscript.viewportl.spigot.gui.rendering.InventoryGUIRenderer;
+class GuiFactoryImpl : GuiFactory {
 
-public class GuiFactoryImpl implements GuiFactory {
-
-    @Override
-    public Renderer<?> createRenderer(ViewRuntime viewRuntime) {
-        return new InventoryGUIRenderer((ViewRuntimeImpl) viewRuntime);
+    override fun createRenderer(runtime: ViewRuntime): Renderer<*> {
+        return InventoryGUIRenderer((runtime as ViewRuntimeImpl))
     }
 
-    @Override
-    public InteractionHandler createInteractionHandler(ViewRuntime viewRuntime) {
-        return new InventoryGUIInteractionHandler((ViewRuntimeImpl) viewRuntime);
+    override fun createInteractionHandler(runtime: ViewRuntime): InteractionHandler {
+        return InventoryGUIInteractionHandler((runtime as ViewRuntimeImpl))
     }
 }

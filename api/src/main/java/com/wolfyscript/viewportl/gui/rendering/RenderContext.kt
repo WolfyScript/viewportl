@@ -15,23 +15,21 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.rendering
 
-package com.wolfyscript.viewportl.gui.rendering;
-
-import com.wolfyscript.viewportl.gui.components.Component;
+import com.wolfyscript.viewportl.gui.components.Component
 
 /**
  * The data that contains all the information needed to render the Menu.
  *
  */
-public interface RenderContext {
+interface RenderContext {
 
-    void enterNode(Component component);
+    fun enterNode(component: Component)
 
-    void exitNode();
+    fun exitNode()
 
-    Component getCurrentComponent();
+    val currentComponent: Component
 
-    int currentOffset();
-
+    fun currentOffset(): Int
 }
