@@ -7,9 +7,6 @@ Based on the well-known [Signal reactive system](https://www.solidjs.com/guides/
 
 It aims to provide a multi-platform GUI framework to quickly and easily integrate GUIs into any plugin/mod.
 
-This repo was previously known as WolfyUtilities, but the GUI API got so advanced, that it deserves a separate library.   
-[**Current WolfyUtils Spigot Implementation**](https://github.com/WolfyScript/WolfyUtils-Spigot)
-
 ### Still in WIP (Alpha)
 This project is very much still in early alpha!   
 **The API may receive breaking changes at anytime without notice!**
