@@ -1,5 +1,4 @@
 import org.gradle.kotlin.dsl.`java-library`
-import org.gradle.kotlin.dsl.`maven-publish`
 
 /*
  *       WolfyUtilities, APIs and Utilities for Minecraft Spigot plugins

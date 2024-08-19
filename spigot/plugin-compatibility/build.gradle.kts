@@ -1,6 +1,6 @@
 plugins {
-    id("wolfyutils.spigot.conventions")
-    id("wolfyutils.kotlinmodule")
+    id("viewportl.spigot.conventions")
+    id("viewportl.kotlinmodule")
 }
 
 dependencies {

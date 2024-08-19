@@ -1,6 +1,6 @@
 plugins {
-    id("wolfyutils.spigot.conventions")
-    id("wolfyutils.kotlinmodule")
+    id("viewportl.spigot.conventions")
+    id("viewportl.kotlinmodule")
     id("com.github.johnrengelman.shadow") version("8.1.1")
 }
 

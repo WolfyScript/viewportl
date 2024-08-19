@@ -20,8 +20,8 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("wolfyutils.common.conventions")
-    id("wolfyutils.kotlinmodule")
+    id("viewportl.common.conventions")
+    id("viewportl.kotlinmodule")
 }
 
 dependencies {

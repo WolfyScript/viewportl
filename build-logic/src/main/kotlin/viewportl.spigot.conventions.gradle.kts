@@ -19,7 +19,7 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("wolfyutils.common.conventions")
+    id("viewportl.common.conventions")
 }
 
 val libs = extensions.getByType(org.gradle.accessors.dm.LibrariesForLibs::class)
