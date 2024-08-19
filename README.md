@@ -1,5 +1,4 @@
 ## Viewportl
-> Previously **WolfyUtils**
 
 ![github_commit](https://img.shields.io/github/last-commit/WolfyScript/WolfyUtilities)
 
