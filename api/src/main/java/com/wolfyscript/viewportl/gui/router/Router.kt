@@ -29,7 +29,7 @@ import java.util.Deque
 interface Router {
 
     val routes: List<Route>
-    val currentPath: ReadOnlySignal<ActivePath>
+    val currentPath: ActivePath?
     val history : ReadWriteSignal<Deque<ActivePath>>
 
     fun open()

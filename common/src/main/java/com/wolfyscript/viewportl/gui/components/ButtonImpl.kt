@@ -81,7 +81,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
         @JacksonInject("button") private val button: Button,
     ) : ButtonIcon {
 
-        override var stack: ItemStackConfig = context.runtime.scaffolding.factories.itemsFactory.createStackConfig(com.wolfyscript.scafall.identifier.Key.key(com.wolfyscript.scafall.identifier.Key.MINECRAFT_NAMESPACE, "air"))
+        override var stack: ItemStackConfig = context.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(com.wolfyscript.scafall.identifier.Key.key(com.wolfyscript.scafall.identifier.Key.MINECRAFT_NAMESPACE, "air"))
         override var resolvers: TagResolver = TagResolver.empty()
 
         override fun stack(stackSupplier: Supplier<ItemStackConfig>) {
@@ -90,7 +90,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
 
         override fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>) {
             context.reactiveSource.createEffect {
-                val newStack = context.runtime.scaffolding.factories.itemsFactory.createStackConfig(com.wolfyscript.scafall.identifier.Key.key(com.wolfyscript.scafall.identifier.Key.MINECRAFT_NAMESPACE, itemId))
+                val newStack = context.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(com.wolfyscript.scafall.identifier.Key.key(com.wolfyscript.scafall.identifier.Key.MINECRAFT_NAMESPACE, itemId))
                 with(stackConfig) { newStack.consume() }
                 stack = newStack
 

@@ -116,7 +116,7 @@ public class StackEditorExampleJava {
                                 stackToEdit.update(store -> {
                                     var stack = store.getStack();
                                     if (stack != null) {
-                                        stack.data().set(ItemStackDataKeys.CUSTOM_NAME, rn.getScafall().getAdventure().getMiniMsg().deserialize(s));
+                                        stack.data().set(ItemStackDataKeys.CUSTOM_NAME, rn.getViewportl().getScafall().getAdventure().getMiniMsg().deserialize(s));
                                     }
                                     return store;
                                 });

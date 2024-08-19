@@ -37,18 +37,11 @@ public class WolfyUtilsBukkit extends WolfyUtils {
         this.core = core;
         this.plugin = plugin;
         this.permissions = new Permissions(this);
-        this.dataBasePrefix = getName().toLowerCase(Locale.ROOT) + "_";
         this.configAPI = new ConfigAPI(this);
         this.guiAPIManager = new GuiAPIManagerImpl(this);
     }
 
     final void initialize() {
-        permissions.initRootPerm(getName().toLowerCase(Locale.ROOT).replace(" ", "_") + ".*");
-    }
-
-    @Override
-    public WolfyCoreSpigot getCore() {
-        return (WolfyCoreSpigot) core;
     }
 
     @Override

@@ -21,6 +21,7 @@ package com.wolfyscript.utilities.language;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wolfyscript.utilities.chat.Chat;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import java.util.Iterator;
@@ -46,12 +47,12 @@ public class LanguageNodeArray extends LanguageNode {
 
     @Override
     public Component getComponent() {
-        return chat.getMiniMessage().deserialize(rawLine);
+        return MiniMessage.miniMessage().deserialize(rawLine);
     }
 
     @Override
     public Component getComponent(TagResolver tagResolver) {
-        return chat.getMiniMessage().deserialize(rawLine, tagResolver);
+        return MiniMessage.miniMessage().deserialize(rawLine, tagResolver);
     }
 
     @Override
@@ -65,11 +66,11 @@ public class LanguageNodeArray extends LanguageNode {
     }
 
     private List<Component> getComponents(List<String> rawValues) {
-        return rawValues.stream().map(s -> chat.getMiniMessage().deserialize(s)).collect(Collectors.toList());
+        return rawValues.stream().map(s -> MiniMessage.miniMessage().deserialize(s)).collect(Collectors.toList());
     }
 
     private List<Component> getComponents(List<String> rawValues, TagResolver tagResolver) {
-        return rawValues.stream().map(s -> chat.getMiniMessage().deserialize(s, tagResolver)).collect(Collectors.toList());
+        return rawValues.stream().map(s -> MiniMessage.miniMessage().deserialize(s, tagResolver)).collect(Collectors.toList());
     }
 
     @Override

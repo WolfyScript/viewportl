@@ -18,7 +18,6 @@
 package com.wolfyscript.utilities.chat
 
 import com.wolfyscript.utilities.WolfyUtils
-import net.kyori.adventure.text.minimessage.MiniMessage
 
 /**
  * Allows sending messages to players, with the specified prefix, translations, placeholders, etc.<br>
@@ -28,13 +27,5 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 interface Chat {
 
     val wolfyUtils: WolfyUtils
-
-    /**
-     * Gets the [MiniMessage] object, that allows you to parse text with formatting similar to html.<br></br>
-     * See [MiniMessage docs](https://docs.adventure.kyori.net/minimessage/)
-     *
-     * @return The MiniMessage object
-     */
-    val miniMessage: MiniMessage
 
 }

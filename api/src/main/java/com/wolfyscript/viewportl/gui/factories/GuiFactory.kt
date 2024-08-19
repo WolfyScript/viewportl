@@ -15,17 +15,15 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.factories
 
-package com.wolfyscript.utilities.platform.gui;
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
+import com.wolfyscript.viewportl.gui.rendering.Renderer
 
-import com.wolfyscript.viewportl.gui.ViewRuntime;
-import com.wolfyscript.viewportl.gui.interaction.InteractionHandler;
-import com.wolfyscript.viewportl.gui.rendering.Renderer;
+interface GuiFactory {
 
-public interface GuiUtils {
+    fun createRenderer(runtime: ViewRuntime): Renderer<*>
 
-    Renderer<?> createRenderer(ViewRuntime runtime);
-
-    InteractionHandler createInteractionHandler(ViewRuntime runtime);
-
+    fun createInteractionHandler(runtime: ViewRuntime): InteractionHandler
 }

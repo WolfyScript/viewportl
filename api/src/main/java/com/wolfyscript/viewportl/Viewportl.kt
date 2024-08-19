@@ -15,11 +15,21 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.utilities.platform
 
-import com.wolfyscript.utilities.platform.gui.GuiUtils
+package com.wolfyscript.viewportl
 
-interface Platform {
+import com.wolfyscript.scafall.Scafall
+import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.viewportl.gui.GuiAPIManager
+import com.wolfyscript.viewportl.gui.factories.GuiFactory
 
-    val guiUtils: GuiUtils
+interface Viewportl {
+
+    val scafall: Scafall
+        get() = ScafallProvider.get()
+
+    val guiManager: GuiAPIManager
+
+    val guiFactory: GuiFactory
+
 }

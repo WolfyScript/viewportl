@@ -29,9 +29,7 @@ import org.bukkit.event.inventory.InventoryDragEvent
 import java.util.function.Consumer
 import java.util.stream.Collectors
 
-class DragInteractionDetailsImpl(
-    private val wolfyUtils: WolfyUtils, private val event: InventoryDragEvent,
-) :
+class DragInteractionDetailsImpl(private val event: InventoryDragEvent) :
     DragInteractionDetails {
 
     override var valid: Boolean = true

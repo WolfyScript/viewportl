@@ -121,7 +121,7 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
         }
         intervalTasks.clear()
         for (intervalRunnable in intervalRunnables) {
-            val task = runtime.scaffolding.scheduler.task(runtime.scaffolding.corePlugin)
+            val task = runtime.viewportl.scafall.scheduler.task(runtime.viewportl.scafall.corePlugin)
                 .interval(intervalRunnable.second)
                 .delay(1)
                 .execute(Runnable {

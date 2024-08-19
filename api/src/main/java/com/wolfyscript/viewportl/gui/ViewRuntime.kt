@@ -17,12 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui
 
-import com.wolfyscript.scafall.Scafall
-import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.viewportl.gui.callback.TextInputCallback
-import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
-import com.wolfyscript.viewportl.gui.router.Router
+import com.wolfyscript.viewportl.Viewportl
 import java.util.*
 
 /**
@@ -75,14 +70,6 @@ interface ViewRuntime {
      */
     val viewers: Set<UUID>
 
-    /**
-     * The API instance this manager belongs to.
-     *
-     * @return The API instance of this manager.
-     */
-    val wolfyUtils: WolfyUtils
-
-    val scaffolding: Scafall
-        get() = ScafallProvider.get()
+    val viewportl: Viewportl
 
 }

@@ -20,19 +20,18 @@ package com.wolfyscript.viewportl.gui.rendering
 
 import com.wolfyscript.scafall.eval.context.EvalContext
 import com.wolfyscript.scafall.platform.PlatformType
+import com.wolfyscript.scafall.spigot.api.wrappers.unwrap
 import com.wolfyscript.scafall.spigot.api.wrappers.world.items.BukkitItemStackConfig
 import com.wolfyscript.scafall.spigot.api.wrappers.world.items.ItemStackImpl
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
-import com.wolfyscript.utilities.bukkit.gui.interaction.BukkitInventoryGuiHolder
 import com.wolfyscript.viewportl.gui.*
 import com.wolfyscript.viewportl.gui.components.Button
 import com.wolfyscript.viewportl.gui.components.ComponentGroup
 import com.wolfyscript.viewportl.gui.components.Outlet
 import com.wolfyscript.viewportl.gui.components.StackInputSlot
+import com.wolfyscript.viewportl.gui.interaction.BukkitInventoryGuiHolder
 import com.wolfyscript.viewportl.gui.model.UpdateInformation
-import com.wolfyscript.viewportl.gui.rendering.Node
-import com.wolfyscript.viewportl.gui.rendering.Renderer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer
 import org.bukkit.Bukkit
@@ -123,7 +122,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
 
             // Direct rendering to specific component renderer TODO: Make extensible
             when (val component = it.component) {
-                is Button -> com.wolfyscript.viewportl.gui.rendering.InventoryButtonComponentRenderer()
+                is Button -> InventoryButtonComponentRenderer()
                     .render(context, component)
                 is ComponentGroup -> InventoryGroupComponentRenderer().render(context, component)
                 is Outlet -> component.component?.apply { InventoryGroupComponentRenderer().render(context, this) }
@@ -249,13 +248,10 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
             return
         }
         require(itemStackConfig is BukkitItemStackConfig) {
-            String.format(
-                "Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.",
-                BukkitItemStackConfig::class.java.name, itemStackConfig.javaClass.name
-            )
+            String.format("Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.", BukkitItemStackConfig::class.java.name, itemStackConfig.javaClass.name)
         }
 
-        inventory!!.setItem(i, itemStackConfig.constructItemStack()?.bukkitRef)
+        inventory!!.setItem(i, itemStackConfig.constructItemStack()?.unwrap())
     }
 
     fun renderStack(position: Int, itemStack: ItemStack?) {
@@ -264,10 +260,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
             return
         }
         require(itemStack is ItemStackImpl) {
-            String.format(
-                "Cannot render stack! Invalid stack config type! Expected '%s' but received '%s'.",
-                ItemStackImpl::class.java.name, itemStack.javaClass.name
-            )
+            String.format("Cannot render stack! Invalid stack config type! Expected '%s' but received '%s'.", ItemStackImpl::class.java.name, itemStack.javaClass.name)
         }
 
         setNativeStack(position, itemStack.bukkitRef)
@@ -275,17 +268,14 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
 
     fun renderStack(position: Int, itemStackConfig: ItemStackConfig, itemStackContext: ItemStackContext) {
         require(itemStackConfig is BukkitItemStackConfig) {
-            String.format(
-                "Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.",
-                BukkitItemStackConfig::class.java.name, itemStackConfig.javaClass.name
-            )
+            String.format("Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.", BukkitItemStackConfig::class.java.name, itemStackConfig.javaClass.name)
         }
 
         setNativeStack(
             position,
             itemStackConfig.constructItemStack(
                 EvalContext(),
-                runtime.scaffolding.adventure.miniMsg,
+                runtime.viewportl.scafall.adventure.miniMsg,
                 itemStackContext.resolvers()
             )?.bukkitRef
         )

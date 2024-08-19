@@ -19,7 +19,7 @@
 package com.wolfyscript.viewportl.gui.interaction
 
 import com.wolfyscript.scafall.spigot.api.wrappers.world.items.ItemStackImpl
-import com.wolfyscript.utilities.bukkit.WolfyUtilsBukkit
+import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.Window
@@ -48,7 +48,7 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
             runtime.interactionHandler.onClick(details)
             event.isCancelled = true
 
-            runtime.scaffolding.scheduler.syncTask(runtime.scaffolding.corePlugin) {
+            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
                 runtime.reactiveSource.runEffects()
             }
         }
@@ -63,21 +63,21 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
         }
         if (currentWindow() == null) return
         if (event.inventory.holder == this) {
-            val interactionDetails = DragInteractionDetailsImpl(runtime.wolfyUtils, event)
+            val interactionDetails = DragInteractionDetailsImpl(event)
             runtime.interactionHandler.onDrag(interactionDetails)
             if (!interactionDetails.valid) {
                 event.isCancelled = true
             } else {
-                runtime.scaffolding.scheduler.syncTask(runtime.scaffolding.corePlugin) {
+                runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
                     for (rawSlot in event.rawSlots) {
                         if (rawSlot < event.inventory.size) {
-                            interactionDetails.callSlotValueUpdate(rawSlot, ItemStackImpl(event.inventory.getItem(rawSlot)))
+                            interactionDetails.callSlotValueUpdate(rawSlot, event.inventory.getItem(rawSlot)?.wrap())
                         }
                     }
                 }
             }
 
-            runtime.scaffolding.scheduler.syncTask(runtime.scaffolding.corePlugin) {
+            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
                 runtime.reactiveSource.runEffects()
             }
         }

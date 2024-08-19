@@ -36,10 +36,6 @@ abstract class WolfyUtils protected constructor() {
 
     abstract val core: WolfyCore
 
-    abstract val name: String
-
-    abstract val dataFolder: File
-
     abstract val logger: Logger
 
     abstract val translations: Translations

@@ -19,14 +19,17 @@ This project is very much still in early alpha!
 These are few of the things planned for the near future.  
 The list is not complete, and things may be added/removed along the way.
 * [ ] Move utils and platform compatibility to a separate project
-  * See the [scaffolding](https://github.com/WolfyScript/scaffolding) project
-  * Makes this library optional for other plugins, that don't require GUIs
+  * [x] Move everything not UI related to [scafall](https://github.com/WolfyScript/scafall)
+  * [ ] Provide API Entrypoint to load the viewportl instance on top of scafall
+  * [ ] Check if Java interop can be kept, or if kotlin will be required
+  * [ ] Create sample projects for a tutorial and testing
 * [ ] Complete name change
-  * [ ] Rename packages
-  * [ ] Rename strings & other appearances of WolfyUtils
+    * [ ] Move everything UI related to the viewportl package
+    * [ ] Get rid of any wolfyutils left over code
+    * [ ] Rename strings & other appearances of WolfyUtils
 * [ ] Multi Platform Support
-  * [ ] Spigot
-  * [ ] Sponge
+  * [ ] Spigot (High priority)
+  * [ ] Sponge 
   * [ ] possibly more in the future
 
 ### Current API Examples

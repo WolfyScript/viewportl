@@ -18,14 +18,13 @@
 
 package com.wolfyscript.viewportl.gui;
 
-import com.wolfyscript.utilities.bukkit.gui.interaction.InventoryGUIInteractionHandler;
-import com.wolfyscript.utilities.bukkit.gui.rendering.InventoryGUIRenderer;
-import com.wolfyscript.viewportl.gui.*;
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler;
+import com.wolfyscript.viewportl.gui.interaction.InventoryGUIInteractionHandler;
+import com.wolfyscript.viewportl.gui.rendering.InventoryGUIRenderer;
 import com.wolfyscript.viewportl.gui.rendering.Renderer;
-import com.wolfyscript.utilities.platform.gui.GuiUtils;
+import com.wolfyscript.viewportl.gui.factories.GuiFactory;
 
-public class GuiUtilsImpl implements GuiUtils {
+public class GuiFactoryImpl implements GuiFactory {
 
     @Override
     public Renderer<?> createRenderer(ViewRuntime viewRuntime) {

@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.gui
 
-import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.UpdateInformation
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveGraph
@@ -28,7 +28,7 @@ import java.util.*
 import java.util.function.Function
 
 class ViewRuntimeImpl(
-    override val wolfyUtils: WolfyUtils,
+    override val viewportl: Viewportl,
     rootRouter: Function<ViewRuntime, Window>,
     override val viewers: Set<UUID>,
 ) : ViewRuntime {
@@ -40,8 +40,8 @@ class ViewRuntimeImpl(
     val reactiveSource: ReactiveGraph = ReactiveGraph(this)
 
     // Create platform specific handlers that handle rendering and interaction
-    val renderer: Renderer<*> = wolfyUtils.core.platform.guiUtils.createRenderer(this)
-    val interactionHandler: InteractionHandler = wolfyUtils.core.platform.guiUtils.createInteractionHandler(this)
+    val renderer: Renderer<*> = viewportl.guiFactory.createRenderer(this)
+    val interactionHandler: InteractionHandler = viewportl.guiFactory.createInteractionHandler(this)
 
     // Build the components and init the rendering tree
     private var currentRoot: Window? = rootRouter.apply(this)
@@ -78,7 +78,7 @@ class ViewRuntimeImpl(
         renderer.changeWindow(window)
         interactionHandler.init(window)
 
-        scaffolding.scheduler.syncTask(scaffolding.corePlugin) {
+        viewportl.scafall.scheduler.syncTask(viewportl.scafall.corePlugin) {
             renderer.render()
             reactiveSource.owner()?.update()
         }

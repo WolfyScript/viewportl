@@ -22,7 +22,7 @@ import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
 import com.wolfyscript.scafall.function.ReceiverFunction
-import com.wolfyscript.utilities.platform.Platform
+import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.reactivity.properties.EffectProperty
@@ -35,6 +35,7 @@ import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
 import java.util.logging.Level
+import javax.swing.text.View
 import kotlin.reflect.KClass
 
 class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
@@ -101,8 +102,8 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
     }
 
     fun renderState() {
-        val logger = viewRuntime.wolfyUtils.logger
-        if (logger.level != Level.FINER) return
+        val logger = viewRuntime.viewportl.scafall.logger
+        if (!logger.isDebugEnabled) return
 
         logger.info("-------- [Reactive Graph] --------")
         logger.info("Pending: $pendingEffects")
@@ -376,7 +377,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
         )
         addNewScopeProperty(EffectProperty(id))
 
-        viewRuntime.scaffolding.scheduler.syncTask(viewRuntime.scaffolding.corePlugin) { // TODO: Is there a better way to schedule them?
+        viewRuntime.viewportl.scafall.scheduler.syncTask(viewRuntime.viewportl.scafall.corePlugin) { // TODO: Is there a better way to schedule them?
             updateIfNecessary(id)
         }
 
@@ -398,18 +399,18 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
         }
     }
 
-    override fun <T> resourceSync(fetch: BiFunction<Platform, ViewRuntime, T>): ReadWriteSignal<Optional<T>> {
+    override fun <T> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime, T>): ReadWriteSignal<Optional<T>> {
         TODO("Not yet implemented")
     }
 
     override fun <I, T> resourceSync(
         input: ReadWriteSignal<I>,
-        fetch: TriFunction<Platform, ViewRuntime, I, T>
+        fetch: TriFunction<Viewportl, ViewRuntime, I, T>
     ): ReadWriteSignal<Optional<T>> {
         TODO("Not yet implemented")
     }
 
-    override fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): ReadWriteSignal<Optional<T>> {
+    override fun <T> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime, T>): ReadWriteSignal<Optional<T>> {
         TODO("Not yet implemented!")
     }
 

@@ -21,7 +21,7 @@ dependencies {
 //    compileOnly(libs.javassist)
 //    compileOnly(libs.adventure.api)
     compileOnly(libs.net.kyori.adventure.platform.bukkit)
-    api(group="com.wolfyscript.scafall.spigot", name = "spigot-platform", version = "0.1-alpha-SNAPSHOT")
+    implementation(group="com.wolfyscript.scafall.spigot", name = "spigot-platform", version = "0.1-alpha-SNAPSHOT")
 //    compileOnly(libs.adventure.minimessage)
     implementation(kotlin("stdlib-jdk8"))
 }

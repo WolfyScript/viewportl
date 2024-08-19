@@ -19,7 +19,6 @@ package com.wolfyscript.utilities
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wolfyscript.utilities.chat.Chat
-import com.wolfyscript.utilities.platform.Platform
 import org.reflections.Reflections
 
 /**
@@ -28,27 +27,6 @@ import org.reflections.Reflections
  */
 abstract class WolfyCore {
 
-    init {
-        _instance = this
-    }
-
-    companion object {
-
-        private var _instance: WolfyCore? = null
-            set(value) {
-                if (field != null) throw IllegalStateException("Cannot set Instance when it is already set!")
-                field = value
-            }
-
-        @JvmStatic
-        val instance: WolfyCore
-            get() {
-                if (_instance == null) throw IllegalStateException("Trying to access WolfyCore before it was initialised!")
-                return _instance!!
-            }
-
-    }
-
     abstract val chat: Chat
 
     abstract fun <M : ObjectMapper?> applyWolfyUtilsJsonMapperModules(mapper: M): M
@@ -56,7 +34,5 @@ abstract class WolfyCore {
     abstract val wolfyUtils: WolfyUtils
 
     abstract val reflections: Reflections
-
-    abstract val platform: Platform
 
 }

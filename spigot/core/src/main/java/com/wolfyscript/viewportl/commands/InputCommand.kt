@@ -15,14 +15,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.utilities.bukkit.commands
+package com.wolfyscript.viewportl.commands
 
 import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.bukkit.WolfyCoreCommon
-import com.wolfyscript.viewportl.gui.GuiAPIManager
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender

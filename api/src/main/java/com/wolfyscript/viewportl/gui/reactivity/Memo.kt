@@ -18,4 +18,8 @@
 
 package com.wolfyscript.viewportl.gui.reactivity
 
-interface Memo<V> : ReadOnlySignal<V>
+import kotlin.reflect.KProperty
+
+interface Memo<V> : ReadOnlySignal<V> {
+
+}

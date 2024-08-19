@@ -37,8 +37,8 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
 
         AtomicInteger frameDelay = new AtomicInteger(0);
         AtomicInteger frameIndex = new AtomicInteger(0);
-        viewManager.getScafall().getScheduler()
-                .task(viewManager.getScafall().getCorePlugin())
+        viewManager.getViewportl().getScafall().getScheduler()
+                .task(viewManager.getViewportl().getScafall().getCorePlugin())
                 .execute(task -> {
                     int delay = frameDelay.getAndIncrement();
                     int frame = frameIndex.get();

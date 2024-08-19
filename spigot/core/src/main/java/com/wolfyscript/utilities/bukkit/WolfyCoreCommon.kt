@@ -14,9 +14,10 @@ import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.utilities.bukkit.commands.*
 import com.wolfyscript.utilities.bukkit.config.WUConfig
 import com.wolfyscript.utilities.bukkit.gui.example.TestGUI
-import com.wolfyscript.viewportl.gui.interaction.GUIInventoryListener
 import com.wolfyscript.utilities.bukkit.json.serialization.*
 import com.wolfyscript.utilities.versioning.ServerVersion
+import com.wolfyscript.viewportl.commands.GuiExampleCommand
+import com.wolfyscript.viewportl.commands.InputCommand
 import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.viewportl.registry.guiComponents
 import org.bukkit.Bukkit

@@ -19,7 +19,7 @@ package com.wolfyscript.viewportl.gui.reactivity
 
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.scafall.function.ReceiverFunction
-import com.wolfyscript.utilities.platform.Platform
+import com.wolfyscript.viewportl.Viewportl
 import org.apache.commons.lang3.function.TriFunction
 import java.util.*
 import java.util.function.BiFunction
@@ -91,11 +91,11 @@ interface ReactiveSource {
      * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
      * @param <T> The type of the value
     </T> */
-    fun <T> resourceSync(fetch: BiFunction<Platform, ViewRuntime, T>): ReadWriteSignal<Optional<T>>
+    fun <T> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime, T>): ReadWriteSignal<Optional<T>>
 
     fun <I, T> resourceSync(
         input: ReadWriteSignal<I>,
-        fetch: TriFunction<Platform, ViewRuntime, I, T>
+        fetch: TriFunction<Viewportl, ViewRuntime, I, T>
     ): ReadWriteSignal<Optional<T>>
 
     /**
@@ -112,7 +112,7 @@ interface ReactiveSource {
      * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
      * @param <T> The type of the value
     </T> */
-    fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): ReadWriteSignal<Optional<T>>
+    fun <T> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime, T>): ReadWriteSignal<Optional<T>>
 
 }
 

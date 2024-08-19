@@ -34,9 +34,7 @@ class RouterImpl internal constructor(
 
     override val routes: MutableList<Route> = mutableListOf()
     override val history: ReadWriteSignal<Deque<ActivePath>> = context.reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(ActivePath()) })
-    override val currentPath: ReadOnlySignal<ActivePath> = context.reactiveSource.createMemo {
-        history.get()?.peek()
-    }
+    override val currentPath: ActivePath? by context.reactiveSource.createMemo<ActivePath> { history.get()?.peek() }
     private var currentRootComponent: ComponentGroup? = null
 
     override fun open() {
@@ -52,7 +50,7 @@ class RouterImpl internal constructor(
 
     override fun openRoute(path: ReceiverConsumer<ActivePath>) {
         history.update {
-            it?.apply {
+            it.apply {
                 val newPath = ActivePath()
                 with(path) { newPath.consume() }
                 if (newPath != it.peek()) {
@@ -64,7 +62,7 @@ class RouterImpl internal constructor(
 
     override fun openSubRoute(path: ReceiverConsumer<ActivePath>) {
         history.update {
-            it?.apply {
+            it.apply {
                 val copy = it.peek().copy()
                 with(path) { copy.consume() }
                 if (copy != it.peek()) {
@@ -76,7 +74,7 @@ class RouterImpl internal constructor(
 
     init {
         val selectedRoute: Memo<Route> = context.reactiveSource.createMemo {
-            currentPath.get()?.let { path ->
+            currentPath?.let { path ->
                 routes.firstOrNull { route -> route.path.matches(path) }
             }
         }
