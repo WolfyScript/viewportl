@@ -15,53 +15,42 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.common.gui.animation
 
-package com.wolfyscript.viewportl.common.gui.animation;
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverFunction
+import com.wolfyscript.scafall.identifier.Key.Companion.MINECRAFT_NAMESPACE
+import com.wolfyscript.scafall.identifier.Key.Companion.key
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.gui.ItemHelper
+import com.wolfyscript.viewportl.gui.animation.Animation
+import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrame
+import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrameBuilder
 
-import com.wolfyscript.scafall.identifier.Key;
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig;
-import com.wolfyscript.viewportl.Viewportl;
-import com.wolfyscript.viewportl.gui.ItemHelper;
-import com.wolfyscript.scafall.function.ReceiverConsumer;
-import com.wolfyscript.scafall.function.ReceiverFunction;
-import com.wolfyscript.viewportl.gui.animation.Animation;
-import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrame;
-import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrameBuilder;
+class ButtonAnimationFrameBuilderImpl(private val viewportl: Viewportl) : ButtonAnimationFrameBuilder {
+    private var duration = 1
+    private var stack: ItemStackConfig? = null
 
-public class ButtonAnimationFrameBuilderImpl implements ButtonAnimationFrameBuilder {
-
-    private final Viewportl viewportl;
-    private int duration;
-    private ItemStackConfig stack;
-
-    public ButtonAnimationFrameBuilderImpl(Viewportl viewportl) {
-        this.duration = 1;
-        this.viewportl = viewportl;
+    override fun stack(itemId: String, config: ReceiverConsumer<ItemStackConfig>): ButtonAnimationFrameBuilder {
+        this.stack = viewportl.scafall.factories.itemsFactory.createStackConfig(key(MINECRAFT_NAMESPACE, itemId))
+        with(config) {
+            stack!!.consume()
+        }
+        return this
     }
 
-    @Override
-    public ButtonAnimationFrameBuilder stack(String itemId, ReceiverConsumer<ItemStackConfig> config) {
-        this.stack = viewportl.getScafall().getFactories().getItemsFactory().createStackConfig(Key.Companion.key(Key.MINECRAFT_NAMESPACE, itemId));
-        config.consume(stack);
-        return this;
-    }
-
-    @Override
-    public ButtonAnimationFrameBuilder stack(ReceiverFunction<ItemHelper, ItemStackConfig> config) {
+    override fun stack(config: ReceiverFunction<ItemHelper, ItemStackConfig>): ButtonAnimationFrameBuilder {
         // TODO
-        return this;
+        return this
     }
 
-    @Override
-    public ButtonAnimationFrameBuilder duration(int duration) {
-        this.duration = duration;
-        return this;
+    override fun duration(duration: Int): ButtonAnimationFrameBuilder {
+        this.duration = duration
+        return this
     }
 
-    @Override
-    public ButtonAnimationFrame build(Animation<ButtonAnimationFrame> animation) {
-        return new ButtonAnimationFrameImpl(animation, duration, stack);
+    override fun build(animation: Animation<ButtonAnimationFrame>): ButtonAnimationFrame {
+        return ButtonAnimationFrameImpl(animation, duration, stack!!)
     }
-
-
 }

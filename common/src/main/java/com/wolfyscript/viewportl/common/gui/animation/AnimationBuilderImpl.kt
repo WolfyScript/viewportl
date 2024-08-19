@@ -15,30 +15,28 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.common.gui.animation
 
-package com.wolfyscript.viewportl.common.gui.animation;
+import com.wolfyscript.scafall.function.ReceiverFunction
+import com.wolfyscript.viewportl.common.gui.BuildContext
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.animation.Animation
+import com.wolfyscript.viewportl.gui.animation.AnimationFrame
+import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
+import com.wolfyscript.viewportl.gui.components.Component
+import java.util.function.Supplier
 
-import com.wolfyscript.viewportl.common.gui.BuildContext;
-import com.wolfyscript.viewportl.gui.components.Component;
-import com.wolfyscript.viewportl.gui.animation.Animation;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrame;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder;
-
-import java.util.function.Supplier;
-
-public class AnimationBuilderImpl<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> extends AnimationBuilderCommonImpl<F, FB> {
-
-    public AnimationBuilderImpl(BuildContext context, Supplier<FB> frameBuilderSupplier) {
-        super(context.getReactiveSource(), frameBuilderSupplier);
-    }
-
-    @Override
-    public Animation<F> build(Component component) {
+class AnimationBuilderImpl<F : AnimationFrame, FB : AnimationFrameBuilder<F>>(
+    context: BuildContext,
+    frameBuilderSupplier: Supplier<FB>
+) :
+    AnimationBuilderCommonImpl<F, FB>(context.reactiveSource, frameBuilderSupplier) {
+    override fun build(component: Component): Animation<F> {
         if (updateSignal == null) {
 //            component.getID() + "_click_animation_handler", Boolean.TYPE,
-            updateSignal = reactiveSource.createSignal(Boolean.class, r -> false);
+            updateSignal = reactiveSource.createSignal(Boolean::class.java) { false }
         }
 
-        return new AnimationImpl<>(component, frameBuilders, updateSignal);
+        return AnimationImpl(component, frameBuilders, updateSignal!!)
     }
 }

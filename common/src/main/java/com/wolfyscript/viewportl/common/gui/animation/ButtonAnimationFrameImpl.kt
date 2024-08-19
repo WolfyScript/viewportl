@@ -15,46 +15,33 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.common.gui.animation
 
-package com.wolfyscript.viewportl.common.gui.animation;
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.viewportl.gui.GuiHolder
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.animation.Animation
+import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrame
+import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig;
-import com.wolfyscript.viewportl.gui.GuiHolder;
-import com.wolfyscript.viewportl.gui.ViewRuntime;
-import com.wolfyscript.viewportl.gui.animation.Animation;
-import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrame;
-import com.wolfyscript.viewportl.gui.rendering.RenderContext;
-
-public class ButtonAnimationFrameImpl implements ButtonAnimationFrame {
-
-    private final Animation<ButtonAnimationFrame> animation;
-    private final ItemStackConfig stack;
-    private final int duration;
-
-    protected ButtonAnimationFrameImpl(Animation<ButtonAnimationFrame> animation, int duration, ItemStackConfig stack) {
-        this.animation = animation;
-        this.duration = duration;
-        this.stack = stack;
+class ButtonAnimationFrameImpl(
+    private val animation: Animation<ButtonAnimationFrame>,
+    private val duration: Int,
+    private val stack: ItemStackConfig
+) :
+    ButtonAnimationFrame {
+    override fun duration(): Int {
+        return duration
     }
 
-    @Override
-    public int duration() {
-        return duration;
+    override fun animation(): Animation<ButtonAnimationFrame> {
+        return animation
     }
 
-    @Override
-    public Animation<ButtonAnimationFrame> animation() {
-        return animation;
+    override fun render(viewManager: ViewRuntime, holder: GuiHolder, context: RenderContext) {
     }
 
-    @Override
-    public void render(ViewRuntime viewManager, GuiHolder holder, RenderContext context) {
-
+    override fun stack(): ItemStackConfig {
+        return stack
     }
-
-    @Override
-    public ItemStackConfig stack() {
-        return stack;
-    }
-
 }

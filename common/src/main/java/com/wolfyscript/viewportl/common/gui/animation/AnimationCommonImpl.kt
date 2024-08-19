@@ -15,42 +15,32 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.common.gui.animation
 
-package com.wolfyscript.viewportl.common.gui.animation;
+import com.wolfyscript.viewportl.gui.animation.Animation
+import com.wolfyscript.viewportl.gui.animation.AnimationFrame
+import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
+import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 
-import com.wolfyscript.viewportl.gui.animation.Animation;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrame;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder;
-import com.wolfyscript.viewportl.gui.components.Component;
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
+abstract class AnimationCommonImpl<F : AnimationFrame?> protected constructor(
+    private val owner: Component,
+    frameBuilders: List<AnimationFrameBuilder<F>?>,
+    private val updateSignal: ReadWriteSignal<*>
+) :
+    Animation<F> {
+    private val frames: List<F> =
+        frameBuilders.stream().map { frame: AnimationFrameBuilder<F>? -> frame!!.build(this) }.toList()
 
-import java.util.List;
-
-public abstract class AnimationCommonImpl<F extends AnimationFrame> implements Animation<F> {
-
-    private final Component owner;
-    private final List<F> frames;
-    private final ReadWriteSignal<?> updateSignal;
-
-    protected AnimationCommonImpl(Component owner, List<? extends AnimationFrameBuilder<F>> frameBuilders, ReadWriteSignal<?> updateSignal) {
-        this.owner = owner;
-        this.frames = frameBuilders.stream().map(frame -> frame.build(this)).toList();
-        this.updateSignal = updateSignal;
+    override fun frames(): List<F> {
+        return frames
     }
 
-    @Override
-    public List<F> frames() {
-        return frames;
+    override fun owner(): Component {
+        return owner
     }
 
-    @Override
-    public Component owner() {
-        return owner;
+    override fun updateSignal(): ReadWriteSignal<*> {
+        return updateSignal
     }
-
-    @Override
-    public ReadWriteSignal<?> updateSignal() {
-        return updateSignal;
-    }
-
 }

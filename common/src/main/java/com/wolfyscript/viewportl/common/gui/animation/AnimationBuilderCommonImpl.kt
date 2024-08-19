@@ -15,46 +15,35 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.common.gui.animation
 
-package com.wolfyscript.viewportl.common.gui.animation;
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.viewportl.gui.animation.AnimationBuilder
+import com.wolfyscript.viewportl.gui.animation.AnimationFrame
+import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
+import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
+import java.util.function.Supplier
 
-import com.wolfyscript.viewportl.gui.animation.AnimationBuilder;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrame;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder;
-import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource;
-import com.wolfyscript.scafall.function.ReceiverConsumer;
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
+abstract class AnimationBuilderCommonImpl<F : AnimationFrame, FB : AnimationFrameBuilder<F>>(
+    protected val reactiveSource: ReactiveSource,
+    private val frameBuilderSupplier: Supplier<FB>
+) :
+    AnimationBuilder<F, FB> {
+    protected val frameBuilders: MutableList<FB> = ArrayList()
+    protected var updateSignal: ReadWriteSignal<*>? = null
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
-
-public abstract class AnimationBuilderCommonImpl<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> implements AnimationBuilder<F, FB> {
-
-    protected final ReactiveSource reactiveSource;
-    protected final List<FB> frameBuilders = new ArrayList<>();
-    protected final Supplier<FB> frameBuilderSupplier;
-    protected ReadWriteSignal<?> updateSignal;
-
-    public AnimationBuilderCommonImpl(ReactiveSource reactiveSource, Supplier<FB> frameBuilderSupplier) {
-        this.reactiveSource = reactiveSource;
-        this.frameBuilderSupplier = frameBuilderSupplier;
+    override fun customSignal(signal: ReadWriteSignal<*>): AnimationBuilderCommonImpl<F, FB> {
+        this.updateSignal = signal
+        return this
     }
 
-    @Override
-    public AnimationBuilderCommonImpl<F, FB> customSignal(ReadWriteSignal<?> signal) {
-        this.updateSignal = signal;
-        return this;
+    override fun frame(frameBuild: ReceiverConsumer<FB>): AnimationBuilderCommonImpl<F, FB> {
+        val frameBuilder = frameBuilderSupplier.get()
+        with(frameBuild) {
+            frameBuilder.consume()
+        }
+        frameBuilders.add(frameBuilder)
+        return this
     }
-
-    @Override
-    public AnimationBuilderCommonImpl<F, FB> frame(ReceiverConsumer<FB> frameBuild) {
-        var frameBuilder = frameBuilderSupplier.get();
-        frameBuild.consume(frameBuilder);
-        frameBuilders.add(frameBuilder);
-        return this;
-    }
-
-
-
 }
