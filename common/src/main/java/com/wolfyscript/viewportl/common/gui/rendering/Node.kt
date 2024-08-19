@@ -15,9 +15,8 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.common.gui.rendering
 
-package com.wolfyscript.viewportl.gui.reactivity
+import com.wolfyscript.viewportl.gui.components.Component
 
-interface Memo<V> : ReadOnlySignal<V> {
-
-}
+class Node(val id: Long, val component: Component)

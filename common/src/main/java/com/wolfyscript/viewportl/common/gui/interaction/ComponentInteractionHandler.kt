@@ -16,8 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.interaction
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.ViewRuntime
+
+interface ComponentInteractionHandler<C: Component> {
+
+    fun onDrag(runtime: ViewRuntime, component: C, details: DragInteractionDetails, transaction: DragTransaction)
+
+    fun onClick(runtime: ViewRuntime, component: C, details: ClickInteractionDetails, transaction: ClickTransaction)
 
 }

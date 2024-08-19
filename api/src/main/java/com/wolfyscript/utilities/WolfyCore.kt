@@ -18,8 +18,6 @@
 package com.wolfyscript.utilities
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.wolfyscript.utilities.chat.Chat
-import org.reflections.Reflections
 
 /**
  * Represents the core instance of the WolfyUtils plugin.
@@ -27,12 +25,8 @@ import org.reflections.Reflections
  */
 abstract class WolfyCore {
 
-    abstract val chat: Chat
-
     abstract fun <M : ObjectMapper?> applyWolfyUtilsJsonMapperModules(mapper: M): M
 
     abstract val wolfyUtils: WolfyUtils
-
-    abstract val reflections: Reflections
 
 }

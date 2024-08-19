@@ -24,7 +24,7 @@ The list is not complete, and things may be added/removed along the way.
   * [ ] Check if Java interop can be kept, or if kotlin will be required
   * [ ] Create sample projects for a tutorial and testing
 * [ ] Complete name change
-    * [ ] Move everything UI related to the viewportl package
+    * [x] Move everything UI related to the viewportl package
     * [ ] Get rid of any wolfyutils left over code
     * [ ] Rename strings & other appearances of WolfyUtils
 * [ ] Multi Platform Support

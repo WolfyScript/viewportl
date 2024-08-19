@@ -16,8 +16,32 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.spigot.gui.interaction
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 
+class InvGUIInteractionContext (val interactionHandler: InteractionHandler) {
+    private var currentNode: Component? = null
+    private var slotOffsetToParent = 0
+
+    fun setSlotOffset(offset: Int) {
+        this.slotOffsetToParent = offset
+    }
+
+    fun currentOffset(): Int {
+        return slotOffsetToParent
+    }
+
+    fun enterNode(component: Component) {
+        this.currentNode = component
+    }
+
+    fun exitNode() {
+        this.currentNode = null
+    }
+
+    fun getCurrentComponent(): Component? {
+        return currentNode
+    }
 }

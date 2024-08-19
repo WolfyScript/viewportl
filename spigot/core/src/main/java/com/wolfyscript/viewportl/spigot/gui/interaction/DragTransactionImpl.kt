@@ -16,8 +16,18 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.spigot.gui.interaction
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.gui.interaction.DragTransaction
+import com.wolfyscript.viewportl.gui.interaction.DragType
+
+class DragTransactionImpl(
+    override val slot : Int,
+    override val inventorySlots: Set<Int>,
+    override val rawSlots: Set<Int>,
+    override val type: DragType,
+) : DragTransaction {
+
+    override var valid: Boolean = true
 
 }

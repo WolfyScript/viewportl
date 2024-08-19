@@ -18,10 +18,7 @@
 package com.wolfyscript.utilities
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties
-import com.wolfyscript.scafall.config.jackson.MapperUtil
-import com.wolfyscript.utilities.chat.Chat
 import com.wolfyscript.viewportl.gui.GuiAPIManager
-import com.wolfyscript.utilities.language.Translations
 import java.io.File
 import java.util.logging.Logger
 import java.util.regex.Pattern
@@ -32,15 +29,8 @@ import java.util.regex.Pattern
  */
 @JsonIncludeProperties
 abstract class WolfyUtils protected constructor() {
-    var jacksonMapperUtil: MapperUtil = MapperUtil(this)
-
-    abstract val core: WolfyCore
 
     abstract val logger: Logger
-
-    abstract val translations: Translations
-
-    abstract val chat: Chat
 
     abstract val guiManager: GuiAPIManager
 

@@ -16,8 +16,30 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.reactivity
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.gui.reactivity.Memo
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
+import kotlin.reflect.safeCast
+
+class MemoImpl<V : Any>(val id: NodeId, private val type: KClass<V>) : Memo<V> {
+
+    override fun get(): V? {
+        id.runtime.reactiveSource.subscribe(id)
+        return getNoTracking()
+    }
+
+    override fun getNoTracking(): V? {
+        val value = id.runtime.reactiveSource.getValue<Any>(id)
+        if (type.isInstance(value)) {
+            return type.safeCast(value)
+        }
+        return null
+    }
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): V {
+        TODO("Not yet implemented")
+    }
 
 }

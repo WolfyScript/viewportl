@@ -16,8 +16,18 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.reactivity
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.gui.reactivity.Trigger
 
+class TriggerImpl(val id: NodeId) : Trigger {
+
+    override fun track() {
+        id.runtime.reactiveSource.subscribe(id)
+    }
+
+    override fun update() {
+        id.runtime.reactiveSource.markDirty(id)
+        id.runtime.reactiveSource.runEffects()
+    }
 }

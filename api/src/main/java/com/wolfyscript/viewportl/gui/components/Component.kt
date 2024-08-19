@@ -20,13 +20,14 @@ package com.wolfyscript.viewportl.gui.components
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver
+import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.config.jackson.KeyedTypeIdResolver;
 import com.wolfyscript.scafall.config.jackson.KeyedTypeResolver;
-import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.Keyed
+import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 
 @JsonTypeResolver(KeyedTypeResolver::class)
@@ -60,7 +61,7 @@ interface Component : Keyed {
      *
      * @return The WolfyUtils API instance.
      */
-    val wolfyUtils: WolfyUtils
+    val wolfyUtils: Viewportl
 
     /**
      * The parent of this Component, or null if it is a root Component.

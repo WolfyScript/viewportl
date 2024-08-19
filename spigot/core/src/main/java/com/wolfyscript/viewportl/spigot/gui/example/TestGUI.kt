@@ -16,8 +16,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.spigot.gui.example
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.common.gui.example.CounterExampleKotlin
+import com.wolfyscript.viewportl.common.gui.example.StackEditorExampleKotlin
+import com.wolfyscript.viewportl.common.gui.example.StackSlotsExampleKotlin
+
+class TestGUI(private val core: Viewportl) {
+
+    fun initWithConfig() {
+        val manager = core.guiManager
+        CounterExampleKotlin.registerExampleCounter(manager)
+        StackEditorExampleKotlin.registerStackEditor(manager)
+        StackSlotsExampleKotlin.registerStackSlotsExample(manager)
+    }
 
 }

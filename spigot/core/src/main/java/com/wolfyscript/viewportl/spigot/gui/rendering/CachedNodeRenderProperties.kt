@@ -16,8 +16,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.spigot.gui.rendering
 
-interface Memo<V> : ReadOnlySignal<V> {
-
-}
+class CachedNodeRenderProperties(var position: Int, val slots: MutableSet<Int> = mutableSetOf())

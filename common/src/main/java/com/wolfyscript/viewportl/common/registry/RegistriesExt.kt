@@ -16,8 +16,19 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.common.registry
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.scafall.registry.Registries
+import org.jetbrains.annotations.ApiStatus.Internal
 
+private var guiComponentsRegistry: RegistryUIComponentImplementations? = null
+
+val Registries.guiComponents : RegistryGUIComponentTypes
+    get() = guiComponentsRegistry ?: throw RuntimeException("Viewportl Registries not yet initialised!")
+
+@Internal
+internal fun Registries.initViewportlRegistries() {
+
+    guiComponentsRegistry = RegistryUIComponentImplementations(Key.key(Key.SCAFFOLDING_NAMESPACE, "components/implementations"), this)
 }

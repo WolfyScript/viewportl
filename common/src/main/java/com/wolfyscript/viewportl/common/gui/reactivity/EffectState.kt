@@ -15,9 +15,22 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.common.gui.reactivity
 
-package com.wolfyscript.viewportl.gui.reactivity
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.scafall.function.ReceiverFunction
+import java.util.function.Consumer
 
-interface Memo<V> : ReadOnlySignal<V> {
+class EffectState<T>(
+    private val fn: ReceiverFunction<T?, T>
+) : AnyComputation<T?> {
+
+    override fun run(runtime: ViewRuntime, value: T?, apply: Consumer<T?>): Boolean {
+        val newValue = with(fn) { value.apply() }
+
+        apply.accept(newValue)
+
+        return true
+    }
 
 }

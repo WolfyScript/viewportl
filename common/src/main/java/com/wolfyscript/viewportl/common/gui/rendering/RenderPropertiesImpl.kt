@@ -16,8 +16,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.rendering
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.gui.rendering.PropertyHeight
+import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
+import com.wolfyscript.viewportl.gui.rendering.PropertyWidth
+import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 
+class RenderPropertiesImpl(override var position: PropertyPosition) : RenderProperties {
+
+    override fun width(): PropertyWidth {
+        TODO("Not yet implemented")
+    }
+
+    override fun height(): PropertyHeight {
+        TODO("Not yet implemented")
+    }
 }

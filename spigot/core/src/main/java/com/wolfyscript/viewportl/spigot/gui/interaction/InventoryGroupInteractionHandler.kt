@@ -16,8 +16,30 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.spigot.gui.interaction
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.components.ComponentGroup
+import com.wolfyscript.viewportl.gui.interaction.*
 
+class InventoryGroupInteractionHandler : ComponentInteractionHandler<ComponentGroup> {
+
+    override fun onDrag(
+        runtime: ViewRuntime,
+        component: ComponentGroup,
+        details: DragInteractionDetails,
+        transaction: DragTransaction
+    ) {
+        details.invalidate()
+    }
+
+    override fun onClick(
+        runtime: ViewRuntime,
+        component: ComponentGroup,
+        details: ClickInteractionDetails,
+        transaction: ClickTransaction
+    ) {
+        details.invalidate()
+    }
 }

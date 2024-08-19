@@ -16,8 +16,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.reactivity
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import java.util.function.Consumer
+import java.util.function.Function
 
+class MemoState<T>(private val fn: Function<T?, Pair<T?, Boolean>>) : AnyComputation<T?> {
+
+    override fun run(runtime: ViewRuntime, value: T?, apply: Consumer<T?>): Boolean {
+        val (newValue, different) = fn.apply(value)
+        apply.accept(newValue)
+        return different
+    }
 }

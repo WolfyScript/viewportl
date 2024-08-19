@@ -16,8 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.spigot.gui.rendering
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
+import com.wolfyscript.viewportl.gui.components.ComponentGroup
 
+class InventoryGroupComponentRenderer : ComponentRenderer<ComponentGroup, InvGUIRenderContext> {
+
+    override fun key(): Key = Key.defaultKey("inventory/group")
+
+    override fun render(context: InvGUIRenderContext, component: ComponentGroup) { }
 }

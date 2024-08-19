@@ -16,8 +16,35 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.reactivity
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
+import java.util.function.Function
+
+class NodeId(val id: Long, val runtime: ViewRuntimeImpl) {
+
+    fun <V> update(updateFn: Function<V, V>) {
+        val reactivityNode: ReactivityNode<V>? = runtime.reactiveSource.node(this)
+        if (reactivityNode != null) {
+            reactivityNode.value?.let { updateFn.apply(it) }
+
+            reactivityNode.mark(ReactivityNode.State.DIRTY)
+        }
+
+    }
+
+    override fun toString(): String {
+        return id.toString()
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is NodeId) return false
+        if (other.id == id) return true
+        return false
+    }
 
 }

@@ -1,8 +1,7 @@
 package com.wolfyscript.utilities.bukkit;
 
-import com.wolfyscript.scafall.wrappers.world.items.Items;
+import com.wolfyscript.scafall.ScafallProvider;
 import com.wolfyscript.utilities.bukkit.config.ConfigAPI;
-import com.wolfyscript.utilities.bukkit.world.items.BookUtil;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.viewportl.gui.GuiAPIManager;
 import com.wolfyscript.viewportl.gui.GuiAPIManagerImpl;
@@ -13,19 +12,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import com.wolfyscript.utilities.language.Translations;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 public class WolfyUtilsBukkit extends WolfyUtils {
 
-    private final WolfyCoreCommon core;
     private final Plugin plugin;
     private final Permissions permissions;
 
@@ -34,7 +30,6 @@ public class WolfyUtilsBukkit extends WolfyUtils {
     private final GuiAPIManagerImpl guiAPIManager;
 
     WolfyUtilsBukkit(WolfyCoreCommon core, Plugin plugin) {
-        this.core = core;
         this.plugin = plugin;
         this.permissions = new Permissions(this);
         this.configAPI = new ConfigAPI(this);
@@ -45,24 +40,8 @@ public class WolfyUtilsBukkit extends WolfyUtils {
     }
 
     @Override
-    public String getName() {
-        return plugin.getName();
-    }
-
-    @Override
-    public File getDataFolder() {
-        return plugin.getDataFolder();
-    }
-
-    @Override
     public Logger getLogger() {
         return plugin.getLogger();
-    }
-
-    @NotNull
-    @Override
-    public Translations getTranslations() {
-        return translations;
     }
 
     @NotNull
@@ -109,7 +88,7 @@ public class WolfyUtilsBukkit extends WolfyUtils {
         }
         resourceName = resourceName.replace('\\', '/');
 
-        Set<String> paths = getCore().getReflections().getResources(filePattern);
+        Set<String> paths = ScafallProvider.Companion.get().getReflections().getResources(filePattern);
         for (String path : paths) {
             if (!path.startsWith(resourceName)) continue;
             URL url = plugin.getClass().getClassLoader().getResource(path);

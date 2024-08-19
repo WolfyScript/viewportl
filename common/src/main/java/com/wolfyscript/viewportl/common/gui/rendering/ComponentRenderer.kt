@@ -16,8 +16,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.rendering
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.scafall.identifier.Keyed
+import com.wolfyscript.viewportl.gui.components.Component
+
+interface ComponentRenderer<C: Component, X: RenderContext> : Keyed {
+
+    fun render(context: X, component: C)
 
 }

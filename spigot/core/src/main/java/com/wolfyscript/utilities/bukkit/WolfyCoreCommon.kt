@@ -1,25 +1,27 @@
 package com.wolfyscript.utilities.bukkit
 
-import com.fasterxml.jackson.databind.InjectableValues
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.google.inject.Binder
 import com.google.inject.Guice
 import com.google.inject.Module
 import com.google.inject.Stage
-import com.wolfyscript.jackson.dataformat.hocon.HoconMapper
+import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.utilities.WolfyCore
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.bukkit.commands.*
 import com.wolfyscript.utilities.bukkit.config.WUConfig
-import com.wolfyscript.utilities.bukkit.gui.example.TestGUI
-import com.wolfyscript.utilities.bukkit.json.serialization.*
-import com.wolfyscript.utilities.versioning.ServerVersion
+import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.commands.GuiExampleCommand
 import com.wolfyscript.viewportl.commands.InputCommand
+import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
+import com.wolfyscript.viewportl.common.gui.components.ComponentGroupImpl
+import com.wolfyscript.viewportl.common.gui.components.OutletImpl
+import com.wolfyscript.viewportl.common.gui.components.StackInputSlotImpl
 import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.viewportl.registry.guiComponents
+import com.wolfyscript.viewportl.spigot.commands.GuiExampleCommand
+import com.wolfyscript.viewportl.spigot.commands.InputCommand
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
@@ -52,7 +54,7 @@ abstract class WolfyCoreCommon(@JvmField val plugin: WolfyCoreCommonBootstrap) :
      *
      * @return The Reflection of the plugins' package.
      */
-    final override val wolfyUtils: WolfyUtilsBukkit = getOrCreate(plugin)
+    final override val wolfyUtils: Viewportl
 
     private var config: WUConfig? = null
 
@@ -103,11 +105,6 @@ abstract class WolfyCoreCommon(@JvmField val plugin: WolfyCoreCommonBootstrap) :
         val keyReferenceModule = SimpleModule()
         jsonMapperModules.add(keyReferenceModule)
 
-        // Create Global WUCore Mapper and apply modules
-        val mapper = applyWolfyUtilsJsonMapperModules(HoconMapper())
-        wolfyUtils.jacksonMapperUtil.applyWolfyUtilsInjectableValues(mapper, InjectableValues.Std())
-        wolfyUtils.jacksonMapperUtil.globalMapper = mapper
-
         // Register GUI things
         val guiComponentBuilders = ScafallProvider.get().registries.guiComponents
         guiComponentBuilders.register(ButtonImpl::class.java)
@@ -118,26 +115,11 @@ abstract class WolfyCoreCommon(@JvmField val plugin: WolfyCoreCommonBootstrap) :
     }
 
     open fun enable() {
-        wolfyUtils.initialize()
-        wolfyUtils.logger.info("Minecraft version: " + ServerVersion.getVersion().version)
-        wolfyUtils.logger.info("WolfyUtils version: " + ServerVersion.getWUVersion().version)
-        if (WolfyUtils.isDevEnv) {
-            wolfyUtils.logger.info("> Dev-Environment <")
-        }
-        this.config = WUConfig(wolfyUtils.configAPI, plugin)
-
-        //Load Language
-        wolfyUtils.translations.loadLangFile("en_US")
-
         registerListeners()
         registerCommands()
-
-        val testGUI = TestGUI(this)
-        testGUI.initWithConfig()
     }
 
     open fun disable() {
-        wolfyUtils.configAPI.saveConfigs()
         wolfyUtils.logger.info("Save stored Custom Items")
     }
 
@@ -173,7 +155,7 @@ abstract class WolfyCoreCommon(@JvmField val plugin: WolfyCoreCommonBootstrap) :
     }
 
     private fun registerListeners() {
-        Bukkit.getPluginManager().registerEvents(com.wolfyscript.viewportl.gui.interaction.GUIInventoryListener(), plugin)
+        Bukkit.getPluginManager().registerEvents(com.wolfyscript.viewportl.spigot.gui.interaction.GUIInventoryListener(), plugin)
     }
 
     /**

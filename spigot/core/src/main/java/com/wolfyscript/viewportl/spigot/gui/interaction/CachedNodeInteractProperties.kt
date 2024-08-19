@@ -16,8 +16,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.spigot.gui.interaction
 
-interface Memo<V> : ReadOnlySignal<V> {
-
-}
+internal class CachedNodeInteractProperties(val position: Int, val slots: MutableList<Int>)

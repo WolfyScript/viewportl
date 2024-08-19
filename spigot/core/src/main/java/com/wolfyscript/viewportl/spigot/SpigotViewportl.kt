@@ -16,8 +16,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.gui.reactivity
+package com.wolfyscript.viewportl.spigot
 
-interface Memo<V> : ReadOnlySignal<V> {
+import com.wolfyscript.viewportl.common.CommonViewportl
+import com.wolfyscript.viewportl.common.gui.GuiAPIManagerImpl
+import com.wolfyscript.viewportl.gui.GuiAPIManager
+import com.wolfyscript.viewportl.gui.factories.GuiFactory
+import com.wolfyscript.viewportl.spigot.gui.GuiFactoryImpl
+
+class SpigotViewportl : CommonViewportl() {
+
+    override val guiManager: GuiAPIManager = GuiAPIManagerImpl(this)
+    override val guiFactory: GuiFactory = GuiFactoryImpl()
 
 }

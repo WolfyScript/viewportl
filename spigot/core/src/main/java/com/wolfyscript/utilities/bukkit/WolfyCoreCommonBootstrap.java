@@ -1,7 +1,6 @@
 package com.wolfyscript.utilities.bukkit;
 
 import com.wolfyscript.utilities.WolfyCore;
-import com.wolfyscript.utilities.versioning.ServerVersion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,7 +27,6 @@ public abstract class WolfyCoreCommonBootstrap extends JavaPlugin {
 
     public WolfyCoreCommonBootstrap() {
         super();
-        ServerVersion.setWUVersion(getDescription().getVersion());
         this.reflections = initReflections();
         instance = this;
     }
