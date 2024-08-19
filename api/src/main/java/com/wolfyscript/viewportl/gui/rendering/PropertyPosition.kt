@@ -23,8 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.wolfyscript.utilities.config.jackson.OptionalValueDeserializer
-import com.wolfyscript.utilities.config.jackson.OptionalValueSerializer
+import com.wolfyscript.scafall.config.jackson.OptionalValueDeserializer
+import com.wolfyscript.scafall.config.jackson.OptionalValueSerializer
 import java.io.IOException
 
 @OptionalValueDeserializer(deserializer = PropertyPosition.ValueDeserializer::class)
@@ -69,7 +69,7 @@ interface PropertyPosition {
     }
 
     class ValueDeserializer :
-        com.wolfyscript.utilities.config.jackson.ValueDeserializer<PropertyPosition>(PropertyPosition::class.java) {
+        com.wolfyscript.scafall.config.jackson.ValueDeserializer<PropertyPosition>(PropertyPosition::class.java) {
         @Throws(IOException::class, JsonProcessingException::class)
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext): PropertyPosition? {
             return when {
@@ -84,7 +84,7 @@ interface PropertyPosition {
     }
 
     class ValueSerializer :
-        com.wolfyscript.utilities.config.jackson.ValueSerializer<PropertyPosition>(PropertyPosition::class.java) {
+        com.wolfyscript.scafall.config.jackson.ValueSerializer<PropertyPosition>(PropertyPosition::class.java) {
         @Throws(IOException::class)
         override fun serialize(
             targetObject: PropertyPosition,

@@ -21,20 +21,19 @@ package com.wolfyscript.viewportl.gui
 import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.common.base.Preconditions
-import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.scafall.scheduling.Task
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.functions.ReceiverConsumer
-import com.wolfyscript.utilities.functions.ReceiverFunction
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverFunction
+import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
 import com.wolfyscript.viewportl.gui.router.Router
 import com.wolfyscript.viewportl.gui.router.RouterImpl
-import com.wolfyscript.utilities.platform.scheduler.Task
-import com.wolfyscript.utilities.tuple.Pair
 import net.kyori.adventure.text.Component
 
-@KeyedStaticId(key = "window")
+@StaticNamespacedKey(key = "window")
 class WindowImpl internal constructor(
     @JsonProperty("id") override val id: String,
     @JsonProperty("size") override var size: Int?,
@@ -73,9 +72,9 @@ class WindowImpl internal constructor(
         }
         intervalTasks.clear()
         for (intervalRunnable in intervalRunnables) {
-            val task = wolfyUtils.core.platform.scheduler.task(wolfyUtils)
-                .interval(intervalRunnable.value)
-                .delay(1).execute(intervalRunnable.key).build()
+            val task = scaffolding.scheduler.task(scaffolding.corePlugin)
+                .interval(intervalRunnable.second)
+                .delay(1).execute(intervalRunnable.first).build()
             intervalTasks.add(task)
         }
         router.open()

@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui.components
 
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
 import net.kyori.adventure.sound.Sound
 

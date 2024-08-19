@@ -5,6 +5,7 @@ pluginManagement {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
+        maven("https://artifacts.wolfyscript.com/artifactory/gradle-dev")
     }
 }
 

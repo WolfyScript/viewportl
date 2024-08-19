@@ -78,7 +78,7 @@ class ViewRuntimeImpl(
         renderer.changeWindow(window)
         interactionHandler.init(window)
 
-        wolfyUtils.core.platform.scheduler.syncTask(wolfyUtils) {
+        scaffolding.scheduler.syncTask(scaffolding.corePlugin) {
             renderer.render()
             reactiveSource.owner()?.update()
         }

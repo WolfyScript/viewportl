@@ -18,14 +18,14 @@
 
 package com.wolfyscript.viewportl.gui.example
 
-import com.wolfyscript.utilities.data.ItemStackDataKeys
-import com.wolfyscript.utilities.eval.value_provider.provider
-import com.wolfyscript.utilities.platform.adapters.ItemStack
+import com.wolfyscript.scafall.data.ItemStackDataKeys
+import com.wolfyscript.scafall.eval.value_provider.provider
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.components.ComponentGroup
 import com.wolfyscript.viewportl.gui.components.match
-import com.wolfyscript.viewportl.gui.reactivity.Signal
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import java.util.function.Consumer
@@ -115,7 +115,7 @@ class StackEditorExampleKotlin {
                         // The sections are only called when the condition changes.
                         whenever {
                             val stack = stackToEdit.get()?.getStack()
-                            stack == null || stack.item == null || stack.item.key == "air"
+                            stack == null || stack.item.value == "air"
                         } then {
                             // Called once whenever the condition changes from false to true
                             // Empty component! Perhaps add a note that the item is missing!
@@ -166,7 +166,7 @@ class StackEditorExampleKotlin {
             }
         }
 
-        private fun ComponentGroup.displayNameTab(window: Window, stackToEdit: Signal<StackEditorStore>) {
+        private fun ComponentGroup.displayNameTab(window: Window, stackToEdit: ReadWriteSignal<StackEditorStore>) {
             group("display_name_tab") {
                 styles {
                     position = PropertyPosition.slot(9)
@@ -184,10 +184,10 @@ class StackEditorExampleKotlin {
                     onClick {
                         window.onTextInput { _, _, s, _ ->
                             stackToEdit.update { store ->
-                                store?.getStack()?.data()
+                                store.getStack()?.data()
                                     ?.set(
                                         ItemStackDataKeys.CUSTOM_NAME,
-                                        window.wolfyUtils.chat.miniMessage.deserialize(s)
+                                        window.scaffolding.adventure.miniMsg.deserialize(s)
                                     )
                                 store
                             }
@@ -206,7 +206,7 @@ class StackEditorExampleKotlin {
                     }
                     onClick {
                         stackToEdit.update { store ->
-                            store?.getStack()?.data()?.remove(ItemStackDataKeys.CUSTOM_NAME)
+                            store.getStack()?.data()?.remove(ItemStackDataKeys.CUSTOM_NAME)
                             store
                         }
                     }

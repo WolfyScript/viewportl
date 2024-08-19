@@ -24,11 +24,11 @@ import com.google.inject.Guice
 import com.google.inject.Module
 import com.google.inject.Stage
 import com.google.inject.util.Providers
-import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.viewportl.registry.guiComponents
 import com.wolfyscript.viewportl.gui.components.Component
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveGraph
-import com.wolfyscript.utilities.tuple.Pair
 import java.util.function.Consumer
 
 class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, val wolfyUtils: WolfyUtils) {
@@ -60,14 +60,14 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, 
         return component
     }
 
-    private fun <B : Component> instantiateNewComponent(parent: Component? = null, numericId: Long, builderTypeInfo: Pair<NamespacedKey, Class<B>>): B {
+    private fun <B : Component> instantiateNewComponent(parent: Component? = null, numericId: Long, builderTypeInfo: Pair<Key, Class<B>>): B {
         val injector = Guice.createInjector(Stage.PRODUCTION, Module { binder: Binder ->
             binder.bind(WolfyUtils::class.java).toInstance(wolfyUtils)
             binder.bind(Long::class.java).toInstance(numericId)
             binder.bind(BuildContext::class.java).toInstance(this)
             binder.bind(Component::class.java).toProvider(Providers.of(parent))
         })
-        return injector.getInstance(builderTypeInfo.value)
+        return injector.getInstance(builderTypeInfo.second)
     }
 
     private fun getOrCreateNumericId(namedId: String? = null): Long {
@@ -80,13 +80,13 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, 
     private fun <B : Component> getComponentType(
         id: String?,
         type: Class<B>
-    ): kotlin.Pair<NamespacedKey, Class<B>> {
-        val registry = runtime.wolfyUtils.registries.guiComponentTypes
-        val key = registry.getKey(type)
-        Preconditions.checkArgument(key != null, "Failed to create component '%s'! Cannot find builder '%s' in registry!", id, type.name)
+    ): Pair<Key, Class<B>> {
+        val registry = runtime.scaffolding.registries.guiComponents
+//        val registry = runtime.scaffolding.registries.getByKeyOfType(Key.key(Key.SCAFFOLDING_NAMESPACE, "component/types"), RegistryGUIComponentTypes::class.java)
+        val key = registry.getKey(type) ?: throw IllegalArgumentException("Could not find component of type $type")
         val builderImplType = registry[key] as Class<B> // We can be sure that the cast is valid, because the key is only non-null if and only if the type matches!
         Preconditions.checkNotNull(builderImplType, "Failed to create component '%s'! Cannot find implementation type of builder '%s' in registry!", id, type.name)
-        return kotlin.Pair(key, builderImplType)
+        return Pair(key, builderImplType)
     }
 
 }

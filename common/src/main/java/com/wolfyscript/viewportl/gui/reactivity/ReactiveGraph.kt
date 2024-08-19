@@ -21,7 +21,7 @@ import com.google.common.collect.ListMultimap
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
-import com.wolfyscript.utilities.functions.ReceiverFunction
+import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.utilities.platform.Platform
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
@@ -358,10 +358,10 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
     override fun <T : Any> createSignal(
         valueType: Class<T>,
         defaultValueProvider: ReceiverFunction<ViewRuntime, T>
-    ): Signal<T> {
+    ): ReadWriteSignal<T> {
         val id = createNode(ReactivityNode.Type.Signal(), with(defaultValueProvider) { viewRuntime.apply() })
         addNewScopeProperty(SignalProperty(id))
-        return SignalImpl(id, valueType.kotlin)
+        return ReadWriteSignalImpl(id, valueType.kotlin)
     }
 
     override fun <T> createMemoEffect(effect: ReceiverFunction<T?, T>): Effect {
@@ -376,7 +376,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
         )
         addNewScopeProperty(EffectProperty(id))
 
-        viewRuntime.wolfyUtils.core.platform.scheduler.syncTask(viewRuntime.wolfyUtils) { // TODO: Is there a better way to schedule them?
+        viewRuntime.scaffolding.scheduler.syncTask(viewRuntime.scaffolding.corePlugin) { // TODO: Is there a better way to schedule them?
             updateIfNecessary(id)
         }
 
@@ -398,18 +398,18 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
         }
     }
 
-    override fun <T> resourceSync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>> {
+    override fun <T> resourceSync(fetch: BiFunction<Platform, ViewRuntime, T>): ReadWriteSignal<Optional<T>> {
         TODO("Not yet implemented")
     }
 
     override fun <I, T> resourceSync(
-        input: Signal<I>,
+        input: ReadWriteSignal<I>,
         fetch: TriFunction<Platform, ViewRuntime, I, T>
-    ): Signal<Optional<T>> {
+    ): ReadWriteSignal<Optional<T>> {
         TODO("Not yet implemented")
     }
 
-    override fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>> {
+    override fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): ReadWriteSignal<Optional<T>> {
         TODO("Not yet implemented!")
     }
 

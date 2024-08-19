@@ -22,8 +22,9 @@ import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.Multimap
 import com.google.common.collect.MultimapBuilder
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import java.util.*
@@ -74,7 +75,7 @@ class GuiAPIManagerImpl(private val wolfyUtils: WolfyUtils) :
                 callback.accept(runtime)
             } else {
                 // Construct the new view manager async, so it doesn't affect the main thread!
-                wolfyUtils.core.platform.scheduler.asyncTask(wolfyUtils) {
+                ScafallProvider.get().scheduler.asyncTask(ScafallProvider.get().corePlugin) {
                     val viewManager = ViewRuntimeImpl(wolfyUtils, constructor, viewerSet)
                     synchronized(runtimes) {
                         viewManagersForID.add(viewManager.id)

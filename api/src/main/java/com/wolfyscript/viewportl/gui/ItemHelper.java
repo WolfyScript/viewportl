@@ -18,8 +18,8 @@
 
 package com.wolfyscript.viewportl.gui;
 
-import com.wolfyscript.utilities.platform.world.items.Items;
-import com.wolfyscript.utilities.world.items.ItemStackConfig;
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig;
+import com.wolfyscript.scafall.wrappers.world.items.Items;
 
 public interface ItemHelper {
 

@@ -18,11 +18,7 @@
 package com.wolfyscript.utilities.chat
 
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.platform.adapters.Player
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 /**
  * Allows sending messages to players, with the specified prefix, translations, placeholders, etc.<br>
@@ -40,98 +36,5 @@ interface Chat {
      * @return The MiniMessage object
      */
     val miniMessage: MiniMessage
-
-    /**
-     * The prefix for this chat message handler.<br>
-     *
-     * You are still able to send messages without prefix, if you disable it using the parameter.
-     * See [sendMessage] or [sendMessages]
-     *
-     */
-    var chatPrefix: Component
-
-    /**
-     * Sends a chat component message, with the previously set prefix, to the player.
-     *
-     * @param player The player to send the message to.
-     * @param component The component to send.
-     */
-    fun sendMessage(player: Player, component: Component)
-
-    /**
-     * Sends a chat component message to the player.<br></br>
-     * The prefix can be disabled, which just sends the component as is.
-     *
-     * @param player The player to send the message to.
-     * @param prefix If the message should have the prefix.
-     * @param component The component to send.
-     */
-    fun sendMessage(player: Player, prefix: Boolean, component: Component)
-
-    /**
-     * Sends chat component messages to the player.<br></br>
-     * Each message will be composed of the prefix and component.
-     *
-     * @param player The player to send the messages to.
-     * @param components The components to send.
-     */
-    fun sendMessages(player: Player, vararg components: Component)
-
-    /**
-     * Sends chat component messages to the player.<br></br>
-     * If `prefix` is set to false, then the messages are just composed of the component.<br></br>
-     * Otherwise, it does the same as [.sendMessages]
-     *
-     * @param player The player to send the messages to.
-     * @param components The components to send.
-     */
-    fun sendMessages(player: Player, prefix: Boolean, vararg components: Component)
-
-    /**
-     * Creates a [Component] of the specified language key.<br></br>
-     * If the key exists in the language it will be translated and returns the according component.
-     * If it is not available it returns an empty component.
-     *
-     * @param key The key in the language.
-     * @return The component set for the key; empty component if not available.
-     */
-    fun translated(key: String): Component
-
-    /**
-     * Creates a [Component] of the specified language key.<br></br>
-     * If the key exists in the language it will be translated and returns the according component.
-     * If it is not available it returns an empty component.
-     *
-     * @param key The key in the language.
-     * @param resolvers The custom tag resolvers to use.
-     * @return The component set for the key; empty component if not available.
-     */
-    fun translated(key: String, vararg resolvers: TagResolver): Component
-
-    /**
-     * Creates a [Component] of the specified language key.<br></br>
-     * If the key exists in the language it will be translated and returns the according component.
-     * If it is not available it returns an empty component.
-     *
-     * @param key The key in the language.
-     * @param resolver The custom tag resolver to use.
-     * @return The component set for the key; empty component if not available.
-     */
-    fun translated(key: String, resolver: TagResolver): Component
-
-    /**
-     * Creates a ClickEvent, that executes code when clicked.<br></br>
-     *
-     *
-     * It will internally link a command with an id to the code to execute.<br></br>
-     * That internal command can only be executed by the player, who received the message.
-     *
-     *
-     * @param player The player the event belongs to.
-     * @param discard If it should be discarded after clicked. (Any action is removed, when the player disconnects!)
-     * @param action The action to execute on click.
-     * @return The ClickEvent with the generated command.
-     */
-    fun executable(player: Player, discard: Boolean, action: ClickActionCallback): ClickEvent
 
 }

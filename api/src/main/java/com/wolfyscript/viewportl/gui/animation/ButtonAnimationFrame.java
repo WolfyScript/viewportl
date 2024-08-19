@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.gui.animation;
 
-import com.wolfyscript.utilities.world.items.ItemStackConfig;
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig;
 
 public interface ButtonAnimationFrame extends AnimationFrame {
 

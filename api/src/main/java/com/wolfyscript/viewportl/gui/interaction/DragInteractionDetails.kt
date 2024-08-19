@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui.interaction
 
-import com.wolfyscript.utilities.platform.adapters.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import java.util.function.Consumer
 
 interface DragInteractionDetails : InteractionDetails {

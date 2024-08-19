@@ -19,7 +19,6 @@
 package com.wolfyscript.utilities.bukkit.world.items;
 
 import com.wolfyscript.utilities.bukkit.WolfyUtilsBukkit;
-import com.wolfyscript.utilities.bukkit.chat.BukkitChat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import org.bukkit.Material;
@@ -30,11 +29,9 @@ import org.bukkit.inventory.meta.BookMeta;
 public class BookUtil {
 
     private final WolfyUtilsBukkit wolfyUtils;
-    private final BukkitChat chat;
 
     public BookUtil(WolfyUtilsBukkit wolfyUtils){
         this.wolfyUtils = wolfyUtils;
-        this.chat = wolfyUtils.getChat();
     }
 
     /**

@@ -20,10 +20,8 @@ package com.wolfyscript.viewportl.gui.animation;
 
 import com.wolfyscript.viewportl.gui.*;
 import com.wolfyscript.viewportl.gui.components.Component;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrame;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder;
 import com.wolfyscript.viewportl.gui.reactivity.Effect;
-import com.wolfyscript.viewportl.gui.reactivity.Signal;
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
 import com.wolfyscript.viewportl.gui.rendering.RenderContext;
 
 import java.util.List;
@@ -31,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl<F> {
 
-    AnimationImpl(Component owner, List<? extends AnimationFrameBuilder<F>> animationFrameBuilders, Signal<?> updateSignal) {
+    AnimationImpl(Component owner, List<? extends AnimationFrameBuilder<F>> animationFrameBuilders, ReadWriteSignal<?> updateSignal) {
         super(owner, animationFrameBuilders, updateSignal);
     }
 
@@ -39,8 +37,8 @@ public class AnimationImpl<F extends AnimationFrame> extends AnimationCommonImpl
 
         AtomicInteger frameDelay = new AtomicInteger(0);
         AtomicInteger frameIndex = new AtomicInteger(0);
-        viewManager.getWolfyUtils().getCore().getPlatform().getScheduler()
-                .task(viewManager.getWolfyUtils())
+        viewManager.getScafall().getScheduler()
+                .task(viewManager.getScafall().getCorePlugin())
                 .execute(task -> {
                     int delay = frameDelay.getAndIncrement();
                     int frame = frameIndex.get();

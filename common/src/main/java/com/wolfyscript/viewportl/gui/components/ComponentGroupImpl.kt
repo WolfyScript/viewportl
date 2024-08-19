@@ -22,18 +22,18 @@ import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.inject.Inject
-import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.scafall.scheduling.Task
+import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.BuildContext
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
-import com.wolfyscript.utilities.platform.scheduler.Task
 import java.util.*
 import kotlin.math.abs
 
 @ComponentImplementation(base = ComponentGroup::class)
-@KeyedStaticId(key = "cluster")
+@StaticNamespacedKey(key = "cluster")
 class ComponentGroupImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,
@@ -121,7 +121,7 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
         }
         intervalTasks.clear()
         for (intervalRunnable in intervalRunnables) {
-            val task = wolfyUtils.core.platform.scheduler.task(wolfyUtils)
+            val task = runtime.scaffolding.scheduler.task(runtime.scaffolding.corePlugin)
                 .interval(intervalRunnable.second)
                 .delay(1)
                 .execute(Runnable {

@@ -1,11 +1,8 @@
 package com.wolfyscript.utilities.bukkit;
 
-import com.wolfyscript.utilities.bukkit.chat.BukkitChat;
+import com.wolfyscript.scafall.wrappers.world.items.Items;
 import com.wolfyscript.utilities.bukkit.config.ConfigAPI;
-import com.wolfyscript.utilities.bukkit.language.TranslationsSpigot;
 import com.wolfyscript.utilities.bukkit.world.items.BookUtil;
-import com.wolfyscript.utilities.bukkit.world.items.Items;
-import com.wolfyscript.utilities.Identifiers;
 import com.wolfyscript.utilities.WolfyUtils;
 import com.wolfyscript.viewportl.gui.GuiAPIManager;
 import com.wolfyscript.viewportl.gui.GuiAPIManagerImpl;
@@ -23,7 +20,6 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import com.wolfyscript.utilities.language.Translations;
-import com.wolfyscript.utilities.spigot.WolfyCoreSpigot;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,12 +27,7 @@ public class WolfyUtilsBukkit extends WolfyUtils {
 
     private final WolfyCoreCommon core;
     private final Plugin plugin;
-    private final BukkitChat chat;
-    private final Translations translations;
     private final Permissions permissions;
-    private final BookUtil bookUtil;
-    private final Identifiers identifiers;
-    private final Items items;
 
     private String dataBasePrefix;
     private final ConfigAPI configAPI;
@@ -45,15 +36,10 @@ public class WolfyUtilsBukkit extends WolfyUtils {
     WolfyUtilsBukkit(WolfyCoreCommon core, Plugin plugin) {
         this.core = core;
         this.plugin = plugin;
-        this.translations = new TranslationsSpigot(this);
-        this.chat = new BukkitChat(this);
         this.permissions = new Permissions(this);
-        this.bookUtil = new BookUtil(this);
         this.dataBasePrefix = getName().toLowerCase(Locale.ROOT) + "_";
         this.configAPI = new ConfigAPI(this);
         this.guiAPIManager = new GuiAPIManagerImpl(this);
-        this.identifiers = new BukkitIdentifiers(this);
-        this.items = new Items(this);
     }
 
     final void initialize() {
@@ -86,16 +72,6 @@ public class WolfyUtilsBukkit extends WolfyUtils {
         return translations;
     }
 
-    @Override
-    public BukkitChat getChat() {
-        return chat;
-    }
-
-    @Override
-    public Identifiers getIdentifiers() {
-        return identifiers;
-    }
-
     @NotNull
     @Override
     public GuiAPIManager getGuiManager() {
@@ -116,18 +92,6 @@ public class WolfyUtilsBukkit extends WolfyUtils {
      */
     public Permissions getPermissions() {
         return permissions;
-    }
-
-    /**
-     * @return The {@link BookUtil} instance.
-     * @see BookUtil More information about BookUtil
-     */
-    public BookUtil getBookUtil() {
-        return bookUtil;
-    }
-
-    public Items getItems() {
-        return items;
     }
 
     /**

@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui.components
 
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import java.util.*
 
 interface ComponentGroup : Component, Configurable, ChildComponentsBuilder<ComponentGroup>, ConditionalChildComponentBuilder, MatchChildComponentBuilder {

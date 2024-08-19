@@ -18,10 +18,10 @@
 
 package com.wolfyscript.viewportl.gui.animation;
 
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig;
 import com.wolfyscript.viewportl.gui.ItemHelper;
-import com.wolfyscript.utilities.functions.ReceiverConsumer;
-import com.wolfyscript.utilities.functions.ReceiverFunction;
-import com.wolfyscript.utilities.world.items.ItemStackConfig;
+import com.wolfyscript.scafall.function.ReceiverConsumer;
+import com.wolfyscript.scafall.function.ReceiverFunction;
 
 public interface ButtonAnimationFrameBuilder extends AnimationFrameBuilder<ButtonAnimationFrame> {
 

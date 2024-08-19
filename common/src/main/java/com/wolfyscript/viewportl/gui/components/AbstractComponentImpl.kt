@@ -18,10 +18,10 @@
 package com.wolfyscript.viewportl.gui.components
 
 import com.google.common.base.Preconditions
-import com.wolfyscript.utilities.KeyedStaticId
-import com.wolfyscript.utilities.NamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.gui.reactivity.Effect
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
@@ -47,15 +47,15 @@ abstract class AbstractComponentImpl<C : Component>(
     override val parent: Component?
 ) : Component, Effect {
 
-    private val type: NamespacedKey = wolfyUtils.identifiers.getNamespaced(javaClass)
+    private val type: Key = Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(javaClass))
     var nodeId: Long? = null
     override var styles: RenderProperties = RenderPropertiesImpl(PropertyPosition.def())
 
     init {
-        Preconditions.checkNotNull(type, "Missing type key! One must be provided to the Component using the annotation: ${KeyedStaticId::class.java.name}")
+        Preconditions.checkNotNull(type, "Missing type key! One must be provided to the Component using the annotation: ${StaticNamespacedKey::class.java.name}")
     }
 
-    override fun key(): NamespacedKey {
+    override fun key(): Key {
         return type
     }
 
@@ -72,7 +72,7 @@ abstract class AbstractComponentImpl<C : Component>(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
-        val that = other as AbstractComponentImpl<C>
+        val that = other as AbstractComponentImpl<*>
         return type == that.type && id == that.id
     }
 

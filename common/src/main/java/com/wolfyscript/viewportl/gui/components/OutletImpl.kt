@@ -20,7 +20,7 @@ package com.wolfyscript.viewportl.gui.components
 
 import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.viewportl.gui.BuildContext
 import com.wolfyscript.viewportl.gui.ViewRuntime
@@ -28,7 +28,7 @@ import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
 import javax.annotation.Nullable
 
 @ComponentImplementation(base = Outlet::class)
-@KeyedStaticId(key = "outlet")
+@StaticNamespacedKey(key = "outlet")
 class OutletImpl(
     @JsonProperty("id") id: String,
     @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,

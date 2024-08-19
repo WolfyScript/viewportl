@@ -19,11 +19,8 @@
 package com.wolfyscript.viewportl.gui.animation;
 
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource;
-import com.wolfyscript.utilities.functions.ReceiverConsumer;
-import com.wolfyscript.viewportl.gui.animation.AnimationBuilder;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrame;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder;
-import com.wolfyscript.viewportl.gui.reactivity.Signal;
+import com.wolfyscript.scafall.function.ReceiverConsumer;
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +31,7 @@ public abstract class AnimationBuilderCommonImpl<F extends AnimationFrame, FB ex
     protected final ReactiveSource reactiveSource;
     protected final List<FB> frameBuilders = new ArrayList<>();
     protected final Supplier<FB> frameBuilderSupplier;
-    protected Signal<?> updateSignal;
+    protected ReadWriteSignal<?> updateSignal;
 
     public AnimationBuilderCommonImpl(ReactiveSource reactiveSource, Supplier<FB> frameBuilderSupplier) {
         this.reactiveSource = reactiveSource;
@@ -42,7 +39,7 @@ public abstract class AnimationBuilderCommonImpl<F extends AnimationFrame, FB ex
     }
 
     @Override
-    public AnimationBuilderCommonImpl<F, FB> customSignal(Signal<?> signal) {
+    public AnimationBuilderCommonImpl<F, FB> customSignal(ReadWriteSignal<?> signal) {
         this.updateSignal = signal;
         return this;
     }

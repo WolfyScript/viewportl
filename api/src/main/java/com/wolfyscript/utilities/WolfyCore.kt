@@ -20,7 +20,6 @@ package com.wolfyscript.utilities
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wolfyscript.utilities.chat.Chat
 import com.wolfyscript.utilities.platform.Platform
-import com.wolfyscript.utilities.registry.Registries
 import org.reflections.Reflections
 
 /**
@@ -57,8 +56,6 @@ abstract class WolfyCore {
     abstract val wolfyUtils: WolfyUtils
 
     abstract val reflections: Reflections
-
-    abstract val registries: Registries
 
     abstract val platform: Platform
 

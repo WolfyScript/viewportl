@@ -234,46 +234,4 @@ public class YamlConfiguration extends org.bukkit.configuration.file.YamlConfigu
         }
     }
 
-    public ItemStack getItem(String path) {
-        return getItem(path, true);
-    }
-
-    @Nullable
-    public ItemStack getItem(String path, boolean replaceKeys) {
-        if (isSet(path)) {
-            ItemStack itemStack = getItemStack(path);
-            if (itemStack.hasItemMeta()) {
-                ItemMeta itemMeta = itemStack.getItemMeta();
-                if (itemMeta.hasDisplayName()) {
-                    String displayName = itemMeta.getDisplayName();
-                    if (replaceKeys && api.getTranslations().getActiveLanguage() != null) {
-                        displayName = api.getTranslations().replaceKeys(displayName);
-                    }
-                    itemMeta.setDisplayName(ChatColor.convert(displayName));
-                }
-                if (itemMeta.hasLore()) {
-                    List<String> newLore = new ArrayList<>();
-                    for (String row : itemMeta.getLore()) {
-                        if (replaceKeys && api.getTranslations().getActiveLanguage() != null) {
-                            if (row.startsWith("[WU]")) {
-                                row = row.substring("[WU]".length());
-                                row = api.getTranslations().replaceKeys(row);
-                            } else if (row.startsWith("[WU!]")) {
-                                List<String> rows = api.getTranslations().replaceKey(row.substring("[WU!]".length()));
-                                for (String newRow : rows) {
-                                    newLore.add(ChatColor.convert(newRow));
-                                }
-                                continue;
-                            }
-                        }
-                        newLore.add(ChatColor.convert(row));
-                    }
-                    itemMeta.setLore(newLore);
-                }
-                itemStack.setItemMeta(itemMeta);
-            }
-            return itemStack;
-        }
-        return null;
-    }
 }

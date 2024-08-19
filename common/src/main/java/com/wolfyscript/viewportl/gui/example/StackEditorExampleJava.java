@@ -18,13 +18,13 @@
 
 package com.wolfyscript.viewportl.gui.example;
 
-import com.wolfyscript.utilities.data.ItemStackDataKeys;
+import com.wolfyscript.scafall.data.ItemStackDataKeys;
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack;
 import com.wolfyscript.viewportl.gui.GuiAPIManager;
 import com.wolfyscript.viewportl.gui.Window;
 import com.wolfyscript.viewportl.gui.components.ComponentGroup;
 import com.wolfyscript.viewportl.gui.components.StackInputSlot;
-import com.wolfyscript.viewportl.gui.reactivity.Signal;
-import com.wolfyscript.utilities.platform.adapters.ItemStack;
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
 
 public class StackEditorExampleJava {
 
@@ -55,13 +55,13 @@ public class StackEditorExampleJava {
                         router.route(path -> { /* empty = Root path */ }, view -> {
                             // This is only called upon creation of the state. So this is not called when the signal is updated!
 
-                            Signal<StackEditorStore> stackToEdit = window.createSignal(StackEditorStore.class, viewRuntime -> new StackEditorStore());
-                            Signal<Tab> selectedTab = window.createSignal(Tab.class, r -> Tab.NONE);
+                            ReadWriteSignal<StackEditorStore> stackToEdit = window.createSignal(StackEditorStore.class, viewRuntime -> new StackEditorStore());
+                            ReadWriteSignal<Tab> selectedTab = window.createSignal(Tab.class, r -> Tab.NONE);
 
                             view.whenever(() -> {
                                 StackEditorStore store = stackToEdit.get();
                                 ItemStack itemStack = store == null ? null : store.getStack();
-                                return itemStack == null || itemStack.getItem() == null || itemStack.getItem().getKey().equals("air");
+                                return itemStack == null || itemStack.getItem() == null || itemStack.getItem().getValue().equals("air");
                             }).then(group -> {
                                 // Empty component! Perhaps add a note that the item is missing!
                             }).orElse(tabGroup ->
@@ -108,7 +108,7 @@ public class StackEditorExampleJava {
         );
     }
 
-    static void displayNameTab(Window window, ComponentGroup reactiveBuilder, Signal<StackEditorStore> stackToEdit) {
+    static void displayNameTab(Window window, ComponentGroup reactiveBuilder, ReadWriteSignal<StackEditorStore> stackToEdit) {
         reactiveBuilder.group("display_name_tab", displayNameClusterBuilder -> {
                     displayNameClusterBuilder.button("set_display_name", button -> {
                         button.setOnClick((details) -> {
@@ -116,7 +116,7 @@ public class StackEditorExampleJava {
                                 stackToEdit.update(store -> {
                                     var stack = store.getStack();
                                     if (stack != null) {
-                                        stack.data().set(ItemStackDataKeys.CUSTOM_NAME, rn.getWolfyUtils().getChat().getMiniMessage().deserialize(s));
+                                        stack.data().set(ItemStackDataKeys.CUSTOM_NAME, rn.getScafall().getAdventure().getMiniMsg().deserialize(s));
                                     }
                                     return store;
                                 });

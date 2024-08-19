@@ -20,7 +20,7 @@ package com.wolfyscript.viewportl.gui.router
 
 import com.wolfyscript.viewportl.gui.components.ComponentGroup
 import com.wolfyscript.viewportl.gui.components.Outlet
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
 
 interface Route {
 

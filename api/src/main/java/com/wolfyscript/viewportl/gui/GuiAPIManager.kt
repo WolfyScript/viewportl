@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui
 
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function

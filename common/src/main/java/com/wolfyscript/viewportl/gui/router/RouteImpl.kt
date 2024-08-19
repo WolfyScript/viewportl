@@ -21,7 +21,7 @@ package com.wolfyscript.viewportl.gui.router
 import com.wolfyscript.viewportl.gui.BuildContext
 import com.wolfyscript.viewportl.gui.components.ComponentGroup
 import com.wolfyscript.viewportl.gui.components.Outlet
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.reactivity.Memo
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 

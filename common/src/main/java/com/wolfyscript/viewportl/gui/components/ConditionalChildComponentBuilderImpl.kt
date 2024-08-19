@@ -20,7 +20,7 @@ package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.viewportl.gui.BuildContext
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.reactivity.Memo
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import java.util.function.Supplier

@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.gui;
 
-import com.wolfyscript.utilities.eval.context.EvalContext;
+import com.wolfyscript.scafall.eval.context.EvalContext;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 

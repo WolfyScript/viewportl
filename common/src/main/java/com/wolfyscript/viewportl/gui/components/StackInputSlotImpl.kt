@@ -22,15 +22,15 @@ import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.inject.Inject
-import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.scafall.function.ReceiverBiFunction
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.functions.ReceiverBiFunction
-import com.wolfyscript.utilities.functions.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.BuildContext
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.interaction.ClickType
-import com.wolfyscript.utilities.platform.adapters.ItemStack
 import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
 import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 import java.util.function.Consumer
@@ -38,7 +38,7 @@ import java.util.function.Supplier
 import javax.annotation.Nullable
 
 @ComponentImplementation(base = StackInputSlot::class)
-@KeyedStaticId(key = "stack_input_slot")
+@StaticNamespacedKey(key = "stack_input_slot")
 class StackInputSlotImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("wolfyUtils") wolfyUtils: WolfyUtils,

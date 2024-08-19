@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui
 
-import com.wolfyscript.utilities.platform.adapters.Player
+import com.wolfyscript.scafall.wrappers.world.entity.Player
 
 class GuiHolderImpl(
     override val currentWindow: Window,

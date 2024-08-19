@@ -18,18 +18,8 @@
 package com.wolfyscript.utilities.platform
 
 import com.wolfyscript.utilities.platform.gui.GuiUtils
-import com.wolfyscript.utilities.platform.scheduler.Scheduler
-import com.wolfyscript.utilities.platform.world.items.Items
 
 interface Platform {
-
-    val type: PlatformType
-
-    val scheduler: Scheduler
-
-    val items: Items
-
-    val audiences: Audiences
 
     val guiUtils: GuiUtils
 }

@@ -17,15 +17,15 @@
  */
 package com.wolfyscript.viewportl.gui.router
 
-import com.wolfyscript.utilities.KeyedStaticId
+import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.viewportl.gui.*
 import com.wolfyscript.viewportl.gui.components.ComponentGroup
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.reactivity.*
 import java.util.*
 
-@KeyedStaticId(key = "router")
+@StaticNamespacedKey(key = "router")
 class RouterImpl internal constructor(
     val wolfyUtils: WolfyUtils,
     val context: BuildContext,
@@ -33,8 +33,8 @@ class RouterImpl internal constructor(
 ) : Router {
 
     override val routes: MutableList<Route> = mutableListOf()
-    override val history: Signal<Deque<ActivePath>> = context.reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(ActivePath()) })
-    override val currentPath: SignalGet<ActivePath> = context.reactiveSource.createMemo {
+    override val history: ReadWriteSignal<Deque<ActivePath>> = context.reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(ActivePath()) })
+    override val currentPath: ReadOnlySignal<ActivePath> = context.reactiveSource.createMemo {
         history.get()?.peek()
     }
     private var currentRootComponent: ComponentGroup? = null

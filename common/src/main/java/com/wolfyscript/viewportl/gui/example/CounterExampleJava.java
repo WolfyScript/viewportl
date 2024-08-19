@@ -22,7 +22,7 @@ import com.wolfyscript.viewportl.gui.GuiAPIManager;
 import com.wolfyscript.viewportl.gui.Window;
 import com.wolfyscript.viewportl.gui.components.Button;
 import com.wolfyscript.viewportl.gui.components.ComponentGroup;
-import com.wolfyscript.viewportl.gui.reactivity.Signal;
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -90,7 +90,7 @@ public class CounterExampleJava {
         // This is only called upon creation of the component. So this is not called when the signal is updated!
 
         // Use signals that provide a simple value storage & synchronisation.
-        Signal<Integer> count = window.createSignal(Integer.TYPE, r -> 0);
+        ReadWriteSignal<Integer> count = window.createSignal(Integer.TYPE, r -> 0);
         count.tagName("count");
 
         window.title(prevTitle ->  // Update the title with the Count
@@ -115,7 +115,7 @@ public class CounterExampleJava {
     /**
      * Since all the components are declared statically as well we can easily move them into their own functions
      **/
-    static void countDownButton(Button bb, Signal<Integer> count) {
+    static void countDownButton(Button bb, ReadWriteSignal<Integer> count) {
         bb.styles(props -> {
             props.setPosition(PropertyPosition.Companion.slot(22));
         });
@@ -130,7 +130,7 @@ public class CounterExampleJava {
         });
     }
 
-    static void countUpButton(Button bb, Signal<Integer> count) {
+    static void countUpButton(Button bb, ReadWriteSignal<Integer> count) {
         bb.styles(props -> {
             props.setPosition(PropertyPosition.Companion.slot(4));
         });
@@ -145,7 +145,7 @@ public class CounterExampleJava {
         });
     }
 
-    static void resetButton(Button bb, Signal<Integer> count) {
+    static void resetButton(Button bb, ReadWriteSignal<Integer> count) {
         bb.styles(props -> {
             props.setPosition(PropertyPosition.Companion.slot(10));
         });

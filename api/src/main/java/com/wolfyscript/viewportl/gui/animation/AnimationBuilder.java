@@ -19,9 +19,8 @@
 package com.wolfyscript.viewportl.gui.animation;
 
 import com.wolfyscript.viewportl.gui.components.Component;
-import com.wolfyscript.utilities.functions.ReceiverConsumer;
-import com.wolfyscript.viewportl.gui.reactivity.Signal;
-import com.wolfyscript.viewportl.gui.reactivity.Signal;
+import com.wolfyscript.scafall.function.ReceiverConsumer;
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
 
 public interface AnimationBuilder<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> {
 
@@ -40,7 +39,7 @@ public interface AnimationBuilder<F extends AnimationFrame, FB extends Animation
      * @param signal The signal to listen to
      * @return This builder for chaining
      */
-    AnimationBuilder<F, FB> customSignal(Signal<?> signal);
+    AnimationBuilder<F, FB> customSignal(ReadWriteSignal<?> signal);
 
     Animation<F> build(Component owner);
 

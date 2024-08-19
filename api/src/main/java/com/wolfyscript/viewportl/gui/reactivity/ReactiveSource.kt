@@ -18,7 +18,7 @@
 package com.wolfyscript.viewportl.gui.reactivity
 
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.utilities.functions.ReceiverFunction
+import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.utilities.platform.Platform
 import org.apache.commons.lang3.function.TriFunction
 import java.util.*
@@ -41,13 +41,13 @@ interface ReactiveSource {
      * Creates a Signal that holds a value of the specified [valueType].
      * The [defaultValueProvider] needs to provide a Non-null default value.
      *
-     * When [Signal] values are accessed inside a [Memo]/[Effect] it subscribes to that [Signal].
-     * Then when the value of the [Signal] is updated the [Memo]/[Effect] is updated too.
+     * When [ReadWriteSignal] values are accessed inside a [Memo]/[Effect] it subscribes to that [ReadWriteSignal].
+     * Then when the value of the [ReadWriteSignal] is updated the [Memo]/[Effect] is updated too.
      */
-    fun <T : Any> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime, T>): Signal<T>
+    fun <T : Any> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime, T>): ReadWriteSignal<T>
 
     /**
-     * Creates an [Effect] that reruns when a [Signal]/[Memo] used inside it is updated.
+     * Creates an [Effect] that reruns when a [ReadWriteSignal]/[Memo] used inside it is updated.
      *
      */
     fun createEffect(effect: ReceiverFunction<Unit?, Unit>): Effect {
@@ -55,7 +55,7 @@ interface ReactiveSource {
     }
 
     /**
-     * Creates an [Effect] that reruns when a [Signal]/[Memo] used inside it is updated.
+     * Creates an [Effect] that reruns when a [ReadWriteSignal]/[Memo] used inside it is updated.
      *
      * This type of [Effect] allows to use the value of the previous execution, and return the new value.<br>
      * When no value is required use the type [Unit]
@@ -65,7 +65,7 @@ interface ReactiveSource {
     /**
      * Creates a Memo, that holds a value of the specified [valueType].
      *
-     * It is a combination of an [Effect] and [Signal]. It keeps track of the value of the previous execution of [fn]
+     * It is a combination of an [Effect] and [ReadWriteSignal]. It keeps track of the value of the previous execution of [fn]
      * and other [Effects][Effect]/[Memos][Memo] can subscribe to it.
      *
      * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
@@ -91,12 +91,12 @@ interface ReactiveSource {
      * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
      * @param <T> The type of the value
     </T> */
-    fun <T> resourceSync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>>
+    fun <T> resourceSync(fetch: BiFunction<Platform, ViewRuntime, T>): ReadWriteSignal<Optional<T>>
 
     fun <I, T> resourceSync(
-        input: Signal<I>,
+        input: ReadWriteSignal<I>,
         fetch: TriFunction<Platform, ViewRuntime, I, T>
-    ): Signal<Optional<T>>
+    ): ReadWriteSignal<Optional<T>>
 
     /**
      * May be used to fetch data async.
@@ -112,14 +112,14 @@ interface ReactiveSource {
      * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
      * @param <T> The type of the value
     </T> */
-    fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): Signal<Optional<T>>
+    fun <T> resourceAsync(fetch: BiFunction<Platform, ViewRuntime, T>): ReadWriteSignal<Optional<T>>
 
 }
 
 /**
  * Creates a Memo, that holds a value of the specified type [T].
  *
- * It is a combination of an [Effect] and [Signal]. It keeps track of the value of the previous execution of [fn]
+ * It is a combination of an [Effect] and [ReadWriteSignal]. It keeps track of the value of the previous execution of [fn]
  * and other [Effects][Effect]/[Memos][Memo] can subscribe to it.
  *
  * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
@@ -128,10 +128,10 @@ inline fun <reified T: Any> ReactiveSource.createMemo(fn: Function<T?, T?>) : Me
     return createMemo(T::class.java, fn)
 }
 
-inline fun <reified T : Any> ReactiveSource.createSignal(defaultValue: T): Signal<T> {
+inline fun <reified T : Any> ReactiveSource.createSignal(defaultValue: T): ReadWriteSignal<T> {
     return createSignal(T::class.java) { defaultValue }
 }
 
-inline fun <reified T : Any> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime, T>): Signal<T> {
+inline fun <reified T : Any> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime, T>): ReadWriteSignal<T> {
     return createSignal(T::class.java, defaultValueProvider)
 }

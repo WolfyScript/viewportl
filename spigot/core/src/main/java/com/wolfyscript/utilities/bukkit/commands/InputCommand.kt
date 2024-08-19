@@ -15,81 +15,72 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.utilities.bukkit.commands
 
-package com.wolfyscript.utilities.bukkit.commands;
+import com.wolfyscript.scafall.spigot.api.wrappers.wrap
+import com.wolfyscript.utilities.WolfyUtils
+import com.wolfyscript.utilities.bukkit.WolfyCoreCommon
+import com.wolfyscript.viewportl.gui.GuiAPIManager
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.Window
+import org.bukkit.Bukkit
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
+import org.bukkit.command.PluginIdentifiableCommand
+import org.bukkit.entity.Player
+import org.bukkit.plugin.Plugin
 
-import com.wolfyscript.utilities.WolfyUtils;
-import com.wolfyscript.utilities.bukkit.WolfyCoreCommon;
-import com.wolfyscript.utilities.bukkit.adapters.BukkitWrapper;
-import com.wolfyscript.viewportl.gui.ViewRuntime;
-import com.wolfyscript.viewportl.gui.Window;
-import com.wolfyscript.utilities.tuple.Pair;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginIdentifiableCommand;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-
-public final class InputCommand extends Command implements PluginIdentifiableCommand {
-
-    private final WolfyCoreCommon core;
-
-    public InputCommand(WolfyCoreCommon core) {
-        super("wui");
-        this.core = core;
-        setUsage("/wui <input>");
-        setDescription("Input for chat input actions");
+class InputCommand(private val core: WolfyCoreCommon) : Command("wui"), PluginIdentifiableCommand {
+    init {
+        usage = "/wui <input>"
+        setDescription("Input for chat input actions")
     }
 
-    @NotNull
-    @Override
-    public Plugin getPlugin() {
-        return core.getWolfyUtils().getPlugin();
+    override fun getPlugin(): Plugin {
+        return core.wolfyUtils.plugin
     }
 
-    @Override
-    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
-        if (!(sender instanceof Player player)) return true;
-        core.getWolfyUtilsInstanceList().parallelStream()
-                .map(WolfyUtils::getGuiManager)
-                .flatMap(guiAPIManager -> guiAPIManager.getViewManagersFor(player.getUniqueId()))
-                .map(runtime -> new Pair<>(runtime, runtime.getCurrentMenu()))
-                .filter(pair -> pair.getValue() != null && pair.getValue().getOnTextInput() != null)
-                .forEach(pair -> {
-                    ViewRuntime runtime = pair.getKey();
-                    Window window = pair.getValue();
-                    String text = String.join(" ", args).trim();
-
-                    Bukkit.getScheduler().runTask(core.plugin, () -> {
-                        window.getOnTextInput().run(BukkitWrapper.adapt(player), null, text, args);
-                        window.setOnTextInput(null);
-                        window.setOnTextInputTabComplete(null);
-                        runtime.open();
-                    });
-                });
-        return true;
+    override fun execute(sender: CommandSender, commandLabel: String, args: Array<String>): Boolean {
+        if (sender !is Player) return true
+        core.wolfyUtilsInstanceList.parallelStream()
+            .map(WolfyUtils::guiManager)
+            .flatMap { guiAPIManager -> guiAPIManager.getViewManagersFor(sender.uniqueId) }
+            .map { runtime -> Pair(runtime, runtime.currentMenu) }
+            .filter { pair -> pair.second != null && pair.second!!.onTextInput != null }
+            .forEach { pair ->
+                val runtime = pair.first
+                val window = pair.second
+                val text = java.lang.String.join(" ", *args).trim { it <= ' ' }
+                Bukkit.getScheduler().runTask(core.plugin, Runnable {
+                    window!!.onTextInput!!.run(sender.wrap(), null, text, args)
+                    window.onTextInput = null
+                    window.onTextInputTabComplete = null
+                    runtime.open()
+                })
+            }
+        return true
     }
 
-    @NotNull
-    @Override
-    public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
-        if (sender instanceof Player player) {
-            return core.getWolfyUtilsInstanceList().parallelStream()
-                    .map(WolfyUtils::getGuiManager)
-                    .flatMap(guiAPIManager -> guiAPIManager.getViewManagersFor(player.getUniqueId()))
-                    .map(viewManager -> new Pair<>(viewManager, viewManager.getCurrentMenu()))
-                    .filter(pair -> pair.getValue() != null && pair.getValue().getOnTextInputTabComplete() != null)
-                    .findFirst()
-                    .map(pair -> {
-                        ViewRuntime runtime = pair.getKey();
-                        Window window = pair.getValue();
-                        return  window.getOnTextInputTabComplete().apply(BukkitWrapper.adapt(player), runtime, String.join(" ", args).trim(), args);
-                    }).orElse(List.of());
+    @Throws(IllegalArgumentException::class)
+    override fun tabComplete(sender: CommandSender, alias: String, args: Array<String>): List<String> {
+        if (sender is Player) {
+            return core.wolfyUtilsInstanceList.parallelStream()
+                .map(WolfyUtils::guiManager)
+                .flatMap { guiAPIManager -> guiAPIManager.getViewManagersFor(sender.uniqueId) }
+                .map { viewManager -> Pair(viewManager, viewManager.currentMenu) }
+                .filter { pair -> pair.second != null && pair.second!!.onTextInputTabComplete != null }
+                .findFirst()
+                .map { pair ->
+                    val runtime = pair.first
+                    val window = pair.second
+                    window!!.onTextInputTabComplete!!.apply(
+                        sender.wrap(),
+                        runtime,
+                        java.lang.String.join(" ", *args).trim { it <= ' ' },
+                        args
+                    )
+                }.orElse(listOf())
         }
-        return super.tabComplete(sender, alias, args);
+        return super.tabComplete(sender, alias, args)
     }
 }

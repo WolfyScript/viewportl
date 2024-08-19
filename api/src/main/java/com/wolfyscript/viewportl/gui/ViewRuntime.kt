@@ -17,6 +17,8 @@
  */
 package com.wolfyscript.viewportl.gui
 
+import com.wolfyscript.scafall.Scafall
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.utilities.WolfyUtils
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
@@ -79,5 +81,8 @@ interface ViewRuntime {
      * @return The API instance of this manager.
      */
     val wolfyUtils: WolfyUtils
+
+    val scaffolding: Scafall
+        get() = ScafallProvider.get()
 
 }

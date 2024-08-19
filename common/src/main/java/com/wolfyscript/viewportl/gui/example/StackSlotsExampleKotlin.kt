@@ -18,7 +18,8 @@
 
 package com.wolfyscript.viewportl.gui.example
 
-import com.wolfyscript.utilities.platform.adapters.ItemStack
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
@@ -40,10 +41,9 @@ class StackSlotsExampleKotlin {
                          */
 
                         val stacks = createSignal {
-                            val wolfyUtils = this.wolfyUtils
                             mutableListOf<ItemStack>().apply {
                                 for (i in 0 until 9) {
-                                    wolfyUtils.core.platform.items.createStackConfig(wolfyUtils, "air")
+                                    this@registerGui.scaffolding.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air"))
                                         .constructItemStack()?.let {
                                         this.add(it)
                                     }
@@ -62,10 +62,8 @@ class StackSlotsExampleKotlin {
                                 onValueChange = Consumer { v ->
                                     stacks.update {
                                         val newStack =
-                                            v ?: this@registerGui.wolfyUtils.core.platform.items.createStackConfig(
-                                                wolfyUtils,
-                                                "air"
-                                            ).constructItemStack()
+                                            v ?: this@registerGui.scaffolding.factories.itemsFactory.createStackConfig(Key.key(
+                                                Key.MINECRAFT_NAMESPACE, "air")).constructItemStack()
                                         if (newStack != null) {
                                             it[i] = newStack
                                         }

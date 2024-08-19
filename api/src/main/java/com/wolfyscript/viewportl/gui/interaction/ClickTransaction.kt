@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.gui.interaction
 
-import com.wolfyscript.utilities.platform.adapters.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 
 interface ClickTransaction : InteractionTransaction {
 

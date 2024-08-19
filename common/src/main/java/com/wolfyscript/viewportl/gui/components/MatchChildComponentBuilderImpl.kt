@@ -20,8 +20,8 @@ package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.viewportl.gui.BuildContext
 import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
-import com.wolfyscript.utilities.functions.ReceiverConsumer
-import com.wolfyscript.utilities.functions.ReceiverFunction
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverFunction
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 

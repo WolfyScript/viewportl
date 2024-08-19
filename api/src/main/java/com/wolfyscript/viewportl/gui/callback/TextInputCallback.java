@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.gui.callback;
 
-import com.wolfyscript.utilities.platform.adapters.Player;
+import com.wolfyscript.scafall.wrappers.world.entity.Player;
 import com.wolfyscript.viewportl.gui.ViewRuntime;
 
 public interface TextInputCallback {

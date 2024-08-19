@@ -18,9 +18,9 @@
 package com.wolfyscript.viewportl.gui.router
 
 import com.wolfyscript.viewportl.gui.components.ComponentGroup
-import com.wolfyscript.utilities.functions.ReceiverConsumer
-import com.wolfyscript.viewportl.gui.reactivity.Signal
-import com.wolfyscript.viewportl.gui.reactivity.SignalGet
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
+import com.wolfyscript.viewportl.gui.reactivity.ReadOnlySignal
 import java.util.Deque
 
 /**
@@ -29,8 +29,8 @@ import java.util.Deque
 interface Router {
 
     val routes: List<Route>
-    val currentPath: SignalGet<ActivePath>
-    val history : Signal<Deque<ActivePath>>
+    val currentPath: ReadOnlySignal<ActivePath>
+    val history : ReadWriteSignal<Deque<ActivePath>>
 
     fun open()
 

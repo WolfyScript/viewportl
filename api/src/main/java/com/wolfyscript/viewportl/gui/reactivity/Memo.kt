@@ -18,4 +18,4 @@
 
 package com.wolfyscript.viewportl.gui.reactivity
 
-interface Memo<V> : SignalGet<V>
+interface Memo<V> : ReadOnlySignal<V>

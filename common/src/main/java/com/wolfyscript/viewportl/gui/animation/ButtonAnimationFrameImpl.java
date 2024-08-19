@@ -18,12 +18,10 @@
 
 package com.wolfyscript.viewportl.gui.animation;
 
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig;
 import com.wolfyscript.viewportl.gui.GuiHolder;
 import com.wolfyscript.viewportl.gui.ViewRuntime;
-import com.wolfyscript.viewportl.gui.animation.Animation;
-import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrame;
 import com.wolfyscript.viewportl.gui.rendering.RenderContext;
-import com.wolfyscript.utilities.world.items.ItemStackConfig;
 
 public class ButtonAnimationFrameImpl implements ButtonAnimationFrame {
 

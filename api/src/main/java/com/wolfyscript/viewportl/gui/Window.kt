@@ -17,9 +17,11 @@
  */
 package com.wolfyscript.viewportl.gui
 
+import com.wolfyscript.scafall.Scafall
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.functions.ReceiverConsumer
-import com.wolfyscript.utilities.functions.ReceiverFunction
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
@@ -72,6 +74,9 @@ interface Window : ReactiveSource {
      * @return The WolfyUtils API instance.
      */
     val wolfyUtils: WolfyUtils
+
+    val scaffolding: Scafall
+        get() = ScafallProvider.get()
 
     /**
      * The parent of this Component, or null if it is a root Component.

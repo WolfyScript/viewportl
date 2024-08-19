@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.gui.rendering
 
-import com.wolfyscript.utilities.Keyed
+import com.wolfyscript.scafall.identifier.Keyed
 import com.wolfyscript.viewportl.gui.components.Component
 
 interface ComponentRenderer<C: Component, X: RenderContext> : Keyed {

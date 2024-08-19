@@ -17,8 +17,8 @@
  */
 package com.wolfyscript.viewportl.gui.components
 
-import com.wolfyscript.utilities.functions.ReceiverConsumer
-import com.wolfyscript.utilities.world.items.ItemStackConfig
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import java.util.function.Supplier
 

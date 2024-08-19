@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.gui.example
 
-import com.wolfyscript.utilities.eval.value_provider.provider
+import com.wolfyscript.scafall.eval.value_provider.provider
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.components.ComponentGroup
@@ -31,6 +31,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import kotlin.properties.Delegates
 
 /**
  * A Counter GUI Example, that allows the viewer:
@@ -89,21 +90,19 @@ class CounterExampleKotlin {
         }
 
         private fun ComponentGroup.counter(window: Window, router: Router) {
-            //configuredBy("main_menu.conf")
             // Called when the path matches, but only once, when the route was changed
 
-            // Use signals that provide a simple value storage & synchronisation.
-            val count = window.createSignal(0)
-            count.tagName("count")
+            // Use signals to notify components to update when the value changes
+            var count: Int by window.createSignal(0)
 
             window.title { // Update the title with the Count
                 Component.text("Counter: ").decorate(TextDecoration.BOLD)
-                    .append(Component.text(count.get() ?: 0).color(NamedTextColor.BLUE))
+                    .append(Component.text(count).color(NamedTextColor.BLUE))
             }
 
             // Update the count periodically (every second)
             interval(20) {
-                count.update { value -> value + 1 }
+                count += 1
             }
 
             button("back") {
@@ -132,7 +131,7 @@ class CounterExampleKotlin {
                 }
 
                 onClick {
-                    count.update { old -> old + 1 }
+                    count += 1
                 }
             }
 
@@ -145,7 +144,7 @@ class CounterExampleKotlin {
                         name = "<!italic>Clicked <b><count></b> times!".provider()
                     }
                     resolvers {
-                        Placeholder.parsed("count", (count.get() ?: 0).toString())
+                        Placeholder.parsed("count", count.toString())
                     }
                 }
             }
@@ -161,11 +160,11 @@ class CounterExampleKotlin {
                 }
 
                 onClick {
-                    count.update { old -> old - 1 }
+                    count -= 1
                 }
             }
             // Sometimes we want to render components dependent on signals
-            whenever { count.get() != 0 } then {
+            whenever { count != 0 } then {
                 styles {
                     position = PropertyPosition.slot(10)
                 }
@@ -181,7 +180,7 @@ class CounterExampleKotlin {
                     }
 
                     onClick {
-                        count.set(0) // The set method changes the value of the signal and prompts the listener of the signal to re-render.
+                        count = 0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
                     }
                     sound = Sound.sound(
                         Key.key("minecraft:entity.dragon_fireball.explode"),

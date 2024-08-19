@@ -20,9 +20,7 @@ package com.wolfyscript.viewportl.gui.animation;
 
 import com.wolfyscript.viewportl.gui.components.Component;
 import com.wolfyscript.viewportl.gui.reactivity.Effect;
-import com.wolfyscript.viewportl.gui.reactivity.Signal;
-import com.wolfyscript.viewportl.gui.reactivity.Effect;
-import com.wolfyscript.viewportl.gui.reactivity.Signal;
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
 
 import java.util.List;
 
@@ -32,6 +30,6 @@ public interface Animation<F extends AnimationFrame> extends Effect {
 
     Component owner();
 
-    Signal<?> updateSignal();
+    ReadWriteSignal<?> updateSignal();
 
 }

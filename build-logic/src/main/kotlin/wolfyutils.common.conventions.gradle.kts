@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     api(libs.com.wolfyscript.jackson.dataformat.hocon)
+    api("com.wolfyscript.scafall:api:0.1-alpha-SNAPSHOT")
     implementation(libs.org.jetbrains.kotlin.stdlib)
 
     compileOnly(libs.com.fasterxml.jackson.core.jackson.databind)

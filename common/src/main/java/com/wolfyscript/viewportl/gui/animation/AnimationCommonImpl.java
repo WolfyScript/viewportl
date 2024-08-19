@@ -19,10 +19,7 @@
 package com.wolfyscript.viewportl.gui.animation;
 
 import com.wolfyscript.viewportl.gui.components.Component;
-import com.wolfyscript.viewportl.gui.animation.Animation;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrame;
-import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder;
-import com.wolfyscript.viewportl.gui.reactivity.Signal;
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
 
 import java.util.List;
 
@@ -30,9 +27,9 @@ public abstract class AnimationCommonImpl<F extends AnimationFrame> implements A
 
     private final Component owner;
     private final List<F> frames;
-    private final Signal<?> updateSignal;
+    private final ReadWriteSignal<?> updateSignal;
 
-    protected AnimationCommonImpl(Component owner, List<? extends AnimationFrameBuilder<F>> frameBuilders, Signal<?> updateSignal) {
+    protected AnimationCommonImpl(Component owner, List<? extends AnimationFrameBuilder<F>> frameBuilders, ReadWriteSignal<?> updateSignal) {
         this.owner = owner;
         this.frames = frameBuilders.stream().map(frame -> frame.build(this)).toList();
         this.updateSignal = updateSignal;
@@ -49,7 +46,7 @@ public abstract class AnimationCommonImpl<F extends AnimationFrame> implements A
     }
 
     @Override
-    public Signal<?> updateSignal() {
+    public ReadWriteSignal<?> updateSignal() {
         return updateSignal;
     }
 

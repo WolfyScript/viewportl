@@ -20,15 +20,14 @@ package com.wolfyscript.viewportl.gui.components
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver
-import com.wolfyscript.utilities.Keyed
-import com.wolfyscript.utilities.NamespacedKey
+import com.wolfyscript.scafall.config.jackson.KeyedTypeIdResolver;
+import com.wolfyscript.scafall.config.jackson.KeyedTypeResolver;
 import com.wolfyscript.utilities.WolfyUtils
-import com.wolfyscript.utilities.config.jackson.KeyedTypeIdResolver
-import com.wolfyscript.utilities.config.jackson.KeyedTypeResolver
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.utilities.functions.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.scafall.identifier.Keyed
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
-
 
 @JsonTypeResolver(KeyedTypeResolver::class)
 @JsonTypeIdResolver(
@@ -40,10 +39,10 @@ import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 interface Component : Keyed {
 
     @JsonIgnore
-    override fun key(): NamespacedKey
+    override fun key(): Key
 
     @JsonGetter("type")
-    fun type(): NamespacedKey {
+    fun type(): Key {
         return key()
     }
 

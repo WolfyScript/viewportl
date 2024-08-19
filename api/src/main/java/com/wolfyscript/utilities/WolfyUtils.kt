@@ -18,11 +18,10 @@
 package com.wolfyscript.utilities
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties
+import com.wolfyscript.scafall.config.jackson.MapperUtil
 import com.wolfyscript.utilities.chat.Chat
-import com.wolfyscript.utilities.config.jackson.MapperUtil
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.utilities.language.Translations
-import com.wolfyscript.utilities.registry.Registries
 import java.io.File
 import java.util.logging.Logger
 import java.util.regex.Pattern
@@ -47,12 +46,7 @@ abstract class WolfyUtils protected constructor() {
 
     abstract val chat: Chat
 
-    abstract val identifiers: Identifiers
-
     abstract val guiManager: GuiAPIManager
-
-    val registries: Registries
-        get() = core.registries
 
     abstract fun exportResource(resourcePath: String, destination: File, replace: Boolean)
 
