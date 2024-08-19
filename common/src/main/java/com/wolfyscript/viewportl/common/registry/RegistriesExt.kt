@@ -20,6 +20,7 @@ package com.wolfyscript.viewportl.common.registry
 
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.registry.Registries
+import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
 import org.jetbrains.annotations.ApiStatus.Internal
 
 private var guiComponentsRegistry: RegistryUIComponentImplementations? = null

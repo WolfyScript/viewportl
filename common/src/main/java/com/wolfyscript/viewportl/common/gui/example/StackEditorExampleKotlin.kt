@@ -19,6 +19,7 @@
 package com.wolfyscript.viewportl.common.gui.example
 
 import com.wolfyscript.scafall.data.ItemStackDataKeys
+import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.scafall.eval.value_provider.provider
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
@@ -187,7 +188,7 @@ class StackEditorExampleKotlin {
                                 store.getStack()?.data()
                                     ?.set(
                                         ItemStackDataKeys.CUSTOM_NAME,
-                                        window.scaffolding.adventure.miniMsg.deserialize(s)
+                                        s.deserialize()
                                     )
                                 store
                             }

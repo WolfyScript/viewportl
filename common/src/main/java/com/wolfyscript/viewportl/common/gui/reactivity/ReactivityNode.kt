@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.common.gui.reactivity
 
-import com.wolfyscript.viewportl.gui.ViewRuntimeImpl
+import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 
 class ReactivityNode<V>(
     val id: NodeId,

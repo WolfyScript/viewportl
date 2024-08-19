@@ -24,8 +24,10 @@ import com.wolfyscript.scafall.registry.Registries
 import com.wolfyscript.scafall.registry.UniqueTypeRegistrySimple
 import com.wolfyscript.viewportl.gui.components.Component
 import com.wolfyscript.viewportl.gui.components.ComponentImplementation
+import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
 
-class RegistryUIComponentImplementations(key: Key, registries: Registries) : UniqueTypeRegistrySimple<Component>(key, registries), RegistryGUIComponentTypes {
+class RegistryUIComponentImplementations(key: Key, registries: Registries) : UniqueTypeRegistrySimple<Component>(key, registries),
+    RegistryGUIComponentTypes {
 
     private val baseTypeToImpl: MutableMap<Class<out Component>, Key> = HashMap()
 

@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.common.gui.reactivity.properties
 
-import com.wolfyscript.viewportl.gui.reactivity.NodeId
+import com.wolfyscript.viewportl.common.gui.reactivity.NodeId
 
 abstract class ScopeProperty(val id: NodeId) {
 
