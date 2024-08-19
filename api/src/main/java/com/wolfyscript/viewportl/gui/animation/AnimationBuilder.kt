@@ -15,22 +15,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.animation
 
-package com.wolfyscript.viewportl.gui.animation;
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 
-import com.wolfyscript.viewportl.gui.components.Component;
-import com.wolfyscript.scafall.function.ReceiverConsumer;
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
-
-public interface AnimationBuilder<F extends AnimationFrame, FB extends AnimationFrameBuilder<F>> {
-
+interface AnimationBuilder<F : AnimationFrame, FB : AnimationFrameBuilder<F>> {
     /**
      *
      *
      * @param frameBuild
      * @return
      */
-    AnimationBuilder<F, FB> frame(ReceiverConsumer<FB> frameBuild);
+    fun frame(frameBuild: ReceiverConsumer<FB>): AnimationBuilder<F, FB>
 
     /**
      * Optional: Can be used to manually start the animation.
@@ -39,8 +37,7 @@ public interface AnimationBuilder<F extends AnimationFrame, FB extends Animation
      * @param signal The signal to listen to
      * @return This builder for chaining
      */
-    AnimationBuilder<F, FB> customSignal(ReadWriteSignal<?> signal);
+    fun customSignal(signal: ReadWriteSignal<*>): AnimationBuilder<F, FB>
 
-    Animation<F> build(Component owner);
-
+    fun build(owner: Component): Animation<F>
 }

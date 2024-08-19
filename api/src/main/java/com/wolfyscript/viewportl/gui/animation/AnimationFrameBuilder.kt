@@ -15,12 +15,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.animation
 
-package com.wolfyscript.viewportl.gui.animation;
+interface AnimationFrameBuilder<F : AnimationFrame> {
 
-public interface AnimationFrameBuilder<F extends AnimationFrame> {
+    fun duration(duration: Int): AnimationFrameBuilder<F>
 
-    AnimationFrameBuilder<F> duration(int duration);
-
-    F build(Animation<F> animation);
+    fun build(animation: Animation<F>): F
 }

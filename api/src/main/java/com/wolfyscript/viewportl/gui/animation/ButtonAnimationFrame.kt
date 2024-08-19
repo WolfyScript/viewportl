@@ -15,13 +15,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.animation
 
-package com.wolfyscript.viewportl.gui.animation;
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig;
+interface ButtonAnimationFrame : AnimationFrame {
 
-public interface ButtonAnimationFrame extends AnimationFrame {
-
-    ItemStackConfig stack();
+    fun stack(): ItemStackConfig
 
 }

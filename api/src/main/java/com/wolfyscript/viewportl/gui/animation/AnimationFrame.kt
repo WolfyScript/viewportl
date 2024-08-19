@@ -15,37 +15,34 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.animation
 
-package com.wolfyscript.viewportl.gui.animation;
+import com.wolfyscript.viewportl.gui.GuiHolder
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
-import com.wolfyscript.viewportl.gui.GuiHolder;
-import com.wolfyscript.viewportl.gui.ViewRuntime;
-import com.wolfyscript.viewportl.gui.rendering.RenderContext;
-
-public interface AnimationFrame {
-
+interface AnimationFrame {
     /**
      * Gets the duration of this frame in ticks
      *
      * @return The duration in ticks
      */
-    int duration();
+    fun duration(): Int
 
     /**
      * Gets the Animation this frame belongs to
      *
      * @return The Animation this frame belongs to
      */
-    Animation<? extends AnimationFrame> animation();
+    fun animation(): Animation<out AnimationFrame>
 
     /**
-     * Renders this frame into the GUI.<br>
+     * Renders this frame into the GUI.<br></br>
      * The Context already entered the Component that this frames' animation belongs to.
      *
      * @param viewManager   The view manager to render this for
      * @param holder        The holder of the GUI
      * @param context       The rendering context
      */
-    void render(ViewRuntime viewManager, GuiHolder holder, RenderContext context);
-
+    fun render(viewManager: ViewRuntime, holder: GuiHolder, context: RenderContext)
 }

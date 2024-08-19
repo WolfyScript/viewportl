@@ -29,11 +29,12 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class AnimationImpl<F : AnimationFrame> internal constructor(
     owner: Component,
-    animationFrameBuilders: List<AnimationFrameBuilder<F>?>,
+    animationFrameBuilders: List<AnimationFrameBuilder<F>>,
     updateSignal: ReadWriteSignal<*>
 ) :
     AnimationCommonImpl<F>(owner, animationFrameBuilders, updateSignal) {
-    fun render(viewManager: ViewRuntime, guiHolder: GuiHolder?, context: RenderContext?) {
+
+    fun render(viewManager: ViewRuntime, guiHolder: GuiHolder, context: RenderContext) {
         val frameDelay = AtomicInteger(0)
         val frameIndex = AtomicInteger(0)
         viewManager.viewportl.scafall.scheduler

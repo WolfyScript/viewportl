@@ -15,21 +15,17 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.animation
 
-package com.wolfyscript.viewportl.gui.animation;
+import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.reactivity.Effect
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 
-import com.wolfyscript.viewportl.gui.components.Component;
-import com.wolfyscript.viewportl.gui.reactivity.Effect;
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;
+interface Animation<F : AnimationFrame?> : Effect {
 
-import java.util.List;
+    fun frames(): List<F>
 
-public interface Animation<F extends AnimationFrame> extends Effect {
+    fun owner(): Component
 
-    List<F> frames();
-
-    Component owner();
-
-    ReadWriteSignal<?> updateSignal();
-
+    fun updateSignal(): ReadWriteSignal<*>
 }

@@ -15,20 +15,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.animation
 
-package com.wolfyscript.viewportl.gui.animation;
+import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.function.ReceiverFunction
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.viewportl.gui.ItemHelper
 
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig;
-import com.wolfyscript.viewportl.gui.ItemHelper;
-import com.wolfyscript.scafall.function.ReceiverConsumer;
-import com.wolfyscript.scafall.function.ReceiverFunction;
+interface ButtonAnimationFrameBuilder : AnimationFrameBuilder<ButtonAnimationFrame> {
 
-public interface ButtonAnimationFrameBuilder extends AnimationFrameBuilder<ButtonAnimationFrame> {
+    fun stack(itemId: String, config: ReceiverConsumer<ItemStackConfig>): ButtonAnimationFrameBuilder
 
-    ButtonAnimationFrameBuilder stack(String itemId, ReceiverConsumer<ItemStackConfig> config);
+    fun stack(config: ReceiverFunction<ItemHelper, ItemStackConfig>): ButtonAnimationFrameBuilder
 
-    ButtonAnimationFrameBuilder stack(ReceiverFunction<ItemHelper, ItemStackConfig> config);
-
-    @Override
-    ButtonAnimationFrameBuilder duration(int duration);
+    override fun duration(duration: Int): ButtonAnimationFrameBuilder
 }

@@ -23,14 +23,14 @@ import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
 import com.wolfyscript.viewportl.gui.components.Component
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 
-abstract class AnimationCommonImpl<F : AnimationFrame?> protected constructor(
+abstract class AnimationCommonImpl<F : AnimationFrame> protected constructor(
     private val owner: Component,
-    frameBuilders: List<AnimationFrameBuilder<F>?>,
+    frameBuilders: List<AnimationFrameBuilder<F>>,
     private val updateSignal: ReadWriteSignal<*>
 ) :
     Animation<F> {
     private val frames: List<F> =
-        frameBuilders.stream().map { frame: AnimationFrameBuilder<F>? -> frame!!.build(this) }.toList()
+        frameBuilders.stream().map { frame -> frame!!.build(this) }.toList()
 
     override fun frames(): List<F> {
         return frames
