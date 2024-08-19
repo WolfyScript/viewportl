@@ -33,7 +33,7 @@ import com.wolfyscript.viewportl.registry.guiComponents
 import com.wolfyscript.viewportl.gui.components.Component
 import java.util.function.Consumer
 
-class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, val wolfyUtils: Viewportl) {
+class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, val viewportl: Viewportl) {
 
     private companion object {
         private var COMPONENT_COUNTER: Long = 0
@@ -64,7 +64,7 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, 
 
     private fun <B : Component> instantiateNewComponent(parent: Component? = null, numericId: Long, builderTypeInfo: Pair<Key, Class<B>>): B {
         val injector = Guice.createInjector(Stage.PRODUCTION, Module { binder: Binder ->
-            binder.bind(Viewportl::class.java).toInstance(wolfyUtils)
+            binder.bind(Viewportl::class.java).toInstance(viewportl)
             binder.bind(Long::class.java).toInstance(numericId)
             binder.bind(BuildContext::class.java).toInstance(this)
             binder.bind(Component::class.java).toProvider(Providers.of(parent))

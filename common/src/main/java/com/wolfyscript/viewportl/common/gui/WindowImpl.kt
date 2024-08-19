@@ -40,13 +40,13 @@ class WindowImpl internal constructor(
     @JsonProperty("id") override val id: String,
     @JsonProperty("size") override var size: Int?,
     @JsonProperty("type") override val type: WindowType? = null,
-    @JacksonInject("wolfyutils") override val wolfyUtils: Viewportl,
+    @JacksonInject("viewportl") override val viewportl: Viewportl,
     @JacksonInject("context") private val context: BuildContext,
 ) :
     Window,
     ReactiveSource by context.reactiveSource {
     override var title: Component? = null
-    override val router: Router = RouterImpl(wolfyUtils, context, this)
+    override val router: Router = RouterImpl(viewportl, context, this)
     override var resourcePath: String? = null
 
     override var onTextInput: TextInputCallback? = null

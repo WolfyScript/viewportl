@@ -18,27 +18,30 @@
 
 package com.wolfyscript.viewportl.common.gui.animation;
 
-import com.wolfyscript.scafall.Scafall;
 import com.wolfyscript.scafall.identifier.Key;
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig;
+import com.wolfyscript.viewportl.Viewportl;
 import com.wolfyscript.viewportl.gui.ItemHelper;
 import com.wolfyscript.scafall.function.ReceiverConsumer;
 import com.wolfyscript.scafall.function.ReceiverFunction;
+import com.wolfyscript.viewportl.gui.animation.Animation;
+import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrame;
+import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrameBuilder;
 
 public class ButtonAnimationFrameBuilderImpl implements ButtonAnimationFrameBuilder {
 
-    private final Scafall wolfyUtils;
+    private final Viewportl viewportl;
     private int duration;
     private ItemStackConfig stack;
 
-    public ButtonAnimationFrameBuilderImpl(Scafall wolfyUtils) {
+    public ButtonAnimationFrameBuilderImpl(Viewportl viewportl) {
         this.duration = 1;
-        this.wolfyUtils = wolfyUtils;
+        this.viewportl = viewportl;
     }
 
     @Override
     public ButtonAnimationFrameBuilder stack(String itemId, ReceiverConsumer<ItemStackConfig> config) {
-        this.stack = wolfyUtils.getFactories().getItemsFactory().createStackConfig(Key.Companion.key(Key.MINECRAFT_NAMESPACE, itemId));
+        this.stack = viewportl.getScafall().getFactories().getItemsFactory().createStackConfig(Key.Companion.key(Key.MINECRAFT_NAMESPACE, itemId));
         config.consume(stack);
         return this;
     }

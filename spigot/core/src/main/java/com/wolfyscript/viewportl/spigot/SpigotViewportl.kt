@@ -18,15 +18,81 @@
 
 package com.wolfyscript.viewportl.spigot
 
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.wolfyscript.scafall.spigot.api.into
 import com.wolfyscript.viewportl.common.CommonViewportl
 import com.wolfyscript.viewportl.common.gui.GuiAPIManagerImpl
+import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
+import com.wolfyscript.viewportl.common.gui.components.ComponentGroupImpl
+import com.wolfyscript.viewportl.common.gui.components.OutletImpl
+import com.wolfyscript.viewportl.common.gui.components.StackInputSlotImpl
 import com.wolfyscript.viewportl.gui.GuiAPIManager
+import com.wolfyscript.viewportl.gui.components.ButtonIcon
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
+import com.wolfyscript.viewportl.registry.guiComponents
+import com.wolfyscript.viewportl.spigot.commands.GuiExampleCommand
+import com.wolfyscript.viewportl.spigot.commands.InputCommand
 import com.wolfyscript.viewportl.spigot.gui.GuiFactoryImpl
+import com.wolfyscript.viewportl.spigot.gui.interaction.GUIInventoryListener
+import org.bukkit.Bukkit
+import org.bukkit.command.Command
+import org.bukkit.command.CommandMap
 
-class SpigotViewportl : CommonViewportl() {
+internal class SpigotViewportl : CommonViewportl() {
 
     override val guiManager: GuiAPIManager = GuiAPIManagerImpl(this)
     override val guiFactory: GuiFactory = GuiFactoryImpl()
+
+    fun init() {
+        val module = SimpleModule()
+        // Register implementation types to use for de/serialization
+        module.addAbstractTypeMapping(ButtonIcon::class.java, ButtonImpl.DynamicIcon::class.java)
+        // TODO: register module
+
+        // Register GUI things
+        val guiComponentBuilders = scafall.registries.guiComponents
+        guiComponentBuilders.register(ButtonImpl::class.java)
+        guiComponentBuilders.register(StackInputSlotImpl::class.java)
+        guiComponentBuilders.register(ComponentGroupImpl::class.java)
+        guiComponentBuilders.register(OutletImpl::class.java)
+
+        registerListeners()
+        registerCommands()
+    }
+
+    private fun registerListeners() {
+        Bukkit.getPluginManager().registerEvents(GUIInventoryListener(), scafall.corePlugin.into().plugin)
+    }
+
+    private fun registerCommands() {
+        registerDynamicCommands(
+            InputCommand(this),
+            GuiExampleCommand(this)
+        )
+    }
+
+    private fun registerDynamicCommands(vararg cmds: Command?) {
+        var commandMap: CommandMap? = null
+        try {
+            val commandMapField = Bukkit.getServer().javaClass.getDeclaredField("commandMap")
+            commandMapField.isAccessible = true
+            commandMap = commandMapField[Bukkit.getServer()] as CommandMap
+        } catch (e: NoSuchFieldException) {
+            e.printStackTrace()
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
+        }
+        if (commandMap == null) {
+            scafall.logger.error("Failed to register Commands: Failed to access CommandMap!")
+            return
+        }
+        for (cmd in cmds) {
+            commandMap.register("viewportl", cmd!!)
+        }
+    }
 
 }

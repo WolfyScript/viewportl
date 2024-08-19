@@ -18,9 +18,8 @@
 
 package com.wolfyscript.viewportl.common.gui.animation;
 
-import com.wolfyscript.viewportl.gui.BuildContext;
+import com.wolfyscript.viewportl.common.gui.BuildContext;
 import com.wolfyscript.viewportl.gui.components.Component;
-import com.wolfyscript.viewportl.gui.BuildContext;
 import com.wolfyscript.viewportl.gui.animation.Animation;
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame;
 import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder;

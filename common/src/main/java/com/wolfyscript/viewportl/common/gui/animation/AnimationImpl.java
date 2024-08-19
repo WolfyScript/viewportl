@@ -19,6 +19,8 @@
 package com.wolfyscript.viewportl.common.gui.animation;
 
 import com.wolfyscript.viewportl.gui.*;
+import com.wolfyscript.viewportl.gui.animation.AnimationFrame;
+import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder;
 import com.wolfyscript.viewportl.gui.components.Component;
 import com.wolfyscript.viewportl.gui.reactivity.Effect;
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;

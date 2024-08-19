@@ -44,11 +44,11 @@ import javax.annotation.Nullable
 @StaticNamespacedKey(key = "stack_input_slot")
 class StackInputSlotImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
-    @JacksonInject("wolfyUtils") wolfyUtils: Viewportl,
+    @JacksonInject("viewportl") viewportl: Viewportl,
     @JacksonInject("context") private val context: BuildContext,
     @Nullable @JacksonInject("parent") parent: Component? = null,
 ) : AbstractComponentImpl<StackInputSlot>(
-    id, wolfyUtils, parent
+    id, viewportl, parent
 ), StackInputSlot {
 
     override var onValueChange: Consumer<ItemStack?>? = null

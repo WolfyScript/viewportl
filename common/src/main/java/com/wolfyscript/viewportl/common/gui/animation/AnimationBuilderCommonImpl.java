@@ -18,6 +18,9 @@
 
 package com.wolfyscript.viewportl.common.gui.animation;
 
+import com.wolfyscript.viewportl.gui.animation.AnimationBuilder;
+import com.wolfyscript.viewportl.gui.animation.AnimationFrame;
+import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder;
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource;
 import com.wolfyscript.scafall.function.ReceiverConsumer;
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal;

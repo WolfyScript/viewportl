@@ -35,10 +35,10 @@ import javax.annotation.Nullable
 @StaticNamespacedKey(key = "outlet")
 class OutletImpl(
     @JsonProperty("id") id: String,
-    @JacksonInject("wolfyUtils") wolfyUtils: Viewportl,
+    @JacksonInject("viewportl") viewportl: Viewportl,
     @JacksonInject("context") private val context: BuildContext,
     @Nullable @JacksonInject("parent") parent: Component? = null,
-) : AbstractComponentImpl<Outlet>(id, wolfyUtils, parent), Outlet {
+) : AbstractComponentImpl<Outlet>(id, viewportl, parent), Outlet {
 
     override var component: ComponentGroup? = null
 

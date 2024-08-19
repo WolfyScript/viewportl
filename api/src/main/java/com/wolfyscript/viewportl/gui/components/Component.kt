@@ -57,11 +57,11 @@ interface Component : Keyed {
     fun nodeId(): Long
 
     /**
-     * Gets the global WolfyUtils instance, this component belongs to.
+     * Gets the Viewportl instance this Component belongs to
      *
-     * @return The WolfyUtils API instance.
+     * @return The Viewportl instance
      */
-    val wolfyUtils: Viewportl
+    val viewportl: Viewportl
 
     /**
      * The parent of this Component, or null if it is a root Component.

@@ -17,11 +17,11 @@
  */
 package com.wolfyscript.viewportl.common.gui.router
 
-import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.gui.*
 import com.wolfyscript.viewportl.gui.components.ComponentGroup
 import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.BuildContext
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.reactivity.*
@@ -33,7 +33,7 @@ import java.util.*
 
 @StaticNamespacedKey(key = "router")
 class RouterImpl internal constructor(
-    val wolfyUtils: Scafall,
+    val viewportl: Viewportl,
     val context: BuildContext,
     val window: Window
 ) : Router {

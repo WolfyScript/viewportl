@@ -37,11 +37,11 @@ import kotlin.math.abs
 @StaticNamespacedKey(key = "cluster")
 class ComponentGroupImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
-    @JacksonInject("wolfyUtils") wolfyUtils: Viewportl,
+    @JacksonInject("viewportl") viewportl: Viewportl,
     @JacksonInject("context") private val context: BuildContext,
     @javax.annotation.Nullable @JacksonInject("parent") parent: Component? = null,
 ) :
-    AbstractComponentImpl<ComponentGroup>(id, wolfyUtils, parent),
+    AbstractComponentImpl<ComponentGroup>(id, viewportl, parent),
     ComponentGroup,
     ConditionalChildComponentBuilder by ConditionalChildComponentBuilderImpl(context),
     MatchChildComponentBuilder by MatchChildComponentBuilderImpl(context) {

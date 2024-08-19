@@ -69,11 +69,11 @@ interface Window : ReactiveSource {
     val id: String?
 
     /**
-     * Gets the global WolfyUtils instance, this component belongs to.
+     * Gets the Viewportl instance this Window belongs to
      *
-     * @return The WolfyUtils API instance.
+     * @return The Viewportl instance
      */
-    val wolfyUtils: Viewportl
+    val viewportl: Viewportl
 
     val scaffolding: Scafall
         get() = ScafallProvider.get()

@@ -44,7 +44,7 @@ import java.util.*
  */
 abstract class AbstractComponentImpl<C : Component>(
     override val id: String,
-    final override val wolfyUtils: Viewportl,
+    final override val viewportl: Viewportl,
     override val parent: Component?
 ) : Component, Effect {
 

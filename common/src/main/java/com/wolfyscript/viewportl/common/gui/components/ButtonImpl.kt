@@ -47,14 +47,14 @@ import javax.annotation.Nullable
 @StaticNamespacedKey(key = "button")
 class ButtonImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
-    @JacksonInject("wolfyUtils") wolfyUtils: Viewportl,
+    @JacksonInject("viewportl") viewportl: Viewportl,
     @JacksonInject("context") private val context: BuildContext,
     @Nullable @JacksonInject("parent") parent: Component? = null,
-) : AbstractComponentImpl<Button>(id, wolfyUtils, parent), Button {
+) : AbstractComponentImpl<Button>(id, viewportl, parent), Button {
 
     private val animation: Animation<ButtonAnimationFrame>? = null
 
-    override var icon: ButtonIcon = DynamicIcon(wolfyUtils, context, this)
+    override var icon: ButtonIcon = DynamicIcon(viewportl, context, this)
     override var onClick: ReceiverConsumer<ClickTransaction>? = null
 
     override fun icon(iconConsumer: ReceiverConsumer<ButtonIcon>) {
@@ -80,7 +80,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
     }
 
     class DynamicIcon internal constructor(
-        @JacksonInject("wolfyUtils") private val wolfyUtils: Viewportl,
+        @JacksonInject("viewportl") private val viewportl: Viewportl,
         @JacksonInject("context") private val context: BuildContext,
         @JacksonInject("button") private val button: Button,
     ) : ButtonIcon {

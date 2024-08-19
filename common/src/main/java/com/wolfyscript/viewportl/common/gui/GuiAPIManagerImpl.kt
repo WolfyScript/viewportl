@@ -35,7 +35,7 @@ import java.util.function.Function
 import java.util.stream.Stream
 import kotlin.collections.set
 
-class GuiAPIManagerImpl(private val wolfyUtils: Viewportl) : GuiAPIManager {
+class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
     private val entriesMap: BiMap<String, Function<ViewRuntime, Window>> = HashBiMap.create()
 
     private val runtimes: Long2ObjectMap<ViewRuntime> = Long2ObjectOpenHashMap()
@@ -59,9 +59,9 @@ class GuiAPIManagerImpl(private val wolfyUtils: Viewportl) : GuiAPIManager {
             val buildContext = BuildContext(
                 runtime,
                 (runtime as ViewRuntimeImpl).reactiveSource,
-                wolfyUtils
+                viewportl
             )
-            val window: Window = WindowImpl(key, 54, null, wolfyUtils, buildContext)
+            val window: Window = WindowImpl(key, 54, null, viewportl, buildContext)
             with(windowConsumer) { window.consume() }
             window
         }
@@ -76,8 +76,8 @@ class GuiAPIManagerImpl(private val wolfyUtils: Viewportl) : GuiAPIManager {
                 callback.accept(runtime)
             } else {
                 // Construct the new view manager async, so it doesn't affect the main thread!
-                wolfyUtils.scafall.scheduler.asyncTask(wolfyUtils.scafall.corePlugin) {
-                    val viewManager = ViewRuntimeImpl(wolfyUtils, constructor, viewerSet)
+                viewportl.scafall.scheduler.asyncTask(viewportl.scafall.corePlugin) {
+                    val viewManager = ViewRuntimeImpl(viewportl, constructor, viewerSet)
                     synchronized(runtimes) {
                         viewManagersForID.add(viewManager.id)
                         runtimes.put(viewManager.id, viewManager)
