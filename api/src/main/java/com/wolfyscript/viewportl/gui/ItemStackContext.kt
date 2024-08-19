@@ -15,19 +15,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui
 
-package com.wolfyscript.viewportl.gui;
+import com.wolfyscript.scafall.eval.context.EvalContext
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
-import com.wolfyscript.scafall.eval.context.EvalContext;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+interface ItemStackContext {
 
-public interface ItemStackContext {
+    fun resolvers(): TagResolver
 
-    TagResolver resolvers();
+    fun miniMessage(): MiniMessage
 
-    MiniMessage miniMessage();
-
-    EvalContext evalContext();
+    fun evalContext(): EvalContext
 
 }

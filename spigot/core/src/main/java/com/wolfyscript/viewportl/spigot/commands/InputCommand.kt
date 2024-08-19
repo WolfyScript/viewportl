@@ -47,7 +47,7 @@ class InputCommand(private val core: Viewportl) : Command("wui"), PluginIdentifi
                 val window = pair.second
                 val text = java.lang.String.join(" ", *args).trim { it <= ' ' }
                 Bukkit.getScheduler().runTask(core.scafall.corePlugin.into().plugin, Runnable {
-                    window!!.onTextInput!!.run(sender.wrap(), null, text, args)
+                    window!!.onTextInput!!.run(sender.wrap(), runtime, text, args)
                     window.onTextInput = null
                     window.onTextInputTabComplete = null
                     runtime.open()

@@ -15,29 +15,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.interaction
 
-package com.wolfyscript.viewportl.gui.interaction;
+class InteractionResult {
 
-public class InteractionResult {
+    var isValid: Boolean = true
+        private set
 
-    private boolean valid = true;
-
-    public InteractionResult() { }
-
-    public void invalidate() {
-        this.valid = false;
+    fun invalidate() {
+        this.isValid = false
     }
 
-    public void validate() {
-        this.valid = true;
+    fun validate() {
+        this.isValid = true
     }
-
-    public void setValid(boolean valid) {
-        this.valid = valid;
-    }
-
-    public boolean isValid() {
-        return valid;
-    }
-
 }

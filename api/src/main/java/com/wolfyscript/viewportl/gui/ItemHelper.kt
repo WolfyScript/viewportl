@@ -15,16 +15,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui
 
-package com.wolfyscript.viewportl.gui;
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.scafall.wrappers.world.items.Items
 
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig;
-import com.wolfyscript.scafall.wrappers.world.items.Items;
+interface ItemHelper {
 
-public interface ItemHelper {
+    fun create(itemId: String): ItemStackConfig
 
-    ItemStackConfig create(String itemId);
-
-    Items items();
-
+    fun items(): Items?
 }

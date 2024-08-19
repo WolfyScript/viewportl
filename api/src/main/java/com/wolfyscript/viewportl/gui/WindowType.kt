@@ -15,14 +15,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui
 
-package com.wolfyscript.viewportl.gui;
-
-public enum WindowType {
-
+enum class WindowType {
     CUSTOM,
     DISPENSER,
     DROPPER,
     HOPPER
-
 }

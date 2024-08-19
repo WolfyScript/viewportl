@@ -15,16 +15,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.callback
 
-package com.wolfyscript.viewportl.gui.callback;
+import com.wolfyscript.scafall.wrappers.world.entity.Player
+import com.wolfyscript.viewportl.gui.ViewRuntime
 
-import com.wolfyscript.scafall.wrappers.world.entity.Player;
-import com.wolfyscript.viewportl.gui.ViewRuntime;
+fun interface TextInputTabCompleteCallback {
 
-import java.util.List;
-
-public interface TextInputTabCompleteCallback {
-
-    List<String> apply(Player player, ViewRuntime viewManager, String input, String[] args);
+    fun apply(player: Player, viewManager: ViewRuntime, input: String, args: Array<String>): List<String>
 
 }

@@ -15,14 +15,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.gui.interaction
 
-package com.wolfyscript.viewportl.gui.interaction;
-
-public enum DragType {
+enum class DragType {
     /**
      * One item from the cursor is placed in each selected slot.
      */
     SINGLE,
+
     /**
      * The cursor is split evenly across all selected slots, not to exceed the
      * Material's max stack size, with the remainder going to the cursor.
