@@ -23,10 +23,10 @@ The list is not complete, and things may be added/removed along the way.
   * [ ] Provide API Entrypoint to load the viewportl instance on top of scafall
   * [ ] Check if Java interop can be kept, or if kotlin will be required
   * [ ] Create sample projects for a tutorial and testing
-* [ ] Complete name change
+* [x] Complete name change
     * [x] Move everything UI related to the viewportl package
-    * [ ] Get rid of any wolfyutils left over code
-    * [ ] Rename strings & other appearances of WolfyUtils
+    * [x] Get rid of any wolfyutils left over code
+    * [x] Rename strings & other appearances of WolfyUtils
 * [ ] Multi Platform Support
   * [ ] Spigot (High priority)
   * [ ] Sponge 
