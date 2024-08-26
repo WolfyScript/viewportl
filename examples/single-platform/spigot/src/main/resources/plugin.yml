@@ -14,3 +14,4 @@ libraries:
   - "${libs.net.kyori.adventure.text.minimessage.get()}"
   - "${libs.net.kyori.adventure.platform.bukkit.get()}"
   - "${libs.jackson.databind.get()}"
+  - "${libs.com.google.inject.guice.get()}"

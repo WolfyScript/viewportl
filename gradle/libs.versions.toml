@@ -4,7 +4,7 @@
 kotlin-stdlib = "1.9.22"
 jackson = "2.15.4"
 guava = "31.1-jre"
-guice = "5.1.0"
+guice = "7.0.0"
 authlib = "1.5.21"
 dataformat-hocon = "2.1-SNAPSHOT"
 netty = "4.1.74.Final"
