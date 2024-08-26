@@ -22,7 +22,6 @@ import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.spigot.initOnSpigot
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.spigot.commands.GuiExampleCommand
 import com.wolfyscript.viewportl.spigot.init
 import com.wolfyscript.viewportl.spigot.instance
 import com.wolfyscript.viewportl.spigot.unload
@@ -30,6 +29,7 @@ import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
 import org.bukkit.plugin.java.JavaPlugin
+import org.example.viewportl.commands.GuiExampleCommand
 import org.example.viewportl.guis.CounterExampleKotlin
 import org.example.viewportl.guis.StackEditorExampleKotlin
 import org.example.viewportl.guis.StackSlotsExampleKotlin
