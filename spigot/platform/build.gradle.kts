@@ -24,15 +24,9 @@ plugins {
     alias(libs.plugins.goooler.shadow)
 }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
 dependencies {
     api(project(":api"))
-    implementation(project(":spigot"))
-    implementation(kotlin("stdlib-jdk8"))
+    compileOnly(project(":spigot"))
 }
 
 tasks {
@@ -44,8 +38,12 @@ tasks {
     named<ShadowJar>("shadowJar") {
         dependsOn(project(":spigot").tasks.named("shadowJar"))
         mustRunAfter("jar")
+        configurations = listOf(
+            project.configurations.runtimeClasspath.get(),
+            project.configurations.compileClasspath.get() // Include compileOnly dependencies to hide implementation from
+        )
 
-        archiveClassifier.set("")
+        archiveClassifier = ""
 
         include("**")
 
@@ -55,7 +53,6 @@ tasks {
         }
     }
 }
-
 
 description = "core"
 
