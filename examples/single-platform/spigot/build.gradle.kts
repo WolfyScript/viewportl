@@ -86,6 +86,7 @@ minecraftDockerRun {
     customEnv["JVM_OPTS"] = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${debugPort}" // Allows to attach the IntelliJ debugger to the MC server inside the container
     customEnv["FORCE_REDOWNLOAD"] = "false"
     env.set(customEnv)
+    clean = true // When enabled, removes the docker container once it is shutdown
     // Constrain the container to 2 cpus, to behave similar to servers in production (it is unlikely servers use 24 threads)
     // and allow for console interactivity with 'docker attach'
     arguments("--cpus", "2", "-it")
