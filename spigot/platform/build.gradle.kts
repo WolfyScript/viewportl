@@ -27,6 +27,7 @@ plugins {
 dependencies {
     api(project(":api"))
     compileOnly(project(":spigot"))
+    compileOnly(project(":common"))
 }
 
 tasks {
@@ -50,11 +51,16 @@ tasks {
         dependencies {
             include(project(":api"))
             include(project(":spigot"))
+            include(project(":common"))
         }
     }
 }
 
 description = "core"
+
+artifacts {
+    archives(tasks.shadowJar)
+}
 
 publishing {
     publications {
