@@ -19,6 +19,10 @@
 package com.wolfyscript.viewportl.registry
 
 import com.wolfyscript.scafall.registry.Registries
+import com.wolfyscript.viewportl.Viewportl
 
-val Registries.guiComponents : RegistryGUIComponentTypes
-    get() = TODO("Not yet implemented")
+abstract class ViewportlRegistries(val viewportl: Viewportl) : Registries(viewportl.scafall) {
+
+    abstract val guiComponents : RegistryGUIComponentTypes
+
+}

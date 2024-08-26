@@ -26,10 +26,11 @@ import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.ComponentGroupImpl
 import com.wolfyscript.viewportl.common.gui.components.OutletImpl
 import com.wolfyscript.viewportl.common.gui.components.StackInputSlotImpl
+import com.wolfyscript.viewportl.common.registry.SpigotViewportlRegistries
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.components.ButtonIcon
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
-import com.wolfyscript.viewportl.registry.guiComponents
+import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import com.wolfyscript.viewportl.spigot.commands.GuiExampleCommand
 import com.wolfyscript.viewportl.spigot.commands.InputCommand
 import com.wolfyscript.viewportl.spigot.gui.GuiFactoryImpl
@@ -42,6 +43,7 @@ class SpigotViewportl : CommonViewportl() {
 
     override val guiManager: GuiAPIManager = GuiAPIManagerImpl(this)
     override val guiFactory: GuiFactory = GuiFactoryImpl()
+    override val registries: ViewportlRegistries = SpigotViewportlRegistries(this)
 
     fun init() {
         val module = SimpleModule()
@@ -50,7 +52,7 @@ class SpigotViewportl : CommonViewportl() {
         // TODO: register module
 
         // Register GUI things
-        val guiComponentBuilders = scafall.registries.guiComponents
+        val guiComponentBuilders = registries.guiComponents
         guiComponentBuilders.register(ButtonImpl::class.java)
         guiComponentBuilders.register(StackInputSlotImpl::class.java)
         guiComponentBuilders.register(ComponentGroupImpl::class.java)

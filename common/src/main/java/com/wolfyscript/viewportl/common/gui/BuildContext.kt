@@ -29,7 +29,6 @@ import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.registry.guiComponents
 import com.wolfyscript.viewportl.gui.components.Component
 import java.util.function.Consumer
 
@@ -83,7 +82,7 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, 
         id: String?,
         type: Class<B>
     ): Pair<Key, Class<B>> {
-        val registry = runtime.viewportl.scafall.registries.guiComponents
+        val registry = runtime.viewportl.registries.guiComponents
 //        val registry = runtime.scaffolding.registries.getByKeyOfType(Key.key(Key.SCAFFOLDING_NAMESPACE, "component/types"), RegistryGUIComponentTypes::class.java)
         val key = registry.getKey(type) ?: throw IllegalArgumentException("Could not find component of type $type")
         val builderImplType = registry[key] as Class<B> // We can be sure that the cast is valid, because the key is only non-null if and only if the type matches!

@@ -16,25 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl
+package com.wolfyscript.viewportl.common.registry
 
-import com.wolfyscript.scafall.Scafall
-import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.viewportl.gui.GuiAPIManager
-import com.wolfyscript.viewportl.gui.factories.GuiFactory
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 
-interface Viewportl {
+class SpigotViewportlRegistries(viewportl: Viewportl) : ViewportlRegistries(viewportl) {
 
-    val scafall: Scafall
-        get() = ScafallProvider.get()
-
-    val guiManager: GuiAPIManager
-
-    val guiFactory: GuiFactory
-
-    val registries: ViewportlRegistries
-
-    companion object
+    override val guiComponents: RegistryGUIComponentTypes = RegistryUIComponentImplementations(Key.Companion.key("viewportl", "components"), this)
 
 }
