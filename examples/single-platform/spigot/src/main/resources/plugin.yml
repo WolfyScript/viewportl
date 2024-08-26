@@ -6,8 +6,11 @@ authors: [ SomeAuthor ]
 load: STARTUP
 
 libraries:
-  - "org.apache.commons:commons-lang3:3.12.0"
-  - "${libs.org.jetbrains.kotlin.stdlib.get()}"
+  - "${libs.org.jetbrains.kotlin.stdlib.get()}" # There are other ways to include kotlin on the server (like a separate plugin), but here we just include it.
+  - "${libs.org.jetbrains.annotations.get()}"
+  - "${libs.org.apache.commons.commons.lang3.get()}"
+  - "${libs.org.reflections.reflections.get()}"
   - "${libs.net.kyori.adventure.api.get()}"
   - "${libs.net.kyori.adventure.text.minimessage.get()}"
   - "${libs.net.kyori.adventure.platform.bukkit.get()}"
+  - "${libs.jackson.databind.get()}"
