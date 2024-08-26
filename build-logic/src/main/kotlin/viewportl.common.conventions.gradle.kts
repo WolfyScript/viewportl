@@ -34,11 +34,11 @@ repositories {
 }
 
 dependencies {
-    api(libs.com.wolfyscript.jackson.dataformat.hocon)
+    api(libs.jackson.dataformat.hocon)
     api("com.wolfyscript.scafall:api:0.1-alpha-SNAPSHOT")
     implementation(libs.org.jetbrains.kotlin.stdlib)
 
-    compileOnly(libs.com.fasterxml.jackson.core.jackson.databind)
+    compileOnly(libs.jackson.databind)
     compileOnly(libs.org.reflections.reflections)
     compileOnly(libs.com.google.inject.guice)
     compileOnly(libs.it.unimi.dsi.fastutil)
