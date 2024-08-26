@@ -27,6 +27,7 @@ val libs = extensions.getByType(org.gradle.accessors.dm.LibrariesForLibs::class)
 repositories {
     mavenLocal()
     mavenCentral()
+    maven(url = "https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {

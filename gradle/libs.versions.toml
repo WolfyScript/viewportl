@@ -23,7 +23,7 @@ shadow = "8.1.7"
 ## ##
 
 ## Spigot Impl dependencies ##
-papermc = "1.20.4-R0.1-SNAPSHOT"
+papermc = "1.21.1-R0.1-SNAPSHOT"
 bstats-bukkit = "3.0.0"
 item-nbt-api = "2.11.3"
 nbt-data-api = "2.11.3"
