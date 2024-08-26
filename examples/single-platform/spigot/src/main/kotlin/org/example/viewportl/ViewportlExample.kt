@@ -39,15 +39,18 @@ class ViewportlExample : JavaPlugin() {
 
     override fun onLoad() {
         Scafall.initOnSpigot(this) // initiate shadowed scafall implementation
-        Viewportl.init() // Init the viewportl instance (uses the scafall core plugin by default)
 
         // From this point onward you can get the instances via
         val scafall = ScafallProvider.get()
-        val viewportl = Viewportl.instance
     }
 
     override fun onEnable() {
-        val manager = Viewportl.instance.guiManager
+        Viewportl.init() // Init the viewportl instance (uses the scafall core plugin by default)
+        // From this point onward you can get the instances via
+        val viewportl = Viewportl.instance
+
+        // then register the guis
+        val manager = viewportl.guiManager
         CounterExampleKotlin.registerExampleCounter(manager)
         StackEditorExampleKotlin.registerStackEditor(manager)
         StackSlotsExampleKotlin.registerStackSlotsExample(manager)
