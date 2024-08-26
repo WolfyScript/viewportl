@@ -61,12 +61,15 @@ artifactory {
     }
 
 }
+
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
 }
+
 repositories {
     mavenCentral()
 }
+
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(21)
 }

@@ -15,21 +15,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.gui.rendering
 
-import com.wolfyscript.viewportl.gui.components.Component
+package com.wolfyscript.viewportl.spigot
 
-/**
- * The data that contains all the information needed to render the Menu.
- *
- */
-interface RenderContext {
+import com.wolfyscript.scafall.PluginWrapper
+import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.viewportl.Viewportl
 
-    fun enterNode(component: Component)
+private var viewportlInstance: SpigotViewportl? = null
 
-    fun exitNode()
+val Viewportl.Companion.instance: Viewportl
+    get() = viewportlInstance ?: throw IllegalStateException("Viewportl is not initialized.")
 
-    val currentComponent: Component?
+fun Viewportl.Companion.init(plugin: PluginWrapper = ScafallProvider.get().corePlugin) {
+    viewportlInstance = SpigotViewportl()
+    viewportlInstance!!.init()
+}
 
-    fun currentOffset(): Int
+fun Viewportl.Companion.unload() {
+    viewportlInstance = null
 }

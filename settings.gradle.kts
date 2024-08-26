@@ -40,10 +40,29 @@ sequenceOf(
     project(":${it}").projectDir = file(it)
 }
 
-// Spigot
+/* ********************* *
+ * Example/Test Projects *
+ * ********************* */
+val examplesDir: String = "examples"
+
+fun samplePlugin(root: String, vararg modules: String) {
+    include(":$examplesDir:$root")
+    project(":$examplesDir:$root").projectDir = file("$examplesDir/$root")
+
+    modules.forEach {
+        // platform loader project
+        include(":$examplesDir:$root:$it")
+        project(":$examplesDir:$root:$it").projectDir = file("$examplesDir/$root/${it.replace(":", "/")}")
+    }
+}
+
+samplePlugin("single-platform", "spigot")
+
+/* ********************* *
+ * Spigot implementation *
+ * ********************* */
 sequenceOf(
-    "core",
-    "plugin-compatibility",
+    "platform",
 ).forEach {
     include(":spigot:${it}")
     project(":spigot:${it}").projectDir = file("spigot/${it.replace(":", "/")}")

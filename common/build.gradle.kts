@@ -36,3 +36,13 @@ tasks.named<ProcessResources>("processResources") {
 repositories {
     mavenCentral()
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("lib") {
+            from(components.getByName("java"))
+            groupId = "com.wolfyscript.viewportl.common"
+            artifactId = "common"
+        }
+    }
+}

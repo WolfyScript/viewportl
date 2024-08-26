@@ -16,46 +16,32 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    id("viewportl.spigot.conventions")
+package com.wolfyscript.viewportl.spigot.gui.rendering
 
-    alias(libs.plugins.goooler.shadow)
-    kotlin("jvm")
-}
+import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
-description = "viewportl-spigot"
+class InvGUIRenderContext(val renderer: InventoryGUIRenderer) :
+    RenderContext {
+    private var currentNode: Component? = null
+    private var slotOffsetToParent = 0
 
-dependencies {
-    compileOnly(libs.net.kyori.adventure.platform.bukkit)
-    implementation(group="com.wolfyscript.scafall.spigot", name = "spigot-platform", version = "0.1-alpha-SNAPSHOT")
-    implementation(project(":common"))
-}
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
-kotlin {
-    jvmToolchain(21)
-}
-
-tasks {
-    shadowJar {
-        archiveClassifier = ""
-
-        dependencies {
-            include(dependency("com.wolfyscript.viewportl:.*"))
-        }
+    fun setSlotOffset(offset: Int) {
+        this.slotOffsetToParent = offset
     }
-}
 
-publishing {
-    publications {
-        create<MavenPublication>("lib") {
-            from(components.getByName("java"))
-            groupId = "com.wolfyscript.viewportl.spigot"
-            artifactId = "spigot"
-        }
+    override fun currentOffset(): Int {
+        return slotOffsetToParent
     }
+
+    override fun enterNode(component: Component) {
+        this.currentNode = component
+    }
+
+    override fun exitNode() {
+        this.currentNode = null
+    }
+
+    override val currentComponent: Component?
+        get() = currentNode
 }

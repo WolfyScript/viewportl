@@ -62,18 +62,4 @@ tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }
 
-java {
-    // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
-}
-
-java.sourceCompatibility = JavaVersion.VERSION_17
-
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components.getByName("java"))
-            artifact(file("$rootDir/gradle.properties"))
-        }
-    }
-}
+java.sourceCompatibility = JavaVersion.VERSION_21

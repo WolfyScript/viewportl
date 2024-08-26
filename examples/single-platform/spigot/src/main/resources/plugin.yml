@@ -1,0 +1,13 @@
+name: ViewportlExample
+version: '${version}'
+main: org.example.viewportl.ViewportlExample
+api-version: 1.21
+authors: [ SomeAuthor ]
+load: STARTUP
+
+libraries:
+  - "org.apache.commons:commons-lang3:3.12.0"
+  - "${libs.org.jetbrains.kotlin.stdlib.get()}"
+  - "${libs.net.kyori.adventure.api.get()}"
+  - "${libs.net.kyori.adventure.text.minimessage.get()}"
+  - "${libs.net.kyori.adventure.platform.bukkit.get()}"

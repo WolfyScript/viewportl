@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 /*
  *     viewportl - multiplatform GUI framework to easily create reactive GUIs
  *     Copyright (C) 2024  WolfyScript
@@ -18,17 +20,8 @@
 
 plugins {
     id("viewportl.spigot.conventions")
-
+    id("viewportl.kotlinmodule")
     alias(libs.plugins.goooler.shadow)
-    kotlin("jvm")
-}
-
-description = "viewportl-spigot"
-
-dependencies {
-    compileOnly(libs.net.kyori.adventure.platform.bukkit)
-    implementation(group="com.wolfyscript.scafall.spigot", name = "spigot-platform", version = "0.1-alpha-SNAPSHOT")
-    implementation(project(":common"))
 }
 
 repositories {
@@ -36,26 +29,42 @@ repositories {
     mavenLocal()
 }
 
-kotlin {
-    jvmToolchain(21)
+dependencies {
+    api(project(":api"))
+    implementation(project(":spigot"))
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks {
-    shadowJar {
-        archiveClassifier = ""
+    named<ProcessResources>("processResources") {
+        expand(project.properties)
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+
+    named<ShadowJar>("shadowJar") {
+        dependsOn(project(":spigot").tasks.named("shadowJar"))
+        mustRunAfter("jar")
+
+        archiveClassifier.set("")
+
+        include("**")
 
         dependencies {
-            include(dependency("com.wolfyscript.viewportl:.*"))
+            include(project(":api"))
+            include(project(":spigot"))
         }
     }
 }
+
+
+description = "core"
 
 publishing {
     publications {
         create<MavenPublication>("lib") {
             from(components.getByName("java"))
             groupId = "com.wolfyscript.viewportl.spigot"
-            artifactId = "spigot"
+            artifactId = "spigot-platform"
         }
     }
 }

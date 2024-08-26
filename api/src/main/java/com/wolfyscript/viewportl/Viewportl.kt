@@ -32,4 +32,6 @@ interface Viewportl {
 
     val guiFactory: GuiFactory
 
+    companion object
+
 }

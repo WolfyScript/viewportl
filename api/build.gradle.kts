@@ -31,3 +31,13 @@ dependencies {
 repositories {
     mavenCentral()
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("lib") {
+            from(components.getByName("java"))
+            groupId = "com.wolfyscript.viewportl.api"
+            artifactId = "api"
+        }
+    }
+}
