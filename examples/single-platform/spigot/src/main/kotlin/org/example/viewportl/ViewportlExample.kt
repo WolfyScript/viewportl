@@ -20,7 +20,7 @@ package org.example.viewportl
 
 import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.scafall.spigot.initOnSpigot
+import com.wolfyscript.scafall.spigot.init
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.spigot.init
 import com.wolfyscript.viewportl.spigot.instance
@@ -38,16 +38,16 @@ import java.util.*
 class ViewportlExample : JavaPlugin() {
 
     override fun onLoad() {
-        Scafall.initOnSpigot(this) // initiate shadowed scafall implementation
 
-        // From this point onward you can get the instances via
-        val scafall = ScafallProvider.get()
     }
 
     override fun onEnable() {
+        Scafall.init(this) // initiate shadowed scafall implementation
         Viewportl.init() // Init the viewportl instance (uses the scafall core plugin by default)
+
         // From this point onward you can get the instances via
         val viewportl = Viewportl.instance
+        val scafall = ScafallProvider.get()
 
         // then register the guis
         val manager = viewportl.guiManager
