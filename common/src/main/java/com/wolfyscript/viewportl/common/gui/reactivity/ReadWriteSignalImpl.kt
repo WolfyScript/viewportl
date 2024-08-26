@@ -18,19 +18,21 @@
 
 package com.wolfyscript.viewportl.common.gui.reactivity
 
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
+import java.lang.IllegalStateException
 import java.util.*
 import java.util.function.Function
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
-import kotlin.reflect.safeCast
 
 class ReadWriteSignalImpl<MT : Any>(private val id: NodeId, private val type: KClass<MT>) : ReadWriteSignal<MT> {
 
     private var tagName: String? = null
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: MT) {
-        TODO("Not yet implemented")
+        ScafallProvider.get().logger.info("Set value for Ref: $thisRef, Property: $property, Value: $value")
+        set(value)
     }
 
     override fun tagName(tagName: String) {
@@ -58,21 +60,19 @@ class ReadWriteSignalImpl<MT : Any>(private val id: NodeId, private val type: KC
         }
     }
 
-    override fun get(): MT? {
+    override fun get(): MT {
         id.runtime.reactiveSource.subscribe(id)
         return getNoTracking()
     }
 
-    override fun getNoTracking(): MT? {
-        val value = id.runtime.reactiveSource.getValue<Any>(id)
-        if (type.isInstance(value)) {
-            return type.safeCast(value)
-        }
-        return null
+    override fun getNoTracking(): MT {
+        val value = id.runtime.reactiveSource.getValue(id, type) ?: throw IllegalStateException("Failed to get value of type $type from signal $id")
+        return value;
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): MT {
-        TODO("Not yet implemented")
+        ScafallProvider.get().logger.info("Get value for Ref: $thisRef, Property: $property")
+        return get()
     }
 
     override fun equals(other: Any?): Boolean {

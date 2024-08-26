@@ -27,9 +27,9 @@ interface ReadOnlySignal<T> {
      *
      * @return The current value.
      */
-    fun get(): T?
+    fun get(): T
 
-    fun getNoTracking(): T?
+    fun getNoTracking(): T
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>) : T
 

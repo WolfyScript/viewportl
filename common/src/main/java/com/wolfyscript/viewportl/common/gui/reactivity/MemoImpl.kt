@@ -18,28 +18,28 @@
 
 package com.wolfyscript.viewportl.common.gui.reactivity
 
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.gui.reactivity.Memo
+import java.lang.IllegalStateException
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.safeCast
 
 class MemoImpl<V : Any>(val id: NodeId, private val type: KClass<V>) : Memo<V> {
 
-    override fun get(): V? {
+    override fun get(): V {
         id.runtime.reactiveSource.subscribe(id)
         return getNoTracking()
     }
 
-    override fun getNoTracking(): V? {
-        val value = id.runtime.reactiveSource.getValue<Any>(id)
-        if (type.isInstance(value)) {
-            return type.safeCast(value)
-        }
-        return null
+    override fun getNoTracking(): V {
+        val value = id.runtime.reactiveSource.getValue(id, type) ?: throw IllegalStateException("Failed to get value of type $type from memo $id")
+        return value
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): V {
-        TODO("Not yet implemented")
+        ScafallProvider.get().logger.info("Get value for Ref: $thisRef, Property: $property")
+        return get()
     }
 
 }

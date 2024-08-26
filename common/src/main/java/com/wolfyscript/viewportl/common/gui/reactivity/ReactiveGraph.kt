@@ -329,6 +329,11 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
         return node<ReactivityNode<V>>(nodeId)?.value
     }
 
+    fun <V : Any> getValue(nodeId: NodeId, type: KClass<V>): V? {
+        updateIfNecessary(nodeId)
+        return node<ReactivityNode<V>>(nodeId)?.value
+    }
+
     inline fun <reified V : Any> setValue(nodeId: NodeId, value: V?) {
         node<ReactivityNode<V>>(nodeId)?.value = value
         markDirty(nodeId)
@@ -418,7 +423,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
             nodeSubscribers[node].add(observer)
             nodeSources[observer].add(node)
         } else {
-            throw IllegalStateException("")
+            throw IllegalStateException("Cannot subscribe to observer: Observer is null")
         }
     }
 
