@@ -31,11 +31,6 @@ dependencies {
     implementation(project(":common"))
 }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
 kotlin {
     jvmToolchain(21)
 }

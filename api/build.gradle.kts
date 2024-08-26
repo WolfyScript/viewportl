@@ -24,14 +24,6 @@ plugins {
     id("viewportl.kotlinmodule")
 }
 
-dependencies {
-
-}
-
-repositories {
-    mavenCentral()
-}
-
 publishing {
     publications {
         create<MavenPublication>("lib") {

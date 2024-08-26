@@ -28,15 +28,6 @@ dependencies {
     api(project(":api"))
 }
 
-tasks.named<ProcessResources>("processResources") {
-    expand(project.properties)
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
-repositories {
-    mavenCentral()
-}
-
 publishing {
     publications {
         create<MavenPublication>("lib") {
