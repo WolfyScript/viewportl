@@ -83,7 +83,7 @@ tasks {
         }
 
         // Always relocate both viewportl & scafall to prevent conflicts between plugins!
-        relocate("com.wolfyscript", "org.example.viewportl.libs.com.wolfyscript")
+//        relocate("com.wolfyscript", "org.example.viewportl.libs.com.wolfyscript")
     }
 }
 
