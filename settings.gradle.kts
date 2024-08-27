@@ -56,7 +56,7 @@ fun samplePlugin(root: String, vararg modules: String) {
     }
 }
 
-samplePlugin("single-platform", "spigot")
+samplePlugin("single-platform", "spigot-plugin")
 
 /* ********************* *
  * Spigot implementation *

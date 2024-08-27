@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 /*
  *     viewportl - multiplatform GUI framework to easily create reactive GUIs
  *     Copyright (C) 2024  WolfyScript
@@ -17,6 +15,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     kotlin("jvm")
     alias(libs.plugins.goooler.shadow) // Use a different fork of the shadow plugin to support Java 21
@@ -38,7 +39,11 @@ dependencies {
 
     // We need both the scafall & viewportl spigot implementation.
     implementation("com.wolfyscript.scafall.spigot:spigot-platform:${project.version}")
-    implementation("com.wolfyscript.viewportl.spigot:spigot-platform:${project.version}") // While this already provides the scafall api, we need the spigot impl. to shade it (see below)
+
+    implementation(project(":common"))
+    implementation(project(":spigot"))
+    implementation(project(":spigot:platform"))
+//    implementation("com.wolfyscript.viewportl.spigot:spigot-platform:${project.version}") // While this already provides the scafall api, we need the spigot impl. to shade it (see below)
 }
 
 kotlin {
@@ -60,13 +65,21 @@ tasks {
      *  Shade Scafall & Viewportl and relocate both of them  *
      * ***************************************************** */
     named<ShadowJar>("shadowJar") {
+        dependsOn(project(":spigot:platform").tasks.named("shadowJar"))
         mustRunAfter("jar")
 
         archiveClassifier = "" // This replaces the non-shaded jar with this shaded one (default creates a separate "-all.jar")
 
+        include("**")
+
         dependencies {
             include(dependency("com.wolfyscript.scafall.spigot:.*"))
             include(dependency("com.wolfyscript.viewportl.spigot:.*"))
+
+            include(project(":api"))
+            include(project(":common"))
+            include(project(":spigot"))
+            include(project(":spigot:platform"))
         }
 
         // Always relocate both viewportl & scafall to prevent conflicts between plugins!
@@ -83,7 +96,8 @@ val debugPort: String = "5006" // This port will be used for the debugger
 minecraftDockerRun {
     val customEnv = env.get().toMutableMap()
     customEnv["MEMORY"] = "2G"
-    customEnv["JVM_OPTS"] = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${debugPort}" // Allows to attach the IntelliJ debugger to the MC server inside the container
+    customEnv["JVM_OPTS"] =
+        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${debugPort}" // Allows to attach the IntelliJ debugger to the MC server inside the container
     customEnv["FORCE_REDOWNLOAD"] = "false"
     env.set(customEnv)
     clean = true // When enabled, removes the docker container once it is shutdown

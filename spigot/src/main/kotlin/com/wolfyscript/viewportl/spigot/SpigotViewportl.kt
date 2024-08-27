@@ -31,7 +31,6 @@ import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.components.ButtonIcon
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
-import com.wolfyscript.viewportl.spigot.commands.GuiExampleCommand
 import com.wolfyscript.viewportl.spigot.commands.InputCommand
 import com.wolfyscript.viewportl.spigot.gui.GuiFactoryImpl
 import com.wolfyscript.viewportl.spigot.gui.interaction.GUIInventoryListener
@@ -68,8 +67,7 @@ class SpigotViewportl : CommonViewportl() {
 
     private fun registerCommands() {
         registerDynamicCommands(
-            InputCommand(this),
-            GuiExampleCommand(this)
+            InputCommand(this)
         )
     }
 
