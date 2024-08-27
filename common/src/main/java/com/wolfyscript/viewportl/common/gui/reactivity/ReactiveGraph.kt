@@ -423,7 +423,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
             nodeSubscribers[node].add(observer)
             nodeSources[observer].add(node)
         } else {
-            throw IllegalStateException("Cannot subscribe to observer: Observer is null")
+//            throw IllegalStateException("Cannot subscribe to observer: Observer is null")
         }
     }
 
