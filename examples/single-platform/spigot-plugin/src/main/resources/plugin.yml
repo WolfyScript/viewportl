@@ -5,6 +5,8 @@ api-version: 1.21
 authors: [ SomeAuthor ]
 load: STARTUP
 
+depend: [ NBTAPI ]
+
 libraries:
   - "${libs.org.jetbrains.kotlin.stdlib.get()}" # There are other ways to include kotlin on the server (like a separate plugin), but here we just include it.
   - "${libs.org.jetbrains.annotations.get()}"
