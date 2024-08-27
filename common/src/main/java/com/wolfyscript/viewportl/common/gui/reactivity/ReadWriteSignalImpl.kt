@@ -31,7 +31,7 @@ class ReadWriteSignalImpl<MT : Any>(private val id: NodeId, private val type: KC
     private var tagName: String? = null
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: MT) {
-        ScafallProvider.get().logger.info("Set value for Ref: $thisRef, Property: $property, Value: $value")
+//        ScafallProvider.get().logger.info("Set value for Ref: $thisRef, Property: $property, Value: $value")
         set(value)
     }
 
@@ -71,7 +71,7 @@ class ReadWriteSignalImpl<MT : Any>(private val id: NodeId, private val type: KC
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): MT {
-        ScafallProvider.get().logger.info("Get value for Ref: $thisRef, Property: $property")
+//        ScafallProvider.get().logger.info("Get value for Ref: $thisRef, Property: $property")
         return get()
     }
 

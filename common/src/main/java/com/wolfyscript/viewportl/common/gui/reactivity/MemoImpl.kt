@@ -38,7 +38,7 @@ class MemoImpl<V : Any>(val id: NodeId, private val type: KClass<V>) : Memo<V> {
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): V {
-        ScafallProvider.get().logger.info("Get value for Ref: $thisRef, Property: $property")
+//        ScafallProvider.get().logger.info("Get value for Ref: $thisRef, Property: $property")
         return get()
     }
 
