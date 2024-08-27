@@ -240,8 +240,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
             if (component == null) {
                 bukkitPlayer.openInventory.title = bukkitPlayer.openInventory.originalTitle
             } else {
-                bukkitPlayer.openInventory.title =
-                    net.kyori.adventure.platform.bukkit.BukkitComponentSerializer.legacy().serialize(component)
+                bukkitPlayer.openInventory.title = BukkitComponentSerializer.legacy().serialize(component)
             }
         }
     }
@@ -275,14 +274,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
             String.format("Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.", BukkitItemStackConfig::class.java.name, itemStackConfig.javaClass.name)
         }
 
-        setNativeStack(
-            position,
-            itemStackConfig.constructItemStack(
-                EvalContext(),
-                runtime.viewportl.scafall.adventure.miniMsg,
-                itemStackContext.resolvers()
-            )?.bukkitRef
-        )
+        setNativeStack(position, itemStackConfig.constructItemStack(EvalContext(), runtime.viewportl.scafall.adventure.miniMsg, itemStackContext.resolvers)?.bukkitRef)
     }
 
     private fun setNativeStack(i: Int, itemStack: org.bukkit.inventory.ItemStack?) {

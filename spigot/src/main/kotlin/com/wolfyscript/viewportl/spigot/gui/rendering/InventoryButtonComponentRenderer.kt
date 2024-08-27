@@ -23,24 +23,12 @@ import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
 import com.wolfyscript.viewportl.gui.ItemStackContext
 import com.wolfyscript.viewportl.gui.components.Button
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 class InventoryButtonComponentRenderer : ComponentRenderer<Button, InvGUIRenderContext> {
 
     override fun key(): Key = Key.defaultKey("inventory/button")
 
     override fun render(context: InvGUIRenderContext, component: Button) {
-
-        context.renderer.renderStack(context.currentOffset(), component.icon.stack, object :
-            ItemStackContext {
-
-            override fun resolvers(): TagResolver = component.icon.resolvers
-
-            override fun miniMessage(): MiniMessage = context.renderer.runtime.viewportl.scafall.adventure.miniMsg
-
-            override fun evalContext(): EvalContext = EvalContext()
-
-        })
+        context.renderer.renderStack(context.currentOffset(), component.icon.stack, ItemStackContext(component.icon.resolvers, context.renderer.runtime.viewportl.scafall.adventure.miniMsg, EvalContext()))
     }
 }

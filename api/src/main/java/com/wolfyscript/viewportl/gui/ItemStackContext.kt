@@ -21,12 +21,4 @@ import com.wolfyscript.scafall.eval.context.EvalContext
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
-interface ItemStackContext {
-
-    fun resolvers(): TagResolver
-
-    fun miniMessage(): MiniMessage
-
-    fun evalContext(): EvalContext
-
-}
+data class ItemStackContext(val resolvers: TagResolver, val miniMessage: MiniMessage, val evalContext: EvalContext)
