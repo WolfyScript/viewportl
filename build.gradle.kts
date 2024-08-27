@@ -37,7 +37,7 @@ import org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask
  */
 plugins {
     id("com.jfrog.artifactory") version "5.+"
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "2.0.20"
 }
 
 tasks.withType<ArtifactoryTask> {
