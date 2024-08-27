@@ -25,6 +25,7 @@ import com.google.inject.Inject
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.BuildContext
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
@@ -37,7 +38,6 @@ import com.wolfyscript.viewportl.gui.components.Component
 import com.wolfyscript.viewportl.gui.components.ComponentImplementation
 import com.wolfyscript.viewportl.gui.model.UpdateInformation
 import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
-import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import java.util.function.Supplier
@@ -63,7 +63,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
         }
     }
 
-    override var sound: Sound? = Sound.sound(Key.key("minecraft:ui.button.click"), Sound.Source.MASTER, 0.25f, 1f)
+    override var sound: Sound? = Sound.sound(Key.parse("minecraft:ui.button.click").into(), Sound.Source.MASTER, 0.25f, 1f)
 
     override fun insert(runtime: ViewRuntime, parentNode: Long) {
         runtime as ViewRuntimeImpl
@@ -85,7 +85,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
         @JacksonInject("button") private val button: Button,
     ) : ButtonIcon {
 
-        override var stack: ItemStackConfig = context.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(com.wolfyscript.scafall.identifier.Key.key(com.wolfyscript.scafall.identifier.Key.MINECRAFT_NAMESPACE, "air"))
+        override var stack: ItemStackConfig = context.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air"))
         override var resolvers: TagResolver = TagResolver.empty()
 
         override fun stack(stackSupplier: Supplier<ItemStackConfig>) {
@@ -94,7 +94,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
 
         override fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>) {
             context.reactiveSource.createEffect {
-                val newStack = context.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(com.wolfyscript.scafall.identifier.Key.key(com.wolfyscript.scafall.identifier.Key.MINECRAFT_NAMESPACE, itemId))
+                val newStack = context.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, itemId))
                 with(stackConfig) { newStack.consume() }
                 stack = newStack
 
