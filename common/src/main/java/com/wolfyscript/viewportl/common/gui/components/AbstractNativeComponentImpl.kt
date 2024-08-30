@@ -23,7 +23,7 @@ import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.rendering.RenderPropertiesImpl
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.reactivity.Effect
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
@@ -42,11 +42,11 @@ import java.util.*
  * Duplicate code may occur, but it can be put into static methods.
  *
  */
-abstract class AbstractComponentImpl<C : Component>(
+abstract class AbstractNativeComponentImpl<C : NativeComponent>(
     override val id: String,
     final override val viewportl: Viewportl,
-    override val parent: Component?
-) : Component, Effect {
+    override val parent: NativeComponent?
+) : NativeComponent, Effect {
 
     private val type: Key = Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(javaClass))
     var nodeId: Long? = null
@@ -73,7 +73,7 @@ abstract class AbstractComponentImpl<C : Component>(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
-        val that = other as AbstractComponentImpl<*>
+        val that = other as AbstractNativeComponentImpl<*>
         return type == that.type && id == that.id
     }
 

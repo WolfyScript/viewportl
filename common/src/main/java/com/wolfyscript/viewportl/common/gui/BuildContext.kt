@@ -24,12 +24,11 @@ import com.google.inject.Guice
 import com.google.inject.Module
 import com.google.inject.Stage
 import com.google.inject.util.Providers
-import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 import java.util.function.Consumer
 
 class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, val viewportl: Viewportl) {
@@ -43,10 +42,13 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, 
     }
 
     // TODO: Do not store Components here! They are handled by the ModelGraph! When removed from the graph the alias is no longer valid!
-    private val componentIdAliases: MutableMap<String, Component> = mutableMapOf()
+    private val nativeComponentIdAliases: MutableMap<String, NativeComponent> = mutableMapOf()
 
-    fun <B : Component> getOrCreateComponent(
-        parent: Component? = null,
+    var parent: NativeComponent? = null
+        private set
+
+    fun <B : NativeComponent> getOrCreateComponent(
+        parent: NativeComponent? = null,
         alias: String? = null,
         type: Class<B>,
         getId: Consumer<Long> = Consumer{ }
@@ -56,29 +58,29 @@ class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, 
         val component = instantiateNewComponent(parent, id, Pair(builderKey, implType))
         getId.accept(id) // We only want to run this when no errors came before
         if (alias != null) {
-            componentIdAliases[alias] = component
+            nativeComponentIdAliases[alias] = component
         }
         return component
     }
 
-    private fun <B : Component> instantiateNewComponent(parent: Component? = null, numericId: Long, builderTypeInfo: Pair<Key, Class<B>>): B {
+    private fun <B : NativeComponent> instantiateNewComponent(parent: NativeComponent? = null, numericId: Long, builderTypeInfo: Pair<Key, Class<B>>): B {
         val injector = Guice.createInjector(Stage.PRODUCTION, Module { binder: Binder ->
             binder.bind(Viewportl::class.java).toInstance(viewportl)
             binder.bind(Long::class.java).toInstance(numericId)
             binder.bind(BuildContext::class.java).toInstance(this)
-            binder.bind(Component::class.java).toProvider(Providers.of(parent))
+            binder.bind(NativeComponent::class.java).toProvider(Providers.of(parent))
         })
         return injector.getInstance(builderTypeInfo.second)
     }
 
     private fun getOrCreateNumericId(namedId: String? = null): Long {
-        if (namedId != null && componentIdAliases.containsKey(namedId)) {
-            return componentIdAliases[namedId]?.nodeId() ?: nextId()
+        if (namedId != null && nativeComponentIdAliases.containsKey(namedId)) {
+            return nativeComponentIdAliases[namedId]?.nodeId() ?: nextId()
         }
         return nextId()
     }
 
-    private fun <B : Component> getComponentType(
+    private fun <B : NativeComponent> getComponentType(
         id: String?,
         type: Class<B>
     ): Pair<Key, Class<B>> {

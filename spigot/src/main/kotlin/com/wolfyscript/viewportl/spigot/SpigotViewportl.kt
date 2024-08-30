@@ -23,16 +23,16 @@ import com.wolfyscript.scafall.spigot.api.into
 import com.wolfyscript.viewportl.common.CommonViewportl
 import com.wolfyscript.viewportl.common.gui.GuiAPIManagerImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.components.ComponentGroupImpl
+import com.wolfyscript.viewportl.common.gui.components.NativeComponentGroupImpl
 import com.wolfyscript.viewportl.common.gui.components.OutletImpl
-import com.wolfyscript.viewportl.common.gui.components.StackInputSlotImpl
+import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.registry.SpigotViewportlRegistries
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.components.ButtonIcon
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import com.wolfyscript.viewportl.spigot.commands.InputCommand
-import com.wolfyscript.viewportl.spigot.gui.GuiFactoryImpl
+import com.wolfyscript.viewportl.spigot.gui.factories.GuiFactoryImpl
 import com.wolfyscript.viewportl.spigot.gui.interaction.GUIInventoryListener
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -53,8 +53,8 @@ class SpigotViewportl : CommonViewportl() {
         // Register GUI things
         val guiComponentBuilders = registries.guiComponents
         guiComponentBuilders.register(ButtonImpl::class.java)
-        guiComponentBuilders.register(StackInputSlotImpl::class.java)
-        guiComponentBuilders.register(ComponentGroupImpl::class.java)
+        guiComponentBuilders.register(SlotImpl::class.java)
+        guiComponentBuilders.register(NativeComponentGroupImpl::class.java)
         guiComponentBuilders.register(OutletImpl::class.java)
 
         registerListeners()

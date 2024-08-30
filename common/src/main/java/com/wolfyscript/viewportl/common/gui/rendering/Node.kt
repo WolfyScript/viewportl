@@ -17,6 +17,6 @@
  */
 package com.wolfyscript.viewportl.common.gui.rendering
 
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 
-class Node(val id: Long, val component: Component)
+class Node(val id: Long, val nativeComponent: NativeComponent)

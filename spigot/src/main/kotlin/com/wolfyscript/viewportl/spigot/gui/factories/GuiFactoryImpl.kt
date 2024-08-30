@@ -15,10 +15,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.spigot.gui
+package com.wolfyscript.viewportl.spigot.gui.factories
 
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
+import com.wolfyscript.viewportl.common.gui.components.ComponentScopeImpl
+import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.components.ComponentScope
+import com.wolfyscript.viewportl.gui.factories.ComponentFactory
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
@@ -34,4 +38,14 @@ class GuiFactoryImpl : GuiFactory {
     override fun createInteractionHandler(runtime: ViewRuntime): InteractionHandler {
         return InventoryGUIInteractionHandler((runtime as ViewRuntimeImpl))
     }
+
+    override fun runComponentFunction(runtime: ViewRuntime, fn: ComponentScope.() -> Unit) {
+        val reactiveSource = runtime.into().reactiveSource
+
+        reactiveSource.createEffect {
+            fn(ComponentScopeImpl(runtime.into()))
+        }
+    }
+
+    override val componentFactory: ComponentFactory = ComponentFactoryImpl()
 }

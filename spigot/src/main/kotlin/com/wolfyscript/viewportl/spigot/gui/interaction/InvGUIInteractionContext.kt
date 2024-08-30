@@ -18,11 +18,11 @@
 
 package com.wolfyscript.viewportl.spigot.gui.interaction
 
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 
 class InvGUIInteractionContext (val interactionHandler: InteractionHandler) {
-    private var currentNode: Component? = null
+    private var currentNode: NativeComponent? = null
     private var slotOffsetToParent = 0
 
     fun setSlotOffset(offset: Int) {
@@ -33,15 +33,15 @@ class InvGUIInteractionContext (val interactionHandler: InteractionHandler) {
         return slotOffsetToParent
     }
 
-    fun enterNode(component: Component) {
-        this.currentNode = component
+    fun enterNode(nativeComponent: NativeComponent) {
+        this.currentNode = nativeComponent
     }
 
     fun exitNode() {
         this.currentNode = null
     }
 
-    fun getCurrentComponent(): Component? {
+    fun getCurrentComponent(): NativeComponent? {
         return currentNode
     }
 }

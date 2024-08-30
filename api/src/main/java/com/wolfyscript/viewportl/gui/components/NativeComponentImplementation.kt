@@ -17,30 +17,8 @@
  */
 package com.wolfyscript.viewportl.gui.components
 
-import com.wolfyscript.scafall.function.ReceiverBiFunction
-import com.wolfyscript.scafall.function.ReceiverConsumer
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
-import com.wolfyscript.viewportl.gui.interaction.ClickType
-import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
-import com.wolfyscript.viewportl.gui.interaction.DragTransaction
-import java.util.function.Consumer
-import java.util.function.Supplier
+import kotlin.reflect.KClass
 
-interface StackInputSlot : Component {
-
-    var value: ItemStack?
-
-    fun value(fn: Supplier<ItemStack?>)
-
-    var onValueChange: Consumer<ItemStack?>?
-
-    var onClick: ReceiverConsumer<ClickTransaction>?
-
-    var onDrag: ReceiverConsumer<DragTransaction>?
-
-    var canPickUpStack : ReceiverBiFunction<ClickType, ItemStack, Boolean>?
-
-    fun onClick(fn: ReceiverConsumer<ClickTransaction>) { onClick = fn }
-
-
-}
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS)
+annotation class NativeComponentImplementation(val base: KClass<out NativeComponent>)

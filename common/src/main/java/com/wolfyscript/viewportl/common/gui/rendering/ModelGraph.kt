@@ -21,8 +21,8 @@ package com.wolfyscript.viewportl.common.gui.rendering
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
-import com.wolfyscript.viewportl.common.gui.components.AbstractComponentImpl
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.common.gui.components.AbstractNativeComponentImpl
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.model.UpdateInformation
 import java.util.Collections
 
@@ -33,18 +33,18 @@ class ModelGraph(private val runtime: ViewRuntimeImpl) {
     private val children: SetMultimap<Long, Long> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
     private val parents: MutableMap<Long, Long> = mutableMapOf()
 
-    fun addNode(component: Component) : Long {
+    fun addNode(nativeComponent: NativeComponent) : Long {
         val id = ++nodeCount
-        nodes[id] = Node(id, component)
-        if (component is AbstractComponentImpl<*>) {
-            component.nodeId = id
+        nodes[id] = Node(id, nativeComponent)
+        if (nativeComponent is AbstractNativeComponentImpl<*>) {
+            nativeComponent.nodeId = id
         }
         return id
     }
 
-    fun insertComponentAt(component: Component, insertAt: Long) {
+    fun insertComponentAt(nativeComponent: NativeComponent, insertAt: Long) {
         if (insertAt != 0L && !nodes.containsKey(insertAt)) return
-        val id = addNode(component)
+        val id = addNode(nativeComponent)
         insertNodeAsChildOf(id, insertAt)
     }
 

@@ -29,7 +29,7 @@ import java.util.*
  */
 interface ViewRuntime {
 
-    fun id(): Long
+    val id: Long
 
     /**
      * Opens a new menu under the specific path.

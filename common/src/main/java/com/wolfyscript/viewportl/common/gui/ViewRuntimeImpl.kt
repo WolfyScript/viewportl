@@ -34,8 +34,8 @@ class ViewRuntimeImpl(
     rootRouter: Function<ViewRuntime, Window>,
     override val viewers: Set<UUID>,
 ) : ViewRuntime {
-    @JvmField
-    val id: Long = NEXT_ID++
+
+    override val id: Long = NEXT_ID++
 
     // Create rendering & reactivity trees
     val modelGraph: ModelGraph = ModelGraph(this)
@@ -99,10 +99,6 @@ class ViewRuntimeImpl(
 
     fun getCurrentMenu(): Optional<Window> {
         return Optional.ofNullable(currentRoot)
-    }
-
-    override fun id(): Long {
-        return id
     }
 
     override fun equals(other: Any?): Boolean {

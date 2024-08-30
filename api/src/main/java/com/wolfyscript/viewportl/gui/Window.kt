@@ -24,11 +24,11 @@ import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
-import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
-import com.wolfyscript.viewportl.gui.router.Router
+import com.wolfyscript.viewportl.gui.components.ComponentScope
+import com.wolfyscript.viewportl.gui.components.Router
 import net.kyori.adventure.text.Component
 
-interface Window : ReactiveSource {
+interface Window : ComponentScope {
 
     fun open()
 
@@ -77,6 +77,8 @@ interface Window : ReactiveSource {
 
     val scaffolding: Scafall
         get() = ScafallProvider.get()
+
+    val runtime: ViewRuntime
 
     /**
      * The parent of this Component, or null if it is a root Component.

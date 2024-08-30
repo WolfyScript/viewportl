@@ -26,7 +26,8 @@ import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.router.RouterImpl
+import com.wolfyscript.viewportl.common.gui.components.RouterImpl
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
@@ -41,7 +42,7 @@ class WindowImpl internal constructor(
     @JsonProperty("size") override var size: Int?,
     @JsonProperty("type") override val type: WindowType? = null,
     @JacksonInject("viewportl") override val viewportl: Viewportl,
-    @JacksonInject("context") private val context: BuildContext,
+    @JacksonInject("context") val context: BuildContext,
 ) :
     Window,
     ReactiveSource by context.reactiveSource {
@@ -55,6 +56,9 @@ class WindowImpl internal constructor(
     // Intervalls
     private val intervalRunnables: List<Pair<Runnable, Long>> = ArrayList()
     private val intervalTasks: MutableList<Task> = ArrayList()
+
+    override val runtime: ViewRuntime
+        get() = context.runtime
 
     init {
         Preconditions.checkArgument(size != null || type != null, "Either type or size must be specified!")

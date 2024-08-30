@@ -18,32 +18,77 @@
 package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import java.util.function.Supplier
+
+/**
+ * A simple button that can execute actions when clicked and change its icon.
+ *
+ * ###### Sound
+ * By default, it uses the default Button sound from Minecraft, on interaction.
+ * While the sound can be removed, it is highly recommended to play a sound on interaction to notify the player that an action has been recognised!
+ *
+ * ###### Native Component
+ * Buttons are a native component meaning they have a platform specific implementation that handles both interactions and rendering.
+ * Only native components will be present in the component graph, non-native components don't really exist, they just group native components together.
+ */
+fun button(
+    runtime: ViewRuntime,
+    icon: ButtonIcon.() -> Unit,
+    styles: RenderProperties.() -> Unit,
+    sound: Sound? = null,
+    onClick: ClickTransaction.() -> Unit = {}
+) = component(runtime) {
+    runtime.viewportl.guiFactory.componentFactory.button(
+        ButtonProperties(
+            runtime,
+            icon,
+            styles,
+            sound,
+            onClick
+        )
+    )
+}
+
+/**
+ * The properties used to create a button implementation
+ */
+data class ButtonProperties(
+    val runtime: ViewRuntime,
+    val icon: ButtonIcon.() -> Unit,
+    val styles: RenderProperties.() -> Unit,
+    val sound: Sound? = null,
+    val onClick: ClickTransaction.() -> Unit
+)
 
 /**
  * A simple button that has an icon (ItemStack) and an interaction callback.
  * It always has a 1x1 size, because it occupies a single slot.
  *
+ * This is a native component that will be present in the data model and has native implementations on each platform, that handle the rendering and interaction.
  */
-interface Button : Component {
-    override fun width(): Int {
-        return 1
-    }
-
-    override fun height(): Int {
-        return 1
-    }
-
+interface Button : NativeComponent {
     var sound: Sound?
-
     var icon: ButtonIcon
-
     var onClick: ReceiverConsumer<ClickTransaction>?
-
-    fun onClick(consumer: ReceiverConsumer<ClickTransaction>) {
-        onClick = consumer
-    }
-
-    fun icon(iconConsumer: ReceiverConsumer<ButtonIcon>)
 }
+
+interface ButtonIcon {
+
+    var stack: ItemStackConfig
+
+    fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>)
+
+    var resolvers: TagResolver
+
+    fun resolvers(resolverSupplier: Supplier<TagResolver>)
+
+}
+
+
+

@@ -17,13 +17,11 @@
  */
 package com.wolfyscript.viewportl.common.gui.animation
 
-import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.common.gui.BuildContext
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.animation.Animation
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame
 import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 import java.util.function.Supplier
 
 class AnimationBuilderImpl<F : AnimationFrame, FB : AnimationFrameBuilder<F>>(
@@ -31,12 +29,12 @@ class AnimationBuilderImpl<F : AnimationFrame, FB : AnimationFrameBuilder<F>>(
     frameBuilderSupplier: Supplier<FB>
 ) :
     AnimationBuilderCommonImpl<F, FB>(context.reactiveSource, frameBuilderSupplier) {
-    override fun build(component: Component): Animation<F> {
+    override fun build(nativeComponent: NativeComponent): Animation<F> {
         if (updateSignal == null) {
 //            component.getID() + "_click_animation_handler", Boolean.TYPE,
             updateSignal = reactiveSource.createSignal(Boolean::class.java) { false }
         }
 
-        return AnimationImpl(component, frameBuilders, updateSignal!!)
+        return AnimationImpl(nativeComponent, frameBuilders, updateSignal!!)
     }
 }

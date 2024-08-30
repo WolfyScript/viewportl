@@ -24,51 +24,36 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.inject.Inject
 import com.wolfyscript.scafall.function.ReceiverBiFunction
 import com.wolfyscript.scafall.function.ReceiverConsumer
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.BuildContext
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.components.Component
-import com.wolfyscript.viewportl.gui.components.ComponentImplementation
+import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.NativeComponentImplementation
 import com.wolfyscript.viewportl.gui.components.StackInputSlot
-import com.wolfyscript.viewportl.gui.interaction.ClickType
 import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.ClickType
 import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 import java.util.function.Consumer
-import java.util.function.Supplier
 import javax.annotation.Nullable
 
-@ComponentImplementation(base = StackInputSlot::class)
+@NativeComponentImplementation(base = StackInputSlot::class)
 @StaticNamespacedKey(key = "stack_input_slot")
-class StackInputSlotImpl @JsonCreator @Inject constructor(
+class SlotImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("viewportl") viewportl: Viewportl,
     @JacksonInject("context") private val context: BuildContext,
-    @Nullable @JacksonInject("parent") parent: Component? = null,
-) : AbstractComponentImpl<StackInputSlot>(
+    @Nullable @JacksonInject("parent") parent: NativeComponent? = null,
+    override var onValueChange: Consumer<ItemStack?>? = null,
+    override var onClick: ReceiverConsumer<ClickTransaction>? = null,
+    override var onDrag: ReceiverConsumer<DragTransaction>? = null,
+    override var canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null,
+    override var value: ItemStack? = null
+) : AbstractNativeComponentImpl<StackInputSlot>(
     id, viewportl, parent
 ), StackInputSlot {
-
-    override var onValueChange: Consumer<ItemStack?>? = null
-    override var onClick: ReceiverConsumer<ClickTransaction>? = null
-    override var onDrag: ReceiverConsumer<DragTransaction>? = null
-    override var canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null
-    override var value: ItemStack? = null
-    private var valueFn: Supplier<ItemStack?>? = null
-
-    override fun value(fn: Supplier<ItemStack?>) {
-        valueFn = fn
-    }
-
-    override fun width(): Int {
-        return 1
-    }
-
-    override fun height(): Int {
-        return 1
-    }
 
     override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
         (runtime as ViewRuntimeImpl).modelGraph.removeNode(nodeId)
@@ -76,12 +61,6 @@ class StackInputSlotImpl @JsonCreator @Inject constructor(
 
     override fun insert(runtime: ViewRuntime, parentNode: Long) {
         runtime as ViewRuntimeImpl
-
-        if (valueFn != null) {
-            runtime.reactiveSource.createEffect {
-                value = valueFn?.get()
-            }
-        }
 
         val id = runtime.modelGraph.addNode(this)
         runtime.modelGraph.insertNodeAsChildOf(id, parentNode)

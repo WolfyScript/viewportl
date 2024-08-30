@@ -33,20 +33,18 @@ import com.wolfyscript.viewportl.gui.components.*
 import java.util.*
 import kotlin.math.abs
 
-@ComponentImplementation(base = ComponentGroup::class)
+@NativeComponentImplementation(base = NativeComponentGroup::class)
 @StaticNamespacedKey(key = "cluster")
-class ComponentGroupImpl @JsonCreator @Inject constructor(
+class NativeComponentGroupImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("viewportl") viewportl: Viewportl,
     @JacksonInject("context") private val context: BuildContext,
-    @javax.annotation.Nullable @JacksonInject("parent") parent: Component? = null,
+    @javax.annotation.Nullable @JacksonInject("parent") parent: NativeComponent? = null,
 ) :
-    AbstractComponentImpl<ComponentGroup>(id, viewportl, parent),
-    ComponentGroup,
-    ConditionalChildComponentBuilder by ConditionalChildComponentBuilderImpl(context),
-    MatchChildComponentBuilder by MatchChildComponentBuilderImpl(context) {
+    AbstractNativeComponentImpl<NativeComponentGroup>(id, viewportl, parent),
+    NativeComponentGroup {
 
-    private val children: MutableList<Component> = mutableListOf()
+    private val children: MutableList<NativeComponent> = mutableListOf()
     private val width: Int
     private val height: Int
 
@@ -59,43 +57,16 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
         this.height = (abs((topLeft / 9).toDouble()) + 1).toInt()
     }
 
-    override fun childComponents(): Set<Component> {
+    override fun childComponents(): Set<NativeComponent> {
         return HashSet(children)
     }
 
-    override fun interval(intervalInTicks: Long, runnable: Runnable) {
-        intervalRunnables.add(Pair(runnable, intervalInTicks))
-    }
-
-    override fun getChild(id: String?): Optional<out Component> {
+    override fun getChild(id: String?): Optional<out NativeComponent> {
         return Optional.empty()
     }
 
     override fun outlet(outletConfig: ReceiverConsumer<Outlet>) {
         TODO("Not yet implemented")
-    }
-
-    override fun configuredBy(filePath: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun width(): Int {
-        return width
-    }
-
-    override fun height(): Int {
-        return height
-    }
-
-    override fun <B : Component> component(
-        id: String?,
-        type: Class<B>,
-        configurator: ReceiverConsumer<B>
-    ) {
-        val component = context.getOrCreateComponent(this, id, type)
-        children.add(component)
-        with(configurator) { component.consume() }
-        component.completeBuild()
     }
 
     override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
@@ -134,8 +105,4 @@ class ComponentGroupImpl @JsonCreator @Inject constructor(
         }
     }
 
-    override fun completeBuild() {
-        buildConditionals(parent)
-        buildMatchers(parent)
-    }
 }

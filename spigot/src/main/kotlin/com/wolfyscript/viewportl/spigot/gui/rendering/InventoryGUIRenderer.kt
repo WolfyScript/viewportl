@@ -30,7 +30,7 @@ import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.rendering.Node
 import com.wolfyscript.viewportl.gui.*
 import com.wolfyscript.viewportl.gui.components.Button
-import com.wolfyscript.viewportl.gui.components.ComponentGroup
+import com.wolfyscript.viewportl.gui.components.NativeComponentGroup
 import com.wolfyscript.viewportl.gui.components.Outlet
 import com.wolfyscript.viewportl.gui.components.StackInputSlot
 import com.wolfyscript.viewportl.gui.model.UpdateInformation
@@ -125,10 +125,10 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
             val offset = context.currentOffset()
 
             // Direct rendering to specific component renderer TODO: Make extensible
-            when (val component = it.component) {
+            when (val component = it.nativeComponent) {
                 is Button -> InventoryButtonComponentRenderer()
                     .render(context, component)
-                is ComponentGroup -> InventoryGroupComponentRenderer().render(context, component)
+                is NativeComponentGroup -> InventoryGroupComponentRenderer().render(context, component)
                 is Outlet -> component.component?.apply { InventoryGroupComponentRenderer().render(context, this) }
                 is StackInputSlot -> {}
             }
@@ -143,7 +143,7 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
     }
 
     private fun calculatePosition(node: Node, context: InvGUIRenderContext): Int {
-        val nextOffset = node.component.styles.position.slotPositioning()?.let {
+        val nextOffset = node.nativeComponent.styles.position.slotPositioning()?.let {
             context.setSlotOffset(it.slot())
             return@let it.slot() + 1
         } ?: run {

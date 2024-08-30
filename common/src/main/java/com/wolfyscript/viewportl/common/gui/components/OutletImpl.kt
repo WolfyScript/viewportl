@@ -25,26 +25,22 @@ import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.BuildContext
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.components.Component
-import com.wolfyscript.viewportl.gui.components.ComponentGroup
-import com.wolfyscript.viewportl.gui.components.ComponentImplementation
+import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.NativeComponentGroup
+import com.wolfyscript.viewportl.gui.components.NativeComponentImplementation
 import com.wolfyscript.viewportl.gui.components.Outlet
 import javax.annotation.Nullable
 
-@ComponentImplementation(base = Outlet::class)
+@NativeComponentImplementation(base = Outlet::class)
 @StaticNamespacedKey(key = "outlet")
 class OutletImpl(
     @JsonProperty("id") id: String,
     @JacksonInject("viewportl") viewportl: Viewportl,
     @JacksonInject("context") private val context: BuildContext,
-    @Nullable @JacksonInject("parent") parent: Component? = null,
-) : AbstractComponentImpl<Outlet>(id, viewportl, parent), Outlet {
+    @Nullable @JacksonInject("parent") parent: NativeComponent? = null,
+) : AbstractNativeComponentImpl<Outlet>(id, viewportl, parent), Outlet {
 
-    override var component: ComponentGroup? = null
-
-    override fun width(): Int = component?.width() ?: 0
-
-    override fun height(): Int = component?.height() ?: 0
+    override var component: NativeComponentGroup? = null
 
     override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
         (runtime as ViewRuntimeImpl).modelGraph.removeNode(nodeId)

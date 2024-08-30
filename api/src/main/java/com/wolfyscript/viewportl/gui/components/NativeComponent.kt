@@ -20,7 +20,6 @@ package com.wolfyscript.viewportl.gui.components
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver
-import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.config.jackson.KeyedTypeIdResolver;
 import com.wolfyscript.scafall.config.jackson.KeyedTypeResolver;
 import com.wolfyscript.viewportl.gui.ViewRuntime
@@ -30,6 +29,16 @@ import com.wolfyscript.scafall.identifier.Keyed
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 
+/**
+ * Native Components have a native renderer and interaction handler implementation on each platform.
+ *
+ * They are the only components that actually exist in the model graph (component tree).
+ * The [component] function is a setup method that encapsulates and groups child components, signals, memos, etc.
+ * See [component]
+ *
+ *
+ *
+ */
 @JsonTypeResolver(KeyedTypeResolver::class)
 @JsonTypeIdResolver(
     KeyedTypeIdResolver::class
@@ -37,7 +46,7 @@ import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonPropertyOrder(value = ["type"])
 @JsonIgnoreProperties(ignoreUnknown = true)
-interface Component : Keyed {
+interface NativeComponent : Keyed {
 
     @JsonIgnore
     override fun key(): Key
@@ -67,21 +76,7 @@ interface Component : Keyed {
      * The parent of this Component, or null if it is a root Component.
      *
      */
-    val parent: Component?
-
-    /**
-     * Gets the width of this Component in slot count.
-     *
-     * @return The width in slots.
-     */
-    fun width(): Int
-
-    /**
-     * Gets the width of this Component in slot count.
-     *
-     * @return The height in slots.
-     */
-    fun height(): Int
+    val parent: NativeComponent?
 
     val styles: RenderProperties
 
@@ -91,5 +86,4 @@ interface Component : Keyed {
 
     fun insert(runtime: ViewRuntime, parentNode: Long)
 
-    fun completeBuild() { }
 }

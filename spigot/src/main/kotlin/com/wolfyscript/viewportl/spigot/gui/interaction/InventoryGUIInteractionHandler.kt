@@ -21,12 +21,12 @@ package com.wolfyscript.viewportl.spigot.gui.interaction
 import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.components.ComponentGroupImpl
-import com.wolfyscript.viewportl.common.gui.components.StackInputSlotImpl
+import com.wolfyscript.viewportl.common.gui.components.NativeComponentGroupImpl
+import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.common.gui.rendering.Node
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
@@ -40,28 +40,28 @@ import org.bukkit.inventory.ItemStack
 class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : InteractionHandler {
 
     companion object {
-        private val componentInteractionHandlers: MutableMap<Class<out Component>, ComponentInteractionHandler<*>> =
+        private val nativeComponentInteractionHandlers: MutableMap<Class<out NativeComponent>, ComponentInteractionHandler<*>> =
             mutableMapOf()
 
         @Suppress("UNCHECKED_CAST")
-        fun <C : Component> getComponentInteractionHandler(type: Class<C>): ComponentInteractionHandler<C>? {
-            val handler: ComponentInteractionHandler<*>? = componentInteractionHandlers[type]
+        fun <C : NativeComponent> getComponentInteractionHandler(type: Class<C>): ComponentInteractionHandler<C>? {
+            val handler: ComponentInteractionHandler<*>? = nativeComponentInteractionHandlers[type]
             return handler as ComponentInteractionHandler<C>?
         }
 
-        private fun <C : Component> registerComponentInteractionHandler(
+        private fun <C : NativeComponent> registerComponentInteractionHandler(
             type: Class<C>,
             handler: ComponentInteractionHandler<in C>
         ) {
-            componentInteractionHandlers[type] = handler
+            nativeComponentInteractionHandlers[type] = handler
         }
 
         init {
             registerComponentInteractionHandler(ButtonImpl::class.java, InventoryButtonInteractionHandler())
-            registerComponentInteractionHandler(ComponentGroupImpl::class.java,
+            registerComponentInteractionHandler(NativeComponentGroupImpl::class.java,
                 InventoryGroupInteractionHandler()
             )
-            registerComponentInteractionHandler(StackInputSlotImpl::class.java, InventoryStackSlotInteractionHandler())
+            registerComponentInteractionHandler(SlotImpl::class.java, InventoryStackSlotInteractionHandler())
         }
 
     }
@@ -99,7 +99,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
     }
 
     private fun calculatePosition(node: Node, context: InvGUIInteractionContext): Int {
-        val nextOffset = node.component.styles.position.slotPositioning()?.let {
+        val nextOffset = node.nativeComponent.styles.position.slotPositioning()?.let {
             context.setSlotOffset(it.slot())
             return@let it.slot() + 1
         } ?: run {
@@ -348,7 +348,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
         details.invalidate()
         transaction.invalidate()
 
-        val component = node.component
+        val component = node.nativeComponent
         getComponentInteractionHandler(component.javaClass)?.onClick(runtime, component, details, transaction)
 
         if (transaction.valid) {
@@ -378,7 +378,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
             )
             transaction.invalidate() // Invalidate the action by default
 
-            val component = node.component
+            val component = node.nativeComponent
             getComponentInteractionHandler(component.javaClass)?.onClick(runtime, component, details, transaction)
 
             return transaction.valid
@@ -503,7 +503,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
                     details.type
                 )
 
-                val component = node.component
+                val component = node.nativeComponent
                 getComponentInteractionHandler(component.javaClass)?.onDrag(runtime, component, details, transaction)
 
                 if (!transaction.valid) {

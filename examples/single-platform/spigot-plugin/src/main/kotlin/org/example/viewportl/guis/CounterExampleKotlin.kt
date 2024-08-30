@@ -20,11 +20,12 @@ package org.example.viewportl.guis
 
 import com.wolfyscript.scafall.eval.value_provider.provider
 import com.wolfyscript.viewportl.gui.GuiAPIManager
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.components.ComponentGroup
+import com.wolfyscript.viewportl.gui.components.*
+import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
-import com.wolfyscript.viewportl.gui.router.Router
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -57,42 +58,43 @@ class CounterExampleKotlin {
                  * Everything in this section is called **async** and only once.
                  * It constructs the component tree and reactive graph as specified.
                  **/
-                resourcePath = "com/wolfyscript/utilities/gui/example/example_counter"
                 size = 9 * 3
 
-                routes {
-                    route({ }, { counterMainMenu(this@registerGui, this@routes) })
-                    route({ this / "main" }, { counter(this@registerGui, this@routes) })
+                router(runtime) {
+                    route({ }) {
+                        mainMenu(runtime, this@registerGui, this@router)
+                    }
+                    route({ this / "main" }) {
+                        counterMenu(runtime, this@registerGui, this@router)
+                    }
                 }
+
             }
         }
 
-        private fun ComponentGroup.counterMainMenu(window: Window, router: Router) {
+        private fun mainMenu(runtime: ViewRuntime, window: Window, routerScope: RouterScope) = component(runtime) {
             window.title { // Update the title with the Count
                 Component.text("Counter Main Menu").decorate(TextDecoration.BOLD)
             }
 
-            button("open") {
-                styles {
-                    position = PropertyPosition.slot(13)
-                }
-                icon {
+            button(
+                runtime = runtime,
+                icon = {
                     stack("green_concrete") {
                         name = "<green><b>Open Counter".provider()
                     }
-                }
-
-                onClick {
-                    router.openSubRoute { this / "main" }
-                }
-            }
+                },
+                styles = { position = PropertyPosition.slot(13) },
+                onClick = { routerScope.openSubRoute { this / "main" } }
+            )
         }
 
-        private fun ComponentGroup.counter(window: Window, router: Router) {
-            // Called when the path matches, but only once, when the route was changed
-
+        /**
+         * This function setups the counter menu
+         */
+        private fun counterMenu(runtime: ViewRuntime, window: Window, routerScope: RouterScope) = component(runtime) {
             // Use signals to notify components to update when the value changes
-            var count: Int by window.createSignal(0)
+            var count: Int by createSignal(0)
 
             window.title { // Update the title with the Count
                 Component.text("Counter: ").decorate(TextDecoration.BOLD)
@@ -104,91 +106,92 @@ class CounterExampleKotlin {
                 count += 1
             }
 
-            button("back") {
-                styles {
-                    position = PropertyPosition.slot(0)
-                }
-                icon {
+            button(runtime = runtime,
+                icon = {
                     stack("barrier") {
                         name = "<red><b>Back".provider()
                     }
-                }
+                },
+                styles = {
+                    position = PropertyPosition.slot(0)
+                },
+                onClick = { routerScope.openPrevious() }
+            )
 
-                onClick {
-                    router.openPrevious()
-                }
-            }
-
-            button("count_up") {
-                styles {
+            button(runtime = runtime,
+                styles = {
                     position = PropertyPosition.slot(4)
-                }
-                icon {
+                },
+                icon = {
                     stack("green_concrete") {
                         name = "<green><b>Count Up".provider()
                     }
-                }
+                },
+                onClick = { count += 1 }
+            )
 
-                onClick {
-                    count += 1
-                }
-            }
-
-            button("counter") {
-                styles {
+            button(
+                runtime = runtime,
+                styles = {
                     position = PropertyPosition.slot(13)
-                }
-                icon {
+                },
+                icon = {
                     stack("redstone") {
                         name = "<!italic>Clicked <b><count></b> times!".provider()
                     }
                     resolvers {
                         Placeholder.parsed("count", count.toString())
                     }
-                }
-            }
+                },
+            )
 
-            button("count_down") {
-                styles {
+            button(runtime = runtime,
+                styles = {
                     position = PropertyPosition.slot(22)
-                }
-                icon {
+                },
+                icon = {
                     stack("red_concrete") {
                         name = "<red><b>Count Down".provider()
                     }
-                }
+                },
+                onClick = { count -= 1 }
+            )
 
-                onClick {
-                    count -= 1
-                }
-            }
             // Sometimes we want to render components dependent on signals
-            whenever { count != 0 } then {
-                styles {
-                    position = PropertyPosition.slot(10)
-                }
-                // This section is run just once up on the initial construction too, not when the condition changes
-                button("reset") {
-                    styles {
-                        position = PropertyPosition.slot(10)
-                    }
-                    icon {
-                        stack("tnt") {
-                            name = "<b><red>Reset Clicks!".provider()
-                        }
-                    }
-
-                    onClick {
-                        count = 0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
-                    }
-                    sound = Sound.sound(
-                        Key.key("minecraft:entity.dragon_fireball.explode"),
-                        Sound.Source.MASTER,
-                        0.25f,
-                        1f
+            val render by createMemo<Boolean> { count != 0 }
+            show(
+                runtime = runtime,
+                condition = render,
+                fallback = { }
+            ) {
+                group(
+                    runtime = runtime,
+                    styles = { position = PropertyPosition.slot(10) },
+                ) {
+                    button(
+                        runtime = runtime,
+                        styles = {
+                            position = PropertyPosition.slot(10)
+                        },
+                        icon = {
+                            stack("tnt") {
+                                name = "<b><red>Reset Clicks!".provider()
+                            }
+                        },
+                        onClick = {
+                            count =
+                                0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
+                        },
+                        sound = Sound.sound(
+                            Key.key("minecraft:entity.dragon_fireball.explode"),
+                            Sound.Source.MASTER,
+                            0.25f,
+                            1f
+                        )
                     )
                 }
             }
+
         }
     }
 }

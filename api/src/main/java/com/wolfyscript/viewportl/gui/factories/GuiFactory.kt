@@ -18,6 +18,7 @@
 package com.wolfyscript.viewportl.gui.factories
 
 import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.components.ComponentScope
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 
@@ -26,4 +27,8 @@ interface GuiFactory {
     fun createRenderer(runtime: ViewRuntime): Renderer<*>
 
     fun createInteractionHandler(runtime: ViewRuntime): InteractionHandler
+
+    fun runComponentFunction(runtime: ViewRuntime, fn: ComponentScope.() -> Unit)
+
+    val componentFactory: ComponentFactory
 }

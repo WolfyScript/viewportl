@@ -18,12 +18,12 @@
 
 package com.wolfyscript.viewportl.spigot.gui.rendering
 
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
 class InvGUIRenderContext(val renderer: InventoryGUIRenderer) :
     RenderContext {
-    private var currentNode: Component? = null
+    private var currentNode: NativeComponent? = null
     private var slotOffsetToParent = 0
 
     fun setSlotOffset(offset: Int) {
@@ -34,14 +34,14 @@ class InvGUIRenderContext(val renderer: InventoryGUIRenderer) :
         return slotOffsetToParent
     }
 
-    override fun enterNode(component: Component) {
-        this.currentNode = component
+    override fun enterNode(nativeComponent: NativeComponent) {
+        this.currentNode = nativeComponent
     }
 
     override fun exitNode() {
         this.currentNode = null
     }
 
-    override val currentComponent: Component?
+    override val currentNativeComponent: NativeComponent?
         get() = currentNode
 }

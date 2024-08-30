@@ -23,13 +23,12 @@ import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.scafall.eval.value_provider.provider
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.components.ComponentGroup
-import com.wolfyscript.viewportl.gui.components.match
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
+import com.wolfyscript.viewportl.gui.components.*
+import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
-import java.util.function.Consumer
 
 class StackEditorExampleKotlin {
 
@@ -62,101 +61,82 @@ class StackEditorExampleKotlin {
                 size = 9 * 6
                 val optionsPos = PropertyPosition.slot(18)
 
-                routes {
+                router(runtime) {
                     route({}, {
-                        val stackToEdit = createSignal(StackEditorStore())
-                        val selectedTab = createSignal(Tab.NONE)
+                        val stackToEdit by createSignal(StackEditorStore())
+                        var selectedTab by createSignal(Tab.NONE)
 
-                        slot("stack_slot") {
-                            styles {
+                        slot(
+                            runtime,
+                            styles = {
                                 position = PropertyPosition.slot(4)
-                            }
-
-                            onValueChange = Consumer { v ->
-                                stackToEdit.update {
-                                    it.setStack(v)
-                                    return@update it
-                                }
-                            }
-                            value {
-                                stackToEdit.get()?.getStack()
-                            }
-                        }
+                            },
+                            onValueChange = { v -> stackToEdit.setStack(v) },
+                            value = stackToEdit.getStack()
+                        )
                         // Tab selectors
-                        button("display_name_tab_selector") {
-                            styles {
+                        button(runtime,
+                            styles = {
                                 position = PropertyPosition.slot(1)
-                            }
-                            icon {
+                            },
+                            icon = {
                                 stack("name_tag") {
                                     name = "<gold><b>Edit Display Name".provider()
                                 }
-                            }
-
-                            onClick {
-                                selectedTab.set(Tab.DISPLAY_NAME)
-                            }
-                        }
-                        button("lore_tab_selector") {
-                            styles {
-                                position = PropertyPosition.slot(2)
-                            }
-                            icon {
+                            },
+                            onClick = { selectedTab = Tab.DISPLAY_NAME }
+                        )
+                        button(runtime,
+                            styles = { position = PropertyPosition.slot(2) },
+                            icon = {
                                 stack("book") {
                                     name = "<gold><b>Edit Lore".provider()
                                 }
-                            }
+                            },
+                            onClick = { selectedTab = Tab.LORE }
+                        )
 
-                            onClick {
-                                selectedTab.set(Tab.LORE)
-                            }
+                        val isAir by createMemo<Boolean> {
+                            val stack = stackToEdit.getStack()
+                            stack == null || stack.item.value == "air"
                         }
 
-                        // The whenever statement only updates the 'then' or 'orElse' sections when absolutely necessary!
-                        // The sections are only called when the condition changes.
-                        whenever {
-                            val stack = stackToEdit.get()?.getStack()
-                            stack == null || stack.item.value == "air"
-                        } then {
-                            // Called once whenever the condition changes from false to true
+                        show(runtime, condition = isAir, fallback = {
+                            // Called once whenever the condition changes from false to true (Item becomes air)
                             // Empty component! Perhaps add a note that the item is missing!
-                        } orElse {
-                            styles {
-                                position = optionsPos
-                            }
-                            // Called once whenever the condition changes from true to false
-                            // Whenever the stack is available we can show the selected tab
-                            match({ selectedTab.get() }) {
-                                case({ this?.equals(Tab.DISPLAY_NAME) ?: false }) {
-                                    styles {
-                                        position = optionsPos
-                                    }
-                                    displayNameTab(this@registerGui, stackToEdit)
-                                }
-                                case({ this?.equals(Tab.LORE) ?: false }) {
-                                    styles {
-                                        position = optionsPos
-                                    }
-                                    group("lore_tab") {
-                                        button("edit_lore") {
-                                            styles {
-                                                position = PropertyPosition.slot(21)
-                                            }
-                                            icon {
-                                                stack("writable_book") {
-                                                    name = "<green><b>Edit Lore".provider()
-                                                }
+                        }) {
+                            group(runtime, styles = { position = optionsPos }) {
+                                val memoizedTab by createMemo<Tab> { selectedTab }
+                                createEffect {
+                                    when (memoizedTab) {
+                                        Tab.DISPLAY_NAME -> displayNameTab(runtime, this@registerGui, stackToEdit)
+                                        Tab.LORE -> {
+                                            group(runtime, styles = { position = optionsPos }) {
+                                                button(runtime,
+                                                    styles = {
+                                                        position = PropertyPosition.slot(21)
+                                                    },
+                                                    icon = {
+                                                        stack("writable_book") {
+                                                            name = "<green><b>Edit Lore".provider()
+                                                        }
+                                                    }
+                                                )
+                                                button(runtime,
+                                                    styles = {
+                                                        position = PropertyPosition.slot(23)
+                                                    },
+                                                    icon = {
+                                                        stack("red_concrete") {
+                                                            name = "<red><b>Clear Lore".provider()
+                                                        }
+                                                    }
+                                                )
                                             }
                                         }
-                                        button("clear_lore") {
-                                            styles {
-                                                position = PropertyPosition.slot(23)
-                                            }
-                                            icon {
-                                                stack("red_concrete") {
-                                                    name = "<red><b>Clear Lore".provider()
-                                                }
-                                            }
+
+                                        Tab.NONE -> {
+                                            // render nothing!
                                         }
                                     }
                                 }
@@ -167,51 +147,44 @@ class StackEditorExampleKotlin {
             }
         }
 
-        private fun ComponentGroup.displayNameTab(window: Window, stackToEdit: ReadWriteSignal<StackEditorStore>) {
-            group("display_name_tab") {
-                styles {
+        private fun displayNameTab(
+            runtime: ViewRuntime,
+            window: Window,
+            stackToEdit: StackEditorStore
+        ) = component(runtime) {
+            group(
+                runtime,
+                styles = {
                     position = PropertyPosition.slot(9)
-                }
-                button("set_display_name") {
-                    styles {
+                },
+            ) {
+                button(runtime,
+                    styles = {
                         position = PropertyPosition.slot(21)
-                    }
-                    icon {
+                    },
+                    icon = {
                         stack("green_concrete") {
                             name = "<green><b>Set Display Name".provider()
                         }
-                    }
-
-                    onClick {
+                    },
+                    onClick = {
                         window.onTextInput { _, _, s, _ ->
-                            stackToEdit.update { store ->
-                                store.getStack()?.data()
-                                    ?.set(
-                                        ItemStackDataKeys.CUSTOM_NAME,
-                                        s.deserialize()
-                                    )
-                                store
-                            }
+                            stackToEdit.getStack()?.data()?.set(ItemStackDataKeys.CUSTOM_NAME, s.deserialize())
                             true
                         }
                     }
-                }
-                button("reset_display_name") {
-                    styles {
+                )
+                button(runtime,
+                    styles = {
                         position = PropertyPosition.slot(23)
-                    }
-                    icon {
+                    },
+                    icon = {
                         stack("red_concrete") {
                             name = "<red><b>Reset Display Name".provider()
                         }
-                    }
-                    onClick {
-                        stackToEdit.update { store ->
-                            store.getStack()?.data()?.remove(ItemStackDataKeys.CUSTOM_NAME)
-                            store
-                        }
-                    }
-                }
+                    },
+                    onClick = { stackToEdit.getStack()?.data()?.remove(ItemStackDataKeys.CUSTOM_NAME) }
+                )
             }
         }
     }

@@ -20,14 +20,14 @@ package com.wolfyscript.viewportl.spigot.gui.interaction
 
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.components.ComponentGroup
+import com.wolfyscript.viewportl.gui.components.NativeComponentGroup
 import com.wolfyscript.viewportl.gui.interaction.*
 
-class InventoryGroupInteractionHandler : ComponentInteractionHandler<ComponentGroup> {
+class InventoryGroupInteractionHandler : ComponentInteractionHandler<NativeComponentGroup> {
 
     override fun onDrag(
         runtime: ViewRuntime,
-        component: ComponentGroup,
+        component: NativeComponentGroup,
         details: DragInteractionDetails,
         transaction: DragTransaction
     ) {
@@ -36,7 +36,7 @@ class InventoryGroupInteractionHandler : ComponentInteractionHandler<ComponentGr
 
     override fun onClick(
         runtime: ViewRuntime,
-        component: ComponentGroup,
+        component: NativeComponentGroup,
         details: ClickInteractionDetails,
         transaction: ClickTransaction
     ) {

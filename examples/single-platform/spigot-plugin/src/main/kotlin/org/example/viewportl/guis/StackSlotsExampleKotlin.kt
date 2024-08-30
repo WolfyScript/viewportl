@@ -21,6 +21,8 @@ package org.example.viewportl.guis
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
+import com.wolfyscript.viewportl.gui.components.router
+import com.wolfyscript.viewportl.gui.components.slot
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import java.util.function.Consumer
@@ -33,14 +35,14 @@ class StackSlotsExampleKotlin {
             manager.registerGui("stack_grid") {
                 size = 9 * 1
 
-                routes {
+                router(runtime) {
                     route({}, {
                         /*
                          This whole construction is only called upon the initiation and creates a reactivity graph
                          from the signals and effects used and only updates the necessary parts at runtime.
                          */
 
-                        val stacks = createSignal {
+                        val stacks by createSignal {
                             mutableListOf<ItemStack>().apply {
                                 for (i in 0 until 9) {
                                     this@registerGui.scaffolding.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air"))
@@ -52,28 +54,19 @@ class StackSlotsExampleKotlin {
                         }
 
                         for (i in 0 until 9) {
-                            slot("stack_slot_$i") {
-                                styles {
+                            slot (runtime,
+                                styles = {
                                     position = PropertyPosition.slot(i)
-                                }
-
-                                onClick { }
-
+                                },
+                                onClick = { },
                                 onValueChange = Consumer { v ->
-                                    stacks.update {
-                                        val newStack =
-                                            v ?: this@registerGui.scaffolding.factories.itemsFactory.createStackConfig(Key.key(
-                                                Key.MINECRAFT_NAMESPACE, "air")).constructItemStack()
-                                        if (newStack != null) {
-                                            it[i] = newStack
-                                        }
-                                        it
+                                    val newStack = v ?: this@registerGui.scaffolding.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air")).constructItemStack()
+                                    if (newStack != null) {
+                                        stacks[i] = newStack
                                     }
-                                }
-                                value {
-                                    stacks.get()?.get(i)
-                                }
-                            }
+                                },
+                                value = stacks[i]
+                            )
                         }
 
                     })

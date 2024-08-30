@@ -18,8 +18,15 @@
 
 package com.wolfyscript.viewportl.gui.components
 
-interface Outlet : Component {
+import com.wolfyscript.viewportl.gui.ViewRuntime
 
-    var component: ComponentGroup?
+fun outlet(runtime: ViewRuntime) = component(runtime) {
+
+}
+
+
+interface Outlet : NativeComponent {
+
+    var component: NativeComponentGroup?
 
 }
