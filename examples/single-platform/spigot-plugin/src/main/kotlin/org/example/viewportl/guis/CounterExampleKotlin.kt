@@ -108,7 +108,7 @@ class CounterExampleKotlin {
                 count += 1
             }
 
-            button(runtime = runtime,
+            button(runtime,
                 icon = {
                     stack("barrier") {
                         name = "<red><b>Back".provider()
@@ -120,7 +120,7 @@ class CounterExampleKotlin {
                 onClick = { routerScope.openPrevious() }
             )
 
-            button(runtime = runtime,
+            button(runtime,
                 styles = {
                     position = PropertyPosition.slot(4)
                 },
@@ -133,7 +133,7 @@ class CounterExampleKotlin {
             )
 
             button(
-                runtime = runtime,
+                runtime,
                 styles = {
                     position = PropertyPosition.slot(13)
                 },
@@ -145,7 +145,7 @@ class CounterExampleKotlin {
                 },
             )
 
-            button(runtime = runtime,
+            button(runtime,
                 styles = {
                     position = PropertyPosition.slot(22)
                 },
@@ -160,16 +160,16 @@ class CounterExampleKotlin {
             // Sometimes we want to render components dependent on signals
             val render by createMemo<Boolean> { count != 0 }
             show(
-                runtime = runtime,
-                condition = render,
+                runtime,
+                condition = { render },
                 fallback = { }
             ) {
                 group(
-                    runtime = runtime,
+                    runtime,
                     styles = { position = PropertyPosition.slot(10) },
                 ) {
                     button(
-                        runtime = runtime,
+                        runtime,
                         styles = {
                             position = PropertyPosition.slot(10)
                         },

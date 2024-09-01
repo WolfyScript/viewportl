@@ -101,7 +101,7 @@ class StackEditorExampleKotlin {
                             stack == null || stack.item.value == "air"
                         }
 
-                        show(runtime, condition = isAir, fallback = {
+                        show(runtime, condition = { isAir }, fallback = {
                             // Called once whenever the condition changes from false to true (Item becomes air)
                             // Empty component! Perhaps add a note that the item is missing!
                         }) {

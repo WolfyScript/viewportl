@@ -28,7 +28,6 @@ import com.wolfyscript.viewportl.gui.router.ActivePath
 import com.wolfyscript.viewportl.gui.router.MatchPath
 import java.util.*
 
-
 @StaticNamespacedKey(key = "router")
 class RouterImpl(
     parent: NativeComponent?,
