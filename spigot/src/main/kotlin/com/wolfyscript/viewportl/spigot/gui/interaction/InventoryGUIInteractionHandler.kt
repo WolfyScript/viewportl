@@ -21,7 +21,7 @@ package com.wolfyscript.viewportl.spigot.gui.interaction
 import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.components.NativeComponentGroupImpl
+import com.wolfyscript.viewportl.common.gui.components.GroupImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.common.gui.rendering.Node
@@ -58,7 +58,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
 
         init {
             registerComponentInteractionHandler(ButtonImpl::class.java, InventoryButtonInteractionHandler())
-            registerComponentInteractionHandler(NativeComponentGroupImpl::class.java,
+            registerComponentInteractionHandler(GroupImpl::class.java,
                 InventoryGroupInteractionHandler()
             )
             registerComponentInteractionHandler(SlotImpl::class.java, InventoryStackSlotInteractionHandler())

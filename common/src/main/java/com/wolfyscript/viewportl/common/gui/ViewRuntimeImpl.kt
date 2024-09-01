@@ -46,6 +46,7 @@ class ViewRuntimeImpl(
     val interactionHandler: InteractionHandler = viewportl.guiFactory.createInteractionHandler(this)
 
     // Build the components and init the rendering tree
+    val buildContext: BuildContext = BuildContext(this, reactiveSource, viewportl)
     private var currentRoot: Window? = rootRouter.apply(this)
     override val currentMenu: Window?
         get() = currentRoot
@@ -62,7 +63,9 @@ class ViewRuntimeImpl(
     }
 
     override fun openNew(vararg path: String) {
-        currentMenu?.apply { open(this) }
+        currentMenu?.apply {
+            open(this)
+        }
     }
 
     override fun open() {

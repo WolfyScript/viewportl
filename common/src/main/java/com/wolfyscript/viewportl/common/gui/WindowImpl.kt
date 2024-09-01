@@ -22,18 +22,15 @@ import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.common.base.Preconditions
 import com.wolfyscript.scafall.scheduling.Task
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.components.RouterImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
-import com.wolfyscript.viewportl.gui.router.Router
 import net.kyori.adventure.text.Component
 
 @StaticNamespacedKey(key = "window")
@@ -47,7 +44,6 @@ class WindowImpl internal constructor(
     Window,
     ReactiveSource by context.reactiveSource {
     override var title: Component? = null
-    override val router: Router = RouterImpl(viewportl, context, this)
     override var resourcePath: String? = null
 
     override var onTextInput: TextInputCallback? = null
@@ -68,7 +64,7 @@ class WindowImpl internal constructor(
         context.reactiveSource.createEffect {
             title = with(titleUpdate) { title.apply() }
 
-            (context.runtime as ViewRuntimeImpl).renderer.updateTitle(title)
+            context.runtime.renderer.updateTitle(title)
         }
     }
 
@@ -83,7 +79,8 @@ class WindowImpl internal constructor(
                 .delay(1).execute(intervalRunnable.first).build()
             intervalTasks.add(task)
         }
-        router.open()
+        // TODO: Render graph
+
     }
 
     override fun close() {
@@ -92,11 +89,7 @@ class WindowImpl internal constructor(
         }
         intervalTasks.clear()
 
-//        (context.runtime as ViewRuntimeImpl).renderingGraph.removeNode(0)
-    }
-
-    override fun routes(routerConfiguration: ReceiverConsumer<Router>) {
-        with(routerConfiguration) { router.consume() }
+//        context.runtime.modelGraph.removeNode(0)
     }
 
     override fun width(): Int {
@@ -113,6 +106,10 @@ class WindowImpl internal constructor(
 
     override fun onTextInputTabComplete(textInputTabCompleteCallback: TextInputTabCompleteCallback?) {
         this.onTextInputTabComplete = textInputTabCompleteCallback
+    }
+
+    override fun interval(intervalInTicks: Long, runnable: Runnable) {
+        TODO("Not yet implemented")
     }
 
 }

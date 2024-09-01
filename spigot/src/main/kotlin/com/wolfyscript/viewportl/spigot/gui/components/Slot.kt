@@ -8,15 +8,15 @@ import com.wolfyscript.viewportl.gui.reactivity.ReadOnlySignal
 import java.lang.IllegalStateException
 
 fun setupSlot(properties: SlotProperties) {
-    val runtime = properties.runtime
-    val reactiveSource = runtime.into().reactiveSource
-    val buildContext = (runtime.currentMenu as? WindowImpl)?.context ?: throw IllegalStateException("Cannot create button outside of window")
+    val runtime = properties.runtime.into()
+    val reactiveSource = runtime.reactiveSource
+    val buildContext = runtime.buildContext
 
     val slot = SlotImpl(
         "",
         runtime.viewportl,
         buildContext,
-        buildContext.parent,
+        buildContext.currentParent,
         onValueChange = properties.onValueChange,
         onClick = properties.onClick,
         onDrag = properties.onDrag,
@@ -24,7 +24,7 @@ fun setupSlot(properties: SlotProperties) {
         value = properties.value
     )
 
-    val id = runtime.into().modelGraph.addNode(slot)
+    val id = buildContext.addComponent(slot)
 
     if (properties.value is ReadOnlySignal<*>) {
         reactiveSource.createEffect {

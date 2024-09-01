@@ -22,8 +22,6 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 import com.fasterxml.jackson.databind.annotation.JsonTypeResolver
 import com.wolfyscript.scafall.config.jackson.KeyedTypeIdResolver;
 import com.wolfyscript.scafall.config.jackson.KeyedTypeResolver;
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.Keyed
 import com.wolfyscript.viewportl.Viewportl
@@ -63,7 +61,7 @@ interface NativeComponent : Keyed {
      */
     val id: String?
 
-    fun nodeId(): Long
+    val nodeId: Long
 
     /**
      * Gets the Viewportl instance this Component belongs to
@@ -79,11 +77,5 @@ interface NativeComponent : Keyed {
     val parent: NativeComponent?
 
     val styles: RenderProperties
-
-    fun styles(config: ReceiverConsumer<RenderProperties>)
-
-    fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long)
-
-    fun insert(runtime: ViewRuntime, parentNode: Long)
 
 }

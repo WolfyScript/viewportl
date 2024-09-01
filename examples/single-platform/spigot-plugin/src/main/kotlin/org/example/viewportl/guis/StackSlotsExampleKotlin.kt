@@ -36,7 +36,7 @@ class StackSlotsExampleKotlin {
                 size = 9 * 1
 
                 router(runtime) {
-                    route({}, {
+                    route({}) {
                         /*
                          This whole construction is only called upon the initiation and creates a reactivity graph
                          from the signals and effects used and only updates the necessary parts at runtime.
@@ -59,7 +59,7 @@ class StackSlotsExampleKotlin {
                                     position = PropertyPosition.slot(i)
                                 },
                                 onClick = { },
-                                onValueChange = Consumer { v ->
+                                onValueChange = { v ->
                                     val newStack = v ?: this@registerGui.scaffolding.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air")).constructItemStack()
                                     if (newStack != null) {
                                         stacks[i] = newStack
@@ -69,7 +69,7 @@ class StackSlotsExampleKotlin {
                             )
                         }
 
-                    })
+                    }
                 }
             }
         }

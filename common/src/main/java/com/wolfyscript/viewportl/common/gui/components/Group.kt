@@ -24,25 +24,20 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.inject.Inject
 import com.wolfyscript.scafall.scheduling.Task
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.BuildContext
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.*
 import java.util.*
 import kotlin.math.abs
 
 @NativeComponentImplementation(base = NativeComponentGroup::class)
 @StaticNamespacedKey(key = "cluster")
-class NativeComponentGroupImpl @JsonCreator @Inject constructor(
+class GroupImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("viewportl") viewportl: Viewportl,
     @JacksonInject("context") private val context: BuildContext,
     @javax.annotation.Nullable @JacksonInject("parent") parent: NativeComponent? = null,
-) :
-    AbstractNativeComponentImpl<NativeComponentGroup>(id, viewportl, parent),
-    NativeComponentGroup {
+) : AbstractNativeComponentImpl<NativeComponentGroup>(id, viewportl, parent), NativeComponentGroup {
 
     private val children: MutableList<NativeComponent> = mutableListOf()
     private val width: Int
@@ -65,44 +60,13 @@ class NativeComponentGroupImpl @JsonCreator @Inject constructor(
         return Optional.empty()
     }
 
-    override fun outlet(outletConfig: ReceiverConsumer<Outlet>) {
-        TODO("Not yet implemented")
-    }
-
-    override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
-        for (intervalTask in intervalTasks) {
-            intervalTask.cancel()
-        }
-        intervalTasks.clear()
-
-        (runtime as ViewRuntimeImpl).modelGraph.removeNode(nodeId)
-    }
-
-    override fun insert(runtime: ViewRuntime, parentNode: Long) {
-        runtime as ViewRuntimeImpl
-        val id = runtime.modelGraph.addNode(this)
-        runtime.modelGraph.insertNodeAsChildOf(id, parentNode)
-
-        for (child in children) {
-            child.insert(runtime, id)
-        }
-
-        // start intervals after the component has been constructed
-        for (intervalTask in intervalTasks) {
-            intervalTask.cancel()
-        }
-        intervalTasks.clear()
-        for (intervalRunnable in intervalRunnables) {
-            val task = runtime.viewportl.scafall.scheduler.task(runtime.viewportl.scafall.corePlugin)
-                .interval(intervalRunnable.second)
-                .delay(1)
-                .execute(Runnable {
-                    intervalRunnable.first.run()
-                    context.reactiveSource.runEffects()
-                })
-                .build()
-            intervalTasks.add(task)
-        }
-    }
+//    override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
+//        for (intervalTask in intervalTasks) {
+//            intervalTask.cancel()
+//        }
+//        intervalTasks.clear()
+//
+//        (runtime as ViewRuntimeImpl).modelGraph.removeNode(nodeId)
+//    }
 
 }

@@ -36,7 +36,7 @@ interface RouterScope {
      *
      * **Note:** Has no effect when used inside the [viewConfig] function. Routes are calculated once on setup and therefore can only be specified at top level!
      */
-    fun route(pathConfig: ReceiverConsumer<MatchPath>, viewConfig: ReceiverConsumer<ComponentScope>)
+    fun route(path: ReceiverConsumer<MatchPath>, subRoutes: ReceiverConsumer<RouteScope> = ReceiverConsumer {}, view: ReceiverConsumer<ComponentScope>)
 
     /**
      * Pops the current path from history and opens the previous path in the history
@@ -60,17 +60,13 @@ data class RouterProperties(
 )
 
 /**
+ * The actual component that is present in the graph. It holds all the computed routes.
  *
+ * The selected route view is rendered as a child of this router component in the graph
  */
 interface Router : NativeComponent {
 
     val routes: List<Route>
-    val currentPath: ActivePath?
-    val history : ReadWriteSignal<Deque<ActivePath>>
-
-    fun open()
-
-    fun route(pathConfig: ReceiverConsumer<MatchPath>, viewConfig: ReceiverConsumer<ComponentScope>, routeConfig: ReceiverConsumer<Route>? = null)
 
 }
 
@@ -87,8 +83,14 @@ interface Route {
 
     val routes: List<Route>
 
-    fun route(pathConfig: ReceiverConsumer<MatchPath>, viewConfig: ReceiverConsumer<ComponentScope>, routeConfig: ReceiverConsumer<Route>)
-
     fun init(outlet: Outlet)
+
+}
+
+interface RouteScope {
+
+    val route: Route
+
+    fun route(pathConfig: ReceiverConsumer<MatchPath>, viewConfig: ReceiverConsumer<ComponentScope>, routeConfig: ReceiverConsumer<Route>)
 
 }

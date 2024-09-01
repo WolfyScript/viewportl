@@ -1,9 +1,6 @@
 package com.wolfyscript.viewportl.gui.factories
 
-import com.wolfyscript.viewportl.gui.components.ButtonProperties
-import com.wolfyscript.viewportl.gui.components.RouterProperties
-import com.wolfyscript.viewportl.gui.components.ShowProperties
-import com.wolfyscript.viewportl.gui.components.SlotProperties
+import com.wolfyscript.viewportl.gui.components.*
 
 interface ComponentFactory {
 
@@ -14,5 +11,7 @@ interface ComponentFactory {
     fun router(properties: RouterProperties)
 
     fun show(properties: ShowProperties)
+
+    fun outlet(properties: OutletProperties)
 
 }

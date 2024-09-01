@@ -81,15 +81,6 @@ interface Window : ComponentScope {
     val runtime: ViewRuntime
 
     /**
-     * The parent of this Component, or null if it is a root Component.
-     *
-     * @return The parent; or null if root Component.
-     */
-    val router: Router
-
-    fun routes(routerConfiguration: ReceiverConsumer<Router>)
-
-    /**
      * Gets the width of this Component in slot count.
      *
      * @return The width in slots.

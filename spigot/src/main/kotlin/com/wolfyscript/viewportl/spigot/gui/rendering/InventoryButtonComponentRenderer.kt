@@ -29,6 +29,6 @@ class InventoryButtonComponentRenderer : ComponentRenderer<Button, InvGUIRenderC
     override fun key(): Key = Key.defaultKey("inventory/button")
 
     override fun render(context: InvGUIRenderContext, component: Button) {
-        context.renderer.renderStack(context.currentOffset(), component.icon.stack, ItemStackContext(component.icon.resolvers, context.renderer.runtime.viewportl.scafall.adventure.miniMsg, EvalContext()))
+        context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.icon.stack, ItemStackContext(component.icon.resolvers, context.renderer.runtime.viewportl.scafall.adventure.miniMsg, EvalContext()))
     }
 }

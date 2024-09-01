@@ -40,11 +40,7 @@ class GuiFactoryImpl : GuiFactory {
     }
 
     override fun runComponentFunction(runtime: ViewRuntime, fn: ComponentScope.() -> Unit) {
-        val reactiveSource = runtime.into().reactiveSource
-
-        reactiveSource.createEffect {
-            fn(ComponentScopeImpl(runtime.into()))
-        }
+        fn(ComponentScopeImpl(runtime.into()))
     }
 
     override val componentFactory: ComponentFactory = ComponentFactoryImpl()

@@ -1,6 +1,5 @@
 package com.wolfyscript.viewportl.gui.components
 
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import java.util.*
@@ -24,8 +23,6 @@ interface NativeComponentGroup : NativeComponent {
      * @return The child Component; or empty Component.
      */
     fun getChild(id: String?): Optional<out NativeComponent?>?
-
-    fun outlet(outletConfig: ReceiverConsumer<Outlet>)
 
     fun findNextOutlet() : Outlet? {
         for (childComponent in childComponents()) {

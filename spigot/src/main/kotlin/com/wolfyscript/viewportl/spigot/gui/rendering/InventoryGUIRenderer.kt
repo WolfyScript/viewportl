@@ -126,10 +126,9 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
 
             // Direct rendering to specific component renderer TODO: Make extensible
             when (val component = it.nativeComponent) {
-                is Button -> InventoryButtonComponentRenderer()
-                    .render(context, component)
+                is Button -> InventoryButtonComponentRenderer().render(context, component)
                 is NativeComponentGroup -> InventoryGroupComponentRenderer().render(context, component)
-                is Outlet -> component.component?.apply { InventoryGroupComponentRenderer().render(context, this) }
+                is Outlet -> {}
                 is StackInputSlot -> {}
             }
             cachedProperties[child] = CachedNodeRenderProperties(offset, mutableSetOf(offset))

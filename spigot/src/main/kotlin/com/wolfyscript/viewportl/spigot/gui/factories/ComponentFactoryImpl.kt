@@ -1,9 +1,7 @@
 package com.wolfyscript.viewportl.spigot.gui.factories
 
-import com.wolfyscript.viewportl.gui.components.ButtonProperties
-import com.wolfyscript.viewportl.gui.components.RouterProperties
-import com.wolfyscript.viewportl.gui.components.ShowProperties
-import com.wolfyscript.viewportl.gui.components.SlotProperties
+import com.wolfyscript.viewportl.common.gui.components.setupOutlet
+import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.viewportl.gui.factories.ComponentFactory
 import com.wolfyscript.viewportl.spigot.gui.components.setupButton
 import com.wolfyscript.viewportl.spigot.gui.components.setupRouter
@@ -18,7 +16,11 @@ class ComponentFactoryImpl : ComponentFactory {
     override fun router(properties: RouterProperties) = setupRouter(properties)
 
     override fun show(properties: ShowProperties) {
-        TODO("Not yet implemented")
+        // TODO
+    }
+
+    override fun outlet(properties: OutletProperties) {
+        setupOutlet(properties)
     }
 
 }

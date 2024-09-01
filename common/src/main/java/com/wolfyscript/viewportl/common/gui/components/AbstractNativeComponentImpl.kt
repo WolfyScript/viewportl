@@ -18,7 +18,6 @@
 package com.wolfyscript.viewportl.common.gui.components
 
 import com.google.common.base.Preconditions
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
@@ -49,26 +48,24 @@ abstract class AbstractNativeComponentImpl<C : NativeComponent>(
 ) : NativeComponent, Effect {
 
     private val type: Key = Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(javaClass))
-    var nodeId: Long? = null
+    internal var currentNodeId: Long? = null
     override var styles: RenderProperties = RenderPropertiesImpl(PropertyPosition.def())
 
     init {
-        Preconditions.checkNotNull(type, "Missing type key! One must be provided to the Component using the annotation: ${StaticNamespacedKey::class.java.name}")
+        Preconditions.checkNotNull(
+            type,
+            "Missing type key! One must be provided to the Component using the annotation: ${StaticNamespacedKey::class.java.name}"
+        )
     }
 
     override fun key(): Key {
         return type
     }
 
-    override fun nodeId(): Long {
-        return nodeId ?: -1
-    }
-
-    override fun styles(config: ReceiverConsumer<RenderProperties>) {
-        with(config) {
-            styles.consume()
+    override val nodeId: Long
+        get() {
+            return currentNodeId ?: -1
         }
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

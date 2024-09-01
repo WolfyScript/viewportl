@@ -19,39 +19,36 @@
 package com.wolfyscript.viewportl.common.gui.components
 
 import com.fasterxml.jackson.annotation.JacksonInject
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.inject.Inject
+import com.wolfyscript.scafall.function.ReceiverBiFunction
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.BuildContext
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.components.NativeComponentGroup
 import com.wolfyscript.viewportl.gui.components.NativeComponentImplementation
-import com.wolfyscript.viewportl.gui.components.Outlet
+import com.wolfyscript.viewportl.gui.components.StackInputSlot
+import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.ClickType
+import com.wolfyscript.viewportl.gui.interaction.DragTransaction
+import java.util.function.Consumer
 import javax.annotation.Nullable
 
-@NativeComponentImplementation(base = Outlet::class)
-@StaticNamespacedKey(key = "outlet")
-class OutletImpl(
+@NativeComponentImplementation(base = StackInputSlot::class)
+@StaticNamespacedKey(key = "stack_input_slot")
+class SlotImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("viewportl") viewportl: Viewportl,
     @JacksonInject("context") private val context: BuildContext,
     @Nullable @JacksonInject("parent") parent: NativeComponent? = null,
-) : AbstractNativeComponentImpl<Outlet>(id, viewportl, parent), Outlet {
-
-    override var component: NativeComponentGroup? = null
-
-    override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
-        (runtime as ViewRuntimeImpl).modelGraph.removeNode(nodeId)
-    }
-
-    override fun insert(runtime: ViewRuntime, parentNode: Long) {
-        runtime as ViewRuntimeImpl
-        val id = runtime.modelGraph.addNode(this)
-        runtime.modelGraph.insertNodeAsChildOf(id, parentNode)
-
-        component?.insert(runtime, id)
-    }
-
-}
+    override var onValueChange: Consumer<ItemStack?>? = null,
+    override var onClick: ReceiverConsumer<ClickTransaction>? = null,
+    override var onDrag: ReceiverConsumer<DragTransaction>? = null,
+    override var canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null,
+    override var value: ItemStack? = null
+) : AbstractNativeComponentImpl<StackInputSlot>(
+    id, viewportl, parent
+), StackInputSlot

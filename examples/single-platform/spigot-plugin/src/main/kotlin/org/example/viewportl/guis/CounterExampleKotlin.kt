@@ -85,7 +85,9 @@ class CounterExampleKotlin {
                     }
                 },
                 styles = { position = PropertyPosition.slot(13) },
-                onClick = { routerScope.openSubRoute { this / "main" } }
+                onClick = {
+                    routerScope.openSubRoute { this / "main" }
+                }
             )
         }
 

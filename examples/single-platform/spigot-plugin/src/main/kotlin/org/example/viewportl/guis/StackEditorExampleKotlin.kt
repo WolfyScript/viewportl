@@ -62,7 +62,7 @@ class StackEditorExampleKotlin {
                 val optionsPos = PropertyPosition.slot(18)
 
                 router(runtime) {
-                    route({}, {
+                    route({}) {
                         val stackToEdit by createSignal(StackEditorStore())
                         var selectedTab by createSignal(Tab.NONE)
 
@@ -142,7 +142,7 @@ class StackEditorExampleKotlin {
                                 }
                             }
                         }
-                    })
+                    }
                 }
             }
         }

@@ -10,8 +10,6 @@ import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.BuildContext
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.Button
 import com.wolfyscript.viewportl.gui.components.ButtonIcon
 import com.wolfyscript.viewportl.gui.components.NativeComponent
@@ -32,21 +30,9 @@ class ButtonImpl @JsonCreator @Inject constructor(
     override var icon: ButtonIcon = DynamicIcon(context),
     override var onClick: ReceiverConsumer<ClickTransaction>? = null,
     override var sound: Sound? = Sound.sound(Key.parse("minecraft:ui.button.click").into(), Sound.Source.MASTER, 0.25f, 1f)
-) : AbstractNativeComponentImpl<Button>(id, viewportl, parent), Button {
+) : AbstractNativeComponentImpl<Button>(id, viewportl, parent), Button
 
-    override fun insert(runtime: ViewRuntime, parentNode: Long) {
-        runtime as ViewRuntimeImpl
-        val id = runtime.modelGraph.addNode(this)
-        runtime.modelGraph.insertNodeAsChildOf(id, parentNode)
-    }
-
-    override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
-        (runtime as ViewRuntimeImpl).modelGraph.removeNode(nodeId)
-    }
-
-}
-
-class DynamicIcon internal constructor(
+class DynamicIcon(
     @JacksonInject("context") private val context: BuildContext,
 ) : ButtonIcon {
 
@@ -55,16 +41,12 @@ class DynamicIcon internal constructor(
     override var resolvers: TagResolver = TagResolver.empty()
 
     override fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>) {
-        context.reactiveSource.createEffect {
-            val newStack = context.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, itemId))
-            with(stackConfig) { newStack.consume() }
-            stack = newStack
-        }
+        val newStack = context.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, itemId))
+        with(stackConfig) { newStack.consume() }
+        stack = newStack
     }
 
     override fun resolvers(resolverSupplier: Supplier<TagResolver>) {
-        context.reactiveSource.createEffect {
-            resolvers = resolverSupplier.get()
-        }
+        resolvers = resolverSupplier.get()
     }
 }

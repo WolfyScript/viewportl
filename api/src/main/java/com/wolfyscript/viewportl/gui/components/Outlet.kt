@@ -21,12 +21,18 @@ package com.wolfyscript.viewportl.gui.components
 import com.wolfyscript.viewportl.gui.ViewRuntime
 
 fun outlet(runtime: ViewRuntime) = component(runtime) {
-
+    runtime.viewportl.guiFactory.componentFactory.outlet(
+        OutletProperties(
+            runtime
+        )
+    )
 }
 
 
 interface Outlet : NativeComponent {
 
-    var component: NativeComponentGroup?
-
 }
+
+data class OutletProperties(
+    val runtime: ViewRuntime
+)

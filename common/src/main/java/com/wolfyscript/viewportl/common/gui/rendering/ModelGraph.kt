@@ -37,7 +37,7 @@ class ModelGraph(private val runtime: ViewRuntimeImpl) {
         val id = ++nodeCount
         nodes[id] = Node(id, nativeComponent)
         if (nativeComponent is AbstractNativeComponentImpl<*>) {
-            nativeComponent.nodeId = id
+            nativeComponent.currentNodeId = id
         }
         return id
     }
@@ -75,6 +75,14 @@ class ModelGraph(private val runtime: ViewRuntimeImpl) {
         return parents[id]
     }
 
+    fun clearNode(nodeId: Long) {
+        // Recursively remove child nodes
+        val removedChildren = children.removeAll(nodeId)
+        for (child in removedChildren) {
+            removeNode(child)
+        }
+    }
+
     fun removeNode(nodeId: Long) {
         runtime.incomingUpdate(object : UpdateInformation{
 
@@ -89,11 +97,6 @@ class ModelGraph(private val runtime: ViewRuntimeImpl) {
         if (parent != null) {
             children[parent].remove(nodeId)
         }
-
-        // Recursively remove child nodes
-        val removedChildren = children.removeAll(nodeId)
-        for (child in removedChildren) {
-            removeNode(child)
-        }
+        clearNode(nodeId)
     }
 }

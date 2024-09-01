@@ -36,10 +36,6 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
         return guiHolder.currentWindow
     }
 
-    fun guiHolder(): GuiHolder {
-        return guiHolder
-    }
-
     fun onClick(event: InventoryClickEvent) {
         if (currentWindow() == null || event.clickedInventory == null) return
         if (event.view.topInventory.holder == this) {

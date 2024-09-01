@@ -54,15 +54,12 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
     }
 
     override fun registerGui(key: String, windowConsumer: ReceiverConsumer<Window>) {
-        // TODO: maybe wrap in an extra object?
         registerGui(key) { runtime ->
-            val buildContext = BuildContext(
-                runtime,
-                (runtime as ViewRuntimeImpl).reactiveSource,
-                viewportl
-            )
-            val window: Window = WindowImpl(key, 54, null, viewportl, buildContext)
-            with(windowConsumer) { window.consume() }
+            val window: Window = WindowImpl(key, 54, null, viewportl, runtime.into().buildContext)
+
+            with(windowConsumer) {
+                window.consume()
+            }
             window
         }
     }

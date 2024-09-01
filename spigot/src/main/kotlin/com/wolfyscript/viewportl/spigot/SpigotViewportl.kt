@@ -18,17 +18,15 @@
 
 package com.wolfyscript.viewportl.spigot
 
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.wolfyscript.scafall.spigot.api.into
 import com.wolfyscript.viewportl.common.CommonViewportl
 import com.wolfyscript.viewportl.common.gui.GuiAPIManagerImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.components.NativeComponentGroupImpl
+import com.wolfyscript.viewportl.common.gui.components.GroupImpl
 import com.wolfyscript.viewportl.common.gui.components.OutletImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.registry.SpigotViewportlRegistries
 import com.wolfyscript.viewportl.gui.GuiAPIManager
-import com.wolfyscript.viewportl.gui.components.ButtonIcon
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import com.wolfyscript.viewportl.spigot.commands.InputCommand
@@ -45,16 +43,11 @@ class SpigotViewportl : CommonViewportl() {
     override val registries: ViewportlRegistries = SpigotViewportlRegistries(this)
 
     fun init() {
-        val module = SimpleModule()
-        // Register implementation types to use for de/serialization
-        module.addAbstractTypeMapping(ButtonIcon::class.java, ButtonImpl.DynamicIcon::class.java)
-        // TODO: register module
-
         // Register GUI things
         val guiComponentBuilders = registries.guiComponents
         guiComponentBuilders.register(ButtonImpl::class.java)
         guiComponentBuilders.register(SlotImpl::class.java)
-        guiComponentBuilders.register(NativeComponentGroupImpl::class.java)
+        guiComponentBuilders.register(GroupImpl::class.java)
         guiComponentBuilders.register(OutletImpl::class.java)
 
         registerListeners()
