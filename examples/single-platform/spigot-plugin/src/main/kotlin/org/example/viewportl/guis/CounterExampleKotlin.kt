@@ -141,9 +141,7 @@ class CounterExampleKotlin {
                     stack("redstone") {
                         name = "<!italic>Clicked <b><count></b> times!".provider()
                     }
-                    resolvers {
-                        Placeholder.parsed("count", count.toString())
-                    }
+                    resolvers = Placeholder.parsed("count", count.toString())
                 },
             )
 
