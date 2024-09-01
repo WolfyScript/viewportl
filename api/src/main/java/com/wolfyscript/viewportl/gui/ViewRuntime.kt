@@ -18,6 +18,7 @@
 package com.wolfyscript.viewportl.gui
 
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.gui.model.ModelGraph
 import java.util.*
 
 /**
@@ -71,5 +72,7 @@ interface ViewRuntime {
     val viewers: Set<UUID>
 
     val viewportl: Viewportl
+
+    val model: ModelGraph
 
 }

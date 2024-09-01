@@ -1,6 +1,5 @@
 package com.wolfyscript.viewportl.spigot.gui.components
 
-import com.wolfyscript.viewportl.common.gui.WindowImpl
 import com.wolfyscript.viewportl.common.gui.components.ComponentScopeImpl
 import com.wolfyscript.viewportl.common.gui.components.RouterImpl
 import com.wolfyscript.viewportl.common.gui.components.RouterScopeImpl
@@ -54,8 +53,8 @@ fun setupRouter(properties: RouterProperties) {
 
         // Clear all child components (the route component)
         reactiveSource.createCleanup {
-            val graph = runtime.into().modelGraph
-            graph.clearNode(id)
+            val graph = runtime.into().model
+            graph.clearNodeChildren(id)
         }
     }
 

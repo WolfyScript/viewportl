@@ -18,20 +18,14 @@
 package com.wolfyscript.viewportl.gui.rendering
 
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.viewportl.gui.model.ModelChangeListener
 import net.kyori.adventure.text.Component
 
-interface Renderer<C: RenderContext> {
+interface Renderer<C: RenderContext> : ModelChangeListener {
 
     fun changeWindow(window: Window)
 
     fun render()
-
-    /**
-     * Called whenever the render graph is updated.
-     * @param information info about the update (e.g. which nodes changed).
-     */
-    fun update(information: UpdateInformation)
 
     fun updateTitle(component: Component?)
 

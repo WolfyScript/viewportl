@@ -27,13 +27,15 @@ import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
-import com.wolfyscript.viewportl.common.gui.rendering.Node
 import com.wolfyscript.viewportl.gui.*
 import com.wolfyscript.viewportl.gui.components.Button
 import com.wolfyscript.viewportl.gui.components.NativeComponentGroup
 import com.wolfyscript.viewportl.gui.components.Outlet
 import com.wolfyscript.viewportl.gui.components.StackInputSlot
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.viewportl.gui.model.Node
+import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
+import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
+import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import com.wolfyscript.viewportl.spigot.gui.interaction.BukkitInventoryGuiHolder
 import net.kyori.adventure.text.Component
@@ -114,13 +116,13 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
     }
 
     private fun renderChildren(parent: Long, context: InvGUIRenderContext) {
-        for (child in runtime.modelGraph.children(parent)) {
+        for (child in runtime.model.children(parent)) {
             renderChildOf(child, parent, context)
         }
     }
 
     private fun renderChildOf(child: Long, parent: Long, context: InvGUIRenderContext) {
-        runtime.modelGraph.getNode(child)?.let {
+        runtime.model.getNode(child)?.let {
             val nextOffset = calculatePosition(it, context)
             val offset = context.currentOffset()
 
@@ -151,66 +153,6 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
         val offset = context.currentOffset()
         cachedProperties[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))
         return nextOffset
-    }
-
-    override fun update(information: UpdateInformation) {
-        val context = InvGUIRenderContext(this)
-        for ((_, addedNode) in information.added()) {
-            runtime.modelGraph.getNode(addedNode)?.let { node ->
-                val parent = runtime.modelGraph.parent(node.id)?.let { runtime.modelGraph.getNode(it) }
-                if (parent != null) {
-                    context.setSlotOffset(0)
-                    cachedProperties[parent.id]?.let {
-                        context.setSlotOffset(it.position)
-                    }
-                    val nextOffset = calculatePosition(parent, context)
-                    context.setSlotOffset(nextOffset)
-                    renderChildOf(addedNode, parent.id, context)
-                } else {
-                    context.setSlotOffset(0)
-                    renderChildOf(addedNode, 0, context)
-                }
-            }
-        }
-
-        for (updated in information.updated()) {
-            runtime.modelGraph.getNode(updated)?.let { node ->
-                val parent = runtime.modelGraph.parent(node.id)?.let { runtime.modelGraph.getNode(it) }
-                if (parent != null) {
-                    context.setSlotOffset(0)
-                    cachedProperties[parent.id]?.let {
-                        context.setSlotOffset(it.position)
-                    }
-                    val nextOffset = calculatePosition(parent, context)
-                    context.setSlotOffset(nextOffset)
-                    renderChildOf(updated, parent.id, context)
-                } else {
-                    context.setSlotOffset(0)
-                    renderChildOf(updated, 0, context)
-                }
-            }
-        }
-
-        for (removedNode in information.removed()) {
-            runtime.modelGraph.getNode(removedNode)?.let {
-
-                // Remove node from cache
-                val removedProperties = cachedProperties.remove(removedNode)
-                removedProperties?.slots?.forEach {
-                    inventory?.clear(it) // clear slots affected by the removed node
-                }
-
-                // Does it have a parent? if so unlink it
-                val parent = runtime.modelGraph.parent(removedNode)
-                if (parent != null) {
-                    cachedProperties[parent]?.let { parentProperties ->
-                        removedProperties?.slots?.let {
-                            parentProperties.slots.removeAll(it) // Remove unmarked slots from parent
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun getInventoryType(window: Window): InventoryType? {
@@ -250,7 +192,11 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
             return
         }
         require(itemStackConfig is BukkitItemStackConfig) {
-            String.format("Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.", BukkitItemStackConfig::class.java.name, itemStackConfig.javaClass.name)
+            String.format(
+                "Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.",
+                BukkitItemStackConfig::class.java.name,
+                itemStackConfig.javaClass.name
+            )
         }
 
         inventory!!.setItem(i, itemStackConfig.constructItemStack()?.unwrap())
@@ -262,7 +208,11 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
             return
         }
         require(itemStack is ItemStackImpl) {
-            String.format("Cannot render stack! Invalid stack config type! Expected '%s' but received '%s'.", ItemStackImpl::class.java.name, itemStack.javaClass.name)
+            String.format(
+                "Cannot render stack! Invalid stack config type! Expected '%s' but received '%s'.",
+                ItemStackImpl::class.java.name,
+                itemStack.javaClass.name
+            )
         }
 
         setNativeStack(position, itemStack.bukkitRef)
@@ -270,10 +220,21 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
 
     fun renderStack(position: Int, itemStackConfig: ItemStackConfig, itemStackContext: ItemStackContext) {
         require(itemStackConfig is BukkitItemStackConfig) {
-            String.format("Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.", BukkitItemStackConfig::class.java.name, itemStackConfig.javaClass.name)
+            String.format(
+                "Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.",
+                BukkitItemStackConfig::class.java.name,
+                itemStackConfig.javaClass.name
+            )
         }
 
-        setNativeStack(position, itemStackConfig.constructItemStack(EvalContext(), runtime.viewportl.scafall.adventure.miniMsg, itemStackContext.resolvers)?.bukkitRef)
+        setNativeStack(
+            position,
+            itemStackConfig.constructItemStack(
+                EvalContext(),
+                runtime.viewportl.scafall.adventure.miniMsg,
+                itemStackContext.resolvers
+            )?.bukkitRef
+        )
     }
 
     private fun setNativeStack(i: Int, itemStack: org.bukkit.inventory.ItemStack?) {
@@ -283,6 +244,58 @@ class InventoryGUIRenderer(val runtime: ViewRuntimeImpl) : Renderer<InvGUIRender
             return
         }
         inventory!!.setItem(i, itemStack)
+    }
+
+    override fun onNodeAdded(event: NodeAddedEvent) {
+        val context = InvGUIRenderContext(this)
+        val parent = runtime.model.parent(event.node.id)?.let { runtime.model.getNode(it) }
+        if (parent != null) {
+            context.setSlotOffset(0)
+            cachedProperties[parent.id]?.let {
+                context.setSlotOffset(it.position)
+            }
+            val nextOffset = calculatePosition(parent, context)
+            context.setSlotOffset(nextOffset)
+            renderChildOf(event.node.id, parent.id, context)
+        } else {
+            context.setSlotOffset(0)
+            renderChildOf(event.node.id, 0, context)
+        }
+    }
+
+    override fun onNodeRemoved(event: NodeRemovedEvent) {
+        // Remove node from cache
+        val removedProperties = cachedProperties.remove(event.node.id)
+        removedProperties?.slots?.forEach {
+            inventory?.clear(it) // clear slots affected by the removed node
+        }
+
+        // Does it have a parent? if so unlink it
+        val parent = runtime.model.parent(event.node.id)
+        if (parent != null) {
+            cachedProperties[parent]?.let { parentProperties ->
+                removedProperties?.slots?.let {
+                    parentProperties.slots.removeAll(it) // Remove unmarked slots from parent
+                }
+            }
+        }
+    }
+
+    override fun onNodeUpdated(event: NodeUpdatedEvent) {
+        val context = InvGUIRenderContext(this)
+        val parent = runtime.model.parent(event.node.id)?.let { runtime.model.getNode(it) }
+        if (parent != null) {
+            context.setSlotOffset(0)
+            cachedProperties[parent.id]?.let {
+                context.setSlotOffset(it.position)
+            }
+            val nextOffset = calculatePosition(parent, context)
+            context.setSlotOffset(nextOffset)
+            renderChildOf(event.node.id, parent.id, context)
+        } else {
+            context.setSlotOffset(0)
+            renderChildOf(event.node.id, 0, context)
+        }
     }
 
 }

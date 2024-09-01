@@ -24,13 +24,15 @@ import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.GroupImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
-import com.wolfyscript.viewportl.common.gui.rendering.Node
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.viewportl.gui.model.Node
+import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
+import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
+import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.Inventory
@@ -78,13 +80,13 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
     }
 
     private fun initChildren(parent: Long, context: InvGUIInteractionContext) {
-        for (child in runtime.modelGraph.children(parent)) {
+        for (child in runtime.model.children(parent)) {
             initChildOf(child, parent, context)
         }
     }
 
     private fun initChildOf(child: Long, parent: Long, context: InvGUIInteractionContext) {
-        runtime.modelGraph.getNode(child)?.let {
+        runtime.model.getNode(child)?.let {
             val nextOffset = calculatePosition(it, context)
             val offset = context.currentOffset()
             // Mark slot to interact with this node
@@ -330,7 +332,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
             return
         }
         // Top inventory clicked
-        val node = slotNodes[details.slot]?.let { runtime.modelGraph.getNode(it) }
+        val node = slotNodes[details.slot]?.let { runtime.model.getNode(it) }
         if (node == null) {
             details.invalidate()
             return
@@ -365,7 +367,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
             return true
         }
         val slot = inventoryView.convertSlot(rawSlot)
-        val node = slotNodes[slot]?.let { runtime.modelGraph.getNode(it) }
+        val node = slotNodes[slot]?.let { runtime.model.getNode(it) }
         if (node != null) {
             val transaction = ClickTransactionImpl(
                 details.clickType,
@@ -489,7 +491,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
         for (rawSlot in details.rawSlots) {
             if (rawSlot < topInvSize) {
                 // Slot is in top inventory
-                val node = slotNodes[rawSlot]?.let { runtime.modelGraph.getNode(it) }
+                val node = slotNodes[rawSlot]?.let { runtime.model.getNode(it) }
 
                 if (node == null) {
                     details.invalidate() // Cancel the entire event if only one fails!
@@ -514,53 +516,42 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
         }
     }
 
-    override fun update(info: UpdateInformation) {
+    override fun onNodeAdded(event: NodeAddedEvent) {
         val context = InvGUIInteractionContext(this)
+        val parent = runtime.model.parent(event.node.id)?.let { runtime.model.getNode(it) }
+        if (parent != null) {
+            context.setSlotOffset(0)
+            cachedProperties[parent.id]?.let {
+                context.setSlotOffset(it.position)
+            }
+            val nextOffset = calculatePosition(parent, context)
+            context.setSlotOffset(nextOffset)
+            initChildOf(event.node.id, parent.id, context)
+        } else {
+            context.setSlotOffset(0)
+            initChildOf(event.node.id, 0, context)
+        }
+    }
 
-        // Nodes that got added
-        for ((sibling, addedNode) in info.added()) {
-            runtime.modelGraph.getNode(addedNode)?.let { node ->
-                val parent = runtime.modelGraph.parent(node.id)?.let { runtime.modelGraph.getNode(it) }
-                if (parent != null) {
-                    context.setSlotOffset(0)
-                    cachedProperties[parent.id]?.let {
-                        context.setSlotOffset(it.position)
-                    }
-                    val nextOffset = calculatePosition(parent, context)
-                    context.setSlotOffset(nextOffset)
-                    initChildOf(addedNode, parent.id, context)
-                } else {
-                    context.setSlotOffset(0)
-                    initChildOf(addedNode, 0, context)
+    override fun onNodeRemoved(event: NodeRemovedEvent) {
+        // Remove node from cache
+        val removedProperties = cachedProperties.remove(event.node.id)
+        removedProperties?.slots?.forEach {
+            slotNodes.remove(it) // Unmark slot, so it no longer interacts with the node
+        }
+
+        // Does it have a parent? if so unlink it
+        val parent = runtime.model.parent(event.node.id)
+        if (parent != null) {
+            cachedProperties[parent]?.let { parentProperties ->
+                removedProperties?.slots?.let {
+                    parentProperties.slots.removeAll(it) // Remove unmarked slots from parent
                 }
             }
         }
+    }
 
-        // Nodes that had their component properties updated
-        for (updated in info.updated()) {
-            // TODO: Do we need this here?
-        }
-
-        // Nodes that got removed
-        for (removedNode in info.removed()) {
-            runtime.modelGraph.getNode(removedNode)?.let {
-
-                // Remove node from cache
-                val removedProperties = cachedProperties.remove(removedNode)
-                removedProperties?.slots?.forEach {
-                    slotNodes.remove(it) // Unmark slot, so it no longer interacts with the node
-                }
-
-                // Does it have a parent? if so unlink it
-                val parent = runtime.modelGraph.parent(removedNode)
-                if (parent != null) {
-                    cachedProperties[parent]?.let { parentProperties ->
-                        removedProperties?.slots?.let {
-                            parentProperties.slots.removeAll(it) // Remove unmarked slots from parent
-                        }
-                    }
-                }
-            }
-        }
+    override fun onNodeUpdated(event: NodeUpdatedEvent) {
+        // TODO: Do we need this here?
     }
 }

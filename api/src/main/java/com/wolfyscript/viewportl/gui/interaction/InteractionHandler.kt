@@ -19,13 +19,12 @@
 package com.wolfyscript.viewportl.gui.interaction
 
 import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.model.ModelChangeListener
 import com.wolfyscript.viewportl.gui.model.UpdateInformation
 
-interface InteractionHandler {
+interface InteractionHandler : ModelChangeListener {
 
     fun init(window: Window)
-
-    fun update(info: UpdateInformation)
 
     fun onClick(details: ClickInteractionDetails)
 

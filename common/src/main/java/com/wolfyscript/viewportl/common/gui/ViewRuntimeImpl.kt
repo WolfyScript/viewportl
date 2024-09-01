@@ -20,11 +20,11 @@ package com.wolfyscript.viewportl.common.gui
 
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
-import com.wolfyscript.viewportl.common.gui.rendering.ModelGraph
+import com.wolfyscript.viewportl.common.gui.model.ModelGraphImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.viewportl.gui.model.ModelGraph
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import java.util.*
 import java.util.function.Function
@@ -37,8 +37,8 @@ class ViewRuntimeImpl(
 
     override val id: Long = NEXT_ID++
 
-    // Create rendering & reactivity trees
-    val modelGraph: ModelGraph = ModelGraph(this)
+    // Create model & reactivity graphs
+    override val model: ModelGraph = ModelGraphImpl(this)
     val reactiveSource: ReactiveGraph = ReactiveGraph(this)
 
     // Create platform specific handlers that handle rendering and interaction
@@ -53,9 +53,9 @@ class ViewRuntimeImpl(
 
     private val history: Deque<Window> = ArrayDeque()
 
-    fun incomingUpdate(information: UpdateInformation?) {
-        interactionHandler.update(information!!)
-        renderer.update(information)
+    init {
+        model.registerListener(renderer)
+        model.registerListener(interactionHandler)
     }
 
     override fun openNew() {

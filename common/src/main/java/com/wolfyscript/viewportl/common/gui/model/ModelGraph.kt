@@ -16,24 +16,45 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.common.gui.rendering
+package com.wolfyscript.viewportl.common.gui.model
 
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.components.AbstractNativeComponentImpl
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.viewportl.gui.model.ModelChangeListener
+import com.wolfyscript.viewportl.gui.model.ModelGraph
+import com.wolfyscript.viewportl.gui.model.Node
+import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
+import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
+import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
 import java.util.Collections
 
-class ModelGraph(private val runtime: ViewRuntimeImpl) {
+/**
+ * An acyclic Graph (Tree) of [NativeComponents][NativeComponent]
+ *
+ * This model can be manipulated by adding or removing nodes ([NativeComponent]).
+ * Those changes are then sent to the renderer and interaction handler.
+ *
+ */
+class ModelGraphImpl(private val runtime: ViewRuntime) : ModelGraph {
 
     private var nodeCount: Long = 0
     private val nodes: MutableMap<Long, Node> = mutableMapOf()
     private val children: SetMultimap<Long, Long> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
     private val parents: MutableMap<Long, Long> = mutableMapOf()
+    private val listeners: MutableSet<ModelChangeListener> = mutableSetOf()
 
-    fun addNode(nativeComponent: NativeComponent) : Long {
+    override fun registerListener(listener: ModelChangeListener) {
+        listeners.add(listener)
+    }
+
+    override fun unregisterListener(listener: ModelChangeListener) {
+        listeners.remove(listener)
+    }
+
+    override fun addNode(nativeComponent: NativeComponent) : Long {
         val id = ++nodeCount
         nodes[id] = Node(id, nativeComponent)
         if (nativeComponent is AbstractNativeComponentImpl<*>) {
@@ -42,40 +63,35 @@ class ModelGraph(private val runtime: ViewRuntimeImpl) {
         return id
     }
 
-    fun insertComponentAt(nativeComponent: NativeComponent, insertAt: Long) {
+    override fun insertComponentAt(nativeComponent: NativeComponent, insertAt: Long) {
         if (insertAt != 0L && !nodes.containsKey(insertAt)) return
         val id = addNode(nativeComponent)
         insertNodeAsChildOf(id, insertAt)
     }
 
-    fun insertNodeAsChildOf(nodeId: Long, parent: Long) {
+    override fun insertNodeAsChildOf(nodeId: Long, parent: Long) {
         if(!nodes.containsKey(nodeId) || (!nodes.containsKey(parent) && parent != 0L)) return
         val siblings = children[parent]
         val previousSibling = siblings.lastOrNull()
         siblings.add(nodeId)
         parents[nodeId] = parent
 
-        runtime.incomingUpdate(object : UpdateInformation{
-
-            override fun added(): List<Pair<Long?, Long>> {
-                return listOf(Pair(previousSibling, nodeId))
-            }
-        })
+        listeners.forEach { it.onNodeAdded(NodeAddedEvent(nodes[nodeId]!!)) }
     }
 
-    fun getNode(id: Long) : Node? {
+    override fun getNode(id: Long) : Node? {
         return nodes[id]
     }
 
-    fun children(id: Long) : Set<Long> {
+    override fun children(id: Long) : Set<Long> {
         return Collections.unmodifiableSet(children[id])
     }
 
-    fun parent(id: Long) : Long? {
+    override fun parent(id: Long) : Long? {
         return parents[id]
     }
 
-    fun clearNode(nodeId: Long) {
+    override fun clearNodeChildren(nodeId: Long) {
         // Recursively remove child nodes
         val removedChildren = children.removeAll(nodeId)
         for (child in removedChildren) {
@@ -83,20 +99,20 @@ class ModelGraph(private val runtime: ViewRuntimeImpl) {
         }
     }
 
-    fun removeNode(nodeId: Long) {
-        runtime.incomingUpdate(object : UpdateInformation{
+    override fun removeNode(nodeId: Long) {
+        val node = nodes.remove(nodeId) ?: return // If no node was removed we can just skip it
+        listeners.forEach { it.onNodeRemoved(NodeRemovedEvent(node)) }
 
-            override fun removed(): List<Long> {
-                return listOf(nodeId)
-            }
-
-        })
-
-        nodes.remove(nodeId)
+        // Remove this node from the parent children list
         val parent = parents.remove(nodeId)
         if (parent != null) {
             children[parent].remove(nodeId)
         }
-        clearNode(nodeId)
+        clearNodeChildren(nodeId)
+    }
+
+    override fun updateNode(nodeId: Long) {
+        val node = nodes[nodeId] ?: return // If no node was removed we can just skip it
+        listeners.forEach { it.onNodeUpdated(NodeUpdatedEvent(node)) }
     }
 }

@@ -25,7 +25,7 @@ import java.util.*
 
 class BuildContext(val runtime: ViewRuntimeImpl, val reactiveSource: ReactiveGraph, val viewportl: Viewportl) {
 
-    val modelGraph = runtime.modelGraph
+    val modelGraph = runtime.model
 
     private val ancestors: Deque<NativeComponent> = ArrayDeque()
 
