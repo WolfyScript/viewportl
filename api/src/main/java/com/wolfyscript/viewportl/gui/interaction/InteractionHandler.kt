@@ -20,7 +20,6 @@ package com.wolfyscript.viewportl.gui.interaction
 
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.model.ModelChangeListener
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
 
 interface InteractionHandler : ModelChangeListener {
 
