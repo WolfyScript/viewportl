@@ -2,6 +2,7 @@ package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
+import kotlin.reflect.KProperty
 
 /**
  * A setup function used to create a component.
@@ -30,5 +31,22 @@ interface ComponentScope : ReactiveSource {
      * @return This builder for chaining
      */
     fun interval(intervalInTicks: Long, runnable: Runnable)
+
+}
+
+class DynamicProperty<O : NativeComponent, T>(
+    val runtime: ViewRuntime,
+    initial: T
+) {
+    private var value: T = initial
+
+    operator fun getValue(thisRef: O, property: KProperty<*>) : T {
+        return value
+    }
+
+    operator fun setValue(thisRef: O, property: KProperty<*>, value: T) {
+        this.value = value
+        runtime.model.updateNode(thisRef.nodeId)
+    }
 
 }

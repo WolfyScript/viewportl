@@ -34,7 +34,9 @@ internal fun setupButton(properties: ButtonProperties) {
         }
     }
     reactiveSource.createEffect {
-        properties.icon(button.icon)
+        val icon = DynamicIcon(runtime.buildContext)
+        properties.icon(icon)
+        button.icon = icon
     }
     reactiveSource.createEffect {
         properties.styles(button.styles)

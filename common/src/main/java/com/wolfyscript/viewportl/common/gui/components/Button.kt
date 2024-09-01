@@ -12,6 +12,7 @@ import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.BuildContext
 import com.wolfyscript.viewportl.gui.components.Button
 import com.wolfyscript.viewportl.gui.components.ButtonIcon
+import com.wolfyscript.viewportl.gui.components.DynamicProperty
 import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.components.NativeComponentImplementation
 import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
@@ -25,19 +26,24 @@ import javax.annotation.Nullable
 class ButtonImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("viewportl") viewportl: Viewportl,
-    @JacksonInject("context") private val context: BuildContext,
+    @JacksonInject("context") internal val context: BuildContext,
     @Nullable @JacksonInject("parent") parent: NativeComponent? = null,
-    override var icon: ButtonIcon = DynamicIcon(context),
-    override var onClick: ReceiverConsumer<ClickTransaction>? = null,
-    override var sound: Sound? = Sound.sound(Key.parse("minecraft:ui.button.click").into(), Sound.Source.MASTER, 0.25f, 1f)
-) : AbstractNativeComponentImpl<Button>(id, viewportl, parent), Button
+    icon: ButtonIcon = DynamicIcon(context),
+    onClick: ReceiverConsumer<ClickTransaction>? = null,
+    sound: Sound? = Sound.sound(Key.parse("minecraft:ui.button.click").into(), Sound.Source.MASTER, 0.25f, 1f)
+) : AbstractNativeComponentImpl<Button>(id, viewportl, parent), Button {
+
+    override var icon: ButtonIcon by DynamicProperty(context.runtime, icon)
+    override var onClick: ReceiverConsumer<ClickTransaction>? by DynamicProperty(context.runtime, onClick)
+    override var sound: Sound? by DynamicProperty(context.runtime, sound)
+
+}
 
 class DynamicIcon(
     @JacksonInject("context") private val context: BuildContext,
 ) : ButtonIcon {
 
-    override var stack: ItemStackConfig = context.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(
-        Key.key(Key.MINECRAFT_NAMESPACE, "air"))
+    override var stack: ItemStackConfig = context.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air"))
     override var resolvers: TagResolver = TagResolver.empty()
 
     override fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>) {
