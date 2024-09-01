@@ -2,6 +2,12 @@ package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.viewportl.gui.ViewRuntime
 
+/**
+ * The show component renders the content depending on the condition.
+ *
+ * When the [condition] evaluates to true then it renders the [content], otherwise renders the [fallback].
+ * Both the [content] and [fallback] components are added as children to the show component.
+ */
 fun show(
     runtime: ViewRuntime,
     condition: () -> Boolean,
@@ -22,4 +28,7 @@ data class ShowProperties(
     val content: ComponentScope.() -> Unit
 )
 
+/**
+ * The actual show component
+ */
 interface Show : NativeComponent
