@@ -18,78 +18,32 @@
 
 package com.wolfyscript.viewportl.common.gui
 
-import com.google.common.base.Preconditions
-import com.google.inject.Binder
-import com.google.inject.Guice
-import com.google.inject.Module
-import com.google.inject.Stage
-import com.google.inject.util.Providers
-import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.NativeComponent
-import java.util.function.Consumer
+import java.util.*
 
-class BuildContext(val runtime: ViewRuntime, val reactiveSource: ReactiveGraph, val viewportl: Viewportl) {
+class BuildContext(val runtime: ViewRuntimeImpl, val reactiveSource: ReactiveGraph, val viewportl: Viewportl) {
 
-    private companion object {
-        private var COMPONENT_COUNTER: Long = 0
+    val modelGraph = runtime.modelGraph
 
-        fun nextId(): Long {
-            return COMPONENT_COUNTER++
-        }
+    private val ancestors: Deque<NativeComponent> = ArrayDeque()
+
+    val currentParent: NativeComponent?
+        get() = ancestors.peek()
+
+    fun enterComponent(component: NativeComponent) {
+        ancestors.push(component)
     }
 
-    // TODO: Do not store Components here! They are handled by the ModelGraph! When removed from the graph the alias is no longer valid!
-    private val nativeComponentIdAliases: MutableMap<String, NativeComponent> = mutableMapOf()
-
-    var parent: NativeComponent? = null
-        private set
-
-    fun <B : NativeComponent> getOrCreateComponent(
-        parent: NativeComponent? = null,
-        alias: String? = null,
-        type: Class<B>,
-        getId: Consumer<Long> = Consumer{ }
-    ): B {
-        val id = getOrCreateNumericId(alias)
-        val (builderKey, implType) = getComponentType(alias ?: "internal_${id}", type)
-        val component = instantiateNewComponent(parent, id, Pair(builderKey, implType))
-        getId.accept(id) // We only want to run this when no errors came before
-        if (alias != null) {
-            nativeComponentIdAliases[alias] = component
-        }
-        return component
+    fun exitComponent() {
+        ancestors.pop()
     }
 
-    private fun <B : NativeComponent> instantiateNewComponent(parent: NativeComponent? = null, numericId: Long, builderTypeInfo: Pair<Key, Class<B>>): B {
-        val injector = Guice.createInjector(Stage.PRODUCTION, Module { binder: Binder ->
-            binder.bind(Viewportl::class.java).toInstance(viewportl)
-            binder.bind(Long::class.java).toInstance(numericId)
-            binder.bind(BuildContext::class.java).toInstance(this)
-            binder.bind(NativeComponent::class.java).toProvider(Providers.of(parent))
-        })
-        return injector.getInstance(builderTypeInfo.second)
-    }
-
-    private fun getOrCreateNumericId(namedId: String? = null): Long {
-        if (namedId != null && nativeComponentIdAliases.containsKey(namedId)) {
-            return nativeComponentIdAliases[namedId]?.nodeId() ?: nextId()
-        }
-        return nextId()
-    }
-
-    private fun <B : NativeComponent> getComponentType(
-        id: String?,
-        type: Class<B>
-    ): Pair<Key, Class<B>> {
-        val registry = runtime.viewportl.registries.guiComponents
-//        val registry = runtime.scaffolding.registries.getByKeyOfType(Key.key(Key.SCAFFOLDING_NAMESPACE, "component/types"), RegistryGUIComponentTypes::class.java)
-        val key = registry.getKey(type) ?: throw IllegalArgumentException("Could not find component of type $type")
-        val builderImplType = registry[key] as Class<B> // We can be sure that the cast is valid, because the key is only non-null if and only if the type matches!
-        Preconditions.checkNotNull(builderImplType, "Failed to create component '%s'! Cannot find implementation type of builder '%s' in registry!", id, type.name)
-        return Pair(key, builderImplType)
+    fun addComponent(component: NativeComponent): Long {
+        val id = modelGraph.addNode(component)
+        modelGraph.insertNodeAsChildOf(id, currentParent?.nodeId ?: 0)
+        return id
     }
 
 }
