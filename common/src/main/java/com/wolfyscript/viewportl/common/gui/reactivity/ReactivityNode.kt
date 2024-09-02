@@ -22,7 +22,7 @@ import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 
 class ReactivityNode<V>(
     val id: NodeId,
-    var value: V?,
+    var value: V,
     val type: Type<V>,
     private var state: State = State.CLEAN
 ) {
@@ -58,15 +58,15 @@ class ReactivityNode<V>(
         return false
     }
 
-    interface Type<T> {
+    interface Type<T : Any?> {
 
         fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>) : Boolean = true
 
-        class Trigger : Type<Any>
+        class Trigger : Type<Any?>
 
-        class Signal<T> : Type<T>
+        class Signal<T : Any?> : Type<T>
 
-        class Effect<T>(private val fn: AnyComputation<T?>) : Type<T> {
+        class Effect<T : Any?>(private val fn: AnyComputation<T>) : Type<T> {
 
             override fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>): Boolean {
                 runtime.reactiveSource.runWithObserver(reactivityNode.id) {
@@ -76,11 +76,11 @@ class ReactivityNode<V>(
                 return true
             }
 
-            fun computation(): AnyComputation<T?> = fn
+            fun computation(): AnyComputation<T> = fn
 
         }
 
-        class Memo<T>(private val fn: AnyComputation<T?>) : Type<T> {
+        class Memo<T : Any?>(private val fn: AnyComputation<T>) : Type<T> {
 
             override fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>): Boolean {
                 var changed = false
@@ -91,7 +91,7 @@ class ReactivityNode<V>(
                 return changed
             }
 
-            fun computation(): AnyComputation<T?> = fn
+            fun computation(): AnyComputation<T> = fn
 
         }
 

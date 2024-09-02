@@ -20,7 +20,7 @@ fun setupRouter(properties: RouterProperties) {
 
     // Create signals to control routing
     val history: ReadWriteSignal<Deque<ActivePath>> = reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(ActivePath()) })
-    val currentPath: ActivePath? by reactiveSource.createMemo { history.get().peek() } // fetch the latest path from the history. Only notify subscribers when it changed!
+    val currentPath: ActivePath? by reactiveSource.createMemo(null) { history.get().peek() } // fetch the latest path from the history. Only notify subscribers when it changed!
 
     val router = RouterImpl(buildContext.currentParent, runtime.viewportl, buildContext)
     // calculate routes
@@ -31,7 +31,7 @@ fun setupRouter(properties: RouterProperties) {
     val id = buildContext.addComponent(router)
 
     // Keep track if selected route has changed
-    val selectedRoute: Route by reactiveSource.createMemo<Route> {
+    val selectedRoute: Route? by reactiveSource.createMemo(null) {
         currentPath?.let { path ->
             routerScope.routes.firstOrNull { route -> route.path.matches(path) }
         }
@@ -41,9 +41,12 @@ fun setupRouter(properties: RouterProperties) {
     // Then it will proceed to construct the child components once the effect runs
     // TODO: Outlet support!
     reactiveSource.createEffect {
+        if (selectedRoute == null) {
+            return@createEffect
+        }
         // Update component when route changes
         val routeOwner = reactiveSource.createTrigger()
-        with(selectedRoute.view) { // this subscribes to the selected route memo
+        with(selectedRoute!!.view) { // this subscribes to the selected route memo
             buildContext.enterComponent(router) // Make sure to create the route as a child of the router component
             reactiveSource.runWithObserver((routeOwner as TriggerImpl).id) {
                 ComponentScopeImpl(runtime.into()).consume()

@@ -34,18 +34,6 @@ class StackEditorExampleKotlin {
 
     companion object {
 
-        class StackEditorStore {
-            private var stack: ItemStack? = null
-
-            fun setStack(stack: ItemStack?) {
-                this.stack = stack
-            }
-
-            fun getStack(): ItemStack? {
-                return this.stack
-            }
-        }
-
         private enum class Tab {
             NONE,
             DISPLAY_NAME,
@@ -63,16 +51,18 @@ class StackEditorExampleKotlin {
 
                 router(runtime) {
                     route({}) {
-                        val stackToEdit by createSignal(StackEditorStore())
-                        var selectedTab by createSignal(Tab.NONE)
+                        var stackToEdit : ItemStack? by createSignal(null)
+                        var selectedTab : Tab by createSignal(Tab.NONE)
 
                         slot(
                             runtime,
                             styles = {
                                 position = PropertyPosition.slot(4)
                             },
-                            onValueChange = { v -> stackToEdit.setStack(v) },
-                            value = stackToEdit.getStack()
+                            onValueChange = { v ->
+                                stackToEdit = v
+                            },
+                            value = { stackToEdit }
                         )
                         // Tab selectors
                         button(runtime,
@@ -96,20 +86,20 @@ class StackEditorExampleKotlin {
                             onClick = { selectedTab = Tab.LORE }
                         )
 
-                        val isAir by createMemo<Boolean> {
-                            val stack = stackToEdit.getStack()
+                        val isAir by createMemo<Boolean>(true) {
+                            val stack = stackToEdit
                             stack == null || stack.item.value == "air"
                         }
 
-                        show(runtime, condition = { isAir }, fallback = {
+                        show(runtime, condition = { !isAir }, fallback = {
                             // Called once whenever the condition changes from false to true (Item becomes air)
                             // Empty component! Perhaps add a note that the item is missing!
                         }) {
                             group(runtime, styles = { position = optionsPos }) {
-                                val memoizedTab by createMemo<Tab> { selectedTab }
+                                val memoizedTab by createMemo<Tab>(Tab.NONE) { selectedTab }
                                 createEffect {
                                     when (memoizedTab) {
-                                        Tab.DISPLAY_NAME -> displayNameTab(runtime, this@registerGui, stackToEdit)
+                                        Tab.DISPLAY_NAME -> displayNameTab(runtime, this@registerGui, { stackToEdit })
                                         Tab.LORE -> {
                                             group(runtime, styles = { position = optionsPos }) {
                                                 button(runtime,
@@ -150,7 +140,7 @@ class StackEditorExampleKotlin {
         private fun displayNameTab(
             runtime: ViewRuntime,
             window: Window,
-            stackToEdit: StackEditorStore
+            stackToEdit: () -> ItemStack?
         ) = component(runtime) {
             group(
                 runtime,
@@ -169,7 +159,7 @@ class StackEditorExampleKotlin {
                     },
                     onClick = {
                         window.onTextInput { _, _, s, _ ->
-                            stackToEdit.getStack()?.data()?.set(ItemStackDataKeys.CUSTOM_NAME, s.deserialize())
+                            stackToEdit()?.data()?.set(ItemStackDataKeys.CUSTOM_NAME, s.deserialize())
                             true
                         }
                     }
@@ -183,7 +173,7 @@ class StackEditorExampleKotlin {
                             name = "<red><b>Reset Display Name".provider()
                         }
                     },
-                    onClick = { stackToEdit.getStack()?.data()?.remove(ItemStackDataKeys.CUSTOM_NAME) }
+                    onClick = { stackToEdit()?.data()?.remove(ItemStackDataKeys.CUSTOM_NAME) }
                 )
             }
         }

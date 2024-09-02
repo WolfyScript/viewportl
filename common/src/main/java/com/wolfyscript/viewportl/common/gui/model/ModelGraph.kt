@@ -72,7 +72,6 @@ class ModelGraphImpl(private val runtime: ViewRuntime) : ModelGraph {
     override fun insertNodeAsChildOf(nodeId: Long, parent: Long) {
         if(!nodes.containsKey(nodeId) || (!nodes.containsKey(parent) && parent != 0L)) return
         val siblings = children[parent]
-        val previousSibling = siblings.lastOrNull()
         siblings.add(nodeId)
         parents[nodeId] = parent
 

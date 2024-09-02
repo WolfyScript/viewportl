@@ -22,9 +22,9 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 import java.util.function.Consumer
 import java.util.function.Function
 
-class MemoState<T>(private val fn: Function<T?, Pair<T?, Boolean>>) : AnyComputation<T?> {
+class MemoState<T : Any?>(private val fn: Function<T?, Pair<T, Boolean>>) : AnyComputation<T> {
 
-    override fun run(runtime: ViewRuntime, value: T?, apply: Consumer<T?>): Boolean {
+    override fun run(runtime: ViewRuntime, value: T, apply: Consumer<T>): Boolean {
         val (newValue, different) = fn.apply(value)
         apply.accept(newValue)
         return different

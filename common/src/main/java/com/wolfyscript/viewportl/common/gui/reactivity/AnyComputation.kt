@@ -22,6 +22,6 @@ import java.util.function.Consumer
 
 interface AnyComputation<T> {
 
-    fun run(runtime: ViewRuntime, value: T?, apply: Consumer<T?>) : Boolean
+    fun run(runtime: ViewRuntime, value: T, apply: Consumer<T>) : Boolean
 
 }

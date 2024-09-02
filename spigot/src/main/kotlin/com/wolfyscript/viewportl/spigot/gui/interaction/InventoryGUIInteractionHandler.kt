@@ -22,6 +22,8 @@ import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.GroupImpl
+import com.wolfyscript.viewportl.common.gui.components.RouterImpl
+import com.wolfyscript.viewportl.common.gui.components.ShowImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
@@ -60,9 +62,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
 
         init {
             registerComponentInteractionHandler(ButtonImpl::class.java, InventoryButtonInteractionHandler())
-            registerComponentInteractionHandler(GroupImpl::class.java,
-                InventoryGroupInteractionHandler()
-            )
+            registerComponentInteractionHandler(GroupImpl::class.java, InventoryGroupInteractionHandler())
             registerComponentInteractionHandler(SlotImpl::class.java, InventoryStackSlotInteractionHandler())
         }
 
@@ -87,14 +87,18 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
 
     private fun initChildOf(child: Long, parent: Long, context: InvGUIInteractionContext) {
         runtime.model.getNode(child)?.let {
-            val nextOffset = calculatePosition(it, context)
-            val offset = context.currentOffset()
+
             // Mark slot to interact with this node
-            slotNodes[offset] = child
-            cachedProperties[child] = CachedNodeInteractProperties(offset, mutableListOf(offset))
-            // Store the position of this node in the parent, so we can easily clean the slot nodes
-            cachedProperties[parent]?.slots?.add(offset)
-            context.setSlotOffset(nextOffset)
+            if (it.nativeComponent !is RouterImpl && it.nativeComponent !is ShowImpl) {
+                val nextOffset = calculatePosition(it, context)
+                val offset = context.currentOffset()
+                slotNodes[offset] = child
+                cachedProperties[child] = CachedNodeInteractProperties(offset, mutableListOf(offset))
+
+                // Store the position of this node in the parent, so we can easily clean the slot nodes
+                cachedProperties[parent]?.slots?.add(offset)
+                context.setSlotOffset(nextOffset)
+            }
 
             initChildren(it.id, context)
         }

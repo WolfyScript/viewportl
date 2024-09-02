@@ -35,7 +35,6 @@ import org.apache.commons.lang3.function.TriFunction
 import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
-import kotlin.reflect.KClass
 
 class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
 
@@ -102,13 +101,13 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
 
     fun renderState() {
         val logger = viewRuntime.viewportl.scafall.logger
-        if (!logger.isDebugEnabled) return
+//        if (!logger.isDebugEnabled) return
 
         logger.info("-------- [Reactive Graph] --------")
         logger.info("Pending: $pendingEffects")
         logger.info("Nodes (${nodes.size}): ")
         for (node in nodes) {
-            logger.info("  ${node.key}: ${node.value.type.javaClass.name} = ${node.value.value}")
+            logger.info("  ${node.key}: ${node.value.type.javaClass.simpleName} = ${node.value.value}")
             val subs = nodeSubscribers[node.key]
             if (subs.isNotEmpty()) {
                 logger.info("    Subscribers: $subs")
@@ -174,7 +173,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
 
     private fun iterateChildren(childIterator: Iterator<NodeId>): Pair<IterResult, Iterator<NodeId>?> {
         if (!childIterator.hasNext()) {
-            return Pair(IterResult.EMPTY, null) // When the iterator is done we remove from the stack
+            return Pair(IterResult.EMPTY, null) // When the iterator is done we remove it from the stack
         }
         var child = childIterator.next()
 
@@ -324,29 +323,31 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
         return untyped
     }
 
-    inline fun <reified V : Any> getValue(nodeId: NodeId): V? {
+    inline fun <reified V : Any?> getValue(nodeId: NodeId): V {
         updateIfNecessary(nodeId)
-        return node<ReactivityNode<V>>(nodeId)?.value
+        val node = node<ReactivityNode<V>>(nodeId) ?: throw IllegalArgumentException("Cannot find reactive node $nodeId of type ${V::class}!")
+        return node.value
     }
 
-    fun <V : Any> getValue(nodeId: NodeId, type: KClass<V>): V? {
+    fun <V : Any?> getValue(nodeId: NodeId, type: Class<V>): V {
         updateIfNecessary(nodeId)
-        return node<ReactivityNode<V>>(nodeId)?.value
+        val node = node<ReactivityNode<V>>(nodeId) ?: throw IllegalArgumentException("Cannot find reactive node $nodeId of type $type!")
+        return node.value
     }
 
-    inline fun <reified V : Any> setValue(nodeId: NodeId, value: V?) {
+    inline fun <reified V : Any?> setValue(nodeId: NodeId, value: V) {
         node<ReactivityNode<V>>(nodeId)?.value = value
         markDirty(nodeId)
     }
 
-    fun <T : Any> setValue(nodeId: NodeId, valueType: KClass<T>, value: T?) {
-        node<ReactivityNode<T>>(nodeId)?.value = value
+    fun <V : Any?> setValue(nodeId: NodeId, type: Class<V>, value: V) {
+        node<ReactivityNode<V>>(nodeId)?.value = value
         markDirty(nodeId)
     }
 
-    private fun <V> createNode(
+    private fun <V : Any?> createNode(
         type: ReactivityNode.Type<V>,
-        initialValue: V?,
+        initialValue: V,
         state: ReactivityNode.State = ReactivityNode.State.CLEAN
     ): NodeId {
         val id = NodeId((nodes.size + 1).toLong(), viewRuntime)
@@ -360,25 +361,21 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
         return TriggerImpl(id)
     }
 
-    override fun <T : Any> createSignal(
+    override fun <T : Any?> createSignal(
         valueType: Class<T>,
         defaultValueProvider: ReceiverFunction<ViewRuntime, T>
     ): ReadWriteSignal<T> {
         val id = createNode(ReactivityNode.Type.Signal(), with(defaultValueProvider) { viewRuntime.apply() })
         addNewScopeProperty(SignalProperty(id))
-        return ReadWriteSignalImpl(id, valueType.kotlin)
+        return ReadWriteSignalImpl(id, valueType)
     }
 
-    override fun <T> createMemoEffect(effect: ReceiverFunction<T?, T>): Effect {
-        return createCustomEffect(null, EffectState(effect))
+    override fun <T : Any?> createMemoEffect(initialValue: T, effect: ReceiverFunction<T, T>): Effect {
+        return createCustomEffect<T>(initialValue, EffectState(effect))
     }
 
-    fun <T> createCustomEffect(value: T?, effect: AnyComputation<T?>): Effect {
-        val id = createNode(
-            ReactivityNode.Type.Effect(effect),
-            value,
-            ReactivityNode.State.DIRTY
-        )
+    fun <T : Any?> createCustomEffect(value: T, effect: AnyComputation<T>): Effect {
+        val id = createNode(ReactivityNode.Type.Effect(effect), value, ReactivityNode.State.DIRTY)
         addNewScopeProperty(EffectProperty(id))
 
         viewRuntime.viewportl.scafall.scheduler.syncTask(viewRuntime.viewportl.scafall.corePlugin) { // TODO: Is there a better way to schedule them?
@@ -388,13 +385,13 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
         return EffectImpl(id)
     }
 
-    override fun <T : Any> createMemo(valueType: Class<T>, fn: Function<T?, T?>): Memo<T> {
+    override fun <T : Any?> createMemo(initialValue: T, valueType: Class<T>, fn: Function<T?, T>): Memo<T> {
         val reactivityNodeId = createNode(ReactivityNode.Type.Memo<T>(MemoState {
             val newValue = fn.apply(it)
             Pair(newValue, newValue != it)
-        }), null, ReactivityNode.State.DIRTY)
+        }), initialValue, ReactivityNode.State.DIRTY)
         addNewScopeProperty(EffectProperty(reactivityNodeId))
-        return MemoImpl(reactivityNodeId, valueType.kotlin)
+        return MemoImpl(reactivityNodeId, valueType)
     }
 
     override fun createCleanup(cleanup: Cleanup) {

@@ -18,7 +18,7 @@ fun setupShow(properties: ShowProperties) {
     val id = buildContext.addComponent(show)
 
     // Keep track if condition result has changed
-    val condition: Boolean by reactiveSource.createMemo { properties.condition() }
+    val condition: Boolean by reactiveSource.createMemo(false) { properties.condition() }
 
     reactiveSource.createEffect {
         // Update component when condition changes

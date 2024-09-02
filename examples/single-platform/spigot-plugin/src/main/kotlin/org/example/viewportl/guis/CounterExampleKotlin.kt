@@ -129,7 +129,9 @@ class CounterExampleKotlin {
                         name = "<green><b>Count Up".provider()
                     }
                 },
-                onClick = { count += 1 }
+                onClick = {
+                    count += 1
+                }
             )
 
             button(
@@ -158,7 +160,7 @@ class CounterExampleKotlin {
             )
 
             // Sometimes we want to render components dependent on signals
-            val render by createMemo<Boolean> { count != 0 }
+            val render by createMemo<Boolean>(false) { count != 0 }
             show(
                 runtime,
                 condition = { render },
