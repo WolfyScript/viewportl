@@ -65,7 +65,7 @@ class StackSlotsExampleKotlin {
                                         stacks[i] = newStack
                                     }
                                 },
-                                value = stacks[i]
+                                value = { stacks[i] }
                             )
                         }
 

@@ -38,7 +38,7 @@ import java.util.function.Consumer
 import javax.annotation.Nullable
 
 @NativeComponentImplementation(base = StackInputSlot::class)
-@StaticNamespacedKey(key = "stack_input_slot")
+@StaticNamespacedKey(key = "slot")
 class SlotImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("viewportl") viewportl: Viewportl,

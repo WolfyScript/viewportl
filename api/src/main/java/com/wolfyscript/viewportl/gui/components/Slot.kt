@@ -16,7 +16,7 @@ import java.util.function.Consumer
  */
 fun slot(
     runtime: ViewRuntime,
-    value: ItemStack?,
+    value: () -> ItemStack?,
     styles: RenderProperties.() -> Unit,
     onValueChange: Consumer<ItemStack?>? = null,
     onClick: ReceiverConsumer<ClickTransaction>? = null,
@@ -37,7 +37,7 @@ fun slot(
 
 data class SlotProperties(
     val runtime: ViewRuntime,
-    val value: ItemStack?,
+    val value: () -> ItemStack?,
     val styles: RenderProperties.() -> Unit,
     val onValueChange: Consumer<ItemStack?>? = null,
     val onClick: ReceiverConsumer<ClickTransaction>? = null,
