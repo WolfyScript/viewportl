@@ -16,24 +16,32 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.interaction
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
-import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
-import com.wolfyscript.viewportl.gui.interaction.ClickType
+import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 
-class ClickTransactionImpl(
-    override val clickType: ClickType,
-    override val slot: Int,
-    override val rawSlot: Int,
-    override val shift: Boolean,
-    override val primary: Boolean,
-    override val secondary: Boolean,
-    override val hotbarIndex: Int,
-) : ClickTransaction {
+class InvGUIInteractionContext (val interactionHandler: InteractionHandler) {
+    private var currentNode: NativeComponent? = null
+    private var slotOffsetToParent = 0
 
-    override var valid: Boolean = true
-    override val cursorStack : ItemStack? = null
-    override val currentStack : ItemStack? = null
+    fun setSlotOffset(offset: Int) {
+        this.slotOffsetToParent = offset
+    }
 
+    fun currentOffset(): Int {
+        return slotOffsetToParent
+    }
+
+    fun enterNode(nativeComponent: NativeComponent) {
+        this.currentNode = nativeComponent
+    }
+
+    fun exitNode() {
+        this.currentNode = null
+    }
+
+    fun getCurrentComponent(): NativeComponent? {
+        return currentNode
+    }
 }

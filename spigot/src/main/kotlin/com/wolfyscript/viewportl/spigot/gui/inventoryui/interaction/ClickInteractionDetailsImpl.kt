@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.interaction
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps

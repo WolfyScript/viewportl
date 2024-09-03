@@ -16,18 +16,24 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.interaction
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.gui.interaction.DragTransaction
-import com.wolfyscript.viewportl.gui.interaction.DragType
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.ClickType
 
-class DragTransactionImpl(
-    override val slot : Int,
-    override val inventorySlots: Set<Int>,
-    override val rawSlots: Set<Int>,
-    override val type: DragType,
-) : DragTransaction {
+class ClickTransactionImpl(
+    override val clickType: ClickType,
+    override val slot: Int,
+    override val rawSlot: Int,
+    override val shift: Boolean,
+    override val primary: Boolean,
+    override val secondary: Boolean,
+    override val hotbarIndex: Int,
+) : ClickTransaction {
 
     override var valid: Boolean = true
+    override val cursorStack : ItemStack? = null
+    override val currentStack : ItemStack? = null
 
 }

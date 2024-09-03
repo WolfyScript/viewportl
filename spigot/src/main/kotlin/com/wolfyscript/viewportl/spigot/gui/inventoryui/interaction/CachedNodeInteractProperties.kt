@@ -16,6 +16,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.rendering
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
-class CachedNodeRenderProperties(var position: Int, val slots: MutableSet<Int> = mutableSetOf())
+internal class CachedNodeInteractProperties(val position: Int, val slots: MutableList<Int>)

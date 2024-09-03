@@ -16,32 +16,18 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.interaction
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
+import com.wolfyscript.viewportl.gui.interaction.DragTransaction
+import com.wolfyscript.viewportl.gui.interaction.DragType
 
-class InvGUIInteractionContext (val interactionHandler: InteractionHandler) {
-    private var currentNode: NativeComponent? = null
-    private var slotOffsetToParent = 0
+class DragTransactionImpl(
+    override val slot : Int,
+    override val inventorySlots: Set<Int>,
+    override val rawSlots: Set<Int>,
+    override val type: DragType,
+) : DragTransaction {
 
-    fun setSlotOffset(offset: Int) {
-        this.slotOffsetToParent = offset
-    }
+    override var valid: Boolean = true
 
-    fun currentOffset(): Int {
-        return slotOffsetToParent
-    }
-
-    fun enterNode(nativeComponent: NativeComponent) {
-        this.currentNode = nativeComponent
-    }
-
-    fun exitNode() {
-        this.currentNode = null
-    }
-
-    fun getCurrentComponent(): NativeComponent? {
-        return currentNode
-    }
 }

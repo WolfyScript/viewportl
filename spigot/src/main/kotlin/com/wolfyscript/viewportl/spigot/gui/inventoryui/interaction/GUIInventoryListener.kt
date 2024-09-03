@@ -15,8 +15,9 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.spigot.gui.interaction
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
+import com.wolfyscript.viewportl.spigot.gui.inventoryui.BukkitInventoryGuiHolder
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -25,6 +26,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 
 class GUIInventoryListener : Listener {
+
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onInvClick(event: InventoryClickEvent) {
         val holder = event.inventory.holder

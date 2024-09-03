@@ -16,30 +16,52 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.interaction
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.components.NativeComponentGroup
+import com.wolfyscript.viewportl.gui.components.StackInputSlot
 import com.wolfyscript.viewportl.gui.interaction.*
 
-class InventoryGroupInteractionHandler : ComponentInteractionHandler<NativeComponentGroup> {
+class InventoryStackSlotInteractionHandler : ComponentInteractionHandler<StackInputSlot> {
 
     override fun onDrag(
         runtime: ViewRuntime,
-        component: NativeComponentGroup,
+        component: StackInputSlot,
         details: DragInteractionDetails,
         transaction: DragTransaction
     ) {
-        details.invalidate()
+        component.onDrag?.let {
+            with(it) {
+                transaction.consume()
+            }
+        }
+
+        details.onSlotValueUpdate(transaction.slot) {
+            component.onValueChange?.accept(it)
+            component.value = it
+        }
     }
 
     override fun onClick(
         runtime: ViewRuntime,
-        component: NativeComponentGroup,
+        component: StackInputSlot,
         details: ClickInteractionDetails,
         transaction: ClickTransaction
     ) {
-        details.invalidate()
+        transaction.validate() // Validate stack input by default
+
+        component.onClick?.let {
+            with(it) {
+                transaction.consume()
+            }
+        }
+
+        if (transaction.valid) {
+            details.onSlotValueUpdate(transaction.rawSlot) {
+                component.onValueChange?.accept(it)
+                component.value = it
+            }
+        }
     }
 }

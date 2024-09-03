@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.rendering
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.eval.context.EvalContext
 import com.wolfyscript.scafall.platform.PlatformType
@@ -37,7 +37,7 @@ import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
 import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
 import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
 import com.wolfyscript.viewportl.gui.rendering.Renderer
-import com.wolfyscript.viewportl.spigot.gui.interaction.BukkitInventoryGuiHolder
+import com.wolfyscript.viewportl.spigot.gui.inventoryui.BukkitInventoryGuiHolder
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer
 import org.bukkit.Bukkit

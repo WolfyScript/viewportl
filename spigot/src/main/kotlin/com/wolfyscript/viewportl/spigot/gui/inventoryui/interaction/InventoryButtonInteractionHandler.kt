@@ -16,52 +16,50 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.interaction
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.components.StackInputSlot
-import com.wolfyscript.viewportl.gui.interaction.*
+import com.wolfyscript.viewportl.gui.components.Button
+import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
+import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 
-class InventoryStackSlotInteractionHandler : ComponentInteractionHandler<StackInputSlot> {
+class InventoryButtonInteractionHandler : ComponentInteractionHandler<Button> {
 
-    override fun onDrag(
-        runtime: ViewRuntime,
-        component: StackInputSlot,
-        details: DragInteractionDetails,
-        transaction: DragTransaction
-    ) {
-        component.onDrag?.let {
-            with(it) {
-                transaction.consume()
+    private fun playSound(runtime: ViewRuntime, component: Button) {
+        component.sound?.let { sound ->
+            runtime.viewers.forEach {
+                runtime.viewportl.scafall.adventure.player(it).playSound(sound)
             }
-        }
-
-        details.onSlotValueUpdate(transaction.slot) {
-            component.onValueChange?.accept(it)
-            component.value = it
         }
     }
 
     override fun onClick(
         runtime: ViewRuntime,
-        component: StackInputSlot,
+        component: Button,
         details: ClickInteractionDetails,
         transaction: ClickTransaction
     ) {
-        transaction.validate() // Validate stack input by default
+        playSound(runtime, component)
 
-        component.onClick?.let {
-            with(it) {
+        component.onClick?.let { click ->
+            with(click) {
                 transaction.consume()
             }
         }
 
-        if (transaction.valid) {
-            details.onSlotValueUpdate(transaction.rawSlot) {
-                component.onValueChange?.accept(it)
-                component.value = it
-            }
-        }
+        details.invalidate() // Never allow to validate it!
     }
+
+    override fun onDrag(
+        runtime: ViewRuntime,
+        component: Button,
+        details: DragInteractionDetails,
+        transaction: DragTransaction
+    ) {
+        details.invalidate()
+    }
+
 }

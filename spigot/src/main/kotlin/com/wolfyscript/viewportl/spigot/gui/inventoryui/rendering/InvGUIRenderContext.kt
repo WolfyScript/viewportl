@@ -16,6 +16,32 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.interaction
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
 
-internal class CachedNodeInteractProperties(val position: Int, val slots: MutableList<Int>)
+import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.rendering.RenderContext
+
+class InvGUIRenderContext(val renderer: InventoryGUIRenderer) :
+    RenderContext {
+    private var currentNode: NativeComponent? = null
+    private var slotOffsetToParent = 0
+
+    fun setSlotOffset(offset: Int) {
+        this.slotOffsetToParent = offset
+    }
+
+    override fun currentOffset(): Int {
+        return slotOffsetToParent
+    }
+
+    override fun enterNode(nativeComponent: NativeComponent) {
+        this.currentNode = nativeComponent
+    }
+
+    override fun exitNode() {
+        this.currentNode = null
+    }
+
+    override val currentNativeComponent: NativeComponent?
+        get() = currentNode
+}

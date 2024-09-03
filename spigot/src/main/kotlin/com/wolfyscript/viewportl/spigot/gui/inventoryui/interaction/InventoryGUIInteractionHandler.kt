@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.interaction
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
@@ -62,7 +62,6 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
 
         init {
             registerComponentInteractionHandler(ButtonImpl::class.java, InventoryButtonInteractionHandler())
-            registerComponentInteractionHandler(GroupImpl::class.java, InventoryGroupInteractionHandler())
             registerComponentInteractionHandler(SlotImpl::class.java, InventoryStackSlotInteractionHandler())
         }
 
@@ -86,11 +85,12 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
     }
 
     private fun initChildOf(child: Long, parent: Long, context: InvGUIInteractionContext) {
-        runtime.model.getNode(child)?.let {
+        runtime.model.getNode(child)?.let { node ->
 
             // Mark slot to interact with this node
-            if (it.nativeComponent !is RouterImpl && it.nativeComponent !is ShowImpl && it.nativeComponent !is GroupImpl) {
-                val nextOffset = calculatePosition(it, context)
+            // Only mark components that have an interaction handler
+            getComponentInteractionHandler(node.nativeComponent.javaClass)?.let {
+                val nextOffset = calculatePosition(node, context)
                 val offset = context.currentOffset()
                 slotNodes[offset] = child
                 cachedProperties[child] = CachedNodeInteractProperties(offset, mutableListOf(offset))
@@ -100,7 +100,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
                 context.setSlotOffset(nextOffset)
             }
 
-            initChildren(it.id, context)
+            initChildren(node.id, context)
         }
     }
 

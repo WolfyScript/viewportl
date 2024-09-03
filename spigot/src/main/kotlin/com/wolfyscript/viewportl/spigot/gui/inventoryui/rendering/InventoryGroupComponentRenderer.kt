@@ -16,32 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.rendering
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
 
-import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.rendering.RenderContext
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
+import com.wolfyscript.viewportl.gui.components.NativeComponentGroup
 
-class InvGUIRenderContext(val renderer: InventoryGUIRenderer) :
-    RenderContext {
-    private var currentNode: NativeComponent? = null
-    private var slotOffsetToParent = 0
+class InventoryGroupComponentRenderer : ComponentRenderer<NativeComponentGroup, InvGUIRenderContext> {
 
-    fun setSlotOffset(offset: Int) {
-        this.slotOffsetToParent = offset
-    }
+    override fun key(): Key = Key.defaultKey("inventory/group")
 
-    override fun currentOffset(): Int {
-        return slotOffsetToParent
-    }
-
-    override fun enterNode(nativeComponent: NativeComponent) {
-        this.currentNode = nativeComponent
-    }
-
-    override fun exitNode() {
-        this.currentNode = null
-    }
-
-    override val currentNativeComponent: NativeComponent?
-        get() = currentNode
+    override fun render(context: InvGUIRenderContext, component: NativeComponentGroup) { }
 }

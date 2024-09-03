@@ -26,8 +26,8 @@ import com.wolfyscript.viewportl.gui.factories.ComponentFactory
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
-import com.wolfyscript.viewportl.spigot.gui.interaction.InventoryGUIInteractionHandler
-import com.wolfyscript.viewportl.spigot.gui.rendering.InventoryGUIRenderer
+import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.InventoryGUIInteractionHandler
+import com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering.InventoryGUIRenderer
 
 class GuiFactoryImpl : GuiFactory {
 
