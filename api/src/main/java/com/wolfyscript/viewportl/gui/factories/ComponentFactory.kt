@@ -4,6 +4,8 @@ import com.wolfyscript.viewportl.gui.components.*
 
 interface ComponentFactory {
 
+    fun group(properties: GroupProperties)
+
     fun button(properties: ButtonProperties)
 
     fun slot(properties: SlotProperties)

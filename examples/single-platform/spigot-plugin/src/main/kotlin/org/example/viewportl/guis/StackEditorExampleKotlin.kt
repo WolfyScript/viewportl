@@ -23,8 +23,7 @@ import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.scafall.eval.value_provider.provider
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
@@ -49,13 +48,12 @@ class StackEditorExampleKotlin {
                 size = 9 * 6
                 val optionsPos = PropertyPosition.slot(18)
 
-                router(runtime) {
+                router {
                     route({}) {
-                        var stackToEdit : ItemStack? by createSignal(null)
-                        var selectedTab : Tab by createSignal(Tab.NONE)
+                        var stackToEdit: ItemStack? by createSignal(null)
+                        var selectedTab: Tab by createSignal(Tab.NONE)
 
                         slot(
-                            runtime,
                             styles = {
                                 position = PropertyPosition.slot(4)
                             },
@@ -65,7 +63,7 @@ class StackEditorExampleKotlin {
                             value = { stackToEdit }
                         )
                         // Tab selectors
-                        button(runtime,
+                        button(
                             styles = {
                                 position = PropertyPosition.slot(1)
                             },
@@ -76,7 +74,7 @@ class StackEditorExampleKotlin {
                             },
                             onClick = { selectedTab = Tab.DISPLAY_NAME }
                         )
-                        button(runtime,
+                        button(
                             styles = { position = PropertyPosition.slot(2) },
                             icon = {
                                 stack("book") {
@@ -91,38 +89,36 @@ class StackEditorExampleKotlin {
                             stack == null || stack.item.value == "air"
                         }
 
-                        show(runtime, condition = { !isAir }, fallback = {
+                        show(condition = { !isAir }, fallback = {
                             // Called once whenever the condition changes from false to true (Item becomes air)
                             // Empty component! Perhaps add a note that the item is missing!
                         }) {
-                            group(runtime, styles = { position = optionsPos }) {
+                            group(styles = { position = optionsPos }) {
                                 val memoizedTab by createMemo<Tab>(Tab.NONE) { selectedTab }
                                 createEffect {
                                     when (memoizedTab) {
-                                        Tab.DISPLAY_NAME -> displayNameTab(runtime, this@registerGui, { stackToEdit })
+                                        Tab.DISPLAY_NAME -> displayNameTab(this@registerGui, { stackToEdit })
                                         Tab.LORE -> {
-                                            group(runtime, styles = { position = optionsPos }) {
-                                                button(runtime,
-                                                    styles = {
-                                                        position = PropertyPosition.slot(21)
-                                                    },
-                                                    icon = {
-                                                        stack("writable_book") {
-                                                            name = "<green><b>Edit Lore".provider()
-                                                        }
+                                            button(
+                                                styles = {
+                                                    position = PropertyPosition.slot(21)
+                                                },
+                                                icon = {
+                                                    stack("writable_book") {
+                                                        name = "<green><b>Edit Lore".provider()
                                                     }
-                                                )
-                                                button(runtime,
-                                                    styles = {
-                                                        position = PropertyPosition.slot(23)
-                                                    },
-                                                    icon = {
-                                                        stack("red_concrete") {
-                                                            name = "<red><b>Clear Lore".provider()
-                                                        }
+                                                }
+                                            )
+                                            button(
+                                                styles = {
+                                                    position = PropertyPosition.slot(23)
+                                                },
+                                                icon = {
+                                                    stack("red_concrete") {
+                                                        name = "<red><b>Clear Lore".provider()
                                                     }
-                                                )
-                                            }
+                                                }
+                                            )
                                         }
 
                                         Tab.NONE -> {
@@ -137,18 +133,16 @@ class StackEditorExampleKotlin {
             }
         }
 
-        private fun displayNameTab(
-            runtime: ViewRuntime,
-            window: Window,
+        private fun ComponentScope.displayNameTab(
+            window: WindowScope,
             stackToEdit: () -> ItemStack?
-        ) = component(runtime) {
+        ) {
             group(
-                runtime,
                 styles = {
                     position = PropertyPosition.slot(9)
                 },
             ) {
-                button(runtime,
+                button(
                     styles = {
                         position = PropertyPosition.slot(21)
                     },
@@ -164,7 +158,7 @@ class StackEditorExampleKotlin {
                         }
                     }
                 )
-                button(runtime,
+                button(
                     styles = {
                         position = PropertyPosition.slot(23)
                     },

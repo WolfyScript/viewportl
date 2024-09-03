@@ -22,29 +22,33 @@ import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.inject.Inject
-import com.wolfyscript.scafall.scheduling.Task
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.BuildContext
+import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.components.*
 import java.util.*
 import kotlin.math.abs
+
+internal fun setupGroup(properties: GroupProperties) {
+    val runtime = properties.scope.runtime.into()
+
+    val group = GroupImpl("", runtime.viewportl, properties.scope.parent?.component)
+    // Add the button once on init
+    val id = (properties.scope as ComponentScopeImpl).setComponent(group)
+    properties.content(properties.scope)
+}
 
 @NativeComponentImplementation(base = NativeComponentGroup::class)
 @StaticNamespacedKey(key = "cluster")
 class GroupImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("viewportl") viewportl: Viewportl,
-    @JacksonInject("context") private val context: BuildContext,
     @javax.annotation.Nullable @JacksonInject("parent") parent: NativeComponent? = null,
 ) : AbstractNativeComponentImpl<NativeComponentGroup>(id, viewportl, parent), NativeComponentGroup {
 
     private val children: MutableList<NativeComponent> = mutableListOf()
     private val width: Int
     private val height: Int
-
-    private val intervalRunnables: MutableList<Pair<Runnable, Long>> = ArrayList()
-    private val intervalTasks: MutableList<Task> = ArrayList()
 
     init {
         val topLeft = 54
@@ -60,13 +64,6 @@ class GroupImpl @JsonCreator @Inject constructor(
         return Optional.empty()
     }
 
-//    override fun remove(runtime: ViewRuntime, nodeId: Long, parentNode: Long) {
-//        for (intervalTask in intervalTasks) {
-//            intervalTask.cancel()
-//        }
-//        intervalTasks.clear()
-//
-//        (runtime as ViewRuntimeImpl).modelGraph.removeNode(nodeId)
-//    }
-
 }
+
+

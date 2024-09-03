@@ -1,27 +1,9 @@
 package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 import com.wolfyscript.viewportl.gui.router.ActivePath
 import com.wolfyscript.viewportl.gui.router.MatchPath
 import java.util.*
-
-/**
- * A Router decides which child component it should show depending on the current path.
- *
- * ### Navigation
- * Navigation between paths is possible within the [RouterScope]. For that the [RouterScope] may be passed to child components.
- *
- */
-fun router(runtime: ViewRuntime, routes: RouterScope.() -> Unit) = component(runtime) {
-    runtime.viewportl.guiFactory.componentFactory.router(
-        RouterProperties(
-            runtime,
-            routes
-        )
-    )
-}
 
 /**
  * Provides access to the router and allows to create routes.
@@ -55,7 +37,7 @@ interface RouterScope {
 }
 
 data class RouterProperties(
-    val runtime: ViewRuntime,
+    val scope: ComponentScope,
     val routes: RouterScope.() -> Unit
 )
 

@@ -21,16 +21,16 @@ package com.wolfyscript.viewportl.common.gui
 import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.common.base.Preconditions
-import com.wolfyscript.scafall.scheduling.Task
 import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.common.gui.components.ComponentScopeImpl
 import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
-import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
+import com.wolfyscript.viewportl.gui.components.ComponentScope
 import net.kyori.adventure.text.Component
 
 @StaticNamespacedKey(key = "window")
@@ -39,56 +39,24 @@ class WindowImpl internal constructor(
     @JsonProperty("size") override var size: Int?,
     @JsonProperty("type") override val type: WindowType? = null,
     @JacksonInject("viewportl") override val viewportl: Viewportl,
-    @JacksonInject("context") val context: BuildContext,
-) :
-    Window,
-    ReactiveSource by context.reactiveSource {
+) : Window {
     override var title: Component? = null
     override var resourcePath: String? = null
 
     override var onTextInput: TextInputCallback? = null
     override var onTextInputTabComplete: TextInputTabCompleteCallback? = null
 
-    // Intervalls
-    private val intervalRunnables: List<Pair<Runnable, Long>> = ArrayList()
-    private val intervalTasks: MutableList<Task> = ArrayList()
-
-    override val runtime: ViewRuntime
-        get() = context.runtime
-
     init {
         Preconditions.checkArgument(size != null || type != null, "Either type or size must be specified!")
     }
 
-    override fun title(titleUpdate: ReceiverFunction<Component?, Component?>) {
-        context.reactiveSource.createEffect {
-            title = with(titleUpdate) { title.apply() }
-
-            context.runtime.renderer.updateTitle(title)
-        }
-    }
+    override fun title(titleUpdate: ReceiverFunction<Component?, Component?>) {}
 
     override fun open() {
-        for (intervalTask in intervalTasks) {
-            intervalTask.cancel()
-        }
-        intervalTasks.clear()
-        for (intervalRunnable in intervalRunnables) {
-            val task = scaffolding.scheduler.task(scaffolding.corePlugin)
-                .interval(intervalRunnable.second)
-                .delay(1).execute(intervalRunnable.first).build()
-            intervalTasks.add(task)
-        }
         // TODO: Render graph
-
     }
 
     override fun close() {
-        for (intervalTask in intervalTasks) {
-            intervalTask.cancel()
-        }
-        intervalTasks.clear()
-
 //        context.runtime.modelGraph.removeNode(0)
     }
 
@@ -100,16 +68,28 @@ class WindowImpl internal constructor(
         return size?.div(9) ?: 1
     }
 
+}
+
+class WindowScopeImpl(val window: Window, componentScope: ComponentScopeImpl) : WindowScope, ComponentScope by componentScope {
+
+    override fun title(titleUpdate: ReceiverFunction<Component?, Component?>) {
+        createEffect {
+            window.title = with(titleUpdate) { window.title.apply() }
+
+            // TODO: Unlink from renderer?!
+            runtime.into().renderer.updateTitle(window.title)
+        }
+    }
+
+    override var size: Int?
+        get() = window.size
+        set(value) { window.size = value }
+
     override fun onTextInput(inputCallback: TextInputCallback?) {
-        this.onTextInput = inputCallback
+        window.onTextInput = inputCallback
     }
 
     override fun onTextInputTabComplete(textInputTabCompleteCallback: TextInputTabCompleteCallback?) {
-        this.onTextInputTabComplete = textInputTabCompleteCallback
+        window.onTextInputTabComplete = textInputTabCompleteCallback
     }
-
-    override fun interval(intervalInTicks: Long, runnable: Runnable) {
-        TODO("Not yet implemented")
-    }
-
 }

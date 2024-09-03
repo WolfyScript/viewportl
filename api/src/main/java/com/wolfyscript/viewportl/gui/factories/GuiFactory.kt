@@ -28,7 +28,7 @@ interface GuiFactory {
 
     fun createInteractionHandler(runtime: ViewRuntime): InteractionHandler
 
-    fun runComponentFunction(runtime: ViewRuntime, fn: ComponentScope.() -> Unit)
+    fun runComponentFunction(runtime: ViewRuntime, scope: ComponentScope?, fn: ComponentScope.() -> Unit)
 
     val componentFactory: ComponentFactory
 }

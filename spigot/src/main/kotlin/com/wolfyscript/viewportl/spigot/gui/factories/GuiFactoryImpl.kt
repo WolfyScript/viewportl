@@ -19,7 +19,7 @@ package com.wolfyscript.viewportl.spigot.gui.factories
 
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.components.ComponentScopeImpl
-import com.wolfyscript.viewportl.common.gui.into
+import com.wolfyscript.viewportl.common.gui.factories.ComponentFactoryImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.ComponentScope
 import com.wolfyscript.viewportl.gui.factories.ComponentFactory
@@ -39,8 +39,8 @@ class GuiFactoryImpl : GuiFactory {
         return InventoryGUIInteractionHandler((runtime as ViewRuntimeImpl))
     }
 
-    override fun runComponentFunction(runtime: ViewRuntime, fn: ComponentScope.() -> Unit) {
-        fn(ComponentScopeImpl(runtime.into()))
+    override fun runComponentFunction(runtime: ViewRuntime, scope: ComponentScope?, fn: ComponentScope.() -> Unit) {
+        fn(ComponentScopeImpl(runtime as ViewRuntimeImpl, scope))
     }
 
     override val componentFactory: ComponentFactory = ComponentFactoryImpl()

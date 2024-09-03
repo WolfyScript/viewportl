@@ -20,7 +20,8 @@ package com.wolfyscript.viewportl.common.gui.components
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.BuildContext
+import com.wolfyscript.viewportl.common.gui.into
+import com.wolfyscript.viewportl.common.gui.reactivity.TriggerImpl
 import com.wolfyscript.viewportl.gui.*
 import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.viewportl.gui.reactivity.*
@@ -28,11 +29,57 @@ import com.wolfyscript.viewportl.gui.router.ActivePath
 import com.wolfyscript.viewportl.gui.router.MatchPath
 import java.util.*
 
+internal fun setupRouter(properties: RouterProperties) {
+    val runtime = properties.scope.runtime.into()
+    val reactiveSource = runtime.reactiveSource
+
+    // Create signals to control routing
+    val history: ReadWriteSignal<Deque<ActivePath>> = reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(ActivePath()) })
+    val currentPath: ActivePath? by reactiveSource.createMemo(null) { history.get().peek() } // fetch the latest path from the history. Only notify subscribers when it changed!
+
+    val router = RouterImpl(properties.scope.parent?.component, runtime.viewportl)
+    // calculate routes
+    val routerScope = RouterScopeImpl(runtime, router, history)
+    properties.routes(routerScope)
+
+    // add component to graph
+    val id = (properties.scope as ComponentScopeImpl).setComponent(router)
+
+    // Keep track if selected route has changed
+    val selectedRoute: Route? by reactiveSource.createMemo(null) {
+        currentPath?.let { path ->
+            routerScope.routes.firstOrNull { route -> route.path.matches(path) }
+        }
+    }
+
+    // We don't know which route to choose on setup time, therefor this will basically terminate.
+    // Then it will proceed to construct the child components once the effect runs
+    // TODO: Outlet support!
+    reactiveSource.createEffect {
+        if (selectedRoute == null) {
+            return@createEffect
+        }
+        // Update component when route changes
+        val routeOwner = reactiveSource.createTrigger()
+        with(selectedRoute!!.view) { // this subscribes to the selected route memo
+            reactiveSource.runWithObserver((routeOwner as TriggerImpl).id) {
+                properties.scope.consume()
+            }
+        }
+
+        // Clear all child components (the route component)
+        reactiveSource.createCleanup {
+            val graph = runtime.into().model
+            graph.clearNodeChildren(id)
+        }
+    }
+
+}
+
 @StaticNamespacedKey(key = "router")
 class RouterImpl(
     parent: NativeComponent?,
-    viewportl: Viewportl,
-    val context: BuildContext,
+    viewportl: Viewportl
 ) : AbstractNativeComponentImpl<Router>("", viewportl, parent), Router {
 
     override val routes: MutableList<Route> = mutableListOf()
@@ -40,7 +87,6 @@ class RouterImpl(
 }
 
 class RouteImpl(
-    val context: BuildContext,
     internal val router: Router,
     override var path: MatchPath,
     override var view: ReceiverConsumer<ComponentScope>
@@ -66,7 +112,6 @@ class RouteImpl(
 class RouterScopeImpl(
     runtime: ViewRuntime,
     override val router: Router,
-    val buildContext: BuildContext,
     private val history: ReadWriteSignal<Deque<ActivePath>>
 ) : RouterScope {
 
@@ -80,11 +125,11 @@ class RouterScopeImpl(
         val matchPath = MatchPath()
         with(path) { matchPath.consume() }
 
-        val route = RouteImpl(buildContext, router, matchPath, view)
+        val route = RouteImpl(router, matchPath, view)
         routes.add(route)
 
         // Init sub routes
-        val routeScope = RouteScopeImpl(route, buildContext)
+        val routeScope = RouteScopeImpl(route)
         with(subRoutes) {
             routeScope.consume()
         }
@@ -125,7 +170,6 @@ class RouterScopeImpl(
 
 class RouteScopeImpl(
     override val route: RouteImpl,
-    private val buildContext: BuildContext,
 ) : RouteScope {
 
     override fun route(
@@ -136,7 +180,7 @@ class RouteScopeImpl(
         val path = MatchPath()
         with(pathConfig) { path.consume() }
 
-        route.routes.add(RouteImpl(buildContext, route.router, path, viewConfig))
+        route.routes.add(RouteImpl(route.router, path, viewConfig))
     }
 
 }

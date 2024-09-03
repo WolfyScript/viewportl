@@ -19,7 +19,6 @@ package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
@@ -27,39 +26,10 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import java.util.function.Supplier
 
 /**
- * A simple button that can execute actions when clicked and change its icon.
- *
- * ###### Sound
- * By default, it uses the default Button sound from Minecraft, on interaction.
- * While the sound can be removed, it is highly recommended to play a sound on interaction to notify the player that an action has been recognised!
- *
- * ###### Native Component
- * Buttons are a native component meaning they have a platform specific implementation that handles both interactions and rendering.
- * Only native components will be present in the component graph, non-native components don't really exist, they just group native components together.
- */
-fun button(
-    runtime: ViewRuntime,
-    icon: ButtonIcon.() -> Unit,
-    styles: RenderProperties.() -> Unit,
-    sound: Sound? = null,
-    onClick: ClickTransaction.() -> Unit = {}
-) = component(runtime) {
-    runtime.viewportl.guiFactory.componentFactory.button(
-        ButtonProperties(
-            runtime,
-            icon,
-            styles,
-            sound,
-            onClick
-        )
-    )
-}
-
-/**
  * The properties used to create a button implementation
  */
 data class ButtonProperties(
-    val runtime: ViewRuntime,
+    val scope: ComponentScope,
     val icon: ButtonIcon.() -> Unit,
     val styles: RenderProperties.() -> Unit,
     val sound: Sound? = null,

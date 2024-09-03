@@ -39,14 +39,13 @@ class ViewRuntimeImpl(
 
     // Create model & reactivity graphs
     override val model: ModelGraph = ModelGraphImpl(this)
-    val reactiveSource: ReactiveGraph = ReactiveGraph(this)
+    override val reactiveSource: ReactiveGraph = ReactiveGraph(this)
 
     // Create platform specific handlers that handle rendering and interaction
     val renderer: Renderer<*> = viewportl.guiFactory.createRenderer(this)
     val interactionHandler: InteractionHandler = viewportl.guiFactory.createInteractionHandler(this)
 
     // Build the components and init the rendering tree
-    val buildContext: BuildContext = BuildContext(this, reactiveSource, viewportl)
     private var currentRoot: Window? = rootRouter.apply(this)
     override val currentMenu: Window?
         get() = currentRoot

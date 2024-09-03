@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.BuildContext
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.components.NativeComponentImplementation
@@ -30,14 +29,9 @@ import com.wolfyscript.viewportl.gui.components.Outlet
 import com.wolfyscript.viewportl.gui.components.OutletProperties
 import javax.annotation.Nullable
 
-fun setupOutlet(properties: OutletProperties) {
-    val runtime = properties.runtime.into()
-    val reactiveSource = runtime.reactiveSource
-    val buildContext = runtime.buildContext
-
-    val id = buildContext.addComponent(OutletImpl("", runtime.viewportl, buildContext))
-
-
+internal fun setupOutlet(properties: OutletProperties) {
+    val runtime = properties.scope.runtime.into()
+    val id = (properties.scope as ComponentScopeImpl).setComponent(OutletImpl("", runtime.viewportl, properties.scope.parent?.component))
 }
 
 @NativeComponentImplementation(base = Outlet::class)
@@ -45,6 +39,5 @@ fun setupOutlet(properties: OutletProperties) {
 class OutletImpl(
     @JsonProperty("id") id: String,
     @JacksonInject("viewportl") viewportl: Viewportl,
-    @JacksonInject("context") private val context: BuildContext,
     @Nullable @JacksonInject("parent") parent: NativeComponent? = null,
 ) : AbstractNativeComponentImpl<Outlet>(id, viewportl, parent), Outlet

@@ -89,7 +89,7 @@ class InventoryGUIInteractionHandler(private val runtime: ViewRuntimeImpl) : Int
         runtime.model.getNode(child)?.let {
 
             // Mark slot to interact with this node
-            if (it.nativeComponent !is RouterImpl && it.nativeComponent !is ShowImpl) {
+            if (it.nativeComponent !is RouterImpl && it.nativeComponent !is ShowImpl && it.nativeComponent !is GroupImpl) {
                 val nextOffset = calculatePosition(it, context)
                 val offset = context.currentOffset()
                 slotNodes[offset] = child

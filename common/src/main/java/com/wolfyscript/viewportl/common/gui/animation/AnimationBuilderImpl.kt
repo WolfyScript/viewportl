@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.common.gui.animation
 
-import com.wolfyscript.viewportl.common.gui.BuildContext
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.animation.Animation
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame
 import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
@@ -25,10 +25,10 @@ import com.wolfyscript.viewportl.gui.components.NativeComponent
 import java.util.function.Supplier
 
 class AnimationBuilderImpl<F : AnimationFrame, FB : AnimationFrameBuilder<F>>(
-    context: BuildContext,
+    runtime: ViewRuntime,
     frameBuilderSupplier: Supplier<FB>
 ) :
-    AnimationBuilderCommonImpl<F, FB>(context.reactiveSource, frameBuilderSupplier) {
+    AnimationBuilderCommonImpl<F, FB>(runtime.reactiveSource, frameBuilderSupplier) {
     override fun build(nativeComponent: NativeComponent): Animation<F> {
         if (updateSignal == null) {
 //            component.getID() + "_click_animation_handler", Boolean.TYPE,

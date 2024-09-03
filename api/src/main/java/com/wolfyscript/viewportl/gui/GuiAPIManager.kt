@@ -36,7 +36,7 @@ interface GuiAPIManager {
      * @param key The unique id of the window
      * @param windowConsumer The consumer that provides the new window
      */
-    fun registerGui(key: String, windowConsumer: ReceiverConsumer<Window>)
+    fun registerGui(key: String, windowConsumer: ReceiverConsumer<WindowScope>)
 
     /**
      * Gets the registered router with the specified id.<br></br>

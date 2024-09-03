@@ -18,32 +18,53 @@
 
 package com.wolfyscript.viewportl.common.gui.components
 
-import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.inject.Inject
 import com.wolfyscript.scafall.function.ReceiverBiFunction
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.BuildContext
+import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.components.NativeComponentImplementation
+import com.wolfyscript.viewportl.gui.components.SlotProperties
 import com.wolfyscript.viewportl.gui.components.StackInputSlot
 import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
 import com.wolfyscript.viewportl.gui.interaction.ClickType
 import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 import java.util.function.Consumer
-import javax.annotation.Nullable
+
+internal fun setupSlot(properties: SlotProperties) {
+    val runtime = properties.scope.runtime.into()
+    val reactiveSource = runtime.reactiveSource
+
+    val slot = SlotImpl(
+        "",
+        runtime.viewportl,
+        properties.scope.parent?.component,
+        onValueChange = properties.onValueChange,
+        onClick = properties.onClick,
+        onDrag = properties.onDrag,
+        canPickUpStack = properties.canPickUpStack,
+        value = properties.value()
+    )
+    properties.styles(slot.styles)
+
+    val id = (properties.scope as ComponentScopeImpl).setComponent(slot)
+
+    reactiveSource.createEffect {
+        slot.value = properties.value()
+    }
+
+}
 
 @NativeComponentImplementation(base = StackInputSlot::class)
 @StaticNamespacedKey(key = "slot")
 class SlotImpl @JsonCreator @Inject constructor(
-    @JsonProperty("id") id: String,
-    @JacksonInject("viewportl") viewportl: Viewportl,
-    @JacksonInject("context") private val context: BuildContext,
-    @Nullable @JacksonInject("parent") parent: NativeComponent? = null,
+    id: String,
+    viewportl: Viewportl,
+    parent: NativeComponent? = null,
     override var onValueChange: Consumer<ItemStack?>? = null,
     override var onClick: ReceiverConsumer<ClickTransaction>? = null,
     override var onDrag: ReceiverConsumer<DragTransaction>? = null,

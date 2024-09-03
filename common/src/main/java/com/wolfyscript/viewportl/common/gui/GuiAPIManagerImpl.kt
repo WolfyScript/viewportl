@@ -24,9 +24,11 @@ import com.google.common.collect.Multimap
 import com.google.common.collect.MultimapBuilder
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.common.gui.components.ComponentScopeImpl
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.WindowScope
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import java.util.*
@@ -53,12 +55,12 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
             .map { runtimes[it] }
     }
 
-    override fun registerGui(key: String, windowConsumer: ReceiverConsumer<Window>) {
+    override fun registerGui(key: String, windowConsumer: ReceiverConsumer<WindowScope>) {
         registerGui(key) { runtime ->
-            val window: Window = WindowImpl(key, 54, null, viewportl, runtime.into().buildContext)
+            val window: Window = WindowImpl(key, 54, null, viewportl)
 
             with(windowConsumer) {
-                window.consume()
+                WindowScopeImpl(window, ComponentScopeImpl(runtime.into(), null)).consume()
             }
             window
         }

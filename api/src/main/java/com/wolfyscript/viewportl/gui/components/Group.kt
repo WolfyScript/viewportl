@@ -1,12 +1,7 @@
 package com.wolfyscript.viewportl.gui.components
 
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import java.util.*
-
-fun group(runtime: ViewRuntime, styles: RenderProperties.() -> Unit = {}, content: ComponentScope.() -> Unit) = component(runtime) {
-    content(this)
-}
 
 interface NativeComponentGroup : NativeComponent {
     /**
@@ -36,3 +31,9 @@ interface NativeComponentGroup : NativeComponent {
     }
 
 }
+
+data class GroupProperties(
+    val scope: ComponentScope,
+    val styles: RenderProperties.() -> Unit,
+    val content: ComponentScope.() -> Unit
+)

@@ -19,6 +19,7 @@ package com.wolfyscript.viewportl.gui
 
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.model.ModelGraph
+import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
 import java.util.*
 
 /**
@@ -74,5 +75,7 @@ interface ViewRuntime {
     val viewportl: Viewportl
 
     val model: ModelGraph
+
+    val reactiveSource: ReactiveSource
 
 }

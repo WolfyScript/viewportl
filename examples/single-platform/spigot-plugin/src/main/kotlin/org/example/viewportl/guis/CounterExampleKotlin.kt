@@ -20,8 +20,7 @@ package org.example.viewportl.guis
 
 import com.wolfyscript.scafall.eval.value_provider.provider
 import com.wolfyscript.viewportl.gui.GuiAPIManager
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
@@ -60,25 +59,24 @@ class CounterExampleKotlin {
                  **/
                 size = 9 * 3
 
-                router(runtime) {
+                router {
                     route({ }) {
-                        mainMenu(runtime, this@registerGui, this@router)
+                        mainMenu(this@registerGui, this@router)
                     }
                     route({ this / "main" }) {
-                        counterMenu(runtime, this@registerGui, this@router)
+                        counterMenu(this@registerGui, this@router)
                     }
                 }
 
             }
         }
 
-        private fun mainMenu(runtime: ViewRuntime, window: Window, routerScope: RouterScope) = component(runtime) {
+        private fun ComponentScope.mainMenu(window: WindowScope, routerScope: RouterScope) {
             window.title { // Update the title with the Count
                 Component.text("Counter Main Menu").decorate(TextDecoration.BOLD)
             }
 
             button(
-                runtime = runtime,
                 icon = {
                     stack("green_concrete") {
                         name = "<green><b>Open Counter".provider()
@@ -94,7 +92,7 @@ class CounterExampleKotlin {
         /**
          * This function setups the counter menu
          */
-        private fun counterMenu(runtime: ViewRuntime, window: Window, routerScope: RouterScope) = component(runtime) {
+        private fun ComponentScope.counterMenu(window: WindowScope, routerScope: RouterScope) {
             // Use signals to notify components to update when the value changes
             var count: Int by createSignal(0)
 
@@ -108,7 +106,7 @@ class CounterExampleKotlin {
                 count += 1
             }
 
-            button(runtime,
+            button(
                 icon = {
                     stack("barrier") {
                         name = "<red><b>Back".provider()
@@ -120,7 +118,7 @@ class CounterExampleKotlin {
                 onClick = { routerScope.openPrevious() }
             )
 
-            button(runtime,
+            button(
                 styles = {
                     position = PropertyPosition.slot(4)
                 },
@@ -135,7 +133,6 @@ class CounterExampleKotlin {
             )
 
             button(
-                runtime,
                 styles = {
                     position = PropertyPosition.slot(13)
                 },
@@ -147,7 +144,7 @@ class CounterExampleKotlin {
                 },
             )
 
-            button(runtime,
+            button(
                 styles = {
                     position = PropertyPosition.slot(22)
                 },
@@ -162,16 +159,13 @@ class CounterExampleKotlin {
             // Sometimes we want to render components dependent on signals
             val render by createMemo<Boolean>(false) { count != 0 }
             show(
-                runtime,
                 condition = { render },
                 fallback = { }
             ) {
                 group(
-                    runtime,
                     styles = { position = PropertyPosition.slot(10) },
                 ) {
                     button(
-                        runtime,
                         styles = {
                             position = PropertyPosition.slot(10)
                         },
