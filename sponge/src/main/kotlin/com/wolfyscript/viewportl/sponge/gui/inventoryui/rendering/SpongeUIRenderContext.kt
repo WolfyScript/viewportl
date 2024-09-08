@@ -16,6 +16,8 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
+package com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering
 
-internal class CachedNodeInteractProperties(val position: Int, val slots: MutableList<Int>)
+import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.UIRenderContext
+
+class SpongeUIRenderContext(override val renderer: SpongeUIRenderer) : UIRenderContext()

@@ -16,32 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
+package com.wolfyscript.viewportl.common.registry
 
-import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
+import com.wolfyscript.viewportl.registry.ViewportlRegistries
 
-class InvGUIInteractionContext (val interactionHandler: InteractionHandler) {
-    private var currentNode: NativeComponent? = null
-    private var slotOffsetToParent = 0
+class CommonViewportlRegistries(viewportl: Viewportl) : ViewportlRegistries(viewportl) {
 
-    fun setSlotOffset(offset: Int) {
-        this.slotOffsetToParent = offset
-    }
+    override val guiComponents: RegistryGUIComponentTypes = RegistryUIComponentImplementations(Key.Companion.key("viewportl", "components"), this)
 
-    fun currentOffset(): Int {
-        return slotOffsetToParent
-    }
-
-    fun enterNode(nativeComponent: NativeComponent) {
-        this.currentNode = nativeComponent
-    }
-
-    fun exitNode() {
-        this.currentNode = null
-    }
-
-    fun getCurrentComponent(): NativeComponent? {
-        return currentNode
-    }
 }

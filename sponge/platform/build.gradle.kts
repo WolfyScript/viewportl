@@ -19,17 +19,25 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
  */
 
 plugins {
-    id("viewportl.spigot.conventions")
+    `java-library`
+    `maven-publish`
     id("viewportl.kotlinmodule")
     alias(libs.plugins.goooler.shadow)
 }
 
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven("https://repo.spongepowered.org/repository/maven-public/")
+}
+
 dependencies {
     api(project(":api"))
-    compileOnly("com.wolfyscript.scafall.spigot:spigot:${project.version}")
-    compileOnly("com.wolfyscript.scafall.spigot:spigot-platform:${project.version}")
-    compileOnly(project(":spigot"))
+    compileOnly(project(":sponge"))
     compileOnly(project(":common"))
+    compileOnly("com.wolfyscript.scafall.sponge:sponge:${project.version}")
+    compileOnly("com.wolfyscript.scafall.sponge:sponge-platform:${project.version}")
+    compileOnly(libs.spongepowered.api)
 }
 
 tasks {
@@ -39,7 +47,7 @@ tasks {
     }
 
     named<ShadowJar>("shadowJar") {
-        dependsOn(project(":spigot").tasks.named("shadowJar"))
+        dependsOn(project(":sponge").tasks.named("shadowJar"))
         mustRunAfter("jar")
         configurations = listOf(
             project.configurations.runtimeClasspath.get(),
@@ -52,7 +60,7 @@ tasks {
 
         dependencies {
             include(project(":api"))
-            include(project(":spigot"))
+            include(project(":sponge"))
             include(project(":common"))
         }
     }
@@ -68,8 +76,8 @@ publishing {
     publications {
         create<MavenPublication>("lib") {
             from(components.getByName("java"))
-            groupId = "com.wolfyscript.viewportl.spigot"
-            artifactId = "spigot-platform"
+            groupId = "com.wolfyscript.viewportl.sponge"
+            artifactId = "sponge-platform"
         }
     }
 }

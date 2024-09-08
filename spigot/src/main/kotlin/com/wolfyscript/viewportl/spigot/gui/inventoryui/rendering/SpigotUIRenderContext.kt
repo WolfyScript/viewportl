@@ -18,4 +18,10 @@
 
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
 
-class CachedNodeRenderProperties(var position: Int, val slots: MutableSet<Int> = mutableSetOf())
+import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.UIRenderContext
+
+class SpigotUIRenderContext(rendererImpl: SpigotUIRenderer) : UIRenderContext() {
+
+    override val renderer: SpigotUIRenderer = rendererImpl
+
+}

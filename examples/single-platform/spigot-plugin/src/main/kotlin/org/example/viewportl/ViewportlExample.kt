@@ -24,7 +24,6 @@ import com.wolfyscript.scafall.spigot.init
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.spigot.init
 import com.wolfyscript.viewportl.spigot.instance
-import com.wolfyscript.viewportl.spigot.unload
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
@@ -37,13 +36,8 @@ import java.util.*
 
 class ViewportlExample : JavaPlugin() {
 
-    override fun onLoad() {
-
-    }
-
     override fun onEnable() {
-        Scafall.init(this) // initiate shadowed scafall implementation
-        Viewportl.init() // Init the viewportl instance (uses the scafall core plugin by default)
+        Viewportl.init(this) // Init the viewportl instance (& Scafall if not yet initiated!)
 
         // From this point onward you can get the instances via
         val viewportl = Viewportl.instance
@@ -56,10 +50,6 @@ class ViewportlExample : JavaPlugin() {
         StackSlotsExampleKotlin.registerStackSlotsExample(manager)
 
         registerCommands()
-    }
-
-    override fun onDisable() {
-        Viewportl.unload() // When the plugin is shutdown, viewportl needs to be gracefully unloaded
     }
 
     private fun registerCommands() {

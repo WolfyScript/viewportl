@@ -26,17 +26,17 @@ import com.wolfyscript.viewportl.gui.factories.ComponentFactory
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.InventoryGUIInteractionHandler
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering.InventoryGUIRenderer
+import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.UIInteractionHandler
+import com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering.SpigotUIRenderer
 
 class GuiFactoryImpl : GuiFactory {
 
     override fun createRenderer(runtime: ViewRuntime): Renderer<*> {
-        return InventoryGUIRenderer((runtime as ViewRuntimeImpl))
+        return SpigotUIRenderer((runtime as ViewRuntimeImpl))
     }
 
     override fun createInteractionHandler(runtime: ViewRuntime): InteractionHandler {
-        return InventoryGUIInteractionHandler((runtime as ViewRuntimeImpl))
+        return UIInteractionHandler((runtime as ViewRuntimeImpl))
     }
 
     override fun runComponentFunction(runtime: ViewRuntime, scope: ComponentScope?, fn: ComponentScope.() -> Unit) {

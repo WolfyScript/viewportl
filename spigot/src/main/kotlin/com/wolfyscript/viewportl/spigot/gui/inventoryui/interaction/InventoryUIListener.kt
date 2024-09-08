@@ -25,7 +25,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 
-class GUIInventoryListener : Listener {
+class InventoryUIListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onInvClick(event: InventoryClickEvent) {

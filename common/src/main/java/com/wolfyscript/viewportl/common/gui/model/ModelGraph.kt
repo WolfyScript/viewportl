@@ -35,7 +35,7 @@ import java.util.Collections
  * An acyclic Graph (Tree) of [NativeComponents][NativeComponent]
  *
  * This model can be manipulated by adding or removing nodes ([NativeComponent]).
- * Those changes are then sent to the renderer and interaction handler.
+ * Those changes are then sent to all registered listeners.
  *
  */
 class ModelGraphImpl(private val runtime: ViewRuntime) : ModelGraph {

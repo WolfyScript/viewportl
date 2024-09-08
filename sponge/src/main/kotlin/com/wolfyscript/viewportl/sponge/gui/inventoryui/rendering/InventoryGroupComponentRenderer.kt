@@ -16,15 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.common.registry
+package com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
-import com.wolfyscript.viewportl.registry.ViewportlRegistries
+import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
+import com.wolfyscript.viewportl.gui.components.NativeComponentGroup
 
-class SpigotViewportlRegistries(viewportl: Viewportl) : ViewportlRegistries(viewportl) {
+class InventoryGroupComponentRenderer : ComponentRenderer<NativeComponentGroup, SpongeUIRenderContext> {
 
-    override val guiComponents: RegistryGUIComponentTypes = RegistryUIComponentImplementations(Key.Companion.key("viewportl", "components"), this)
+    override fun key(): Key = Key.defaultKey("inventory/group")
 
+    override fun render(context: SpongeUIRenderContext, component: NativeComponentGroup) { }
 }

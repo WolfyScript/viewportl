@@ -16,15 +16,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
+package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 
-import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
-import com.wolfyscript.viewportl.gui.components.NativeComponentGroup
-
-class InventoryGroupComponentRenderer : ComponentRenderer<NativeComponentGroup, SpigotUIRenderContext> {
-
-    override fun key(): Key = Key.defaultKey("inventory/group")
-
-    override fun render(context: SpigotUIRenderContext, component: NativeComponentGroup) { }
-}
+data class CachedNodeInteractProperties(val position: Int, val slots: MutableList<Int>)
