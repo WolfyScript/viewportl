@@ -21,9 +21,9 @@ package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
-abstract class UIRenderContext : RenderContext {
+abstract class InvUIRenderContext : RenderContext {
 
-    abstract val renderer: UIRenderer<*>
+    abstract val renderer: InvUIRenderer<*, *>
     private var currentNode: NativeComponent? = null
     private var slotOffsetToParent = 0
 

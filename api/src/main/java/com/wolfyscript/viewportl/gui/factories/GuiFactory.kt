@@ -17,18 +17,28 @@
  */
 package com.wolfyscript.viewportl.gui.factories
 
+import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.components.ComponentScope
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
+import java.util.*
+import java.util.function.Function
 
 interface GuiFactory {
 
-    fun createRenderer(runtime: ViewRuntime): Renderer<*>
+    fun createInventoryUIRuntime(
+        viewportl: Viewportl,
+        callback: Function<ViewRuntime<*, *>, Window>,
+        viewers: Set<UUID>
+    ): ViewRuntime<*, *>
 
-    fun createInteractionHandler(runtime: ViewRuntime): InteractionHandler
+    fun createInventoryRenderer(): Renderer<*, *>
 
-    fun runComponentFunction(runtime: ViewRuntime, scope: ComponentScope?, fn: ComponentScope.() -> Unit)
+    fun createInventoryInteractionHandler(): InteractionHandler<*>
+
+    fun runComponentFunction(runtime: ViewRuntime<*, *>, scope: ComponentScope?, fn: ComponentScope.() -> Unit)
 
     val componentFactory: ComponentFactory
 }

@@ -18,10 +18,10 @@
 
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
 
-import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.UIRenderContext
+import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderContext
 
-class SpigotUIRenderContext(rendererImpl: SpigotUIRenderer) : UIRenderContext() {
+class SpigotInvUIRenderContext(rendererImpl: SpigotInvUIRenderer) : InvUIRenderContext() {
 
-    override val renderer: SpigotUIRenderer = rendererImpl
+    override val renderer: SpigotInvUIRenderer = rendererImpl
 
 }

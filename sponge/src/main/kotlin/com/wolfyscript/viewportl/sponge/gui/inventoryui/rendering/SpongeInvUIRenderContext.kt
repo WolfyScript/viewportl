@@ -18,6 +18,6 @@
 
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering
 
-import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.UIRenderContext
+import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderContext
 
-class SpongeUIRenderContext(override val renderer: SpongeUIRenderer) : UIRenderContext()
+class SpongeInvUIRenderContext(override val renderer: SpongeInvUIRenderer) : InvUIRenderContext()

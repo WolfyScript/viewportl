@@ -17,13 +17,18 @@
  */
 package com.wolfyscript.viewportl.gui.rendering
 
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.model.ModelChangeListener
 import net.kyori.adventure.text.Component
 
-interface Renderer<C: RenderContext> : ModelChangeListener {
+interface Renderer<Self: Renderer<Self, C>, C: RenderContext> : ModelChangeListener {
 
-    fun changeWindow(window: Window)
+    val runtime: ViewRuntime<Self, *>
+
+    fun init(runtime: ViewRuntime<Self, *>)
+
+    fun onWindowOpen(window: Window)
 
     fun render()
 

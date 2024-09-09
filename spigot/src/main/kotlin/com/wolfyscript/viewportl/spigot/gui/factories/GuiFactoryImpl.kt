@@ -17,29 +17,47 @@
  */
 package com.wolfyscript.viewportl.spigot.gui.factories
 
+import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.components.ComponentScopeImpl
 import com.wolfyscript.viewportl.common.gui.factories.ComponentFactoryImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.components.ComponentScope
 import com.wolfyscript.viewportl.gui.factories.ComponentFactory
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.UIInteractionHandler
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering.SpigotUIRenderer
+import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.SpigotInvUIInteractionHandler
+import com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering.SpigotInvUIRenderer
+import java.util.*
+import java.util.function.Function
 
 class GuiFactoryImpl : GuiFactory {
 
-    override fun createRenderer(runtime: ViewRuntime): Renderer<*> {
-        return SpigotUIRenderer((runtime as ViewRuntimeImpl))
+    override fun createInventoryUIRuntime(
+        viewportl: Viewportl,
+        callback: Function<ViewRuntime<*, *>, Window>,
+        viewers: Set<UUID>
+    ): ViewRuntime<*, *> {
+        return ViewRuntimeImpl(
+            viewportl,
+            callback,
+            viewers,
+            renderer = SpigotInvUIRenderer(),
+            interactionHandler = SpigotInvUIInteractionHandler(),
+        )
     }
 
-    override fun createInteractionHandler(runtime: ViewRuntime): InteractionHandler {
-        return UIInteractionHandler((runtime as ViewRuntimeImpl))
+    override fun createInventoryRenderer(): Renderer<*, *> {
+        return SpigotInvUIRenderer()
     }
 
-    override fun runComponentFunction(runtime: ViewRuntime, scope: ComponentScope?, fn: ComponentScope.() -> Unit) {
+    override fun createInventoryInteractionHandler(): InteractionHandler<*> {
+        return SpigotInvUIInteractionHandler()
+    }
+
+    override fun runComponentFunction(runtime: ViewRuntime<*, *>, scope: ComponentScope?, fn: ComponentScope.() -> Unit) {
         fn(ComponentScopeImpl(runtime as ViewRuntimeImpl, scope))
     }
 

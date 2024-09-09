@@ -1,16 +1,13 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
-import com.wolfyscript.viewportl.gui.model.Node
-import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
-import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
-import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
+import com.wolfyscript.viewportl.gui.model.*
 
-abstract class UIInteractionHandler(private val runtime: ViewRuntimeImpl) : InteractionHandler {
+abstract class InvUIInteractionHandler<Self: InvUIInteractionHandler<Self>> : InteractionHandler<Self> {
 
     companion object {
         private val nativeComponentInteractionHandlers: MutableMap<Class<out NativeComponent>, ComponentInteractionHandler<*>> = mutableMapOf()
@@ -30,24 +27,29 @@ abstract class UIInteractionHandler(private val runtime: ViewRuntimeImpl) : Inte
 
     }
 
+    lateinit var runtime: ViewRuntime<*, Self>
     val slotNodes: MutableMap<Int, Long> = mutableMapOf()
     val cachedProperties: MutableMap<Long, CachedNodeInteractProperties> = mutableMapOf()
 
-    override fun init(window: Window) {
-        val context = UIInteractionContext(this)
+    override fun init(runtime: ViewRuntime<*, Self>) {
+        this.runtime = runtime
+    }
+
+    override fun onWindowOpen(window: Window) {
+        val context = InvUIInteractionContext(this)
         cachedProperties[0] = CachedNodeInteractProperties(0, mutableListOf(0))
         context.setSlotOffset(0)
 
         initChildren(0, context)
     }
 
-    private fun initChildren(parent: Long, context: UIInteractionContext) {
+    private fun initChildren(parent: Long, context: InvUIInteractionContext) {
         for (child in runtime.model.children(parent)) {
             initChildOf(child, parent, context)
         }
     }
 
-    private fun initChildOf(child: Long, parent: Long, context: UIInteractionContext) {
+    private fun initChildOf(child: Long, parent: Long, context: InvUIInteractionContext) {
         runtime.model.getNode(child)?.let { node ->
 
             // Mark slot to interact with this node
@@ -67,7 +69,7 @@ abstract class UIInteractionHandler(private val runtime: ViewRuntimeImpl) : Inte
         }
     }
 
-    private fun calculatePosition(node: Node, context: UIInteractionContext): Int {
+    private fun calculatePosition(node: Node, context: InvUIInteractionContext): Int {
         val nextOffset = node.nativeComponent.styles.position.slotPositioning()?.let {
             context.setSlotOffset(it.slot())
             return@let it.slot() + 1
@@ -84,7 +86,7 @@ abstract class UIInteractionHandler(private val runtime: ViewRuntimeImpl) : Inte
      * *********************************************************************** */
 
     override fun onNodeAdded(event: NodeAddedEvent) {
-        val context = UIInteractionContext(this)
+        val context = InvUIInteractionContext(this)
         val parent = runtime.model.parent(event.node.id)?.let { runtime.model.getNode(it) }
         if (parent != null) {
             context.setSlotOffset(0)

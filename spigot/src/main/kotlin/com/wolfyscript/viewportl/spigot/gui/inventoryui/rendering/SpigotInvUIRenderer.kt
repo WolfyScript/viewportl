@@ -26,13 +26,11 @@ import com.wolfyscript.scafall.spigot.api.wrappers.world.items.ItemStackImpl
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.GroupImpl
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.CachedNodeRenderProperties
-import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.UIRenderContext
-import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.UIRenderer
+import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.gui.*
 import com.wolfyscript.viewportl.spigot.gui.inventoryui.BukkitInventoryGuiHolder
 import net.kyori.adventure.text.Component
@@ -42,25 +40,25 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import java.util.*
 
-class SpigotUIRenderer(runtime: ViewRuntimeImpl) : UIRenderer<SpigotUIRenderContext>(runtime) {
+class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRenderContext>() {
 
     companion object {
 
         init {
-            registerComponentRenderer(SpigotUIRenderer::class.java, ButtonImpl::class.java, InventoryButtonComponentRenderer())
-            registerComponentRenderer(SpigotUIRenderer::class.java, GroupImpl::class.java, InventoryGroupComponentRenderer())
+            registerComponentRenderer(SpigotInvUIRenderer::class.java, ButtonImpl::class.java, InventoryButtonComponentRenderer())
+            registerComponentRenderer(SpigotInvUIRenderer::class.java, GroupImpl::class.java, InventoryGroupComponentRenderer())
         }
 
     }
 
     private var inventory: Inventory? = Bukkit.createInventory(null, 27)
 
-    override fun createContext(): SpigotUIRenderContext {
-        return SpigotUIRenderContext(this)
+    override fun createContext(): SpigotInvUIRenderContext {
+        return SpigotInvUIRenderContext(this)
     }
 
-    override fun changeWindow(window: Window) {
-        val guiHolder: GuiHolder = GuiHolderImpl(window, runtime, null)
+    override fun onWindowOpen(window: Window) {
+        val guiHolder: GuiHolder = GuiHolderImpl(window, runtime)
         val holder = BukkitInventoryGuiHolder(runtime.into(), guiHolder)
         val title: Component? = window.title
 

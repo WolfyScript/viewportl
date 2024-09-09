@@ -3,7 +3,7 @@ package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 
-class UIInteractionContext (val interactionHandler: InteractionHandler) {
+class InvUIInteractionContext (val interactionHandler: InteractionHandler<*>) {
     private var currentNode: NativeComponent? = null
     private var slotOffsetToParent = 0
 

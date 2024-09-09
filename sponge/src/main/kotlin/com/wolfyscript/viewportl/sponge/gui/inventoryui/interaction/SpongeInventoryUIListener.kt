@@ -47,6 +47,7 @@ class SpongeInventoryUIListener(val viewportl: Viewportl) {
     fun onClickMiddle(event: ClickContainerEvent.Middle) {
 
     }
+
     @Listener
     fun onClickDrag(event: Drag) {
         val inventory: Inventory = event.inventory()
@@ -66,16 +67,13 @@ class SpongeInventoryUIListener(val viewportl: Viewportl) {
     fun onClose(event: InteractContainerEvent.Close) {
         val inventory = event.inventory()
         findGuiHolder(inventory)?.let {
-            it.viewManager.currentMenu?.close()
+            it.viewManager.window?.close()
         }
     }
 
     private fun onClick(event: ClickContainerEvent, clickType: ClickType<*>, slot: Slot, slotIndex: Int) {
         findGuiHolder(event.inventory())?.let { holder ->
-            val node = holder.viewManager.model.slotNodes[slotIndex]?.let { runtime.model.getNode(it) }
-            if (node == null) {
-                return
-            }
+
         }
     }
 

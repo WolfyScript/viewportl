@@ -19,10 +19,9 @@
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.spigot.api.wrappers.wrap
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
-import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.UIInteractionHandler
+import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
 import org.bukkit.Material
@@ -31,7 +30,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 
-class UIInteractionHandler(private val runtime: ViewRuntimeImpl) : UIInteractionHandler(runtime) {
+class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInteractionHandler>() {
 
     companion object {
 
@@ -42,7 +41,7 @@ class UIInteractionHandler(private val runtime: ViewRuntimeImpl) : UIInteraction
 
     }
 
-    override fun onClick(details: ClickInteractionDetails) {
+    fun onClick(details: ClickInteractionDetails) {
         details as ClickInteractionDetailsImpl
 
         val event = details.clickEvent
@@ -413,8 +412,8 @@ class UIInteractionHandler(private val runtime: ViewRuntimeImpl) : UIInteraction
         }
     }
 
-    override fun onDrag(details: DragInteractionDetails) {
-        val topInvSize = runtime.getCurrentMenu().map { it.size ?: 0 }.orElse(0)
+    fun onDrag(details: DragInteractionDetails) {
+        val topInvSize = runtime.window?.size ?: 0
 
         // Go through each slot that is affected, and call them separately
         // (Sponge allows us to invalidate single slot transactions of the drag event! Keep the same API behaviour on Spigot, but cancel the entire event!)

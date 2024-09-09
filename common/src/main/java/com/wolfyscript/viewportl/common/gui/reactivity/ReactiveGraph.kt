@@ -21,6 +21,7 @@ import com.google.common.collect.ListMultimap
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
@@ -36,7 +37,7 @@ import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
 
-class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
+class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*,*>) : ReactiveSource {
 
     private var owner: NodeId?
     private var observer: NodeId? = null
@@ -100,7 +101,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
     }
 
     fun renderState() {
-        val logger = viewRuntime.viewportl.scafall.logger
+        val logger = ScafallProvider.get().logger
 //        if (!logger.isDebugEnabled) return
 
         logger.info("-------- [Reactive Graph] --------")
@@ -363,7 +364,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
 
     override fun <T : Any?> createSignal(
         valueType: Class<T>,
-        defaultValueProvider: ReceiverFunction<ViewRuntime, T>
+        defaultValueProvider: ReceiverFunction<ViewRuntime<*,*>, T>
     ): ReadWriteSignal<T> {
         val id = createNode(ReactivityNode.Type.Signal(), with(defaultValueProvider) { viewRuntime.apply() })
         addNewScopeProperty(SignalProperty(id))
@@ -400,18 +401,18 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl) : ReactiveSource {
         }
     }
 
-    override fun <T> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime, T>): ReadWriteSignal<Optional<T>> {
+    override fun <T> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, T>): ReadWriteSignal<Optional<T>> {
         TODO("Not yet implemented")
     }
 
     override fun <I, T> resourceSync(
         input: ReadWriteSignal<I>,
-        fetch: TriFunction<Viewportl, ViewRuntime, I, T>
+        fetch: TriFunction<Viewportl, ViewRuntime<*,*>, I, T>
     ): ReadWriteSignal<Optional<T>> {
         TODO("Not yet implemented")
     }
 
-    override fun <T> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime, T>): ReadWriteSignal<Optional<T>> {
+    override fun <T> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, T>): ReadWriteSignal<Optional<T>> {
         TODO("Not yet implemented!")
     }
 

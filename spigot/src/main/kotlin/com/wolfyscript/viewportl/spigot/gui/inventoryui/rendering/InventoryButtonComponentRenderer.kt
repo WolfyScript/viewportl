@@ -20,16 +20,15 @@ package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.eval.context.EvalContext
 import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.UIRenderContext
 import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
 import com.wolfyscript.viewportl.gui.ItemStackContext
 import com.wolfyscript.viewportl.gui.components.Button
 
-class InventoryButtonComponentRenderer : ComponentRenderer<Button, SpigotUIRenderContext> {
+class InventoryButtonComponentRenderer : ComponentRenderer<Button, SpigotInvUIRenderContext> {
 
     override fun key(): Key = Key.defaultKey("inventory/button")
 
-    override fun render(context: SpigotUIRenderContext, component: Button) {
+    override fun render(context: SpigotInvUIRenderContext, component: Button) {
         context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.icon.stack, ItemStackContext(component.icon.resolvers, context.renderer.runtime.viewportl.scafall.adventure.miniMsg, EvalContext()))
     }
 }

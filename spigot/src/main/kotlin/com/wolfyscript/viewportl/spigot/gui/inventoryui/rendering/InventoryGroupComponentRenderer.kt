@@ -22,9 +22,9 @@ import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
 import com.wolfyscript.viewportl.gui.components.NativeComponentGroup
 
-class InventoryGroupComponentRenderer : ComponentRenderer<NativeComponentGroup, SpigotUIRenderContext> {
+class InventoryGroupComponentRenderer : ComponentRenderer<NativeComponentGroup, SpigotInvUIRenderContext> {
 
     override fun key(): Key = Key.defaultKey("inventory/group")
 
-    override fun render(context: SpigotUIRenderContext, component: NativeComponentGroup) { }
+    override fun render(context: SpigotInvUIRenderContext, component: NativeComponentGroup) { }
 }

@@ -24,13 +24,14 @@ import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.ClickInteractionDetailsImpl
 import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.DragInteractionDetailsImpl
+import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.SpigotInvUIInteractionHandler
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, private val guiHolder: GuiHolder) :
+internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl<*, SpigotInvUIInteractionHandler>, private val guiHolder: GuiHolder) :
     InventoryHolder {
     private var activeInventory: Inventory? = null
 
@@ -41,8 +42,7 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
     fun onClick(event: InventoryClickEvent) {
         if (currentWindow() == null || event.clickedInventory == null) return
         if (event.view.topInventory.holder == this) {
-            val details =
-                ClickInteractionDetailsImpl(event)
+            val details = ClickInteractionDetailsImpl(event)
             runtime.interactionHandler.onClick(details)
             event.isCancelled = true
 
@@ -86,7 +86,7 @@ internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl, pr
         // TODO: Close Window
         if (currentWindow() == null) return
         if (event.inventory.holder == this) {
-            guiHolder.viewManager.currentMenu?.apply { close() }
+            guiHolder.viewManager.window?.apply { close() }
         }
     }
 

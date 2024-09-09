@@ -23,7 +23,7 @@ import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
 import java.util.function.Consumer
 
-class ComponentScopeImpl(override val runtime: ViewRuntimeImpl, override val parent: ComponentScope? = null) : ComponentScope,
+class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override val parent: ComponentScope? = null) : ComponentScope,
     ReactiveSource by runtime.reactiveSource {
 
     override var component: NativeComponent? = null
@@ -39,10 +39,10 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl, override val par
         val task = runtime.viewportl.scafall.scheduler.task(runtime.viewportl.scafall.corePlugin)
             .interval(intervalInTicks)
             .delay(1)
-            .execute {
+            .execute(Runnable{
                 runnable.run()
                 runtime.reactiveSource.runEffects()
-            }
+            })
             .build()
 
         createCleanup {

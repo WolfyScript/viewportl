@@ -9,19 +9,19 @@ import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
 import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 
-abstract class UIRenderer<T : UIRenderContext>(val runtime: ViewRuntime) : Renderer<T> {
+abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContext> : Renderer<Self, T> {
 
     companion object {
 
-        private val componentRenderersForUIRenderer : MutableMap<Class<out UIRenderer<*>>, MutableMap<Class<out NativeComponent>, ComponentRenderer<*, out UIRenderContext>>> = mutableMapOf()
+        private val componentRenderersForUIRenderer : MutableMap<Class<out InvUIRenderer<*, *>>, MutableMap<Class<out NativeComponent>, ComponentRenderer<*, out InvUIRenderContext>>> = mutableMapOf()
 
         @Suppress("UNCHECKED_CAST")
-        fun <X : UIRenderContext, R : UIRenderer<X>, C : NativeComponent> getComponentRenderer(uiRendererType: Class<R>, type: Class<C>): ComponentRenderer<C, X>? {
-            val handler: ComponentRenderer<*, out UIRenderContext>? = componentRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type]
+        fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : NativeComponent> getComponentRenderer(uiRendererType: Class<R>, type: Class<C>): ComponentRenderer<C, X>? {
+            val handler: ComponentRenderer<*, out InvUIRenderContext>? = componentRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type]
             return handler as? ComponentRenderer<C, X>?
         }
 
-        fun <X : UIRenderContext, R : UIRenderer<X>, C : NativeComponent> registerComponentRenderer(
+        fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : NativeComponent> registerComponentRenderer(
             uiRendererType: Class<R>,
             type: Class<C>,
             handler: ComponentRenderer<in C, X>
@@ -29,6 +29,12 @@ abstract class UIRenderer<T : UIRenderContext>(val runtime: ViewRuntime) : Rende
             componentRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type] = handler
         }
 
+    }
+
+    override lateinit var runtime: ViewRuntime<Self, *>
+
+    override fun init(runtime: ViewRuntime<Self, *>) {
+        this.runtime = runtime
     }
 
     val cachedProperties: MutableMap<Long, CachedNodeRenderProperties> = mutableMapOf()
@@ -72,7 +78,7 @@ abstract class UIRenderer<T : UIRenderContext>(val runtime: ViewRuntime) : Rende
      *  Listen to changes to the model graph & rerender accordingly  *
      * ************************************************************* */
 
-    private fun calculatePosition(node: Node, context: UIRenderContext): Int {
+    private fun calculatePosition(node: Node, context: InvUIRenderContext): Int {
         val nextOffset = node.nativeComponent.styles.position.slotPositioning()?.let {
             context.setSlotOffset(it.slot())
             return@let it.slot() + 1

@@ -9,7 +9,7 @@ import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.CachedNodeRenderProperties
-import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.UIRenderer
+import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.gui.*
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import net.kyori.adventure.text.Component
@@ -23,12 +23,12 @@ import org.spongepowered.api.item.inventory.type.ViewableInventory
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
-class SpongeUIRenderer(runtime: ViewRuntime) : UIRenderer<SpongeUIRenderContext>(runtime) {
+class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRenderContext>() {
 
     private var inventoryMenu: InventoryMenu? = null
 
-    override fun createContext(): SpongeUIRenderContext {
-        return SpongeUIRenderContext(this)
+    override fun createContext(): SpongeInvUIRenderContext {
+        return SpongeInvUIRenderContext(this)
     }
 
     override fun clearSlots(slots: Collection<Int>) {
@@ -37,8 +37,8 @@ class SpongeUIRenderer(runtime: ViewRuntime) : UIRenderer<SpongeUIRenderContext>
         }
     }
 
-    override fun changeWindow(window: Window) {
-        val guiHolder: GuiHolder = GuiHolderImpl(window, runtime, null)
+    override fun onWindowOpen(window: Window) {
+        val guiHolder: GuiHolder = GuiHolderImpl(window, runtime)
         val carrier = GuiCarrier(guiHolder)
         inventoryMenu = ViewableInventory.builder()
             .type { getInventoryType(window) }

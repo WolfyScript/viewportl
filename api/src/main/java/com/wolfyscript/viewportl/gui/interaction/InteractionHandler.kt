@@ -18,15 +18,14 @@
 
 package com.wolfyscript.viewportl.gui.interaction
 
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.model.ModelChangeListener
 
-interface InteractionHandler : ModelChangeListener {
+interface InteractionHandler<Self: InteractionHandler<Self>> : ModelChangeListener {
 
-    fun init(window: Window)
+    fun init(runtime: ViewRuntime<*, Self>)
 
-    fun onClick(details: ClickInteractionDetails)
-
-    fun onDrag(details: DragInteractionDetails)
+    fun onWindowOpen(window: Window)
 
 }

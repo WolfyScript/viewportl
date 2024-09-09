@@ -24,11 +24,11 @@ import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
 import com.wolfyscript.viewportl.gui.ItemStackContext
 import com.wolfyscript.viewportl.gui.components.Button
 
-class InventoryButtonComponentRenderer : ComponentRenderer<Button, SpongeUIRenderContext> {
+class InventoryButtonComponentRenderer : ComponentRenderer<Button, SpongeInvUIRenderContext> {
 
     override fun key(): Key = Key.defaultKey("inventory/button")
 
-    override fun render(context: SpongeUIRenderContext, component: Button) {
+    override fun render(context: SpongeInvUIRenderContext, component: Button) {
         context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.icon.stack, ItemStackContext(component.icon.resolvers, context.renderer.runtime.viewportl.scafall.adventure.miniMsg, EvalContext()))
     }
 }

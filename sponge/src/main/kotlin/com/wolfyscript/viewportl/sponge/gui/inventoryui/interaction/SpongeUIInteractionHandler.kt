@@ -1,13 +1,12 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
-import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.UIInteractionHandler
+import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
 
-class SpongeUIInteractionHandler(private val runtime: ViewRuntimeImpl) : UIInteractionHandler(runtime) {
+class SpongeUIInteractionHandler : InvUIInteractionHandler<SpongeUIInteractionHandler>() {
 
     companion object {
 
@@ -18,7 +17,7 @@ class SpongeUIInteractionHandler(private val runtime: ViewRuntimeImpl) : UIInter
 
     }
 
-    override fun onClick(details: ClickInteractionDetails) {
+    fun onClick(details: ClickInteractionDetails) {
         details as ClickInteractionDetailsImpl
 
         if (details.valid) {
@@ -28,8 +27,8 @@ class SpongeUIInteractionHandler(private val runtime: ViewRuntimeImpl) : UIInter
         }
     }
 
-    override fun onDrag(details: DragInteractionDetails) {
-        val topInvSize = runtime.getCurrentMenu().map { it.size ?: 0 }.orElse(0)
+    fun onDrag(details: DragInteractionDetails) {
+        val topInvSize = runtime.window?.size ?: 0
 
     }
 

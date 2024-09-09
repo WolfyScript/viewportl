@@ -38,7 +38,7 @@ import java.util.Collections
  * Those changes are then sent to all registered listeners.
  *
  */
-class ModelGraphImpl(private val runtime: ViewRuntime) : ModelGraph {
+class ModelGraphImpl : ModelGraph {
 
     private var nodeCount: Long = 0
     private val nodes: MutableMap<Long, Node> = mutableMapOf()
