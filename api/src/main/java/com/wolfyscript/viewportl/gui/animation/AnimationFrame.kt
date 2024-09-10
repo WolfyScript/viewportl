@@ -44,5 +44,5 @@ interface AnimationFrame {
      * @param holder        The holder of the GUI
      * @param context       The rendering context
      */
-    fun render(viewManager: ViewRuntime, holder: GuiHolder, context: RenderContext)
+    fun render(viewManager: ViewRuntime<*,*>, holder: GuiHolder, context: RenderContext)
 }

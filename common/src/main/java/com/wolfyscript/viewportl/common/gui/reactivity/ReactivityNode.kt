@@ -35,7 +35,7 @@ class ReactivityNode<V>(
         return state
     }
 
-    fun update(viewRuntime: ViewRuntimeImpl) : Boolean {
+    fun update(viewRuntime: ViewRuntimeImpl<*,*>) : Boolean {
         return type.runUpdate(viewRuntime, this)
     }
 
@@ -60,7 +60,7 @@ class ReactivityNode<V>(
 
     interface Type<T : Any?> {
 
-        fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>) : Boolean = true
+        fun runUpdate(runtime: ViewRuntimeImpl<*,*>, reactivityNode: ReactivityNode<T>) : Boolean = true
 
         class Trigger : Type<Any?>
 
@@ -68,7 +68,7 @@ class ReactivityNode<V>(
 
         class Effect<T : Any?>(private val fn: AnyComputation<T>) : Type<T> {
 
-            override fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>): Boolean {
+            override fun runUpdate(runtime: ViewRuntimeImpl<*,*>, reactivityNode: ReactivityNode<T>): Boolean {
                 runtime.reactiveSource.runWithObserver(reactivityNode.id) {
                     runtime.reactiveSource.cleanupSourcesFor(reactivityNode.id)
                     computation().run(runtime, reactivityNode.value) { reactivityNode.value = it }
@@ -82,7 +82,7 @@ class ReactivityNode<V>(
 
         class Memo<T : Any?>(private val fn: AnyComputation<T>) : Type<T> {
 
-            override fun runUpdate(runtime: ViewRuntimeImpl, reactivityNode: ReactivityNode<T>): Boolean {
+            override fun runUpdate(runtime: ViewRuntimeImpl<*,*>, reactivityNode: ReactivityNode<T>): Boolean {
                 var changed = false
                 runtime.reactiveSource.runWithObserver(reactivityNode.id) {
                     runtime.reactiveSource.cleanupSourcesFor(reactivityNode.id)

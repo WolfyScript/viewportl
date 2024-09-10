@@ -26,7 +26,7 @@ import com.wolfyscript.viewportl.gui.interaction.*
 class InventoryStackSlotInteractionHandler : ComponentInteractionHandler<StackInputSlot> {
 
     override fun onDrag(
-        runtime: ViewRuntime,
+        runtime: ViewRuntime<*,*>,
         component: StackInputSlot,
         details: DragInteractionDetails,
         transaction: DragTransaction
@@ -44,7 +44,7 @@ class InventoryStackSlotInteractionHandler : ComponentInteractionHandler<StackIn
     }
 
     override fun onClick(
-        runtime: ViewRuntime,
+        runtime: ViewRuntime<*,*>,
         component: StackInputSlot,
         details: ClickInteractionDetails,
         transaction: ClickTransaction

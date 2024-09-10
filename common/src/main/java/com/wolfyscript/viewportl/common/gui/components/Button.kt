@@ -60,7 +60,7 @@ internal fun setupButton(properties: ButtonProperties) {
 @StaticNamespacedKey(key = "button")
 class ButtonImpl @JsonCreator @Inject constructor(
     id: String,
-    internal val runtime: ViewRuntime,
+    internal val runtime: ViewRuntime<*,*>,
     viewportl: Viewportl = runtime.viewportl,
     parent: NativeComponent? = null,
     icon: ButtonIcon = DynamicIcon(runtime),
@@ -75,7 +75,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
 }
 
 class DynamicIcon(
-    private val runtime: ViewRuntime,
+    private val runtime: ViewRuntime<*,*>,
 ) : ButtonIcon {
 
     override var stack: ItemStackConfig = runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air"))

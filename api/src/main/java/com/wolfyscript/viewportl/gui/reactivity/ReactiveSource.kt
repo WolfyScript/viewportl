@@ -44,7 +44,7 @@ interface ReactiveSource {
      * When [ReadWriteSignal] values are accessed inside a [Memo]/[Effect] it subscribes to that [ReadWriteSignal].
      * Then when the value of the [ReadWriteSignal] is updated the [Memo]/[Effect] is updated too.
      */
-    fun <T : Any?> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime, T>): ReadWriteSignal<T>
+    fun <T : Any?> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime<*,*>, T>): ReadWriteSignal<T>
 
     /**
      * Creates an [Effect] that reruns when a [ReadWriteSignal]/[Memo] used inside it is updated.
@@ -91,11 +91,11 @@ interface ReactiveSource {
      * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
      * @param <T> The type of the value
     </T> */
-    fun <T> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime, T>): ReadWriteSignal<Optional<T>>
+    fun <T> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, T>): ReadWriteSignal<Optional<T>>
 
     fun <I, T> resourceSync(
         input: ReadWriteSignal<I>,
-        fetch: TriFunction<Viewportl, ViewRuntime, I, T>
+        fetch: TriFunction<Viewportl, ViewRuntime<*,*>, I, T>
     ): ReadWriteSignal<Optional<T>>
 
     /**
@@ -112,7 +112,7 @@ interface ReactiveSource {
      * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
      * @param <T> The type of the value
     </T> */
-    fun <T> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime, T>): ReadWriteSignal<Optional<T>>
+    fun <T> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, T>): ReadWriteSignal<Optional<T>>
 
 }
 
@@ -132,6 +132,6 @@ inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValue: T): Read
     return createSignal(T::class.java) { defaultValue }
 }
 
-inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime, T>): ReadWriteSignal<T> {
+inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime<*,*>, T>): ReadWriteSignal<T> {
     return createSignal(T::class.java, defaultValueProvider)
 }

@@ -25,7 +25,7 @@ class EffectState<T : Any?>(
     private val fn: ReceiverFunction<T, T>
 ) : AnyComputation<T> {
 
-    override fun run(runtime: ViewRuntime, value: T, apply: Consumer<T>): Boolean {
+    override fun run(runtime: ViewRuntime<*,*>, value: T, apply: Consumer<T>): Boolean {
         val newValue = with(fn) { value.apply() }
 
         apply.accept(newValue)

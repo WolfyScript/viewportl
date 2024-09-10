@@ -17,6 +17,7 @@
  */
 package com.wolfyscript.viewportl.common.gui.animation
 
+import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame
@@ -34,12 +35,12 @@ class AnimationImpl<F : AnimationFrame> internal constructor(
 ) :
     AnimationCommonImpl<F>(owner, animationFrameBuilders, updateSignal) {
 
-    fun render(viewManager: ViewRuntime, guiHolder: GuiHolder, context: RenderContext) {
+    fun render(viewManager: ViewRuntime<*,*>, guiHolder: GuiHolder, context: RenderContext) {
         val frameDelay = AtomicInteger(0)
         val frameIndex = AtomicInteger(0)
         viewManager.viewportl.scafall.scheduler
             .task(viewManager.viewportl.scafall.corePlugin)
-            .execute {
+            .execute (ReceiverConsumer {
                 val delay = frameDelay.getAndIncrement()
                 val frame = frameIndex.get()
                 if (frames().size <= frame) {
@@ -47,17 +48,17 @@ class AnimationImpl<F : AnimationFrame> internal constructor(
                     if (owner() is Effect) {
                         // TODO
                     }
-                    return@execute
+                    return@ReceiverConsumer
                 }
 
                 val frameObj: AnimationFrame = frames()[frame]
                 if (delay <= frameObj.duration()) {
                     frameObj.render(viewManager, guiHolder, context)
-                    return@execute
+                    return@ReceiverConsumer
                 }
                 frameIndex.incrementAndGet()
                 frameDelay.set(0)
-            }
+            })
             .interval(1)
             .build()
     }

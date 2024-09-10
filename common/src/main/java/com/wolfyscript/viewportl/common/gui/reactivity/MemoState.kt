@@ -24,7 +24,7 @@ import java.util.function.Function
 
 class MemoState<T : Any?>(private val fn: Function<T?, Pair<T, Boolean>>) : AnyComputation<T> {
 
-    override fun run(runtime: ViewRuntime, value: T, apply: Consumer<T>): Boolean {
+    override fun run(runtime: ViewRuntime<*,*>, value: T, apply: Consumer<T>): Boolean {
         val (newValue, different) = fn.apply(value)
         apply.accept(newValue)
         return different

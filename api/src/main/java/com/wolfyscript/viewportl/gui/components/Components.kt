@@ -24,7 +24,7 @@ import kotlin.reflect.KProperty
  * while the component functions setup all reactive nodes for e.g. updating native component properties.
  *
  */
-fun component(componentScope: ComponentScope? = null, runtime: ViewRuntime, fn: ComponentScope.() -> Unit) {
+fun component(componentScope: ComponentScope? = null, runtime: ViewRuntime<*,*>, fn: ComponentScope.() -> Unit) {
     runtime.viewportl.guiFactory.runComponentFunction(runtime, componentScope, fn)
 }
 
@@ -33,7 +33,7 @@ fun component(componentScope: ComponentScope? = null, runtime: ViewRuntime, fn: 
  */
 interface ComponentScope : ReactiveSource {
 
-    val runtime : ViewRuntime
+    val runtime : ViewRuntime<*,*>
 
     val component: NativeComponent?
 
@@ -103,7 +103,7 @@ interface ComponentScope : ReactiveSource {
 }
 
 class DynamicProperty<O : NativeComponent, T>(
-    val runtime: ViewRuntime,
+    val runtime: ViewRuntime<*,*>,
     initial: T
 ) {
     private var value: T = initial

@@ -25,7 +25,7 @@ import com.wolfyscript.viewportl.gui.components.NativeComponent
 import java.util.function.Supplier
 
 class AnimationBuilderImpl<F : AnimationFrame, FB : AnimationFrameBuilder<F>>(
-    runtime: ViewRuntime,
+    runtime: ViewRuntime<*,*>,
     frameBuilderSupplier: Supplier<FB>
 ) :
     AnimationBuilderCommonImpl<F, FB>(runtime.reactiveSource, frameBuilderSupplier) {

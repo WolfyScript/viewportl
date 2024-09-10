@@ -28,7 +28,7 @@ import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 
 class InventoryButtonInteractionHandler : ComponentInteractionHandler<Button> {
 
-    private fun playSound(runtime: ViewRuntime, component: Button) {
+    private fun playSound(runtime: ViewRuntime<*,*>, component: Button) {
         component.sound?.let { sound ->
             runtime.viewers.forEach {
                 runtime.viewportl.scafall.adventure.player(it).playSound(sound)
@@ -37,7 +37,7 @@ class InventoryButtonInteractionHandler : ComponentInteractionHandler<Button> {
     }
 
     override fun onClick(
-        runtime: ViewRuntime,
+        runtime: ViewRuntime<*,*>,
         component: Button,
         details: ClickInteractionDetails,
         transaction: ClickTransaction
@@ -54,7 +54,7 @@ class InventoryButtonInteractionHandler : ComponentInteractionHandler<Button> {
     }
 
     override fun onDrag(
-        runtime: ViewRuntime,
+        runtime: ViewRuntime<*,*>,
         component: Button,
         details: DragInteractionDetails,
         transaction: DragTransaction

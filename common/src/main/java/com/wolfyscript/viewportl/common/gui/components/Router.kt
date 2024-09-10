@@ -110,7 +110,7 @@ class RouteImpl(
 }
 
 class RouterScopeImpl(
-    runtime: ViewRuntime,
+    runtime: ViewRuntime<*,*>,
     override val router: Router,
     private val history: ReadWriteSignal<Deque<ActivePath>>
 ) : RouterScope {
