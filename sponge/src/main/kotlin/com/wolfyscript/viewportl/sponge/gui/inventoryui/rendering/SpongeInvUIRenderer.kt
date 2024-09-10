@@ -8,6 +8,8 @@ import com.wolfyscript.scafall.sponge.api.wrappers.world.items.SpongeItemStackCo
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
+import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
+import com.wolfyscript.viewportl.common.gui.components.GroupImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.CachedNodeRenderProperties
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.gui.*
@@ -24,6 +26,11 @@ import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRenderContext>() {
+
+    init {
+        registerComponentRenderer(SpongeInvUIRenderer::class.java, ButtonImpl::class.java, InventoryButtonComponentRenderer())
+        registerComponentRenderer(SpongeInvUIRenderer::class.java, GroupImpl::class.java, InventoryGroupComponentRenderer())
+    }
 
     private var inventoryMenu: InventoryMenu? = null
 
