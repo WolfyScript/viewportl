@@ -42,6 +42,8 @@ dependencies {
     // We need both the scafall & viewportl sponge implementation.
     implementation("com.wolfyscript.scafall.sponge:sponge-platform:${project.version}")
 
+    implementation(libs.org.reflections.reflections)
+
     implementation(project(":common"))
     implementation(project(":sponge"))
     implementation(project(":sponge:platform"))
@@ -63,7 +65,7 @@ sponge {
     plugin("viewportl_example") {
         displayName("ViewportlExample")
         description("")
-        entrypoint("")
+        entrypoint("org.example.viewportl.ViewportlExample")
         dependency("spongeapi") {
             loadOrder(LoadOrder.AFTER)
             optional(false)
@@ -96,6 +98,9 @@ tasks {
         dependencies {
             include(dependency("com.wolfyscript.scafall.sponge:.*"))
             include(dependency("com.wolfyscript.viewportl.sponge:.*"))
+            include(dependency("org.jetbrains.kotlin:.*"))
+            include(dependency("org.reflections:reflections"))
+            include(dependency("org.javassist:javassist"))
 
             include(project(":api"))
             include(project(":common"))
