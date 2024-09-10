@@ -18,9 +18,7 @@
 
 package org.example.viewportl
 
-import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.scafall.spigot.init
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.spigot.init
 import com.wolfyscript.viewportl.spigot.instance
