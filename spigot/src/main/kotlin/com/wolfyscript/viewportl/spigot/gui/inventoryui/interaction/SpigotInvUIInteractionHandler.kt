@@ -18,12 +18,15 @@
 
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
+import com.wolfyscript.scafall.spigot.api.into
 import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
+import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.Inventory
@@ -39,6 +42,16 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
             registerComponentInteractionHandler(SlotImpl::class.java, InventoryStackSlotInteractionHandler())
         }
 
+    }
+
+    private var listener: InventoryUIListener? = null
+
+    override fun onWindowOpen(window: Window) {
+        super.onWindowOpen(window)
+
+        if (listener == null) {
+            Bukkit.getPluginManager().registerEvents(InventoryUIListener(runtime), runtime.viewportl.scafall.corePlugin.into().plugin)
+        }
     }
 
     fun onClick(details: ClickInteractionDetails) {

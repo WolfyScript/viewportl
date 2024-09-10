@@ -18,77 +18,14 @@
 
 package com.wolfyscript.viewportl.spigot.gui.inventoryui
 
-import com.wolfyscript.scafall.spigot.api.wrappers.wrap
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.ClickInteractionDetailsImpl
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.DragInteractionDetailsImpl
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.SpigotInvUIInteractionHandler
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-internal class BukkitInventoryGuiHolder(private val runtime: ViewRuntimeImpl<*, SpigotInvUIInteractionHandler>, private val guiHolder: GuiHolder) :
+internal class BukkitInventoryGuiHolder(val guiHolder: GuiHolder) :
     InventoryHolder {
     private var activeInventory: Inventory? = null
-
-    private fun currentWindow(): Window {
-        return guiHolder.currentWindow
-    }
-
-    fun onClick(event: InventoryClickEvent) {
-        if (currentWindow() == null || event.clickedInventory == null) return
-        if (event.view.topInventory.holder == this) {
-            val details = ClickInteractionDetailsImpl(event)
-            runtime.interactionHandler.onClick(details)
-            event.isCancelled = true
-
-            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
-                runtime.reactiveSource.runEffects()
-            }
-        }
-    }
-
-    fun onDrag(event: InventoryDragEvent) {
-        if (event.rawSlots.stream().anyMatch { rawSlot: Int? ->
-                event.view.getInventory(rawSlot!!) != activeInventory
-            }) {
-            event.isCancelled = true
-            return
-        }
-        if (currentWindow() == null) return
-        if (event.inventory.holder == this) {
-            val interactionDetails =
-                DragInteractionDetailsImpl(event)
-            runtime.interactionHandler.onDrag(interactionDetails)
-            if (!interactionDetails.valid) {
-                event.isCancelled = true
-            } else {
-                runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
-                    for (rawSlot in event.rawSlots) {
-                        if (rawSlot < event.inventory.size) {
-                            interactionDetails.callSlotValueUpdate(rawSlot, event.inventory.getItem(rawSlot)?.wrap())
-                        }
-                    }
-                }
-            }
-
-            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
-                runtime.reactiveSource.runEffects()
-            }
-        }
-    }
-
-    fun onClose(event: InventoryCloseEvent) {
-        // TODO: Close Window
-        if (currentWindow() == null) return
-        if (event.inventory.holder == this) {
-            guiHolder.viewManager.window?.apply { close() }
-        }
-    }
 
     fun setActiveInventory(activeInventory: Inventory?) {
         this.activeInventory = activeInventory

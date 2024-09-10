@@ -35,8 +35,8 @@ class ViewRuntimeImpl<R: Renderer<R,*>, I: InteractionHandler<I>>(
     override val viewers: Set<UUID>,
     override val model: ModelGraph = ModelGraphImpl(),
     // Handlers that handle rendering and interaction
-    val renderer: R,
-    val interactionHandler: I
+    override val renderer: R,
+    override val interactionHandler: I
 ) : ViewRuntime<R, I> {
 
     override val id: Long = NEXT_ID++

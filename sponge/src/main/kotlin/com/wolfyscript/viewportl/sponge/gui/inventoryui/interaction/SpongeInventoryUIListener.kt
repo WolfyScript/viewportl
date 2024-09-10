@@ -1,8 +1,10 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.GuiHolder
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import org.spongepowered.api.data.Keys
 import org.spongepowered.api.event.Listener
@@ -15,7 +17,7 @@ import org.spongepowered.api.item.inventory.menu.ClickType
 import org.spongepowered.api.item.inventory.menu.ClickTypes
 import org.spongepowered.api.item.inventory.type.CarriedInventory
 
-class SpongeInventoryUIListener(val viewportl: Viewportl) {
+class SpongeInventoryUIListener(private val runtime: ViewRuntimeImpl<*, SpongeUIInteractionHandler>, val viewportl: Viewportl) {
 
     fun findGuiHolder(inventory: Inventory) : GuiHolder? {
         if (inventory is CarriedInventory<*>) {
@@ -33,7 +35,7 @@ class SpongeInventoryUIListener(val viewportl: Viewportl) {
     fun onClickPrimary(event: ClickContainerEvent.Primary) {
         event.slot().ifPresent { slot ->
             slot.get(Keys.SLOT_INDEX).ifPresent { index ->
-                findGuiHolder(event.inventory())?.viewManager?.into()?.interactionHandler?.onClick(ClickInteractionDetailsImpl(ClickTypes.CLICK_LEFT.get(), slot, index, -1))
+                runtime.interactionHandler.onClick(ClickInteractionDetailsImpl(ClickTypes.CLICK_LEFT.get(), slot, index, -1))
             }
         }
     }

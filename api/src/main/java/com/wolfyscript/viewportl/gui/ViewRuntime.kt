@@ -80,4 +80,8 @@ interface ViewRuntime<R: Renderer<*, *>, I: InteractionHandler<*>> {
 
     val reactiveSource: ReactiveSource
 
+    val renderer: R
+
+    val interactionHandler: I
+
 }

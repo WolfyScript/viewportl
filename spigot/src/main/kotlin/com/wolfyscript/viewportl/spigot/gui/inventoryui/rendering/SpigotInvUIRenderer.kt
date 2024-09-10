@@ -28,7 +28,6 @@ import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.GroupImpl
-import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.CachedNodeRenderProperties
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.gui.*
@@ -59,7 +58,7 @@ class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRender
 
     override fun onWindowOpen(window: Window) {
         val guiHolder: GuiHolder = GuiHolderImpl(window, runtime)
-        val holder = BukkitInventoryGuiHolder(runtime.into(), guiHolder)
+        val holder = BukkitInventoryGuiHolder(guiHolder)
         val title: Component? = window.title
 
         inventory = if (window.scaffolding.platformType == PlatformType.PAPER) {

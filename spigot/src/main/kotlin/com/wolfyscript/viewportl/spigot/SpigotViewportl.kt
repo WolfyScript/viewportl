@@ -59,7 +59,6 @@ class SpigotViewportl(private val plugin: PluginWrapper) : CommonViewportl(), Li
     }
 
     private fun registerListeners() {
-        Bukkit.getPluginManager().registerEvents(InventoryUIListener(), plugin.into().plugin)
         Bukkit.getPluginManager().registerEvents(this, plugin.into().plugin)
     }
 
