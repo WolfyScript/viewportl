@@ -50,7 +50,9 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
         super.onWindowOpen(window)
 
         if (listener == null) {
-            Bukkit.getPluginManager().registerEvents(InventoryUIListener(runtime), runtime.viewportl.scafall.corePlugin.into().plugin)
+            // Hook this handler into the Spigot event system
+            listener = InventoryUIListener(runtime)
+            Bukkit.getPluginManager().registerEvents(listener!!, runtime.viewportl.scafall.corePlugin.into().plugin)
         }
     }
 

@@ -19,6 +19,7 @@ package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
+import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.spigot.gui.inventoryui.BukkitInventoryGuiHolder
 import org.bukkit.event.EventHandler
@@ -27,14 +28,19 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
+import org.bukkit.inventory.InventoryHolder
 
 class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>) : Listener {
 
+    private fun checkIfValidHolderAndRun(holder: InventoryHolder?, fn: GuiHolder.() -> Unit) {
+        if (holder is BukkitInventoryGuiHolder && holder.guiHolder.viewManager == runtime) {
+            fn(holder.guiHolder)
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onInvClick(event: InventoryClickEvent) {
-        val holder = event.inventory.holder
-        if (holder is BukkitInventoryGuiHolder) {
-//            bukkitInventoryGuiHolder.guiHolder().getViewManager().blockedByInteraction();
+        checkIfValidHolderAndRun(event.inventory.holder) {
             val details = ClickInteractionDetailsImpl(event)
             runtime.interactionHandler.onClick(details)
             event.isCancelled = true
@@ -47,16 +53,14 @@ class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHand
 
     @EventHandler(priority = EventPriority.HIGH)
     fun onItemDrag(event: InventoryDragEvent) {
-        val holder = event.inventory.holder
-        if (holder is BukkitInventoryGuiHolder) {
-//            bukkitInventoryGuiHolder.guiHolder().getViewManager().blockedByInteraction();
+        checkIfValidHolderAndRun(event.inventory.holder) {
             if (event.rawSlots.stream()
                     .anyMatch { rawSlot -> event.view.getInventory(rawSlot) != event.view.topInventory }
             ) {
                 event.isCancelled = true
-                return
+                return@checkIfValidHolderAndRun
             }
-            if (runtime.window == null) return
+            if (runtime.window == null) return@checkIfValidHolderAndRun
             val interactionDetails = DragInteractionDetailsImpl(event)
             runtime.interactionHandler.onDrag(interactionDetails)
             if (!interactionDetails.valid) {
@@ -79,9 +83,7 @@ class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHand
 
     @EventHandler(priority = EventPriority.HIGH)
     fun onClose(event: InventoryCloseEvent) {
-        val holder = event.inventory.holder
-        if (holder is BukkitInventoryGuiHolder) {
-//            bukkitInventoryGuiHolder.guiHolder().getViewManager().blockedByInteraction();
+        checkIfValidHolderAndRun(event.inventory.holder) {
             runtime.window?.apply { close() }
         }
     }

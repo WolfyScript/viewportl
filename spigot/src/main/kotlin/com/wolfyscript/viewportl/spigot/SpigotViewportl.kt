@@ -32,7 +32,6 @@ import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import com.wolfyscript.viewportl.spigot.commands.InputCommand
 import com.wolfyscript.viewportl.spigot.gui.factories.GuiFactoryImpl
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.InventoryUIListener
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
