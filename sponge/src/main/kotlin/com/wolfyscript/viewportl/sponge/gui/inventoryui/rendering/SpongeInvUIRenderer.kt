@@ -2,6 +2,8 @@ package com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.common.api.into
 import com.wolfyscript.scafall.eval.context.EvalContext
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.sponge.api.SpongePluginWrapper
 import com.wolfyscript.scafall.sponge.api.wrappers.world.items.ItemStackWrapper
 import com.wolfyscript.scafall.sponge.api.wrappers.world.items.SpongeItemStackConfig
@@ -27,9 +29,11 @@ import kotlin.jvm.optionals.getOrNull
 
 class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRenderContext>() {
 
-    init {
-        registerComponentRenderer(SpongeInvUIRenderer::class.java, ButtonImpl::class.java, InventoryButtonComponentRenderer())
-        registerComponentRenderer(SpongeInvUIRenderer::class.java, GroupImpl::class.java, InventoryGroupComponentRenderer())
+    companion object {
+        init {
+            registerComponentRenderer(SpongeInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(ButtonImpl::class.java)), InventoryButtonComponentRenderer())
+            registerComponentRenderer(SpongeInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(GroupImpl::class.java)), InventoryGroupComponentRenderer())
+        }
     }
 
     private var inventoryMenu: InventoryMenu? = null
@@ -103,9 +107,7 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
         player: UUID,
         component: Component?
     ) {
-        Sponge.server().player(player).getOrNull()?.openInventory()?.getOrNull()
-            ?.let { obj: Container -> obj.currentMenu() }
-            ?.ifPresent { inventoryMenu -> inventoryMenu.setTitle(component) }
+        Sponge.server().player(player).getOrNull()?.openInventory()?.getOrNull()?.currentMenu()?.ifPresent { it.setTitle(component) }
     }
 
     fun setStack(i: Int, itemStackConfig: ItemStackConfig?) {

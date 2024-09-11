@@ -1,5 +1,6 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 
+import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.*
@@ -13,17 +14,17 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
 
     companion object {
 
-        private val componentRenderersForUIRenderer : MutableMap<Class<out InvUIRenderer<*, *>>, MutableMap<Class<out NativeComponent>, ComponentRenderer<*, out InvUIRenderContext>>> = mutableMapOf()
+        private val componentRenderersForUIRenderer : MutableMap<Class<out InvUIRenderer<*, *>>, MutableMap<Key, ComponentRenderer<*, out InvUIRenderContext>>> = mutableMapOf()
 
         @Suppress("UNCHECKED_CAST")
-        fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : NativeComponent> getComponentRenderer(uiRendererType: Class<R>, type: Class<C>): ComponentRenderer<C, X>? {
+        fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : NativeComponent> getComponentRenderer(uiRendererType: Class<R>, type: Key): ComponentRenderer<C, X>? {
             val handler: ComponentRenderer<*, out InvUIRenderContext>? = componentRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type]
             return handler as? ComponentRenderer<C, X>?
         }
 
         fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : NativeComponent> registerComponentRenderer(
             uiRendererType: Class<R>,
-            type: Class<C>,
+            type: Key,
             handler: ComponentRenderer<in C, X>
         ) {
             componentRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type] = handler
@@ -62,7 +63,8 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
         val nextOffset = calculatePosition(node, context)
         val offset = context.currentOffset()
 
-        getComponentRenderer(this::class.java, C::class.java)?.let { renderer ->
+        val componentRenderer : ComponentRenderer<C, T>? = getComponentRenderer(this::class.java, component.type())
+        componentRenderer?.let { renderer ->
             renderer.render(context, component)
 
             cachedProperties[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))

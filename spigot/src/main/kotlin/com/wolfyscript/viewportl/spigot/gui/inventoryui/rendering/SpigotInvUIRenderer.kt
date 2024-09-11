@@ -19,6 +19,8 @@
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.eval.context.EvalContext
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.platform.PlatformType
 import com.wolfyscript.scafall.spigot.api.wrappers.unwrap
 import com.wolfyscript.scafall.spigot.api.wrappers.world.items.BukkitItemStackConfig
@@ -44,8 +46,8 @@ class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRender
     companion object {
 
         init {
-            registerComponentRenderer(SpigotInvUIRenderer::class.java, ButtonImpl::class.java, InventoryButtonComponentRenderer())
-            registerComponentRenderer(SpigotInvUIRenderer::class.java, GroupImpl::class.java, InventoryGroupComponentRenderer())
+            registerComponentRenderer(SpigotInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(ButtonImpl::class.java)), InventoryButtonComponentRenderer())
+            registerComponentRenderer(SpigotInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(GroupImpl::class.java)), InventoryGroupComponentRenderer())
         }
 
     }
