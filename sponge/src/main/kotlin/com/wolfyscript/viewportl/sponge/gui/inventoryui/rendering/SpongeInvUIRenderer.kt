@@ -44,7 +44,7 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
 
     override fun clearSlots(slots: Collection<Int>) {
         for (slot in slots) {
-            inventoryMenu?.inventory()?.set(slot, null)
+            inventoryMenu?.inventory()?.set(slot, org.spongepowered.api.item.inventory.ItemStack.empty())
         }
     }
 
@@ -98,16 +98,8 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
     }
 
     override fun updateTitle(component: Component?) {
-        inventoryMenu?.inventory()?.viewers()?.forEach {
-            updateTitle(it.uniqueId(), component)
-        }
-    }
-
-    private fun updateTitle(
-        player: UUID,
-        component: Component?
-    ) {
-        Sponge.server().player(player).getOrNull()?.openInventory()?.getOrNull()?.currentMenu()?.ifPresent { it.setTitle(component) }
+        // TODO: Fix issue?! Report ClassCastException: class org.spongepowered.common.network.SpongeServerEngineConnection cannot be cast to class net.minecraft.server.network.ServerGamePacketListenerImpl (org.spongepowered.common.network.SpongeServerEngineConnection and net.minecraft.server.network.ServerGamePacketListenerImpl are in unnamed module of loader cpw.mods.modlauncher.TransformingClassLoader @9d7ccfe)
+//        inventoryMenu?.setTitle(component)
     }
 
     fun setStack(i: Int, itemStackConfig: ItemStackConfig?) {
