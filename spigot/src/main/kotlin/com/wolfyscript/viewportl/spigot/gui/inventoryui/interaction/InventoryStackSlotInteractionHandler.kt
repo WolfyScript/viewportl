@@ -18,12 +18,11 @@
 
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.StackInputSlot
 import com.wolfyscript.viewportl.gui.interaction.*
 
-class InventoryStackSlotInteractionHandler : ComponentInteractionHandler<StackInputSlot> {
+class InventoryStackSlotInteractionHandler : SpigotComponentInteractionHandler<StackInputSlot> {
 
     override fun onDrag(
         runtime: ViewRuntime<*,*>,

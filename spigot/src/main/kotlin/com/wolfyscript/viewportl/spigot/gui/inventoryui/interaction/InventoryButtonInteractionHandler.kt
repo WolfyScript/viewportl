@@ -18,7 +18,6 @@
 
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.Button
 import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
@@ -26,7 +25,7 @@ import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
 import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 
-class InventoryButtonInteractionHandler : ComponentInteractionHandler<Button> {
+class InventoryButtonInteractionHandler : SpigotComponentInteractionHandler<Button> {
 
     private fun playSound(runtime: ViewRuntime<*,*>, component: Button) {
         component.sound?.let { sound ->
@@ -45,9 +44,7 @@ class InventoryButtonInteractionHandler : ComponentInteractionHandler<Button> {
         playSound(runtime, component)
 
         component.onClick?.let { click ->
-            with(click) {
-                transaction.consume()
-            }
+            transaction.click()
         }
 
         details.invalidate() // Never allow to validate it!

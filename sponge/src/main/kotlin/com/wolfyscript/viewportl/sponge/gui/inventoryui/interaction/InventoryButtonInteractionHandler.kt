@@ -71,9 +71,7 @@ class InventoryButtonInteractionHandler : SpongeComponentInteractionHandler<Butt
         playSound(runtime, component)
 
         component.onClick?.let { click ->
-            with(click) {
-                ClickTransactionImpl(ClickType.PRIMARY, index, index, false, true, false, -1).consume()
-            }
+            ClickTransactionImpl(ClickType.PRIMARY, index, index, false, true, false, -1).click()
         }
     }
 

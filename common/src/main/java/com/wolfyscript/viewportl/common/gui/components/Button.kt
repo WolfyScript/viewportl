@@ -64,12 +64,12 @@ class ButtonImpl @JsonCreator @Inject constructor(
     viewportl: Viewportl = runtime.viewportl,
     parent: NativeComponent? = null,
     icon: ButtonIcon = DynamicIcon(runtime),
-    onClick: ReceiverConsumer<ClickTransaction>?,
+    onClick: (ClickTransaction.() -> Unit)?,
     sound: Sound?
 ) : AbstractNativeComponentImpl<Button>(id, viewportl, parent), Button {
 
     override var icon: ButtonIcon by DynamicProperty(runtime, icon)
-    override var onClick: ReceiverConsumer<ClickTransaction>? by DynamicProperty(runtime, onClick)
+    override var onClick: (ClickTransaction.() -> Unit)? by DynamicProperty(runtime, onClick)
     override var sound: Sound? by DynamicProperty(runtime, sound)
 
 }

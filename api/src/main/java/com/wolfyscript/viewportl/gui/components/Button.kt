@@ -33,7 +33,7 @@ data class ButtonProperties(
     val icon: ButtonIcon.() -> Unit,
     val styles: RenderProperties.() -> Unit,
     val sound: Sound? = null,
-    val onClick: ClickTransaction.() -> Unit
+    val onClick: (ClickTransaction.() -> Unit)?
 )
 
 /**
@@ -45,7 +45,7 @@ data class ButtonProperties(
 interface Button : NativeComponent {
     var sound: Sound?
     var icon: ButtonIcon
-    var onClick: ReceiverConsumer<ClickTransaction>?
+    var onClick: (ClickTransaction.() -> Unit)?
 }
 
 interface ButtonIcon {

@@ -65,7 +65,7 @@ interface ComponentScope : ReactiveSource {
         icon: ButtonIcon.() -> Unit,
         styles: RenderProperties.() -> Unit = {},
         sound: Sound? = Sound.sound(Key.parse("minecraft:ui.button.click").into(), Sound.Source.MASTER, 0.25f, 1f),
-        onClick: ClickTransaction.() -> Unit = {}
+        onClick: (ClickTransaction.() -> Unit)? = null
     )
 
     fun outlet()

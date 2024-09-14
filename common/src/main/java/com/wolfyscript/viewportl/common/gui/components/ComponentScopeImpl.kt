@@ -61,7 +61,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
         icon: ButtonIcon.() -> Unit,
         styles: RenderProperties.() -> Unit,
         sound: Sound?,
-        onClick: ClickTransaction.() -> Unit
+        onClick: (ClickTransaction.() -> Unit)?
     ) = component(this, runtime) {
         runtime.viewportl.guiFactory.componentFactory.button(
             ButtonProperties(
