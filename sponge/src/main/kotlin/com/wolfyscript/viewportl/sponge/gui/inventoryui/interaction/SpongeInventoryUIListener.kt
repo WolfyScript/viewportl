@@ -1,16 +1,15 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
-import org.spongepowered.api.data.Keys
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.filter.type.Include
 import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
 import org.spongepowered.api.event.item.inventory.container.InteractContainerEvent
 import org.spongepowered.api.item.inventory.Inventory
-import org.spongepowered.api.item.inventory.menu.ClickTypes
 import org.spongepowered.api.item.inventory.type.CarriedInventory
 
 class SpongeInventoryUIListener(
@@ -44,6 +43,10 @@ class SpongeInventoryUIListener(
     fun onClickSingleSlot(event: ClickContainerEvent) {
         withGuiHolder(event.inventory()) {
             runtime.interactionHandler.onClick(event)
+
+            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
+                (runtime.reactiveSource as ReactiveGraph).runEffects()
+            }
         }
     }
 
@@ -57,6 +60,10 @@ class SpongeInventoryUIListener(
 
                 runtime.interactionHandler.onClick(event)
             }
+
+            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
+                (runtime.reactiveSource as ReactiveGraph).runEffects()
+            }
         }
     }
 
@@ -69,6 +76,10 @@ class SpongeInventoryUIListener(
                     continue // Let's not handle events not affecting top inventory
                 }
                 runtime.interactionHandler.onDrag(event, transaction)
+            }
+
+            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
+                (runtime.reactiveSource as ReactiveGraph).runEffects()
             }
         }
     }
