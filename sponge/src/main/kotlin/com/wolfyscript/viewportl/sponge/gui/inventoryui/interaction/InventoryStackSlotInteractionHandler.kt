@@ -18,50 +18,60 @@
 
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
+import com.wolfyscript.scafall.sponge.api.wrappers.world.items.ItemStackWrapper
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.StackInputSlot
 import com.wolfyscript.viewportl.gui.interaction.*
+import org.spongepowered.api.data.Keys
+import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
+import org.spongepowered.api.item.inventory.transaction.SlotTransaction
 
-class InventoryStackSlotInteractionHandler : ComponentInteractionHandler<StackInputSlot> {
+class InventoryStackSlotInteractionHandler : SpongeComponentInteractionHandler<StackInputSlot> {
+
+    override fun onSingleSlotClick(
+        runtime: ViewRuntime<*, SpongeUIInteractionHandler>,
+        component: StackInputSlot,
+        event: ClickContainerEvent
+    ) {
+        for (transaction in event.transactions()) {
+            handleTransaction(component, transaction)
+        }
+    }
 
     override fun onDrag(
-        runtime: ViewRuntime<*,*>,
+        runtime: ViewRuntime<*, SpongeUIInteractionHandler>,
+        component: StackInputSlot,
+        slotTransaction: SlotTransaction,
+        event: ClickContainerEvent.Drag
+    ) {
+        handleTransaction(component, slotTransaction)
+    }
+
+    private fun handleTransaction(component: StackInputSlot, transaction: SlotTransaction) {
+        if (!transaction.isValid) {
+            return
+        }
+        val slot = transaction.slot()
+        slot.get(Keys.SLOT_INDEX).ifPresent { slotIndex ->
+            // TODO: Check if stack can be accepted (invalidate transaction otherwise)
+
+            val wrappedFinalReplacement = ItemStackWrapper(transaction.finalReplacement().createStack())  // TODO: Wrap stack snapshot instead?
+            component.value = wrappedFinalReplacement
+            component.onValueChange?.accept(wrappedFinalReplacement)
+        }
+    }
+
+    override fun onDrag(
+        runtime: ViewRuntime<*, *>,
         component: StackInputSlot,
         details: DragInteractionDetails,
         transaction: DragTransaction
-    ) {
-        component.onDrag?.let {
-            with(it) {
-                transaction.consume()
-            }
-        }
-
-        details.onSlotValueUpdate(transaction.slot) {
-            component.onValueChange?.accept(it)
-            component.value = it
-        }
-    }
+    ) {}
 
     override fun onClick(
-        runtime: ViewRuntime<*,*>,
+        runtime: ViewRuntime<*, *>,
         component: StackInputSlot,
         details: ClickInteractionDetails,
         transaction: ClickTransaction
-    ) {
-        transaction.validate() // Validate stack input by default
-
-        component.onClick?.let {
-            with(it) {
-                transaction.consume()
-            }
-        }
-
-        if (transaction.valid) {
-            details.onSlotValueUpdate(transaction.rawSlot) {
-                component.onValueChange?.accept(it)
-                component.value = it
-            }
-        }
-    }
+    ) {}
 }

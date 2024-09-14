@@ -18,17 +18,16 @@
 
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.Button
-import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
-import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
-import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
-import com.wolfyscript.viewportl.gui.interaction.DragTransaction
+import com.wolfyscript.viewportl.gui.interaction.*
+import org.spongepowered.api.data.Keys
+import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
+import org.spongepowered.api.item.inventory.transaction.SlotTransaction
 
-class InventoryButtonInteractionHandler : ComponentInteractionHandler<Button> {
+class InventoryButtonInteractionHandler : SpongeComponentInteractionHandler<Button> {
 
-    private fun playSound(runtime: ViewRuntime<*,*>, component: Button) {
+    private fun playSound(runtime: ViewRuntime<*, *>, component: Button) {
         component.sound?.let { sound ->
             runtime.viewers.forEach {
                 runtime.viewportl.scafall.adventure.player(it).playSound(sound)
@@ -36,30 +35,62 @@ class InventoryButtonInteractionHandler : ComponentInteractionHandler<Button> {
         }
     }
 
-    override fun onClick(
-        runtime: ViewRuntime<*,*>,
+    override fun onSingleSlotClick(
+        runtime: ViewRuntime<*, SpongeUIInteractionHandler>,
         component: Button,
-        details: ClickInteractionDetails,
-        transaction: ClickTransaction
+        event: ClickContainerEvent
     ) {
+        event.transactions().firstOrNull()?.let { transaction ->
+            handleClick(runtime, component, transaction)
+        }
+
+        event.cursorTransaction().isValid = false
+        event.transactions().forEach { it.isValid = false }
+    }
+
+    override fun onDrag(
+        runtime: ViewRuntime<*, SpongeUIInteractionHandler>,
+        component: Button,
+        slotTransaction: SlotTransaction,
+        event: ClickContainerEvent.Drag
+    ) {
+        if (!slotTransaction.isValid) {
+            return
+        }
+
+        handleClick(runtime, component, slotTransaction)
+
+        event.cursorTransaction().isValid = false
+        slotTransaction.isValid = false
+    }
+
+    private fun handleClick(runtime: ViewRuntime<*,SpongeUIInteractionHandler>, component: Button, transaction: SlotTransaction) {
+        val slot = transaction.slot()
+        val index = slot.get(Keys.SLOT_INDEX).orElse(null) ?: return
+
         playSound(runtime, component)
 
         component.onClick?.let { click ->
             with(click) {
-                transaction.consume()
+                ClickTransactionImpl(ClickType.PRIMARY, index, index, false, true, false, -1).consume()
             }
         }
+    }
 
-        details.invalidate() // Never allow to validate it!
+    override fun onClick(
+        runtime: ViewRuntime<*, *>,
+        component: Button,
+        details: ClickInteractionDetails,
+        transaction: ClickTransaction
+    ) {
     }
 
     override fun onDrag(
-        runtime: ViewRuntime<*,*>,
+        runtime: ViewRuntime<*, *>,
         component: Button,
         details: DragInteractionDetails,
         transaction: DragTransaction
     ) {
-        details.invalidate()
     }
 
 }

@@ -1,66 +1,74 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
-import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import org.spongepowered.api.data.Keys
 import org.spongepowered.api.event.Listener
+import org.spongepowered.api.event.filter.type.Include
 import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
-import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent.Drag
 import org.spongepowered.api.event.item.inventory.container.InteractContainerEvent
 import org.spongepowered.api.item.inventory.Inventory
-import org.spongepowered.api.item.inventory.Slot
-import org.spongepowered.api.item.inventory.menu.ClickType
 import org.spongepowered.api.item.inventory.menu.ClickTypes
 import org.spongepowered.api.item.inventory.type.CarriedInventory
 
-class SpongeInventoryUIListener(private val runtime: ViewRuntimeImpl<*, SpongeUIInteractionHandler>, val viewportl: Viewportl) {
+class SpongeInventoryUIListener(
+    private val runtime: ViewRuntime<*, SpongeUIInteractionHandler>,
+    val viewportl: Viewportl
+) {
 
-    fun findGuiHolder(inventory: Inventory) : GuiHolder? {
+    private fun withGuiHolder(inventory: Inventory, fn: GuiHolder.() -> Unit) {
         if (inventory is CarriedInventory<*>) {
-            return inventory.carrier().map {
+            return inventory.carrier().ifPresent {
                 if (it is GuiCarrier) {
-                    return@map it.holder
+                    it.holder.fn()
                 }
-                null
-            }.orElse(null)
+            }
         }
-        return null
+    }
+
+    /**
+     *
+     */
+    @Listener
+    @Include(
+        ClickContainerEvent.Primary::class,
+        ClickContainerEvent.Secondary::class,
+        ClickContainerEvent.Middle::class,
+        ClickContainerEvent.Shift::class,
+        ClickContainerEvent.Double::class,
+        ClickContainerEvent.Drop.Single::class,
+        ClickContainerEvent.Drop.Full::class
+    )
+    fun onClickSingleSlot(event: ClickContainerEvent) {
+        withGuiHolder(event.inventory()) {
+            runtime.interactionHandler.onClick(event)
+        }
     }
 
     @Listener
-    fun onClickPrimary(event: ClickContainerEvent.Primary) {
-        event.slot().ifPresent { slot ->
-            slot.get(Keys.SLOT_INDEX).ifPresent { index ->
-                runtime.interactionHandler.onClick(ClickInteractionDetailsImpl(ClickTypes.CLICK_LEFT.get(), slot, index, -1))
+    fun onDoubleCollect(event: ClickContainerEvent.Double) {
+        withGuiHolder(event.inventory()) {
+            for (transaction in event.transactions()) {
+                if (!event.inventory().isViewedSlot(transaction.slot().viewedSlot())) {
+                    continue // Let's not handle events not affecting top inventory
+                }
+
+                runtime.interactionHandler.onClick(event)
             }
         }
     }
 
     @Listener
-    fun onClickSecondary(event: ClickContainerEvent.Secondary) {
-
-    }
-
-    @Listener
-    fun onClickMiddle(event: ClickContainerEvent.Middle) {
-
-    }
-
-    @Listener
-    fun onClickDrag(event: Drag) {
+    fun onClickDrag(event: ClickContainerEvent.Drag) {
         val inventory: Inventory = event.inventory()
-        findGuiHolder(inventory)?.let {
-            event.cursorTransaction()
+        withGuiHolder(inventory) {
             for (transaction in event.transactions()) {
-                transaction.slot().get(Keys.SLOT_INDEX).ifPresent { slotIndex: Int ->
-                    if (slotIndex == 11) {
-                        transaction.invalidate()
-                    }
+                if (!event.inventory().isViewedSlot(transaction.slot().viewedSlot())) {
+                    continue // Let's not handle events not affecting top inventory
                 }
+                runtime.interactionHandler.onDrag(event, transaction)
             }
         }
     }
@@ -68,14 +76,8 @@ class SpongeInventoryUIListener(private val runtime: ViewRuntimeImpl<*, SpongeUI
     @Listener
     fun onClose(event: InteractContainerEvent.Close) {
         val inventory = event.inventory()
-        findGuiHolder(inventory)?.let {
-            it.viewManager.window?.close()
-        }
-    }
-
-    private fun onClick(event: ClickContainerEvent, clickType: ClickType<*>, slot: Slot, slotIndex: Int) {
-        findGuiHolder(event.inventory())?.let { holder ->
-
+        withGuiHolder(inventory) {
+            viewManager.window?.close()
         }
     }
 
