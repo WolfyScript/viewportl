@@ -54,13 +54,13 @@ class StackEditorExampleKotlin {
                         var selectedTab: Tab by createSignal(Tab.NONE)
 
                         slot(
+                            value = { stackToEdit },
                             styles = {
                                 position = PropertyPosition.slot(4)
                             },
                             onValueChange = { v ->
                                 stackToEdit = v
-                            },
-                            value = { stackToEdit }
+                            }
                         )
                         // Tab selectors
                         button(

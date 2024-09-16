@@ -107,8 +107,6 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
         value: () -> ItemStack?,
         styles: RenderProperties.() -> Unit,
         onValueChange: Consumer<ItemStack?>?,
-        onClick: ReceiverConsumer<ClickTransaction>?,
-        onDrag: ReceiverConsumer<DragTransaction>?,
         canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>?
     ) = component(this, runtime) {
         runtime.viewportl.guiFactory.componentFactory.slot(
@@ -117,8 +115,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
                 value,
                 styles,
                 onValueChange,
-                onClick,
-                onDrag, canPickUpStack
+                canPickUpStack
             )
         )
     }

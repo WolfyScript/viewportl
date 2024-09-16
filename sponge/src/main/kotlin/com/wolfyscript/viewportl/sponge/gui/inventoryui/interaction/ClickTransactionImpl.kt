@@ -25,14 +25,12 @@ import com.wolfyscript.viewportl.gui.interaction.ClickType
 class ClickTransactionImpl(
     override val clickType: ClickType,
     override val slot: Int,
-    override val rawSlot: Int,
     override val shift: Boolean,
     override val primary: Boolean,
     override val secondary: Boolean,
     override val hotbarIndex: Int,
 ) : ClickTransaction {
 
-    override var valid: Boolean = true
     override val cursorStack : ItemStack? = null
     override val currentStack : ItemStack? = null
 

@@ -52,17 +52,16 @@ class StackSlotsExampleKotlin {
 
                         for (i in 0 until 9) {
                             slot (
+                                value = { stacks[i] },
                                 styles = {
                                     position = PropertyPosition.slot(i)
                                 },
-                                onClick = { },
                                 onValueChange = { v ->
                                     val newStack = v ?: this@registerGui.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air")).constructItemStack()
                                     if (newStack != null) {
                                         stacks[i] = newStack
                                     }
-                                },
-                                value = { stacks[i] }
+                                }
                             )
                         }
 

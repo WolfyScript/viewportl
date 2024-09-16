@@ -1,13 +1,11 @@
 package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.scafall.function.ReceiverBiFunction
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
 import com.wolfyscript.viewportl.gui.interaction.ClickType
-import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
@@ -95,8 +93,6 @@ interface ComponentScope : ReactiveSource {
         value: () -> ItemStack?,
         styles: RenderProperties.() -> Unit,
         onValueChange: Consumer<ItemStack?>? = null,
-        onClick: ReceiverConsumer<ClickTransaction>? = null,
-        onDrag: ReceiverConsumer<DragTransaction>? = null,
         canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null,
     )
 
