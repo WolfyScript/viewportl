@@ -71,24 +71,9 @@ class InventoryButtonInteractionHandler : SpongeComponentInteractionHandler<Butt
         playSound(runtime, component)
 
         component.onClick?.let { click ->
-            ClickTransactionImpl(ClickType.PRIMARY, index, index, false, true, false, -1).click()
+            // TODO
+            ClickTransactionImpl(ClickType.PRIMARY, index, false, true, false, -1).click()
         }
-    }
-
-    override fun onClick(
-        runtime: ViewRuntime<*, *>,
-        component: Button,
-        details: ClickInteractionDetails,
-        transaction: ClickTransaction
-    ) {
-    }
-
-    override fun onDrag(
-        runtime: ViewRuntime<*, *>,
-        component: Button,
-        details: DragInteractionDetails,
-        transaction: DragTransaction
-    ) {
     }
 
 }

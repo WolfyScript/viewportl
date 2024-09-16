@@ -19,16 +19,16 @@
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.spigot.api.into
-import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
-import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
@@ -56,10 +56,7 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
         }
     }
 
-    fun onClick(details: ClickInteractionDetails) {
-        details as ClickInteractionDetailsImpl
-
-        val event = details.clickEvent
+    fun onClick(event: InventoryClickEvent, valueHandler: ValueHandler) {
         val clickedTopInv = event.clickedInventory == event.view.topInventory
 
         val originalCursor = event.cursor
@@ -68,9 +65,9 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
         var cursor: ItemStack? = originalCursor.clone()
         var slotResult: ItemStack? = originalSlotStack?.clone()
 
-        testMainClickTransaction(details)
+        testMainClickTransaction(event, Slot(event.rawSlot), valueHandler)
 
-        if (!details.valid) {
+        if (event.isCancelled) {
             return
         }
 
@@ -160,25 +157,25 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
             }
 
             InventoryAction.COLLECT_TO_CURSOR -> {
-                details.clickEvent.isCancelled = true
+                event.isCancelled = true
 
-                if (details.valid) { // Only continue to collect items when main component allows it
+                if (!event.isCancelled) { // Only continue to collect items when main component allows it
                     // Clear the slot, it was moved to the cursor
                     slotResult = null
-                    details.callSlotValueUpdate(event.rawSlot, null)
+                    valueHandler.callSlotValueUpdate(event.rawSlot, null)
 
                     if (cursor != null) {
                         // calculate the slots that should be collected. Skip Buttons and other components that invalidate the transaction
                         collectToCursor(cursor, event.view, { index, stack ->
-                            testChildClickTransaction(index, event.view, details)
+                            testChildClickTransaction(event, Slot(index), valueHandler, event.view)
                         }) { rawSlot, stack ->
-                            details.callSlotValueUpdate(rawSlot, stack?.wrap())
+                            valueHandler.callSlotValueUpdate(rawSlot, stack)
                         }
                     }
 
                     // Apply calculated slot changes
-                    details.clickEvent.view.setCursor(cursor)
-                    details.clickEvent.currentItem = null
+                    event.view.setCursor(cursor)
+                    event.currentItem = null
                 }
                 return
             }
@@ -191,9 +188,9 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
 
             // Moving items between inventories using shift clicking
             InventoryAction.MOVE_TO_OTHER_INVENTORY -> {
-                details.clickEvent.isCancelled = true
+                event.isCancelled = true
 
-                if (details.valid) { // Only move items when parent transaction is allowed
+                if (!event.isCancelled) { // Only move items when parent transaction is allowed
                     if (clickedTopInv) {
                         // Move from Top Inv to Bottom Inv
                         // So no need to test and update child transactions in bottom inv
@@ -204,10 +201,10 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
                                 event.view.topInventory,
                                 event.view.bottomInventory,
                                 { _, _ -> true }) { _, _ -> }
-                            details.callSlotValueUpdate(event.rawSlot, slotResult.wrap())
+                            valueHandler.callSlotValueUpdate(event.rawSlot, slotResult)
 
                             // Apply calculated slot changes
-                            details.clickEvent.currentItem = slotResult
+                            event.currentItem = slotResult
                         }
                     } else {
                         // Move from Bottom Inv to Top Inv
@@ -219,13 +216,13 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
                                 event.view.bottomInventory,
                                 event.view.topInventory,
                                 { index, stack ->
-                                    testChildClickTransaction(index, event.view, details)
+                                    testChildClickTransaction(event, Slot(index), valueHandler, event.view)
                                 }) { rawSlot, stack ->
-                                details.callSlotValueUpdate(rawSlot, stack?.wrap())
+                                valueHandler.callSlotValueUpdate(rawSlot, stack)
                             }
 
                             // Apply calculated slot changes
-                            details.clickEvent.currentItem = slotResult
+                            event.currentItem = slotResult
                         }
                     }
                 }
@@ -245,7 +242,7 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
 
             // Hotbar swapping using the number keys
             InventoryAction.HOTBAR_SWAP, InventoryAction.HOTBAR_MOVE_AND_READD -> {
-                if (details.valid) {
+                if (!event.isCancelled) {
                     val clickedStack = slotResult?.clone()
                     slotResult = event.whoClicked.inventory.getItem(event.hotbarButton)
                     event.whoClicked.inventory.setItem(event.hotbarButton, clickedStack)
@@ -258,76 +255,55 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
             }
         }
 
-        details.clickEvent.isCancelled = true
+        event.isCancelled = true
 
-        if (details.valid) {
-            // Apply calculated slot changes
-            details.clickEvent.view.setCursor(cursor)
-            details.clickEvent.currentItem = slotResult
+        // Apply calculated slot changes
+        event.view.setCursor(cursor)
+        event.currentItem = slotResult
 
-            // Notify listeners (e.g. components)
-            details.callSlotValueUpdate(event.rawSlot, slotResult?.wrap())
-        }
+        // Notify listeners (e.g. components)
+        valueHandler.callSlotValueUpdate(event.rawSlot, slotResult)
     }
 
-    private fun testMainClickTransaction(details: ClickInteractionDetailsImpl) {
-        if (details.clickEvent.clickedInventory == details.clickEvent.view.bottomInventory) {
-            details.validate() // Allow any bottom inventory interaction
+    private fun testMainClickTransaction(
+        event: InventoryClickEvent,
+        slot: Slot,
+        valueHandler: ValueHandler
+    ) {
+        if (event.clickedInventory == event.view.bottomInventory) {
+            event.isCancelled = false // Allow any bottom inventory interaction
             return
         }
         // Top inventory clicked
-        val node = slotNodes[details.slot]?.let { runtime.model.getNode(it) }
+        val node = slotNodes[slot.index]?.let { runtime.model.getNode(it) }
         if (node == null) {
-            details.invalidate()
+            event.isCancelled = true
             return
         }
-        val transaction = ClickTransactionImpl(
-            details.clickType,
-            details.slot,
-            details.rawSlot,
-            details.isShift,
-            details.isPrimary,
-            details.isSecondary,
-            details.hotbarButton
-        )
-        // Invalidate the action by default
-        details.invalidate()
-        transaction.invalidate()
 
         val component = node.nativeComponent
-        getComponentInteractionHandler(component.javaClass)?.onClick(runtime, component, details, transaction)
-
-        if (transaction.valid) {
-            details.validate() // Validate it as wished by the transaction
+        callComponentHandler(node.nativeComponent) {
+            onClick(runtime, component, event, slot, valueHandler)
         }
     }
 
     private fun testChildClickTransaction(
-        rawSlot: Int,
+        event: InventoryClickEvent,
+        slot: Slot,
+        valueHandler: ValueHandler,
         inventoryView: InventoryView,
-        details: ClickInteractionDetails
     ): Boolean {
-        if (rawSlot >= inventoryView.topInventory.size) {
+        if (slot.index >= inventoryView.topInventory.size) {
             return true
         }
-        val slot = inventoryView.convertSlot(rawSlot)
-        val node = slotNodes[slot]?.let { runtime.model.getNode(it) }
+        val node = slotNodes[slot.index]?.let { runtime.model.getNode(it) }
         if (node != null) {
-            val transaction = ClickTransactionImpl(
-                details.clickType,
-                slot,
-                rawSlot,
-                details.isShift,
-                details.isPrimary,
-                details.isSecondary,
-                details.hotbarButton
-            )
-            transaction.invalidate() // Invalidate the action by default
-
             val component = node.nativeComponent
-            getComponentInteractionHandler(component.javaClass)?.onClick(runtime, component, details, transaction)
+            callComponentHandler(node.nativeComponent) {
+                onClick(runtime, component, event, slot, valueHandler)
+            }
 
-            return transaction.valid
+            return !event.isCancelled
         }
         return false
     }
@@ -427,37 +403,35 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
         }
     }
 
-    fun onDrag(details: DragInteractionDetails) {
+    fun onDrag(event: InventoryDragEvent, valueHandler: ValueHandler) {
         val topInvSize = runtime.window?.size ?: 0
 
         // Go through each slot that is affected, and call them separately
         // (Sponge allows us to invalidate single slot transactions of the drag event! Keep the same API behaviour on Spigot, but cancel the entire event!)
-        for (rawSlot in details.rawSlots) {
+        for (rawSlot in event.rawSlots) {
             if (rawSlot < topInvSize) {
                 // Slot is in top inventory
                 val node = slotNodes[rawSlot]?.let { runtime.model.getNode(it) }
 
                 if (node == null) {
-                    details.invalidate() // Cancel the entire event if only one fails!
-                    return // TODO: Should we skip the next slots? On Spigot that would make sense, but on Sponge the next slots may be valid!
+                    event.isCancelled = true // Cancel the entire event if only one fails!
+                    return
                 }
 
-                val transaction = DragTransactionImpl(
-                    rawSlot,
-                    details.inventorySlots,
-                    details.rawSlots,
-                    details.type
-                )
-
-                val component = node.nativeComponent
-                getComponentInteractionHandler(component.javaClass)?.onDrag(runtime, component, details, transaction)
-
-                if (!transaction.valid) {
-                    details.invalidate() // Again, cancel the entire event!
+                callComponentHandler(node.nativeComponent) {
+                    onDrag(runtime, node.nativeComponent, event, Slot(rawSlot), valueHandler)
                 }
-
             }
         }
+    }
+
+    private fun <C : NativeComponent> callComponentHandler(
+        component: C,
+        fn: SpigotComponentInteractionHandler<C>.() -> Unit
+    ) {
+        val componentHandler =
+            getComponentInteractionHandler(component.javaClass) as SpigotComponentInteractionHandler<C>
+        componentHandler.fn()
     }
 
 }

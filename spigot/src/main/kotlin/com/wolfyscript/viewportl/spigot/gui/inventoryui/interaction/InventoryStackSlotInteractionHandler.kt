@@ -18,49 +18,40 @@
 
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
+import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.StackInputSlot
-import com.wolfyscript.viewportl.gui.interaction.*
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryDragEvent
 
 class InventoryStackSlotInteractionHandler : SpigotComponentInteractionHandler<StackInputSlot> {
 
     override fun onDrag(
-        runtime: ViewRuntime<*,*>,
+        runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>,
         component: StackInputSlot,
-        details: DragInteractionDetails,
-        transaction: DragTransaction
+        event: InventoryDragEvent,
+        slot: Slot,
+        valueHandler: ValueHandler
     ) {
-        component.onDrag?.let {
-            with(it) {
-                transaction.consume()
-            }
-        }
-
-        details.onSlotValueUpdate(transaction.slot) {
-            component.onValueChange?.accept(it)
-            component.value = it
+        valueHandler.listeners.put(slot.index) {
+            val wrapped = it?.wrap()
+            component.onValueChange?.accept(wrapped)
+            component.value = wrapped
         }
     }
 
     override fun onClick(
-        runtime: ViewRuntime<*,*>,
+        runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>,
         component: StackInputSlot,
-        details: ClickInteractionDetails,
-        transaction: ClickTransaction
+        event: InventoryClickEvent,
+        slot: Slot,
+        valueHandler: ValueHandler
     ) {
-        transaction.validate() // Validate stack input by default
-
-        component.onClick?.let {
-            with(it) {
-                transaction.consume()
-            }
-        }
-
-        if (transaction.valid) {
-            details.onSlotValueUpdate(transaction.rawSlot) {
-                component.onValueChange?.accept(it)
-                component.value = it
-            }
+        valueHandler.listeners.put(event.rawSlot) {
+            val wrapped = it?.wrap()
+            component.onValueChange?.accept(wrapped)
+            component.value = wrapped
         }
     }
+
 }

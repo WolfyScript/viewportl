@@ -19,16 +19,5 @@
 package com.wolfyscript.viewportl.common.gui.interaction
 
 import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
-import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
-import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
-import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 
-interface ComponentInteractionHandler<C: NativeComponent> {
-
-    fun onDrag(runtime: ViewRuntime<*,*>, component: C, details: DragInteractionDetails, transaction: DragTransaction)
-
-    fun onClick(runtime: ViewRuntime<*,*>, component: C, details: ClickInteractionDetails, transaction: ClickTransaction)
-
-}
+interface ComponentInteractionHandler<C: NativeComponent>

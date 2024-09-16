@@ -20,10 +20,9 @@ package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.Button
-import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
-import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
-import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
-import com.wolfyscript.viewportl.gui.interaction.DragTransaction
+import com.wolfyscript.viewportl.gui.interaction.ClickType
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryDragEvent
 
 class InventoryButtonInteractionHandler : SpigotComponentInteractionHandler<Button> {
 
@@ -35,28 +34,31 @@ class InventoryButtonInteractionHandler : SpigotComponentInteractionHandler<Butt
         }
     }
 
-    override fun onClick(
-        runtime: ViewRuntime<*,*>,
+    override fun onDrag(
+        runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>,
         component: Button,
-        details: ClickInteractionDetails,
-        transaction: ClickTransaction
+        event: InventoryDragEvent,
+        slot: Slot,
+        valueHandler: ValueHandler
+    ) {
+        event.isCancelled = true
+    }
+
+    override fun onClick(
+        runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>,
+        component: Button,
+        event: InventoryClickEvent,
+        slot: Slot,
+        valueHandler: ValueHandler
     ) {
         playSound(runtime, component)
 
         component.onClick?.let { click ->
-            transaction.click()
+            // TODO
+            ClickTransactionImpl(ClickType.PRIMARY, slot.index, false, true, false, 0).click()
         }
 
-        details.invalidate() // Never allow to validate it!
-    }
-
-    override fun onDrag(
-        runtime: ViewRuntime<*,*>,
-        component: Button,
-        details: DragInteractionDetails,
-        transaction: DragTransaction
-    ) {
-        details.invalidate()
+        event.isCancelled = true
     }
 
 }

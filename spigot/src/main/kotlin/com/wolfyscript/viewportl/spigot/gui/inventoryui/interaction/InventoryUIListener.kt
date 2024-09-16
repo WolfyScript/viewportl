@@ -17,6 +17,8 @@
  */
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
+import com.google.common.collect.Multimap
+import com.google.common.collect.Multimaps
 import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
 import com.wolfyscript.viewportl.gui.GuiHolder
@@ -29,10 +31,11 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.ItemStack
 
 class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>) : Listener {
 
-    private fun checkIfValidHolderAndRun(holder: InventoryHolder?, fn: GuiHolder.() -> Unit) {
+    private fun withHolder(holder: InventoryHolder?, fn: GuiHolder.() -> Unit) {
         if (holder is BukkitInventoryGuiHolder && holder.guiHolder.viewManager == runtime) {
             fn(holder.guiHolder)
         }
@@ -40,9 +43,9 @@ class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHand
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onInvClick(event: InventoryClickEvent) {
-        checkIfValidHolderAndRun(event.inventory.holder) {
-            val details = ClickInteractionDetailsImpl(event)
-            runtime.interactionHandler.onClick(details)
+        withHolder(event.inventory.holder) {
+            val valueHandler = ValueHandler()
+            runtime.interactionHandler.onClick(event, valueHandler)
             event.isCancelled = true
 
             runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
@@ -53,23 +56,22 @@ class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHand
 
     @EventHandler(priority = EventPriority.HIGH)
     fun onItemDrag(event: InventoryDragEvent) {
-        checkIfValidHolderAndRun(event.inventory.holder) {
+        withHolder(event.inventory.holder) {
             if (event.rawSlots.stream()
                     .anyMatch { rawSlot -> event.view.getInventory(rawSlot) != event.view.topInventory }
             ) {
                 event.isCancelled = true
-                return@checkIfValidHolderAndRun
+                return@withHolder
             }
-            if (runtime.window == null) return@checkIfValidHolderAndRun
-            val interactionDetails = DragInteractionDetailsImpl(event)
-            runtime.interactionHandler.onDrag(interactionDetails)
-            if (!interactionDetails.valid) {
-                event.isCancelled = true
-            } else {
+            if (runtime.window == null) return@withHolder
+            val valueHandler = ValueHandler()
+            runtime.interactionHandler.onDrag(event, valueHandler)
+
+            if (!event.isCancelled) {
                 runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
                     for (rawSlot in event.rawSlots) {
                         if (rawSlot < event.inventory.size) {
-                            interactionDetails.callSlotValueUpdate(rawSlot, event.inventory.getItem(rawSlot)?.wrap())
+                            valueHandler.callSlotValueUpdate(rawSlot, event.inventory.getItem(rawSlot))
                         }
                     }
                 }
@@ -83,8 +85,24 @@ class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHand
 
     @EventHandler(priority = EventPriority.HIGH)
     fun onClose(event: InventoryCloseEvent) {
-        checkIfValidHolderAndRun(event.inventory.holder) {
+        withHolder(event.inventory.holder) {
             runtime.window?.apply { close() }
         }
     }
 }
+
+data class ValueHandler(
+    val listeners: Multimap<Int, (ItemStack?) -> Unit> = Multimaps.newListMultimap(mutableMapOf()) { mutableListOf() }
+) {
+
+    fun callSlotValueUpdate(slot: Int, item: ItemStack?) {
+        listeners[slot].forEach {
+            it(item)
+        }
+    }
+
+}
+
+data class Slot(
+    val index: Int
+)
