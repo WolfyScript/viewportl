@@ -61,17 +61,4 @@ class InventoryStackSlotInteractionHandler : SpongeComponentInteractionHandler<S
         }
     }
 
-    override fun onDrag(
-        runtime: ViewRuntime<*, *>,
-        component: StackInputSlot,
-        details: DragInteractionDetails,
-        transaction: DragTransaction
-    ) {}
-
-    override fun onClick(
-        runtime: ViewRuntime<*, *>,
-        component: StackInputSlot,
-        details: ClickInteractionDetails,
-        transaction: ClickTransaction
-    ) {}
 }

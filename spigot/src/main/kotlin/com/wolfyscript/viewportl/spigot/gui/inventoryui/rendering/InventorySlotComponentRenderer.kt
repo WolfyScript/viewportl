@@ -16,14 +16,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
+package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
 
-import com.wolfyscript.viewportl.gui.interaction.DragTransaction
-import com.wolfyscript.viewportl.gui.interaction.DragType
+import com.wolfyscript.scafall.eval.context.EvalContext
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
+import com.wolfyscript.viewportl.gui.ItemStackContext
+import com.wolfyscript.viewportl.gui.components.Button
+import com.wolfyscript.viewportl.gui.components.StackInputSlot
 
-class DragTransactionImpl(
-    override val slot : Int,
-    override val inventorySlots: Set<Int>,
-    override val rawSlots: Set<Int>,
-    override val type: DragType,
-) : DragTransaction
+class InventorySlotComponentRenderer : ComponentRenderer<StackInputSlot, SpigotInvUIRenderContext> {
+
+    override fun key(): Key = Key.defaultKey("inventory/slot")
+
+    override fun render(context: SpigotInvUIRenderContext, component: StackInputSlot) {
+        context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.value)
+    }
+}
