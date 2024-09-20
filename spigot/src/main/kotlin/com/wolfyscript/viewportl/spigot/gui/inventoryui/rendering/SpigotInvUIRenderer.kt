@@ -29,7 +29,6 @@ import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.components.GroupImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.CachedNodeRenderProperties
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
@@ -49,7 +48,6 @@ class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRender
         init {
             registerComponentRenderer(SpigotInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(ButtonImpl::class.java)), InventoryButtonComponentRenderer())
             registerComponentRenderer(SpigotInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(SlotImpl::class.java)), InventorySlotComponentRenderer())
-            registerComponentRenderer(SpigotInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(GroupImpl::class.java)), InventoryGroupComponentRenderer())
         }
 
     }

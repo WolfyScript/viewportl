@@ -34,7 +34,6 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
         init {
             registerComponentRenderer(SpongeInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(ButtonImpl::class.java)), InventoryButtonComponentRenderer())
             registerComponentRenderer(SpongeInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(SlotImpl::class.java)), InventorySlotComponentRenderer())
-            registerComponentRenderer(SpongeInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(GroupImpl::class.java)), InventoryGroupComponentRenderer())
         }
     }
 
