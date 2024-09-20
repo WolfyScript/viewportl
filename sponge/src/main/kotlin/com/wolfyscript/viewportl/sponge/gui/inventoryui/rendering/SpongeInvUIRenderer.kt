@@ -11,7 +11,6 @@ import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.components.GroupImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.CachedNodeRenderProperties
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
@@ -20,12 +19,10 @@ import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import net.kyori.adventure.text.Component
 import org.spongepowered.api.ResourceKey
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.item.inventory.Container
 import org.spongepowered.api.item.inventory.ContainerType
 import org.spongepowered.api.item.inventory.ContainerTypes
 import org.spongepowered.api.item.inventory.menu.InventoryMenu
 import org.spongepowered.api.item.inventory.type.ViewableInventory
-import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRenderContext>() {
@@ -66,7 +63,7 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
         if (inventoryMenu == null) return
 
         val context = createContext()
-        cachedProperties[0] = CachedNodeRenderProperties(0, mutableSetOf(0))
+        computed[0] = CachedNodeRenderProperties(0, mutableSetOf(0))
         context.setSlotOffset(0)
 
         renderChildren(0, context)

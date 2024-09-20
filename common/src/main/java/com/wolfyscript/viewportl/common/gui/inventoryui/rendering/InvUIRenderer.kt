@@ -9,6 +9,7 @@ import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
 import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
 import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
 import com.wolfyscript.viewportl.gui.rendering.Renderer
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 
 abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContext> : Renderer<Self, T> {
 
@@ -38,7 +39,7 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
         this.runtime = runtime
     }
 
-    val cachedProperties: MutableMap<Long, CachedNodeRenderProperties> = mutableMapOf()
+    val computed: MutableMap<Long, CachedNodeRenderProperties> = Long2ObjectOpenHashMap()
 
     fun renderChildren(parent: Long, context: T) {
         for (child in runtime.model.children(parent)) {
@@ -67,9 +68,9 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
         componentRenderer?.let { renderer ->
             renderer.render(context, component)
 
-            cachedProperties[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))
+            computed[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))
             // Store the slots affected by this node, so the slots can be easily cleared
-            cachedProperties[parent]?.slots?.add(offset)
+            computed[parent]?.slots?.add(offset)
 
             context.setSlotOffset(nextOffset)
         }
@@ -88,7 +89,7 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
             return context.currentOffset() + 1
         }
         val offset = context.currentOffset()
-        cachedProperties[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))
+        computed[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))
         return nextOffset
     }
 
@@ -98,7 +99,7 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
         val parent = runtime.model.parent(event.node.id)?.let { runtime.model.getNode(it) }
         if (parent != null) {
             context.setSlotOffset(0)
-            cachedProperties[parent.id]?.let {
+            computed[parent.id]?.let {
                 context.setSlotOffset(it.position)
             }
             val nextOffset = calculatePosition(parent, context)
@@ -112,13 +113,13 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
 
     override fun onNodeRemoved(event: NodeRemovedEvent) {
         // Remove node from cache
-        val removedProperties = cachedProperties.remove(event.node.id)
+        val removedProperties = computed.remove(event.node.id)
         clearSlots(removedProperties?.slots ?: emptySet()) // clear slots affected by the removed node
 
         // Does it have a parent? if so unlink it
         val parent = runtime.model.parent(event.node.id)
         if (parent != null) {
-            cachedProperties[parent]?.let { parentProperties ->
+            computed[parent]?.let { parentProperties ->
                 removedProperties?.slots?.let {
                     parentProperties.slots.removeAll(it) // Remove unmarked slots from parent
                 }
@@ -131,7 +132,7 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
         val parent = runtime.model.parent(event.node.id)?.let { runtime.model.getNode(it) }
         if (parent != null) {
             context.setSlotOffset(0)
-            cachedProperties[parent.id]?.let {
+            computed[parent.id]?.let {
                 context.setSlotOffset(it.position)
             }
             val nextOffset = calculatePosition(parent, context)

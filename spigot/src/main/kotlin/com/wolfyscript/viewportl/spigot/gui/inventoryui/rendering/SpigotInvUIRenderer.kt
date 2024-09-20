@@ -113,7 +113,7 @@ class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRender
         if (inventory == null) return
 
         val context = createContext()
-        cachedProperties[0] = CachedNodeRenderProperties(0, mutableSetOf(0))
+        computed[0] = CachedNodeRenderProperties(0, mutableSetOf(0))
         context.setSlotOffset(0)
 
         renderChildren(0, context)
