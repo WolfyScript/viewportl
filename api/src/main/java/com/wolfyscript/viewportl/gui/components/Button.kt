@@ -37,10 +37,7 @@ data class ButtonProperties(
 )
 
 /**
- * A simple button that has an icon (ItemStack) and an interaction callback.
- * It always has a 1x1 size, because it occupies a single slot.
- *
- * This is a native component that will be present in the data model and has native implementations on each platform, that handle the rendering and interaction.
+ * A simple button that has an icon and a click callback.
  */
 interface Button : NativeComponent {
     var sound: Sound?

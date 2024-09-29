@@ -20,4 +20,9 @@ package com.wolfyscript.viewportl.common.gui.interaction
 
 import com.wolfyscript.viewportl.gui.components.NativeComponent
 
+/**
+ * Handler that adds interactivity to a [NativeComponent].
+ *
+ * Platform-specific interfaces, that extend this, provide native event functions to handle those platform interactions.
+ */
 interface ComponentInteractionHandler<C: NativeComponent>

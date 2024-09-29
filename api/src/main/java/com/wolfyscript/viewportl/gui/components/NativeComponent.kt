@@ -28,13 +28,11 @@ import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 
 /**
- * Native Components have a native renderer and interaction handler implementation on each platform.
+ * Native Components are present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph]. They may have a native renderer and interaction handler implementation on each platform.
+ * (Though not necessarily, some are only present in the Model and cannot be interacted with nor are rendered)
  *
- * They are the only components that actually exist in the model graph (component tree).
- * The [component] function is a setup method that encapsulates and groups child components, signals, memos, etc.
+ * Using the [component] function components, signals, memos, etc. can be encapsulated and grouped for better code structure.
  * See [component]
- *
- *
  *
  */
 @JsonTypeResolver(KeyedTypeResolver::class)
