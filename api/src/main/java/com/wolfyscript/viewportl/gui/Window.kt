@@ -19,16 +19,14 @@ package com.wolfyscript.viewportl.gui
 
 import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
-import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
-import com.wolfyscript.viewportl.gui.router.Router
+import com.wolfyscript.viewportl.gui.components.ComponentScope
 import net.kyori.adventure.text.Component
 
-interface Window : ReactiveSource {
+interface Window {
 
     fun open()
 
@@ -79,15 +77,6 @@ interface Window : ReactiveSource {
         get() = ScafallProvider.get()
 
     /**
-     * The parent of this Component, or null if it is a root Component.
-     *
-     * @return The parent; or null if root Component.
-     */
-    val router: Router
-
-    fun routes(routerConfiguration: ReceiverConsumer<Router>)
-
-    /**
      * Gets the width of this Component in slot count.
      *
      * @return The width in slots.
@@ -105,7 +94,16 @@ interface Window : ReactiveSource {
 
     var onTextInputTabComplete: TextInputTabCompleteCallback?
 
+}
+
+interface WindowScope : ComponentScope {
+
+    fun title(titleUpdate: ReceiverFunction<Component?, Component?>)
+
+    var size: Int?
+
     fun onTextInput(inputCallback: TextInputCallback?)
 
     fun onTextInputTabComplete(textInputTabCompleteCallback: TextInputTabCompleteCallback?)
+
 }

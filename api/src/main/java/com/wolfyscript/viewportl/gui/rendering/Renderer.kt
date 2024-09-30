@@ -17,21 +17,30 @@
  */
 package com.wolfyscript.viewportl.gui.rendering
 
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.viewportl.gui.model.ModelChangeListener
 import net.kyori.adventure.text.Component
 
-interface Renderer<C: RenderContext> {
+/**
+ * Renders [NativeComponents][com.wolfyscript.viewportl.gui.components.NativeComponent] present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph] of a [ViewRuntime].
+ * It is supplied to the [ViewRuntime] upon creation.
+ *
+ * For a given type of gui each platform has its own [Renderer] implementation (with possibly shared common parts)
+ *
+ *
+ * It can be assumed that when this ([Self]) is used for the runtime, then it has the same [Renderer] type.
+ * Though, the [InteractionHandler][com.wolfyscript.viewportl.gui.interaction.InteractionHandler] type is unknown!
+ */
+interface Renderer<Self: Renderer<Self, C>, C: RenderContext> : ModelChangeListener {
 
-    fun changeWindow(window: Window)
+    val runtime: ViewRuntime<Self, *>
+
+    fun init(runtime: ViewRuntime<Self, *>)
+
+    fun onWindowOpen(window: Window)
 
     fun render()
-
-    /**
-     * Called whenever the render graph is updated.
-     * @param information info about the update (e.g. which nodes changed).
-     */
-    fun update(information: UpdateInformation)
 
     fun updateTitle(component: Component?)
 

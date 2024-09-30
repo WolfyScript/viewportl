@@ -21,7 +21,7 @@ package com.wolfyscript.viewportl.common.gui.reactivity
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import java.util.function.Function
 
-class NodeId(val id: Long, val runtime: ViewRuntimeImpl) {
+class NodeId(val id: Long, val runtime: ViewRuntimeImpl<*,*>) {
 
     fun <V> update(updateFn: Function<V, V>) {
         val reactivityNode: ReactivityNode<V>? = runtime.reactiveSource.node(this)

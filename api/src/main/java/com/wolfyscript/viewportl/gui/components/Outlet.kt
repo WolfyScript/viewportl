@@ -18,8 +18,8 @@
 
 package com.wolfyscript.viewportl.gui.components
 
-interface Outlet : Component {
+interface Outlet : NativeComponent
 
-    var component: ComponentGroup?
-
-}
+data class OutletProperties(
+    val scope: ComponentScope,
+)

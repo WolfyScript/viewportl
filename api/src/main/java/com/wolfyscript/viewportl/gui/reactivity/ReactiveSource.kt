@@ -44,14 +44,14 @@ interface ReactiveSource {
      * When [ReadWriteSignal] values are accessed inside a [Memo]/[Effect] it subscribes to that [ReadWriteSignal].
      * Then when the value of the [ReadWriteSignal] is updated the [Memo]/[Effect] is updated too.
      */
-    fun <T : Any> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime, T>): ReadWriteSignal<T>
+    fun <T : Any?> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime<*,*>, T>): ReadWriteSignal<T>
 
     /**
      * Creates an [Effect] that reruns when a [ReadWriteSignal]/[Memo] used inside it is updated.
      *
      */
-    fun createEffect(effect: ReceiverFunction<Unit?, Unit>): Effect {
-        return createMemoEffect(effect)
+    fun createEffect(effect: ReceiverFunction<Unit, Unit>): Effect {
+        return createMemoEffect<Unit>(Unit, effect)
     }
 
     /**
@@ -60,7 +60,7 @@ interface ReactiveSource {
      * This type of [Effect] allows to use the value of the previous execution, and return the new value.<br>
      * When no value is required use the type [Unit]
      */
-    fun <T> createMemoEffect(effect: ReceiverFunction<T?, T>): Effect
+    fun <T : Any?> createMemoEffect(initialValue: T, effect: ReceiverFunction<T, T>): Effect
 
     /**
      * Creates a Memo, that holds a value of the specified [valueType].
@@ -70,7 +70,7 @@ interface ReactiveSource {
      *
      * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
      */
-    fun <T : Any> createMemo(valueType: Class<T>, fn: Function<T?, T?>) : Memo<T>
+    fun <T : Any?> createMemo(initialValue: T, valueType: Class<T>, fn: Function<T?, T>) : Memo<T>
 
     /**
      * Creates a function that is run when the current owner is removed.
@@ -91,11 +91,11 @@ interface ReactiveSource {
      * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
      * @param <T> The type of the value
     </T> */
-    fun <T> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime, T>): ReadWriteSignal<Optional<T>>
+    fun <T> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, T>): ReadWriteSignal<Optional<T>>
 
     fun <I, T> resourceSync(
         input: ReadWriteSignal<I>,
-        fetch: TriFunction<Viewportl, ViewRuntime, I, T>
+        fetch: TriFunction<Viewportl, ViewRuntime<*,*>, I, T>
     ): ReadWriteSignal<Optional<T>>
 
     /**
@@ -112,7 +112,7 @@ interface ReactiveSource {
      * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
      * @param <T> The type of the value
     </T> */
-    fun <T> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime, T>): ReadWriteSignal<Optional<T>>
+    fun <T> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, T>): ReadWriteSignal<Optional<T>>
 
 }
 
@@ -124,14 +124,14 @@ interface ReactiveSource {
  *
  * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
  */
-inline fun <reified T: Any> ReactiveSource.createMemo(fn: Function<T?, T?>) : Memo<T> {
-    return createMemo(T::class.java, fn)
+inline fun <reified T: Any?> ReactiveSource.createMemo(initialValue: T, fn: Function<T?, T>) : Memo<T> {
+    return createMemo(initialValue, T::class.java, fn)
 }
 
-inline fun <reified T : Any> ReactiveSource.createSignal(defaultValue: T): ReadWriteSignal<T> {
+inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValue: T): ReadWriteSignal<T> {
     return createSignal(T::class.java) { defaultValue }
 }
 
-inline fun <reified T : Any> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime, T>): ReadWriteSignal<T> {
+inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime<*,*>, T>): ReadWriteSignal<T> {
     return createSignal(T::class.java, defaultValueProvider)
 }

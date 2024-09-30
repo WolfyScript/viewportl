@@ -21,7 +21,7 @@ import com.wolfyscript.scafall.wrappers.world.entity.Player
 
 interface GuiHolder {
 
-    val viewManager: ViewRuntime
+    val viewManager: ViewRuntime<*, *>
 
     val currentWindow: Window
 

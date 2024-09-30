@@ -38,7 +38,7 @@ class ButtonAnimationFrameImpl(
         return animation
     }
 
-    override fun render(viewManager: ViewRuntime, holder: GuiHolder, context: RenderContext) {
+    override fun render(viewManager: ViewRuntime<*,*>, holder: GuiHolder, context: RenderContext) {
     }
 
     override fun stack(): ItemStackConfig {

@@ -19,10 +19,10 @@
 package com.wolfyscript.viewportl.common.gui.rendering
 
 import com.wolfyscript.scafall.identifier.Keyed
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
-interface ComponentRenderer<C: Component, X: RenderContext> : Keyed {
+interface ComponentRenderer<C: NativeComponent, X: RenderContext> : Keyed {
 
     fun render(context: X, component: C)
 

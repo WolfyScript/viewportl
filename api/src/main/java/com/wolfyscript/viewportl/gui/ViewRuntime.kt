@@ -18,6 +18,10 @@
 package com.wolfyscript.viewportl.gui
 
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
+import com.wolfyscript.viewportl.gui.model.ModelGraph
+import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
+import com.wolfyscript.viewportl.gui.rendering.Renderer
 import java.util.*
 
 /**
@@ -27,9 +31,9 @@ import java.util.*
  * The view is immutable, so you need to create a new view each time you need to add a viewer or change the root.
  *
  */
-interface ViewRuntime {
+interface ViewRuntime<R: Renderer<*, *>, I: InteractionHandler<*>> {
 
-    fun id(): Long
+    val id: Long
 
     /**
      * Opens a new menu under the specific path.
@@ -60,7 +64,7 @@ interface ViewRuntime {
      *
      * @return The currently active menu.
      */
-    val currentMenu: Window?
+    val window: Window?
 
     /**
      * Gets the viewers that are handled by this view manager.
@@ -71,5 +75,13 @@ interface ViewRuntime {
     val viewers: Set<UUID>
 
     val viewportl: Viewportl
+
+    val model: ModelGraph
+
+    val reactiveSource: ReactiveSource
+
+    val renderer: R
+
+    val interactionHandler: I
 
 }

@@ -18,10 +18,10 @@
 package com.wolfyscript.viewportl.registry
 
 import com.wolfyscript.scafall.registry.TypeRegistry
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 
-interface RegistryGUIComponentTypes : TypeRegistry<Component> {
+interface RegistryGUIComponentTypes : TypeRegistry<NativeComponent> {
 
-    fun getImplementation(baseComponentType: Class<out Component>): Class<out Component>?
+    fun getImplementation(baseNativeComponentType: Class<out NativeComponent>): Class<out NativeComponent>?
 
 }

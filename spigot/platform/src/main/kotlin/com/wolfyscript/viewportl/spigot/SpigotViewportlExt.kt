@@ -19,19 +19,52 @@
 package com.wolfyscript.viewportl.spigot
 
 import com.wolfyscript.scafall.PluginWrapper
+import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.scafall.spigot.api.into
+import com.wolfyscript.scafall.spigot.init
 import com.wolfyscript.viewportl.Viewportl
+import org.bukkit.Bukkit
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.server.PluginDisableEvent
+import org.bukkit.plugin.java.JavaPlugin
 
 private var viewportlInstance: SpigotViewportl? = null
 
 val Viewportl.Companion.instance: Viewportl
     get() = viewportlInstance ?: throw IllegalStateException("Viewportl is not initialized.")
 
-fun Viewportl.Companion.init(plugin: PluginWrapper = ScafallProvider.get().corePlugin) {
-    viewportlInstance = SpigotViewportl()
-    viewportlInstance!!.init()
+/**
+ * Initiates the Viewportl library and loads all required data.
+ *
+ * When Scafall wasn't yet initiated this will [init Scafall][Scafall.Companion.init] using the passed [plugin]
+ *
+ */
+fun Viewportl.Companion.init(plugin: JavaPlugin) {
+    if (!ScafallProvider.registered()) {
+        Scafall.init(plugin)
+    }
+    init()
 }
 
-fun Viewportl.Companion.unload() {
-    viewportlInstance = null
+/**
+ * Initiates the Viewportl library and loads all required data.
+ *
+ * The [plugin] param requires [Scafall] to be initiated by default!
+ */
+fun Viewportl.Companion.init(plugin: PluginWrapper = ScafallProvider.get().corePlugin) {
+    viewportlInstance = SpigotViewportl(plugin)
+    viewportlInstance!!.init()
+
+    Bukkit.getPluginManager().registerEvents(UnloadListener(), plugin.into().plugin)
+}
+
+private class UnloadListener : Listener {
+
+    @EventHandler
+    fun onViewportlDisabled(event: PluginDisableEvent) {
+        viewportlInstance = null
+    }
+
 }

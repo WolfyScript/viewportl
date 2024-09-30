@@ -24,9 +24,11 @@ import com.google.common.collect.Multimap
 import com.google.common.collect.MultimapBuilder
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.common.gui.components.ComponentScopeImpl
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.WindowScope
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import java.util.*
@@ -36,38 +38,35 @@ import java.util.stream.Stream
 import kotlin.collections.set
 
 class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
-    private val entriesMap: BiMap<String, Function<ViewRuntime, Window>> = HashBiMap.create()
+    private val entriesMap: BiMap<String, Function<ViewRuntime<*,*>, Window>> = HashBiMap.create()
 
-    private val runtimes: Long2ObjectMap<ViewRuntime> = Long2ObjectOpenHashMap()
+    private val runtimes: Long2ObjectMap<ViewRuntime<*,*>> = Long2ObjectOpenHashMap()
     private val cachedViewRuntimes: Multimap<String, Long> = MultimapBuilder.hashKeys().hashSetValues().build()
     private val viewRuntimesPerPlayer: Multimap<UUID, Long> = MultimapBuilder.hashKeys().hashSetValues().build()
 
-    override fun getViewManagersFor(uuid: UUID): Stream<ViewRuntime> {
+    override fun getViewManagersFor(uuid: UUID): Stream<ViewRuntime<*,*>> {
         return viewRuntimesPerPlayer[uuid].stream().map { runtimes[it] }
     }
 
-    override fun getViewManagersFor(uuid: UUID, guiID: String): Stream<ViewRuntime> {
+    override fun getViewManagersFor(uuid: UUID, guiID: String): Stream<ViewRuntime<*,*>> {
         val ids = cachedViewRuntimes[guiID]
         return viewRuntimesPerPlayer[uuid].stream()
             .filter { ids.contains(it) }
             .map { runtimes[it] }
     }
 
-    override fun registerGui(key: String, windowConsumer: ReceiverConsumer<Window>) {
-        // TODO: maybe wrap in an extra object?
+    override fun registerGui(key: String, windowConsumer: ReceiverConsumer<WindowScope>) {
         registerGui(key) { runtime ->
-            val buildContext = BuildContext(
-                runtime,
-                (runtime as ViewRuntimeImpl).reactiveSource,
-                viewportl
-            )
-            val window: Window = WindowImpl(key, 54, null, viewportl, buildContext)
-            with(windowConsumer) { window.consume() }
+            val window: Window = WindowImpl(key, 54, null, viewportl)
+
+            with(windowConsumer) {
+                WindowScopeImpl(window, ComponentScopeImpl(runtime.into(), null)).consume()
+            }
             window
         }
     }
 
-    override fun createViewAndThen(guiId: String, callback: Consumer<ViewRuntime>, vararg viewers: UUID) {
+    override fun createViewAndThen(guiId: String, callback: Consumer<ViewRuntime<*, *>>, vararg viewers: UUID) {
         getGui(guiId).ifPresent { constructor ->
             val viewerSet = mutableSetOf(*viewers)
             val viewManagersForID = cachedViewRuntimes[guiId]
@@ -77,7 +76,7 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
             } else {
                 // Construct the new view manager async, so it doesn't affect the main thread!
                 viewportl.scafall.scheduler.asyncTask(viewportl.scafall.corePlugin) {
-                    val viewManager = ViewRuntimeImpl(viewportl, constructor, viewerSet)
+                    val viewManager = viewportl.guiFactory.createInventoryUIRuntime(viewportl, constructor, viewerSet)
                     synchronized(runtimes) {
                         viewManagersForID.add(viewManager.id)
                         runtimes.put(viewManager.id, viewManager)
@@ -93,7 +92,7 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
         }
     }
 
-    private fun registerGui(id: String, constructor: Function<ViewRuntime, Window>) {
+    private fun registerGui(id: String, constructor: Function<ViewRuntime<*,*>, Window>) {
         entriesMap[id] = constructor
     }
 
@@ -101,7 +100,7 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
         createViewAndThen(guiID, { it.open() }, *viewers)
     }
 
-    override fun getGui(id: String): Optional<Function<ViewRuntime, Window>> {
+    override fun getGui(id: String): Optional<Function<ViewRuntime<*,*>, Window>> {
         return Optional.ofNullable(
             entriesMap[id]
         )

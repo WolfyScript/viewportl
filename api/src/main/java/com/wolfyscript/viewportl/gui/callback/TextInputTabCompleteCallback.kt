@@ -22,6 +22,6 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 
 fun interface TextInputTabCompleteCallback {
 
-    fun apply(player: Player, viewManager: ViewRuntime, input: String, args: Array<String>): List<String>
+    fun apply(player: Player, viewManager: ViewRuntime<*,*>, input: String, args: Array<String>): List<String>
 
 }

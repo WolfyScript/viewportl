@@ -34,7 +34,8 @@ plugins {
 sequenceOf(
     "api",
     "common",
-    "spigot"
+    "spigot",
+    "sponge"
 ).forEach {
     include(":${it}")
     project(":${it}").projectDir = file(it)
@@ -56,7 +57,7 @@ fun samplePlugin(root: String, vararg modules: String) {
     }
 }
 
-samplePlugin("single-platform", "spigot-plugin")
+samplePlugin("single-platform", "spigot-plugin", "sponge-plugin")
 
 /* ********************* *
  * Spigot implementation *
@@ -66,4 +67,15 @@ sequenceOf(
 ).forEach {
     include(":spigot:${it}")
     project(":spigot:${it}").projectDir = file("spigot/${it.replace(":", "/")}")
+}
+
+
+/* ********************* *
+ * Sponge implementation *
+ * ********************* */
+sequenceOf(
+    "platform",
+).forEach {
+    include(":sponge:${it}")
+    project(":sponge:${it}").projectDir = file("sponge/${it.replace(":", "/")}")
 }

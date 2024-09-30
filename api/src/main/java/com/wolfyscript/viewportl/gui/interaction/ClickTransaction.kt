@@ -26,8 +26,6 @@ interface ClickTransaction : InteractionTransaction {
 
     val slot: Int
 
-    val rawSlot: Int
-
     val cursorStack : ItemStack?
 
     val currentStack : ItemStack?
