@@ -27,9 +27,9 @@ The list is not complete, and things may be added/removed along the way.
     * [x] platform integration
     * [x] Scheduler
     * [x] InvUI Renderer
-    * [ ] InvUI Interaction Handler
-      * [ ] Use native event system
-      * [ ] Components
+    * [x] InvUI Interaction Handler
+      * [x] Use native event system
+      * [x] Components
   * [ ] Sponge
     * [x] platform integration
     * [x] InvUI Renderer
