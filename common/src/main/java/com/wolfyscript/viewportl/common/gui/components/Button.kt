@@ -15,7 +15,7 @@ import com.wolfyscript.viewportl.gui.components.ButtonProperties
 import com.wolfyscript.viewportl.gui.components.DynamicProperty
 import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.components.NativeComponentImplementation
-import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.reactivity.ReadOnlySignal
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
@@ -64,12 +64,12 @@ class ButtonImpl @JsonCreator @Inject constructor(
     viewportl: Viewportl = runtime.viewportl,
     parent: NativeComponent? = null,
     icon: ButtonIcon = DynamicIcon(runtime),
-    onClick: (ClickTransaction.() -> Unit)?,
+    onClick: (ClickInfo.() -> Unit)?,
     sound: Sound?
 ) : AbstractNativeComponentImpl<Button>(id, viewportl, parent), Button {
 
     override var icon: ButtonIcon by DynamicProperty(runtime, icon)
-    override var onClick: (ClickTransaction.() -> Unit)? by DynamicProperty(runtime, onClick)
+    override var onClick: (ClickInfo.() -> Unit)? by DynamicProperty(runtime, onClick)
     override var sound: Sound? by DynamicProperty(runtime, sound)
 
 }

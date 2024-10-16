@@ -4,7 +4,7 @@ import com.wolfyscript.scafall.function.ReceiverBiFunction
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.interaction.ClickType
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
@@ -63,7 +63,7 @@ interface ComponentScope : ReactiveSource {
         icon: ButtonIcon.() -> Unit,
         styles: RenderProperties.() -> Unit = {},
         sound: Sound? = Sound.sound(Key.parse("minecraft:ui.button.click").into(), Sound.Source.MASTER, 0.25f, 1f),
-        onClick: (ClickTransaction.() -> Unit)? = null
+        onClick: (ClickInfo.() -> Unit)? = null
     )
 
     fun outlet()

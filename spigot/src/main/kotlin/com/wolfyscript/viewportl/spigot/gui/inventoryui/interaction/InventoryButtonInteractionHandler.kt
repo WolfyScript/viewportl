@@ -20,7 +20,6 @@ package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.components.Button
-import com.wolfyscript.viewportl.gui.interaction.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 
@@ -54,8 +53,7 @@ class InventoryButtonInteractionHandler : SpigotComponentInteractionHandler<Butt
         playSound(runtime, component)
 
         component.onClick?.let { click ->
-            // TODO
-            ClickTransactionImpl(ClickType.PRIMARY, slot.index, false, true, false, 0).click()
+            event.convert().click()
         }
 
         event.isCancelled = true

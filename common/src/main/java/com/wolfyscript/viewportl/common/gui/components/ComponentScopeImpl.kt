@@ -1,7 +1,6 @@
 package com.wolfyscript.viewportl.common.gui.components
 
 import com.wolfyscript.scafall.function.ReceiverBiFunction
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.components.ButtonIcon
@@ -15,9 +14,8 @@ import com.wolfyscript.viewportl.gui.components.RouterScope
 import com.wolfyscript.viewportl.gui.components.ShowProperties
 import com.wolfyscript.viewportl.gui.components.SlotProperties
 import com.wolfyscript.viewportl.gui.components.component
-import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.interaction.ClickType
-import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 import com.wolfyscript.viewportl.gui.reactivity.*
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
@@ -61,7 +59,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
         icon: ButtonIcon.() -> Unit,
         styles: RenderProperties.() -> Unit,
         sound: Sound?,
-        onClick: (ClickTransaction.() -> Unit)?
+        onClick: (ClickInfo.() -> Unit)?
     ) = component(this, runtime) {
         runtime.viewportl.guiFactory.componentFactory.button(
             ButtonProperties(

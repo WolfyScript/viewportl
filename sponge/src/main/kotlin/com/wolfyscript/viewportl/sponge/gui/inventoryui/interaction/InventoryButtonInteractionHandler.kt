@@ -41,7 +41,7 @@ class InventoryButtonInteractionHandler : SpongeComponentInteractionHandler<Butt
         event: ClickContainerEvent
     ) {
         event.transactions().firstOrNull()?.let { transaction ->
-            handleClick(runtime, component, transaction)
+            handleClick(runtime, component, event, transaction)
         }
 
         event.cursorTransaction().isValid = false
@@ -58,21 +58,17 @@ class InventoryButtonInteractionHandler : SpongeComponentInteractionHandler<Butt
             return
         }
 
-        handleClick(runtime, component, slotTransaction)
+        handleClick(runtime, component, event, slotTransaction)
 
         event.cursorTransaction().isValid = false
         slotTransaction.isValid = false
     }
 
-    private fun handleClick(runtime: ViewRuntime<*,SpongeUIInteractionHandler>, component: Button, transaction: SlotTransaction) {
-        val slot = transaction.slot()
-        val index = slot.get(Keys.SLOT_INDEX).orElse(null) ?: return
-
+    private fun handleClick(runtime: ViewRuntime<*,SpongeUIInteractionHandler>, component: Button, event: ClickContainerEvent, transaction: SlotTransaction) {
         playSound(runtime, component)
 
         component.onClick?.let { click ->
-            // TODO
-            ClickTransactionImpl(ClickType.PRIMARY, index, false, true, false, -1).click()
+            event.convert(transaction).click()
         }
     }
 

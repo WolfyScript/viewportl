@@ -19,7 +19,7 @@ package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
-import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
@@ -33,7 +33,7 @@ data class ButtonProperties(
     val icon: ButtonIcon.() -> Unit,
     val styles: RenderProperties.() -> Unit,
     val sound: Sound? = null,
-    val onClick: (ClickTransaction.() -> Unit)?
+    val onClick: (ClickInfo.() -> Unit)?
 )
 
 /**
@@ -42,7 +42,7 @@ data class ButtonProperties(
 interface Button : NativeComponent {
     var sound: Sound?
     var icon: ButtonIcon
-    var onClick: (ClickTransaction.() -> Unit)?
+    var onClick: (ClickInfo.() -> Unit)?
 }
 
 interface ButtonIcon {

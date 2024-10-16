@@ -7,7 +7,6 @@ import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.interaction.ClickInteractionDetails
 import com.wolfyscript.viewportl.gui.interaction.DragInteractionDetails
 import com.wolfyscript.viewportl.gui.model.Node
 import org.spongepowered.api.Sponge
