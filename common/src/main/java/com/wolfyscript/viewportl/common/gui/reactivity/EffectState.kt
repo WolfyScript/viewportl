@@ -21,11 +21,11 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.scafall.function.ReceiverFunction
 import java.util.function.Consumer
 
-class EffectState<T>(
-    private val fn: ReceiverFunction<T?, T>
-) : AnyComputation<T?> {
+class EffectState<T : Any?>(
+    private val fn: ReceiverFunction<T, T>
+) : AnyComputation<T> {
 
-    override fun run(runtime: ViewRuntime, value: T?, apply: Consumer<T?>): Boolean {
+    override fun run(runtime: ViewRuntime<*,*>, value: T, apply: Consumer<T>): Boolean {
         val newValue = with(fn) { value.apply() }
 
         apply.accept(newValue)

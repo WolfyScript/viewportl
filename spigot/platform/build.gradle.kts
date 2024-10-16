@@ -26,6 +26,8 @@ plugins {
 
 dependencies {
     api(project(":api"))
+    compileOnly("com.wolfyscript.scafall.spigot:spigot:${project.version}")
+    compileOnly("com.wolfyscript.scafall.spigot:spigot-platform:${project.version}")
     compileOnly(project(":spigot"))
     compileOnly(project(":common"))
 }

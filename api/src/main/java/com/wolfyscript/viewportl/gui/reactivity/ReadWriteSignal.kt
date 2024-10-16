@@ -27,7 +27,7 @@ import kotlin.reflect.KProperty
  *
  * @param <V> The value type this Signal holds. Can be any Object.
  */
-interface ReadWriteSignal<V> : SignalTaggable, ReadOnlySignal<V> {
+interface ReadWriteSignal<V : Any?> : SignalTaggable, ReadOnlySignal<V> {
     /**
      * Sets the tracked value to a new value and causes a re-render.
      *

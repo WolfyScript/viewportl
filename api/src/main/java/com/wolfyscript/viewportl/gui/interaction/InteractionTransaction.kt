@@ -18,16 +18,4 @@
 
 package com.wolfyscript.viewportl.gui.interaction
 
-interface InteractionTransaction {
-
-    var valid: Boolean
-
-    fun validate() {
-        valid = true
-    }
-
-    fun invalidate() {
-        valid = false
-    }
-
-}
+interface InteractionTransaction

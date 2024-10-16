@@ -18,15 +18,12 @@
 
 package com.wolfyscript.viewportl.common.gui.reactivity
 
-import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
-import java.lang.IllegalStateException
 import java.util.*
 import java.util.function.Function
-import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
-class ReadWriteSignalImpl<MT : Any>(private val id: NodeId, private val type: KClass<MT>) : ReadWriteSignal<MT> {
+class ReadWriteSignalImpl<MT : Any?>(private val id: NodeId, private val type: Class<MT>) : ReadWriteSignal<MT> {
 
     private var tagName: String? = null
 
@@ -53,10 +50,8 @@ class ReadWriteSignalImpl<MT : Any>(private val id: NodeId, private val type: KC
 
     override fun update(function: Function<MT, MT>) {
         val node = id.runtime.reactiveSource.node<ReactivityNode<MT>>(id)
-        if (node != null) {
-            node.value?.let {
-                id.runtime.reactiveSource.setValue(id, type, function.apply(it))
-            }
+        node?.value?.let {
+            id.runtime.reactiveSource.setValue(id, type, function.apply(it))
         }
     }
 
@@ -66,8 +61,7 @@ class ReadWriteSignalImpl<MT : Any>(private val id: NodeId, private val type: KC
     }
 
     override fun getNoTracking(): MT {
-        val value = id.runtime.reactiveSource.getValue(id, type) ?: throw IllegalStateException("Failed to get value of type $type from signal $id")
-        return value;
+        return id.runtime.reactiveSource.getValue(id, type)
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): MT {

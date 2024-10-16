@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui.animation
 
-import com.wolfyscript.viewportl.gui.components.Component
+import com.wolfyscript.viewportl.gui.components.NativeComponent
 import com.wolfyscript.viewportl.gui.reactivity.Effect
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 
@@ -25,7 +25,7 @@ interface Animation<F : AnimationFrame?> : Effect {
 
     fun frames(): List<F>
 
-    fun owner(): Component
+    fun owner(): NativeComponent
 
     fun updateSignal(): ReadWriteSignal<*>
 }

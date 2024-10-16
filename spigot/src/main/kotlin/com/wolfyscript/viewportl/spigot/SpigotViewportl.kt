@@ -18,43 +18,39 @@
 
 package com.wolfyscript.viewportl.spigot
 
-import com.fasterxml.jackson.databind.module.SimpleModule
+import com.wolfyscript.scafall.PluginWrapper
 import com.wolfyscript.scafall.spigot.api.into
 import com.wolfyscript.viewportl.common.CommonViewportl
 import com.wolfyscript.viewportl.common.gui.GuiAPIManagerImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.components.ComponentGroupImpl
+import com.wolfyscript.viewportl.common.gui.components.GroupImpl
 import com.wolfyscript.viewportl.common.gui.components.OutletImpl
-import com.wolfyscript.viewportl.common.gui.components.StackInputSlotImpl
-import com.wolfyscript.viewportl.common.registry.SpigotViewportlRegistries
+import com.wolfyscript.viewportl.common.gui.components.SlotImpl
+import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.gui.GuiAPIManager
-import com.wolfyscript.viewportl.gui.components.ButtonIcon
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import com.wolfyscript.viewportl.spigot.commands.InputCommand
-import com.wolfyscript.viewportl.spigot.gui.GuiFactoryImpl
-import com.wolfyscript.viewportl.spigot.gui.interaction.GUIInventoryListener
+import com.wolfyscript.viewportl.spigot.gui.factories.GuiFactoryImpl
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.server.PluginDisableEvent
 
-class SpigotViewportl : CommonViewportl() {
+class SpigotViewportl(private val plugin: PluginWrapper) : CommonViewportl(), Listener {
 
     override val guiManager: GuiAPIManager = GuiAPIManagerImpl(this)
     override val guiFactory: GuiFactory = GuiFactoryImpl()
-    override val registries: ViewportlRegistries = SpigotViewportlRegistries(this)
+    override val registries: ViewportlRegistries = CommonViewportlRegistries(this)
 
     fun init() {
-        val module = SimpleModule()
-        // Register implementation types to use for de/serialization
-        module.addAbstractTypeMapping(ButtonIcon::class.java, ButtonImpl.DynamicIcon::class.java)
-        // TODO: register module
-
         // Register GUI things
         val guiComponentBuilders = registries.guiComponents
         guiComponentBuilders.register(ButtonImpl::class.java)
-        guiComponentBuilders.register(StackInputSlotImpl::class.java)
-        guiComponentBuilders.register(ComponentGroupImpl::class.java)
+        guiComponentBuilders.register(SlotImpl::class.java)
+        guiComponentBuilders.register(GroupImpl::class.java)
         guiComponentBuilders.register(OutletImpl::class.java)
 
         registerListeners()
@@ -62,7 +58,7 @@ class SpigotViewportl : CommonViewportl() {
     }
 
     private fun registerListeners() {
-        Bukkit.getPluginManager().registerEvents(GUIInventoryListener(), scafall.corePlugin.into().plugin)
+        Bukkit.getPluginManager().registerEvents(this, plugin.into().plugin)
     }
 
     private fun registerCommands() {
@@ -93,6 +89,11 @@ class SpigotViewportl : CommonViewportl() {
         for (cmd in cmds) {
             commandMap.register("viewportl", cmd!!)
         }
+    }
+
+    @EventHandler
+    private fun onViewportlDisabled(event: PluginDisableEvent) {
+
     }
 
 }

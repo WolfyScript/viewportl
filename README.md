@@ -17,19 +17,25 @@ The list is not complete, and things may be added/removed along the way.
 * [ ] Move utils and platform compatibility to a separate project
   * [x] Move everything not UI related to [scafall](https://github.com/WolfyScript/scafall)
   * [x] Provide API Entrypoint to load the viewportl instance on top of scafall
-  * [ ] Check if Java interop can be kept, or if kotlin will be required
+  * [x] ~~Check if Java interop can be kept~~ **Java interop won't be a priority! Kotlin first**
   * [ ] Create sample projects for a tutorial and testing
-    * [x] Create single-platform example for spigot
+    * [x] Spigot single-platform example
+    * [x] Sponge single-platform example
     * [ ] Create multi-platform example (requires other platform implementations)
-* [x] Complete name change
-    * [x] Move everything UI related to the viewportl package
-    * [x] Get rid of any wolfyutils left over code
-    * [x] Rename strings & other appearances of WolfyUtils
 * [ ] Multi Platform Support
   * [ ] Spigot (High priority)
-    * [ ] Test & Fix issues after scafall migration
-  * [ ] Sponge 
-  * [ ] possibly more in the future
+    * [x] platform integration
+    * [x] Scheduler
+    * [x] InvUI Renderer
+    * [x] InvUI Interaction Handler
+      * [x] Use native event system
+      * [x] Components
+  * [ ] Sponge
+    * [x] platform integration
+    * [x] InvUI Renderer
+      * [ ] Fix inventory title update
+    * [x] InvUI Interaction Handler
+      * [x] Components
 
 ### Current API Examples
 Examples can be found in the `examples` directory of the `common` implementation.  

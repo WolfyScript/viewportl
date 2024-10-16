@@ -19,42 +19,44 @@
 package com.wolfyscript.viewportl.common.gui
 
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.common.gui.model.ModelGraphImpl
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
-import com.wolfyscript.viewportl.common.gui.rendering.ModelGraph
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
-import com.wolfyscript.viewportl.gui.model.UpdateInformation
+import com.wolfyscript.viewportl.gui.model.ModelGraph
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import java.util.*
 import java.util.function.Function
 
-class ViewRuntimeImpl(
+class ViewRuntimeImpl<R: Renderer<R,*>, I: InteractionHandler<I>>(
     override val viewportl: Viewportl,
-    rootRouter: Function<ViewRuntime, Window>,
+    windowFactory: Function<ViewRuntime<*,*>, Window>,
     override val viewers: Set<UUID>,
-) : ViewRuntime {
-    @JvmField
-    val id: Long = NEXT_ID++
+    override val model: ModelGraph = ModelGraphImpl(),
+    // Handlers that handle rendering and interaction
+    override val renderer: R,
+    override val interactionHandler: I
+) : ViewRuntime<R, I> {
 
-    // Create rendering & reactivity trees
-    val modelGraph: ModelGraph = ModelGraph(this)
-    val reactiveSource: ReactiveGraph = ReactiveGraph(this)
+    override val id: Long = NEXT_ID++
 
-    // Create platform specific handlers that handle rendering and interaction
-    val renderer: Renderer<*> = viewportl.guiFactory.createRenderer(this)
-    val interactionHandler: InteractionHandler = viewportl.guiFactory.createInteractionHandler(this)
+    // Create model & reactivity graphs
+    override val reactiveSource: ReactiveGraph = ReactiveGraph(this)
 
     // Build the components and init the rendering tree
-    private var currentRoot: Window? = rootRouter.apply(this)
-    override val currentMenu: Window?
-        get() = currentRoot
+    private var currentWindow: Window? = windowFactory.apply(this)
+    override val window: Window?
+        get() = currentWindow
 
     private val history: Deque<Window> = ArrayDeque()
 
-    fun incomingUpdate(information: UpdateInformation?) {
-        interactionHandler.update(information!!)
-        renderer.update(information)
+    init {
+        model.registerListener(renderer)
+        model.registerListener(interactionHandler)
+
+        renderer.init(this)
+        interactionHandler.init(this)
     }
 
     override fun openNew() {
@@ -62,23 +64,25 @@ class ViewRuntimeImpl(
     }
 
     override fun openNew(vararg path: String) {
-        currentMenu?.apply { open(this) }
+        window?.apply {
+            open(this)
+        }
     }
 
     override fun open() {
         if (history.isEmpty()) {
-            currentMenu?.close()
+            window?.close()
             openNew()
         } else {
-            currentMenu?.let { open(it) }
+            window?.let { open(it) }
         }
     }
 
     private fun open(window: Window) {
-        setCurrentRoot(window)
+        currentWindow = window
 
-        renderer.changeWindow(window)
-        interactionHandler.init(window)
+        renderer.onWindowOpen(window)
+        interactionHandler.onWindowOpen(window)
 
         viewportl.scafall.scheduler.syncTask(viewportl.scafall.corePlugin) {
             renderer.render()
@@ -89,26 +93,14 @@ class ViewRuntimeImpl(
     override fun openPrevious() {
         history.poll() // Remove active current menu
         val window = history.peek()
-        currentMenu?.close()
+        this.window?.close()
         open(window)
-    }
-
-    fun setCurrentRoot(currentRoot: Window?) {
-        this.currentRoot = currentRoot
-    }
-
-    fun getCurrentMenu(): Optional<Window> {
-        return Optional.ofNullable(currentRoot)
-    }
-
-    override fun id(): Long {
-        return id
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
-        val that = other as ViewRuntimeImpl
+        val that = other as ViewRuntimeImpl<*,*>
         return id == that.id
     }
 

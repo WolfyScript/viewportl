@@ -36,7 +36,7 @@ interface GuiAPIManager {
      * @param key The unique id of the window
      * @param windowConsumer The consumer that provides the new window
      */
-    fun registerGui(key: String, windowConsumer: ReceiverConsumer<Window>)
+    fun registerGui(key: String, windowConsumer: ReceiverConsumer<WindowScope>)
 
     /**
      * Gets the registered router with the specified id.<br></br>
@@ -44,7 +44,7 @@ interface GuiAPIManager {
      * @param id The id of the router.
      * @return The registered router only if the id matches; otherwise empty Optional.
      */
-    fun getGui(id: String): Optional<Function<ViewRuntime, Window>>
+    fun getGui(id: String): Optional<Function<ViewRuntime<*,*>, Window>>
 
     /**
      * Creates a new view for the specified viewers, with the specified GUI.
@@ -63,7 +63,7 @@ interface GuiAPIManager {
      * @param callback The callback, that is run right after the view manager has been created. **May be Async!**
      * @param viewers The viewers of this view.
      */
-    fun createViewAndThen(guiId: String, callback: Consumer<ViewRuntime>, vararg viewers: UUID)
+    fun createViewAndThen(guiId: String, callback: Consumer<ViewRuntime<*,*>>, vararg viewers: UUID)
 
     /**
      * Creates (or gets the existing ViewManager) and opens the entry menu right after the creation of the view.
@@ -73,7 +73,7 @@ interface GuiAPIManager {
      */
     fun createViewAndOpen(guiID: String, vararg viewers: UUID)
 
-    fun getViewManagersFor(uuid: UUID): Stream<ViewRuntime>
+    fun getViewManagersFor(uuid: UUID): Stream<ViewRuntime<*,*>>
 
-    fun getViewManagersFor(uuid: UUID, guiID: String): Stream<ViewRuntime>
+    fun getViewManagersFor(uuid: UUID, guiID: String): Stream<ViewRuntime<*,*>>
 }

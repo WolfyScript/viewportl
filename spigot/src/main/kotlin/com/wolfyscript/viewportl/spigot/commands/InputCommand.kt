@@ -40,7 +40,7 @@ class InputCommand(private val core: Viewportl) : Command("wui"), PluginIdentifi
     override fun execute(sender: CommandSender, commandLabel: String, args: Array<String>): Boolean {
         if (sender !is Player) return true
         core.guiManager.getViewManagersFor(sender.uniqueId)
-            .map { runtime -> Pair(runtime, runtime.currentMenu) }
+            .map { runtime -> Pair(runtime, runtime.window) }
             .filter { pair -> pair.second != null && pair.second!!.onTextInput != null }
             .forEach { pair ->
                 val runtime = pair.first
@@ -60,7 +60,7 @@ class InputCommand(private val core: Viewportl) : Command("wui"), PluginIdentifi
     override fun tabComplete(sender: CommandSender, alias: String, args: Array<String>): List<String> {
         if (sender is Player) {
             return core.guiManager.getViewManagersFor(sender.uniqueId)
-                .map { viewManager -> Pair(viewManager, viewManager.currentMenu) }
+                .map { viewManager -> Pair(viewManager, viewManager.window) }
                 .filter { pair -> pair.second != null && pair.second!!.onTextInputTabComplete != null }
                 .findFirst()
                 .map { pair ->

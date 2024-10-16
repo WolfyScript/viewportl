@@ -18,32 +18,44 @@
 package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
-import com.wolfyscript.viewportl.gui.interaction.ClickTransaction
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.viewportl.gui.interaction.ClickInfo
+import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import java.util.function.Supplier
 
 /**
- * A simple button that has an icon (ItemStack) and an interaction callback.
- * It always has a 1x1 size, because it occupies a single slot.
- *
+ * The properties used to create a button implementation
  */
-interface Button : Component {
-    override fun width(): Int {
-        return 1
-    }
+data class ButtonProperties(
+    val scope: ComponentScope,
+    val icon: ButtonIcon.() -> Unit,
+    val styles: RenderProperties.() -> Unit,
+    val sound: Sound? = null,
+    val onClick: (ClickInfo.() -> Unit)?
+)
 
-    override fun height(): Int {
-        return 1
-    }
-
+/**
+ * A simple button that has an icon and a click callback.
+ */
+interface Button : NativeComponent {
     var sound: Sound?
-
     var icon: ButtonIcon
-
-    var onClick: ReceiverConsumer<ClickTransaction>?
-
-    fun onClick(consumer: ReceiverConsumer<ClickTransaction>) {
-        onClick = consumer
-    }
-
-    fun icon(iconConsumer: ReceiverConsumer<ButtonIcon>)
+    var onClick: (ClickInfo.() -> Unit)?
 }
+
+interface ButtonIcon {
+
+    var stack: ItemStackConfig
+
+    fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>)
+
+    var resolvers: TagResolver
+
+    fun resolvers(resolverSupplier: Supplier<TagResolver>)
+
+}
+
+
+

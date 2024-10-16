@@ -29,6 +29,10 @@ item-nbt-api = "2.11.3"
 nbt-data-api = "2.11.3"
 ## ##
 
+## Sponge Impl dependencies ##
+sponge-gradle = "2.2.0"
+sponge-api = "11.0.0-SNAPSHOT"
+
 [libraries]
 # Kotlin & Jetbrains dependencies
 org-jetbrains-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin-stdlib" }
@@ -59,5 +63,9 @@ io-papermc-paper = { module = "io.papermc.paper:paper-api", version.ref = "paper
 net-kyori-adventure-platform-bukkit = { module = "net.kyori:adventure-platform-bukkit", version.ref = "adventure-platform-api" }
 ## ##
 
+## Sponge Impl dependencies ##
+spongepowered-api = { module = "org.spongepowered:spongeapi", version.ref = "sponge-api" }
+
 [plugins]
 goooler-shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }
+spongepowered-gradle = { id = "org.spongepowered.gradle.plugin", version.ref = "sponge-gradle" }
