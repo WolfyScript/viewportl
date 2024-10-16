@@ -325,7 +325,7 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
         val storageSize =
             moveTo.storageContents.size // Do not include armor, off-hand, etc. to get the proper slot position
 
-        for (i in (storageSize - 1) downTo 0) {
+        for (i in storageSize - 1 downTo 0) {
             if (amount <= 0) {
                 break
             }
@@ -352,7 +352,7 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
         }
         if (amount > 0) {
             // There are still items left to move, look for empty slots
-            for (i in (storageSize - 1) downTo 0) {
+            for (i in storageSize - 1 downTo 0) {
                 if (amount <= 0) {
                     break
                 }
