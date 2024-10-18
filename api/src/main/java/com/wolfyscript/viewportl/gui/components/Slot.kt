@@ -1,10 +1,8 @@
 package com.wolfyscript.viewportl.gui.components
 
 import com.wolfyscript.scafall.function.ReceiverBiFunction
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.interaction.ClickType
-import com.wolfyscript.viewportl.gui.interaction.DragTransaction
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import java.util.function.Consumer
 
