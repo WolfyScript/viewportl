@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.example.viewportl.guis
+package org.example.viewportl.common.gui
 
 import com.wolfyscript.scafall.eval.value_provider.provider
 import com.wolfyscript.viewportl.gui.GuiAPIManager

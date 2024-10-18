@@ -44,6 +44,7 @@ dependencies {
 
     implementation(libs.org.reflections.reflections)
 
+    implementation(project(":examples:single-platform:plugin-common"))
     implementation(project(":common"))
     implementation(project(":sponge"))
     implementation(project(":sponge:platform"))
@@ -101,6 +102,8 @@ tasks {
             include(dependency("org.jetbrains.kotlin:.*"))
             include(dependency("org.reflections:reflections"))
             include(dependency("org.javassist:javassist"))
+
+            include(project(":examples:single-platform:plugin-common"))
 
             include(project(":api"))
             include(project(":common"))

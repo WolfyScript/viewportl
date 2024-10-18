@@ -27,9 +27,9 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
 import org.bukkit.plugin.java.JavaPlugin
 import org.example.viewportl.commands.GuiExampleCommand
-import org.example.viewportl.guis.CounterExampleKotlin
-import org.example.viewportl.guis.StackEditorExampleKotlin
-import org.example.viewportl.guis.StackSlotsExampleKotlin
+import org.example.viewportl.common.gui.CounterExampleKotlin
+import org.example.viewportl.common.gui.StackEditorExampleKotlin
+import org.example.viewportl.common.gui.StackSlotsExampleKotlin
 import java.util.*
 
 class ViewportlExample : JavaPlugin() {

@@ -40,10 +40,11 @@ dependencies {
     // We need both the scafall & viewportl spigot implementation.
     implementation("com.wolfyscript.scafall.spigot:spigot-platform:${project.version}")
 
+    implementation(project(":examples:single-platform:plugin-common"))
     implementation(project(":common"))
     implementation(project(":spigot"))
     implementation(project(":spigot:platform"))
-//    implementation("com.wolfyscript.viewportl.spigot:spigot-platform:${project.version}") // While this already provides the scafall api, we need the spigot impl. to shade it (see below)
+//    implementation("com.wolfyscript.viewportl.spigot:spigot-platform:${project.version}") // While this already provides the viewportl api, we need the spigot impl. to shade it (see below)
 }
 
 kotlin {
@@ -75,6 +76,8 @@ tasks {
         dependencies {
             include(dependency("com.wolfyscript.scafall.spigot:.*"))
             include(dependency("com.wolfyscript.viewportl.spigot:.*"))
+
+            include(project(":examples:single-platform:plugin-common"))
 
             include(project(":api"))
             include(project(":common"))

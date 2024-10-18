@@ -12,9 +12,9 @@ import net.kyori.adventure.text.LinearComponents
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
-import org.example.viewportl.guis.CounterExampleKotlin
-import org.example.viewportl.guis.StackEditorExampleKotlin
-import org.example.viewportl.guis.StackSlotsExampleKotlin
+import org.example.viewportl.common.gui.CounterExampleKotlin
+import org.example.viewportl.common.gui.StackEditorExampleKotlin
+import org.example.viewportl.common.gui.StackSlotsExampleKotlin
 import org.spongepowered.api.Server
 import org.spongepowered.api.command.Command
 import org.spongepowered.api.command.CommandResult

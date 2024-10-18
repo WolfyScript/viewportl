@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.example.viewportl.guis
+package org.example.viewportl.common.gui
 
 import com.wolfyscript.scafall.data.ItemStackDataKeys
 import com.wolfyscript.scafall.deserialize
