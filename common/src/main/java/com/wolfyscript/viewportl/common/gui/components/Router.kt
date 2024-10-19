@@ -46,11 +46,7 @@ internal fun setupRouter(properties: RouterProperties) {
     val id = (properties.scope as ComponentScopeImpl).setComponent(router)
 
     // Keep track if selected route has changed
-    val selectedRoute: Route? by reactiveSource.createMemo(null) {
-        currentPath?.let { path ->
-            routerScope.routes.firstOrNull { route -> route.path.matches(path) }
-        }
-    }
+    val selectedRoute: Route? by reactiveSource.createMemo(null) { currentPath?.let { routerScope.matchRoute(it) } }
 
     // We don't know which route to choose on setup time, therefor this will basically terminate.
     // Then it will proceed to construct the child components once the effect runs
@@ -84,6 +80,9 @@ class RouterImpl(
 
     override val routes: MutableList<Route> = mutableListOf()
 
+    override fun toString(): String {
+        return "Routes: ${routes.joinToString(separator = "\n", prefix = "\n")}"
+    }
 }
 
 class RouteImpl(
@@ -93,6 +92,26 @@ class RouteImpl(
 ) : Route {
 
     override val routes: MutableList<Route> = mutableListOf()
+
+    fun matchRoute(activePath: ActivePath, startIndex: Int = 0) : Route? {
+        if (!path.matches(activePath, startIndex)) {
+            return null
+        }
+
+        if (routes.isEmpty()) {
+            return this
+        }
+
+        val nextIndex = startIndex + path.length
+        // match sub routes
+        for (route in routes) {
+            val subRoute = (route as RouteImpl).matchRoute(activePath, nextIndex)
+            if (subRoute != null) {
+                return subRoute
+            }
+        }
+        return null
+    }
 
     override fun init(outlet: Outlet) {
 //        val selectedRoute: Memo<Route> = context.reactiveSource.createMemo {
@@ -107,6 +126,10 @@ class RouteImpl(
 //        }
 
     }
+
+    override fun toString(): String {
+        return "path: $path \n sub-routes: ${routes.joinToString(separator = "\n", prefix = "\n")}"
+    }
 }
 
 class RouterScopeImpl(
@@ -116,6 +139,16 @@ class RouterScopeImpl(
 ) : RouterScope {
 
     val routes = ArrayList<Route>()
+
+    fun matchRoute(activePath: ActivePath) : Route? {
+        for (route in routes) {
+            val routeMatch = (route as RouteImpl).matchRoute(activePath)
+            if (routeMatch != null) {
+                return routeMatch
+            }
+        }
+        return null
+    }
 
     override fun route(
         path: ReceiverConsumer<MatchPath>,
