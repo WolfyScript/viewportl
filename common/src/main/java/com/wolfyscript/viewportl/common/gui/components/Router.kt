@@ -44,21 +44,21 @@ internal fun setupRouter(properties: RouterProperties) {
     properties.routes(routerScope)
 
     // add component to graph
-    val id = (properties.scope as ComponentScopeImpl).setComponent(router)
+    val routerComponentId = (properties.scope as ComponentScopeImpl).setComponent(router)
 
     // Keep track if selected route has changed
-    val selectedRoute: Route? by reactiveSource.createMemo(null) { currentPath?.let { routerScope.matchRoute(it) } }
+    val selectedRoute: RouteGraph.Node? by reactiveSource.createMemo(null) { currentPath?.let { router.routeGraph.matchRoute(it) } }
 
     // We don't know which route to choose on setup time, therefor this will basically terminate.
     // Then it will proceed to construct the child components once the effect runs
-    // TODO: Outlet support!
     reactiveSource.createEffect {
-        if (selectedRoute == null) {
+        if (selectedRoute == null || selectedRoute!!.route == null) {
             return@createEffect
         }
         // Update component when route changes
         val routeOwner = reactiveSource.createTrigger()
-        with(selectedRoute!!.view) { // this subscribes to the selected route memo
+        val route = selectedRoute!!.route!!
+        with(route.view) { // this subscribes to the selected route memo
             reactiveSource.runWithObserver((routeOwner as TriggerImpl).id) {
                 properties.scope.consume()
             }
@@ -66,8 +66,7 @@ internal fun setupRouter(properties: RouterProperties) {
 
         // Clear all child components (the route component)
         reactiveSource.createCleanup {
-            val graph = runtime.into().model
-            graph.clearNodeChildren(id)
+            runtime.into().model.clearNodeChildren(routerComponentId)
         }
     }
 
@@ -75,7 +74,7 @@ internal fun setupRouter(properties: RouterProperties) {
 
 class RouteGraph {
 
-    private val root: Node = Node(MatchPath.StaticMatcher(""))
+    private val root: Node = Node(null, MatchPath.StaticMatcher(""))
 
     fun insertRoute(route: Route, startNode: Node = root) {
         var currentNode: Node = startNode
@@ -88,7 +87,7 @@ class RouteGraph {
             }
 
             // insert new child node
-            val newNode = Node(sectionMatcher)
+            val newNode = Node(currentNode, sectionMatcher)
             currentNode.insertChild(newNode)
             currentNode = newNode
         }
@@ -104,7 +103,7 @@ class RouteGraph {
         }
     }
 
-    fun matchRoute(path: ActivePath): Route? {
+    fun matchRoute(path: ActivePath): Node? {
         var currentNode: Node = root
 
         for (pathSection in path.pathSections) {
@@ -117,7 +116,7 @@ class RouteGraph {
         }
 
         // Path was successfully matched, though the path may not have a route associated with it
-        return currentNode.route
+        return currentNode
     }
 
     override fun toString(): String {
@@ -125,6 +124,7 @@ class RouteGraph {
     }
 
     class Node(
+        val parent: Node?,
         val matcher: MatchPath.SectionMatcher,
         var route: Route? = null,
     ) {
@@ -160,6 +160,13 @@ class RouterImpl(
 
     override val routes: MutableList<Route> = mutableListOf()
 
+    val outlets: MutableList<Pair<Long, Int>> = mutableListOf()
+
+    fun registerOutlet(outlet: Long, depth: Int) {
+        outlets.add(outlet to depth)
+        outlets.sortBy { it.second }
+    }
+
     override fun toString(): String {
         return "Routes: ${routes.joinToString(separator = "\n", prefix = "\n")}"
     }
@@ -173,20 +180,6 @@ class RouteImpl(
 
     override val routes: MutableList<Route> = mutableListOf()
 
-    override fun init(outlet: Outlet) {
-//        val selectedRoute: Memo<Route> = context.reactiveSource.createMemo {
-//            router.currentPath?.let { path ->
-//                routes.firstOrNull { route -> route.path.matches(path) }
-//            }
-//        }
-//
-//        context.reactiveSource.createEffect {
-//            selectedRoute.get()?.let { selectedRoute ->
-//            }
-//        }
-
-    }
-
     override fun toString(): String {
         return "path: $path \n sub-routes: ${routes.joinToString(separator = "\n", prefix = "\n")}"
     }
@@ -197,10 +190,6 @@ class RouterScopeImpl(
     override val router: Router,
     private val history: ReadWriteSignal<Deque<ActivePath>>
 ) : RouterScope {
-
-    fun matchRoute(activePath: ActivePath) : Route? {
-        return (router as RouterImpl).routeGraph.matchRoute(activePath)
-    }
 
     override fun route(
         path: ReceiverConsumer<MatchPath>,

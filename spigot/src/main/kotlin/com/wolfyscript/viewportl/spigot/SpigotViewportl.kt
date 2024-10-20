@@ -24,7 +24,6 @@ import com.wolfyscript.viewportl.common.CommonViewportl
 import com.wolfyscript.viewportl.common.gui.GuiAPIManagerImpl
 import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.GroupImpl
-import com.wolfyscript.viewportl.common.gui.components.OutletImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.gui.GuiAPIManager
@@ -51,7 +50,6 @@ class SpigotViewportl(private val plugin: PluginWrapper) : CommonViewportl(), Li
         guiComponentBuilders.register(ButtonImpl::class.java)
         guiComponentBuilders.register(SlotImpl::class.java)
         guiComponentBuilders.register(GroupImpl::class.java)
-        guiComponentBuilders.register(OutletImpl::class.java)
 
         registerListeners()
         registerCommands()

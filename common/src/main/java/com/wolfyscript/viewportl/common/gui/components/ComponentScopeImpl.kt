@@ -8,7 +8,6 @@ import com.wolfyscript.viewportl.gui.components.ButtonProperties
 import com.wolfyscript.viewportl.gui.components.ComponentScope
 import com.wolfyscript.viewportl.gui.components.GroupProperties
 import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.components.OutletProperties
 import com.wolfyscript.viewportl.gui.components.RouterProperties
 import com.wolfyscript.viewportl.gui.components.RouterScope
 import com.wolfyscript.viewportl.gui.components.ShowProperties
@@ -68,14 +67,6 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
                 styles,
                 sound,
                 onClick
-            )
-        )
-    }
-
-    override fun outlet() = component(this, runtime) {
-        runtime.viewportl.guiFactory.componentFactory.outlet(
-            OutletProperties(
-                this
             )
         )
     }

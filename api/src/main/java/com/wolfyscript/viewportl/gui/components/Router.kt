@@ -65,8 +65,6 @@ interface Route {
 
     val routes: List<Route>
 
-    fun init(outlet: Outlet)
-
 }
 
 interface RouteScope {

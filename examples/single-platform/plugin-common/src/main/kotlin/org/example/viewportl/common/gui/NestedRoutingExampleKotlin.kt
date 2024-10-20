@@ -20,6 +20,8 @@ package org.example.viewportl.common.gui
 
 import com.wolfyscript.scafall.eval.value_provider.provider
 import com.wolfyscript.viewportl.gui.GuiAPIManager
+import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.components.ComponentScope
 import com.wolfyscript.viewportl.gui.components.RouterScope
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
@@ -27,19 +29,11 @@ import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import net.kyori.adventure.text.Component
 
 /**
- * A Counter GUI Example, that allows the viewer:
+ * A GUI Example, that shows how nested routing is possible.
  *
- *  * to click one Button to increase the count,
- *  * another button to decrease the count,
- *  * and a button to reset the count to 0.
- *
- *
- *
- * The reset Button is only displayed, when the count is not 0.<br></br>
- * Whenever the GUI is open the count is increased periodically every second, without requiring any input.
- * <br></br>
- * The count is displayed in the title of the Inventory and in the item name of the button in the middle.
- * Those parts are automatically updated when the count changes.
+ * A GUI can have multiple routers nested into each other.
+ * Whenever the path of a router changes, the router clears all the child components.
+ * Therefor, components that are added outside a Route View are not reset and kept between path changes.
  */
 class NestedRoutingExampleKotlin {
 
@@ -47,71 +41,60 @@ class NestedRoutingExampleKotlin {
 
         fun registerNestedRoutingExample(manager: GuiAPIManager) {
             manager.registerGui("nested_routing") {
-                /**
-                 * Everything in this section is called **async** and only once.
-                 * It constructs the component tree and reactive graph as specified.
-                 **/
                 size = 9 * 6
 
                 router {
+                    // Note: Routes (and sub-routes) are constructed at setup. It is not possible to create new routes at runtime!
                     route({ }) {
-                        mainMenu(this@router)
+                        entry(this@router)
                     }
-                    route(
-                        path = { this / "main" },
-                        subRoutes = {
-                            route({ this / "page1" }, {
-                                button(
-                                    icon = { stack("written_book") { name = "<aqua>Page 1".provider() } },
-                                    styles = { position = PropertyPosition.slot(30) }
-                                )
-                            }, routeConfig = {})
-                            route({ this / "page2" }, {
-                                button(
-                                    icon = { stack("written_book") { name = "<aqua>Page 2".provider() } },
-                                    styles = { position = PropertyPosition.slot(30) }
-                                )
-                            }, {})
-                            route({ this / "page3" }, {
-                                button(
-                                    icon = { stack("written_book") { name = "<aqua>Page 3".provider() } },
-                                    styles = { position = PropertyPosition.slot(30) }
-                                )
-                            }, {})
-                        },
-                        view = {
-                            var page: Int by createSignal(1)
-
-                            title {
-                                Component.text("Main View")
-                            }
-
-                            button(
-                                icon = { stack("green_concrete") { name = "<green><b>Next Page".provider() } },
-                                styles = { position = PropertyPosition.slot(0) },
-                                onClick = {
-                                    page = page++.coerceAtMost(3)
-                                    openRoute { this / "main" / "page$page" }
-                                }
-                            )
-                            button(
-                                icon = { stack("red_concrete") { name = "<green><b>Previous Page".provider() } },
-                                styles = { position = PropertyPosition.slot(45) },
-                                onClick = {
-                                    page = page++.coerceAtLeast(1)
-                                    openRoute { this / "main" / "page$page" }
-                                }
-                            )
-
-                            outlet()
-                        }
-                    )
+                    route({ this / "main" }) {
+                        mainView(this@registerGui, this@router)
+                    }
                 }
-
             }
         }
 
-        private fun ComponentScope.mainMenu(routerScope: RouterScope) {
+        private fun ComponentScope.mainView(window: WindowScope, mainRouter: RouterScope) {
+            var page: Int by createSignal(1)
+
+            window.title {
+                Component.text("Main View")
+            }
+
+            button(
+                icon = { stack("barrier") { name = "<red><b>Close".provider() } },
+                styles = { position = PropertyPosition.slot(0) },
+                onClick = { mainRouter.openPrevious() }
+            )
+
+            router {
+                // Creates components in the outer component scope, while having access to the router scope
+                button(
+                    icon = { stack("green_concrete") { name = "<green><b>Next Page".provider() } },
+                    styles = { position = PropertyPosition.slot(53) },
+                    onClick = {
+                        page = (++page).coerceAtMost(3)
+                        openRoute { this / "page$page" }
+                    }
+                )
+                button(
+                    icon = { stack("red_concrete") { name = "<green><b>Previous Page".provider() } },
+                    styles = { position = PropertyPosition.slot(45) },
+                    onClick = {
+                        page = (--page).coerceAtLeast(1)
+                        openRoute { this / "page$page" }
+                    }
+                )
+
+                // Setup sub routes.
+                route({ this / "page1" }) { page1(this@router) }
+                route({ this / "page2" }) { page2(this@router) }
+                route({ this / "page3" }) { page3(this@router) }
+            }
+        }
+
+        private fun ComponentScope.entry(routerScope: RouterScope) {
             button(
                 icon = {
                     stack("green_concrete") {
@@ -125,5 +108,25 @@ class NestedRoutingExampleKotlin {
             )
         }
 
+        private fun ComponentScope.page1(router: RouterScope) {
+            button(
+                icon = { stack("paper") { name = "<aqua>Page 1".provider() } },
+                styles = { position = PropertyPosition.slot(31) }
+            )
+        }
+
+        private fun ComponentScope.page2(router: RouterScope) {
+            button(
+                icon = { stack("written_book") { name = "<aqua>Page 2".provider() } },
+                styles = { position = PropertyPosition.slot(31) }
+            )
+        }
+
+        private fun ComponentScope.page3(router: RouterScope) {
+            button(
+                icon = { stack("name_tag") { name = "<aqua>Page 3".provider() } },
+                styles = { position = PropertyPosition.slot(31) }
+            )
+        }
     }
 }
