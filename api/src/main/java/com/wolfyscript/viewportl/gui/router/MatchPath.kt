@@ -18,11 +18,13 @@
 
 package com.wolfyscript.viewportl.gui.router
 
+import java.util.Collections
 import kotlin.reflect.KClass
 
 class MatchPath(private val path: MutableList<SectionMatcher> = mutableListOf()) {
 
     val length: Int get() = path.size
+    val sections: List<SectionMatcher> get() = Collections.unmodifiableList(path)
 
     operator fun div(section: String) : MatchPath {
         path.add(StaticMatcher(section))

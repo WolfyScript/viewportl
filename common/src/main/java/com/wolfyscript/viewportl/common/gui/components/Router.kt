@@ -27,6 +27,7 @@ import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.viewportl.gui.reactivity.*
 import com.wolfyscript.viewportl.gui.router.ActivePath
 import com.wolfyscript.viewportl.gui.router.MatchPath
+import java.lang.IllegalStateException
 import java.util.*
 
 internal fun setupRouter(properties: RouterProperties) {
@@ -72,11 +73,90 @@ internal fun setupRouter(properties: RouterProperties) {
 
 }
 
+class RouteGraph {
+
+    private val root: Node = Node(MatchPath.StaticMatcher(""))
+
+    fun insertRoute(route: Route, startNode: Node = root) {
+        var currentNode: Node = startNode
+        for (sectionMatcher in route.path.sections) {
+            val existingChild = currentNode.findChild(sectionMatcher)
+            if (existingChild != null) {
+                // This section of the path is already in the tree
+                currentNode = existingChild
+                continue
+            }
+
+            // insert new child node
+            val newNode = Node(sectionMatcher)
+            currentNode.insertChild(newNode)
+            currentNode = newNode
+        }
+
+        if (currentNode.route != null) {
+            throw IllegalStateException("A route with the path '${route.path}' already exists.")
+        }
+        currentNode.route = route
+
+        // Also add the sub routes
+        for (subRoute in route.routes) {
+            insertRoute(subRoute, currentNode) // No need to walk the same path down again, start at the current node
+        }
+    }
+
+    fun matchRoute(path: ActivePath): Route? {
+        var currentNode: Node = root
+
+        for (pathSection in path.pathSections) {
+            val childNode = currentNode.matchChild(pathSection)
+            if (childNode != null) {
+                currentNode = childNode
+                continue
+            }
+            return null
+        }
+
+        // Path was successfully matched, though the path may not have a route associated with it
+        return currentNode.route
+    }
+
+    override fun toString(): String {
+        return "RouteGraph(root=$root)"
+    }
+
+    class Node(
+        val matcher: MatchPath.SectionMatcher,
+        var route: Route? = null,
+    ) {
+        private val children: MutableList<Node> = mutableListOf()
+
+        fun findChild(matcher: MatchPath.SectionMatcher): Node? {
+            return children.firstOrNull { node -> node.matcher == matcher }
+        }
+
+        fun insertChild(node: Node) {
+            children.add(node)
+        }
+
+        fun matchChild(section: ActivePath.Section): Node? {
+            return children.firstOrNull { node -> node.matcher.matches(section) }
+        }
+
+        override fun toString(): String {
+            return "{\n Matcher: $matcher, Routes: [\n${children.joinToString(separator = ", ")}] \n}"
+        }
+
+    }
+
+}
+
 @StaticNamespacedKey(key = "router")
 class RouterImpl(
     parent: NativeComponent?,
     viewportl: Viewportl
 ) : AbstractNativeComponentImpl<Router>("", viewportl, parent), Router {
+
+    val routeGraph: RouteGraph = RouteGraph()
 
     override val routes: MutableList<Route> = mutableListOf()
 
@@ -92,26 +172,6 @@ class RouteImpl(
 ) : Route {
 
     override val routes: MutableList<Route> = mutableListOf()
-
-    fun matchRoute(activePath: ActivePath, startIndex: Int = 0) : Route? {
-        if (!path.matches(activePath, startIndex)) {
-            return null
-        }
-
-        if (routes.isEmpty()) {
-            return this
-        }
-
-        val nextIndex = startIndex + path.length
-        // match sub routes
-        for (route in routes) {
-            val subRoute = (route as RouteImpl).matchRoute(activePath, nextIndex)
-            if (subRoute != null) {
-                return subRoute
-            }
-        }
-        return null
-    }
 
     override fun init(outlet: Outlet) {
 //        val selectedRoute: Memo<Route> = context.reactiveSource.createMemo {
@@ -138,16 +198,8 @@ class RouterScopeImpl(
     private val history: ReadWriteSignal<Deque<ActivePath>>
 ) : RouterScope {
 
-    val routes = ArrayList<Route>()
-
     fun matchRoute(activePath: ActivePath) : Route? {
-        for (route in routes) {
-            val routeMatch = (route as RouteImpl).matchRoute(activePath)
-            if (routeMatch != null) {
-                return routeMatch
-            }
-        }
-        return null
+        return (router as RouterImpl).routeGraph.matchRoute(activePath)
     }
 
     override fun route(
@@ -159,7 +211,7 @@ class RouterScopeImpl(
         with(path) { matchPath.consume() }
 
         val route = RouteImpl(router, matchPath, view)
-        routes.add(route)
+        (router as RouterImpl).routeGraph.insertRoute(route)
 
         // Init sub routes
         val routeScope = RouteScopeImpl(route)
@@ -210,10 +262,10 @@ class RouteScopeImpl(
         viewConfig: ReceiverConsumer<ComponentScope>,
         routeConfig: ReceiverConsumer<Route>
     ) {
-        val path = MatchPath()
+        val path = route.path.copy()
         with(pathConfig) { path.consume() }
 
-        route.routes.add(RouteImpl(route.router, path, viewConfig))
+        (route.router as RouterImpl).routeGraph.insertRoute(RouteImpl(route.router, path, viewConfig))
     }
 
 }
