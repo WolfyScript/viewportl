@@ -66,8 +66,6 @@ interface ComponentScope : ReactiveSource {
         onClick: (ClickInfo.() -> Unit)? = null
     )
 
-    fun outlet()
-
     /**
      * A Router decides which child component it should show depending on the current path.
      *

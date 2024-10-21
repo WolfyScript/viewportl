@@ -14,6 +14,4 @@ interface ComponentFactory {
 
     fun show(properties: ShowProperties)
 
-    fun outlet(properties: OutletProperties)
-
 }

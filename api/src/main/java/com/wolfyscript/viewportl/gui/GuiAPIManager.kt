@@ -29,6 +29,9 @@ import java.util.stream.Stream
  * Additionally, it stores the [ViewRuntime]s that handle the views for players.
  */
 interface GuiAPIManager {
+
+    val registeredGuis : Set<String>
+
     /**
      * Registers a new window with the specified id.<br></br>
      * The consumer provides the newly constructed [Window], which can then be configured.<br></br>

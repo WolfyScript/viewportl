@@ -25,6 +25,9 @@ class ActivePath(private val path: MutableList<Section> = mutableListOf()) : Ite
 
     private val params: MutableMap<String, Param<*>> = LinkedHashMap()
 
+    val size: Int get() = path.size
+    val pathSections: List<Section> get() = Collections.unmodifiableList(path.toList())
+
     fun getParam(key: String): Param<*>? {
         return params[key]
     }
@@ -77,6 +80,10 @@ class ActivePath(private val path: MutableList<Section> = mutableListOf()) : Ite
         return newPath
     }
 
+    override fun toString(): String {
+        return path.joinToString(separator = "/", prefix = "/")
+    }
+
     interface Section {
 
         val name: String
@@ -89,11 +96,19 @@ class ActivePath(private val path: MutableList<Section> = mutableListOf()) : Ite
         override fun copy(): Section {
             return this
         }
+
+        override fun toString(): String {
+            return name
+        }
     }
 
     class Param<T: Any>(override val name: String, val value: T) : Section {
         override fun copy(): Section {
             return this
+        }
+
+        override fun toString(): String {
+            return "<$name> ($value)"
         }
     }
 

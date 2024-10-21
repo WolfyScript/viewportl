@@ -28,6 +28,7 @@ import org.bukkit.command.CommandMap
 import org.bukkit.plugin.java.JavaPlugin
 import org.example.viewportl.commands.GuiExampleCommand
 import org.example.viewportl.common.gui.CounterExampleKotlin
+import org.example.viewportl.common.gui.NestedRoutingExampleKotlin
 import org.example.viewportl.common.gui.StackEditorExampleKotlin
 import org.example.viewportl.common.gui.StackSlotsExampleKotlin
 import java.util.*
@@ -44,6 +45,7 @@ class ViewportlExample : JavaPlugin() {
         // then register the guis
         val manager = viewportl.guiManager
         CounterExampleKotlin.registerExampleCounter(manager)
+        NestedRoutingExampleKotlin.registerNestedRoutingExample(manager)
         StackEditorExampleKotlin.registerStackEditor(manager)
         StackSlotsExampleKotlin.registerStackSlotsExample(manager)
 

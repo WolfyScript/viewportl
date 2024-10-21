@@ -18,11 +18,13 @@
 
 package com.wolfyscript.viewportl.gui.router
 
+import java.util.Collections
 import kotlin.reflect.KClass
 
-class MatchPath {
+class MatchPath(private val path: MutableList<SectionMatcher> = mutableListOf()) {
 
-    private val path: MutableList<SectionMatcher> = mutableListOf()
+    val length: Int get() = path.size
+    val sections: List<SectionMatcher> get() = Collections.unmodifiableList(path)
 
     operator fun div(section: String) : MatchPath {
         path.add(StaticMatcher(section))
@@ -46,13 +48,29 @@ class MatchPath {
         return this
     }
 
-    fun matches(activePath: ActivePath) : Boolean {
-        for ((index, section) in activePath.withIndex()) {
-            if (index >= path.size) return false
-            val matcher = path[index]
-            if (!matcher.matches(section)) return false
+    fun matches(activePath: ActivePath, startIndex: Int = 0) : Boolean {
+        if (activePath.size > path.size) {
+            return false
+        }
+        val activePathSections = activePath.pathSections
+        for ((index, matcher) in path.withIndex()) {
+            if (activePathSections.size <= startIndex + index) {
+                return false
+            }
+            val section = activePathSections[startIndex + index]
+            if (!matcher.matches(section)) {
+                return false
+            }
         }
         return true
+    }
+
+    override fun toString(): String {
+        return path.joinToString(separator = "/", prefix = " /")
+    }
+
+    fun copy(): MatchPath {
+        return MatchPath(path.toMutableList())
     }
 
     data class ParamMatcher<T: Any>(
@@ -64,6 +82,10 @@ class MatchPath {
             if (type != section.value.javaClass) return false
             return true
         }
+
+        override fun toString(): String {
+            return "<$name : $type>"
+        }
     }
 
     data class StaticMatcher(
@@ -71,6 +93,10 @@ class MatchPath {
     ) : SectionMatcher {
         override fun matches(section: ActivePath.Section) : Boolean {
             return section is ActivePath.StaticSection && section.name == name
+        }
+
+        override fun toString(): String {
+            return name
         }
     }
 

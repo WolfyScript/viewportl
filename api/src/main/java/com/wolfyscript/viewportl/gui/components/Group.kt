@@ -19,17 +19,6 @@ interface NativeComponentGroup : NativeComponent {
      */
     fun getChild(id: String?): Optional<out NativeComponent?>?
 
-    fun findNextOutlet() : Outlet? {
-        for (childComponent in childComponents()) {
-            if (childComponent is Outlet) return childComponent
-            if (childComponent is NativeComponentGroup) {
-                val outlet = childComponent.findNextOutlet()
-                if (outlet != null) return outlet
-            }
-        }
-        return null
-    }
-
 }
 
 data class GroupProperties(

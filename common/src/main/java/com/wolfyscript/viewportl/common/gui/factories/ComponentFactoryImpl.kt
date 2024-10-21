@@ -2,7 +2,6 @@ package com.wolfyscript.viewportl.common.gui.factories
 
 import com.wolfyscript.viewportl.common.gui.components.setupButton
 import com.wolfyscript.viewportl.common.gui.components.setupGroup
-import com.wolfyscript.viewportl.common.gui.components.setupOutlet
 import com.wolfyscript.viewportl.common.gui.components.setupRouter
 import com.wolfyscript.viewportl.common.gui.components.setupShow
 import com.wolfyscript.viewportl.common.gui.components.setupSlot
@@ -20,9 +19,5 @@ class ComponentFactoryImpl : ComponentFactory {
     override fun router(properties: RouterProperties) = setupRouter(properties)
 
     override fun show(properties: ShowProperties) = setupShow(properties)
-
-    override fun outlet(properties: OutletProperties) {
-        setupOutlet(properties)
-    }
 
 }
