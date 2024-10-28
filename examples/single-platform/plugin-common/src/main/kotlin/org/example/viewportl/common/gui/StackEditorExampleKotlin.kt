@@ -20,7 +20,6 @@ package org.example.viewportl.common.gui
 
 import com.wolfyscript.scafall.data.ItemStackDataKeys
 import com.wolfyscript.scafall.deserialize
-import com.wolfyscript.scafall.eval.value_provider.provider
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
@@ -69,7 +68,7 @@ class StackEditorExampleKotlin {
                             },
                             icon = {
                                 stack("name_tag") {
-                                    name = "<gold><b>Edit Display Name".provider()
+                                    data().set(it.customName, "<gold><b>Edit Display Name".deserialize())
                                 }
                             },
                             onClick = { selectedTab = Tab.DISPLAY_NAME }
@@ -78,7 +77,7 @@ class StackEditorExampleKotlin {
                             styles = { position = PropertyPosition.slot(2) },
                             icon = {
                                 stack("book") {
-                                    name = "<gold><b>Edit Lore".provider()
+                                    data().set(it.customName, "<gold><b>Edit Lore".deserialize())
                                 }
                             },
                             onClick = { selectedTab = Tab.LORE }
@@ -105,7 +104,7 @@ class StackEditorExampleKotlin {
                                                 },
                                                 icon = {
                                                     stack("writable_book") {
-                                                        name = "<green><b>Edit Lore".provider()
+                                                        data().set(it.customName, "<green><b>Edit Lore".deserialize())
                                                     }
                                                 }
                                             )
@@ -115,7 +114,7 @@ class StackEditorExampleKotlin {
                                                 },
                                                 icon = {
                                                     stack("red_concrete") {
-                                                        name = "<red><b>Clear Lore".provider()
+                                                        data().set(it.customName, "<red><b>Clear Lore".deserialize())
                                                     }
                                                 }
                                             )
@@ -148,7 +147,7 @@ class StackEditorExampleKotlin {
                     },
                     icon = {
                         stack("green_concrete") {
-                            name = "<green><b>Set Display Name".provider()
+                            data().set(it.customName, "<green><b>Set Display Name".deserialize())
                         }
                     },
                     onClick = {
@@ -164,7 +163,7 @@ class StackEditorExampleKotlin {
                     },
                     icon = {
                         stack("red_concrete") {
-                            name = "<red><b>Reset Display Name".provider()
+                            data().set(it.customName, "<red><b>Reset Display Name".deserialize())
                         }
                     },
                     onClick = { stackToEdit()?.data()?.remove(ItemStackDataKeys.CUSTOM_NAME) }

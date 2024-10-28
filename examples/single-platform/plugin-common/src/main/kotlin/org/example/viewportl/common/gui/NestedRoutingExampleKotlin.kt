@@ -18,9 +18,8 @@
 
 package org.example.viewportl.common.gui
 
-import com.wolfyscript.scafall.eval.value_provider.provider
+import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.viewportl.gui.GuiAPIManager
-import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.components.ComponentScope
 import com.wolfyscript.viewportl.gui.components.RouterScope
@@ -63,7 +62,11 @@ class NestedRoutingExampleKotlin {
             }
 
             button(
-                icon = { stack("barrier") { name = "<red><b>Close".provider() } },
+                icon = {
+                    stack("barrier") {
+                        data().set(it.customName, "<red><b>Close".deserialize())
+                    }
+                },
                 styles = { position = PropertyPosition.slot(0) },
                 onClick = { mainRouter.openPrevious() }
             )
@@ -71,7 +74,11 @@ class NestedRoutingExampleKotlin {
             router {
                 // Creates components in the outer component scope, while having access to the router scope
                 button(
-                    icon = { stack("green_concrete") { name = "<green><b>Next Page".provider() } },
+                    icon = {
+                        stack("green_concrete") {
+                            data().set(it.customName, "<green><b>Next Page".deserialize())
+                        }
+                    },
                     styles = { position = PropertyPosition.slot(53) },
                     onClick = {
                         page = (++page).coerceAtMost(3)
@@ -79,7 +86,11 @@ class NestedRoutingExampleKotlin {
                     }
                 )
                 button(
-                    icon = { stack("red_concrete") { name = "<green><b>Previous Page".provider() } },
+                    icon = {
+                        stack("red_concrete") {
+                            data().set(it.customName, "<green><b>Previous Page".deserialize())
+                        }
+                    },
                     styles = { position = PropertyPosition.slot(45) },
                     onClick = {
                         page = (--page).coerceAtLeast(1)
@@ -98,7 +109,7 @@ class NestedRoutingExampleKotlin {
             button(
                 icon = {
                     stack("green_concrete") {
-                        name = "<green><b>Open Main View".provider()
+                        data().set(it.customName, "<green><b>Open Main View".deserialize())
                     }
                 },
                 styles = { position = PropertyPosition.slot(13) },
@@ -110,21 +121,33 @@ class NestedRoutingExampleKotlin {
 
         private fun ComponentScope.page1(router: RouterScope) {
             button(
-                icon = { stack("paper") { name = "<aqua>Page 1".provider() } },
+                icon = {
+                    stack("paper") {
+                        data().set(it.customName, "<aqua>Page 1".deserialize())
+                    }
+                },
                 styles = { position = PropertyPosition.slot(31) }
             )
         }
 
         private fun ComponentScope.page2(router: RouterScope) {
             button(
-                icon = { stack("written_book") { name = "<aqua>Page 2".provider() } },
+                icon = {
+                    stack("written_book") {
+                        data().set(it.customName, "<aqua>Page 2".deserialize())
+                    }
+                },
                 styles = { position = PropertyPosition.slot(31) }
             )
         }
 
         private fun ComponentScope.page3(router: RouterScope) {
             button(
-                icon = { stack("name_tag") { name = "<aqua>Page 3".provider() } },
+                icon = {
+                    stack("name_tag") {
+                        data().set(it.customName, "<aqua>Page 3".deserialize())
+                    }
+                },
                 styles = { position = PropertyPosition.slot(31) }
             )
         }
