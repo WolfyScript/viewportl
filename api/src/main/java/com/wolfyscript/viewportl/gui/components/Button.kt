@@ -51,10 +51,6 @@ interface ButtonIcon {
 
     fun stack(itemId: String, stackConfig: ItemStackConfig.(DataKeyProvider) -> Unit)
 
-    var resolvers: TagResolver
-
-    fun resolvers(resolverSupplier: Supplier<TagResolver>)
-
 }
 
 

@@ -80,7 +80,6 @@ class DynamicIcon(
 ) : ButtonIcon {
 
     override var stack: ItemStackConfig = runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air"))
-    override var resolvers: TagResolver = TagResolver.empty()
 
     override fun stack(itemId: String, stackConfig: ItemStackConfig.(DataKeyProvider) -> Unit) {
         val newStack = runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, itemId))
@@ -88,7 +87,4 @@ class DynamicIcon(
         stack = newStack
     }
 
-    override fun resolvers(resolverSupplier: Supplier<TagResolver>) {
-        resolvers = resolverSupplier.get()
-    }
 }
