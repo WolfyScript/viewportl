@@ -31,7 +31,7 @@ nbt-data-api = "2.11.3"
 
 ## Sponge Impl dependencies ##
 sponge-gradle = "2.2.0"
-sponge-api = "11.0.0-SNAPSHOT"
+sponge-api = "13.0.0-SNAPSHOT"
 
 [libraries]
 # Kotlin & Jetbrains dependencies

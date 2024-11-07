@@ -55,7 +55,7 @@ class InventoryStackSlotInteractionHandler : SpongeComponentInteractionHandler<S
         slot.get(Keys.SLOT_INDEX).ifPresent { slotIndex ->
             // TODO: Check if stack can be accepted (invalidate transaction otherwise)
 
-            val wrappedFinalReplacement = ItemStackWrapper(transaction.finalReplacement().createStack())  // TODO: Wrap stack snapshot instead?
+            val wrappedFinalReplacement = ItemStackWrapper(transaction.finalReplacement().asMutable())  // TODO: Wrap stack snapshot instead?
             component.value = wrappedFinalReplacement
             component.onValueChange?.accept(wrappedFinalReplacement)
         }
