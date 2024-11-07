@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui.components
 
-import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.data.DataKeyProvider
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
@@ -49,11 +49,7 @@ interface ButtonIcon {
 
     var stack: ItemStackConfig
 
-    fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>)
-
-    var resolvers: TagResolver
-
-    fun resolvers(resolverSupplier: Supplier<TagResolver>)
+    fun stack(itemId: String, stackConfig: ItemStackConfig.(DataKeyProvider) -> Unit)
 
 }
 

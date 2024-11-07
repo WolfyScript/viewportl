@@ -55,6 +55,9 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
             .map { runtimes[it] }
     }
 
+    override val registeredGuis: Set<String>
+        get() = entriesMap.keys
+
     override fun registerGui(key: String, windowConsumer: ReceiverConsumer<WindowScope>) {
         registerGui(key) { runtime ->
             val window: Window = WindowImpl(key, 54, null, viewportl)

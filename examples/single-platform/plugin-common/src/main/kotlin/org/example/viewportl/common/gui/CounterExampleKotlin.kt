@@ -18,7 +18,7 @@
 
 package org.example.viewportl.common.gui
 
-import com.wolfyscript.scafall.eval.value_provider.provider
+import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.components.*
@@ -79,7 +79,7 @@ class CounterExampleKotlin {
             button(
                 icon = {
                     stack("green_concrete") {
-                        name = "<green><b>Open Counter".provider()
+                        data().set(it.customName, "<green><b>Open Counter".deserialize())
                     }
                 },
                 styles = { position = PropertyPosition.slot(13) },
@@ -109,7 +109,7 @@ class CounterExampleKotlin {
             button(
                 icon = {
                     stack("barrier") {
-                        name = "<red><b>Back".provider()
+                        data().set(it.customName, "<red><b>Back".deserialize())
                     }
                 },
                 styles = {
@@ -124,7 +124,7 @@ class CounterExampleKotlin {
                 },
                 icon = {
                     stack("green_concrete") {
-                        name = "<green><b>Count Up".provider()
+                        data().set(it.customName, "<green><b>Count Up".deserialize())
                     }
                 },
                 onClick = {
@@ -138,9 +138,8 @@ class CounterExampleKotlin {
                 },
                 icon = {
                     stack("redstone") {
-                        name = "<!italic>Clicked <b><count></b> times!".provider()
+                        data().set(it.customName, "<!italic>Clicked <b><count></b> times!".deserialize(tagResolver = Placeholder.parsed("count", count.toString())))
                     }
-                    resolvers = Placeholder.parsed("count", count.toString())
                 },
             )
 
@@ -150,7 +149,7 @@ class CounterExampleKotlin {
                 },
                 icon = {
                     stack("red_concrete") {
-                        name = "<red><b>Count Down".provider()
+                        data().set(it.customName, "<red><b>Count Down".deserialize())
                     }
                 },
                 onClick = { count -= 1 }
@@ -171,7 +170,7 @@ class CounterExampleKotlin {
                         },
                         icon = {
                             stack("tnt") {
-                                name = "<b><red>Reset Clicks!".provider()
+                                data().set(it.customName, "<b><red>Reset Clicks!".deserialize())
                             }
                         },
                         onClick = {

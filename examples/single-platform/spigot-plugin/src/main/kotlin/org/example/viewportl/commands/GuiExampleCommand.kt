@@ -24,6 +24,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.PluginIdentifiableCommand
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
+import org.bukkit.util.StringUtil
 
 class GuiExampleCommand(private val core: Viewportl) : Command("gui_example"), PluginIdentifiableCommand {
     init {
@@ -44,5 +45,13 @@ class GuiExampleCommand(private val core: Viewportl) : Command("gui_example"), P
             core.guiManager.createViewAndOpen("example_counter", sender.uniqueId)
         }
         return true
+    }
+
+    override fun tabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
+        val list = mutableListOf<String>()
+        if (args.isNotEmpty()) {
+            StringUtil.copyPartialMatches(args[0], core.guiManager.registeredGuis, list)
+        }
+        return list
     }
 }

@@ -2,7 +2,8 @@ package com.wolfyscript.viewportl.common.gui.components
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.google.inject.Inject
-import com.wolfyscript.scafall.function.ReceiverConsumer
+import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.scafall.data.DataKeyProvider
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
@@ -79,15 +80,11 @@ class DynamicIcon(
 ) : ButtonIcon {
 
     override var stack: ItemStackConfig = runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air"))
-    override var resolvers: TagResolver = TagResolver.empty()
 
-    override fun stack(itemId: String, stackConfig: ReceiverConsumer<ItemStackConfig>) {
+    override fun stack(itemId: String, stackConfig: ItemStackConfig.(DataKeyProvider) -> Unit) {
         val newStack = runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, itemId))
-        with(stackConfig) { newStack.consume() }
+        newStack.stackConfig(ScafallProvider.get().factories.itemsFactory.dataKeyProvider)
         stack = newStack
     }
 
-    override fun resolvers(resolverSupplier: Supplier<TagResolver>) {
-        resolvers = resolverSupplier.get()
-    }
 }
