@@ -140,8 +140,8 @@ minecraftServers {
     libName.set("${project.name}-${version}.jar") // Makes sure to copy the correct file (when using shaded classifier "-all.jar" this needs to be changed!)
     val debugPortMapping = "${debugPort}:${debugPort}"
     servers {
-        register("spongevanilla_11") {
-            val spongeVersion = "1.20.6-11.0.0"
+        register("spongevanilla_13") {
+            val spongeVersion = "1.21.3-13.0.0-RC1893"
             imageVersion.set("java21")
             type.set("CUSTOM")
             extraEnv.put("SPONGEVERSION", spongeVersion)

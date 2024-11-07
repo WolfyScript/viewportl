@@ -30,8 +30,8 @@ fun ClickContainerEvent.convert(transaction: SlotTransaction): ClickInfo {
     val slot: Slot = transaction.slot()
     val index = slot.get(Keys.SLOT_INDEX).orElse(null) ?: throw IndexOutOfBoundsException("Failed to convert ClickContainer event. Could not find index: $slot")
 
-    val slotStack = transaction.original().createStack().wrap()
-    val cursorStack = cursorTransaction().original().createStack().wrap()
+    val slotStack = transaction.original().asMutable().wrap() // TODO: consider reworking wrapping in scafall to wrap stack snapshot instead!
+    val cursorStack = cursorTransaction().original().asMutable().wrap()
 
     return when(this) {
         is ClickContainerEvent.Drop -> {
