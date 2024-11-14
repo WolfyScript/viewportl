@@ -66,12 +66,16 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
 
         // Register a simple command
         // When possible, all commands should be registered within a command register event
+        val guiParam = Parameter.string().key("gui").optional().build()
         event.register(
             pluginContainer, Command.builder()
+                .addParameter(guiParam)
                 .executor { context: CommandContext ->
+                    val gui = if (context.hasAny(guiParam)) context.requireOne(guiParam) else "example_counter"
+
                     context.cause().first(ServerPlayer::class.java)
                         .ifPresent { serverPlayer: ServerPlayer ->
-                            viewportl.guiManager.createViewAndOpen("example_counter", serverPlayer.uniqueId())
+                            viewportl.guiManager.createViewAndOpen(gui, serverPlayer.uniqueId())
                         }
                     CommandResult.success()
                 } //.permission("wolfyutils.command.gui")
