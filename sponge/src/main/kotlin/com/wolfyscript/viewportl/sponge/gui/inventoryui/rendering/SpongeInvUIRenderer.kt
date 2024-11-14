@@ -154,7 +154,7 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
     private fun setNativeStack(i: Int, itemStack: org.spongepowered.api.item.inventory.ItemStack?) {
         //checkIfSlotInBounds(i);
         if (itemStack == null) {
-            inventoryMenu?.inventory()?.set(i, null)
+            inventoryMenu?.inventory()?.set(i, org.spongepowered.api.item.inventory.ItemStack.empty())
             return
         }
         inventoryMenu?.inventory()?.set(i, itemStack)
