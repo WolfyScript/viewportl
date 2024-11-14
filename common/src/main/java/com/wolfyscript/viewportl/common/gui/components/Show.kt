@@ -4,7 +4,7 @@ import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.common.gui.reactivity.TriggerImpl
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.Element
 import com.wolfyscript.viewportl.gui.components.Show
 import com.wolfyscript.viewportl.gui.components.ShowProperties
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
@@ -45,6 +45,6 @@ internal fun setupShow(properties: ShowProperties) {
 
 @StaticNamespacedKey(key = "show")
 class ShowImpl(
-    parent: NativeComponent?,
+    parent: Element?,
     viewportl: Viewportl,
-) : AbstractNativeComponentImpl<Show>("", viewportl, parent), Show
+) : AbstractElementImpl<Show>("", viewportl, parent), Show

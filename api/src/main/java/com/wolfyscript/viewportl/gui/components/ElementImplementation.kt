@@ -21,4 +21,4 @@ import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class NativeComponentImplementation(val base: KClass<out NativeComponent>)
+annotation class ElementImplementation(val base: KClass<out Element>)

@@ -23,7 +23,7 @@ import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.Element
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
@@ -281,8 +281,8 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
             return
         }
 
-        val component = node.nativeComponent
-        callComponentHandler(node.nativeComponent) {
+        val component = node.element
+        callComponentHandler(node.element) {
             onClick(runtime, component, event, slot, valueHandler)
         }
     }
@@ -298,8 +298,8 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
         }
         val node = slotNodes[slot.index]?.let { runtime.model.getNode(it) }
         if (node != null) {
-            val component = node.nativeComponent
-            callComponentHandler(node.nativeComponent) {
+            val component = node.element
+            callComponentHandler(node.element) {
                 onClick(runtime, component, event, slot, valueHandler)
             }
 
@@ -418,14 +418,14 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
                     return
                 }
 
-                callComponentHandler(node.nativeComponent) {
-                    onDrag(runtime, node.nativeComponent, event, Slot(rawSlot), valueHandler)
+                callComponentHandler(node.element) {
+                    onDrag(runtime, node.element, event, Slot(rawSlot), valueHandler)
                 }
             }
         }
     }
 
-    private fun <C : NativeComponent> callComponentHandler(
+    private fun <C : Element> callComponentHandler(
         component: C,
         fn: SpigotComponentInteractionHandler<C>.() -> Unit
     ) {

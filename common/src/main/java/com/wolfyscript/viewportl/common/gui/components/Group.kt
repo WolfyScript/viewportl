@@ -38,15 +38,15 @@ internal fun setupGroup(properties: GroupProperties) {
     properties.content(properties.scope)
 }
 
-@NativeComponentImplementation(base = NativeComponentGroup::class)
+@ElementImplementation(base = ElementGroup::class)
 @StaticNamespacedKey(key = "cluster")
 class GroupImpl @JsonCreator @Inject constructor(
     @JsonProperty("id") id: String,
     @JacksonInject("viewportl") viewportl: Viewportl,
-    @javax.annotation.Nullable @JacksonInject("parent") parent: NativeComponent? = null,
-) : AbstractNativeComponentImpl<NativeComponentGroup>(id, viewportl, parent), NativeComponentGroup {
+    @javax.annotation.Nullable @JacksonInject("parent") parent: Element? = null,
+) : AbstractElementImpl<ElementGroup>(id, viewportl, parent), ElementGroup {
 
-    private val children: MutableList<NativeComponent> = mutableListOf()
+    private val children: MutableList<Element> = mutableListOf()
     private val width: Int
     private val height: Int
 
@@ -56,11 +56,11 @@ class GroupImpl @JsonCreator @Inject constructor(
         this.height = (abs((topLeft / 9).toDouble()) + 1).toInt()
     }
 
-    override fun childComponents(): Set<NativeComponent> {
+    override fun childComponents(): Set<Element> {
         return HashSet(children)
     }
 
-    override fun getChild(id: String?): Optional<out NativeComponent> {
+    override fun getChild(id: String?): Optional<out Element> {
         return Optional.empty()
     }
 

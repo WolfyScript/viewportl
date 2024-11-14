@@ -18,13 +18,13 @@
 
 package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.Element
 import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
 abstract class InvUIRenderContext : RenderContext {
 
     abstract val renderer: InvUIRenderer<*, *>
-    private var currentNode: NativeComponent? = null
+    private var currentNode: Element? = null
     private var slotOffsetToParent = 0
 
     fun setSlotOffset(offset: Int) {
@@ -35,14 +35,14 @@ abstract class InvUIRenderContext : RenderContext {
         return slotOffsetToParent
     }
 
-    override fun enterNode(nativeComponent: NativeComponent) {
-        this.currentNode = nativeComponent
+    override fun enterNode(element: Element) {
+        this.currentNode = element
     }
 
     override fun exitNode() {
         this.currentNode = null
     }
 
-    override val currentNativeComponent: NativeComponent?
+    override val currentElement: Element?
         get() = currentNode
 }

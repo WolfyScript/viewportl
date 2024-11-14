@@ -22,14 +22,14 @@ import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame
 import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.Element
 import com.wolfyscript.viewportl.gui.reactivity.Effect
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 import com.wolfyscript.viewportl.gui.rendering.RenderContext
 import java.util.concurrent.atomic.AtomicInteger
 
 class AnimationImpl<F : AnimationFrame> internal constructor(
-    owner: NativeComponent,
+    owner: Element,
     animationFrameBuilders: List<AnimationFrameBuilder<F>>,
     updateSignal: ReadWriteSignal<*>
 ) :

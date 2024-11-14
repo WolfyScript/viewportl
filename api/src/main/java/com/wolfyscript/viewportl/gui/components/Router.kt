@@ -42,11 +42,11 @@ data class RouterProperties(
 )
 
 /**
- * The actual component that is present in the graph. It holds all the computed routes.
+ * This Element is present in the model graph and holds all the computed routes.
  *
- * The selected route view is rendered as a child of this router component in the graph
+ * The selected route view is rendered as a child of this router element in the graph
  */
-interface Router : NativeComponent {
+interface Router : Element {
 
     val routes: List<Route>
 

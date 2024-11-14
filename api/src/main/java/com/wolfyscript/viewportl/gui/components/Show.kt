@@ -9,6 +9,6 @@ data class ShowProperties(
 )
 
 /**
- * The actual show component
+ * The actual show element
  */
-interface Show : NativeComponent
+interface Show : Element

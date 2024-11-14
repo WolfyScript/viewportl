@@ -28,7 +28,7 @@ import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 
 /**
- * Native Components are present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph]. They may have a native renderer and interaction handler implementation on each platform.
+ * Elements are present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph]. They may have a native renderer and interaction handler implementation on each platform.
  * (Though not necessarily, some are only present in the Model and cannot be interacted with nor are rendered)
  *
  * Using the [component] function components, signals, memos, etc. can be encapsulated and grouped for better code structure.
@@ -42,7 +42,7 @@ import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonPropertyOrder(value = ["type"])
 @JsonIgnoreProperties(ignoreUnknown = true)
-interface NativeComponent : Keyed {
+interface Element : Keyed {
 
     @JsonIgnore
     override fun key(): Key
@@ -72,7 +72,7 @@ interface NativeComponent : Keyed {
      * The parent of this Component, or null if it is a root Component.
      *
      */
-    val parent: NativeComponent?
+    val parent: Element?
 
     val styles: RenderProperties
 

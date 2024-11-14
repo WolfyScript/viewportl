@@ -3,26 +3,26 @@ package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.Element
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.*
 
 abstract class InvUIInteractionHandler<Self: InvUIInteractionHandler<Self>> : InteractionHandler<Self> {
 
     companion object {
-        private val nativeComponentInteractionHandlers: MutableMap<Class<out NativeComponent>, ComponentInteractionHandler<*>> = mutableMapOf()
+        private val elementInteractionHandlers: MutableMap<Class<out Element>, ComponentInteractionHandler<*>> = mutableMapOf()
 
         @Suppress("UNCHECKED_CAST")
-        fun <C : NativeComponent> getComponentInteractionHandler(type: Class<C>): ComponentInteractionHandler<C>? {
-            val handler: ComponentInteractionHandler<*>? = nativeComponentInteractionHandlers[type]
+        fun <C : Element> getComponentInteractionHandler(type: Class<C>): ComponentInteractionHandler<C>? {
+            val handler: ComponentInteractionHandler<*>? = elementInteractionHandlers[type]
             return handler as ComponentInteractionHandler<C>?
         }
 
-        fun <C : NativeComponent> registerComponentInteractionHandler(
+        fun <C : Element> registerComponentInteractionHandler(
             type: Class<C>,
             handler: ComponentInteractionHandler<in C>
         ) {
-            nativeComponentInteractionHandlers[type] = handler
+            elementInteractionHandlers[type] = handler
         }
 
     }
@@ -54,7 +54,7 @@ abstract class InvUIInteractionHandler<Self: InvUIInteractionHandler<Self>> : In
 
             // Mark slot to interact with this node
             // Only mark components that have an interaction handler
-            getComponentInteractionHandler(node.nativeComponent.javaClass)?.let {
+            getComponentInteractionHandler(node.element.javaClass)?.let {
                 val nextOffset = calculatePosition(node, context)
                 val offset = context.currentOffset()
                 slotNodes[offset] = child
@@ -70,7 +70,7 @@ abstract class InvUIInteractionHandler<Self: InvUIInteractionHandler<Self>> : In
     }
 
     private fun calculatePosition(node: Node, context: InvUIInteractionContext): Int {
-        val nextOffset = node.nativeComponent.styles.position.slotPositioning()?.let {
+        val nextOffset = node.element.styles.position.slotPositioning()?.let {
             context.setSlotOffset(it.slot())
             return@let it.slot() + 1
         } ?: run {

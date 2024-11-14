@@ -18,13 +18,13 @@
 
 package com.wolfyscript.viewportl.gui.model
 
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.Element
 
 /**
- * An acyclic Graph (Tree) of [NativeComponents][NativeComponent]
+ * An acyclic Graph (Tree) of [Elements][Element]
  *
- * This model can be manipulated by adding or removing nodes ([NativeComponent]).
- * Those changes are then sent to the renderer and interaction handler.
+ * This model can be manipulated by adding or removing nodes ([Element]).
+ * Those changes are then sent to the listeners (e.g. renderer and interaction handler).
  *
  */
 interface ModelGraph {
@@ -33,9 +33,9 @@ interface ModelGraph {
 
     fun unregisterListener(listener: ModelChangeListener)
 
-    fun addNode(nativeComponent: NativeComponent) : Long
+    fun addNode(element: Element) : Long
 
-    fun insertComponentAt(nativeComponent: NativeComponent, insertAt: Long)
+    fun insertComponentAt(element: Element, insertAt: Long)
 
     fun insertNodeAsChildOf(nodeId: Long, parent: Long)
 
@@ -54,9 +54,9 @@ interface ModelGraph {
 }
 
 /**
- * Represents a Node in the [ModelGraph]. It consists of the associated id and [NativeComponent]
+ * Represents a Node in the [ModelGraph]. It consists of the associated id and [Element]
  */
-class Node(val id: Long, val nativeComponent: NativeComponent)
+class Node(val id: Long, val element: Element)
 
 /**
  * Listens to updates of the [ModelGraph]

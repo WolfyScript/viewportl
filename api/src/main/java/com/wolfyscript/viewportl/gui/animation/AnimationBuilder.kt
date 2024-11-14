@@ -18,7 +18,7 @@
 package com.wolfyscript.viewportl.gui.animation
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.Element
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 
 interface AnimationBuilder<F : AnimationFrame, FB : AnimationFrameBuilder<F>> {
@@ -39,5 +39,5 @@ interface AnimationBuilder<F : AnimationFrame, FB : AnimationFrameBuilder<F>> {
      */
     fun customSignal(signal: ReadWriteSignal<*>): AnimationBuilder<F, FB>
 
-    fun build(owner: NativeComponent): Animation<F>
+    fun build(owner: Element): Animation<F>
 }

@@ -7,7 +7,7 @@ import com.wolfyscript.viewportl.gui.components.ButtonIcon
 import com.wolfyscript.viewportl.gui.components.ButtonProperties
 import com.wolfyscript.viewportl.gui.components.ComponentScope
 import com.wolfyscript.viewportl.gui.components.GroupProperties
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.Element
 import com.wolfyscript.viewportl.gui.components.RouterProperties
 import com.wolfyscript.viewportl.gui.components.RouterScope
 import com.wolfyscript.viewportl.gui.components.ShowProperties
@@ -23,9 +23,9 @@ import java.util.function.Consumer
 class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override val parent: ComponentScope? = null) : ComponentScope,
     ReactiveSource by runtime.reactiveSource {
 
-    override var component: NativeComponent? = null
+    override var component: Element? = null
 
-    fun setComponent(component: NativeComponent): Long {
+    fun setComponent(component: Element): Long {
         val id = runtime.model.addNode(component)
         this.component = component
         runtime.model.insertNodeAsChildOf(id, parent?.component?.nodeId ?: 0)
@@ -51,7 +51,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
         styles: RenderProperties.() -> Unit,
         content: ComponentScope.() -> Unit
     ) = component(this, runtime) {
-        runtime.viewportl.guiFactory.componentFactory.group(GroupProperties(this, styles, content))
+        runtime.viewportl.guiFactory.elementFactory.group(GroupProperties(this, styles, content))
     }
 
     override fun button(
@@ -60,7 +60,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
         sound: Sound?,
         onClick: (ClickInfo.() -> Unit)?
     ) = component(this, runtime) {
-        runtime.viewportl.guiFactory.componentFactory.button(
+        runtime.viewportl.guiFactory.elementFactory.button(
             ButtonProperties(
                 this,
                 icon,
@@ -72,7 +72,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
     }
 
     override fun router(routes: RouterScope.() -> Unit) = component(this, runtime) {
-        runtime.viewportl.guiFactory.componentFactory.router(
+        runtime.viewportl.guiFactory.elementFactory.router(
             RouterProperties(
                 this,
                 routes
@@ -85,7 +85,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
         fallback: ComponentScope.() -> Unit,
         content: ComponentScope.() -> Unit
     ) = component(this, runtime) {
-        runtime.viewportl.guiFactory.componentFactory.show(
+        runtime.viewportl.guiFactory.elementFactory.show(
             ShowProperties(
                 this, condition, fallback, content
             )
@@ -98,7 +98,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
         onValueChange: Consumer<ItemStack?>?,
         canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>?
     ) = component(this, runtime) {
-        runtime.viewportl.guiFactory.componentFactory.slot(
+        runtime.viewportl.guiFactory.elementFactory.slot(
             SlotProperties(
                 this,
                 value,

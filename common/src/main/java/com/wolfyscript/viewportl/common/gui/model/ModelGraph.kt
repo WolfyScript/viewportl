@@ -20,9 +20,8 @@ package com.wolfyscript.viewportl.common.gui.model
 
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
-import com.wolfyscript.viewportl.common.gui.components.AbstractNativeComponentImpl
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.common.gui.components.AbstractElementImpl
+import com.wolfyscript.viewportl.gui.components.Element
 import com.wolfyscript.viewportl.gui.model.ModelChangeListener
 import com.wolfyscript.viewportl.gui.model.ModelGraph
 import com.wolfyscript.viewportl.gui.model.Node
@@ -32,9 +31,9 @@ import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
 import java.util.Collections
 
 /**
- * An acyclic Graph (Tree) of [NativeComponents][NativeComponent]
+ * An acyclic Graph (Tree) of [NativeComponents][Element]
  *
- * This model can be manipulated by adding or removing nodes ([NativeComponent]).
+ * This model can be manipulated by adding or removing nodes ([Element]).
  * Those changes are then sent to all registered listeners.
  *
  */
@@ -54,18 +53,18 @@ class ModelGraphImpl : ModelGraph {
         listeners.remove(listener)
     }
 
-    override fun addNode(nativeComponent: NativeComponent) : Long {
+    override fun addNode(element: Element) : Long {
         val id = ++nodeCount
-        nodes[id] = Node(id, nativeComponent)
-        if (nativeComponent is AbstractNativeComponentImpl<*>) {
-            nativeComponent.currentNodeId = id
+        nodes[id] = Node(id, element)
+        if (element is AbstractElementImpl<*>) {
+            element.currentNodeId = id
         }
         return id
     }
 
-    override fun insertComponentAt(nativeComponent: NativeComponent, insertAt: Long) {
+    override fun insertComponentAt(element: Element, insertAt: Long) {
         if (insertAt != 0L && !nodes.containsKey(insertAt)) return
-        val id = addNode(nativeComponent)
+        val id = addNode(element)
         insertNodeAsChildOf(id, insertAt)
     }
 

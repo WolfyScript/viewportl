@@ -6,7 +6,7 @@ import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.components.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.Element
 import com.wolfyscript.viewportl.gui.model.Node
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Keys
@@ -44,8 +44,8 @@ class SpongeUIInteractionHandler : InvUIInteractionHandler<SpongeUIInteractionHa
             transaction.slot().get(Keys.SLOT_INDEX).ifPresent { slotIndex ->
                 val node = getNodeAt(slotIndex)
                 if (node != null) {
-                    callComponentHandler(node.nativeComponent) {
-                        onSingleSlotClick(runtime, node.nativeComponent, event)
+                    callComponentHandler(node.element) {
+                        onSingleSlotClick(runtime, node.element, event)
                     }
                     return@ifPresent
                 }
@@ -61,8 +61,8 @@ class SpongeUIInteractionHandler : InvUIInteractionHandler<SpongeUIInteractionHa
         transaction.slot().get(Keys.SLOT_INDEX).ifPresent {
             val node = getNodeAt(it)
             if (node != null) {
-                callComponentHandler(node.nativeComponent) {
-                    onDrag(runtime, node.nativeComponent, transaction, event)
+                callComponentHandler(node.element) {
+                    onDrag(runtime, node.element, transaction, event)
                 }
                 return@ifPresent
             }
@@ -76,7 +76,7 @@ class SpongeUIInteractionHandler : InvUIInteractionHandler<SpongeUIInteractionHa
         return slotNodes[slotIndex]?.let { runtime.model.getNode(it) }
     }
 
-    private fun <C: NativeComponent> callComponentHandler(component: C, fn: SpongeComponentInteractionHandler<C>.() -> Unit) {
+    private fun <C: Element> callComponentHandler(component: C, fn: SpongeComponentInteractionHandler<C>.() -> Unit) {
         val componentHandler = getComponentInteractionHandler(component.javaClass) as SpongeComponentInteractionHandler<C>
         componentHandler.fn()
     }

@@ -152,9 +152,9 @@ class RouteGraph {
 
 @StaticNamespacedKey(key = "router")
 class RouterImpl(
-    parent: NativeComponent?,
+    parent: Element?,
     viewportl: Viewportl
-) : AbstractNativeComponentImpl<Router>("", viewportl, parent), Router {
+) : AbstractElementImpl<Router>("", viewportl, parent), Router {
 
     val routeGraph: RouteGraph = RouteGraph()
 

@@ -6,9 +6,9 @@ import com.wolfyscript.viewportl.common.gui.components.setupRouter
 import com.wolfyscript.viewportl.common.gui.components.setupShow
 import com.wolfyscript.viewportl.common.gui.components.setupSlot
 import com.wolfyscript.viewportl.gui.components.*
-import com.wolfyscript.viewportl.gui.factories.ComponentFactory
+import com.wolfyscript.viewportl.gui.factories.ElementFactory
 
-class ComponentFactoryImpl : ComponentFactory {
+class ElementFactoryImpl : ElementFactory {
 
     override fun group(properties: GroupProperties) = setupGroup(properties)
 

@@ -40,5 +40,5 @@ interface GuiFactory {
 
     fun runComponentFunction(runtime: ViewRuntime<*, *>, scope: ComponentScope?, fn: ComponentScope.() -> Unit)
 
-    val componentFactory: ComponentFactory
+    val elementFactory: ElementFactory
 }

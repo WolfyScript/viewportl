@@ -25,8 +25,8 @@ import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
-import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.components.NativeComponentImplementation
+import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.components.ElementImplementation
 import com.wolfyscript.viewportl.gui.components.SlotProperties
 import com.wolfyscript.viewportl.gui.components.StackInputSlot
 import com.wolfyscript.viewportl.gui.interaction.ClickType
@@ -54,15 +54,15 @@ internal fun setupSlot(properties: SlotProperties) {
 
 }
 
-@NativeComponentImplementation(base = StackInputSlot::class)
+@ElementImplementation(base = StackInputSlot::class)
 @StaticNamespacedKey(key = "slot")
 class SlotImpl @JsonCreator @Inject constructor(
     id: String,
     viewportl: Viewportl,
-    parent: NativeComponent? = null,
+    parent: Element? = null,
     override var onValueChange: Consumer<ItemStack?>? = null,
     override var canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null,
     override var value: ItemStack? = null
-) : AbstractNativeComponentImpl<StackInputSlot>(
+) : AbstractElementImpl<StackInputSlot>(
     id, viewportl, parent
 ), StackInputSlot

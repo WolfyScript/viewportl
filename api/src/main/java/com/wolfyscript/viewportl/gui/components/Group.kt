@@ -3,21 +3,21 @@ package com.wolfyscript.viewportl.gui.components
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import java.util.*
 
-interface NativeComponentGroup : NativeComponent {
+interface ElementGroup : Element {
     /**
-     * The children of this Component; or an empty Set if there are no children.
+     * The children of this Element; or an empty Set if there are no children.
      *
-     * @return The child Components of this Component.
+     * @return The child Elements of this Element.
      */
-    fun childComponents(): Set<NativeComponent>
+    fun childComponents(): Set<Element>
 
     /**
-     * Gets the direct child Component, or an empty Optional when it wasn't found.
+     * Gets the direct child Element, or an empty Optional when it wasn't found.
      *
-     * @param id The id of the child Component.
-     * @return The child Component; or empty Component.
+     * @param id The id of the child Element.
+     * @return The child Element; or empty Element.
      */
-    fun getChild(id: String?): Optional<out NativeComponent?>?
+    fun getChild(id: String?): Optional<out Element?>?
 
 }
 

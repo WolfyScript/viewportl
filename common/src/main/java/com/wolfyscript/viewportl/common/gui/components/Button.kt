@@ -14,13 +14,11 @@ import com.wolfyscript.viewportl.gui.components.Button
 import com.wolfyscript.viewportl.gui.components.ButtonIcon
 import com.wolfyscript.viewportl.gui.components.ButtonProperties
 import com.wolfyscript.viewportl.gui.components.DynamicProperty
-import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.components.NativeComponentImplementation
+import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.components.ElementImplementation
 import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.reactivity.ReadOnlySignal
 import net.kyori.adventure.sound.Sound
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import java.util.function.Supplier
 
 internal fun setupButton(properties: ButtonProperties) {
     val runtime = properties.scope.runtime.into()
@@ -57,17 +55,17 @@ internal fun setupButton(properties: ButtonProperties) {
     }
 }
 
-@NativeComponentImplementation(base = Button::class)
+@ElementImplementation(base = Button::class)
 @StaticNamespacedKey(key = "button")
 class ButtonImpl @JsonCreator @Inject constructor(
     id: String,
     internal val runtime: ViewRuntime<*,*>,
     viewportl: Viewportl = runtime.viewportl,
-    parent: NativeComponent? = null,
+    parent: Element? = null,
     icon: ButtonIcon = DynamicIcon(runtime),
     onClick: (ClickInfo.() -> Unit)?,
     sound: Sound?
-) : AbstractNativeComponentImpl<Button>(id, viewportl, parent), Button {
+) : AbstractElementImpl<Button>(id, viewportl, parent), Button {
 
     override var icon: ButtonIcon by DynamicProperty(runtime, icon)
     override var onClick: (ClickInfo.() -> Unit)? by DynamicProperty(runtime, onClick)

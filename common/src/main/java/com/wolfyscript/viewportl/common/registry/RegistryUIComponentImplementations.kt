@@ -22,19 +22,19 @@ import com.google.common.base.Preconditions
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.registry.Registries
 import com.wolfyscript.scafall.registry.UniqueTypeRegistrySimple
-import com.wolfyscript.viewportl.gui.components.NativeComponent
-import com.wolfyscript.viewportl.gui.components.NativeComponentImplementation
+import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.components.ElementImplementation
 import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
 
-class RegistryUIComponentImplementations(key: Key, registries: Registries) : UniqueTypeRegistrySimple<NativeComponent>(key, registries),
+class RegistryUIComponentImplementations(key: Key, registries: Registries) : UniqueTypeRegistrySimple<Element>(key, registries),
     RegistryGUIComponentTypes {
 
-    private val baseTypeToImpl: MutableMap<Class<out NativeComponent>, Key> = HashMap()
+    private val baseTypeToImpl: MutableMap<Class<out Element>, Key> = HashMap()
 
-    override fun register(key: Key, value: Class<out NativeComponent>) {
-        val settings = value.getAnnotation(NativeComponentImplementation::class.java)
-        Preconditions.checkNotNull(settings, "Missing ComponentImplementation annotation for '%s'! Requires: %s", key, NativeComponentImplementation::class.java)
-        val baseType: Class<out NativeComponent> = settings.base.java
+    override fun register(key: Key, value: Class<out Element>) {
+        val settings = value.getAnnotation(ElementImplementation::class.java)
+        Preconditions.checkNotNull(settings, "Missing ComponentImplementation annotation for '%s'! Requires: %s", key, ElementImplementation::class.java)
+        val baseType: Class<out Element> = settings.base.java
         Preconditions.checkState(
             baseTypeToImpl[baseType] == null,
             "Failed to register Component! There can only be one implementation for a single Component Type: '%s' already has an implementation '%s'!",
@@ -45,14 +45,14 @@ class RegistryUIComponentImplementations(key: Key, registries: Registries) : Uni
         baseTypeToImpl[baseType] = key
     }
 
-    override fun getKey(value: Class<out NativeComponent>): Key? {
+    override fun getKey(value: Class<out Element>): Key? {
         val implKey: Key = super<UniqueTypeRegistrySimple>.getKey(value) ?: return baseTypeToImpl[value]
         return implKey
     }
 
-    override fun getImplementation(baseNativeComponentType: Class<out NativeComponent>): Class<out NativeComponent>? {
-        Preconditions.checkNotNull(baseNativeComponentType, "Cannot get Builder for null component type!")
-        val key = baseTypeToImpl[baseNativeComponentType] ?: return null
+    override fun getImplementation(baseElementType: Class<out Element>): Class<out Element>? {
+        Preconditions.checkNotNull(baseElementType, "Cannot get Builder for null component type!")
+        val key = baseTypeToImpl[baseElementType] ?: return null
         return get(key)
     }
 

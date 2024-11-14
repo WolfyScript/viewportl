@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui.rendering
 
-import com.wolfyscript.viewportl.gui.components.NativeComponent
+import com.wolfyscript.viewportl.gui.components.Element
 
 /**
  * The data that contains all the information needed to render the Menu.
@@ -25,11 +25,11 @@ import com.wolfyscript.viewportl.gui.components.NativeComponent
  */
 interface RenderContext {
 
-    fun enterNode(nativeComponent: NativeComponent)
+    fun enterNode(element: Element)
 
     fun exitNode()
 
-    val currentNativeComponent: NativeComponent?
+    val currentElement: Element?
 
     fun currentOffset(): Int
 }

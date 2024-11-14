@@ -14,7 +14,7 @@ data class SlotProperties(
     val canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null,
 )
 
-interface StackInputSlot : NativeComponent {
+interface StackInputSlot : Element {
 
     var value: ItemStack?
 

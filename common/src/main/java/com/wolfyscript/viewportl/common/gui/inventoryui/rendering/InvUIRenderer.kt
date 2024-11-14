@@ -18,12 +18,12 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
         private val componentRenderersForUIRenderer : MutableMap<Class<out InvUIRenderer<*, *>>, MutableMap<Key, ComponentRenderer<*, out InvUIRenderContext>>> = mutableMapOf()
 
         @Suppress("UNCHECKED_CAST")
-        fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : NativeComponent> getComponentRenderer(uiRendererType: Class<R>, type: Key): ComponentRenderer<C, X>? {
+        fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : Element> getComponentRenderer(uiRendererType: Class<R>, type: Key): ComponentRenderer<C, X>? {
             val handler: ComponentRenderer<*, out InvUIRenderContext>? = componentRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type]
             return handler as? ComponentRenderer<C, X>?
         }
 
-        fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : NativeComponent> registerComponentRenderer(
+        fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : Element> registerComponentRenderer(
             uiRendererType: Class<R>,
             type: Key,
             handler: ComponentRenderer<in C, X>
@@ -54,13 +54,13 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
     private fun renderChildOf(child: Long, parent: Long, context: T) {
         runtime.model.getNode(child)?.let {
             // Direct rendering to specific component renderer
-            renderComponent(it.nativeComponent, it, parent, context)
+            renderComponent(it.element, it, parent, context)
 
             renderChildren(it.id, context)
         }
     }
 
-    private inline fun <reified C : NativeComponent> renderComponent(component: C, node: Node, parent: Long, context: T) {
+    private inline fun <reified C : Element> renderComponent(component: C, node: Node, parent: Long, context: T) {
         val nextOffset = calculatePosition(node, context)
         val offset = context.currentOffset()
 
@@ -82,7 +82,7 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
      * ************************************************************* */
 
     private fun calculatePosition(node: Node, context: InvUIRenderContext): Int {
-        val nextOffset = node.nativeComponent.styles.position.slotPositioning()?.let {
+        val nextOffset = node.element.styles.position.slotPositioning()?.let {
             context.setSlotOffset(it.slot())
             return@let it.slot() + 1
         } ?: run {

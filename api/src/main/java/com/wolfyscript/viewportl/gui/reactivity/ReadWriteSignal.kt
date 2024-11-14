@@ -21,15 +21,13 @@ import java.util.function.Function
 import kotlin.reflect.KProperty
 
 /**
- * Keeps track of value changes and updates Components listening to a Signal accordingly.
- * Signals are shared across all children of the Component that creates the Signal,
- * meaning that children can listen to that of the parent, but not the other way around!
+ * Keeps track of value changes and updates Effects listening to a Signal accordingly.
  *
  * @param <V> The value type this Signal holds. Can be any Object.
  */
 interface ReadWriteSignal<V : Any?> : SignalTaggable, ReadOnlySignal<V> {
     /**
-     * Sets the tracked value to a new value and causes a re-render.
+     * Sets the tracked value to a new value and causes an update.
      *
      * @param newValue The new value to apply.
      */
@@ -38,7 +36,7 @@ interface ReadWriteSignal<V : Any?> : SignalTaggable, ReadOnlySignal<V> {
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: V)
 
     /**
-     * Gets the tracked value, then updates it, and causes a re-render.
+     * Gets the tracked value, then updates it, and causes an update.
      *
      * @param updateFunction The function to update the value.
      */

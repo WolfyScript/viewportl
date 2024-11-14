@@ -60,7 +60,7 @@ interface Window {
     var resourcePath: String?
 
     /**
-     * Gets the unique id (in context of the parent) of this component.
+     * Gets the unique id (in context of the parent) of this Window.
      *
      * @return The id of this component.
      */
@@ -77,14 +77,14 @@ interface Window {
         get() = ScafallProvider.get()
 
     /**
-     * Gets the width of this Component in slot count.
+     * Gets the width of this Window in slot count.
      *
      * @return The width in slots.
      */
     fun width(): Int
 
     /**
-     * Gets the width of this Component in slot count.
+     * Gets the width of this Window in slot count.
      *
      * @return The height in slots.
      */

@@ -15,11 +15,8 @@ import kotlin.reflect.KProperty
 /**
  * A setup function used to create a component with a new [ComponentScope].
  *
- * These components are not actually present in the graph, but instead aggregate [NativeComponents][NativeComponent] and
- * allow for better structuring of ui components and encapsulate signals, memos, effects, etc.
- *
- * In the end only the [NativeComponents][NativeComponent] are present in the component graph,
- * while the component functions setup all reactive nodes for e.g. updating native component properties.
+ * These components are not actually present in the graph, but instead aggregate [Elements][Element] and
+ * allow for better structuring of UI elements and encapsulate signals, memos, effects, etc.
  *
  */
 fun component(componentScope: ComponentScope? = null, runtime: ViewRuntime<*,*>, fn: ComponentScope.() -> Unit) {
@@ -33,7 +30,7 @@ interface ComponentScope : ReactiveSource {
 
     val runtime : ViewRuntime<*,*>
 
-    val component: NativeComponent?
+    val component: Element?
 
     val parent: ComponentScope?
 
@@ -96,7 +93,7 @@ interface ComponentScope : ReactiveSource {
 
 }
 
-class DynamicProperty<O : NativeComponent, T>(
+class DynamicProperty<O : Element, T>(
     val runtime: ViewRuntime<*,*>,
     initial: T
 ) {

@@ -2,7 +2,7 @@ package com.wolfyscript.viewportl.gui.factories
 
 import com.wolfyscript.viewportl.gui.components.*
 
-interface ComponentFactory {
+interface ElementFactory {
 
     fun group(properties: GroupProperties)
 

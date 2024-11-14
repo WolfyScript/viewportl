@@ -20,11 +20,11 @@ package com.wolfyscript.viewportl.spigot.gui.factories
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.components.ComponentScopeImpl
-import com.wolfyscript.viewportl.common.gui.factories.ComponentFactoryImpl
+import com.wolfyscript.viewportl.common.gui.factories.ElementFactoryImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.components.ComponentScope
-import com.wolfyscript.viewportl.gui.factories.ComponentFactory
+import com.wolfyscript.viewportl.gui.factories.ElementFactory
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
@@ -61,5 +61,5 @@ class GuiFactoryImpl : GuiFactory {
         fn(ComponentScopeImpl(runtime as ViewRuntimeImpl, scope))
     }
 
-    override val componentFactory: ComponentFactory = ComponentFactoryImpl()
+    override val elementFactory: ElementFactory = ElementFactoryImpl()
 }
