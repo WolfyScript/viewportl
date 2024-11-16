@@ -2,7 +2,7 @@ package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction
 

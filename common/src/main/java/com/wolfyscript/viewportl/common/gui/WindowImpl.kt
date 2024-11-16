@@ -24,13 +24,13 @@ import com.google.common.base.Preconditions
 import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.components.ComponentScopeImpl
+import com.wolfyscript.viewportl.common.gui.elements.ComponentScopeImpl
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
-import com.wolfyscript.viewportl.gui.components.ComponentScope
+import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import net.kyori.adventure.text.Component
 
 @StaticNamespacedKey(key = "window")

@@ -21,8 +21,8 @@ package org.example.viewportl.common.gui
 import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
-import com.wolfyscript.viewportl.gui.components.ComponentScope
-import com.wolfyscript.viewportl.gui.components.RouterScope
+import com.wolfyscript.viewportl.gui.elements.ComponentScope
+import com.wolfyscript.viewportl.gui.elements.RouterScope
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import net.kyori.adventure.text.Component

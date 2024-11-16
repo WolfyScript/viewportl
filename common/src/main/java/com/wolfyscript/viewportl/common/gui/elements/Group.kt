@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.common.gui.components
+package com.wolfyscript.viewportl.common.gui.elements
 
 import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonCreator
@@ -26,6 +26,10 @@ import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.components.*
+import com.wolfyscript.viewportl.gui.elements.Element
+import com.wolfyscript.viewportl.gui.elements.ElementGroup
+import com.wolfyscript.viewportl.gui.elements.ElementImplementation
+import com.wolfyscript.viewportl.gui.elements.GroupProperties
 import java.util.*
 import kotlin.math.abs
 

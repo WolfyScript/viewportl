@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.gui.model
 
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 
 /**
  * An acyclic Graph (Tree) of [Elements][Element]

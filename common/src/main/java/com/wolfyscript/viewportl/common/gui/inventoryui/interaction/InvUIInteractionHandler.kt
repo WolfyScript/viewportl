@@ -3,7 +3,7 @@ package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.*
 

@@ -20,8 +20,8 @@ package com.wolfyscript.viewportl.common.gui.model
 
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
-import com.wolfyscript.viewportl.common.gui.components.AbstractElementImpl
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.common.gui.elements.AbstractElementImpl
+import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.model.ModelChangeListener
 import com.wolfyscript.viewportl.gui.model.ModelGraph
 import com.wolfyscript.viewportl.gui.model.Node

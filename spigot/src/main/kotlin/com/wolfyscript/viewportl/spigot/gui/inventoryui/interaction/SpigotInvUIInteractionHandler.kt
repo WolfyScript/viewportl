@@ -19,11 +19,11 @@
 package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.spigot.api.into
-import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.components.SlotImpl
+import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
+import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction

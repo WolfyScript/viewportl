@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
 abstract class InvUIRenderContext : RenderContext {

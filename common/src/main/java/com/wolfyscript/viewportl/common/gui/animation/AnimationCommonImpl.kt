@@ -20,7 +20,7 @@ package com.wolfyscript.viewportl.common.gui.animation
 import com.wolfyscript.viewportl.gui.animation.Animation
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame
 import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 
 abstract class AnimationCommonImpl<F : AnimationFrame> protected constructor(

@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.common.gui.components
+package com.wolfyscript.viewportl.common.gui.elements
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.google.inject.Inject
@@ -25,10 +25,10 @@ import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
-import com.wolfyscript.viewportl.gui.components.Element
-import com.wolfyscript.viewportl.gui.components.ElementImplementation
-import com.wolfyscript.viewportl.gui.components.SlotProperties
-import com.wolfyscript.viewportl.gui.components.StackInputSlot
+import com.wolfyscript.viewportl.gui.elements.Element
+import com.wolfyscript.viewportl.gui.elements.ElementImplementation
+import com.wolfyscript.viewportl.gui.elements.SlotProperties
+import com.wolfyscript.viewportl.gui.elements.StackInputSlot
 import com.wolfyscript.viewportl.gui.interaction.ClickType
 import java.util.function.Consumer
 

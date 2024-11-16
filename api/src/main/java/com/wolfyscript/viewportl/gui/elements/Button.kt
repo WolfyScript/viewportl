@@ -15,7 +15,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.gui.components
+package com.wolfyscript.viewportl.gui.elements
 
 import com.wolfyscript.scafall.data.DataKeyProvider
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig

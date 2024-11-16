@@ -23,7 +23,7 @@ import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
-import com.wolfyscript.viewportl.gui.components.ComponentScope
+import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import net.kyori.adventure.text.Component
 
 interface Window {

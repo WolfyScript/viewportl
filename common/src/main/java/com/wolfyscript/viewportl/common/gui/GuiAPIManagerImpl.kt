@@ -24,7 +24,7 @@ import com.google.common.collect.Multimap
 import com.google.common.collect.MultimapBuilder
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.components.ComponentScopeImpl
+import com.wolfyscript.viewportl.common.gui.elements.ComponentScopeImpl
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window

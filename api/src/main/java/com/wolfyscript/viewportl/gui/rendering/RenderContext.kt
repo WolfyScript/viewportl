@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui.rendering
 
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 
 /**
  * The data that contains all the information needed to render the Menu.

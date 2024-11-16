@@ -1,4 +1,4 @@
-package com.wolfyscript.viewportl.gui.components
+package com.wolfyscript.viewportl.gui.elements
 
 
 data class ShowProperties(

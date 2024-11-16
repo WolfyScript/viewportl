@@ -22,8 +22,8 @@ import com.google.common.base.Preconditions
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.registry.Registries
 import com.wolfyscript.scafall.registry.UniqueTypeRegistrySimple
-import com.wolfyscript.viewportl.gui.components.Element
-import com.wolfyscript.viewportl.gui.components.ElementImplementation
+import com.wolfyscript.viewportl.gui.elements.Element
+import com.wolfyscript.viewportl.gui.elements.ElementImplementation
 import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
 
 class RegistryUIComponentImplementations(key: Key, registries: Registries) : UniqueTypeRegistrySimple<Element>(key, registries),

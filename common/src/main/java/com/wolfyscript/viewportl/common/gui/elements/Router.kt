@@ -15,7 +15,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.common.gui.components
+package com.wolfyscript.viewportl.common.gui.elements
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
@@ -24,6 +24,7 @@ import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.common.gui.reactivity.TriggerImpl
 import com.wolfyscript.viewportl.gui.*
 import com.wolfyscript.viewportl.gui.components.*
+import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.gui.reactivity.*
 import com.wolfyscript.viewportl.gui.router.ActivePath
 import com.wolfyscript.viewportl.gui.router.MatchPath

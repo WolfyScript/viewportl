@@ -22,9 +22,9 @@ import com.wolfyscript.scafall.PluginWrapper
 import com.wolfyscript.scafall.spigot.api.into
 import com.wolfyscript.viewportl.common.CommonViewportl
 import com.wolfyscript.viewportl.common.gui.GuiAPIManagerImpl
-import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.components.GroupImpl
-import com.wolfyscript.viewportl.common.gui.components.SlotImpl
+import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
+import com.wolfyscript.viewportl.common.gui.elements.GroupImpl
+import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
 import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory

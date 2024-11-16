@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.common.gui.interaction
 
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 
 /**
  * Handler that adds interactivity to a [Element].

@@ -19,7 +19,7 @@
 package com.wolfyscript.viewportl.common.gui.rendering
 
 import com.wolfyscript.scafall.identifier.Keyed
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
 interface ComponentRenderer<C: Element, X: RenderContext> : Keyed {

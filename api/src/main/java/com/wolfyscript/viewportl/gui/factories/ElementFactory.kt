@@ -1,6 +1,7 @@
 package com.wolfyscript.viewportl.gui.factories
 
 import com.wolfyscript.viewportl.gui.components.*
+import com.wolfyscript.viewportl.gui.elements.*
 
 interface ElementFactory {
 

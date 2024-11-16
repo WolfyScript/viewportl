@@ -21,7 +21,7 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.animation.Animation
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame
 import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 import java.util.function.Supplier
 
 class AnimationBuilderImpl<F : AnimationFrame, FB : AnimationFrameBuilder<F>>(

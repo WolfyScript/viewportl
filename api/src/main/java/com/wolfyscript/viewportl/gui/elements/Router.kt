@@ -1,4 +1,4 @@
-package com.wolfyscript.viewportl.gui.components
+package com.wolfyscript.viewportl.gui.elements
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.router.ActivePath

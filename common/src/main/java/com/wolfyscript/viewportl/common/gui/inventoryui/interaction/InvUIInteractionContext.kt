@@ -1,6 +1,6 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 
 class InvUIInteractionContext (val interactionHandler: InteractionHandler<*>) {

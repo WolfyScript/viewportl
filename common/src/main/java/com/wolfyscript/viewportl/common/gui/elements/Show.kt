@@ -1,12 +1,12 @@
-package com.wolfyscript.viewportl.common.gui.components
+package com.wolfyscript.viewportl.common.gui.elements
 
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.common.gui.reactivity.TriggerImpl
-import com.wolfyscript.viewportl.gui.components.Element
-import com.wolfyscript.viewportl.gui.components.Show
-import com.wolfyscript.viewportl.gui.components.ShowProperties
+import com.wolfyscript.viewportl.gui.elements.Element
+import com.wolfyscript.viewportl.gui.elements.Show
+import com.wolfyscript.viewportl.gui.elements.ShowProperties
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 
 internal fun setupShow(properties: ShowProperties) {

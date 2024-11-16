@@ -18,7 +18,7 @@
 package com.wolfyscript.viewportl.registry
 
 import com.wolfyscript.scafall.registry.TypeRegistry
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 
 interface RegistryGUIComponentTypes : TypeRegistry<Element> {
 

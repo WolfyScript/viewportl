@@ -18,7 +18,7 @@
 package com.wolfyscript.viewportl.gui.animation
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 
 interface AnimationBuilder<F : AnimationFrame, FB : AnimationFrameBuilder<F>> {

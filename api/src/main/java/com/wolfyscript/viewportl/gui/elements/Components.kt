@@ -1,4 +1,4 @@
-package com.wolfyscript.viewportl.gui.components
+package com.wolfyscript.viewportl.gui.elements
 
 import com.wolfyscript.scafall.function.ReceiverBiFunction
 import com.wolfyscript.scafall.identifier.Key

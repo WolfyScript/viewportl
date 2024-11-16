@@ -2,11 +2,11 @@ package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.common.api.into
 import com.wolfyscript.scafall.sponge.api.SpongePluginWrapper
-import com.wolfyscript.viewportl.common.gui.components.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.components.SlotImpl
+import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
+import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.components.Element
+import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.model.Node
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Keys
