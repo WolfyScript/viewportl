@@ -22,13 +22,8 @@ import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
 import com.wolfyscript.viewportl.common.gui.elements.AbstractElementImpl
 import com.wolfyscript.viewportl.gui.elements.Element
-import com.wolfyscript.viewportl.gui.model.ModelChangeListener
-import com.wolfyscript.viewportl.gui.model.ModelGraph
-import com.wolfyscript.viewportl.gui.model.Node
-import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
-import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
-import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
-import java.util.Collections
+import com.wolfyscript.viewportl.gui.model.*
+import java.util.*
 
 /**
  * An acyclic Graph (Tree) of [NativeComponents][Element]

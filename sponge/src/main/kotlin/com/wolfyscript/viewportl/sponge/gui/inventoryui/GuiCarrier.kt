@@ -4,7 +4,6 @@ import com.wolfyscript.viewportl.gui.GuiHolder
 import org.spongepowered.api.item.inventory.Carrier
 import org.spongepowered.api.item.inventory.menu.InventoryMenu
 import org.spongepowered.api.item.inventory.type.CarriedInventory
-import java.lang.IllegalStateException
 
 class GuiCarrier(val holder: GuiHolder) : Carrier {
 

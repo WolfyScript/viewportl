@@ -18,13 +18,9 @@
 
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering
 
-import com.wolfyscript.scafall.eval.context.EvalContext
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
-import com.wolfyscript.viewportl.gui.ItemStackContext
-import com.wolfyscript.viewportl.gui.elements.Button
 import com.wolfyscript.viewportl.gui.elements.StackInputSlot
-import org.spongepowered.api.item.inventory.Slot
 
 class InventorySlotComponentRenderer : ComponentRenderer<StackInputSlot, SpongeInvUIRenderContext> {
 

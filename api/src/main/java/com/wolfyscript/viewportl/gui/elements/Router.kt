@@ -3,7 +3,6 @@ package com.wolfyscript.viewportl.gui.elements
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.router.ActivePath
 import com.wolfyscript.viewportl.gui.router.MatchPath
-import java.util.*
 
 /**
  * Provides access to the router and allows to create routes.

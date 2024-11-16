@@ -5,7 +5,10 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
-import com.wolfyscript.viewportl.gui.model.*
+import com.wolfyscript.viewportl.gui.model.Node
+import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
+import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
+import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
 
 abstract class InvUIInteractionHandler<Self: InvUIInteractionHandler<Self>> : InteractionHandler<Self> {
 

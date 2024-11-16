@@ -17,9 +17,9 @@
  */
 package com.wolfyscript.viewportl.gui.reactivity
 
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import org.apache.commons.lang3.function.TriFunction
 import java.util.*
 import java.util.function.BiFunction

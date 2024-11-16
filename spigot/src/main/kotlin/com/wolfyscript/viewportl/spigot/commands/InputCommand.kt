@@ -26,6 +26,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.PluginIdentifiableCommand
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
+import kotlin.Throws
 
 class InputCommand(private val core: Viewportl) : Command("wui"), PluginIdentifiableCommand {
     init {

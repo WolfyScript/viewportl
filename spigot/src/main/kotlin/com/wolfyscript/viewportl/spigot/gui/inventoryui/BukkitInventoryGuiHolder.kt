@@ -19,7 +19,6 @@
 package com.wolfyscript.viewportl.spigot.gui.inventoryui
 
 import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.Window
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 

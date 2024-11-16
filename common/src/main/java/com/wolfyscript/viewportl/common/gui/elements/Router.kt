@@ -22,13 +22,13 @@ import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.common.gui.reactivity.TriggerImpl
-import com.wolfyscript.viewportl.gui.*
-import com.wolfyscript.viewportl.gui.components.*
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.*
-import com.wolfyscript.viewportl.gui.reactivity.*
+import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
+import com.wolfyscript.viewportl.gui.reactivity.createMemo
+import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.router.ActivePath
 import com.wolfyscript.viewportl.gui.router.MatchPath
-import java.lang.IllegalStateException
 import java.util.*
 
 internal fun setupRouter(properties: RouterProperties) {

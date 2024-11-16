@@ -32,7 +32,10 @@ import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.CachedNodeRenderProperties
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
-import com.wolfyscript.viewportl.gui.*
+import com.wolfyscript.viewportl.gui.GuiHolder
+import com.wolfyscript.viewportl.gui.ItemStackContext
+import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.spigot.gui.inventoryui.BukkitInventoryGuiHolder
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer

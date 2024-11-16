@@ -19,7 +19,6 @@ package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
 
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
-import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime

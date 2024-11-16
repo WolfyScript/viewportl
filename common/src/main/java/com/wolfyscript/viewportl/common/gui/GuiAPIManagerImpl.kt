@@ -35,7 +35,6 @@ import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.stream.Stream
-import kotlin.collections.set
 
 class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
     private val entriesMap: BiMap<String, Function<ViewRuntime<*,*>, Window>> = HashBiMap.create()

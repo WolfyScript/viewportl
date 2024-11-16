@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.gui.router
 
-import java.util.Collections
+import java.util.*
 import kotlin.reflect.KClass
 
 class MatchPath(private val path: MutableList<SectionMatcher> = mutableListOf()) {

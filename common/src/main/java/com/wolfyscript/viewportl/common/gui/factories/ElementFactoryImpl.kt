@@ -1,11 +1,6 @@
 package com.wolfyscript.viewportl.common.gui.factories
 
-import com.wolfyscript.viewportl.common.gui.elements.setupButton
-import com.wolfyscript.viewportl.common.gui.elements.setupGroup
-import com.wolfyscript.viewportl.common.gui.elements.setupRouter
-import com.wolfyscript.viewportl.common.gui.elements.setupShow
-import com.wolfyscript.viewportl.common.gui.elements.setupSlot
-import com.wolfyscript.viewportl.gui.components.*
+import com.wolfyscript.viewportl.common.gui.elements.*
 import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.gui.factories.ElementFactory
 

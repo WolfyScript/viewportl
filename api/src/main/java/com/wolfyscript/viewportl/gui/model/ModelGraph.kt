@@ -67,21 +67,21 @@ class Node(val id: Long, val element: Element)
 interface ModelChangeListener {
 
     /**
-     * Called when a node (component) was added to the graph.
+     * Called when a node was added to the graph.
      *
-     * Note: This will be called for each child component that may be added.
+     * Note: This will be called for each child node that may be added.
      */
     fun onNodeAdded(event: NodeAddedEvent)
 
     /**
-     * Called when a node (component) was removed from the graph.
+     * Called when a node was removed from the graph.
      *
-     * Note: This will be called for each child component that may be removed too.
+     * Note: This will be called for each child node that may be removed too.
      */
     fun onNodeRemoved(event: NodeRemovedEvent)
 
     /**
-     * Called when a node (component) in the graph was updated, meaning a property of the component was changed.
+     * Called when a node in the graph was updated, meaning a property of the node was changed.
      */
     fun onNodeUpdated(event: NodeUpdatedEvent)
 

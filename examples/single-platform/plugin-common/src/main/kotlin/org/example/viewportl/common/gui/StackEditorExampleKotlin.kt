@@ -23,7 +23,6 @@ import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
-import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal

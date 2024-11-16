@@ -21,7 +21,6 @@ package org.example.viewportl.common.gui
 import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
-import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import com.wolfyscript.viewportl.gui.elements.RouterScope
 import com.wolfyscript.viewportl.gui.reactivity.createMemo

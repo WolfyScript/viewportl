@@ -17,8 +17,8 @@
  */
 package com.wolfyscript.viewportl.common.gui.reactivity
 
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.scafall.function.ReceiverFunction
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import java.util.function.Consumer
 
 class EffectState<T : Any?>(

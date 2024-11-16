@@ -25,7 +25,6 @@ import com.google.inject.Inject
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
-import com.wolfyscript.viewportl.gui.components.*
 import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.elements.ElementGroup
 import com.wolfyscript.viewportl.gui.elements.ElementImplementation
