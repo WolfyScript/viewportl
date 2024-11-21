@@ -18,6 +18,8 @@
 
 package com.wolfyscript.viewportl.common.registry
 
+import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.scafall.data.ItemStackDataComponentConverterRegistry
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
@@ -26,5 +28,7 @@ import com.wolfyscript.viewportl.registry.ViewportlRegistries
 class CommonViewportlRegistries(viewportl: Viewportl) : ViewportlRegistries(viewportl) {
 
     override val guiComponents: RegistryGUIComponentTypes = RegistryUIComponentImplementations(Key.Companion.key("viewportl", "components"), this)
+
+    override val itemStackDataComponentConverterRegistry: ItemStackDataComponentConverterRegistry = ScafallProvider.get().registries.itemStackDataComponentConverterRegistry
 
 }

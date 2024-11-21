@@ -5,7 +5,7 @@ import com.wolfyscript.scafall.eval.context.EvalContext
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.sponge.api.SpongePluginWrapper
-import com.wolfyscript.scafall.sponge.api.wrappers.world.items.ItemStackWrapper
+import com.wolfyscript.scafall.sponge.api.wrappers.unwrap
 import com.wolfyscript.scafall.sponge.api.wrappers.world.items.SpongeItemStackConfig
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
@@ -110,13 +110,6 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
             inventoryMenu?.inventory()?.set(i, null)
             return
         }
-        require(itemStackConfig is SpongeItemStackConfig) {
-            String.format(
-                "Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.",
-                SpongeItemStackConfig::class.java.name,
-                itemStackConfig.javaClass.name
-            )
-        }
 
         renderStack(i, itemStackConfig.constructItemStack())
     }
@@ -126,43 +119,23 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
             setNativeStack(position, null)
             return
         }
-        require(itemStack is ItemStackWrapper) {
-            String.format(
-                "Cannot render stack! Invalid stack config type! Expected '%s' but received '%s'.",
-                ItemStackWrapper::class.java.name,
-                itemStack.javaClass.name
-            )
-        }
-
-        setNativeStack(position, itemStack.ref)
+        setNativeStack(position, itemStack.unwrap())
     }
 
     fun renderStack(position: Int, itemStackConfig: ItemStackConfig, itemStackContext: ItemStackContext) {
-        require(itemStackConfig is SpongeItemStackConfig) {
-            String.format(
-                "Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.",
-                SpongeItemStackConfig::class.java.name,
-                itemStackConfig.javaClass.name
-            )
-        }
-
         setNativeStack(
             position,
-            (itemStackConfig.constructItemStack(
+            itemStackConfig.constructItemStack(
                 EvalContext(),
                 runtime.viewportl.scafall.adventure.miniMsg,
                 itemStackContext.resolvers
-            ) as ItemStackWrapper).ref
+            )?.unwrap()
         )
     }
 
     private fun setNativeStack(i: Int, itemStack: org.spongepowered.api.item.inventory.ItemStack?) {
         //checkIfSlotInBounds(i);
-        if (itemStack == null) {
-            inventoryMenu?.inventory()?.set(i, org.spongepowered.api.item.inventory.ItemStack.empty())
-            return
-        }
-        inventoryMenu?.inventory()?.set(i, itemStack)
+        inventoryMenu?.inventory()?.set(i, itemStack ?: org.spongepowered.api.item.inventory.ItemStack.empty())
     }
 
 }

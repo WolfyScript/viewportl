@@ -21,7 +21,7 @@ import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.scafall.identifier.Key.Companion.MINECRAFT_NAMESPACE
 import com.wolfyscript.scafall.identifier.Key.Companion.key
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.ItemHelper
 import com.wolfyscript.viewportl.gui.animation.Animation
@@ -30,17 +30,18 @@ import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrameBuilder
 
 class ButtonAnimationFrameBuilderImpl(private val viewportl: Viewportl) : ButtonAnimationFrameBuilder {
     private var duration = 1
-    private var stack: ItemStackConfig? = null
+    private var stack: ItemStack? = null
 
-    override fun stack(itemId: String, config: ReceiverConsumer<ItemStackConfig>): ButtonAnimationFrameBuilder {
-        this.stack = viewportl.scafall.factories.itemsFactory.createStackConfig(key(MINECRAFT_NAMESPACE, itemId))
+    override fun stack(itemId: String, config: ReceiverConsumer<ItemStack>): ButtonAnimationFrameBuilder {
+        this.stack = viewportl.scafall.factories.itemsFactory.createStack(key(MINECRAFT_NAMESPACE, itemId))
+
         with(config) {
             stack!!.consume()
         }
         return this
     }
 
-    override fun stack(config: ReceiverFunction<ItemHelper, ItemStackConfig>): ButtonAnimationFrameBuilder {
+    override fun stack(config: ReceiverFunction<ItemHelper, ItemStack>): ButtonAnimationFrameBuilder {
         // TODO
         return this
     }

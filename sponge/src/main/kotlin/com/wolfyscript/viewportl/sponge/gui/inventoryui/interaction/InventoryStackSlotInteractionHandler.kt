@@ -18,7 +18,7 @@
 
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
-import com.wolfyscript.scafall.sponge.api.wrappers.world.items.ItemStackWrapper
+import com.wolfyscript.scafall.sponge.api.wrappers.wrap
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.StackInputSlot
 import org.spongepowered.api.data.Keys
@@ -54,7 +54,7 @@ class InventoryStackSlotInteractionHandler : SpongeComponentInteractionHandler<S
         slot.get(Keys.SLOT_INDEX).ifPresent { slotIndex ->
             // TODO: Check if stack can be accepted (invalidate transaction otherwise)
 
-            val wrappedFinalReplacement = ItemStackWrapper(transaction.finalReplacement().asMutable())  // TODO: Wrap stack snapshot instead?
+            val wrappedFinalReplacement = transaction.finalReplacement().asMutable().wrap()  // TODO: Wrap stack snapshot instead?
             component.value = wrappedFinalReplacement
             component.onValueChange?.accept(wrappedFinalReplacement)
         }
