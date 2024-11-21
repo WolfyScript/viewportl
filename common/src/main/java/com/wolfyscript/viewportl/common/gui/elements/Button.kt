@@ -2,11 +2,9 @@ package com.wolfyscript.viewportl.common.gui.elements
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.google.inject.Inject
-import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.scafall.data.DataKeyProvider
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.ViewRuntime
@@ -72,11 +70,11 @@ class DynamicIcon(
     private val runtime: ViewRuntime<*,*>,
 ) : ButtonIcon {
 
-    override var stack: ItemStackConfig = runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air"))
+    override var stack: ItemStack = runtime.viewportl.scafall.factories.itemsFactory.createStack(Key.key(Key.MINECRAFT_NAMESPACE, "air"))
 
-    override fun stack(itemId: String, stackConfig: ItemStackConfig.(DataKeyProvider) -> Unit) {
-        val newStack = runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, itemId))
-        newStack.stackConfig(ScafallProvider.get().factories.itemsFactory.dataKeyProvider)
+    override fun stack(itemId: String, stackConfig: ItemStack.() -> Unit) {
+        val newStack = runtime.viewportl.scafall.factories.itemsFactory.createStack(Key.key(Key.MINECRAFT_NAMESPACE, itemId))
+        newStack.stackConfig()
         stack = newStack
     }
 

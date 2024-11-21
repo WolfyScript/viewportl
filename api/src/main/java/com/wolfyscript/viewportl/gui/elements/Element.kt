@@ -31,7 +31,7 @@ import com.wolfyscript.viewportl.gui.rendering.RenderProperties
  * Elements are present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph]. They may have a native renderer and interaction handler implementation on each platform.
  * (Though not necessarily, some are only present in the Model and cannot be interacted with nor are rendered)
  *
- * Using the [component] function components, signals, memos, etc. can be encapsulated and grouped for better code structure.
+ * Using the [component] function elements, signals, memos, etc. can be encapsulated and grouped for better code structure.
  * See [component]
  *
  */

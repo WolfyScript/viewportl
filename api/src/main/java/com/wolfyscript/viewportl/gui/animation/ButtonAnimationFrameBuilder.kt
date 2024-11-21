@@ -19,14 +19,14 @@ package com.wolfyscript.viewportl.gui.animation
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.function.ReceiverFunction
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.ItemHelper
 
 interface ButtonAnimationFrameBuilder : AnimationFrameBuilder<ButtonAnimationFrame> {
 
-    fun stack(itemId: String, config: ReceiverConsumer<ItemStackConfig>): ButtonAnimationFrameBuilder
+    fun stack(itemId: String, config: ReceiverConsumer<ItemStack>): ButtonAnimationFrameBuilder
 
-    fun stack(config: ReceiverFunction<ItemHelper, ItemStackConfig>): ButtonAnimationFrameBuilder
+    fun stack(config: ReceiverFunction<ItemHelper, ItemStack>): ButtonAnimationFrameBuilder
 
     override fun duration(duration: Int): ButtonAnimationFrameBuilder
 }

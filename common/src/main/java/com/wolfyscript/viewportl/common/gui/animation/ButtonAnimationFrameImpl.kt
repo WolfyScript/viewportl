@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.common.gui.animation
 
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.animation.Animation
@@ -27,7 +27,7 @@ import com.wolfyscript.viewportl.gui.rendering.RenderContext
 class ButtonAnimationFrameImpl(
     private val animation: Animation<ButtonAnimationFrame>,
     private val duration: Int,
-    private val stack: ItemStackConfig
+    private val stack: ItemStack
 ) :
     ButtonAnimationFrame {
     override fun duration(): Int {
@@ -41,7 +41,7 @@ class ButtonAnimationFrameImpl(
     override fun render(viewManager: ViewRuntime<*,*>, holder: GuiHolder, context: RenderContext) {
     }
 
-    override fun stack(): ItemStackConfig {
+    override fun stack(): ItemStack {
         return stack
     }
 }

@@ -23,8 +23,6 @@ import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.platform.PlatformType
 import com.wolfyscript.scafall.spigot.api.wrappers.unwrap
-import com.wolfyscript.scafall.spigot.api.wrappers.world.items.BukkitItemStackConfig
-import com.wolfyscript.scafall.spigot.api.wrappers.world.items.ItemStackImpl
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
@@ -164,13 +162,6 @@ class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRender
             inventory!!.setItem(i, null)
             return
         }
-        require(itemStackConfig is BukkitItemStackConfig) {
-            String.format(
-                "Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.",
-                BukkitItemStackConfig::class.java.name,
-                itemStackConfig.javaClass.name
-            )
-        }
 
         inventory!!.setItem(i, itemStackConfig.constructItemStack()?.unwrap())
     }
@@ -180,33 +171,17 @@ class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRender
             setNativeStack(position, null)
             return
         }
-        require(itemStack is ItemStackImpl) {
-            String.format(
-                "Cannot render stack! Invalid stack config type! Expected '%s' but received '%s'.",
-                ItemStackImpl::class.java.name,
-                itemStack.javaClass.name
-            )
-        }
-
-        setNativeStack(position, itemStack.bukkitRef)
+        setNativeStack(position, itemStack.unwrap())
     }
 
     fun renderStack(position: Int, itemStackConfig: ItemStackConfig, itemStackContext: ItemStackContext) {
-        require(itemStackConfig is BukkitItemStackConfig) {
-            String.format(
-                "Cannot render stack config! Invalid stack config type! Expected '%s' but received '%s'.",
-                BukkitItemStackConfig::class.java.name,
-                itemStackConfig.javaClass.name
-            )
-        }
-
         setNativeStack(
             position,
             itemStackConfig.constructItemStack(
                 EvalContext(),
                 runtime.viewportl.scafall.adventure.miniMsg,
                 itemStackContext.resolvers
-            )?.bukkitRef
+            )?.unwrap()
         )
     }
 

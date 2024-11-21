@@ -18,11 +18,9 @@
 package com.wolfyscript.viewportl.gui
 
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
-import com.wolfyscript.scafall.wrappers.world.items.Items
 
 interface ItemHelper {
 
     fun create(itemId: String): ItemStackConfig
 
-    fun items(): Items?
 }
