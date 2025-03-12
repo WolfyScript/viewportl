@@ -68,7 +68,7 @@ class StackEditorExampleKotlin {
                             },
                             icon = {
                                 stack("name_tag") {
-                                    data().set(it.customName, "<gold><b>Edit Display Name".deserialize())
+                                    set(ItemStackDataKeys.CUSTOM_NAME, "<gold><b>Edit Display Name".deserialize())
                                 }
                             },
                             onClick = { selectedTab = Tab.DISPLAY_NAME }
@@ -77,7 +77,7 @@ class StackEditorExampleKotlin {
                             styles = { position = PropertyPosition.slot(2) },
                             icon = {
                                 stack("book") {
-                                    data().set(it.customName, "<gold><b>Edit Lore".deserialize())
+                                    set(ItemStackDataKeys.CUSTOM_NAME, "<gold><b>Edit Lore".deserialize())
                                 }
                             },
                             onClick = { selectedTab = Tab.LORE }
@@ -104,7 +104,7 @@ class StackEditorExampleKotlin {
                                                 },
                                                 icon = {
                                                     stack("writable_book") {
-                                                        data().set(it.customName, "<green><b>Edit Lore".deserialize())
+                                                        set(ItemStackDataKeys.CUSTOM_NAME, "<green><b>Edit Lore".deserialize())
                                                     }
                                                 }
                                             )
@@ -114,7 +114,7 @@ class StackEditorExampleKotlin {
                                                 },
                                                 icon = {
                                                     stack("red_concrete") {
-                                                        data().set(it.customName, "<red><b>Clear Lore".deserialize())
+                                                        set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Clear Lore".deserialize())
                                                     }
                                                 }
                                             )
@@ -147,12 +147,12 @@ class StackEditorExampleKotlin {
                     },
                     icon = {
                         stack("green_concrete") {
-                            data().set(it.customName, "<green><b>Set Display Name".deserialize())
+                            set(ItemStackDataKeys.CUSTOM_NAME, "<green><b>Set Display Name".deserialize())
                         }
                     },
                     onClick = {
                         window.onTextInput { _, _, s, _ ->
-                            stackToEdit()?.data()?.set(ItemStackDataKeys.CUSTOM_NAME, s.deserialize())
+                            stackToEdit()?.set(ItemStackDataKeys.CUSTOM_NAME, s.deserialize())
                             true
                         }
                     }
@@ -163,10 +163,10 @@ class StackEditorExampleKotlin {
                     },
                     icon = {
                         stack("red_concrete") {
-                            data().set(it.customName, "<red><b>Reset Display Name".deserialize())
+                            set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Reset Display Name".deserialize())
                         }
                     },
-                    onClick = { stackToEdit()?.data()?.remove(ItemStackDataKeys.CUSTOM_NAME) }
+                    onClick = { stackToEdit()?.remove(ItemStackDataKeys.CUSTOM_NAME) }
                 )
             }
         }

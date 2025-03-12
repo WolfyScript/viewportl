@@ -42,10 +42,7 @@ class StackSlotsExampleKotlin {
                         val stacks by createSignal {
                             mutableListOf<ItemStack>().apply {
                                 for (i in 0 until 9) {
-                                    this@registerGui.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air"))
-                                        .constructItemStack()?.let {
-                                        this.add(it)
-                                    }
+                                    add(runtime.viewportl.scafall.factories.itemsFactory.createStack(Key.minecraft("air")))
                                 }
                             }
                         }
@@ -57,10 +54,7 @@ class StackSlotsExampleKotlin {
                                     position = PropertyPosition.slot(i)
                                 },
                                 onValueChange = { v ->
-                                    val newStack = v ?: this@registerGui.runtime.viewportl.scafall.factories.itemsFactory.createStackConfig(Key.key(Key.MINECRAFT_NAMESPACE, "air")).constructItemStack()
-                                    if (newStack != null) {
-                                        stacks[i] = newStack
-                                    }
+                                    stacks[i] = v ?: runtime.viewportl.scafall.factories.itemsFactory.createStack(Key.minecraft("air"))
                                 }
                             )
                         }
