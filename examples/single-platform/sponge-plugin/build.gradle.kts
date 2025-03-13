@@ -40,7 +40,7 @@ repositories {
 dependencies {
 
     // We need both the scafall & viewportl sponge implementation.
-    implementation("com.wolfyscript.scafall.sponge:sponge-platform:${project.version}")
+    implementation(libs.scafall.sponge.platform)
 
     implementation(libs.org.reflections.reflections)
 
@@ -140,8 +140,8 @@ minecraftServers {
     libName.set("${project.name}-${version}.jar") // Makes sure to copy the correct file (when using shaded classifier "-all.jar" this needs to be changed!)
     val debugPortMapping = "${debugPort}:${debugPort}"
     servers {
-        register("spongevanilla_13") {
-            val spongeVersion = "1.21.3-13.0.0-RC1893"
+        register("spongevanilla_14") {
+            val spongeVersion = "1.21.4-14.0.0-RC2113"
             imageVersion.set("java21")
             type.set("CUSTOM")
             extraEnv.put("SPONGEVERSION", spongeVersion)
