@@ -36,12 +36,9 @@ class SpongeUIInteractionHandler : InvUIInteractionHandler<SpongeUIInteractionHa
     }
 
     fun onClick(event: ClickContainerEvent) {
-        for (transaction in event.transactions()) { // Can these events actually have multiple transactions?
-            if (event !is ClickContainerEvent.Shift && !event.inventory().isViewedSlot(transaction.slot().viewedSlot())) {
-                continue // Let's not handle events not affecting top inventory // TODO: Handle shift separately?
-            }
-
-            transaction.slot().get(Keys.SLOT_INDEX).ifPresent { slotIndex ->
+        // TODO: Handle double click collection to cursor (may have to iterate over the transactions then)
+        event.slot().ifPresent {
+            it.get(Keys.SLOT_INDEX).ifPresent { slotIndex ->
                 val node = getNodeAt(slotIndex)
                 if (node != null) {
                     callComponentHandler(node.element) {
