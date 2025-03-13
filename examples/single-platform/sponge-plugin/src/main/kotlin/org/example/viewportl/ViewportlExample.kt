@@ -82,6 +82,17 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
                 //.executionRequirements(cause -> cause.context().get(EventContextKeys.PLAYER).isPresent())
                 .build(), "gui_example")
 
+        event.register(
+            pluginContainer, Command.builder()
+                .addParameter(guiParam)
+                .executor { context: CommandContext ->
+                    val gui = if (context.hasAny(guiParam)) context.requireOne(guiParam) else "example_counter"
+                    viewportl.guiManager.clearFromCache(gui)
+                    CommandResult.success()
+                } //.permission("wolfyutils.command.gui")
+                //.executionRequirements(cause -> cause.context().get(EventContextKeys.PLAYER).isPresent())
+                .build(), "gui_clear")
+
         val nameParam = Parameter.string().key("name").build()
         event.register(
             pluginContainer, Command.builder()

@@ -54,6 +54,21 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
             .map { runtimes[it] }
     }
 
+    override fun clearFromCache(guiId: String) {
+        val runtimes = cachedViewRuntimes[guiId]
+        cachedViewRuntimes.removeAll(runtimes)
+
+        val playerEntries = viewRuntimesPerPlayer.entries().iterator()
+        while (playerEntries.hasNext()) {
+            val entry = playerEntries.next()
+            if (runtimes.contains(entry.value)) {
+                playerEntries.remove()
+            }
+        }
+
+        cachedViewRuntimes.removeAll(guiId)
+    }
+
     override val registeredGuis: Set<String>
         get() = entriesMap.keys
 
