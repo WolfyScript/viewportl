@@ -35,8 +35,8 @@ dependencies {
     api(project(":api"))
     compileOnly(project(":sponge"))
     compileOnly(project(":common"))
-    compileOnly("com.wolfyscript.scafall.sponge:sponge:${project.version}")
-    compileOnly("com.wolfyscript.scafall.sponge:sponge-platform:${project.version}")
+    compileOnly(libs.scafall.sponge.impl)
+    compileOnly(libs.scafall.sponge.platform)
     compileOnly(libs.spongepowered.api)
 }
 

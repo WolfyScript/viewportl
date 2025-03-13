@@ -33,7 +33,7 @@ repositories {
 
 dependencies {
     compileOnly(libs.spongepowered.api)
-    implementation(group="com.wolfyscript.scafall.sponge", name = "sponge-platform", version = "0.1-alpha-SNAPSHOT")
+    implementation(libs.scafall.sponge.platform)
     implementation(project(":common"))
 }
 

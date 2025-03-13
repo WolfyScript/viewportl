@@ -27,7 +27,7 @@ description = "viewportl-spigot"
 
 dependencies {
     compileOnly(libs.net.kyori.adventure.platform.bukkit)
-    implementation(group="com.wolfyscript.scafall.spigot", name = "spigot-platform", version = "0.1-alpha-SNAPSHOT")
+    implementation(libs.scafall.spigot.platform)
     implementation(project(":common"))
 }
 
