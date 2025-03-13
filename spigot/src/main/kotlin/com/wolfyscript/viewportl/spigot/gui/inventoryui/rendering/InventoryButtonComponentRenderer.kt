@@ -30,7 +30,6 @@ class InventoryButtonComponentRenderer : ComponentRenderer<Button, SpigotInvUIRe
     override fun key(): Key = Key.defaultKey("inventory/button")
 
     override fun render(context: SpigotInvUIRenderContext, component: Button) {
-        context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.icon.stack, ItemStackContext(
-            TagResolver.empty(), context.renderer.runtime.viewportl.scafall.adventure.miniMsg, EvalContext()))
+        context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.icon.stack)
     }
 }

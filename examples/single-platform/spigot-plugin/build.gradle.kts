@@ -38,7 +38,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
 
     // We need both the scafall & viewportl spigot implementation.
-    implementation("com.wolfyscript.scafall.spigot:spigot-platform:${project.version}")
+    implementation(libs.scafall.spigot.platform)
 
     implementation(project(":examples:single-platform:plugin-common"))
     implementation(project(":common"))

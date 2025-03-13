@@ -79,4 +79,6 @@ interface GuiAPIManager {
     fun getViewManagersFor(uuid: UUID): Stream<ViewRuntime<*,*>>
 
     fun getViewManagersFor(uuid: UUID, guiID: String): Stream<ViewRuntime<*,*>>
+
+    fun clearFromCache(guiId: String)
 }
