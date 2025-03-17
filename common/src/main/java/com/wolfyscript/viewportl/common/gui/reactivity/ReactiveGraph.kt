@@ -100,33 +100,31 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*,*>) : ReactiveSou
         }
     }
 
-    fun renderState() {
-        val logger = ScafallProvider.get().logger
-//        if (!logger.isDebugEnabled) return
-
-        logger.info("-------- [Reactive Graph] --------")
-        logger.info("Pending: $pendingEffects")
-        logger.info("Nodes (${nodes.size}): ")
-        for (node in nodes) {
-            logger.info("  ${node.key}: ${node.value.type.javaClass.simpleName} = ${node.value.value}")
-            val subs = nodeSubscribers[node.key]
-            if (subs.isNotEmpty()) {
-                logger.info("    Subscribers: $subs")
-            }
-            val sources = nodeSources[node.key]
-            if (sources.isNotEmpty()) {
-                logger.info("    Sources: $sources")
-            }
-            val owners = nodeOwners[node.key]
-            if (owners.isNotEmpty()) {
-                logger.info("    Owners: $owners")
-            }
-            val properties = nodeProperties[node.key]
-            if (properties.isNotEmpty()) {
-                logger.info("    Properties: ${properties.map { it.toNodeId() }}")
+    fun renderState(): String {
+        return buildString {
+            appendLine("-------- [Reactive Graph] --------")
+            appendLine("Pending: $pendingEffects")
+            appendLine("Nodes (${nodes.size}): ")
+            for (node in nodes) {
+                appendLine("  ${node.key}: ${node.value.type.javaClass.simpleName} = ${node.value.value}")
+                val subs = nodeSubscribers[node.key]
+                if (subs.isNotEmpty()) {
+                    appendLine("    Subscribers: $subs")
+                }
+                val sources = nodeSources[node.key]
+                if (sources.isNotEmpty()) {
+                    appendLine("    Sources: $sources")
+                }
+                val owners = nodeOwners[node.key]
+                if (owners.isNotEmpty()) {
+                    appendLine("    Owners: $owners")
+                }
+                val properties = nodeProperties[node.key]
+                if (properties.isNotEmpty()) {
+                    appendLine("    Properties: ${properties.map { it.toNodeId() }}")
+                }
             }
         }
-        logger.info("")
     }
 
     internal fun owner(): Trigger? {
