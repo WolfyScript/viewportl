@@ -144,7 +144,7 @@ class RouteGraph {
         }
 
         override fun toString(): String {
-            return "{\n Matcher: $matcher, Routes: [\n${children.joinToString(separator = ", ")}] \n}"
+            return "{ Matcher: $matcher, Routes: [ ${children.joinToString(separator = ", ")}] }"
         }
 
     }
@@ -169,7 +169,7 @@ class RouterImpl(
     }
 
     override fun toString(): String {
-        return "Routes: ${routes.joinToString(separator = "\n", prefix = "\n")}"
+        return "Routes: ${routes.joinToString(separator = ", ", prefix = " ")}"
     }
 }
 
@@ -182,7 +182,7 @@ class RouteImpl(
     override val routes: MutableList<Route> = mutableListOf()
 
     override fun toString(): String {
-        return "path: $path \n sub-routes: ${routes.joinToString(separator = "\n", prefix = "\n")}"
+        return "path: $path, sub-routes: ${routes.joinToString(separator = ", ", prefix = " ")}"
     }
 }
 
