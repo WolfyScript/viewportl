@@ -19,6 +19,7 @@
 package com.wolfyscript.viewportl.common.gui.reactivity
 
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
+import java.util.Optional
 
 class ReactivityNode<V>(
     val id: NodeId,
@@ -92,6 +93,19 @@ class ReactivityNode<V>(
             }
 
             fun computation(): AnyComputation<T> = fn
+
+        }
+
+        class Resource<T : Any>(private val fn: (ViewRuntimeImpl<*,*>, ReactivityNode<Optional<Result<T>>>) -> Unit) : Type<Optional<Result<T>>> {
+
+            override fun runUpdate(runtime: ViewRuntimeImpl<*,*>, reactivityNode: ReactivityNode<Optional<Result<T>>>): Boolean {
+                runtime.reactiveSource.runWithObserver(reactivityNode.id) {
+                    runtime.reactiveSource.cleanupSourcesFor(reactivityNode.id)
+                    fn(runtime, reactivityNode)
+                    reactivityNode.value = Optional.empty()
+                }
+                return true // value was reset so it changed
+            }
 
         }
 

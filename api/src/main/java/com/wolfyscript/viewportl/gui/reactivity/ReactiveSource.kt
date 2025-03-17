@@ -20,7 +20,6 @@ package com.wolfyscript.viewportl.gui.reactivity
 import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import org.apache.commons.lang3.function.TriFunction
 import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
@@ -78,41 +77,39 @@ interface ReactiveSource {
     fun createCleanup(cleanup: Cleanup)
 
     /**
-     * Must be used to fetch data from the main Minecraft thread (i.e. Entities, World, etc.).
-     * This is because the GUI is run async on a different thread!
+     * Fetches data from the main Minecraft thread (i.e. Entities, World, etc.).
      *
+     * Must be used to access Minecraft objects in a thread-safe manner, because the GUI runs async on a separate thread!
      *
      * After creation, it runs the specified function on the main thread and fetches the data.
      * The signal gets updated when the data is available.
-     * When the signal value is requested before the data is available it returns an empty Optional.
      *
+     * When the result is requested before the data is available it returns an empty Optional.
      *
      * @param fetch The function to run on the main thread.
-     * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
+     * @return A signal for an Optional wrapping a [Result]; otherwise [Optional.empty] when not yet fetched
      * @param <T> The type of the value
-    </T> */
-    fun <T> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, T>): ReadWriteSignal<Optional<T>>
+     */
+    fun <T: Any> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, Result<T>>): Resource<T>
 
-    fun <I, T> resourceSync(
-        input: ReadWriteSignal<I>,
-        fetch: TriFunction<Viewportl, ViewRuntime<*,*>, I, T>
-    ): ReadWriteSignal<Optional<T>>
+    fun <T: Any> resourceSync(
+        vararg input: ReadWriteSignal<*>,
+        fetch: (Viewportl, ViewRuntime<*,*>) -> Result<T>
+    ): Resource<T>
 
     /**
-     * May be used to fetch data async.
-     *
-     *
+     * Fetches data asynchronously and returns the result once available.
      *
      * After creation, it runs the specified function async and fetches the data.
      * The signal gets updated when the data is available.
-     * When the signal value is requested before the data is available it returns an empty Optional.
      *
+     * When the value is requested before the data is available it returns an empty Optional.
      *
      * @param fetch The function to run async
-     * @return A signal that contains an Optional wrapping the fetched data; empty by default; non-empty when data has been fetched
+     * @return A signal for an Optional wrapping a [Result]; otherwise [Optional.empty] when not yet fetched
      * @param <T> The type of the value
-    </T> */
-    fun <T> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, T>): ReadWriteSignal<Optional<T>>
+     */
+    fun <T: Any> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, Result<T>>): Resource<T>
 
 }
 

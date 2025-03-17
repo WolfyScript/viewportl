@@ -401,19 +401,47 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*,*>) : ReactiveSou
         }
     }
 
-    override fun <T> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, T>): ReadWriteSignal<Optional<T>> {
-        TODO("Not yet implemented")
+    override fun <T: Any> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime<*, *>, Result<T>>): Resource<T> {
+        val nodeId = createNode(ReactivityNode.Type.Resource<T> { runtime, node ->
+            viewRuntime.viewportl.scafall.scheduler.syncTask(viewRuntime.viewportl.scafall.corePlugin) {
+                val fetchedValue = fetch.apply(viewRuntime.viewportl, viewRuntime)
+                node.value = Optional.of(fetchedValue)
+
+                for (id in runtime.reactiveSource.nodeSubscribers[node.id]) {
+                    runtime.reactiveSource.markDirty(id)
+                }
+                runtime.reactiveSource.runEffects()
+            }
+
+        }, Optional.empty<Result<T>>(), ReactivityNode.State.DIRTY)
+
+        addNewScopeProperty(EffectProperty(nodeId))
+        return ResourceImpl(nodeId, Optional::class as Class<Optional<Result<T>>>)
     }
 
-    override fun <I, T> resourceSync(
-        input: ReadWriteSignal<I>,
-        fetch: TriFunction<Viewportl, ViewRuntime<*,*>, I, T>
-    ): ReadWriteSignal<Optional<T>> {
+    override fun <T : Any> resourceSync(
+        vararg input: ReadWriteSignal<*>,
+        fetch: (Viewportl, ViewRuntime<*, *>) -> Result<T>
+    ): Resource<T> {
         TODO("Not yet implemented")
+
     }
 
-    override fun <T> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, T>): ReadWriteSignal<Optional<T>> {
-        TODO("Not yet implemented!")
+    override fun <T: Any> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, Result<T>>): Resource<T> {
+        val nodeId = createNode(ReactivityNode.Type.Resource<T> { runtime, node ->
+            viewRuntime.viewportl.scafall.scheduler.asyncTask(viewRuntime.viewportl.scafall.corePlugin) {
+                val fetchedValue = fetch.apply(viewRuntime.viewportl, viewRuntime)
+                node.value = Optional.of(fetchedValue)
+
+                for (id in runtime.reactiveSource.nodeSubscribers[node.id]) {
+                    runtime.reactiveSource.markDirty(id)
+                }
+                runtime.reactiveSource.runEffects()
+            }
+        }, Optional.empty<Result<T>>(), ReactivityNode.State.DIRTY)
+
+        addNewScopeProperty(EffectProperty(nodeId))
+        return ResourceImpl(nodeId, Optional.empty<Result<T>>().javaClass)
     }
 
     fun subscribe(node: NodeId) {
@@ -423,6 +451,10 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*,*>) : ReactiveSou
         } else {
 //            throw IllegalStateException("Cannot subscribe to observer: Observer is null")
         }
+    }
+
+    override fun toString(): String {
+        return renderState()
     }
 
 }
