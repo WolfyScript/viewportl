@@ -34,7 +34,7 @@ import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import java.net.MalformedURLException
 
 /**
  * A Counter GUI Example, that allows the viewer:
@@ -80,6 +80,14 @@ class CounterExampleKotlin {
                 Component.text("Counter Main Menu").decorate(TextDecoration.BOLD)
             }
 
+            val fetched by resourceAsync<Int> { viewportl, runtime ->
+                Thread.sleep(4000);
+                if (Math.random() > 0.5) {
+                    return@resourceAsync Result.failure(MalformedURLException());
+                }
+                return@resourceAsync Result.success(20)
+            }
+
             button(
                 icon = {
                     stack("green_concrete") {
@@ -91,6 +99,37 @@ class CounterExampleKotlin {
                     routerScope.openSubRoute { this / "main" }
                 }
             )
+
+            show({ fetched.isEmpty }, {
+                show({ fetched.get().isFailure }, {
+                    button(
+                        icon = {
+                            stack("written_book") {
+                                set(ItemStackDataKeys.CUSTOM_NAME, "<green><b>Fetched ${fetched.get().getOrDefault(0)}".deserialize())
+                            }
+                        },
+                        styles = { position = PropertyPosition.slot(16) },
+                    )
+                }) {
+                    button(
+                        icon = {
+                            stack("barrier") {
+                                set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Failed to fetch".deserialize())
+                            }
+                        },
+                        styles = { position = PropertyPosition.slot(16) },
+                    )
+                }
+            }) {
+               button(
+                   icon = {
+                       stack("paper") {
+                           set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Fetching...".deserialize())
+                       }
+                   },
+                   styles = { position = PropertyPosition.slot(16) },
+               )
+            }
         }
 
         /**
