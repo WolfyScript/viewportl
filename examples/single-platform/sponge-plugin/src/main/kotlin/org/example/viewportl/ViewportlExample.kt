@@ -13,6 +13,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import org.example.viewportl.common.gui.CounterExampleKotlin
+import org.example.viewportl.common.gui.FetchExampleKotlin
 import org.example.viewportl.common.gui.NestedRoutingExampleKotlin
 import org.example.viewportl.common.gui.StackEditorExampleKotlin
 import org.example.viewportl.common.gui.StackSlotsExampleKotlin
@@ -44,6 +45,7 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
         // then register the guis
         val manager = viewportl.guiManager
         CounterExampleKotlin.registerExampleCounter(manager)
+        FetchExampleKotlin.registerExampleFetch(manager)
         NestedRoutingExampleKotlin.registerNestedRoutingExample(manager)
         StackEditorExampleKotlin.registerStackEditor(manager)
         StackSlotsExampleKotlin.registerStackSlotsExample(manager)

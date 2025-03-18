@@ -21,11 +21,11 @@ package org.example.viewportl.common.gui
 import com.wolfyscript.scafall.data.ItemStackDataKeys
 import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.scafall.parsed
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import com.wolfyscript.viewportl.gui.elements.RouterScope
+import com.wolfyscript.viewportl.gui.reactivity.Trigger
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
@@ -80,14 +80,6 @@ class CounterExampleKotlin {
                 Component.text("Counter Main Menu").decorate(TextDecoration.BOLD)
             }
 
-            val fetched by resourceAsync<Int> { viewportl, runtime ->
-                Thread.sleep(4000);
-                if (Math.random() > 0.5) {
-                    return@resourceAsync Result.failure(MalformedURLException());
-                }
-                return@resourceAsync Result.success(20)
-            }
-
             button(
                 icon = {
                     stack("green_concrete") {
@@ -100,36 +92,6 @@ class CounterExampleKotlin {
                 }
             )
 
-            show({ fetched.isEmpty }, {
-                show({ fetched.get().isFailure }, {
-                    button(
-                        icon = {
-                            stack("written_book") {
-                                set(ItemStackDataKeys.CUSTOM_NAME, "<green><b>Fetched ${fetched.get().getOrDefault(0)}".deserialize())
-                            }
-                        },
-                        styles = { position = PropertyPosition.slot(16) },
-                    )
-                }) {
-                    button(
-                        icon = {
-                            stack("barrier") {
-                                set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Failed to fetch".deserialize())
-                            }
-                        },
-                        styles = { position = PropertyPosition.slot(16) },
-                    )
-                }
-            }) {
-               button(
-                   icon = {
-                       stack("paper") {
-                           set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Fetching...".deserialize())
-                       }
-                   },
-                   styles = { position = PropertyPosition.slot(16) },
-               )
-            }
         }
 
         /**
