@@ -21,7 +21,6 @@ import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import java.util.*
-import java.util.function.BiFunction
 import java.util.function.Function
 
 interface ReactiveSource {
@@ -34,7 +33,7 @@ interface ReactiveSource {
      * To notify subscribers call the [Trigger.update] method.
      *
      */
-    fun createTrigger() : Trigger
+    fun createTrigger(): Trigger
 
     /**
      * Creates a Signal that holds a value of the specified [valueType].
@@ -43,7 +42,10 @@ interface ReactiveSource {
      * When [ReadWriteSignal] values are accessed inside a [Memo]/[Effect] it subscribes to that [ReadWriteSignal].
      * Then when the value of the [ReadWriteSignal] is updated the [Memo]/[Effect] is updated too.
      */
-    fun <T : Any?> createSignal(valueType: Class<T>, defaultValueProvider: ReceiverFunction<ViewRuntime<*,*>, T>): ReadWriteSignal<T>
+    fun <T : Any?> createSignal(
+        valueType: Class<T>,
+        defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>,
+    ): ReadWriteSignal<T>
 
     /**
      * Creates an [Effect] that reruns when a [ReadWriteSignal]/[Memo] used inside it is updated.
@@ -69,7 +71,7 @@ interface ReactiveSource {
      *
      * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
      */
-    fun <T : Any?> createMemo(initialValue: T, valueType: Class<T>, fn: Function<T?, T>) : Memo<T>
+    fun <T : Any?> createMemo(initialValue: T, valueType: Class<T>, fn: Function<T?, T>): Memo<T>
 
     /**
      * Creates a function that is run when the current owner is removed.
@@ -90,11 +92,9 @@ interface ReactiveSource {
      * @return A signal for an Optional wrapping a [Result]; otherwise [Optional.empty] when not yet fetched
      * @param <T> The type of the value
      */
-    fun <T: Any> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, Result<T>>): Resource<T>
-
-    fun <T: Any> resourceSync(
-        vararg input: ReadWriteSignal<*>,
-        fetch: (Viewportl, ViewRuntime<*,*>) -> Result<T>
+    fun <T : Any> resourceSync(
+        input: () -> List<*> = { emptyList<Any>() },
+        fetch: (Viewportl, ViewRuntime<*, *>) -> Result<T>,
     ): Resource<T>
 
     /**
@@ -109,7 +109,11 @@ interface ReactiveSource {
      * @return A signal for an Optional wrapping a [Result]; otherwise [Optional.empty] when not yet fetched
      * @param <T> The type of the value
      */
-    fun <T: Any> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, Result<T>>): Resource<T>
+    fun <T : Any> resourceAsync(
+        triggers: () -> Unit = {},
+        input: () -> List<*> = { emptyList<Any>() },
+        fetch: (Viewportl, ViewRuntime<*, *>) -> Result<T>,
+    ): Resource<T>
 
 }
 
@@ -121,7 +125,7 @@ interface ReactiveSource {
  *
  * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
  */
-inline fun <reified T: Any?> ReactiveSource.createMemo(initialValue: T, fn: Function<T?, T>) : Memo<T> {
+inline fun <reified T : Any?> ReactiveSource.createMemo(initialValue: T, fn: Function<T?, T>): Memo<T> {
     return createMemo(initialValue, T::class.java, fn)
 }
 
@@ -129,6 +133,6 @@ inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValue: T): Read
     return createSignal(T::class.java) { defaultValue }
 }
 
-inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime<*,*>, T>): ReadWriteSignal<T> {
+inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>): ReadWriteSignal<T> {
     return createSignal(T::class.java, defaultValueProvider)
 }

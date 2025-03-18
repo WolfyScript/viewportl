@@ -21,7 +21,6 @@ import com.google.common.collect.ListMultimap
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
-import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
@@ -32,23 +31,23 @@ import com.wolfyscript.viewportl.common.gui.reactivity.properties.TriggerPropert
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.reactivity.*
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import org.apache.commons.lang3.function.TriFunction
 import java.util.*
-import java.util.function.BiFunction
 import java.util.function.Function
 
-class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*,*>) : ReactiveSource {
+class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSource {
 
     private var owner: NodeId?
     private var observer: NodeId? = null
 
     // Graph
     private val nodes: MutableMap<NodeId, ReactivityNode<*>> = Object2ObjectOpenHashMap()
-    private val nodeSubscribers: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
+    private val nodeSubscribers: SetMultimap<NodeId, NodeId> =
+        Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
     private val nodeSources: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
 
     // Owners and Properties
-    private val nodeProperties: ListMultimap<NodeId, ScopeProperty> = Multimaps.newListMultimap(mutableMapOf()) { mutableListOf() }
+    private val nodeProperties: ListMultimap<NodeId, ScopeProperty> =
+        Multimaps.newListMultimap(mutableMapOf()) { mutableListOf() }
     private val nodeOwners: SetMultimap<NodeId, NodeId> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
     private val cleanups: Multimap<NodeId, Cleanup> = Multimaps.newListMultimap(mutableMapOf()) { mutableListOf() }
 
@@ -324,13 +323,15 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*,*>) : ReactiveSou
 
     inline fun <reified V : Any?> getValue(nodeId: NodeId): V {
         updateIfNecessary(nodeId)
-        val node = node<ReactivityNode<V>>(nodeId) ?: throw IllegalArgumentException("Cannot find reactive node $nodeId of type ${V::class}!")
+        val node = node<ReactivityNode<V>>(nodeId)
+            ?: throw IllegalArgumentException("Cannot find reactive node $nodeId of type ${V::class}!")
         return node.value
     }
 
     fun <V : Any?> getValue(nodeId: NodeId, type: Class<V>): V {
         updateIfNecessary(nodeId)
-        val node = node<ReactivityNode<V>>(nodeId) ?: throw IllegalArgumentException("Cannot find reactive node $nodeId of type $type!")
+        val node = node<ReactivityNode<V>>(nodeId)
+            ?: throw IllegalArgumentException("Cannot find reactive node $nodeId of type $type!")
         return node.value
     }
 
@@ -362,7 +363,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*,*>) : ReactiveSou
 
     override fun <T : Any?> createSignal(
         valueType: Class<T>,
-        defaultValueProvider: ReceiverFunction<ViewRuntime<*,*>, T>
+        defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>,
     ): ReadWriteSignal<T> {
         val id = createNode(ReactivityNode.Type.Signal(), with(defaultValueProvider) { viewRuntime.apply() })
         addNewScopeProperty(SignalProperty(id))
@@ -399,10 +400,15 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*,*>) : ReactiveSou
         }
     }
 
-    override fun <T: Any> resourceSync(fetch: BiFunction<Viewportl, ViewRuntime<*, *>, Result<T>>): Resource<T> {
+    override fun <T : Any> resourceSync(
+        input: () -> List<*>,
+        fetch: (Viewportl, ViewRuntime<*, *>) -> Result<T>,
+    ): Resource<T> {
         val nodeId = createNode(ReactivityNode.Type.Resource<T> { runtime, node ->
-            viewRuntime.viewportl.scafall.scheduler.syncTask(viewRuntime.viewportl.scafall.corePlugin) {
-                val fetchedValue = fetch.apply(viewRuntime.viewportl, viewRuntime)
+            val inputVals = input()
+
+            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
+                val fetchedValue = fetch(runtime.viewportl, runtime)
                 node.value = Optional.of(fetchedValue)
 
                 for (id in runtime.reactiveSource.nodeSubscribers[node.id]) {
@@ -415,20 +421,20 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*,*>) : ReactiveSou
 
         addNewScopeProperty(EffectProperty(nodeId))
         return ResourceImpl(nodeId, Optional::class as Class<Optional<Result<T>>>)
+
     }
 
-    override fun <T : Any> resourceSync(
-        vararg input: ReadWriteSignal<*>,
-        fetch: (Viewportl, ViewRuntime<*, *>) -> Result<T>
+    override fun <T : Any> resourceAsync(
+        triggers: () -> Unit,
+        input: () -> List<*>,
+        fetch: (Viewportl, ViewRuntime<*, *>) -> Result<T>,
     ): Resource<T> {
-        TODO("Not yet implemented")
-
-    }
-
-    override fun <T: Any> resourceAsync(fetch: BiFunction<Viewportl, ViewRuntime<*,*>, Result<T>>): Resource<T> {
         val nodeId = createNode(ReactivityNode.Type.Resource<T> { runtime, node ->
+            triggers()
+            val inputVals = input()
+
             viewRuntime.viewportl.scafall.scheduler.asyncTask(viewRuntime.viewportl.scafall.corePlugin) {
-                val fetchedValue = fetch.apply(viewRuntime.viewportl, viewRuntime)
+                val fetchedValue = fetch(viewRuntime.viewportl, viewRuntime)
                 node.value = Optional.of(fetchedValue)
 
                 for (id in runtime.reactiveSource.nodeSubscribers[node.id]) {
