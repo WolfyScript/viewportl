@@ -36,6 +36,8 @@ import java.util.function.Function
 
 class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSource {
 
+    private var nextNodeId: Long = 0
+
     private var owner: NodeId?
     private var observer: NodeId? = null
 
@@ -348,9 +350,9 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
     private fun <V : Any?> createNode(
         type: ReactivityNode.Type<V>,
         initialValue: V,
-        state: ReactivityNode.State = ReactivityNode.State.CLEAN
+        state: ReactivityNode.State = ReactivityNode.State.CLEAN,
     ): NodeId {
-        val id = NodeId((nodes.size + 1).toLong(), viewRuntime)
+        val id = NodeId(nextNodeId++, viewRuntime)
         nodes[id] = ReactivityNode(id, initialValue, type, state)
         return id
     }
