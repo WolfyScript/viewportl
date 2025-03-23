@@ -25,7 +25,7 @@ import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import com.wolfyscript.viewportl.gui.elements.RouterScope
-import com.wolfyscript.viewportl.gui.reactivity.Trigger
+import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
@@ -34,7 +34,6 @@ import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import java.net.MalformedURLException
 
 /**
  * A Counter GUI Example, that allows the viewer:
@@ -53,6 +52,12 @@ import java.net.MalformedURLException
  */
 class CounterExampleKotlin {
 
+    class CounterStore(val reactiveSource: ReactiveSource) : ReactiveSource by reactiveSource {
+
+        var count: Int by createSignal(0)
+
+    }
+
     companion object {
 
         fun register(manager: GuiAPIManager) {
@@ -62,13 +67,17 @@ class CounterExampleKotlin {
                  * It constructs the component tree and reactive graph as specified.
                  **/
                 size = 9 * 3
+                title = "<b>Counter".deserialize()
+
+                // Use signals to notify components to update when the value changes
+                var countStore = CounterStore(this)
 
                 router {
                     route({ }) {
                         mainMenu(this@registerGui, this@router)
                     }
                     route({ this / "main" }) {
-                        counterMenu(this@registerGui, this@router)
+                        counterMenu(countStore, this@registerGui, this@router)
                     }
                 }
 
@@ -97,18 +106,15 @@ class CounterExampleKotlin {
         /**
          * This function setups the counter menu
          */
-        private fun ComponentScope.counterMenu(window: WindowScope, routerScope: RouterScope) {
-            // Use signals to notify components to update when the value changes
-            var count: Int by createSignal(0)
-
+        private fun ComponentScope.counterMenu(counterStore: CounterStore, window: WindowScope, routerScope: RouterScope) {
             window.title { // Update the title with the Count
                 Component.text("Counter: ").decorate(TextDecoration.BOLD)
-                    .append(Component.text(count).color(NamedTextColor.BLUE))
+                    .append(Component.text(counterStore.count).color(NamedTextColor.BLUE))
             }
 
             // Update the count periodically (every second)
             interval(20) {
-                count += 1
+                counterStore.count += 1
             }
 
             button(
@@ -133,7 +139,7 @@ class CounterExampleKotlin {
                     }
                 },
                 onClick = {
-                    count += 1
+                    counterStore.count += 1
                 }
             )
 
@@ -143,7 +149,7 @@ class CounterExampleKotlin {
                 },
                 icon = {
                     stack("redstone") {
-                        set(ItemStackDataKeys.CUSTOM_NAME, "<!italic>Clicked <b><count></b> times!".deserialize("count".parsed(count)))
+                        set(ItemStackDataKeys.CUSTOM_NAME, "<!italic>Clicked <b><count></b> times!".deserialize("count".parsed(counterStore.count)))
                     }
                 },
             )
@@ -157,11 +163,13 @@ class CounterExampleKotlin {
                         set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Count Down".deserialize())
                     }
                 },
-                onClick = { count -= 1 }
+                onClick = {
+                    counterStore.count -= 1
+                }
             )
 
             // Sometimes we want to render components dependent on signals
-            val render by createMemo<Boolean>(false) { count != 0 }
+            val render by createMemo<Boolean>(false) { counterStore.count != 0 }
             show(
                 condition = { render },
                 fallback = { }
@@ -179,8 +187,7 @@ class CounterExampleKotlin {
                             }
                         },
                         onClick = {
-                            count =
-                                0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
+                            counterStore.count = 0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
                         },
                         sound = Sound.sound(
                             Key.key("minecraft:entity.dragon_fireball.explode"),
