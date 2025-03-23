@@ -20,19 +20,11 @@ package org.example.viewportl.common.gui
 
 import com.wolfyscript.scafall.data.ItemStackDataKeys
 import com.wolfyscript.scafall.deserialize
-import com.wolfyscript.scafall.parsed
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.elements.ComponentScope
-import com.wolfyscript.viewportl.gui.elements.RouterScope
-import com.wolfyscript.viewportl.gui.reactivity.Trigger
-import com.wolfyscript.viewportl.gui.reactivity.createMemo
-import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import java.net.MalformedURLException
 
@@ -47,6 +39,7 @@ class FetchExampleKotlin {
                  * It constructs the component tree and reactive graph as specified.
                  **/
                 size = 9 * 3
+                title = "Fetch Example".deserialize()
 
                 router {
                     route({ }) {
@@ -62,26 +55,26 @@ class FetchExampleKotlin {
                 Component.text("Fetcher Main Menu").decorate(TextDecoration.BOLD)
             }
 
-            val fetch = createTrigger()
-            val fetched by resourceAsync<Int>(input = { fetch.track(); emptyList<Any>() }) { viewportl, runtime ->
+            val (fetchedSignal, refetch) = resourceAsync<Unit, Int>(null, Unit.javaClass as Class<Unit?>, { }) { unit, viewportl, runtime ->
                 Thread.sleep(4000);
                 if (Math.random() > 0.5) {
                     return@resourceAsync Result.failure(MalformedURLException());
                 }
                 return@resourceAsync Result.success(20)
             }
+            var fetched by fetchedSignal
 
-            show({ fetched.isEmpty }, {
-                show({ fetched.get().isFailure }, {
+            show({ fetched == null }, {
+                show({ fetched!!.isFailure }, {
                     button(
                         icon = {
                             stack("written_book") {
-                                set(ItemStackDataKeys.CUSTOM_NAME, "<green><b>Fetched ${fetched.get().getOrDefault(0)}".deserialize())
+                                set(ItemStackDataKeys.CUSTOM_NAME, "<green><b>Fetched ${fetched!!.getOrDefault(0)}".deserialize())
                             }
                         },
-                        styles = { position = PropertyPosition.slot(16) },
+                        styles = { position = PropertyPosition.slot(14) },
                     )
-                    refetch(fetch)
+                    refetch(refetch)
                 }) {
                     button(
                         icon = {
@@ -89,9 +82,9 @@ class FetchExampleKotlin {
                                 set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Failed to fetch".deserialize())
                             }
                         },
-                        styles = { position = PropertyPosition.slot(16) },
+                        styles = { position = PropertyPosition.slot(14) },
                     )
-                    refetch(fetch)
+                    refetch(refetch)
                 }
             }) {
                button(
@@ -100,22 +93,20 @@ class FetchExampleKotlin {
                            set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Fetching...".deserialize())
                        }
                    },
-                   styles = { position = PropertyPosition.slot(16) },
+                   styles = { position = PropertyPosition.slot(14) },
                )
             }
         }
 
-        private fun ComponentScope.refetch(fetchTrigger: Trigger) {
+        private fun ComponentScope.refetch(refetch: () -> Unit) {
             button(
                 icon = {
                     stack("cyan_concrete") {
-                        set(ItemStackDataKeys.CUSTOM_NAME, "<cyan><b>Fetch Again".deserialize())
+                        set(ItemStackDataKeys.CUSTOM_NAME, "<aqua><b>Fetch Again".deserialize())
                     }
                 },
-                styles = { position = PropertyPosition.slot(15) },
-                onClick = {
-                    fetchTrigger.update()
-                }
+                styles = { position = PropertyPosition.slot(12) },
+                onClick = { refetch() }
             )
         }
 
