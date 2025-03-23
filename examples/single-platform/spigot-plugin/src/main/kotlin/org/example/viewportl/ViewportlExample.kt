@@ -44,10 +44,10 @@ class ViewportlExample : JavaPlugin() {
 
         // then register the guis
         val manager = viewportl.guiManager
-        CounterExampleKotlin.registerExampleCounter(manager)
-        NestedRoutingExampleKotlin.registerNestedRoutingExample(manager)
-        StackEditorExampleKotlin.registerStackEditor(manager)
-        StackSlotsExampleKotlin.registerStackSlotsExample(manager)
+        CounterExampleKotlin.register(manager)
+        NestedRoutingExampleKotlin.register(manager)
+        StackEditorExampleKotlin.register(manager)
+        StackSlotsExampleKotlin.register(manager)
 
         registerCommands()
     }

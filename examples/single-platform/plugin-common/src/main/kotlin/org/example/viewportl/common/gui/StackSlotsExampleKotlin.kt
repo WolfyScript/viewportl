@@ -28,7 +28,7 @@ class StackSlotsExampleKotlin {
 
     companion object {
 
-        fun registerStackSlotsExample(manager: GuiAPIManager) {
+        fun register(manager: GuiAPIManager) {
             manager.registerGui("stack_grid") {
                 size = 9 * 1
 

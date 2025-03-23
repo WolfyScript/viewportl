@@ -44,11 +44,11 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
 
         // then register the guis
         val manager = viewportl.guiManager
-        CounterExampleKotlin.registerExampleCounter(manager)
-        FetchExampleKotlin.registerExampleFetch(manager)
-        NestedRoutingExampleKotlin.registerNestedRoutingExample(manager)
-        StackEditorExampleKotlin.registerStackEditor(manager)
-        StackSlotsExampleKotlin.registerStackSlotsExample(manager)
+        CounterExampleKotlin.register(manager)
+        FetchExampleKotlin.register(manager)
+        NestedRoutingExampleKotlin.register(manager)
+        StackEditorExampleKotlin.register(manager)
+        StackSlotsExampleKotlin.register(manager)
 
     }
 

@@ -38,7 +38,7 @@ class StackEditorExampleKotlin {
             LORE,
         }
 
-        fun registerStackEditor(manager: GuiAPIManager) {
+        fun register(manager: GuiAPIManager) {
             manager.registerGui("stack_editor") {
                 /*
                  * This whole construction is only called upon the initiation and creates a reactivity graph

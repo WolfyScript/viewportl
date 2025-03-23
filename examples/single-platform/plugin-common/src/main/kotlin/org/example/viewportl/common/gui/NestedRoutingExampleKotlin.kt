@@ -39,7 +39,7 @@ class NestedRoutingExampleKotlin {
 
     companion object {
 
-        fun registerNestedRoutingExample(manager: GuiAPIManager) {
+        fun register(manager: GuiAPIManager) {
             manager.registerGui("nested_routing") {
                 size = 9 * 6
 

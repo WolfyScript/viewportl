@@ -55,7 +55,7 @@ class CounterExampleKotlin {
 
     companion object {
 
-        fun registerExampleCounter(manager: GuiAPIManager) {
+        fun register(manager: GuiAPIManager) {
             manager.registerGui("example_counter") {
                 /**
                  * Everything in this section is called **async** and only once.

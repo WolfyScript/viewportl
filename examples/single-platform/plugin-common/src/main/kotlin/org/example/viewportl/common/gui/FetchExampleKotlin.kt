@@ -40,7 +40,7 @@ class FetchExampleKotlin {
 
     companion object {
 
-        fun registerExampleFetch(manager: GuiAPIManager) {
+        fun register(manager: GuiAPIManager) {
             manager.registerGui("example_fetch") {
                 /**
                  * Everything in this section is called **async** and only once.
