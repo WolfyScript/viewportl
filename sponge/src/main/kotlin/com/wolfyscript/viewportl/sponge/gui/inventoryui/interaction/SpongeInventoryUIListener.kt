@@ -86,7 +86,7 @@ class SpongeInventoryUIListener(
 
     @Listener
     fun onClose(event: InteractContainerEvent.Close) {
-        val inventory = event.inventory()
+        val inventory = event.container()
         withGuiHolder(inventory) {
             viewManager.window?.close()
         }
