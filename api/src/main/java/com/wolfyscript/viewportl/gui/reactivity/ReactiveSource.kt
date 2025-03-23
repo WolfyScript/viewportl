@@ -51,7 +51,7 @@ interface ReactiveSource {
      * Creates an [Effect] that reruns when a [ReadWriteSignal]/[Memo] used inside it is updated.
      *
      */
-    fun createEffect(effect: ReceiverFunction<Unit, Unit>): Effect {
+    fun createEffect(effect: Unit.() -> Unit): Effect {
         return createMemoEffect<Unit>(Unit, effect)
     }
 
@@ -61,7 +61,7 @@ interface ReactiveSource {
      * This type of [Effect] allows to use the value of the previous execution, and return the new value.<br>
      * When no value is required use the type [Unit]
      */
-    fun <T : Any?> createMemoEffect(initialValue: T, effect: ReceiverFunction<T, T>): Effect
+    fun <T : Any?> createMemoEffect(initialValue: T, effect: T.() -> T): Effect
 
     /**
      * Creates a Memo, that holds a value of the specified [valueType].
@@ -79,25 +79,6 @@ interface ReactiveSource {
     fun createCleanup(cleanup: Cleanup)
 
     /**
-     * Fetches data from the main Minecraft thread (i.e. Entities, World, etc.).
-     *
-     * Must be used to access Minecraft objects in a thread-safe manner, because the GUI runs async on a separate thread!
-     *
-     * After creation, it runs the specified function on the main thread and fetches the data.
-     * The signal gets updated when the data is available.
-     *
-     * When the result is requested before the data is available it returns an empty Optional.
-     *
-     * @param fetch The function to run on the main thread.
-     * @return A signal for an Optional wrapping a [Result]; otherwise [Optional.empty] when not yet fetched
-     * @param <T> The type of the value
-     */
-    fun <T : Any> resourceSync(
-        input: () -> List<*> = { emptyList<Any>() },
-        fetch: (Viewportl, ViewRuntime<*, *>) -> Result<T>,
-    ): Resource<T>
-
-    /**
      * Fetches data asynchronously and returns the result once available.
      *
      * After creation, it runs the specified function async and fetches the data.
@@ -109,11 +90,12 @@ interface ReactiveSource {
      * @return A signal for an Optional wrapping a [Result]; otherwise [Optional.empty] when not yet fetched
      * @param <T> The type of the value
      */
-    fun <T : Any> resourceAsync(
-        triggers: () -> Unit = {},
-        input: () -> List<*> = { emptyList<Any>() },
-        fetch: (Viewportl, ViewRuntime<*, *>) -> Result<T>,
-    ): Resource<T>
+    fun <I, T : Any> resourceAsync(
+        initialValue: Result<T>?,
+        inputType: Class<I?>,
+        input: () -> I?,
+        fetch: (I, Viewportl, ViewRuntime<*, *>) -> Result<T>,
+    ): Pair<ReadWriteSignal<Result<T>?>, () -> Unit>
 
 }
 

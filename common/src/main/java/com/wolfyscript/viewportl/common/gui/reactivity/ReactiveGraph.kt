@@ -379,7 +379,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         return ReadWriteSignalImpl(id, valueType)
     }
 
-    override fun <T : Any?> createMemoEffect(initialValue: T, effect: ReceiverFunction<T, T>): Effect {
+    override fun <T : Any?> createMemoEffect(initialValue: T, effect: T.() -> T): Effect {
         return createCustomEffect<T>(initialValue, EffectState(effect))
     }
 
@@ -409,52 +409,48 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         }
     }
 
-    override fun <T : Any> resourceSync(
-        input: () -> List<*>,
-        fetch: (Viewportl, ViewRuntime<*, *>) -> Result<T>,
-    ): Resource<T> {
-        val nodeId = createNode(ReactivityNode.Type.Resource<T> { runtime, node ->
-            val inputVals = input()
+    override fun <I, T : Any> resourceAsync(
+        initialValue: Result<T>?,
+        inputType: Class<I?>,
+        input: () -> I?,
+        fetch: (I, Viewportl, ViewRuntime<*, *>) -> Result<T>,
+    ): Pair<ReadWriteSignal<Result<T>?>, () -> Unit> {
+        val value = createSignal<Result<T>?> { initialValue }
+        val inputMemo = createMemo<I?>(null, inputType) { input() }
 
-            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
-                val fetchedValue = fetch(runtime.viewportl, runtime)
-                node.value = Optional.of(fetchedValue)
+        var initiated: Boolean = initialValue != null
+        var task: Task? = null
 
-                for (id in runtime.reactiveSource.nodeSubscribers[node.id]) {
-                    runtime.reactiveSource.markDirty(id)
-                }
-                runtime.reactiveSource.runEffects()
+        fun completeFetch(fetchedValue: Result<T>) {
+            task = null;
+            initiated = true
+            value.set(fetchedValue)
+            viewRuntime.viewportl.scafall.scheduler.syncTask(viewRuntime.viewportl.scafall.corePlugin) {
+                viewRuntime.reactiveSource.runEffects()
             }
+        }
 
-        }, Optional.empty<Result<T>>(), ReactivityNode.State.DIRTY)
-
-        addNewScopeProperty(EffectProperty(nodeId))
-        return ResourceImpl(nodeId, Optional::class as Class<Optional<Result<T>>>)
-
-    }
-
-    override fun <T : Any> resourceAsync(
-        triggers: () -> Unit,
-        input: () -> List<*>,
-        fetch: (Viewportl, ViewRuntime<*, *>) -> Result<T>,
-    ): Resource<T> {
-        val nodeId = createNode(ReactivityNode.Type.Resource<T> { runtime, node ->
-            triggers()
-            val inputVals = input()
-
-            viewRuntime.viewportl.scafall.scheduler.asyncTask(viewRuntime.viewportl.scafall.corePlugin) {
-                val fetchedValue = fetch(viewRuntime.viewportl, viewRuntime)
-                node.value = Optional.of(fetchedValue)
-
-                for (id in runtime.reactiveSource.nodeSubscribers[node.id]) {
-                    runtime.reactiveSource.markDirty(id)
-                }
-                runtime.reactiveSource.runEffects()
+        val schedule = fun() {
+            if (task != null) {
+                return
             }
-        }, Optional.empty<Result<T>>(), ReactivityNode.State.DIRTY)
+            val inputCopy = inputMemo.get()
+            if (inputCopy != null) {
+                value.set(null)
+                viewRuntime.viewportl.scafall.scheduler.syncTask(viewRuntime.viewportl.scafall.corePlugin) {
+                    viewRuntime.reactiveSource.runEffects()
+                }
 
-        addNewScopeProperty(EffectProperty(nodeId))
-        return ResourceImpl(nodeId, Optional.empty<Result<T>>().javaClass)
+                task = viewRuntime.viewportl.scafall.scheduler.asyncTask(viewRuntime.viewportl.scafall.corePlugin) {
+                    val fetchedValue = fetch(inputCopy, viewRuntime.viewportl, viewRuntime)
+                    completeFetch(fetchedValue)
+                }
+            }
+        }
+
+        createEffect { schedule() }
+
+        return Pair(value, schedule)
     }
 
     fun subscribe(node: NodeId) {
