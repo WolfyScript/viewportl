@@ -61,6 +61,9 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
             .plugin(runtime.viewportl.scafall.corePlugin.into<SpongePluginWrapper>().plugin) // TODO
             .build()
             .asMenu()
+        window.title?.let {
+            inventoryMenu?.setTitle(it)
+        }
         carrier.menu = inventoryMenu
     }
 
