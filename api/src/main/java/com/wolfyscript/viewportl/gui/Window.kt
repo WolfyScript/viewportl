@@ -98,9 +98,21 @@ interface Window {
 
 interface WindowScope : ComponentScope {
 
+    /**
+     * Setups an effect that updates the title everytime the signal sources are updated.
+     */
     fun title(titleUpdate: ReceiverFunction<Component?, Component?>)
 
+    /**
+     * The initial size of the window inventory
+     */
     var size: Int?
+
+    /**
+     * The title of the window.
+     * Note: This will get replaced if a title update effect is applied
+     */
+    var title: Component?
 
     fun onTextInput(inputCallback: TextInputCallback?)
 

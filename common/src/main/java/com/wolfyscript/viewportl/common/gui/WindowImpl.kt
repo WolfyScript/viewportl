@@ -85,6 +85,10 @@ class WindowScopeImpl(val window: Window, componentScope: ComponentScopeImpl) : 
         get() = window.size
         set(value) { window.size = value }
 
+    override var title: Component?
+        get() = window.title
+        set(value) { window.title = value }
+
     override fun onTextInput(inputCallback: TextInputCallback?) {
         window.onTextInput = inputCallback
     }
