@@ -21,7 +21,7 @@ import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
-import com.wolfyscript.viewportl.common.gui.reactivity.TriggerImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.signal.TriggerImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal

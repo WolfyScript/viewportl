@@ -15,19 +15,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.common.gui.reactivity.effect
 
-package com.wolfyscript.viewportl.common.gui.reactivity
+import com.wolfyscript.scafall.function.ReceiverFunction
+import com.wolfyscript.viewportl.common.gui.reactivity.AnyComputation
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import java.util.function.Consumer
 
-import com.wolfyscript.viewportl.gui.reactivity.Trigger
+class EffectState<T : Any?>(
+    private val fn: ReceiverFunction<T, T>
+) : AnyComputation<T> {
 
-class TriggerImpl(val id: NodeId) : Trigger {
+    override fun run(runtime: ViewRuntime<*,*>, value: T, apply: Consumer<T>): Boolean {
+        val newValue = with(fn) { value.apply() }
 
-    override fun track() {
-        id.runtime.reactiveSource.subscribe(id)
+        apply.accept(newValue)
+
+        return true
     }
 
-    override fun update() {
-        id.runtime.reactiveSource.markDirty(id)
-        id.runtime.reactiveSource.runEffects()
-    }
 }

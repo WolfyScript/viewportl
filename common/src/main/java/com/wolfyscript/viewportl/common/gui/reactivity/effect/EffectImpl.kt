@@ -16,25 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.common.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.reactivity.effect
 
-import com.wolfyscript.viewportl.gui.reactivity.Memo
-import kotlin.reflect.KProperty
+import com.wolfyscript.viewportl.common.gui.reactivity.NodeId
+import com.wolfyscript.viewportl.gui.reactivity.Effect
 
-class MemoImpl<V : Any?>(val id: NodeId, private val type: Class<V>) : Memo<V> {
-
-    override fun get(): V {
-        id.runtime.reactiveSource.subscribe(id)
-        return getNoTracking()
-    }
-
-    override fun getNoTracking(): V {
-        return id.runtime.reactiveSource.getValue(id, type)
-    }
-
-    override fun getValue(thisRef: Any?, property: KProperty<*>): V {
-//        ScafallProvider.get().logger.info("Get value for Ref: $thisRef, Property: $property")
-        return get()
-    }
-
-}
+class EffectImpl(val id: NodeId) : Effect

@@ -3,7 +3,7 @@ package com.wolfyscript.viewportl.common.gui.elements
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
-import com.wolfyscript.viewportl.common.gui.reactivity.TriggerImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.signal.TriggerImpl
 import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.elements.Show
 import com.wolfyscript.viewportl.gui.elements.ShowProperties

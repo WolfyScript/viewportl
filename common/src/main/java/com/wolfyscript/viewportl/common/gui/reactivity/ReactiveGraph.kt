@@ -22,12 +22,19 @@ import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import com.google.common.collect.SetMultimap
 import com.wolfyscript.scafall.function.ReceiverFunction
+import com.wolfyscript.scafall.scheduling.Task
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.effect.EffectImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.effect.EffectState
+import com.wolfyscript.viewportl.common.gui.reactivity.memo.MemoImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.memo.MemoState
 import com.wolfyscript.viewportl.common.gui.reactivity.properties.EffectProperty
 import com.wolfyscript.viewportl.common.gui.reactivity.properties.ScopeProperty
 import com.wolfyscript.viewportl.common.gui.reactivity.properties.SignalProperty
 import com.wolfyscript.viewportl.common.gui.reactivity.properties.TriggerProperty
+import com.wolfyscript.viewportl.common.gui.reactivity.signal.ReadWriteSignalImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.signal.TriggerImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.reactivity.*
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
@@ -57,7 +64,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
     private val pendingEffects: MutableSet<NodeId> = mutableSetOf()
 
     init {
-        owner = createNode(ReactivityNode.Type.Trigger(), null)
+        owner = createNode(NodeType.Trigger(), null)
     }
 
     private fun addNewScopeProperty(property: ScopeProperty) {
@@ -82,15 +89,15 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         observer = prevObserver
     }
 
-    fun runWithObserver(nodeId: NodeId, fn: Runnable) {
-        val previousObserver = observer
+    fun runWithObserver(observer: NodeId, fn: Runnable) {
+        val previousObserver = this.observer
         val previousOwner = owner
 
-        observer = nodeId
-        owner = nodeId
+        this.observer = observer
+        owner = observer
         fn.run()
 
-        observer = previousObserver
+        this.observer = previousObserver
         owner = previousOwner
     }
 
@@ -131,7 +138,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
     internal fun owner(): Trigger? {
         if (owner != null) {
             nodes[owner]?.let {
-                if (it.type is ReactivityNode.Type.Trigger) {
+                if (it.type is NodeType.Trigger) {
                     return TriggerImpl(it.id)
                 }
             }
@@ -211,7 +218,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
             node.mark(state)
         }
 
-        if (node.type is ReactivityNode.Type.Effect && node.id != observer) {
+        if (node.type is NodeType.Effect && node.id != observer) {
             pendingEffects.add(node.id)
         }
 
@@ -348,7 +355,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
     }
 
     private fun <V : Any?> createNode(
-        type: ReactivityNode.Type<V>,
+        type: NodeType<V>,
         initialValue: V,
         state: ReactivityNode.State = ReactivityNode.State.CLEAN,
     ): NodeId {
@@ -358,7 +365,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
     }
 
     override fun createTrigger(): Trigger {
-        val id = createNode(ReactivityNode.Type.Trigger(), null)
+        val id = createNode(NodeType.Trigger(), null)
         addNewScopeProperty(TriggerProperty(id))
         return TriggerImpl(id)
     }
@@ -367,7 +374,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         valueType: Class<T>,
         defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>,
     ): ReadWriteSignal<T> {
-        val id = createNode(ReactivityNode.Type.Signal(), with(defaultValueProvider) { viewRuntime.apply() })
+        val id = createNode(NodeType.Signal(), with(defaultValueProvider) { viewRuntime.apply() })
         addNewScopeProperty(SignalProperty(id))
         return ReadWriteSignalImpl(id, valueType)
     }
@@ -377,7 +384,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
     }
 
     fun <T : Any?> createCustomEffect(value: T, effect: AnyComputation<T>): Effect {
-        val id = createNode(ReactivityNode.Type.Effect(effect), value, ReactivityNode.State.DIRTY)
+        val id = createNode(NodeType.Effect(effect), value, ReactivityNode.State.DIRTY)
         addNewScopeProperty(EffectProperty(id))
 
         viewRuntime.viewportl.scafall.scheduler.syncTask(viewRuntime.viewportl.scafall.corePlugin) { // TODO: Is there a better way to schedule them?
@@ -388,7 +395,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
     }
 
     override fun <T : Any?> createMemo(initialValue: T, valueType: Class<T>, fn: Function<T?, T>): Memo<T> {
-        val reactivityNodeId = createNode(ReactivityNode.Type.Memo<T>(MemoState {
+        val reactivityNodeId = createNode(NodeType.Memo<T>(MemoState {
             val newValue = fn.apply(it)
             Pair(newValue, newValue != it)
         }), initialValue, ReactivityNode.State.DIRTY)

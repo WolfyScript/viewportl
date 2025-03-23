@@ -16,17 +16,19 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.common.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.reactivity.signal
 
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import java.util.function.Consumer
-import java.util.function.Function
+import com.wolfyscript.viewportl.common.gui.reactivity.NodeId
+import com.wolfyscript.viewportl.gui.reactivity.Trigger
 
-class MemoState<T : Any?>(private val fn: Function<T?, Pair<T, Boolean>>) : AnyComputation<T> {
+class TriggerImpl(val id: NodeId) : Trigger {
 
-    override fun run(runtime: ViewRuntime<*,*>, value: T, apply: Consumer<T>): Boolean {
-        val (newValue, different) = fn.apply(value)
-        apply.accept(newValue)
-        return different
+    override fun track() {
+        id.runtime.reactiveSource.subscribe(id)
+    }
+
+    override fun update() {
+        id.runtime.reactiveSource.markDirty(id)
+        id.runtime.reactiveSource.runEffects()
     }
 }

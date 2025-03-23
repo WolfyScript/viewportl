@@ -15,22 +15,27 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.common.gui.reactivity
 
-import com.wolfyscript.scafall.function.ReceiverFunction
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import java.util.function.Consumer
+package com.wolfyscript.viewportl.common.gui.reactivity.memo
 
-class EffectState<T : Any?>(
-    private val fn: ReceiverFunction<T, T>
-) : AnyComputation<T> {
+import com.wolfyscript.viewportl.common.gui.reactivity.NodeId
+import com.wolfyscript.viewportl.gui.reactivity.Memo
+import kotlin.reflect.KProperty
 
-    override fun run(runtime: ViewRuntime<*,*>, value: T, apply: Consumer<T>): Boolean {
-        val newValue = with(fn) { value.apply() }
+class MemoImpl<V : Any?>(val id: NodeId, private val type: Class<V>) : Memo<V> {
 
-        apply.accept(newValue)
+    override fun get(): V {
+        id.runtime.reactiveSource.subscribe(id)
+        return getNoTracking()
+    }
 
-        return true
+    override fun getNoTracking(): V {
+        return id.runtime.reactiveSource.getValue(id, type)
+    }
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): V {
+//        ScafallProvider.get().logger.info("Get value for Ref: $thisRef, Property: $property")
+        return get()
     }
 
 }

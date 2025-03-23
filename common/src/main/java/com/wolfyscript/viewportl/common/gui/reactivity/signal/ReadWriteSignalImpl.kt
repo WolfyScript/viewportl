@@ -16,8 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.common.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.reactivity.signal
 
+import com.wolfyscript.viewportl.common.gui.reactivity.NodeId
+import com.wolfyscript.viewportl.common.gui.reactivity.ReactivityNode
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 import java.util.*
 import java.util.function.Function

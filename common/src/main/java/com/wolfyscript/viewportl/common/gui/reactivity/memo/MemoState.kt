@@ -16,8 +16,18 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.common.gui.reactivity
+package com.wolfyscript.viewportl.common.gui.reactivity.memo
 
-import com.wolfyscript.viewportl.gui.reactivity.Effect
+import com.wolfyscript.viewportl.common.gui.reactivity.AnyComputation
+import com.wolfyscript.viewportl.gui.ViewRuntime
+import java.util.function.Consumer
+import java.util.function.Function
 
-class EffectImpl(val id: NodeId) : Effect
+class MemoState<T : Any?>(private val fn: Function<T?, Pair<T, Boolean>>) : AnyComputation<T> {
+
+    override fun run(runtime: ViewRuntime<*,*>, value: T, apply: Consumer<T>): Boolean {
+        val (newValue, different) = fn.apply(value)
+        apply.accept(newValue)
+        return different
+    }
+}
