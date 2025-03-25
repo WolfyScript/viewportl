@@ -23,12 +23,12 @@ package com.wolfyscript.viewportl.gui.reactivity
  * It does not contain a value, so it is for cases where a simple update notification and no value is required.
  *
  * To track the trigger inside an Effect/Memo you need to call the [Trigger.track] method inside it.<br>
- * To notify subscribers call the [Trigger.update] method.
+ * To notify subscribers call the [Trigger.updateIfNecessary] method.
  */
-interface Trigger {
+interface Trigger: ReactivityNode, Source {
 
     fun track()
 
-    fun update()
+    fun trigger()
 
 }

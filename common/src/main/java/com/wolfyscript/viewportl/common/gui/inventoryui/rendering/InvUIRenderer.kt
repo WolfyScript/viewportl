@@ -114,7 +114,7 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
     override fun onNodeRemoved(event: NodeRemovedEvent) {
         // Remove node from cache
         val removedProperties = computed.remove(event.node.id)
-        clearSlots(removedProperties?.slots ?: emptySet()) // clear slots affected by the removed node
+        clearSlots(removedProperties?.slots ?: emptySet()) // clearSources slots affected by the removed node
 
         // Does it have a parent? if so unlink it
         val parent = runtime.model.parent(event.node.id)

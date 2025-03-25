@@ -19,6 +19,64 @@
 package com.wolfyscript.viewportl.common.gui.reactivity.effect
 
 import com.wolfyscript.viewportl.common.gui.reactivity.NodeId
+import com.wolfyscript.viewportl.common.gui.reactivity.ObserverImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.OwnerImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.ReactivityNodeImpl
 import com.wolfyscript.viewportl.gui.reactivity.Effect
+import com.wolfyscript.viewportl.gui.reactivity.Owner
+import com.wolfyscript.viewportl.gui.reactivity.ReactivityNode
+import com.wolfyscript.viewportl.gui.reactivity.Source
 
-class EffectImpl(val id: NodeId) : Effect
+class EffectImpl(
+    id: NodeId,
+    val fn: () -> Unit,
+    val owner: Owner = OwnerImpl(id.runtime),
+) : Effect, ReactivityNodeImpl(id) {
+
+    val sources: MutableList<Source> = mutableListOf<Source>()
+
+    override fun notifySubscribers() {}
+
+    override fun updateIfNecessary(): Boolean {
+        val needsToUpdate = when (state) {
+            ReactivityNode.State.CLEAN -> false
+            ReactivityNode.State.CHECK -> sources.any { it.updateIfNecessary() }
+            ReactivityNode.State.DIRTY -> true
+        }
+
+        // TODO: Queue effect execution instead of executing it here
+
+        if (needsToUpdate) {
+
+        }
+
+        return needsToUpdate
+    }
+
+    override fun markCheck() {
+        super.markCheck()
+        updateIfNecessary()
+    }
+
+    override fun markDirty() {
+        super.markDirty()
+        updateIfNecessary()
+    }
+
+    override fun subscribeTo(source: Source) {
+        sources.add(source)
+    }
+
+    override fun clearSources() {
+        sources.clear()
+    }
+
+    override fun <T> observe(fn: () -> T): T {
+        val prevObserver = id.runtime.reactiveSource.observer
+        id.runtime.reactiveSource.observer = ObserverImpl(this)
+        val returnValue = fn()
+        id.runtime.reactiveSource.observer = prevObserver
+        return returnValue
+    }
+
+}

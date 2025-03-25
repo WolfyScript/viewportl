@@ -25,6 +25,7 @@ import com.wolfyscript.viewportl.common.gui.reactivity.signal.TriggerImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
+import com.wolfyscript.viewportl.gui.reactivity.Signal
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.router.ActivePath
@@ -36,7 +37,7 @@ internal fun setupRouter(properties: RouterProperties) {
     val reactiveSource = runtime.reactiveSource
 
     // Create signals to control routing
-    val history: ReadWriteSignal<Deque<ActivePath>> = reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(ActivePath()) })
+    val history: Signal<Deque<ActivePath>> = reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(ActivePath()) })
     val currentPath: ActivePath? by reactiveSource.createMemo(null) { history.get().peek() } // fetch the latest path from the history. Only notify subscribers when it changed!
 
     val router = RouterImpl(properties.scope.parent?.component, runtime.viewportl)
@@ -57,12 +58,9 @@ internal fun setupRouter(properties: RouterProperties) {
             return@createEffect
         }
         // Update component when route changes
-        val routeOwner = reactiveSource.createTrigger()
         val route = selectedRoute!!.route!!
         with(route.view) { // this subscribes to the selected route memo
-            reactiveSource.runWithObserver((routeOwner as TriggerImpl).id) {
-                properties.scope.consume()
-            }
+            properties.scope.consume()
         }
 
         // Clear all child components (the route component)
@@ -189,7 +187,7 @@ class RouteImpl(
 class RouterScopeImpl(
     runtime: ViewRuntime<*,*>,
     override val router: Router,
-    private val history: ReadWriteSignal<Deque<ActivePath>>
+    private val history: Signal<Deque<ActivePath>>
 ) : RouterScope {
 
     override fun route(

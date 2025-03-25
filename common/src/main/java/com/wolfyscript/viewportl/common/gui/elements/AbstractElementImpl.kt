@@ -45,7 +45,7 @@ abstract class AbstractElementImpl<C : Element>(
     override val id: String,
     final override val viewportl: Viewportl,
     override val parent: Element?
-) : Element, Effect {
+) : Element {
 
     private val type: Key = Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(javaClass))
     internal var currentNodeId: Long? = null

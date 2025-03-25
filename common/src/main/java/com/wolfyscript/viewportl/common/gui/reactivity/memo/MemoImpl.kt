@@ -19,23 +19,105 @@
 package com.wolfyscript.viewportl.common.gui.reactivity.memo
 
 import com.wolfyscript.viewportl.common.gui.reactivity.NodeId
+import com.wolfyscript.viewportl.common.gui.reactivity.ObserverImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.OwnerImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.ReactivityNodeImpl
 import com.wolfyscript.viewportl.gui.reactivity.Memo
+import com.wolfyscript.viewportl.gui.reactivity.ReactivityNode
+import com.wolfyscript.viewportl.gui.reactivity.Source
+import com.wolfyscript.viewportl.gui.reactivity.Subscriber
 import kotlin.reflect.KProperty
 
-class MemoImpl<V : Any?>(val id: NodeId, private val type: Class<V>) : Memo<V> {
+class MemoImpl<V : Any?>(
+    id: NodeId,
+    initialValue: V,
+    val fn: (V) -> V,
+    val owner: OwnerImpl = OwnerImpl(id.runtime),
+) : Memo<V>, ReactivityNodeImpl(id) {
+
+    val sources: MutableList<Source> = mutableListOf()
+    val subscribers: MutableList<Subscriber> = mutableListOf()
+
+    var value: V = initialValue
 
     override fun get(): V {
-        id.runtime.reactiveSource.subscribe(id)
-        return getNoTracking()
-    }
-
-    override fun getNoTracking(): V {
-        return id.runtime.reactiveSource.getValue(id, type)
+        id.runtime.reactiveSource.observer?.subscriber?.subscribeTo(this)
+        return value
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): V {
-//        ScafallProvider.get().logger.info("Get value for Ref: $thisRef, Property: $property")
         return get()
+    }
+
+    override fun updateIfNecessary(): Boolean {
+        val shouldUpdate = when(state) {
+            ReactivityNode.State.CLEAN -> false
+            ReactivityNode.State.CHECK -> {
+                sources.any {
+                    it.updateIfNecessary() || state == ReactivityNode.State.DIRTY // The source may mark this as Dirty again
+                }
+            }
+            ReactivityNode.State.DIRTY -> true
+        }
+
+        if (shouldUpdate) {
+            val newValue = owner.acquire {
+                this.observe {
+                    return@observe fn(value)
+                }
+            }
+            value = newValue
+        }
+
+        return false
+    }
+
+    override fun markCheck() {
+        if (state != ReactivityNode.State.DIRTY) {
+            state = ReactivityNode.State.CHECK
+        }
+        for (subscriber in subscribers) {
+            subscriber.markCheck()
+        }
+    }
+
+    override fun markDirty() {
+        super.markDirty()
+        notifySubscribers()
+    }
+
+    override fun notifySubscribers() {
+        for (subscriber in subscribers) {
+            subscriber.markCheck()
+        }
+    }
+
+    override fun subscribedBy(subscriber: Subscriber) {
+        subscribers.add(subscriber)
+    }
+
+    override fun unsubscribedBy(subscriber: Subscriber) {
+        subscribers.remove(subscriber)
+    }
+
+    override fun clearSubscribers() {
+        subscribers.clear()
+    }
+
+    override fun subscribeTo(source: Source) {
+        sources.add(source)
+    }
+
+    override fun clearSources() {
+        sources.clear()
+    }
+
+    override fun <T> observe(fn: () -> T): T {
+        val prevObserver = id.runtime.reactiveSource.observer
+        id.runtime.reactiveSource.observer = ObserverImpl(this)
+        val returnValue = fn()
+        id.runtime.reactiveSource.observer = prevObserver
+        return returnValue
     }
 
 }

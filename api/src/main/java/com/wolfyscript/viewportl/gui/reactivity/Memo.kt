@@ -18,6 +18,12 @@
 
 package com.wolfyscript.viewportl.gui.reactivity
 
-interface Memo<V> : ReadOnlySignal<V> {
+import kotlin.reflect.KProperty
+
+interface Memo<T> : Source, Subscriber {
+
+    fun get(): T
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>) : T
 
 }

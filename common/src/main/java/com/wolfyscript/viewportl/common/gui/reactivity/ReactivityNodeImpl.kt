@@ -18,24 +18,18 @@
 
 package com.wolfyscript.viewportl.common.gui.reactivity
 
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
-import java.util.function.Function
+import com.wolfyscript.viewportl.gui.reactivity.ReactivityNode
 
-class NodeId(override val id: Long, override val runtime: ViewRuntimeImpl<*,*>) :
-    com.wolfyscript.viewportl.gui.reactivity.NodeId {
+abstract class ReactivityNodeImpl(val id: NodeId) : ReactivityNode {
 
-    override fun toString(): String {
-        return id.toString()
+    override var state: ReactivityNode.State = ReactivityNode.State.CLEAN
+
+    override fun markDirty() {
+        state = ReactivityNode.State.DIRTY
     }
 
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other !is NodeId) return false
-        if (other.id == id) return true
-        return false
+    override fun markCheck() {
+        state = ReactivityNode.State.CHECK
     }
 
 }

@@ -17,4 +17,4 @@
  */
 package com.wolfyscript.viewportl.gui.reactivity
 
-interface Effect 
+interface Effect : ReactivityNode, Subscriber

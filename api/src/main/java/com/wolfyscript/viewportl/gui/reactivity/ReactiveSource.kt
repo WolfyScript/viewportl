@@ -30,7 +30,7 @@ interface ReactiveSource {
      * It does not contain a value, so it is for cases where a simple update notification and no value is required.
      *
      * To track the trigger inside an Effect/Memo you need to call the [Trigger.track] method inside it.<br>
-     * To notify subscribers call the [Trigger.update] method.
+     * To notify subscribers call the [Trigger.updateIfNecessary] method.
      *
      */
     fun createTrigger(): Trigger
@@ -45,15 +45,13 @@ interface ReactiveSource {
     fun <T : Any?> createSignal(
         valueType: Class<T>,
         defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>,
-    ): ReadWriteSignal<T>
+    ): Signal<T>
 
     /**
      * Creates an [Effect] that reruns when a [ReadWriteSignal]/[Memo] used inside it is updated.
      *
      */
-    fun createEffect(effect: Unit.() -> Unit): Effect {
-        return createMemoEffect<Unit>(Unit, effect)
-    }
+    fun createEffect(effect: () -> Unit): Effect
 
     /**
      * Creates an [Effect] that reruns when a [ReadWriteSignal]/[Memo] used inside it is updated.
@@ -61,7 +59,7 @@ interface ReactiveSource {
      * This type of [Effect] allows to use the value of the previous execution, and return the new value.<br>
      * When no value is required use the type [Unit]
      */
-    fun <T : Any?> createMemoEffect(initialValue: T, effect: T.() -> T): Effect
+    fun <T : Any?> createMemoEffect(initialValue: T, effect: (T) -> T): Effect
 
     /**
      * Creates a Memo, that holds a value of the specified [valueType].
@@ -71,7 +69,7 @@ interface ReactiveSource {
      *
      * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
      */
-    fun <T : Any?> createMemo(initialValue: T, valueType: Class<T>, fn: Function<T?, T>): Memo<T>
+    fun <T : Any?> createMemo(initialValue: T, valueType: Class<T>, fn: (T) -> T): Memo<T>
 
     /**
      * Creates a function that is run when the current owner is removed.
@@ -107,14 +105,14 @@ interface ReactiveSource {
  *
  * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
  */
-inline fun <reified T : Any?> ReactiveSource.createMemo(initialValue: T, fn: Function<T?, T>): Memo<T> {
+inline fun <reified T : Any?> ReactiveSource.createMemo(initialValue: T, noinline fn: (T) -> T): Memo<T> {
     return createMemo(initialValue, T::class.java, fn)
 }
 
-inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValue: T): ReadWriteSignal<T> {
+inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValue: T): Signal<T> {
     return createSignal(T::class.java) { defaultValue }
 }
 
-inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>): ReadWriteSignal<T> {
+inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>): Signal<T> {
     return createSignal(T::class.java, defaultValueProvider)
 }

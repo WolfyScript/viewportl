@@ -19,16 +19,49 @@
 package com.wolfyscript.viewportl.common.gui.reactivity.signal
 
 import com.wolfyscript.viewportl.common.gui.reactivity.NodeId
+import com.wolfyscript.viewportl.common.gui.reactivity.ReactivityNodeImpl
+import com.wolfyscript.viewportl.gui.reactivity.Subscriber
 import com.wolfyscript.viewportl.gui.reactivity.Trigger
 
-class TriggerImpl(val id: NodeId) : Trigger {
+class TriggerImpl(
+    id: NodeId,
+) : Trigger, ReactivityNodeImpl(id) {
+
+    val subscribers: MutableList<Subscriber> = mutableListOf()
 
     override fun track() {
-        id.runtime.reactiveSource.subscribe(id)
+        id.runtime.reactiveSource.observer?.subscriber?.subscribeTo(this)
     }
 
-    override fun update() {
-        id.runtime.reactiveSource.markDirty(id)
-        id.runtime.reactiveSource.runEffects()
+    override fun trigger() {
+        markDirty()
+    }
+
+    override fun markDirty() {
+        notifySubscribers()
+    }
+
+    override fun markCheck() {}
+
+    override fun notifySubscribers() {
+        for (subscriber in subscribers) {
+            subscriber.markDirty()
+        }
+    }
+
+    override fun updateIfNecessary(): Boolean {
+        return false
+    }
+
+    override fun subscribedBy(subscriber: Subscriber) {
+        subscribers.add(subscriber)
+    }
+
+    override fun unsubscribedBy(subscriber: Subscriber) {
+        subscribers.remove(subscriber)
+    }
+
+    override fun clearSubscribers() {
+        subscribers.clear()
     }
 }

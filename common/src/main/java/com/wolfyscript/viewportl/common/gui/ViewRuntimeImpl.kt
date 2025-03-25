@@ -86,7 +86,6 @@ class ViewRuntimeImpl<R: Renderer<R,*>, I: InteractionHandler<I>>(
 
         viewportl.scafall.scheduler.syncTask(viewportl.scafall.corePlugin) {
             renderer.render()
-            reactiveSource.owner()?.update()
         }
     }
 

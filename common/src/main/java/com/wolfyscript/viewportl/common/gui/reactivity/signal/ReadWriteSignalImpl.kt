@@ -19,7 +19,6 @@
 package com.wolfyscript.viewportl.common.gui.reactivity.signal
 
 import com.wolfyscript.viewportl.common.gui.reactivity.NodeId
-import com.wolfyscript.viewportl.common.gui.reactivity.ReactivityNode
 import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 import java.util.*
 import java.util.function.Function
@@ -47,23 +46,16 @@ class ReadWriteSignalImpl<MT : Any?>(private val id: NodeId, private val type: C
     }
 
     override fun set(newValue: MT) {
-        id.runtime.reactiveSource.setValue(id, type, newValue)
     }
 
     override fun update(function: Function<MT, MT>) {
-        val node = id.runtime.reactiveSource.node<ReactivityNode<MT>>(id)
-        node?.value?.let {
-            id.runtime.reactiveSource.setValue(id, type, function.apply(it))
-        }
     }
 
     override fun get(): MT {
-        id.runtime.reactiveSource.subscribe(id)
         return getNoTracking()
     }
 
     override fun getNoTracking(): MT {
-        return id.runtime.reactiveSource.getValue(id, type)
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): MT {

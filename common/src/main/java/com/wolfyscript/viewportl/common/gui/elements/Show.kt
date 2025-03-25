@@ -24,15 +24,10 @@ internal fun setupShow(properties: ShowProperties) {
 
     reactiveSource.createEffect {
         // Update component when condition changes
-        val owner = reactiveSource.createTrigger()
         if (condition) {
-            reactiveSource.runWithObserver((owner as TriggerImpl).id) {
-                properties.content(properties.scope)
-            }
+            properties.content(properties.scope)
         } else {
-            reactiveSource.runWithObserver((owner as TriggerImpl).id) {
-                properties.fallback(properties.scope)
-            }
+            properties.fallback(properties.scope)
         }
         // Clear all child components (the route component)
         reactiveSource.createCleanup {
