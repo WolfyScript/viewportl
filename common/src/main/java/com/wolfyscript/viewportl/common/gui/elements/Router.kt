@@ -24,7 +24,6 @@ import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.common.gui.reactivity.signal.TriggerImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.*
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
 import com.wolfyscript.viewportl.gui.reactivity.Signal
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal

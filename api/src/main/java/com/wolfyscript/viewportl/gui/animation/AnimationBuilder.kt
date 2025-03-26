@@ -19,7 +19,7 @@ package com.wolfyscript.viewportl.gui.animation
 
 import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.elements.Element
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
+import com.wolfyscript.viewportl.gui.reactivity.Signal
 
 interface AnimationBuilder<F : AnimationFrame, FB : AnimationFrameBuilder<F>> {
     /**
@@ -37,7 +37,7 @@ interface AnimationBuilder<F : AnimationFrame, FB : AnimationFrameBuilder<F>> {
      * @param signal The signal to listen to
      * @return This builder for chaining
      */
-    fun customSignal(signal: ReadWriteSignal<*>): AnimationBuilder<F, FB>
+    fun customSignal(signal: Signal<*>): AnimationBuilder<F, FB>
 
     fun build(owner: Element): Animation<F>
 }

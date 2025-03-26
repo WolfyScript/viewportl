@@ -24,14 +24,14 @@ import com.wolfyscript.viewportl.gui.animation.AnimationFrame
 import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
 import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.reactivity.Effect
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
+import com.wolfyscript.viewportl.gui.reactivity.Signal
 import com.wolfyscript.viewportl.gui.rendering.RenderContext
 import java.util.concurrent.atomic.AtomicInteger
 
 class AnimationImpl<F : AnimationFrame> internal constructor(
     owner: Element,
     animationFrameBuilders: List<AnimationFrameBuilder<F>>,
-    updateSignal: ReadWriteSignal<*>
+    updateSignal: Signal<*>
 ) :
     AnimationCommonImpl<F>(owner, animationFrameBuilders, updateSignal) {
 

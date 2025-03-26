@@ -21,7 +21,6 @@ import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import java.util.*
-import java.util.function.Function
 
 interface ReactiveSource {
 
@@ -39,8 +38,8 @@ interface ReactiveSource {
      * Creates a Signal that holds a value of the specified [valueType].
      * The [defaultValueProvider] needs to provide a Non-null default value.
      *
-     * When [ReadWriteSignal] values are accessed inside a [Memo]/[Effect] it subscribes to that [ReadWriteSignal].
-     * Then when the value of the [ReadWriteSignal] is updated the [Memo]/[Effect] is updated too.
+     * When [Signal] values are accessed inside a [Memo]/[Effect] it subscribes to that [Signal].
+     * Then when the value of the [Signal] is updated the [Memo]/[Effect] is updated too.
      */
     fun <T : Any?> createSignal(
         valueType: Class<T>,
@@ -48,23 +47,15 @@ interface ReactiveSource {
     ): Signal<T>
 
     /**
-     * Creates an [Effect] that reruns when a [ReadWriteSignal]/[Memo] used inside it is updated.
+     * Creates an [Effect] that reruns when a [Signal]/[Memo] used inside it is updated.
      *
      */
     fun createEffect(effect: () -> Unit): Effect
 
     /**
-     * Creates an [Effect] that reruns when a [ReadWriteSignal]/[Memo] used inside it is updated.
-     *
-     * This type of [Effect] allows to use the value of the previous execution, and return the new value.<br>
-     * When no value is required use the type [Unit]
-     */
-    fun <T : Any?> createMemoEffect(initialValue: T, effect: (T) -> T): Effect
-
-    /**
      * Creates a Memo, that holds a value of the specified [valueType].
      *
-     * It is a combination of an [Effect] and [ReadWriteSignal]. It keeps track of the value of the previous execution of [fn]
+     * It is a combination of an [Effect] and [Signal]. It keeps track of the value of the previous execution of [fn]
      * and other [Effects][Effect]/[Memos][Memo] can subscribe to it.
      *
      * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.
@@ -93,14 +84,14 @@ interface ReactiveSource {
         inputType: Class<I?>,
         input: () -> I?,
         fetch: (I, Viewportl, ViewRuntime<*, *>) -> Result<T>,
-    ): Pair<ReadWriteSignal<Result<T>?>, () -> Unit>
+    ): Pair<Signal<Result<T>?>, () -> Unit>
 
 }
 
 /**
  * Creates a Memo, that holds a value of the specified type [T].
  *
- * It is a combination of an [Effect] and [ReadWriteSignal]. It keeps track of the value of the previous execution of [fn]
+ * It is a combination of an [Effect] and [Signal]. It keeps track of the value of the previous execution of [fn]
  * and other [Effects][Effect]/[Memos][Memo] can subscribe to it.
  *
  * It guarantees that subscribers are only updated when the value of [fn] is different from the previous value.

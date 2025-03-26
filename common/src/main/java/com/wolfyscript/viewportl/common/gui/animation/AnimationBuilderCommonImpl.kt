@@ -22,7 +22,7 @@ import com.wolfyscript.viewportl.gui.animation.AnimationBuilder
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame
 import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
+import com.wolfyscript.viewportl.gui.reactivity.Signal
 import java.util.function.Supplier
 
 abstract class AnimationBuilderCommonImpl<F : AnimationFrame, FB : AnimationFrameBuilder<F>>(
@@ -31,9 +31,9 @@ abstract class AnimationBuilderCommonImpl<F : AnimationFrame, FB : AnimationFram
 ) :
     AnimationBuilder<F, FB> {
     protected val frameBuilders: MutableList<FB> = ArrayList()
-    protected var updateSignal: ReadWriteSignal<*>? = null
+    protected var updateSignal: Signal<*>? = null
 
-    override fun customSignal(signal: ReadWriteSignal<*>): AnimationBuilderCommonImpl<F, FB> {
+    override fun customSignal(signal: Signal<*>): AnimationBuilderCommonImpl<F, FB> {
         this.updateSignal = signal
         return this
     }

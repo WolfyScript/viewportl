@@ -10,7 +10,7 @@ import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.gui.interaction.ClickInfo
-import com.wolfyscript.viewportl.gui.reactivity.ReadOnlySignal
+import com.wolfyscript.viewportl.gui.reactivity.Signal
 import net.kyori.adventure.sound.Sound
 
 internal fun setupButton(properties: ButtonProperties) {
@@ -33,7 +33,7 @@ internal fun setupButton(properties: ButtonProperties) {
     val id = (properties.scope as ComponentScopeImpl).setComponent(button)
 
     // Setup effects to update button. This way signals only update the parts that actually require updates
-    if (properties.sound is ReadOnlySignal<*>) {
+    if (properties.sound is Signal<*>) {
         reactiveSource.createEffect {
             button.sound = properties.sound
         }

@@ -21,12 +21,12 @@ import com.wolfyscript.viewportl.gui.animation.Animation
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame
 import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
 import com.wolfyscript.viewportl.gui.elements.Element
-import com.wolfyscript.viewportl.gui.reactivity.ReadWriteSignal
+import com.wolfyscript.viewportl.gui.reactivity.Signal
 
 abstract class AnimationCommonImpl<F : AnimationFrame> protected constructor(
     private val owner: Element,
     frameBuilders: List<AnimationFrameBuilder<F>>,
-    private val updateSignal: ReadWriteSignal<*>
+    private val updateSignal: Signal<*>
 ) :
     Animation<F> {
     private val frames: List<F> =
@@ -40,7 +40,7 @@ abstract class AnimationCommonImpl<F : AnimationFrame> protected constructor(
         return owner
     }
 
-    override fun updateSignal(): ReadWriteSignal<*> {
+    override fun updateSignal(): Signal<*> {
         return updateSignal
     }
 }
