@@ -55,7 +55,8 @@ class MemoImpl<V : Any?>(
             ReactivityNode.State.CLEAN -> false
             ReactivityNode.State.CHECK -> {
                 sources.any {
-                    it.updateIfNecessary() || state == ReactivityNode.State.DIRTY // The source may mark this as Dirty again
+                    // Check if the source changed, or it marked this node as DIRTY
+                    it.updateIfNecessary() || state == ReactivityNode.State.DIRTY
                 }
             }
             ReactivityNode.State.DIRTY -> true

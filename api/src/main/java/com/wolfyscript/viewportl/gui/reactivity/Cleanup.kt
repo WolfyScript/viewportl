@@ -18,6 +18,9 @@
 
 package com.wolfyscript.viewportl.gui.reactivity
 
+/**
+ * Cleanups are called when a Subscriber (i.e. Effect) reruns or is disposed.
+ */
 fun interface Cleanup {
 
     fun run()

@@ -4,6 +4,9 @@ interface ReactivityNode {
 
     val state: State
 
+    /**
+     * Notifies the subscribers (if there are any), that this nodes value has changed.
+     */
     fun notifySubscribers()
 
     /**
@@ -14,6 +17,8 @@ interface ReactivityNode {
      * Therefor this method goes up the Graph, starting at this Node, checking recursively if any sources are [ReactivityNode.State.DIRTY].
      *
      * Note that a [ReactivityNode.State.DIRTY] state can stop propagating down. For Example when a Memo doesn't change its value.
+     *
+     * @return If the value of the node has changed
      */
     fun updateIfNecessary(): Boolean
 
@@ -23,8 +28,15 @@ interface ReactivityNode {
      */
     fun markDirty()
 
+    /**
+     * Marks this node as [State.CHECK].
+     * Not all nodes have a [State.CHECK] state, so it depends on the specific implementation.
+     */
     fun markCheck()
 
+    /**
+     * The state of a [ReactivityNode]
+     */
     enum class State {
         /**
          * Node is clean, it does not need to be updated
