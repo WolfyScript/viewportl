@@ -16,7 +16,7 @@ class OwnerImpl(
         cleanups.add(cleanup)
     }
 
-    fun runCleanups() {
+    override fun runCleanups() {
         for (cleanup in cleanups) {
             cleanup.run()
         }
