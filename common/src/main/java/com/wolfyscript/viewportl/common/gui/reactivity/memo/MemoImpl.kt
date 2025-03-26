@@ -32,6 +32,7 @@ class MemoImpl<V : Any?>(
     id: NodeId,
     initialValue: V,
     val fn: (V) -> V,
+    val changed: (V, V) -> Boolean = { prev, new -> prev != new },
     val owner: OwnerImpl = OwnerImpl(id.runtime),
 ) : Memo<V>, ReactivityNodeImpl(id) {
 
@@ -60,13 +61,22 @@ class MemoImpl<V : Any?>(
             ReactivityNode.State.DIRTY -> true
         }
 
+        state = ReactivityNode.State.CLEAN
+
         if (shouldUpdate) {
             val newValue = owner.acquire {
                 this.observe {
                     return@observe fn(value)
                 }
             }
-            value = newValue
+            val changed = changed(value, newValue)
+            if (changed) {
+                value = newValue
+                for (subscriber in subscribers) {
+                    subscriber.markDirty()
+                }
+            }
+            return changed
         }
 
         return false
