@@ -28,6 +28,11 @@ class SignalImpl<T>(
         markDirty()
     }
 
+    override fun update(fn: (T) -> Unit) {
+        fn(value)
+        markDirty()
+    }
+
     override fun get(): T {
         id.runtime.reactiveSource.observer?.subscriber?.subscribeTo(this)
         updateIfNecessary()
@@ -35,16 +40,20 @@ class SignalImpl<T>(
     }
 
     override fun notifySubscribers() {
+        // Subscribers of this signal are marked DIRTY, because this signal was updated
         for (subscriber in subscribers) {
             subscriber.markDirty()
         }
     }
 
     override fun markDirty() {
+        // No need to mark the Signal DIRTY, just propagate the state down to Memos and Effects
         notifySubscribers()
     }
 
-    override fun markCheck() {}
+    override fun markCheck() {
+        // A Signal is either DIRTY or CLEAN, no need for CHECK as it has no sources!
+    }
 
     override fun updateIfNecessary(): Boolean {
         return false

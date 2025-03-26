@@ -6,6 +6,8 @@ interface Signal<T> : ReactivityNode, Source {
 
     fun set(value: T)
 
+    fun update(fn: (T) -> Unit)
+
     fun get(): T
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>) : T
