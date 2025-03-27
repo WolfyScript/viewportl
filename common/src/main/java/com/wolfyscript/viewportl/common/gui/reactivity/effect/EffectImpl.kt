@@ -30,37 +30,48 @@ import com.wolfyscript.viewportl.gui.reactivity.Source
 class EffectImpl(
     id: NodeId,
     val fn: () -> Unit,
-    val owner: Owner = OwnerImpl(id.runtime),
+    val owner: OwnerImpl = OwnerImpl(id.runtime),
 ) : Effect, ReactivityNodeImpl(id) {
+
+    var init = true
+
+    init {
+        markCheck() // We want to update the Memos and all above this Effect on the first run
+    }
 
     val sources: MutableList<Source> = mutableListOf<Source>()
 
     override fun notifySubscribers() {}
 
     override fun updateIfNecessary(): Boolean {
-        val needsToUpdate = when (state) {
-            ReactivityNode.State.CLEAN -> false
-            ReactivityNode.State.CHECK -> sources.any { it.updateIfNecessary() }
-            ReactivityNode.State.DIRTY -> true
+        if (state == ReactivityNode.State.DIRTY) {
+            state = ReactivityNode.State.CLEAN
+            return true
         }
 
-        // TODO: Queue effect execution instead of executing it here
+        return sources.any { it.updateIfNecessary() }
+    }
 
-        if (needsToUpdate) {
-
+    @Synchronized
+    fun execute() {
+        if (updateIfNecessary() || init) {
+            init = false
+            owner.dispose()
+            owner.acquire {
+                observe {
+                    fn()
+                }
+            }
         }
-
-        return needsToUpdate
     }
 
     override fun markCheck() {
-        super.markCheck()
-        updateIfNecessary()
+        id.runtime.reactiveSource.scheduleEffect(this)
     }
 
     override fun markDirty() {
         super.markDirty()
-        updateIfNecessary()
+        id.runtime.reactiveSource.scheduleEffect(this)
     }
 
     override fun subscribeTo(source: Source) {
