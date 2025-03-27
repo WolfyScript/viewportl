@@ -36,6 +36,11 @@ class MemoImpl<V : Any?>(
     val owner: OwnerImpl = OwnerImpl(id.runtime),
 ) : Memo<V>, ReactivityNodeImpl(id) {
 
+    init {
+        // On the initial run the Memo hasn't subscribed to any source yet, so need to mark it DIRTY
+        state = ReactivityNode.State.DIRTY
+    }
+
     val sources: MutableList<Source> = mutableListOf()
     val subscribers: MutableList<Subscriber> = mutableListOf()
 
