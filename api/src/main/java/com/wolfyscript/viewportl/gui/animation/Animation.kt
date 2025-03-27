@@ -18,10 +18,9 @@
 package com.wolfyscript.viewportl.gui.animation
 
 import com.wolfyscript.viewportl.gui.elements.Element
-import com.wolfyscript.viewportl.gui.reactivity.Effect
 import com.wolfyscript.viewportl.gui.reactivity.Signal
 
-interface Animation<F : AnimationFrame?> : Effect {
+interface Animation<F : AnimationFrame?> {
 
     fun frames(): List<F>
 
