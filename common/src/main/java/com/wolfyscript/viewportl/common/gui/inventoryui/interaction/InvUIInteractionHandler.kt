@@ -38,6 +38,10 @@ abstract class InvUIInteractionHandler<Self: InvUIInteractionHandler<Self>> : In
         this.runtime = runtime
     }
 
+    override fun dispose() {
+
+    }
+
     override fun onWindowOpen(window: Window) {
         val context = InvUIInteractionContext(this)
         cachedProperties[0] = CachedNodeInteractProperties(0, mutableListOf(0))

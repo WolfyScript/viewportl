@@ -48,11 +48,31 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
     internal var observer: Observer? = null
 
     // Effects that need to be updated
-    private val pendingEffects: MutableSet<NodeId> = mutableSetOf()
+    private val pendingEffects: MutableSet<EffectImpl> = mutableSetOf()
+    private var scheduler: Task? = null
 
+    fun initScheduler() {
+        scheduler = viewRuntime.viewportl.scafall.scheduler.asyncTimerTask(viewRuntime.viewportl.scafall.corePlugin, {
+            // TODO: Check if blocked by interaction
+            runEffects()
+        }, 1, 10)
+    }
+
+    fun exit() {
+        scheduler?.cancel()
+    }
+
+    @Synchronized
+    fun scheduleEffect(effect: EffectImpl) {
+        pendingEffects.add(effect)
+    }
+
+    @Synchronized
     fun runEffects() {
-        pendingEffects.removeAll {
-            true
+        val pending = pendingEffects.toList()
+        pendingEffects.clear()
+        for (effect in pending) {
+            effect.execute()
         }
     }
 

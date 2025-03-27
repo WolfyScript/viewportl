@@ -62,6 +62,7 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
         while (playerEntries.hasNext()) {
             val entry = playerEntries.next()
             if (runtimes.contains(entry.value)) {
+                this.runtimes[entry.value].dispose()
                 playerEntries.remove()
             }
         }

@@ -35,6 +35,8 @@ interface InteractionHandler<Self: InteractionHandler<Self>> : ModelChangeListen
 
     fun init(runtime: ViewRuntime<*, Self>)
 
+    fun dispose()
+
     fun onWindowOpen(window: Window)
 
 }

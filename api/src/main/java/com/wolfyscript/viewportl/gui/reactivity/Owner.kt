@@ -20,9 +20,6 @@ interface Owner {
      */
     fun <T> acquire(fn: () -> T): T
 
-    /**
-     * Runs the [Cleanup]s of this owner
-     */
-    fun runCleanups()
+    fun dispose()
 
 }

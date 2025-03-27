@@ -12,6 +12,7 @@ import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Keys
 import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction
+import java.lang.invoke.MethodHandles
 
 class SpongeUIInteractionHandler : InvUIInteractionHandler<SpongeUIInteractionHandler>() {
 
@@ -31,8 +32,13 @@ class SpongeUIInteractionHandler : InvUIInteractionHandler<SpongeUIInteractionHa
 
         if (listener == null) {
             listener = SpongeInventoryUIListener(runtime, runtime.viewportl)
-            Sponge.eventManager().registerListeners(runtime.viewportl.scafall.corePlugin.into<SpongePluginWrapper>().plugin, listener)
+            Sponge.eventManager().registerListeners(runtime.viewportl.scafall.corePlugin.into<SpongePluginWrapper>().plugin, listener, MethodHandles.lookup())
         }
+    }
+
+    override fun dispose() {
+        super.dispose()
+        Sponge.eventManager().unregisterListeners(listener)
     }
 
     fun onClick(event: ClickContainerEvent) {

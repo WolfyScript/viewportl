@@ -59,6 +59,8 @@ interface ViewRuntime<R: Renderer<*, *>, I: InteractionHandler<*>> {
      */
     fun openPrevious()
 
+    fun dispose()
+
     /**
      * Gets the currently active menu.
      *

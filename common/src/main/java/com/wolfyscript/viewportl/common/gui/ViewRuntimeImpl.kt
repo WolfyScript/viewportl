@@ -59,6 +59,11 @@ class ViewRuntimeImpl<R: Renderer<R,*>, I: InteractionHandler<I>>(
         interactionHandler.init(this)
     }
 
+    override fun dispose() {
+        reactiveSource.exit()
+        interactionHandler.dispose()
+    }
+
     override fun openNew() {
         openNew(*emptyArray())
     }
