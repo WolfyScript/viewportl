@@ -29,7 +29,6 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
             .delay(1)
             .execute(Runnable{
                 runnable.run()
-                runtime.reactiveSource.runEffects()
             })
             .build()
 

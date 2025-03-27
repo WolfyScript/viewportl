@@ -125,9 +125,6 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
             task = null;
             initiated = true
             value.set(fetchedValue)
-            viewRuntime.viewportl.scafall.scheduler.syncTask(viewRuntime.viewportl.scafall.corePlugin) {
-                viewRuntime.reactiveSource.runEffects()
-            }
         }
 
         val schedule = fun() {
@@ -137,9 +134,6 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
             val inputCopy = inputMemo.get()
             if (inputCopy != null) {
                 value.set(null)
-                viewRuntime.viewportl.scafall.scheduler.syncTask(viewRuntime.viewportl.scafall.corePlugin) {
-                    viewRuntime.reactiveSource.runEffects()
-                }
 
                 task = viewRuntime.viewportl.scafall.scheduler.asyncTask(viewRuntime.viewportl.scafall.corePlugin) {
                     val fetchedValue = fetch(inputCopy, viewRuntime.viewportl, viewRuntime)
