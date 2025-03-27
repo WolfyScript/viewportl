@@ -39,7 +39,6 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         }
 
     // Graph
-    private val nodes: MutableMap<NodeId, ReactivityNode> = Object2ObjectOpenHashMap()
     private val rootOwner: OwnerImpl = OwnerImpl(viewRuntime, null)
     private val associatedOwners: Map<NodeId, OwnerImpl> = Object2ObjectOpenHashMap()
 
@@ -92,15 +91,20 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         valueType: Class<T>,
         defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>,
     ): Signal<T> {
-        return SignalImpl<T>(nextNodeId, with(defaultValueProvider) { viewRuntime.apply() })
+        val signal = SignalImpl<T>(nextNodeId, with(defaultValueProvider) { viewRuntime.apply() })
+        owner?.nodes?.add(signal.id)
+        return signal
     }
 
     override fun createEffect(effect: () -> Unit): Effect {
-        return EffectImpl(nextNodeId, effect)
+        val effect = EffectImpl(nextNodeId, effect)
+        return effect
     }
 
     override fun <T : Any?> createMemo(initialValue: T, valueType: Class<T>, fn: (T) -> T): Memo<T> {
-        return MemoImpl(nextNodeId, initialValue, fn)
+        val memo = MemoImpl(nextNodeId, initialValue, fn)
+        owner?.nodes?.add(memo.id)
+        return memo
     }
 
     fun <I, T> createLink(input: () -> I, getter: (I, ViewRuntime<*,*>) -> T, setter: (T, ViewRuntime<*,*>) -> Unit) { }
