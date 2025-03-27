@@ -34,7 +34,10 @@ class SignalImpl<T>(
     }
 
     override fun get(): T {
-        id.runtime.reactiveSource.observer?.subscriber?.subscribeTo(this)
+        id.runtime.reactiveSource.observer?.let {
+            it.subscriber.subscribeTo(this)
+            subscribedBy(it.subscriber)
+        }
         updateIfNecessary()
         return this.value
     }

@@ -47,7 +47,11 @@ class MemoImpl<V : Any?>(
     var value: V = initialValue
 
     override fun get(): V {
-        id.runtime.reactiveSource.observer?.subscriber?.subscribeTo(this)
+        id.runtime.reactiveSource.observer?.let {
+            it.subscriber.subscribeTo(this)
+            subscribedBy(it.subscriber)
+        }
+        updateIfNecessary()
         return value
     }
 
