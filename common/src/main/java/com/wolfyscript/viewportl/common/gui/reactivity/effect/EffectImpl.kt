@@ -23,9 +23,9 @@ import com.wolfyscript.viewportl.common.gui.reactivity.ObserverImpl
 import com.wolfyscript.viewportl.common.gui.reactivity.OwnerImpl
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactivityNodeImpl
 import com.wolfyscript.viewportl.gui.reactivity.Effect
-import com.wolfyscript.viewportl.gui.reactivity.Owner
 import com.wolfyscript.viewportl.gui.reactivity.ReactivityNode
 import com.wolfyscript.viewportl.gui.reactivity.Source
+import it.unimi.dsi.fastutil.objects.ObjectArraySet
 
 class EffectImpl(
     id: NodeId,
@@ -39,7 +39,7 @@ class EffectImpl(
         markCheck() // We want to update the Memos and all above this Effect on the first run
     }
 
-    val sources: MutableList<Source> = mutableListOf<Source>()
+    val sources: MutableSet<Source> = ObjectArraySet()
 
     override fun notifySubscribers() {}
 

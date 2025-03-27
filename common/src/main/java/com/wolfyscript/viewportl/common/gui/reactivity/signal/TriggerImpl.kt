@@ -22,12 +22,13 @@ import com.wolfyscript.viewportl.common.gui.reactivity.NodeId
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactivityNodeImpl
 import com.wolfyscript.viewportl.gui.reactivity.Subscriber
 import com.wolfyscript.viewportl.gui.reactivity.Trigger
+import it.unimi.dsi.fastutil.objects.ObjectArraySet
 
 class TriggerImpl(
     id: NodeId,
 ) : Trigger, ReactivityNodeImpl(id) {
 
-    val subscribers: MutableList<Subscriber> = mutableListOf()
+    val subscribers: MutableSet<Subscriber> = ObjectArraySet()
 
     override fun track() {
         id.runtime.reactiveSource.observer?.subscriber?.subscribeTo(this)

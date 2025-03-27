@@ -5,6 +5,7 @@ import com.wolfyscript.viewportl.common.gui.reactivity.ReactivityNodeImpl
 import com.wolfyscript.viewportl.gui.reactivity.Signal
 import com.wolfyscript.viewportl.gui.reactivity.Source
 import com.wolfyscript.viewportl.gui.reactivity.Subscriber
+import it.unimi.dsi.fastutil.objects.ObjectArraySet
 import kotlin.reflect.KProperty
 
 class SignalImpl<T>(
@@ -12,7 +13,7 @@ class SignalImpl<T>(
     initialValue: T,
 ) : Signal<T>, ReactivityNodeImpl(id), Source {
 
-    val subscribers: MutableList<Subscriber> = mutableListOf()
+    val subscribers: MutableSet<Subscriber> = ObjectArraySet()
     var value = initialValue
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {

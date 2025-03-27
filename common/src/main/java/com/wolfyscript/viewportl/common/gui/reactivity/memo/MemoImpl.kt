@@ -26,6 +26,7 @@ import com.wolfyscript.viewportl.gui.reactivity.Memo
 import com.wolfyscript.viewportl.gui.reactivity.ReactivityNode
 import com.wolfyscript.viewportl.gui.reactivity.Source
 import com.wolfyscript.viewportl.gui.reactivity.Subscriber
+import it.unimi.dsi.fastutil.objects.ObjectArraySet
 import kotlin.reflect.KProperty
 
 class MemoImpl<V : Any?>(
@@ -41,8 +42,8 @@ class MemoImpl<V : Any?>(
         state = ReactivityNode.State.DIRTY
     }
 
-    val sources: MutableList<Source> = mutableListOf()
-    val subscribers: MutableList<Subscriber> = mutableListOf()
+    val sources: MutableSet<Source> = ObjectArraySet()
+    val subscribers: MutableSet<Subscriber> = ObjectArraySet()
 
     var value: V = initialValue
 
