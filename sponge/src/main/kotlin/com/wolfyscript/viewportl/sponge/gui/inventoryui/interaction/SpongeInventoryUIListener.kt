@@ -43,10 +43,6 @@ class SpongeInventoryUIListener(
     fun onClickSingleSlot(event: ClickContainerEvent) {
         withGuiHolder(event.inventory()) {
             runtime.interactionHandler.onClick(event)
-
-            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
-                (runtime.reactiveSource as ReactiveGraph).runEffects()
-            }
         }
     }
 
@@ -60,10 +56,6 @@ class SpongeInventoryUIListener(
 
                 runtime.interactionHandler.onClick(event)
             }
-
-            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
-                (runtime.reactiveSource as ReactiveGraph).runEffects()
-            }
         }
     }
 
@@ -76,10 +68,6 @@ class SpongeInventoryUIListener(
                     continue // Let's not handle events not affecting top inventory
                 }
                 runtime.interactionHandler.onDrag(event, transaction)
-            }
-
-            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
-                (runtime.reactiveSource as ReactiveGraph).runEffects()
             }
         }
     }
