@@ -56,6 +56,7 @@ class EffectImpl(
     fun execute() {
         if (updateIfNecessary() || init) {
             init = false
+            state = ReactivityNode.State.CLEAN
             owner.dispose()
             owner.acquire {
                 observe {
