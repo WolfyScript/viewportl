@@ -21,7 +21,6 @@ import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
-import com.wolfyscript.viewportl.common.gui.reactivity.signal.TriggerImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.gui.reactivity.Signal
@@ -35,9 +34,11 @@ internal fun setupRouter(properties: RouterProperties) {
     val runtime = properties.scope.runtime.into()
     val reactiveSource = runtime.reactiveSource
 
+    val initialPath = ActivePath()
+
     // Create signals to control routing
-    val history: Signal<Deque<ActivePath>> = reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(ActivePath()) })
-    val currentPath: ActivePath? by reactiveSource.createMemo(null) { history.get().peek() } // fetch the latest path from the history. Only notify subscribers when it changed!
+    val history: Signal<Deque<ActivePath>> = reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(initialPath) })
+    val currentPath: ActivePath? by reactiveSource.createMemo(initialPath) { history.get().peek() } // fetch the latest path from the history. Only notify subscribers when it changed!
 
     val router = RouterImpl(properties.scope.parent?.component, runtime.viewportl)
     // calculate routes
@@ -58,9 +59,8 @@ internal fun setupRouter(properties: RouterProperties) {
         }
         // Update component when route changes
         val route = selectedRoute!!.route!!
-        with(route.view) { // this subscribes to the selected route memo
-            properties.scope.consume()
-        }
+        // this subscribes to the selected route memo
+        route.view(properties.scope)
 
         // Clear all child components (the route component)
         reactiveSource.createCleanup {
@@ -173,7 +173,7 @@ class RouterImpl(
 class RouteImpl(
     internal val router: Router,
     override var path: MatchPath,
-    override var view: ReceiverConsumer<ComponentScope>
+    override var view: ComponentScope.() -> Unit
 ) : Route {
 
     override val routes: MutableList<Route> = mutableListOf()
@@ -192,7 +192,7 @@ class RouterScopeImpl(
     override fun route(
         path: ReceiverConsumer<MatchPath>,
         subRoutes: ReceiverConsumer<RouteScope>,
-        view: ReceiverConsumer<ComponentScope>
+        view: ComponentScope.() -> Unit
     ) {
         val matchPath = MatchPath()
         with(path) { matchPath.consume() }
@@ -246,7 +246,7 @@ class RouteScopeImpl(
 
     override fun route(
         pathConfig: ReceiverConsumer<MatchPath>,
-        viewConfig: ReceiverConsumer<ComponentScope>,
+        viewConfig: ComponentScope.() -> Unit,
         routeConfig: ReceiverConsumer<Route>
     ) {
         val path = route.path.copy()

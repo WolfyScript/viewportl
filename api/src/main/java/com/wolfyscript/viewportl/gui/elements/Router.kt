@@ -17,7 +17,7 @@ interface RouterScope {
      *
      * **Note:** Has no effect when used inside the [viewConfig] function. Routes are calculated once on setup and therefore can only be specified at top level!
      */
-    fun route(path: ReceiverConsumer<MatchPath>, subRoutes: ReceiverConsumer<RouteScope> = ReceiverConsumer {}, view: ReceiverConsumer<ComponentScope>)
+    fun route(path: ReceiverConsumer<MatchPath>, subRoutes: ReceiverConsumer<RouteScope> = ReceiverConsumer {}, view: ComponentScope.() -> Unit)
 
     /**
      * Pops the current path from history and opens the previous path in the history
@@ -60,7 +60,7 @@ interface Route {
 
     var path: MatchPath
 
-    var view: ReceiverConsumer<ComponentScope>
+    var view: ComponentScope.() -> Unit
 
     val routes: List<Route>
 
@@ -70,6 +70,6 @@ interface RouteScope {
 
     val route: Route
 
-    fun route(pathConfig: ReceiverConsumer<MatchPath>, viewConfig: ReceiverConsumer<ComponentScope>, routeConfig: ReceiverConsumer<Route>)
+    fun route(pathConfig: ReceiverConsumer<MatchPath>, viewConfig: ComponentScope.() -> Unit, routeConfig: ReceiverConsumer<Route>)
 
 }
