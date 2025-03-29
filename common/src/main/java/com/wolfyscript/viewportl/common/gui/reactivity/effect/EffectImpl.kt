@@ -80,6 +80,9 @@ class EffectImpl(
     }
 
     override fun clearSources() {
+        for (source in sources) {
+            source.unsubscribedBy(this)
+        }
         sources.clear()
     }
 

@@ -28,7 +28,6 @@ import com.wolfyscript.viewportl.common.gui.reactivity.signal.SignalImpl
 import com.wolfyscript.viewportl.common.gui.reactivity.signal.TriggerImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.reactivity.*
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 
 class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSource {
 
@@ -40,7 +39,6 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
 
     // Graph
     private val rootOwner: OwnerImpl = OwnerImpl(viewRuntime, null)
-    private val associatedOwners: Map<NodeId, OwnerImpl> = Object2ObjectOpenHashMap()
 
     // State
     internal var owner: OwnerImpl? = rootOwner
@@ -92,18 +90,19 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>,
     ): Signal<T> {
         val signal = SignalImpl<T>(nextNodeId, with(defaultValueProvider) { viewRuntime.apply() })
-        owner?.nodes?.add(signal.id)
+        owner?.nodes?.add(signal)
         return signal
     }
 
     override fun createEffect(effect: () -> Unit): Effect {
         val effect = EffectImpl(nextNodeId, effect)
+        owner?.nodes?.add(effect)
         return effect
     }
 
     override fun <T : Any?> createMemo(initialValue: T, valueType: Class<T>, fn: (T) -> T): Memo<T> {
         val memo = MemoImpl(nextNodeId, initialValue, fn)
-        owner?.nodes?.add(memo.id)
+        owner?.nodes?.add(memo)
         return memo
     }
 

@@ -132,6 +132,9 @@ class MemoImpl<V : Any?>(
     }
 
     override fun clearSources() {
+        for (source in sources) {
+            source.unsubscribedBy(this)
+        }
         sources.clear()
     }
 

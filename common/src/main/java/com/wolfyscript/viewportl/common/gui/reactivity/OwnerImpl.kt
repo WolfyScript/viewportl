@@ -3,13 +3,17 @@ package com.wolfyscript.viewportl.common.gui.reactivity
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.reactivity.Cleanup
 import com.wolfyscript.viewportl.gui.reactivity.Owner
+import com.wolfyscript.viewportl.gui.reactivity.ReactivityNode
+import com.wolfyscript.viewportl.gui.reactivity.Source
+import com.wolfyscript.viewportl.gui.reactivity.Subscriber
+import it.unimi.dsi.fastutil.objects.ObjectArraySet
 
 class OwnerImpl(
     val runtime: ViewRuntimeImpl<*,*>,
     override val parent: OwnerImpl? = runtime.reactiveSource.owner // Use the current owner as the parent
 ) : Owner {
-    override val nodes: MutableList<NodeId> = mutableListOf()
-    override val children: MutableList<OwnerImpl> = mutableListOf()
+    override val nodes: MutableSet<ReactivityNode> = ObjectArraySet()
+    override val children: MutableSet<OwnerImpl> = ObjectArraySet()
     override val cleanups: MutableList<Cleanup> = mutableListOf()
 
     init {
@@ -20,6 +24,7 @@ class OwnerImpl(
         for (child in children) {
             child.dispose()
         }
+        children.clear()
         runCleanups()
         clear()
     }
@@ -35,8 +40,15 @@ class OwnerImpl(
     }
 
     fun clear() {
+        for (node in nodes) {
+            if (node is Subscriber) {
+                node.clearSources()
+            }
+            if (node is Source) {
+                node.clearSubscribers()
+            }
+        }
         nodes.clear()
-        children.clear()
         cleanups.clear()
     }
 

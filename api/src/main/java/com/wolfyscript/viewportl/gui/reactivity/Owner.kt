@@ -9,8 +9,8 @@ package com.wolfyscript.viewportl.gui.reactivity
 interface Owner {
 
     val parent: Owner?
-    val nodes: List<NodeId>
-    val children: List<Owner>
+    val nodes: Set<ReactivityNode>
+    val children: Set<Owner>
     val cleanups: List<Cleanup>
 
     /**
