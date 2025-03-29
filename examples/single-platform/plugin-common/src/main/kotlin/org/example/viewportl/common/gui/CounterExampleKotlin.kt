@@ -106,7 +106,11 @@ class CounterExampleKotlin {
         /**
          * This function setups the counter menu
          */
-        private fun ComponentScope.counterMenu(counterStore: CounterStore, window: WindowScope, routerScope: RouterScope) {
+        private fun ComponentScope.counterMenu(
+            counterStore: CounterStore,
+            window: WindowScope,
+            routerScope: RouterScope,
+        ) {
             window.title { // Update the title with the Count
                 Component.text("Counter: ").decorate(TextDecoration.BOLD)
                     .append(Component.text(counterStore.count).color(NamedTextColor.BLUE))
@@ -131,7 +135,7 @@ class CounterExampleKotlin {
 
             button(
                 styles = {
-                    position = PropertyPosition.slot(4)
+                    position = PropertyPosition.slot(5)
                 },
                 icon = {
                     stack("green_concrete") {
@@ -145,18 +149,21 @@ class CounterExampleKotlin {
 
             button(
                 styles = {
-                    position = PropertyPosition.slot(13)
+                    position = PropertyPosition.slot(14)
                 },
                 icon = {
                     stack("redstone") {
-                        set(ItemStackDataKeys.CUSTOM_NAME, "<!italic>Clicked <b><count></b> times!".deserialize("count".parsed(counterStore.count)))
+                        set(
+                            ItemStackDataKeys.CUSTOM_NAME,
+                            "<!italic>Clicked <b><count></b> times!".deserialize("count".parsed(counterStore.count))
+                        )
                     }
                 },
             )
 
             button(
                 styles = {
-                    position = PropertyPosition.slot(22)
+                    position = PropertyPosition.slot(23)
                 },
                 icon = {
                     stack("red_concrete") {
@@ -174,29 +181,26 @@ class CounterExampleKotlin {
                 condition = { render },
                 fallback = { }
             ) {
-                group(
-                    styles = { position = PropertyPosition.slot(10) },
-                ) {
-                    button(
-                        styles = {
-                            position = PropertyPosition.slot(10)
-                        },
-                        icon = {
-                            stack("tnt") {
-                                set(ItemStackDataKeys.CUSTOM_NAME, "<b><red>Reset Clicks!".deserialize())
-                            }
-                        },
-                        onClick = {
-                            counterStore.count = 0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
-                        },
-                        sound = Sound.sound(
-                            Key.key("minecraft:entity.dragon_fireball.explode"),
-                            Sound.Source.MASTER,
-                            0.25f,
-                            1f
-                        )
+                button(
+                    styles = {
+                        position = PropertyPosition.slot(11)
+                    },
+                    icon = {
+                        stack("tnt") {
+                            set(ItemStackDataKeys.CUSTOM_NAME, "<b><red>Reset Clicks!".deserialize())
+                        }
+                    },
+                    onClick = {
+                        counterStore.count =
+                            0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
+                    },
+                    sound = Sound.sound(
+                        Key.key("minecraft:entity.dragon_fireball.explode"),
+                        Sound.Source.MASTER,
+                        0.25f,
+                        1f
                     )
-                }
+                )
             }
 
         }
