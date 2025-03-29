@@ -1,6 +1,7 @@
 package com.wolfyscript.viewportl.common.gui.reactivity
 
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
+import com.wolfyscript.viewportl.common.gui.reactivity.effect.EffectImpl
 import com.wolfyscript.viewportl.gui.reactivity.Cleanup
 import com.wolfyscript.viewportl.gui.reactivity.Owner
 import com.wolfyscript.viewportl.gui.reactivity.ReactivityNode
@@ -46,6 +47,9 @@ class OwnerImpl(
             }
             if (node is Source) {
                 node.clearSubscribers()
+            }
+            if (node is EffectImpl) {
+                node.state = ReactivityNode.State.CLEAN
             }
         }
         nodes.clear()

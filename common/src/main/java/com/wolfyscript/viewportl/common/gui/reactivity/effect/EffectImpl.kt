@@ -44,6 +44,9 @@ class EffectImpl(
     override fun notifySubscribers() {}
 
     override fun updateIfNecessary(): Boolean {
+        if (state == ReactivityNode.State.CLEAN) {
+            return false
+        }
         if (state == ReactivityNode.State.DIRTY) {
             state = ReactivityNode.State.CLEAN
             return true
@@ -67,6 +70,7 @@ class EffectImpl(
     }
 
     override fun markCheck() {
+        super.markCheck()
         id.runtime.reactiveSource.scheduleEffect(this)
     }
 
