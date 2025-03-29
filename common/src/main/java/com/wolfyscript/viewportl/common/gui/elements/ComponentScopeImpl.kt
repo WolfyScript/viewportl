@@ -72,8 +72,8 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
 
     override fun show(
         condition: () -> Boolean,
-        fallback: ComponentScope.() -> Unit,
-        content: ComponentScope.() -> Unit
+        content: ComponentScope.() -> Unit,
+        fallback: ComponentScope.() -> Unit
     ) = component(this, runtime) {
         runtime.viewportl.guiFactory.elementFactory.show(
             ShowProperties(

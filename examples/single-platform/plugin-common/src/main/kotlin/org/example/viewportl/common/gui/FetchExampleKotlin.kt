@@ -64,12 +64,15 @@ class FetchExampleKotlin {
             }
             var fetched by fetchedSignal
 
-            show({ fetched == null }, {
-                show({ fetched!!.isFailure }, {
+            show({ fetched != null }, {
+                show({ fetched!!.isSuccess }, {
                     button(
                         icon = {
                             stack("written_book") {
-                                set(ItemStackDataKeys.CUSTOM_NAME, "<green><b>Fetched ${fetched!!.getOrDefault(0)}".deserialize())
+                                set(
+                                    ItemStackDataKeys.CUSTOM_NAME,
+                                    "<green><b>Fetched ${fetched!!.getOrDefault(0)}".deserialize()
+                                )
                             }
                         },
                         styles = { position = PropertyPosition.slot(14) },
@@ -87,14 +90,14 @@ class FetchExampleKotlin {
                     refetch(refetch)
                 }
             }) {
-               button(
-                   icon = {
-                       stack("paper") {
-                           set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Fetching...".deserialize())
-                       }
-                   },
-                   styles = { position = PropertyPosition.slot(14) },
-               )
+                button(
+                    icon = {
+                        stack("paper") {
+                            set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Fetching...".deserialize())
+                        }
+                    },
+                    styles = { position = PropertyPosition.slot(14) },
+                )
             }
         }
 

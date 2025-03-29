@@ -80,8 +80,8 @@ interface ComponentScope : ReactiveSource {
      */
     fun show(
         condition: () -> Boolean,
+        content: ComponentScope.() -> Unit,
         fallback: ComponentScope.() -> Unit = {},
-        content: ComponentScope.() -> Unit
     )
 
     fun slot(

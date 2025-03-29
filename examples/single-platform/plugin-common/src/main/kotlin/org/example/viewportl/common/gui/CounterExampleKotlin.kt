@@ -179,29 +179,29 @@ class CounterExampleKotlin {
             val render by createMemo<Boolean>(false) { counterStore.count != 0 }
             show(
                 condition = { render },
-                fallback = { }
-            ) {
-                button(
-                    styles = {
-                        position = PropertyPosition.slot(11)
-                    },
-                    icon = {
-                        stack("tnt") {
-                            set(ItemStackDataKeys.CUSTOM_NAME, "<b><red>Reset Clicks!".deserialize())
-                        }
-                    },
-                    onClick = {
-                        counterStore.count =
-                            0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
-                    },
-                    sound = Sound.sound(
-                        Key.key("minecraft:entity.dragon_fireball.explode"),
-                        Sound.Source.MASTER,
-                        0.25f,
-                        1f
+                {
+                    button(
+                        styles = {
+                            position = PropertyPosition.slot(11)
+                        },
+                        icon = {
+                            stack("tnt") {
+                                set(ItemStackDataKeys.CUSTOM_NAME, "<b><red>Reset Clicks!".deserialize())
+                            }
+                        },
+                        onClick = {
+                            counterStore.count =
+                                0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
+                        },
+                        sound = Sound.sound(
+                            Key.key("minecraft:entity.dragon_fireball.explode"),
+                            Sound.Source.MASTER,
+                            0.25f,
+                            1f
+                        )
                     )
-                )
-            }
+                }
+            ) { }
 
         }
     }

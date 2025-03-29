@@ -88,10 +88,7 @@ class StackEditorExampleKotlin {
                             stack == null || stack.item.value == "air"
                         }
 
-                        show(condition = { !isAir }, fallback = {
-                            // Called once whenever the condition changes from false to true (Item becomes air)
-                            // Empty component! Perhaps add a note that the item is missing!
-                        }) {
+                        show(condition = { !isAir }, {
                             group(styles = { position = optionsPos }) {
                                 val memoizedTab by createMemo<Tab>(Tab.NONE) { selectedTab }
                                 createEffect {
@@ -126,6 +123,9 @@ class StackEditorExampleKotlin {
                                     }
                                 }
                             }
+                        }) {
+                            // Called once whenever the condition changes from false to true (Item becomes air)
+                            // Empty component! Perhaps add a note that the item is missing!
                         }
                     }
                 }
