@@ -7,6 +7,7 @@ import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
+import com.wolfyscript.viewportl.common.gui.reactivity.effect.EffectImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.gui.interaction.ClickInfo
@@ -25,27 +26,27 @@ internal fun setupButton(properties: ButtonProperties) {
         onClick = properties.onClick,
         sound = properties.sound,
     )
-    // Apply initial button settings
-    properties.icon(button.icon)
-    properties.styles(button.styles)
-
-    // Add the button once on init
-    val id = (properties.scope as ComponentScopeImpl).setComponent(button)
-
     // Setup effects to update button. This way signals only update the parts that actually require updates
     if (properties.sound is Signal<*>) {
-        reactiveSource.createEffect {
+        val soundEffect = reactiveSource.createEffect {
             button.sound = properties.sound
         }
+        (soundEffect as EffectImpl).execute()
     }
-    reactiveSource.createEffect {
+    val effect = reactiveSource.createEffect {
         val icon = DynamicIcon(runtime)
         properties.icon(icon)
         button.icon = icon
     }
-    reactiveSource.createEffect {
+    (effect as EffectImpl).execute()
+
+    val styleEffect = reactiveSource.createEffect {
         properties.styles(button.styles)
     }
+    (styleEffect as EffectImpl).execute()
+
+    // Add the button once on init
+    val id = (properties.scope as ComponentScopeImpl).setComponent(button)
 }
 
 @ElementImplementation(base = Button::class)
