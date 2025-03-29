@@ -84,7 +84,9 @@ class MemoImpl<V : Any?>(
             if (changed) {
                 value = newValue
                 for (subscriber in subscribers) {
-                    subscriber.markDirty()
+                    if (subscriber != id.runtime.reactiveSource.observer) {
+                        subscriber.markDirty()
+                    }
                 }
             }
             return changed
