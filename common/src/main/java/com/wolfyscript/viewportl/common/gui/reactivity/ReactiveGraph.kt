@@ -77,7 +77,6 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         return buildString {
             appendLine("-------- [Reactive Graph] --------")
             appendLine("Pending: $pendingEffects")
-            appendLine("Nodes (${nodes.size}): ")
         }
     }
 

@@ -62,17 +62,9 @@ class OwnerImpl(
 
     override fun toString(): String {
         return buildString {
-            append(this.hashCode())
-            append(" -> ")
-            append("Nodes: ")
-            for (id in nodes) {
-                append(id.id).append(", ")
-            }
-            appendLine("Owners: [")
-            for (owner in children) {
-                appendLine(owner)
-            }
-            append("]")
+            append("{ ")
+            append(super.toString().replace("com.wolfyscript.viewportl.common.gui.reactivity.", ""))
+            append(": Nodes: ${nodes.size}, children: (${children.size})[$children] }")
         }
     }
 }
