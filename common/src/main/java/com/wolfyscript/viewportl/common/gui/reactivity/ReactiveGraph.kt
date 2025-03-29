@@ -52,7 +52,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         scheduler = viewRuntime.viewportl.scafall.scheduler.asyncTimerTask(viewRuntime.viewportl.scafall.corePlugin, {
             // TODO: Check if blocked by interaction
             runEffects()
-        }, 1, 10)
+        }, 1, 2)
     }
 
     fun exit() {
