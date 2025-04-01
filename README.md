@@ -22,8 +22,8 @@ The list is not complete, and things may be added/removed along the way.
     * [x] Spigot single-platform example
     * [x] Sponge single-platform example
 * API Features
-  * [ ] Routing
-    * [ ] Default route (initial route to select, useful for nested routing)
+  * [x] Routing
+    * [x] Default route (initial route to select, useful for nested routing)
   * [ ] Basic elements
     * [x] Buttons
     * [x] Group (group elements together)
@@ -31,7 +31,7 @@ The list is not complete, and things may be added/removed along the way.
     * [ ] Slot Input (not fully implemented on all platforms)
   * [ ] Persistent State
     (Currently signals are non-persistent, meaning state is lost when closing the inv or the component is removed from the graph)
-  * [ ] Data fetching (async/sync data fetching utils into signals)
+  * [x] Data fetching (async/sync data fetching utils into signals)
   * [ ] Multi-player GUIs (multiple viewers, synchronisation)
 * Platform
   * [ ] Multi Platform Support
