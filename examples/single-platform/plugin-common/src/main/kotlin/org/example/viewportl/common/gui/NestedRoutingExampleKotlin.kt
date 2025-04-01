@@ -100,6 +100,7 @@ class NestedRoutingExampleKotlin {
                 )
 
                 // Setup sub routes.
+                initialPath { this / "page1" }
                 route({ this / "page1" }) { page1(this@router) }
                 route({ this / "page2" }) { page2(this@router) }
                 route({ this / "page3" }) { page3(this@router) }

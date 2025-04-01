@@ -12,6 +12,8 @@ interface RouterScope {
 
     val router: Router
 
+    fun initialPath(path: ActivePath.() -> Unit)
+
     /**
      * Specifies a new route with a given path and associated view.
      *

@@ -34,16 +34,19 @@ internal fun setupRouter(properties: RouterProperties) {
     val runtime = properties.scope.runtime.into()
     val reactiveSource = runtime.reactiveSource
 
-    val initialPath = ActivePath()
+    val router = RouterImpl(properties.scope.parent?.component, runtime.viewportl)
 
     // Create signals to control routing
-    val history: Signal<Deque<ActivePath>> = reactiveSource.createSignal(ArrayDeque<ActivePath>().apply { add(initialPath) })
-    val currentPath: ActivePath? by reactiveSource.createMemo(initialPath) { history.get().peek() } // fetch the latest path from the history. Only notify subscribers when it changed!
+    val history: Signal<Deque<ActivePath>> = reactiveSource.createSignal(ArrayDeque<ActivePath>())
+    val currentPath: ActivePath? by reactiveSource.createMemo(null) { history.get().peek() } // fetch the latest path from the history. Only notify subscribers when it changed!
 
-    val router = RouterImpl(properties.scope.parent?.component, runtime.viewportl)
     // calculate routes
     val routerScope = RouterScopeImpl(runtime, router, history)
     properties.routes(routerScope)
+
+    history.update {
+        it.add(routerScope.initialPath ?: ActivePath())
+    }
 
     // add component to graph
     val routerComponentId = (properties.scope as ComponentScopeImpl).setComponent(router)
@@ -188,6 +191,14 @@ class RouterScopeImpl(
     override val router: Router,
     private val history: Signal<Deque<ActivePath>>
 ) : RouterScope {
+
+    var initialPath: ActivePath? = null
+
+    override fun initialPath(path: ActivePath.() -> Unit) {
+        val newPath = ActivePath()
+        path(newPath)
+        initialPath = newPath
+    }
 
     override fun route(
         path: ReceiverConsumer<MatchPath>,
