@@ -17,4 +17,13 @@
  */
 package com.wolfyscript.viewportl.gui.reactivity
 
+/**
+ * Effects re-run whenever a signal it subscribed to changed its value.
+ * i.e. Signals/Memos define data and Effects use the data to update the UI.
+ *
+ * The flow of Signals/Memos typically terminates at Effects.
+ * You can think of Effects as leave nodes at the very bottom of the reactivity tree graph.
+ *
+ * **Effects should not update Signal values, because that can and probably will cause loops!**
+ */
 interface Effect : ReactivityNode, Subscriber
