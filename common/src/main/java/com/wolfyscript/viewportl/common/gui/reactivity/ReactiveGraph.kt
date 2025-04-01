@@ -144,7 +144,14 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
             }
         }
 
-        createEffect { schedule() }
+        createEffect {
+            schedule()
+
+            createCleanup {
+                task?.cancel()
+                task = null
+            }
+        }
 
         return Pair(value, schedule)
     }
