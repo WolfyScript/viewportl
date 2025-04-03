@@ -22,7 +22,10 @@ import com.wolfyscript.scafall.sponge.api.wrappers.wrap
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.StackInputSlot
 import org.spongepowered.api.data.Keys
+import org.spongepowered.api.data.Transaction
 import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
+import org.spongepowered.api.item.inventory.ItemStackSnapshot
+import org.spongepowered.api.item.inventory.Slot
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction
 
 class InventoryStackSlotInteractionHandler : SpongeComponentInteractionHandler<StackInputSlot> {
@@ -32,8 +35,8 @@ class InventoryStackSlotInteractionHandler : SpongeComponentInteractionHandler<S
         component: StackInputSlot,
         event: ClickContainerEvent
     ) {
-        for (transaction in event.transactions()) {
-            handleTransaction(component, transaction)
+        event.transactions().getOrNull(0)?.let {
+            handleTransaction(component, it.slot(), it)
         }
     }
 
@@ -43,20 +46,19 @@ class InventoryStackSlotInteractionHandler : SpongeComponentInteractionHandler<S
         slotTransaction: SlotTransaction,
         event: ClickContainerEvent.Drag
     ) {
-        handleTransaction(component, slotTransaction)
+        handleTransaction(component, slotTransaction.slot(), slotTransaction)
     }
 
-    private fun handleTransaction(component: StackInputSlot, transaction: SlotTransaction) {
+    private fun handleTransaction(component: StackInputSlot, slot: Slot?, transaction: Transaction<ItemStackSnapshot>) {
         if (!transaction.isValid) {
             return
         }
-        val slot = transaction.slot()
-        slot.get(Keys.SLOT_INDEX).ifPresent { slotIndex ->
+        slot?.get(Keys.SLOT_INDEX)?.ifPresent { slotIndex ->
             // TODO: Check if stack can be accepted (invalidate transaction otherwise)
 
-            val wrappedFinalReplacement = transaction.finalReplacement().asMutable().wrap()  // TODO: Wrap stack snapshot instead?
-            component.value = wrappedFinalReplacement
-            component.onValueChange?.accept(wrappedFinalReplacement)
+            val wrappedFinalReplacement = transaction.finalReplacement().wrap()  // TODO: Wrap stack snapshot instead?
+            component.value = wrappedFinalReplacement.createStack()
+            component.onValueChange?.accept(component.value)
         }
     }
 

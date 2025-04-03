@@ -42,7 +42,7 @@ internal fun setupSlot(properties: SlotProperties) {
         properties.scope.parent?.component,
         onValueChange = properties.onValueChange,
         canPickUpStack = properties.canPickUpStack,
-        value = properties.value()
+        value = null//properties.value()
     )
     properties.styles(slot.styles)
 
