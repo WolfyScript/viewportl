@@ -42,6 +42,9 @@ class SpongeInventoryUIListener(
     )
     fun onClickSingleSlot(event: ClickContainerEvent) {
         withGuiHolder(event.inventory()) {
+            if (event.slot().map { !event.inventory().isViewedSlot(it.viewedSlot()) }.orElse(true)) {
+                return@withGuiHolder // Let's not handle events not affecting top inventory
+            }
             runtime.interactionHandler.onClick(event)
         }
     }
