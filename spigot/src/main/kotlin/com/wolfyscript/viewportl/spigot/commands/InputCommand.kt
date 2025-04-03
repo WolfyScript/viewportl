@@ -28,9 +28,9 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import kotlin.Throws
 
-class InputCommand(private val core: Viewportl) : Command("wui"), PluginIdentifiableCommand {
+class InputCommand(private val core: Viewportl) : Command("io"), PluginIdentifiableCommand {
     init {
-        usage = "/wui <input>"
+        usage = "/io <input>"
         setDescription("Input for chat input actions")
     }
 
