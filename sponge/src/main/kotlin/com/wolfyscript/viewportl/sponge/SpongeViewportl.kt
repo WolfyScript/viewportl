@@ -58,7 +58,7 @@ class SpongeViewportl : Viewportl {
                         }
                     CommandResult.success()
                 } //.permission("wolfyutils.command.gui")
-//                .executionRequirements(cause -> cause.context().get(EventContextKeys.PLAYER).isPresent())
+                .executionRequirements { cause -> cause.contextCause().first(ServerPlayer::class.java).isPresent }
                 .build(), "io")
 
     }
