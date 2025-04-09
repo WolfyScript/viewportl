@@ -75,8 +75,6 @@ class WindowScopeImpl(val window: Window, componentScope: ComponentScopeImpl) : 
     override fun title(titleUpdate: ReceiverFunction<Component?, Component?>) {
         createEffect {
             window.title = with(titleUpdate) { window.title.apply() }
-
-            // TODO: Unlink from renderer?!
             runtime.into().renderer.updateTitle(window.title)
         }
     }

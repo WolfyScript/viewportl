@@ -6,7 +6,6 @@ import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.sponge.api.SpongePluginWrapper
 import com.wolfyscript.scafall.sponge.api.wrappers.unwrap
-import com.wolfyscript.scafall.sponge.api.wrappers.world.items.SpongeItemStackConfig
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
@@ -22,8 +21,10 @@ import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import net.kyori.adventure.text.Component
 import org.spongepowered.api.ResourceKey
 import org.spongepowered.api.Sponge
+import org.spongepowered.api.data.Keys
 import org.spongepowered.api.item.inventory.ContainerType
 import org.spongepowered.api.item.inventory.ContainerTypes
+import org.spongepowered.api.item.inventory.Inventory
 import org.spongepowered.api.item.inventory.menu.InventoryMenu
 import org.spongepowered.api.item.inventory.type.ViewableInventory
 import kotlin.jvm.optionals.getOrNull
@@ -32,13 +33,25 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
 
     companion object {
         init {
-            registerComponentRenderer(SpongeInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(
-                ButtonImpl::class.java)), InventoryButtonComponentRenderer())
-            registerComponentRenderer(SpongeInvUIRenderer::class.java, Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(
-                SlotImpl::class.java)), InventorySlotComponentRenderer())
+            registerComponentRenderer(
+                SpongeInvUIRenderer::class.java, Key.parse(
+                    StaticNamespacedKey.KeyBuilder.createKeyString(
+                        ButtonImpl::class.java
+                    )
+                ), InventoryButtonComponentRenderer()
+            )
+            registerComponentRenderer(
+                SpongeInvUIRenderer::class.java, Key.parse(
+                    StaticNamespacedKey.KeyBuilder.createKeyString(
+                        SlotImpl::class.java
+                    )
+                ), InventorySlotComponentRenderer()
+            )
         }
     }
 
+    private var inventory: Inventory? = null
+    private var title: Component? = null
     private var inventoryMenu: InventoryMenu? = null
 
     override fun createContext(): SpongeInvUIRenderContext {
@@ -47,28 +60,29 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
 
     override fun clearSlots(slots: Collection<Int>) {
         for (slot in slots) {
-            inventoryMenu?.inventory()?.set(slot, org.spongepowered.api.item.inventory.ItemStack.empty())
+            inventory?.set(slot, org.spongepowered.api.item.inventory.ItemStack.empty())
         }
     }
 
     override fun onWindowOpen(window: Window) {
         val guiHolder: GuiHolder = GuiHolderImpl(window, runtime)
         val carrier = GuiCarrier(guiHolder)
-        inventoryMenu = ViewableInventory.builder()
+
+        inventory = ViewableInventory.builder()
             .type { getInventoryType(window) }
             .completeStructure()
             .carrier(carrier)
-            .plugin(runtime.viewportl.scafall.corePlugin.into<SpongePluginWrapper>().plugin) // TODO
-            .build()
-            .asMenu()
+            .plugin(runtime.viewportl.scafall.corePlugin.into<SpongePluginWrapper>().plugin)
+            .build();
+
         window.title?.let {
-            inventoryMenu?.setTitle(it)
+            title = it
         }
-        carrier.menu = inventoryMenu
+        carrier.inventory = inventory
     }
 
     override fun render() {
-        if (inventoryMenu == null) return
+        if (inventory == null) return
 
         val context = createContext()
         computed[0] = CachedNodeRenderProperties(0, mutableSetOf(0))
@@ -78,8 +92,8 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
 
         runtime.viewers.forEach { viewer ->
             Sponge.server().player(viewer).ifPresent { player ->
-                if (player.openInventory().flatMap { it.currentMenu() }.orElse(null) != inventoryMenu) {
-                    inventoryMenu?.open(player)
+                if (player.openInventory().orElse(null) != inventory) {
+                    player.openInventory(inventory, title)
                 }
             }
         }
@@ -104,13 +118,19 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
     }
 
     override fun updateTitle(component: Component?) {
-        // TODO: Fix issue?! Report ClassCastException: class org.spongepowered.common.network.SpongeServerEngineConnection cannot be cast to class net.minecraft.server.network.ServerGamePacketListenerImpl (org.spongepowered.common.network.SpongeServerEngineConnection and net.minecraft.server.network.ServerGamePacketListenerImpl are in unnamed module of loader cpw.mods.modlauncher.TransformingClassLoader @9d7ccfe)
-//        inventoryMenu?.setTitle(component)
+        title = component
+        runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
+            for (uuid in runtime.viewers) {
+                Sponge.server().player(uuid).ifPresent { player ->
+                    player.openInventory(inventory, title)
+                }
+            }
+        }
     }
 
     fun setStack(i: Int, itemStackConfig: ItemStackConfig?) {
         if (itemStackConfig == null) {
-            inventoryMenu?.inventory()?.set(i, null)
+            inventory?.set(i, null)
             return
         }
 
@@ -138,7 +158,7 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
 
     private fun setNativeStack(i: Int, itemStack: org.spongepowered.api.item.inventory.ItemStack?) {
         //checkIfSlotInBounds(i);
-        inventoryMenu?.inventory()?.set(i, itemStack ?: org.spongepowered.api.item.inventory.ItemStack.empty())
+        inventory?.set(i, itemStack ?: org.spongepowered.api.item.inventory.ItemStack.empty())
     }
 
 }
