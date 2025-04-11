@@ -26,8 +26,8 @@ plugins {
     alias(libs.plugins.spongepowered.gradle)
 
     // These are required for the test servers (see below), can be removed when not required
-    id("com.wolfyscript.devtools.docker.run") version "2.0-SNAPSHOT"
-    id("com.wolfyscript.devtools.docker.minecraft_servers") version "2.0-SNAPSHOT"
+    alias(libs.plugins.devtools.docker.run)
+    alias(libs.plugins.devtools.docker.minecraft)
 }
 
 repositories {
@@ -109,7 +109,6 @@ tasks {
      *  Shade Scafall & Viewportl and relocate both of them  *
      * ***************************************************** */
     named<ShadowJar>("shadowJar") {
-        dependsOn(project(":sponge:platform").tasks.named("shadowJar"))
         mustRunAfter("jar")
         archiveClassifier =
             "" // This replaces the non-shaded jar with this shaded one (default creates a separate "-all.jar")
@@ -149,6 +148,7 @@ minecraftServers {
     val debugPortMapping = "${debugPort}:${debugPort}"
     servers {
         register("spongevanilla_14") {
+            destFileName.set("viewportl-loader.jar")
             val spongeVersion = "1.21.4-14.0.0-RC2113"
             imageVersion.set("java21")
             type.set("CUSTOM")

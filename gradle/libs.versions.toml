@@ -22,6 +22,7 @@ scafall = "alpha0.0.1.0-SNAPSHOT"
 
 ## plugins
 shadow = "8.1.7"
+dev-tools = "a2.0.1.0"
 ## ##
 
 ## Spigot Impl dependencies ##
@@ -77,3 +78,5 @@ spongepowered-api = { module = "org.spongepowered:spongeapi", version.ref = "spo
 [plugins]
 goooler-shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }
 spongepowered-gradle = { id = "org.spongepowered.gradle.plugin", version.ref = "sponge-gradle" }
+devtools-docker-run = { id = "com.wolfyscript.devtools.docker.run", version.ref = "dev-tools" }
+devtools-docker-minecraft = { id = "com.wolfyscript.devtools.docker.minecraft_servers", version.ref = "dev-tools" }

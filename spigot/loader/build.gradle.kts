@@ -24,8 +24,8 @@ plugins {
     id("viewportl.spigot.conventions")
 
     // These are required for the test servers (see below), can be removed when not required
-    id("com.wolfyscript.devtools.docker.run") version "2.0-SNAPSHOT"
-    id("com.wolfyscript.devtools.docker.minecraft_servers") version "2.0-SNAPSHOT"
+    alias(libs.plugins.devtools.docker.run)
+    alias(libs.plugins.devtools.docker.minecraft)
 }
 
 repositories {
@@ -102,6 +102,7 @@ minecraftServers {
     val debugPortMapping = "${debugPort}:${debugPort}"
     servers {
         register("spigot_1_21") {
+            destFileName.set("viewportl-loader.jar")
             version.set("1.21.1")
             type.set("SPIGOT")
             imageVersion.set("java21")
@@ -109,6 +110,7 @@ minecraftServers {
         }
         // Paper test servers
         register("paper_1_21") {
+            destFileName.set("viewportl-loader.jar")
             version.set("1.21.1")
             type.set("PAPER")
             imageVersion.set("java21")
