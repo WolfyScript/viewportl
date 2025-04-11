@@ -38,9 +38,10 @@ repositories {
 }
 
 dependencies {
+    // We need both the scafall & viewportl sponge implementation.
+    implementation(libs.scafall.loader)
     implementation(libs.org.reflections.reflections)
-
-    implementation(project(":examples:single-platform:plugin-common"))
+    implementation(project(":sponge"))
 }
 
 kotlin {
@@ -55,16 +56,43 @@ sponge {
         name(PluginLoaders.JAVA_PLAIN)
         version("1.0")
     }
-    plugin("viewportl_example") {
-        version("0.0.1.0")
-        displayName("ViewportlExample")
+    plugin("viewportl") {
+        version(convertToEpochVer(project.version.toString()))
+        displayName("Viewportl")
         description("")
-        entrypoint("org.example.viewportl.ViewportlExample")
+        entrypoint("com.wolfyscript.viewportl.Viewportl")
         dependency("spongeapi") {
             loadOrder(LoadOrder.AFTER)
             optional(false)
         }
     }
+}
+
+fun convertToEpochVer(version: String, prefixFactor: Int = 1000): String {
+    val prefixMapping = mapOf("a" to 1, "alpha" to 1, "b" to 2, "beta" to 2, "rc" to 6, "lts" to 9)
+    val split = version.split('-')
+    val verSections = split[0].split('.')
+    val epochVer = verSections.mapIndexed { index, section ->
+        var prefix = section.substring(0, section.indexOfFirst { it >= '0' && it <= '9' })
+        var encoded = prefixMapping[prefix]
+        if (encoded != null) {
+            val verNum = section.substring(prefix.length).toInt()
+            return@mapIndexed "${(encoded * prefixFactor) + verNum}"
+        }
+        if (index == 0) {
+            // Use default release encoding for first number
+            val verNum = section.substring(prefix.length).toInt()
+            return@mapIndexed "${(8 * prefixFactor) + verNum}"
+        }
+        return@mapIndexed section
+    }.joinToString(".")
+
+    if (split.size > 1) {
+        print("version: $version -> $epochVer-${split[1]}")
+        return "${epochVer}-${split[1]}"
+    }
+    print("version: $version -> $epochVer")
+    return epochVer
 }
 
 tasks {
@@ -78,22 +106,20 @@ tasks {
     }
 
     /* ***************************************************** *
-     *  Shade the common module                              *
+     *  Shade Scafall & Viewportl and relocate both of them  *
      * ***************************************************** */
     named<ShadowJar>("shadowJar") {
+        dependsOn(project(":sponge:platform").tasks.named("shadowJar"))
         mustRunAfter("jar")
-
         archiveClassifier =
             "" // This replaces the non-shaded jar with this shaded one (default creates a separate "-all.jar")
-
         include("**")
-
         dependencies {
-            include(dependency("org.jetbrains.kotlin:.*"))
-            include(dependency("org.reflections:reflections"))
-            include(dependency("org.javassist:javassist"))
-
-            include(project(":examples:single-platform:plugin-common"))
+            include(dependency("com.wolfyscript.viewportl.sponge:.*"))
+            include(project(":api"))
+            include(project(":common"))
+            include(project(":sponge"))
+            include(project(":sponge:platform"))
         }
     }
 }

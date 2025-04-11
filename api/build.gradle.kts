@@ -24,6 +24,10 @@ plugins {
     id("viewportl.kotlinmodule")
 }
 
+dependencies {
+    implementation(libs.scafall.loader)
+}
+
 publishing {
     publications {
         create<MavenPublication>("lib") {

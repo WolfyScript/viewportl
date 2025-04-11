@@ -9,8 +9,8 @@ repositories {
 }
 
 dependencies {
-    // We need both the scafall & viewportl spigot implementation.
-    implementation(project(":common"))
+    api(libs.scafall.api)
+    api("com.wolfyscript.viewportl.api:api:alpha0.0.1.0-SNAPSHOT")
 }
 
 kotlin {

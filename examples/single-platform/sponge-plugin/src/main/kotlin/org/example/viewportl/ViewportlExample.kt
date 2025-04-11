@@ -2,10 +2,7 @@ package org.example.viewportl
 
 import com.google.inject.Inject
 import com.google.inject.Injector
-import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.sponge.init
-import com.wolfyscript.viewportl.sponge.instance
+import com.wolfyscript.viewportl.ViewportlProvider
 import net.kyori.adventure.identity.Identity
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.LinearComponents
@@ -36,11 +33,8 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
 
     @Listener
     fun onConstructPlugin(event: ConstructPluginEvent) {
-        Viewportl.init(pluginContainer) // Init the viewportl instance (& Scafall if not yet initiated!)
-
         // From this point onward you can get the instances via
-        val viewportl = Viewportl.instance
-        val scafall = ScafallProvider.get()
+        val viewportl = ViewportlProvider.get()
 
         // then register the guis
         val manager = viewportl.guiManager
@@ -64,7 +58,7 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
 
     @Listener
     fun onRegisterCommands(event: RegisterCommandEvent<Command.Parameterized>) {
-        val viewportl = Viewportl.instance
+        val viewportl = ViewportlProvider.get()
 
         // Register a simple command
         // When possible, all commands should be registered within a command register event

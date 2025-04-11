@@ -36,15 +36,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
-
-    // We need both the scafall & viewportl spigot implementation.
-    implementation(libs.scafall.spigot.platform)
-
     implementation(project(":examples:single-platform:plugin-common"))
-    implementation(project(":common"))
-    implementation(project(":spigot"))
-    implementation(project(":spigot:platform"))
-//    implementation("com.wolfyscript.viewportl.spigot:spigot-platform:${project.version}") // While this already provides the viewportl api, we need the spigot impl. to shade it (see below)
 }
 
 kotlin {
@@ -66,7 +58,6 @@ tasks {
      *  Shade Scafall & Viewportl and relocate both of them  *
      * ***************************************************** */
     named<ShadowJar>("shadowJar") {
-        dependsOn(project(":spigot:platform").tasks.named("shadowJar"))
         mustRunAfter("jar")
 
         archiveClassifier = "" // This replaces the non-shaded jar with this shaded one (default creates a separate "-all.jar")
@@ -74,19 +65,8 @@ tasks {
         include("**")
 
         dependencies {
-            include(dependency("com.wolfyscript.scafall.spigot:.*"))
-            include(dependency("com.wolfyscript.viewportl.spigot:.*"))
-
             include(project(":examples:single-platform:plugin-common"))
-
-            include(project(":api"))
-            include(project(":common"))
-            include(project(":spigot"))
-            include(project(":spigot:platform"))
         }
-
-        // Always relocate both viewportl & scafall to prevent conflicts between plugins!
-//        relocate("com.wolfyscript", "org.example.viewportl.libs.com.wolfyscript")
     }
 }
 
@@ -115,14 +95,14 @@ minecraftServers {
     val debugPortMapping = "${debugPort}:${debugPort}"
     servers {
         register("spigot_1_21") {
-            version.set("1.21.1")
+            version.set("1.21.4")
             type.set("SPIGOT")
             imageVersion.set("java21")
             ports.set(setOf(debugPortMapping, "25568:25565"))
         }
         // Paper test servers
         register("paper_1_21") {
-            version.set("1.21.1")
+            version.set("1.21.4")
             type.set("PAPER")
             imageVersion.set("java21")
             ports.set(setOf(debugPortMapping, "25569:25565"))

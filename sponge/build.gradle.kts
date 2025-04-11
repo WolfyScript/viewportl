@@ -33,8 +33,8 @@ repositories {
 
 dependencies {
     compileOnly(libs.spongepowered.api)
-    implementation(libs.scafall.sponge.platform)
-    implementation(project(":common"))
+    implementation(libs.scafall.sponge.impl)
+    api(project(":common"))
 }
 
 kotlin {
@@ -43,7 +43,7 @@ kotlin {
 
 tasks {
     shadowJar {
-        archiveClassifier = ""
+        archiveFileName = "viewportl-sponge.innerjar"
 
         dependencies {
             include(dependency("com.wolfyscript.viewportl:.*"))

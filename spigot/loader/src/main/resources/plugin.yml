@@ -1,0 +1,9 @@
+name: Viewportl
+version: '${version}'
+main: com.wolfyscript.viewportl.loader.SpigotViewportlLoader
+api-version: 1.21.4
+authors: [ WolfyScript ]
+load: STARTUP
+
+depend:
+  - Scafall

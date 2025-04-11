@@ -18,10 +18,7 @@
 
 package org.example.viewportl
 
-import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.spigot.init
-import com.wolfyscript.viewportl.spigot.instance
+import com.wolfyscript.viewportl.ViewportlProvider
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
@@ -36,11 +33,8 @@ import java.util.*
 class ViewportlExample : JavaPlugin() {
 
     override fun onEnable() {
-        Viewportl.init(this) // Init the viewportl instance (& Scafall if not yet initiated!)
-
         // From this point onward you can get the instances via
-        val viewportl = Viewportl.instance
-        val scafall = ScafallProvider.get()
+        val viewportl = ViewportlProvider.get()
 
         // then register the guis
         val manager = viewportl.guiManager
@@ -54,7 +48,7 @@ class ViewportlExample : JavaPlugin() {
 
     private fun registerCommands() {
         registerDynamicCommands(
-            GuiExampleCommand(Viewportl.instance)
+            GuiExampleCommand(ViewportlProvider.get())
         )
     }
 

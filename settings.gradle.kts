@@ -64,6 +64,7 @@ samplePlugin("single-platform", "plugin-common", "spigot-plugin", "sponge-plugin
  * ********************* */
 sequenceOf(
     "platform",
+    "loader"
 ).forEach {
     include(":spigot:${it}")
     project(":spigot:${it}").projectDir = file("spigot/${it.replace(":", "/")}")
@@ -75,6 +76,7 @@ sequenceOf(
  * ********************* */
 sequenceOf(
     "platform",
+    "loader"
 ).forEach {
     include(":sponge:${it}")
     project(":sponge:${it}").projectDir = file("sponge/${it.replace(":", "/")}")

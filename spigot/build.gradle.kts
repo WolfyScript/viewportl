@@ -26,9 +26,10 @@ plugins {
 description = "viewportl-spigot"
 
 dependencies {
+    compileOnly(libs.io.papermc.paper)
     compileOnly(libs.net.kyori.adventure.platform.bukkit)
-    implementation(libs.scafall.spigot.platform)
-    implementation(project(":common"))
+    implementation(libs.scafall.spigot.impl)
+    api(project(":common"))
 }
 
 kotlin {
@@ -37,7 +38,7 @@ kotlin {
 
 tasks {
     shadowJar {
-        archiveClassifier = ""
+        archiveFileName = "viewportl-spigot.innerjar"
 
         dependencies {
             include(dependency("com.wolfyscript.viewportl:.*"))

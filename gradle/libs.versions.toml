@@ -62,10 +62,9 @@ org-junit-jupiter-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", 
 
 ## scafall
 scafall-api = { module = "com.wolfyscript.scafall:api", version.ref = "scafall" }
+scafall-loader = { module = "com.wolfyscript.scafall.loader:loader-api", version.ref = "scafall" }
 scafall-spigot-impl = { module = "com.wolfyscript.scafall.spigot:spigot", version.ref = "scafall" }
-scafall-spigot-platform = { module = "com.wolfyscript.scafall.spigot:spigot-platform", version.ref = "scafall" }
 scafall-sponge-impl = { module = "com.wolfyscript.scafall.sponge:sponge", version.ref = "scafall" }
-scafall-sponge-platform = { module = "com.wolfyscript.scafall.sponge:sponge-platform", version.ref = "scafall" }
 
 ## Spigot Impl dependencies ##
 io-papermc-paper = { module = "io.papermc.paper:paper-api", version.ref = "papermc" }
