@@ -73,6 +73,12 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         }
     }
 
+    fun batch(fn: () -> Unit) {
+
+
+
+    }
+
     fun renderState(): String {
         return buildString {
             appendLine("-------- [Reactive Graph] --------")
@@ -105,7 +111,18 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         return memo
     }
 
-    fun <I, T> createLink(input: () -> I, getter: (I, ViewRuntime<*,*>) -> T, setter: (T, ViewRuntime<*,*>) -> Unit) { }
+    fun <I, T> createLink(inputType: Class<I?>, input: () -> I?, valueType: Class<T>, initialValue: T, getter: (I, ViewRuntime<*,*>) -> T, setter: (T, ViewRuntime<*,*>) -> Unit) {
+        val inputMemo by createMemo(null, inputType) { input() }
+        val value = createMemo(initialValue, valueType) {
+            if (inputMemo != null) {
+                return@createMemo getter(inputMemo!!, viewRuntime)
+            }
+            return@createMemo it
+        }
+
+
+
+    }
 
     override fun createCleanup(cleanup: Cleanup) {
         owner?.addCleanup(cleanup)

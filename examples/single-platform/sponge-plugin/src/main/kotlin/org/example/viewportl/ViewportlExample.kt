@@ -2,13 +2,8 @@ package org.example.viewportl
 
 import com.google.inject.Inject
 import com.google.inject.Injector
-import com.wolfyscript.viewportl.ViewportlProvider
-import net.kyori.adventure.identity.Identity
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.LinearComponents
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.Style
-import net.kyori.adventure.text.format.TextDecoration
+import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.viewportl.viewportl
 import org.example.viewportl.common.gui.CounterExampleKotlin
 import org.example.viewportl.common.gui.FetchExampleKotlin
 import org.example.viewportl.common.gui.NestedRoutingExampleKotlin
@@ -33,17 +28,14 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
 
     @Listener
     fun onConstructPlugin(event: ConstructPluginEvent) {
-        // From this point onward you can get the instances via
-        val viewportl = ViewportlProvider.get()
+        val viewportl = ScafallProvider.get().viewportl
 
-        // then register the guis
         val manager = viewportl.guiManager
         CounterExampleKotlin.register(manager)
         FetchExampleKotlin.register(manager)
         NestedRoutingExampleKotlin.register(manager)
         StackEditorExampleKotlin.register(manager)
         StackSlotsExampleKotlin.register(manager)
-
     }
 
     @Listener
@@ -58,7 +50,7 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
 
     @Listener
     fun onRegisterCommands(event: RegisterCommandEvent<Command.Parameterized>) {
-        val viewportl = ViewportlProvider.get()
+        val viewportl = ScafallProvider.get().viewportl
 
         // Register a simple command
         // When possible, all commands should be registered within a command register event
@@ -88,28 +80,6 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
                 } //.permission("wolfyutils.command.gui")
                 //.executionRequirements(cause -> cause.context().get(EventContextKeys.PLAYER).isPresent())
                 .build(), "gui_clear")
-
-        val nameParam = Parameter.string().key("name").build()
-        event.register(
-            pluginContainer, Command.builder()
-                .addParameter(nameParam)
-                .permission("wolfyutils-sponge.command.greet")
-                .executor { ctx: CommandContext ->
-                    val name = ctx.requireOne(nameParam)
-                    ctx.sendMessage(
-                        Identity.nil(), LinearComponents.linear(
-                            NamedTextColor.AQUA,
-                            Component.text("Hello "),
-                            Component.text(
-                                name,
-                                Style.style(TextDecoration.BOLD)
-                            ),
-                            Component.text("! How are you?")
-                        )
-                    )
-                    CommandResult.success()
-                }
-                .build(), "greet", "wave")
     }
 
 }

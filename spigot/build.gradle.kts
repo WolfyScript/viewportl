@@ -29,6 +29,7 @@ dependencies {
     compileOnly(libs.io.papermc.paper)
     compileOnly(libs.net.kyori.adventure.platform.bukkit)
     implementation(libs.scafall.spigot.impl)
+    implementation(libs.scafall.loader)
     api(project(":common"))
 }
 

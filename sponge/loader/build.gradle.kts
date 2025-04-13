@@ -60,8 +60,13 @@ sponge {
         version(convertToEpochVer(project.version.toString()))
         displayName("Viewportl")
         description("")
-        entrypoint("com.wolfyscript.viewportl.Viewportl")
+        entrypoint("com.wolfyscript.viewportl.loader.SpongeViewportlLoader")
         dependency("spongeapi") {
+            loadOrder(LoadOrder.AFTER)
+            optional(false)
+        }
+        dependency("scafall") {
+            version("1000.0.1.0-SNAPSHOT")
             loadOrder(LoadOrder.AFTER)
             optional(false)
         }
@@ -109,17 +114,19 @@ tasks {
      *  Shade Scafall & Viewportl and relocate both of them  *
      * ***************************************************** */
     named<ShadowJar>("shadowJar") {
+        dependsOn(project(":sponge").tasks.shadowJar.get())
         mustRunAfter("jar")
         archiveClassifier =
             "" // This replaces the non-shaded jar with this shaded one (default creates a separate "-all.jar")
-        include("**")
         dependencies {
-            include(dependency("com.wolfyscript.viewportl.sponge:.*"))
+//            include(dependency("com.wolfyscript.viewportl.sponge:.*"))
             include(project(":api"))
             include(project(":common"))
             include(project(":sponge"))
-            include(project(":sponge:platform"))
         }
+
+        // Include the inner jar files for internal implementation
+        from(project(":sponge").tasks.shadowJar.get().archiveFile)
     }
 }
 

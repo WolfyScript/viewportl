@@ -40,19 +40,29 @@ import org.bukkit.event.server.PluginDisableEvent
 
 class SpigotViewportl(private val plugin: PluginWrapper) : CommonViewportl(), Listener {
 
-    override val guiManager: GuiAPIManager = GuiAPIManagerImpl(this)
-    override val guiFactory: GuiFactory = GuiFactoryImpl()
-    override val registries: ViewportlRegistries = CommonViewportlRegistries(this)
+    override lateinit var guiManager: GuiAPIManager
+    override lateinit var guiFactory: GuiFactory
+    override lateinit var registries: ViewportlRegistries
 
     fun init() {
+        guiManager = GuiAPIManagerImpl(this)
+        guiFactory = GuiFactoryImpl()
+        registries = CommonViewportlRegistries(this)
+
         // Register GUI things
         val guiComponentBuilders = registries.guiComponents
         guiComponentBuilders.register(ButtonImpl::class.java)
         guiComponentBuilders.register(SlotImpl::class.java)
         guiComponentBuilders.register(GroupImpl::class.java)
+    }
 
+    fun enable() {
         registerListeners()
         registerCommands()
+    }
+
+    fun unload() {
+
     }
 
     private fun registerListeners() {

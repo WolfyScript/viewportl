@@ -18,7 +18,8 @@
 
 package org.example.viewportl
 
-import com.wolfyscript.viewportl.ViewportlProvider
+import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.viewportl.viewportl
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
@@ -33,10 +34,8 @@ import java.util.*
 class ViewportlExample : JavaPlugin() {
 
     override fun onEnable() {
-        // From this point onward you can get the instances via
-        val viewportl = ViewportlProvider.get()
+        val viewportl = ScafallProvider.get().viewportl
 
-        // then register the guis
         val manager = viewportl.guiManager
         CounterExampleKotlin.register(manager)
         NestedRoutingExampleKotlin.register(manager)
@@ -48,7 +47,7 @@ class ViewportlExample : JavaPlugin() {
 
     private fun registerCommands() {
         registerDynamicCommands(
-            GuiExampleCommand(ViewportlProvider.get())
+            GuiExampleCommand(this, ScafallProvider.get().viewportl)
         )
     }
 

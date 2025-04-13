@@ -66,7 +66,7 @@ class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRender
         val holder = BukkitInventoryGuiHolder(guiHolder)
         val title: Component? = window.title
 
-        inventory = if (window.scaffolding.platformType == PlatformType.PAPER) {
+        inventory = if (window.scaffolding.platformManager.platformType == PlatformType.PAPER) {
             // Paper has direct Adventure support, so use it for better titles!
             getInventoryType(window)?.let { inventoryType ->
                 title?.let { Bukkit.createInventory(holder, inventoryType, it) } ?: Bukkit.createInventory(

@@ -1,30 +1,9 @@
 package com.wolfyscript.viewportl
 
-import org.jetbrains.annotations.ApiStatus
+import com.wolfyscript.scafall.Scafall
+import com.wolfyscript.scafall.identifier.Key
 
-interface ViewportlProvider {
-
-    companion object {
-
-        private var instance: Viewportl? = null
-
-        fun get(): Viewportl {
-            return instance ?: throw IllegalStateException("ViewportlProvider not initialized.")
-        }
-
-        fun registered(): Boolean {
-            return instance != null
-        }
-
-        @JvmSynthetic
-        @ApiStatus.Internal
-        internal fun register(viewportl: Viewportl): Viewportl {
-            if (registered()) {
-                throw IllegalStateException("ViewportlProvider already registered.")
-            }
-            return viewportl
-        }
-
+val Scafall.viewportl: Viewportl
+    get() {
+        return this.platformManager.getImplementationModule(Key.key("scafall", "viewportl"), Viewportl::class.java) ?: throw IllegalStateException("Viewportl not initialized!")
     }
-
-}

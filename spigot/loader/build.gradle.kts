@@ -68,12 +68,12 @@ tasks {
         include("**")
 
         dependencies {
-            include(dependency("com.wolfyscript.viewportl.spigot:.*"))
+//            include(dependency("com.wolfyscript.viewportl.spigot:.*"))
             include(project(":api"))
-            include(project(":common"))
-            include(project(":spigot"))
-            include(project(":spigot:platform"))
         }
+
+        // Include the inner jar files for internal implementation
+        from(project(":spigot").tasks.shadowJar.get().archiveFile)
     }
 }
 

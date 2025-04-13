@@ -26,8 +26,8 @@ plugins {
     alias(libs.plugins.spongepowered.gradle)
 
     // These are required for the test servers (see below), can be removed when not required
-    id("com.wolfyscript.devtools.docker.run") version "2.0-SNAPSHOT"
-    id("com.wolfyscript.devtools.docker.minecraft_servers") version "2.0-SNAPSHOT"
+    id("com.wolfyscript.devtools.docker.run") version "a2.0.1.0"
+    id("com.wolfyscript.devtools.docker.minecraft_servers") version "a2.0.1.0"
 }
 
 repositories {
@@ -64,6 +64,16 @@ sponge {
             loadOrder(LoadOrder.AFTER)
             optional(false)
         }
+        dependency("scafall") {
+            version("1000.0.1.0-SNAPSHOT")
+            loadOrder(LoadOrder.AFTER)
+            optional(false)
+        }
+        dependency("viewportl") {
+            version("1000.0.1.0-SNAPSHOT")
+            loadOrder(LoadOrder.AFTER)
+            optional(false)
+        }
     }
 }
 
@@ -89,10 +99,6 @@ tasks {
         include("**")
 
         dependencies {
-            include(dependency("org.jetbrains.kotlin:.*"))
-            include(dependency("org.reflections:reflections"))
-            include(dependency("org.javassist:javassist"))
-
             include(project(":examples:single-platform:plugin-common"))
         }
     }
@@ -123,6 +129,7 @@ minecraftServers {
     val debugPortMapping = "${debugPort}:${debugPort}"
     servers {
         register("spongevanilla_14") {
+            destFileName.set("viewportl_example.jar")
             val spongeVersion = "1.21.4-14.0.0-RC2113"
             imageVersion.set("java21")
             type.set("CUSTOM")

@@ -35,6 +35,7 @@ dependencies {
     compileOnly(libs.spongepowered.api)
     implementation(libs.scafall.sponge.impl)
     api(project(":common"))
+    implementation(libs.scafall.loader)
 }
 
 kotlin {

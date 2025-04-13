@@ -17,7 +17,6 @@
  */
 package org.example.viewportl.commands
 
-import com.wolfyscript.scafall.spigot.api.into
 import com.wolfyscript.viewportl.Viewportl
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -26,13 +25,13 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.StringUtil
 
-class GuiExampleCommand(private val core: Viewportl) : Command("gui_example"), PluginIdentifiableCommand {
+class GuiExampleCommand(private val plugin: Plugin, private val core: Viewportl) : Command("gui_example"), PluginIdentifiableCommand {
     init {
         setDescription("Opens the specified example GUI.")
     }
 
     override fun getPlugin(): Plugin {
-        return core.scafall.corePlugin.into().plugin
+        return plugin
     }
 
     override fun execute(sender: CommandSender, commandLabel: String, args: Array<String>): Boolean {

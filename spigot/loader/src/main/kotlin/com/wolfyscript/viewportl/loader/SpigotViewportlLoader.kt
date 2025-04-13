@@ -1,29 +1,26 @@
 package com.wolfyscript.viewportl.loader
 
-import com.wolfyscript.scafall.loader.ScafallLoader
-import com.wolfyscript.scafall.loader.module.Module
+import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import org.bukkit.plugin.java.JavaPlugin
 
 class SpigotViewportlLoader : JavaPlugin() {
 
-    private val module: Module<Viewportl>
-
     init {
-        val bootstrap = ScafallLoader.loadImplementationModule(Viewportl::class.java, "viewportl-spigot.innerjar", "com.wolfyscript.viewportl.Bootstrap")
-        module = bootstrap.loadImplementationModule(Viewportl::class.java, "com.wolfyscript.viewportl.spigot.SpigotViewportl", this::class.java, this)
+        ScafallProvider.get().platformManager.registerImplementationModule(
+            Key.key("scafall", "viewportl"),
+            Viewportl::class.java,
+            classLoader,
+            "viewportl-spigot.innerjar",
+            "com.wolfyscript.viewportl.spigot.SpigotViewportlModule"
+        )
     }
 
-    override fun onLoad() {
-        module.onLoad()
-    }
+    override fun onLoad() {}
 
-    override fun onEnable() {
+    override fun onEnable() {}
 
-    }
-
-    override fun onDisable() {
-        module.onUnload()
-    }
+    override fun onDisable() {}
 
 }

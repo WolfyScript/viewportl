@@ -32,6 +32,14 @@ class SpongeViewportl : Viewportl {
         eventManager.registerListeners(spongePlugin, this, MethodHandles.lookup())
     }
 
+    fun enable() {
+
+    }
+
+    fun unload() {
+
+    }
+
     @Listener
     fun onCommandRegister(event: RegisterCommandEvent<Command.Parameterized>) {
         val inputParam = Parameter.remainingJoinedStrings().key("input").build()
