@@ -119,10 +119,7 @@ tasks {
         archiveClassifier =
             "" // This replaces the non-shaded jar with this shaded one (default creates a separate "-all.jar")
         dependencies {
-//            include(dependency("com.wolfyscript.viewportl.sponge:.*"))
             include(project(":api"))
-            include(project(":common"))
-            include(project(":sponge"))
         }
 
         // Include the inner jar files for internal implementation
