@@ -5,6 +5,7 @@ import com.google.inject.Injector
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.viewportl
 import org.example.viewportl.common.gui.Counter
+import org.example.viewportl.common.gui.CounterTextured
 import org.example.viewportl.common.gui.Fetch
 import org.example.viewportl.common.gui.NestedRouting
 import org.example.viewportl.common.gui.StackEditor
@@ -32,6 +33,7 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
 
         val manager = viewportl.guiManager
         Counter.register(manager)
+        CounterTextured.register(manager)
         Fetch.register(manager)
         NestedRouting.register(manager)
         StackEditor.register(manager)

@@ -26,6 +26,7 @@ import org.bukkit.command.CommandMap
 import org.bukkit.plugin.java.JavaPlugin
 import org.example.viewportl.commands.GuiExampleCommand
 import org.example.viewportl.common.gui.Counter
+import org.example.viewportl.common.gui.CounterTextured
 import org.example.viewportl.common.gui.NestedRouting
 import org.example.viewportl.common.gui.StackEditor
 import org.example.viewportl.common.gui.StackSlots
@@ -38,6 +39,7 @@ class ViewportlExample : JavaPlugin() {
 
         val manager = viewportl.guiManager
         Counter.register(manager)
+        CounterTextured.register(manager)
         NestedRouting.register(manager)
         StackEditor.register(manager)
         StackSlots.register(manager)
