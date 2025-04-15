@@ -19,16 +19,17 @@
 package com.wolfyscript.viewportl.common.registry
 
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.scafall.data.ItemStackDataComponentConverterRegistry
+import com.wolfyscript.scafall.data.ItemDataComponentConverterRegistry
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 
+// TODO: Why extend the entire scafall registry? All the other contained registries won't have any values! That's confusing! Perhaps a global Registry of registries would be more useful!
 class CommonViewportlRegistries(viewportl: Viewportl) : ViewportlRegistries(viewportl) {
 
     override val guiComponents: RegistryGUIComponentTypes = RegistryUIComponentImplementations(Key.Companion.key("viewportl", "components"), this)
 
-    override val itemStackDataComponentConverterRegistry: ItemStackDataComponentConverterRegistry = ScafallProvider.get().registries.itemStackDataComponentConverterRegistry
+    override val itemDataComponentConverterRegistry: ItemDataComponentConverterRegistry = ScafallProvider.get().registries.itemDataComponentConverterRegistry
 
 }

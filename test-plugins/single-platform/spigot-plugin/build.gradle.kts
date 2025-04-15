@@ -17,17 +17,14 @@
  */
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.spongepowered.gradle.plugin.config.PluginLoaders
-import org.spongepowered.plugin.metadata.model.PluginDependency.LoadOrder
 
 plugins {
     kotlin("jvm")
     alias(libs.plugins.goooler.shadow) // Use a different fork of the shadow plugin to support Java 21
-    alias(libs.plugins.spongepowered.gradle)
 
     // These are required for the test servers (see below), can be removed when not required
-    id("com.wolfyscript.devtools.docker.run") version "a2.0.1.0"
-    id("com.wolfyscript.devtools.docker.minecraft_servers") version "a2.0.1.0"
+    id("com.wolfyscript.devtools.docker.run") version "2.0-SNAPSHOT"
+    id("com.wolfyscript.devtools.docker.minecraft_servers") version "2.0-SNAPSHOT"
 }
 
 repositories {
@@ -38,43 +35,13 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.org.reflections.reflections)
-
-    implementation(project(":examples:single-platform:plugin-common"))
+    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    implementation(project(":test-plugins:single-platform:plugin-common"))
 }
 
 kotlin {
     // Both scafall & viewportl are compiled using Java 21, so this plugin will be too
     jvmToolchain(21)
-}
-
-sponge {
-    apiVersion(libs.versions.sponge.api.get())
-    license("GNU GPL 3.0")
-    loader {
-        name(PluginLoaders.JAVA_PLAIN)
-        version("1.0")
-    }
-    plugin("viewportl_example") {
-        version("0.0.1.0")
-        displayName("ViewportlExample")
-        description("")
-        entrypoint("org.example.viewportl.ViewportlExample")
-        dependency("spongeapi") {
-            loadOrder(LoadOrder.AFTER)
-            optional(false)
-        }
-        dependency("scafall") {
-            version("1000.0.1.0-SNAPSHOT")
-            loadOrder(LoadOrder.AFTER)
-            optional(false)
-        }
-        dependency("viewportl") {
-            version("1000.0.1.0-SNAPSHOT")
-            loadOrder(LoadOrder.AFTER)
-            optional(false)
-        }
-    }
 }
 
 tasks {
@@ -88,13 +55,12 @@ tasks {
     }
 
     /* ***************************************************** *
-     *  Shade the common module                              *
+     *  Shade Scafall & Viewportl and relocate both of them  *
      * ***************************************************** */
     named<ShadowJar>("shadowJar") {
         mustRunAfter("jar")
 
-        archiveClassifier =
-            "" // This replaces the non-shaded jar with this shaded one (default creates a separate "-all.jar")
+        archiveClassifier = "" // This replaces the non-shaded jar with this shaded one (default creates a separate "-all.jar")
 
         include("**")
 
@@ -128,17 +94,18 @@ minecraftServers {
     libName.set("${project.name}-${version}.jar") // Makes sure to copy the correct file (when using shaded classifier "-all.jar" this needs to be changed!)
     val debugPortMapping = "${debugPort}:${debugPort}"
     servers {
-        register("spongevanilla_14") {
-            destFileName.set("viewportl_example.jar")
-            val spongeVersion = "1.21.4-14.0.0-RC2113"
+        register("spigot_1_21") {
+            version.set("1.21.4")
+            type.set("SPIGOT")
             imageVersion.set("java21")
-            type.set("CUSTOM")
-            extraEnv.put("SPONGEVERSION", spongeVersion)
-            extraEnv.put(
-                "CUSTOM_SERVER",
-                "https://repo.spongepowered.org/repository/maven-public/org/spongepowered/spongevanilla/${spongeVersion}/spongevanilla-${spongeVersion}-universal.jar"
-            )
-            ports.set(setOf(debugPortMapping, "25595:25565"))
+            ports.set(setOf(debugPortMapping, "25568:25565"))
+        }
+        // Paper test servers
+        register("paper_1_21") {
+            version.set("1.21.4")
+            type.set("PAPER")
+            imageVersion.set("java21")
+            ports.set(setOf(debugPortMapping, "25569:25565"))
         }
     }
 }

@@ -44,7 +44,7 @@ sequenceOf(
 /* ********************* *
  * Example/Test Projects *
  * ********************* */
-val examplesDir: String = "examples"
+val examplesDir: String = "test-plugins"
 
 fun samplePlugin(root: String, vararg modules: String) {
     include(":$examplesDir:$root")

@@ -18,7 +18,7 @@
 
 package org.example.viewportl.common.gui
 
-import com.wolfyscript.scafall.data.ItemStackDataKeys
+import com.wolfyscript.scafall.data.ItemDataComponentTypes.Companion.CUSTOM_NAME
 import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
@@ -70,7 +70,7 @@ class FetchExampleKotlin {
                         icon = {
                             stack("written_book") {
                                 set(
-                                    ItemStackDataKeys.CUSTOM_NAME,
+                                    CUSTOM_NAME,
                                     "<green><b>Fetched ${fetched!!.getOrDefault(0)}".deserialize()
                                 )
                             }
@@ -82,7 +82,7 @@ class FetchExampleKotlin {
                     button(
                         icon = {
                             stack("barrier") {
-                                set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Failed to fetch".deserialize())
+                                set(CUSTOM_NAME, "<red><b>Failed to fetch".deserialize())
                             }
                         },
                         styles = { position = PropertyPosition.slot(14) },
@@ -93,7 +93,7 @@ class FetchExampleKotlin {
                 button(
                     icon = {
                         stack("paper") {
-                            set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Fetching...".deserialize())
+                            set(CUSTOM_NAME, "<red><b>Fetching...".deserialize())
                         }
                     },
                     styles = { position = PropertyPosition.slot(14) },
@@ -105,7 +105,7 @@ class FetchExampleKotlin {
             button(
                 icon = {
                     stack("cyan_concrete") {
-                        set(ItemStackDataKeys.CUSTOM_NAME, "<aqua><b>Fetch Again".deserialize())
+                        set(CUSTOM_NAME, "<aqua><b>Fetch Again".deserialize())
                     }
                 },
                 styles = { position = PropertyPosition.slot(12) },

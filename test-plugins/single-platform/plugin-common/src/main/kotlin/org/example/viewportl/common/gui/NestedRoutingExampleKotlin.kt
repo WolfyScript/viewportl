@@ -18,7 +18,7 @@
 
 package org.example.viewportl.common.gui
 
-import com.wolfyscript.scafall.data.ItemStackDataKeys
+import com.wolfyscript.scafall.data.ItemDataComponentTypes.Companion.CUSTOM_NAME
 import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
@@ -65,7 +65,7 @@ class NestedRoutingExampleKotlin {
             button(
                 icon = {
                     stack("barrier") {
-                        set(ItemStackDataKeys.CUSTOM_NAME, "<red><b>Close".deserialize())
+                        set(CUSTOM_NAME, "<red><b>Close".deserialize())
                     }
                 },
                 styles = { position = PropertyPosition.slot(0) },
@@ -77,7 +77,7 @@ class NestedRoutingExampleKotlin {
                 button(
                     icon = {
                         stack("green_concrete") {
-                            set(ItemStackDataKeys.CUSTOM_NAME, "<green><b>Next Page".deserialize())
+                            set(CUSTOM_NAME, "<green><b>Next Page".deserialize())
                         }
                     },
                     styles = { position = PropertyPosition.slot(53) },
@@ -89,7 +89,7 @@ class NestedRoutingExampleKotlin {
                 button(
                     icon = {
                         stack("red_concrete") {
-                            set(ItemStackDataKeys.CUSTOM_NAME, "<green><b>Previous Page".deserialize())
+                            set(CUSTOM_NAME, "<green><b>Previous Page".deserialize())
                         }
                     },
                     styles = { position = PropertyPosition.slot(45) },
@@ -111,7 +111,7 @@ class NestedRoutingExampleKotlin {
             button(
                 icon = {
                     stack("green_concrete") {
-                        set(ItemStackDataKeys.CUSTOM_NAME, "<green><b>Open Main View".deserialize())
+                        set(CUSTOM_NAME, "<green><b>Open Main View".deserialize())
                     }
                 },
                 styles = { position = PropertyPosition.slot(13) },
@@ -125,7 +125,7 @@ class NestedRoutingExampleKotlin {
             button(
                 icon = {
                     stack("paper") {
-                        set(ItemStackDataKeys.CUSTOM_NAME, "<aqua>Page 1".deserialize())
+                        set(CUSTOM_NAME, "<aqua>Page 1".deserialize())
                     }
                 },
                 styles = { position = PropertyPosition.slot(31) }
@@ -136,7 +136,7 @@ class NestedRoutingExampleKotlin {
             button(
                 icon = {
                     stack("written_book") {
-                        set(ItemStackDataKeys.CUSTOM_NAME, "<aqua>Page 2".deserialize())
+                        set(CUSTOM_NAME, "<aqua>Page 2".deserialize())
                     }
                 },
                 styles = { position = PropertyPosition.slot(31) }
@@ -147,7 +147,7 @@ class NestedRoutingExampleKotlin {
             button(
                 icon = {
                     stack("name_tag") {
-                        set(ItemStackDataKeys.CUSTOM_NAME, "<aqua>Page 3".deserialize())
+                        set(CUSTOM_NAME, "<aqua>Page 3".deserialize())
                     }
                 },
                 styles = { position = PropertyPosition.slot(31) }
