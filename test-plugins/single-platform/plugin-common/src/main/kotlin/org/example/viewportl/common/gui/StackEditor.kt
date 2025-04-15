@@ -28,7 +28,7 @@ import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 
-class StackEditorExampleKotlin {
+class StackEditor {
 
     companion object {
 

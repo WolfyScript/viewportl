@@ -35,7 +35,7 @@ import net.kyori.adventure.text.Component
  * Whenever the path of a router changes, the router clears all the child components.
  * Therefor, components that are added outside a Route View are not reset and kept between path changes.
  */
-class NestedRoutingExampleKotlin {
+class NestedRouting {
 
     companion object {
 

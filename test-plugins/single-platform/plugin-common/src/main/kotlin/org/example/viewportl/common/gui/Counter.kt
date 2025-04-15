@@ -46,7 +46,7 @@ import net.kyori.adventure.sound.Sound
  * The count is displayed in the title of the Inventory and in the item name of the button in the middle.
  * Those parts are automatically updated when the count changes.
  */
-class CounterExampleKotlin {
+class Counter {
 
     class CounterStore(val reactiveSource: ReactiveSource) : ReactiveSource by reactiveSource {
 
@@ -57,7 +57,7 @@ class CounterExampleKotlin {
     companion object {
 
         fun register(manager: GuiAPIManager) {
-            manager.registerGui("example_counter") {
+            manager.registerGui("counter") {
                 /**
                  * Everything in this section is called **async** and only once.
                  * It constructs the component tree and reactive graph as specified.

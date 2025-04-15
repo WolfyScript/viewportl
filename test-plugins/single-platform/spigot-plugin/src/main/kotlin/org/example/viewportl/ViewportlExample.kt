@@ -25,10 +25,10 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandMap
 import org.bukkit.plugin.java.JavaPlugin
 import org.example.viewportl.commands.GuiExampleCommand
-import org.example.viewportl.common.gui.CounterExampleKotlin
-import org.example.viewportl.common.gui.NestedRoutingExampleKotlin
-import org.example.viewportl.common.gui.StackEditorExampleKotlin
-import org.example.viewportl.common.gui.StackSlotsExampleKotlin
+import org.example.viewportl.common.gui.Counter
+import org.example.viewportl.common.gui.NestedRouting
+import org.example.viewportl.common.gui.StackEditor
+import org.example.viewportl.common.gui.StackSlots
 import java.util.*
 
 class ViewportlExample : JavaPlugin() {
@@ -37,10 +37,10 @@ class ViewportlExample : JavaPlugin() {
         val viewportl = ScafallProvider.get().viewportl
 
         val manager = viewportl.guiManager
-        CounterExampleKotlin.register(manager)
-        NestedRoutingExampleKotlin.register(manager)
-        StackEditorExampleKotlin.register(manager)
-        StackSlotsExampleKotlin.register(manager)
+        Counter.register(manager)
+        NestedRouting.register(manager)
+        StackEditor.register(manager)
+        StackSlots.register(manager)
 
         registerCommands()
     }

@@ -24,7 +24,7 @@ import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 
-class StackSlotsExampleKotlin {
+class StackSlots {
 
     companion object {
 

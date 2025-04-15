@@ -4,11 +4,11 @@ import com.google.inject.Inject
 import com.google.inject.Injector
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.viewportl
-import org.example.viewportl.common.gui.CounterExampleKotlin
-import org.example.viewportl.common.gui.FetchExampleKotlin
-import org.example.viewportl.common.gui.NestedRoutingExampleKotlin
-import org.example.viewportl.common.gui.StackEditorExampleKotlin
-import org.example.viewportl.common.gui.StackSlotsExampleKotlin
+import org.example.viewportl.common.gui.Counter
+import org.example.viewportl.common.gui.Fetch
+import org.example.viewportl.common.gui.NestedRouting
+import org.example.viewportl.common.gui.StackEditor
+import org.example.viewportl.common.gui.StackSlots
 import org.spongepowered.api.Server
 import org.spongepowered.api.command.Command
 import org.spongepowered.api.command.CommandResult
@@ -31,11 +31,11 @@ class ViewportlExample @Inject constructor(private val injector: Injector, priva
         val viewportl = ScafallProvider.get().viewportl
 
         val manager = viewportl.guiManager
-        CounterExampleKotlin.register(manager)
-        FetchExampleKotlin.register(manager)
-        NestedRoutingExampleKotlin.register(manager)
-        StackEditorExampleKotlin.register(manager)
-        StackSlotsExampleKotlin.register(manager)
+        Counter.register(manager)
+        Fetch.register(manager)
+        NestedRouting.register(manager)
+        StackEditor.register(manager)
+        StackSlots.register(manager)
     }
 
     @Listener

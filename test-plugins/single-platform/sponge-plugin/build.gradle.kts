@@ -99,7 +99,7 @@ tasks {
         include("**")
 
         dependencies {
-            include(project(":examples:single-platform:plugin-common"))
+            include(project(":test-plugins:single-platform:plugin-common"))
         }
     }
 }

@@ -28,18 +28,18 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import java.net.MalformedURLException
 
-class FetchExampleKotlin {
+class Fetch {
 
     companion object {
 
         fun register(manager: GuiAPIManager) {
-            manager.registerGui("example_fetch") {
+            manager.registerGui("fetch") {
                 /**
                  * Everything in this section is called **async** and only once.
                  * It constructs the component tree and reactive graph as specified.
                  **/
                 size = 9 * 3
-                title = "Fetch Example".deserialize()
+                title = "Fetch Test".deserialize()
 
                 router {
                     route({ }) {
