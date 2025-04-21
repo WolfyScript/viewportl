@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     api(libs.scafall.api)
-    api("com.wolfyscript.viewportl.api:api:alpha0.0.1.0-SNAPSHOT")
+    api(project(":api"))
 }
 
 kotlin {
