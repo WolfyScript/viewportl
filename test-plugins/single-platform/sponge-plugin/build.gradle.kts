@@ -130,7 +130,7 @@ minecraftServers {
     servers {
         register("spongevanilla_14") {
             destFileName.set("viewportl_example.jar")
-            val spongeVersion = "1.21.4-14.0.0-RC2113"
+            val spongeVersion = "1.21.5-15.0.0-RC2153"
             imageVersion.set("java21")
             type.set("CUSTOM")
             extraEnv.put("SPONGEVERSION", spongeVersion)
