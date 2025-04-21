@@ -28,7 +28,7 @@ class SpongeViewportlLoader @Inject constructor(
             Viewportl::class.java,
             this.javaClass.classLoader,
             "viewportl-sponge.innerjar",
-            "com.wolfyscript.viewportl.sponge.SpongeViewportModule"
+            "com.wolfyscript.viewportl.sponge.SpongeViewportlModule"
         )
     }
 
