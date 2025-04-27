@@ -21,7 +21,6 @@ plugins {
     `java-library`
     `maven-publish`
     id("viewportl.common.conventions")
-    id("viewportl.kotlinmodule")
 }
 
 dependencies {

@@ -21,11 +21,13 @@ plugins {
     `java-library`
     `maven-publish`
     id("viewportl.common.conventions")
-    id("viewportl.kotlinmodule")
+    alias(libs.plugins.fabric.loom)
 }
 
 dependencies {
     api(project(":api"))
+    minecraft("com.mojang:minecraft:${libs.versions.minecraft.get()}")
+    mappings(loom.officialMojangMappings())
 }
 
 publishing {

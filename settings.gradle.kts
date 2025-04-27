@@ -18,17 +18,39 @@
 
 rootProject.name = "viewportl"
 pluginManagement {
-    includeBuild("build-logic") // Include 'plugins build' to define convention plugins.
     repositories {
-        mavenLocal()
-        mavenCentral()
         gradlePluginPortal()
+        mavenCentral()
+        mavenLocal()
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net")
+            content {
+                includeGroup("net.fabricmc")
+                includeGroup("fabric-loom")
+            }
+        }
+        maven {
+            name = "Sponge"
+            url = uri("https://repo.spongepowered.org/repository/maven-public")
+            content {
+                includeGroupAndSubgroups("org.spongepowered")
+            }
+        }
+        maven {
+            name = "Forge"
+            url = uri("https://maven.minecraftforge.net")
+            content {
+                includeGroupAndSubgroups("net.minecraftforge")
+            }
+        }
         maven("https://artifacts.wolfyscript.com/artifactory/gradle-dev")
+        maven("https://maven.neoforged.net/releases")
     }
 }
 
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
 sequenceOf(
