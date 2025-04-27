@@ -65,6 +65,10 @@ com-typesafe-config = { module = "com.typesafe:config", version.ref = "typesafe-
 # Testing
 org-junit-jupiter-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 
+## Minecraft
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+
+
 ## scafall
 scafall-api = { module = "com.wolfyscript.scafall:api", version.ref = "scafall" }
 scafall-loader = { module = "com.wolfyscript.scafall.loader:loader-api", version.ref = "scafall" }
