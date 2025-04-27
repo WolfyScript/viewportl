@@ -17,25 +17,29 @@
  */
 
 plugins {
+    kotlin("jvm")
     id("viewportl.spigot.conventions")
 
     alias(libs.plugins.goooler.shadow)
-    kotlin("jvm")
+    alias(libs.plugins.paperweight.userdev)
 }
 
 description = "viewportl-spigot"
 
 dependencies {
-    compileOnly(libs.io.papermc.paper)
     compileOnly(libs.net.kyori.adventure.platform.bukkit)
     implementation(libs.scafall.spigot.impl)
     implementation(libs.scafall.loader)
     api(project(":common"))
+
+    paperweight.paperDevBundle(libs.versions.papermc.get())
 }
 
 kotlin {
     jvmToolchain(21)
 }
+
+paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
 
 tasks {
     shadowJar {

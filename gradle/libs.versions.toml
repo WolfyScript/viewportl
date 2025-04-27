@@ -27,6 +27,7 @@ fabric-loom = "1.10-SNAPSHOT"
 shadow = "8.1.7"
 dev-tools = "a2.0.1.0"
 artifactory = "5+"
+paperweight-userdev = "2.0.0-beta.16"
 ## ##
 
 ## Spigot Impl dependencies ##
@@ -90,3 +91,4 @@ devtools-docker-run = { id = "com.wolfyscript.devtools.docker.run", version.ref 
 devtools-docker-minecraft = { id = "com.wolfyscript.devtools.docker.minecraft_servers", version.ref = "dev-tools" }
 artifactory = { id = "com.jfrog.artifactory", version.ref = "artifactory"}
 fabric-loom = { id = "fabric-loom", version.ref = "fabric-loom" }
+paperweight-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight-userdev" }
