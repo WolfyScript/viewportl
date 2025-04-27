@@ -20,7 +20,7 @@ plugins {
     kotlin("jvm")
     id("viewportl.spigot.conventions")
 
-    alias(libs.plugins.goooler.shadow)
+    alias(libs.plugins.shadow)
     alias(libs.plugins.paperweight.userdev)
 }
 
@@ -33,10 +33,6 @@ dependencies {
     api(project(":common"))
 
     paperweight.paperDevBundle(libs.versions.papermc.get())
-}
-
-kotlin {
-    jvmToolchain(21)
 }
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION

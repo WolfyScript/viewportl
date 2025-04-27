@@ -1,91 +1,109 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
+# Kotlin & Jetbrains
 kotlin-stdlib = "2.0.21"
+jetbrains-annotations = "23.0.0"
+
+# Configuration
 jackson = "2.15.4"
-guava = "31.1-jre"
-guice = "7.0.0"
-authlib = "6.0.58"
 dataformat-hocon = "2.1-SNAPSHOT"
-netty = "4.1.74.Final"
-fastutil = "8.5.15"
+typesafe-config = "1.3.1"
+
+# cross-platform APIs
+scafall = "alpha0.0.1.0-SNAPSHOT"
 adventure-api = "4.10.1"
 adventure-platform-api = "4.1.0"
 adventure-minimessage = "4.10.0"
+
+# Minecraft
+minecraft = "1.21.5"
+authlib = "6.0.58"
+fastutil = "8.5.15"
+netty = "4.1.74.Final"
+
+# Utils, Dependency Injection & Misc
+guava = "31.1-jre"
+guice = "7.0.0"
 commons-lang3 = "3.12.0"
-jetbrains-annotations = "23.0.0"
 junit-jupiter = "5.8.2"
 reflections = "0.10.2"
-typesafe-config = "1.3.1"
 
-scafall = "alpha0.0.1.0-SNAPSHOT"
-
-minecraft = "1.21.5"
-fabric-loom = "1.10-SNAPSHOT"
-
-## plugins
-shadow = "8.1.7"
-dev-tools = "a2.0.1.0"
-artifactory = "5+"
-paperweight-userdev = "2.0.0-beta.16"
-## ##
-
-## Spigot Impl dependencies ##
+# Spigot/Paper/Folia
 papermc = "1.21.1-R0.1-SNAPSHOT"
 bstats-bukkit = "3.0.0"
 item-nbt-api = "2.11.3"
 nbt-data-api = "2.11.3"
-## ##
 
-## Sponge Impl dependencies ##
+# Sponge
 sponge-gradle = "2.2.0"
 sponge-api = "15.0.0-SNAPSHOT"
 
+# Fabric
+fabric = "0.119.5+1.21.5"
+fabric-loader = "0.16.10"
+
+# Forge
+forge = "55.0.1"
+forge-loader-range = "[55,)"
+
+# NeoForge
+neoforge_version = "21.5.4-beta"
+neoforge_loader_version_range = "[4,)"
+
+# Gradle plugins
+fabric-loom = "1.10-SNAPSHOT"
+shadow = "8.1.7"
+dev-tools = "a2.0.1.0"
+artifactory = "5+"
+paperweight-userdev = "2.0.0-beta.16"
+
 [libraries]
-# Kotlin & Jetbrains dependencies
+# Kotlin & Jetbrains
 org-jetbrains-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin-stdlib" }
 org-jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
-# Misc (Utils, Datastructurs, etc.)
-com-google-inject-guice = { module = "com.google.inject:guice", version.ref = "guice" }
-com-google-guava-guava = { module = "com.google.guava:guava", version.ref = "guava" }
-org-apache-commons-commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
-org-reflections-reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
-it-unimi-dsi-fastutil = { module = "it.unimi.dsi:fastutil", version.ref = "fastutil" }
-io-netty-netty-all = { module = "io.netty:netty-all", version.ref = "netty" }
-com-mojang-authlib = { module = "com.mojang:authlib", version.ref = "authlib" }
-# Adventure
-net-kyori-adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure-api" }
-net-kyori-adventure-platform-api = { module = "net.kyori:adventure-platform-api", version.ref = "adventure-platform-api" }
-net-kyori-adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure-minimessage" }
-# Configs (Jackson + HOCON)
+
+# Configurations
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
 jackson-dataformat-hocon = { module = "com.wolfyscript:jackson-dataformat-hocon", version.ref = "dataformat-hocon" }
 com-typesafe-config = { module = "com.typesafe:config", version.ref = "typesafe-config" }
-# Testing
-org-junit-jupiter-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 
-## Minecraft
-minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-
-
-## scafall
+# cross-platform APIs
 scafall-api = { module = "com.wolfyscript.scafall:api", version.ref = "scafall" }
 scafall-loader = { module = "com.wolfyscript.scafall.loader:loader-api", version.ref = "scafall" }
 scafall-spigot-impl = { module = "com.wolfyscript.scafall.spigot:spigot", version.ref = "scafall" }
 scafall-sponge-impl = { module = "com.wolfyscript.scafall.sponge:sponge", version.ref = "scafall" }
+## Adventure
+net-kyori-adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure-api" }
+net-kyori-adventure-platform-api = { module = "net.kyori:adventure-platform-api", version.ref = "adventure-platform-api" }
+net-kyori-adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure-minimessage" }
 
-## Spigot Impl dependencies ##
+# Minecraft
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+com-mojang-authlib = { module = "com.mojang:authlib", version.ref = "authlib" }
+it-unimi-dsi-fastutil = { module = "it.unimi.dsi:fastutil", version.ref = "fastutil" }
+io-netty-netty-all = { module = "io.netty:netty-all", version.ref = "netty" }
+
+# Utils & Misc
+com-google-inject-guice = { module = "com.google.inject:guice", version.ref = "guice" }
+com-google-guava-guava = { module = "com.google.guava:guava", version.ref = "guava" }
+org-apache-commons-commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
+org-reflections-reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
+
+# Testing
+org-junit-jupiter-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+
+# Spigot/Paper/Folia
 io-papermc-paper = { module = "io.papermc.paper:paper-api", version.ref = "papermc" }
 net-kyori-adventure-platform-bukkit = { module = "net.kyori:adventure-platform-bukkit", version.ref = "adventure-platform-api" }
-## ##
 
-## Sponge Impl dependencies ##
+# Sponge
 spongepowered-api = { module = "org.spongepowered:spongeapi", version.ref = "sponge-api" }
 
 [plugins]
-goooler-shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }
+shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }
 spongepowered-gradle = { id = "org.spongepowered.gradle.plugin", version.ref = "sponge-gradle" }
 devtools-docker-run = { id = "com.wolfyscript.devtools.docker.run", version.ref = "dev-tools" }
 devtools-docker-minecraft = { id = "com.wolfyscript.devtools.docker.minecraft_servers", version.ref = "dev-tools" }

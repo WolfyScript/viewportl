@@ -20,7 +20,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     kotlin("jvm")
-    alias(libs.plugins.goooler.shadow) // Use a different fork of the shadow plugin to support Java 21
+    alias(libs.plugins.shadow)
 
     // These are required for the test servers (see below), can be removed when not required
     id("com.wolfyscript.devtools.docker.run") version "2.0-SNAPSHOT"

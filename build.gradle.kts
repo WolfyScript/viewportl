@@ -37,7 +37,7 @@ tasks.withType<ArtifactoryTask> {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(project.properties["jvm_target"].toString().toInt())
 }
 
 artifactory {

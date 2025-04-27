@@ -19,7 +19,7 @@
 plugins {
     `java-library`
     `maven-publish`
-    alias(libs.plugins.goooler.shadow)
+    alias(libs.plugins.shadow)
     kotlin("jvm")
 }
 

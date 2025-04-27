@@ -31,17 +31,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.20")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-
 kotlin {
-    target {
-        compilations.configureEach {
-            kotlinOptions {
-                jvmTarget = "21"
-            }
-        }
-    }
+    jvmToolchain(21)
 }
