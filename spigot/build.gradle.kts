@@ -27,7 +27,7 @@ plugins {
 description = "viewportl-spigot"
 
 dependencies {
-    compileOnly(libs.net.kyori.adventure.platform.bukkit)
+    compileOnly(libs.adventure.platform.bukkit)
     implementation(libs.scafall.spigot.impl)
     implementation(libs.scafall.loader)
     api(project(":common"))

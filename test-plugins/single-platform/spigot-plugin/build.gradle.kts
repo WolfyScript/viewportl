@@ -21,10 +21,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     kotlin("jvm")
     alias(libs.plugins.shadow)
-
-    // These are required for the test servers (see below), can be removed when not required
-    id("com.wolfyscript.devtools.docker.run") version "2.0-SNAPSHOT"
-    id("com.wolfyscript.devtools.docker.minecraft_servers") version "2.0-SNAPSHOT"
+    alias(libs.plugins.devtools.docker.run)
+    alias(libs.plugins.devtools.docker.minecraft)
 }
 
 repositories {
@@ -35,7 +33,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    compileOnly(libs.papermc.paper)
     implementation(project(":test-plugins:single-platform:plugin-common"))
 }
 
@@ -93,16 +91,18 @@ minecraftServers {
     serversDir.set(file("${System.getProperty("user.home")}${File.separator}minecraft${File.separator}test_servers_v5"))
     libName.set("${project.name}-${version}.jar") // Makes sure to copy the correct file (when using shaded classifier "-all.jar" this needs to be changed!)
     val debugPortMapping = "${debugPort}:${debugPort}"
+    val minecraftVersion = libs.versions.minecraft.get()
+    val majorMinorVersion = minecraftVersion.substringBeforeLast('.').replace(".", "_")
     servers {
-        register("spigot_1_21") {
-            version.set("1.21.4")
+        register("spigot_${majorMinorVersion}") {
+            version.set(libs.versions.minecraft.get())
             type.set("SPIGOT")
             imageVersion.set("java21")
             ports.set(setOf(debugPortMapping, "25568:25565"))
         }
         // Paper test servers
-        register("paper_1_21") {
-            version.set("1.21.4")
+        register("paper_${majorMinorVersion}") {
+            version.set(libs.versions.minecraft.get())
             type.set("PAPER")
             imageVersion.set("java21")
             ports.set(setOf(debugPortMapping, "25569:25565"))

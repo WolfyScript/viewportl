@@ -64,22 +64,16 @@ val Project.libs
 
 dependencies {
     api(libs.scafall.api)
-    api(libs.jackson.dataformat.hocon)
-    implementation(libs.org.jetbrains.kotlin.stdlib)
+    implementation(libs.bundles.jetbrains)
 
-    compileOnly(libs.com.google.inject.guice)
-    compileOnly(libs.org.reflections.reflections)
-    compileOnly(libs.it.unimi.dsi.fastutil)
-    compileOnly(libs.org.jetbrains.annotations)
-    compileOnly(libs.io.netty.netty.all)
-    compileOnly(libs.com.mojang.authlib)
-    compileOnlyApi(libs.org.apache.commons.commons.lang3)
-    compileOnly(libs.com.google.guava.guava)
+    compileOnly(libs.inject.guice)
+    compileOnly(libs.org.reflections)
+    compileOnlyApi(libs.commons.lang3)
+    compileOnly(libs.guava)
 
-    compileOnly(libs.jackson.databind)
-    compileOnlyApi(libs.net.kyori.adventure.api)
-    compileOnlyApi(libs.net.kyori.adventure.text.minimessage)
-    compileOnly(libs.net.kyori.adventure.platform.api)
+    compileOnly(libs.bundles.minecraft.deps)
+    compileOnlyApi(libs.bundles.jackson)
+    compileOnlyApi(libs.bundles.adventure)
 
-    testImplementation(libs.org.junit.jupiter.junit.jupiter)
+    testImplementation(libs.bundles.testing)
 }

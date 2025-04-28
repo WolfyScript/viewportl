@@ -19,15 +19,14 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.model.PluginDependency.LoadOrder
+import utils.convertToEpochVer
 
 plugins {
     kotlin("jvm")
     alias(libs.plugins.shadow)
     alias(libs.plugins.spongepowered.gradle)
-
-    // These are required for the test servers (see below), can be removed when not required
-    id("com.wolfyscript.devtools.docker.run") version "a2.0.1.0"
-    id("com.wolfyscript.devtools.docker.minecraft_servers") version "a2.0.1.0"
+    alias(libs.plugins.devtools.docker.run)
+    alias(libs.plugins.devtools.docker.minecraft)
 }
 
 repositories {
@@ -38,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.org.reflections.reflections)
+    implementation(libs.org.reflections)
 
     implementation(project(":test-plugins:single-platform:plugin-common"))
 }
@@ -56,7 +55,7 @@ sponge {
         version("1.0")
     }
     plugin("viewportl_example") {
-        version("0.0.1.0")
+        version(properties["test_plugin_version"].toString())
         displayName("ViewportlExample")
         description("")
         entrypoint("org.example.viewportl.ViewportlExample")
@@ -65,12 +64,12 @@ sponge {
             optional(false)
         }
         dependency("scafall") {
-            version("1000.0.1.0-SNAPSHOT")
+            version(libs.versions.scafall.get().convertToEpochVer())
             loadOrder(LoadOrder.AFTER)
             optional(false)
         }
         dependency("viewportl") {
-            version("1000.0.1.0-SNAPSHOT")
+            version(properties["version"].toString().convertToEpochVer())
             loadOrder(LoadOrder.AFTER)
             optional(false)
         }

@@ -41,7 +41,7 @@ repositories {
 dependencies {
     // We need both the scafall & viewportl sponge implementation.
     implementation(libs.scafall.loader)
-    implementation(libs.org.reflections.reflections)
+    implementation(libs.org.reflections)
     implementation(project(":sponge"))
 }
 

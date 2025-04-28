@@ -60,15 +60,15 @@ paperweight-userdev = "2.0.0-beta.16"
 
 [libraries]
 # Kotlin & Jetbrains
-org-jetbrains-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin-stdlib" }
-org-jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin-stdlib" }
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 
 # Configurations
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
 jackson-dataformat-hocon = { module = "com.wolfyscript:jackson-dataformat-hocon", version.ref = "dataformat-hocon" }
-com-typesafe-config = { module = "com.typesafe:config", version.ref = "typesafe-config" }
+typesafe-config = { module = "com.typesafe:config", version.ref = "typesafe-config" }
 
 # cross-platform APIs
 scafall-api = { module = "com.wolfyscript.scafall:api", version.ref = "scafall" }
@@ -76,31 +76,38 @@ scafall-loader = { module = "com.wolfyscript.scafall.loader:loader-api", version
 scafall-spigot-impl = { module = "com.wolfyscript.scafall.spigot:spigot", version.ref = "scafall" }
 scafall-sponge-impl = { module = "com.wolfyscript.scafall.sponge:sponge", version.ref = "scafall" }
 ## Adventure
-net-kyori-adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure-api" }
-net-kyori-adventure-platform-api = { module = "net.kyori:adventure-platform-api", version.ref = "adventure-platform-api" }
-net-kyori-adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure-minimessage" }
+adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure-api" }
+adventure-platform-api = { module = "net.kyori:adventure-platform-api", version.ref = "adventure-platform-api" }
+adventure-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure-minimessage" }
 
 # Minecraft
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-com-mojang-authlib = { module = "com.mojang:authlib", version.ref = "authlib" }
-it-unimi-dsi-fastutil = { module = "it.unimi.dsi:fastutil", version.ref = "fastutil" }
-io-netty-netty-all = { module = "io.netty:netty-all", version.ref = "netty" }
+mojang-authlib = { module = "com.mojang:authlib", version.ref = "authlib" }
+fastutil = { module = "it.unimi.dsi:fastutil", version.ref = "fastutil" }
+netty-all = { module = "io.netty:netty-all", version.ref = "netty" }
 
 # Utils & Misc
-com-google-inject-guice = { module = "com.google.inject:guice", version.ref = "guice" }
-com-google-guava-guava = { module = "com.google.guava:guava", version.ref = "guava" }
-org-apache-commons-commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
-org-reflections-reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
+inject-guice = { module = "com.google.inject:guice", version.ref = "guice" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
+org-reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 
 # Testing
-org-junit-jupiter-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 
 # Spigot/Paper/Folia
-io-papermc-paper = { module = "io.papermc.paper:paper-api", version.ref = "papermc" }
-net-kyori-adventure-platform-bukkit = { module = "net.kyori:adventure-platform-bukkit", version.ref = "adventure-platform-api" }
+papermc-paper = { module = "io.papermc.paper:paper-api", version.ref = "papermc" }
+adventure-platform-bukkit = { module = "net.kyori:adventure-platform-bukkit", version.ref = "adventure-platform-api" }
 
 # Sponge
 spongepowered-api = { module = "org.spongepowered:spongeapi", version.ref = "sponge-api" }
+
+[bundles]
+jetbrains = [ "kotlin-stdlib", "jetbrains-annotations" ]
+adventure = [ "adventure-api", "adventure-minimessage", "adventure-platform-api" ]
+jackson = [ "jackson-databind", "jackson-dataformat-hocon" ]
+minecraft-deps = [ "mojang-authlib", "fastutil", "netty-all" ]
+testing = [ "junit-jupiter" ]
 
 [plugins]
 shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }
