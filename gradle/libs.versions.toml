@@ -12,8 +12,9 @@ typesafe-config = "1.3.1"
 
 # cross-platform APIs
 scafall = "alpha0.0.1.0-SNAPSHOT"
-adventure-api = "4.10.1"
+adventure-api = "4.21.0"
 adventure-platform-api = "4.1.0"
+adventure-platform-mod-shared = "6.4.0"
 adventure-minimessage = "4.10.0"
 
 # Minecraft
@@ -79,6 +80,7 @@ scafall-sponge-impl = { module = "com.wolfyscript.scafall.sponge:sponge", versio
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure-api" }
 adventure-platform-api = { module = "net.kyori:adventure-platform-api", version.ref = "adventure-platform-api" }
 adventure-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure-minimessage" }
+adventure-platform-shared = { module = "net.kyori:adventure-platform-mod-shared-fabric-repack", version.ref = "adventure-platform-mod-shared" }
 
 # Minecraft
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
