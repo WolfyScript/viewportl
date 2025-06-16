@@ -18,9 +18,11 @@
 
 package org.example.viewportl.common.gui
 
-import com.wolfyscript.scafall.data.ItemDataComponentTypes.Companion.CUSTOM_NAME
-import com.wolfyscript.scafall.deserialize
-import com.wolfyscript.scafall.parsed
+import com.wolfyscript.scafall.adventure.deser
+import com.wolfyscript.scafall.adventure.parsed
+import com.wolfyscript.scafall.adventure.text
+import com.wolfyscript.scafall.adventure.vanilla
+import com.wolfyscript.scafall.wrappers.utils.wrap
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.elements.ComponentScope
@@ -30,6 +32,14 @@ import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.Style
+import net.kyori.adventure.text.format.TextDecoration
+import net.minecraft.ChatFormatting
+import net.minecraft.core.component.DataComponents
+import net.minecraft.network.chat.Component
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 
 /**
  * A Counter GUI Example, that allows the viewer:
@@ -63,7 +73,7 @@ class Counter {
                  * It constructs the component tree and reactive graph as specified.
                  **/
                 size = 9 * 3
-                title = "<b>Counter".deserialize()
+                title = "<b>Counter".deser()
 
                 // Use signals to notify components to update when the value changes
                 var countStore = CounterStore(this)
@@ -82,14 +92,12 @@ class Counter {
 
         private fun ComponentScope.mainMenu(window: WindowScope, routerScope: RouterScope) {
             window.title {
-                "<dark_gray><b>Counter Main Menu".deserialize()
+                "<dark_gray><b>Counter Main Menu".deser()
             }
 
             button(
                 icon = {
-                    stack("green_concrete") {
-                        set(CUSTOM_NAME, "<green><b>Open Counter".deserialize())
-                    }
+                    stack = openCounterIcon
                 },
                 styles = { position = PropertyPosition.slot(13) },
                 onClick = {
@@ -108,7 +116,7 @@ class Counter {
             routerScope: RouterScope,
         ) {
             window.title {
-                "<dark_gray><b>Counter".deserialize()
+                "<dark_gray><b>Counter".deser()
             }
             // Update the count periodically (every second)
             interval(20) {
@@ -116,11 +124,7 @@ class Counter {
             }
 
             button(
-                icon = {
-                    stack("barrier") {
-                        set(CUSTOM_NAME, "<red><b>Back".deserialize())
-                    }
-                },
+                icon = { stack = backIcon },
                 styles = {
                     position = PropertyPosition.slot(0)
                 },
@@ -131,11 +135,7 @@ class Counter {
                 styles = {
                     position = PropertyPosition.slot(6)
                 },
-                icon = {
-                    stack("green_concrete") {
-                        set(CUSTOM_NAME, "<green><b>Count Up".deserialize())
-                    }
-                },
+                icon = { stack = countUpIcon },
                 onClick = {
                     counterStore.count += 1
                 }
@@ -146,12 +146,12 @@ class Counter {
                     position = PropertyPosition.slot(13)
                 },
                 icon = {
-                    stack("redstone") {
+                    stack = ItemStack(Items.REDSTONE).apply {
                         set(
-                            CUSTOM_NAME,
-                            "<!italic>Score: <b><count></b>".deserialize("count".parsed(counterStore.count))
+                            DataComponents.CUSTOM_NAME,
+                            "<!italic>Score: <b><count></b>".deser("count".parsed(counterStore.count)).vanilla()
                         )
-                    }
+                    }.wrap()
                 },
             )
 
@@ -159,11 +159,7 @@ class Counter {
                 styles = {
                     position = PropertyPosition.slot(24)
                 },
-                icon = {
-                    stack("red_concrete") {
-                        set(CUSTOM_NAME, "<red><b>Count Down".deserialize())
-                    }
-                },
+                icon = { stack = countDownIcon },
                 onClick = {
                     counterStore.count -= 1
                 }
@@ -178,14 +174,10 @@ class Counter {
                         styles = {
                             position = PropertyPosition.slot(11)
                         },
-                        icon = {
-                            stack("tnt") {
-                                set(CUSTOM_NAME, "<b><red>Reset Clicks!".deserialize())
-                            }
-                        },
+                        icon = { stack = resetIcon },
                         onClick = {
-                            counterStore.count =
-                                0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
+                            // Changes the value of the signal and prompts the listener of the signal to re-render.
+                            counterStore.count = 0
                         },
                         sound = Sound.sound(
                             net.kyori.adventure.key.Key.key("minecraft:entity.dragon_fireball.explode"),
@@ -198,5 +190,43 @@ class Counter {
             ) { }
 
         }
+
+        /*
+         * Construct static icons ones. No need to reparse. Plus, have them all in one place.
+         */
+
+        private val openCounterIcon = ItemStack(Items.GREEN_CONCRETE).apply {
+            // Using Minecraft Components directly (no conversion, fastest)
+            set(
+                DataComponents.CUSTOM_NAME,
+                Component.literal("Open Counter").withStyle(ChatFormatting.BOLD)
+                    .withStyle(ChatFormatting.GREEN)
+            )
+            // Using Adventure Builder (adventure -> gson -> minecraft, 2 conversions, slower)
+            set(
+                DataComponents.CUSTOM_NAME, "Open Counter".text(
+                    Style.style(NamedTextColor.GREEN, TextDecoration.BOLD)
+                ).vanilla()
+            )
+            // or minimessage (minimessage -> adventure -> gson -> minecraft, 3 conversions, slowest)
+            set(DataComponents.CUSTOM_NAME, "<green><b>Open Counter".deser().vanilla())
+        }.wrap()
+
+        private val resetIcon = ItemStack(Items.TNT).apply {
+            set(DataComponents.CUSTOM_NAME, "<b><red>Reset Clicks!".deser().vanilla())
+        }.wrap()
+
+        private val countDownIcon = ItemStack(Items.RED_CONCRETE).apply {
+            set(DataComponents.CUSTOM_NAME, "<red><b>Count Down".deser().vanilla())
+        }.wrap()
+
+        private val countUpIcon = ItemStack(Items.GREEN_CONCRETE).apply {
+            set(DataComponents.CUSTOM_NAME, "<green><b>Count Up".deser().vanilla())
+        }.wrap()
+
+        private val backIcon = ItemStack(Items.BARRIER).apply {
+            set(DataComponents.CUSTOM_NAME, "<red><b>Back".deser().vanilla())
+        }.wrap()
+
     }
 }

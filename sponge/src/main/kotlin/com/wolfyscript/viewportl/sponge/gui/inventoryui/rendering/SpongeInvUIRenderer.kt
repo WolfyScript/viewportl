@@ -122,7 +122,7 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
         runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
             for (uuid in runtime.viewers) {
                 Sponge.server().player(uuid).ifPresent { player ->
-                    player.openInventory(inventory, title)
+//                    player.openInventory(inventory, title)
                 }
             }
         }

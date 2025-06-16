@@ -18,7 +18,7 @@
 
 package org.example.viewportl.common.gui
 
-import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.scafall.wrappers.utils.wrap
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
@@ -42,7 +42,7 @@ class StackSlots {
                         val stacks by createSignal {
                             mutableListOf<ItemStack>().apply {
                                 for (i in 0 until 9) {
-                                    add(runtime.viewportl.scafall.factories.itemsFactory.createStack(Key.minecraft("air")))
+                                    add(net.minecraft.world.item.ItemStack.EMPTY.wrap())
                                 }
                             }
                         }
@@ -54,7 +54,7 @@ class StackSlots {
                                     position = PropertyPosition.slot(i)
                                 },
                                 onValueChange = { v ->
-                                    stacks[i] = v ?: runtime.viewportl.scafall.factories.itemsFactory.createStack(Key.minecraft("air"))
+                                    stacks[i] = v ?: net.minecraft.world.item.ItemStack.EMPTY.wrap()
                                 }
                             )
                         }

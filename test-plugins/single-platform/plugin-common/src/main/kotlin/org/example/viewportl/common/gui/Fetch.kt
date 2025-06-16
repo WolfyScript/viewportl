@@ -18,14 +18,18 @@
 
 package org.example.viewportl.common.gui
 
-import com.wolfyscript.scafall.data.ItemDataComponentTypes.Companion.CUSTOM_NAME
-import com.wolfyscript.scafall.deserialize
+import com.wolfyscript.scafall.adventure.deser
+import com.wolfyscript.scafall.adventure.vanilla
+import com.wolfyscript.scafall.wrappers.utils.wrap
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
+import net.minecraft.core.component.DataComponents.CUSTOM_NAME
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import java.net.MalformedURLException
 
 class Fetch {
@@ -39,7 +43,7 @@ class Fetch {
                  * It constructs the component tree and reactive graph as specified.
                  **/
                 size = 9 * 3
-                title = "Fetch Test".deserialize()
+                title = "Fetch Test".deser()
 
                 router {
                     route({ }) {
@@ -55,7 +59,7 @@ class Fetch {
                 Component.text("Fetcher Main Menu").decorate(TextDecoration.BOLD)
             }
 
-            val (fetchedSignal, refetch) = resourceAsync<Unit, Int>(null, Unit.javaClass as Class<Unit?>, { }) { unit, viewportl, runtime ->
+            val (fetchedSignal, refetch) = resourceAsync(null, Unit.javaClass as Class<Unit?>, { }) { unit, viewportl, runtime ->
                 Thread.sleep(4000);
                 if (Math.random() > 0.5) {
                     return@resourceAsync Result.failure(MalformedURLException());
@@ -68,12 +72,12 @@ class Fetch {
                 show({ fetched!!.isSuccess }, {
                     button(
                         icon = {
-                            stack("written_book") {
+                            stack = ItemStack(Items.WRITTEN_BOOK).apply {
                                 set(
                                     CUSTOM_NAME,
-                                    "<green><b>Fetched ${fetched!!.getOrDefault(0)}".deserialize()
+                                    "<green><b>Fetched ${fetched!!.getOrDefault(0)}".deser().vanilla()
                                 )
-                            }
+                            }.wrap()
                         },
                         styles = { position = PropertyPosition.slot(14) },
                     )
@@ -81,9 +85,9 @@ class Fetch {
                 }) {
                     button(
                         icon = {
-                            stack("barrier") {
-                                set(CUSTOM_NAME, "<red><b>Failed to fetch".deserialize())
-                            }
+                            stack = ItemStack(Items.BARRIER).apply {
+                                set(CUSTOM_NAME, "<red><b>Failed to fetch".deser().vanilla())
+                            }.wrap()
                         },
                         styles = { position = PropertyPosition.slot(14) },
                     )
@@ -92,9 +96,9 @@ class Fetch {
             }) {
                 button(
                     icon = {
-                        stack("paper") {
-                            set(CUSTOM_NAME, "<red><b>Fetching...".deserialize())
-                        }
+                        stack = ItemStack(Items.PAPER).apply {
+                            set(CUSTOM_NAME, "<red><b>Fetching...".deser().vanilla())
+                        }.wrap()
                     },
                     styles = { position = PropertyPosition.slot(14) },
                 )
@@ -104,9 +108,9 @@ class Fetch {
         private fun ComponentScope.refetch(refetch: () -> Unit) {
             button(
                 icon = {
-                    stack("cyan_concrete") {
-                        set(CUSTOM_NAME, "<aqua><b>Fetch Again".deserialize())
-                    }
+                    stack = ItemStack(Items.CYAN_CONCRETE).apply {
+                        set(CUSTOM_NAME, "<aqua><b>Fetch Again".deser().vanilla())
+                    }.wrap()
                 },
                 styles = { position = PropertyPosition.slot(12) },
                 onClick = { refetch() }

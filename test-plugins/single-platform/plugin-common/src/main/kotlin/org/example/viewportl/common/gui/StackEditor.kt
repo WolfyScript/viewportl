@@ -18,8 +18,8 @@
 
 package org.example.viewportl.common.gui
 
+import com.wolfyscript.scafall.adventure.deser
 import com.wolfyscript.scafall.data.ItemDataComponentTypes.Companion.CUSTOM_NAME
-import com.wolfyscript.scafall.deserialize
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
@@ -68,7 +68,7 @@ class StackEditor {
                             },
                             icon = {
                                 stack("name_tag") {
-                                    set(CUSTOM_NAME, "<gold><b>Edit Display Name".deserialize())
+                                    set(CUSTOM_NAME, "<gold><b>Edit Display Name".deser())
                                 }
                             },
                             onClick = { selectedTab = Tab.DISPLAY_NAME }
@@ -77,7 +77,7 @@ class StackEditor {
                             styles = { position = PropertyPosition.slot(2) },
                             icon = {
                                 stack("book") {
-                                    set(CUSTOM_NAME, "<gold><b>Edit Lore".deserialize())
+                                    set(CUSTOM_NAME, "<gold><b>Edit Lore".deser())
                                 }
                             },
                             onClick = { selectedTab = Tab.LORE }
@@ -101,7 +101,7 @@ class StackEditor {
                                                 },
                                                 icon = {
                                                     stack("writable_book") {
-                                                        set(CUSTOM_NAME, "<green><b>Edit Lore".deserialize())
+                                                        set(CUSTOM_NAME, "<green><b>Edit Lore".deser())
                                                     }
                                                 }
                                             )
@@ -111,7 +111,7 @@ class StackEditor {
                                                 },
                                                 icon = {
                                                     stack("red_concrete") {
-                                                        set(CUSTOM_NAME, "<red><b>Clear Lore".deserialize())
+                                                        set(CUSTOM_NAME, "<red><b>Clear Lore".deser())
                                                     }
                                                 }
                                             )
@@ -147,12 +147,12 @@ class StackEditor {
                     },
                     icon = {
                         stack("green_concrete") {
-                            set(CUSTOM_NAME, "<green><b>Set Display Name".deserialize())
+                            set(CUSTOM_NAME, "<green><b>Set Display Name".deser())
                         }
                     },
                     onClick = {
                         window.onTextInput { _, _, s, _ ->
-                            stackToEdit()?.set(CUSTOM_NAME, s.deserialize())
+                            stackToEdit()?.set(CUSTOM_NAME, s.deser())
                             true
                         }
                     }
@@ -163,7 +163,7 @@ class StackEditor {
                     },
                     icon = {
                         stack("red_concrete") {
-                            set(CUSTOM_NAME, "<red><b>Reset Display Name".deserialize())
+                            set(CUSTOM_NAME, "<red><b>Reset Display Name".deser())
                         }
                     },
                     onClick = { stackToEdit()?.remove(CUSTOM_NAME) }

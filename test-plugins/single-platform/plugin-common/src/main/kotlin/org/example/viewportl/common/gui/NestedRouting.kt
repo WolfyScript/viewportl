@@ -18,8 +18,9 @@
 
 package org.example.viewportl.common.gui
 
-import com.wolfyscript.scafall.data.ItemDataComponentTypes.Companion.CUSTOM_NAME
-import com.wolfyscript.scafall.deserialize
+import com.wolfyscript.scafall.adventure.deser
+import com.wolfyscript.scafall.adventure.vanilla
+import com.wolfyscript.scafall.wrappers.utils.wrap
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.elements.ComponentScope
@@ -27,6 +28,9 @@ import com.wolfyscript.viewportl.gui.elements.RouterScope
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import net.kyori.adventure.text.Component
+import net.minecraft.core.component.DataComponents.CUSTOM_NAME
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 
 /**
  * A GUI Example, that shows how nested routing is possible.
@@ -64,9 +68,9 @@ class NestedRouting {
 
             button(
                 icon = {
-                    stack("barrier") {
-                        set(CUSTOM_NAME, "<red><b>Close".deserialize())
-                    }
+                    stack = ItemStack(Items.BARRIER).apply {
+                        set(CUSTOM_NAME, "<red><b>Close".deser().vanilla())
+                    }.wrap()
                 },
                 styles = { position = PropertyPosition.slot(0) },
                 onClick = { mainRouter.openPrevious() }
@@ -76,9 +80,9 @@ class NestedRouting {
                 // Creates components in the outer component scope, while having access to the router scope
                 button(
                     icon = {
-                        stack("green_concrete") {
-                            set(CUSTOM_NAME, "<green><b>Next Page".deserialize())
-                        }
+                        stack = ItemStack(Items.GREEN_CONCRETE).apply {
+                            set(CUSTOM_NAME, "<green><b>Next Page".deser().vanilla())
+                        }.wrap()
                     },
                     styles = { position = PropertyPosition.slot(53) },
                     onClick = {
@@ -88,9 +92,9 @@ class NestedRouting {
                 )
                 button(
                     icon = {
-                        stack("red_concrete") {
-                            set(CUSTOM_NAME, "<green><b>Previous Page".deserialize())
-                        }
+                        stack = ItemStack(Items.RED_CONCRETE).apply {
+                            set(CUSTOM_NAME, "<green><b>Previous Page".deser().vanilla())
+                        }.wrap()
                     },
                     styles = { position = PropertyPosition.slot(45) },
                     onClick = {
@@ -110,9 +114,9 @@ class NestedRouting {
         private fun ComponentScope.entry(routerScope: RouterScope) {
             button(
                 icon = {
-                    stack("green_concrete") {
-                        set(CUSTOM_NAME, "<green><b>Open Main View".deserialize())
-                    }
+                    stack = ItemStack(Items.GREEN_CONCRETE).apply {
+                        set(CUSTOM_NAME, "<green><b>Open Main View".deser().vanilla())
+                    }.wrap()
                 },
                 styles = { position = PropertyPosition.slot(13) },
                 onClick = {
@@ -124,9 +128,9 @@ class NestedRouting {
         private fun ComponentScope.page1(router: RouterScope) {
             button(
                 icon = {
-                    stack("paper") {
-                        set(CUSTOM_NAME, "<aqua>Page 1".deserialize())
-                    }
+                    stack = ItemStack(Items.PAPER).apply {
+                        set(CUSTOM_NAME, "<aqua>Page 1".deser().vanilla())
+                    }.wrap()
                 },
                 styles = { position = PropertyPosition.slot(31) }
             )
@@ -135,9 +139,9 @@ class NestedRouting {
         private fun ComponentScope.page2(router: RouterScope) {
             button(
                 icon = {
-                    stack("written_book") {
-                        set(CUSTOM_NAME, "<aqua>Page 2".deserialize())
-                    }
+                    stack = ItemStack(Items.WRITTEN_BOOK).apply {
+                        set(CUSTOM_NAME, "<aqua>Page 2".deser().vanilla())
+                    }.wrap()
                 },
                 styles = { position = PropertyPosition.slot(31) }
             )
@@ -146,9 +150,9 @@ class NestedRouting {
         private fun ComponentScope.page3(router: RouterScope) {
             button(
                 icon = {
-                    stack("name_tag") {
-                        set(CUSTOM_NAME, "<aqua>Page 3".deserialize())
-                    }
+                    stack = ItemStack(Items.NAME_TAG).apply {
+                        set(CUSTOM_NAME, "<aqua>Page 3".deser().vanilla())
+                    }.wrap()
                 },
                 styles = { position = PropertyPosition.slot(31) }
             )

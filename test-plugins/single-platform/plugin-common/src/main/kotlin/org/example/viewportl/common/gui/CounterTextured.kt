@@ -18,11 +18,11 @@
 
 package org.example.viewportl.common.gui
 
-import com.wolfyscript.scafall.data.ItemDataComponentTypes.Companion.CUSTOM_NAME
-import com.wolfyscript.scafall.data.ItemDataComponentTypes.Companion.ITEM_MODEL
-import com.wolfyscript.scafall.deserialize
+import com.wolfyscript.scafall.adventure.deser
+import com.wolfyscript.scafall.adventure.parsed
+import com.wolfyscript.scafall.adventure.vanilla
 import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.scafall.parsed
+import com.wolfyscript.scafall.wrappers.utils.wrap
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.elements.ComponentScope
@@ -31,7 +31,15 @@ import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
 import com.wolfyscript.viewportl.gui.reactivity.createMemo
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
+import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet
 import net.kyori.adventure.sound.Sound
+import net.minecraft.core.component.DataComponents.CUSTOM_NAME
+import net.minecraft.core.component.DataComponents.ITEM_MODEL
+import net.minecraft.core.component.DataComponents.TOOLTIP_DISPLAY
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
+import net.minecraft.world.item.component.TooltipDisplay
 
 /**
  * A Counter GUI Example, that allows the viewer:
@@ -65,7 +73,7 @@ class CounterTextured {
                  * It constructs the component tree and reactive graph as specified.
                  **/
                 size = 9 * 3
-                title = "\ueff1<b>Counter".deserialize()
+                title = "\ueff1<b>Counter".deser()
 
                 // Use signals to notify components to update when the value changes
                 var countStore = CounterStore(this)
@@ -84,16 +92,11 @@ class CounterTextured {
 
         private fun ComponentScope.mainMenu(window: WindowScope, routerScope: RouterScope) {
             window.title {
-                "\ue228<white>\ue240 \ue22e\ue22a\ue22b\ue22c<dark_gray><b>Counter Main Menu".deserialize()
+                "\ue228<white>\ue240 \ue22e\ue22a\ue22b\ue22c<dark_gray><b>Counter Main Menu".deser()
             }
 
             button(
-                icon = {
-                    stack("green_concrete") {
-                        set(CUSTOM_NAME, "<green><b>Open Counter".deserialize())
-                        set(ITEM_MODEL, Key.minecraft("button"))
-                    }
-                },
+                icon = { stack = openCounterIcon },
                 styles = { position = PropertyPosition.slot(13) },
                 onClick = {
                     routerScope.openSubRoute { this / "main" }
@@ -111,7 +114,7 @@ class CounterTextured {
             routerScope: RouterScope,
         ) {
             window.title {
-                "\ue228<white>\ue240 \ue22e\ue22a\ue22b\ue22c<dark_gray><b>Counter".deserialize()
+                "\ue228<white>\ue240 \ue22e\ue22a\ue22b\ue22c<dark_gray><b>Counter".deser()
             }
             // Update the count periodically (every second)
             interval(20) {
@@ -119,12 +122,7 @@ class CounterTextured {
             }
 
             button(
-                icon = {
-//                    stack = runtime.viewportl.scafall.factories.itemsFactory.createFromSNBT("{count: 1, id: \"minecraft:barrier\"}")
-                    stack("barrier") {
-                        set(CUSTOM_NAME, "<red><b>Back".deserialize())
-                    }
-                },
+                icon = { stack = backIcon },
                 styles = {
                     position = PropertyPosition.slot(0)
                 },
@@ -135,12 +133,7 @@ class CounterTextured {
                 styles = {
                     position = PropertyPosition.slot(6)
                 },
-                icon = {
-                    stack("green_concrete") {
-                        set(CUSTOM_NAME, "<green><b>Count Up".deserialize())
-                        set(ITEM_MODEL, Key.key("gui_counter", "buttons/increase"))
-                    }
-                },
+                icon = { stack = countUpIcon },
                 onClick = {
                     counterStore.count += 1
                 }
@@ -151,12 +144,12 @@ class CounterTextured {
                     position = PropertyPosition.slot(13)
                 },
                 icon = {
-                    stack("redstone") {
+                    stack = ItemStack(Items.REDSTONE).apply {
                         set(
                             CUSTOM_NAME,
-                            "<!italic>Score: <b><count></b>".deserialize("count".parsed(counterStore.count))
+                            "<!italic>Score: <b><count></b>".deser("count".parsed(counterStore.count)).vanilla()
                         )
-                    }
+                    }.wrap()
                 },
             )
 
@@ -164,12 +157,7 @@ class CounterTextured {
                 styles = {
                     position = PropertyPosition.slot(24)
                 },
-                icon = {
-                    stack("red_concrete") {
-                        set(CUSTOM_NAME, "<red><b>Count Down".deserialize())
-                        set(ITEM_MODEL, Key.key("gui_counter", "buttons/decrease"))
-                    }
-                },
+                icon = { stack = countDownIcon },
                 onClick = {
                     counterStore.count -= 1
                 }
@@ -184,11 +172,7 @@ class CounterTextured {
                         styles = {
                             position = PropertyPosition.slot(11)
                         },
-                        icon = {
-                            stack("tnt") {
-                                set(CUSTOM_NAME, "<b><red>Reset Clicks!".deserialize())
-                            }
-                        },
+                        icon = { stack = resetIcon },
                         onClick = {
                             counterStore.count =
                                 0 // The set method changes the value of the signal and prompts the listener of the signal to re-render.
@@ -204,5 +188,34 @@ class CounterTextured {
             ) { }
 
         }
+
+        /*
+         * Construct static icons ones. No need to reparse. Plus, have them all in one place.
+         */
+
+        private val openCounterIcon = ItemStack(Items.GREEN_CONCRETE).apply {
+            set(CUSTOM_NAME, "<green><b>Open Counter".deser().vanilla())
+            set(ITEM_MODEL, ResourceLocation.fromNamespaceAndPath(Key.SCAFFOLDING_NAMESPACE, "button"))
+            set(TOOLTIP_DISPLAY, TooltipDisplay(true, ReferenceLinkedOpenHashSet()))
+        }.wrap()
+
+        private val resetIcon = ItemStack(Items.TNT).apply {
+            set(CUSTOM_NAME, "<b><red>Reset Clicks!".deser().vanilla())
+        }.wrap()
+
+        private val countDownIcon = ItemStack(Items.RED_CONCRETE).apply {
+            set(CUSTOM_NAME, "<red><b>Count Down".deser().vanilla())
+            set(ITEM_MODEL, ResourceLocation.fromNamespaceAndPath("gui_counter", "buttons/decrease"))
+        }.wrap()
+
+        private val countUpIcon = ItemStack(Items.GREEN_CONCRETE).apply {
+            set(CUSTOM_NAME, "<green><b>Count Up".deser().vanilla())
+            set(ITEM_MODEL, ResourceLocation.fromNamespaceAndPath("gui_counter", "buttons/increase"))
+        }.wrap()
+
+        private val backIcon = ItemStack(Items.BARRIER).apply {
+            set(CUSTOM_NAME, "<red><b>Back".deser().vanilla())
+        }.wrap()
+
     }
 }
