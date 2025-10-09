@@ -17,7 +17,6 @@
  */
 package com.wolfyscript.viewportl.gui.reactivity
 
-import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import java.util.*
@@ -43,7 +42,7 @@ interface ReactiveSource {
      */
     fun <T : Any?> createSignal(
         valueType: Class<T>,
-        defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>,
+        defaultValueProvider: ViewRuntime<*, *>.() -> T,
     ): Signal<T>
 
     /**
@@ -104,6 +103,6 @@ inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValue: T): Sign
     return createSignal(T::class.java) { defaultValue }
 }
 
-inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>): Signal<T> {
+inline fun <reified T : Any?> ReactiveSource.createSignal(noinline defaultValueProvider: ViewRuntime<*, *>.() -> T): Signal<T> {
     return createSignal(T::class.java, defaultValueProvider)
 }

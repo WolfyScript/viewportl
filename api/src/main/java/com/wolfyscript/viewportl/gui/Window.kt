@@ -19,7 +19,6 @@ package com.wolfyscript.viewportl.gui
 
 import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
@@ -55,7 +54,7 @@ interface Window {
      */
     var title: Component?
 
-    fun title(titleUpdate: ReceiverFunction<Component?, Component?>)
+    fun title(titleUpdate: Component?.() -> Component?)
 
     var resourcePath: String?
 
@@ -101,7 +100,7 @@ interface WindowScope : ComponentScope {
     /**
      * Setups an effect that updates the title everytime the signal sources are updated.
      */
-    fun title(titleUpdate: ReceiverFunction<Component?, Component?>)
+    fun title(titleUpdate: Component?.() -> Component?)
 
     /**
      * The initial size of the window inventory

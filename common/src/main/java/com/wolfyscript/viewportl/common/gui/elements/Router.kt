@@ -17,7 +17,6 @@
  */
 package com.wolfyscript.viewportl.common.gui.elements
 
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
@@ -200,22 +199,16 @@ class RouterScopeImpl(
         initialPath = newPath
     }
 
-    override fun route(
-        path: ReceiverConsumer<MatchPath>,
-        subRoutes: ReceiverConsumer<RouteScope>,
-        view: ComponentScope.() -> Unit
-    ) {
+    override fun route(path: MatchPath.() -> Unit, subRoutes: RouteScope.() -> Unit, view: ComponentScope.() -> Unit) {
         val matchPath = MatchPath()
-        with(path) { matchPath.consume() }
+        path(matchPath)
 
         val route = RouteImpl(router, matchPath, view)
         (router as RouterImpl).routeGraph.insertRoute(route)
 
         // Init sub routes
         val routeScope = RouteScopeImpl(route)
-        with(subRoutes) {
-            routeScope.consume()
-        }
+        subRoutes(routeScope)
     }
 
     override fun openPrevious() {
@@ -225,11 +218,11 @@ class RouterScopeImpl(
         }
     }
 
-    override fun openRoute(path: ReceiverConsumer<ActivePath>) {
+    override fun openRoute(path: ActivePath.() -> Unit) {
         history.update {
             it.apply {
                 val newPath = ActivePath()
-                with(path) { newPath.consume() }
+                path(newPath)
                 if (newPath != it.peek()) {
                     it.push(newPath)
                 }
@@ -237,11 +230,11 @@ class RouterScopeImpl(
         }
     }
 
-    override fun openSubRoute(path: ReceiverConsumer<ActivePath>) {
+    override fun openSubRoute(path: ActivePath.() -> Unit) {
         history.update {
             it.apply {
                 val copy = it.peek().copy()
-                with(path) { copy.consume() }
+                path(copy)
                 if (copy != it.peek()) {
                     it.push(copy)
                 }
@@ -256,12 +249,12 @@ class RouteScopeImpl(
 ) : RouteScope {
 
     override fun route(
-        pathConfig: ReceiverConsumer<MatchPath>,
+        pathConfig: MatchPath.() -> Unit,
         viewConfig: ComponentScope.() -> Unit,
-        routeConfig: ReceiverConsumer<Route>
+        routeConfig: Route.() -> Unit
     ) {
         val path = route.path.copy()
-        with(pathConfig) { path.consume() }
+        pathConfig(path)
 
         (route.router as RouterImpl).routeGraph.insertRoute(RouteImpl(route.router, path, viewConfig))
     }

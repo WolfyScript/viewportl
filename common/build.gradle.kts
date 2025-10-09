@@ -51,3 +51,7 @@ tasks {
         targetNamespace = "named"
     }
 }
+
+artifacts {
+    archives(tasks.remapJar)
+}

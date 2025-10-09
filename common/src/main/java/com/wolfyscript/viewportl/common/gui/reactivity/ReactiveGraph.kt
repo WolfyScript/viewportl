@@ -17,7 +17,6 @@
  */
 package com.wolfyscript.viewportl.common.gui.reactivity
 
-import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.scafall.scheduling.Task
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.reactivity.Observer
@@ -49,7 +48,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
     private var scheduler: Task? = null
 
     fun initScheduler() {
-        scheduler = viewRuntime.viewportl.scafall.scheduler.asyncTimerTask(viewRuntime.viewportl.scafall.corePlugin, {
+        scheduler = viewRuntime.viewportl.scafall.scheduler.asyncTimerTask(viewRuntime.viewportl.scafall.modInfo, {
             // TODO: Check if blocked by interaction
             runEffects()
         }, 1, 2)
@@ -90,11 +89,8 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
         return TriggerImpl(nextNodeId)
     }
 
-    override fun <T : Any?> createSignal(
-        valueType: Class<T>,
-        defaultValueProvider: ReceiverFunction<ViewRuntime<*, *>, T>,
-    ): Signal<T> {
-        val signal = SignalImpl<T>(nextNodeId, with(defaultValueProvider) { viewRuntime.apply() })
+    override fun <T> createSignal(valueType: Class<T>, defaultValueProvider: ViewRuntime<*, *>.() -> T): Signal<T> {
+        val signal = SignalImpl(nextNodeId, defaultValueProvider(viewRuntime))
         owner?.nodes?.add(signal)
         return signal
     }
@@ -154,7 +150,7 @@ class ReactiveGraph(private val viewRuntime: ViewRuntimeImpl<*, *>) : ReactiveSo
             if (inputCopy != null) {
                 value.set(null)
 
-                task = viewRuntime.viewportl.scafall.scheduler.asyncTask(viewRuntime.viewportl.scafall.corePlugin) {
+                task = viewRuntime.viewportl.scafall.scheduler.asyncTask(viewRuntime.viewportl.scafall.modInfo) {
                     val fetchedValue = fetch(inputCopy, viewRuntime.viewportl, viewRuntime)
                     completeFetch(fetchedValue)
                 }

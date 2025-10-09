@@ -17,7 +17,6 @@
  */
 package com.wolfyscript.viewportl.common.gui.animation
 
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.animation.AnimationBuilder
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame
 import com.wolfyscript.viewportl.gui.animation.AnimationFrameBuilder
@@ -38,11 +37,9 @@ abstract class AnimationBuilderCommonImpl<F : AnimationFrame, FB : AnimationFram
         return this
     }
 
-    override fun frame(frameBuild: ReceiverConsumer<FB>): AnimationBuilderCommonImpl<F, FB> {
+    override fun frame(frameBuild: FB.() -> Unit): AnimationBuilder<F, FB> {
         val frameBuilder = frameBuilderSupplier.get()
-        with(frameBuild) {
-            frameBuilder.consume()
-        }
+        frameBuild(frameBuilder)
         frameBuilders.add(frameBuilder)
         return this
     }

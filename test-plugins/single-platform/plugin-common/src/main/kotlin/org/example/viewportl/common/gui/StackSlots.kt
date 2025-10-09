@@ -18,11 +18,12 @@
 
 package org.example.viewportl.common.gui
 
-import com.wolfyscript.scafall.wrappers.utils.wrap
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
+import com.wolfyscript.scafall.wrappers.wrap
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.reactivity.createSignal
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
+import net.minecraft.world.item.ItemStack
 
 class StackSlots {
 
@@ -40,9 +41,9 @@ class StackSlots {
                          */
 
                         val stacks by createSignal {
-                            mutableListOf<ItemStack>().apply {
+                            mutableListOf<ScafallItemStack>().apply {
                                 for (i in 0 until 9) {
-                                    add(net.minecraft.world.item.ItemStack.EMPTY.wrap())
+                                    add(ItemStack.EMPTY.wrap())
                                 }
                             }
                         }
@@ -53,9 +54,7 @@ class StackSlots {
                                 styles = {
                                     position = PropertyPosition.slot(i)
                                 },
-                                onValueChange = { v ->
-                                    stacks[i] = v ?: net.minecraft.world.item.ItemStack.EMPTY.wrap()
-                                }
+                                onValueChange = { stacks[i] = it }
                             )
                         }
 

@@ -1,25 +1,24 @@
 package com.wolfyscript.viewportl.gui.elements
 
-import com.wolfyscript.scafall.function.ReceiverBiFunction
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackLike
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.gui.interaction.ClickType
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
-import java.util.function.Consumer
 
 data class SlotProperties(
     val scope: ComponentScope,
-    val value: () -> ItemStack?,
+    val value: () -> ItemStackLike?,
     val styles: RenderProperties.() -> Unit,
-    val onValueChange: Consumer<ItemStack?>? = null,
-    val canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null,
+    val onValueChange: (ScafallItemStack.() -> Unit)? = null,
+    val canPickUpStack: (ClickType.(ScafallItemStack) -> Boolean)? = null,
 )
 
 interface StackInputSlot : Element {
 
-    var value: ItemStack?
+    var value: ScafallItemStack?
 
-    var onValueChange: Consumer<ItemStack?>?
+    var onValueChange: (ScafallItemStack.() -> Unit)?
 
-    var canPickUpStack : ReceiverBiFunction<ClickType, ItemStack, Boolean>?
+    var canPickUpStack : (ClickType.(ScafallItemStack) -> Boolean)?
 
 }

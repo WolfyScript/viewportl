@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui
 
-import com.wolfyscript.scafall.wrappers.world.entity.Player
+import com.wolfyscript.scafall.wrappers.ScafallPlayer
 
 interface GuiHolder {
 
@@ -25,5 +25,5 @@ interface GuiHolder {
 
     val currentWindow: Window
 
-    val player: Player?
+    val player: ScafallPlayer?
 }

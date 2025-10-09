@@ -17,16 +17,14 @@
  */
 package com.wolfyscript.viewportl.gui.animation
 
-import com.wolfyscript.scafall.function.ReceiverConsumer
-import com.wolfyscript.scafall.function.ReceiverFunction
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.gui.ItemHelper
 
 interface ButtonAnimationFrameBuilder : AnimationFrameBuilder<ButtonAnimationFrame> {
 
-    fun stack(itemId: String, config: ReceiverConsumer<ItemStack>): ButtonAnimationFrameBuilder
+    fun stack(itemId: String, config: ScafallItemStack.() -> Unit): ButtonAnimationFrameBuilder
 
-    fun stack(config: ReceiverFunction<ItemHelper, ItemStack>): ButtonAnimationFrameBuilder
+    fun stack(config: ItemHelper.() -> ScafallItemStack): ButtonAnimationFrameBuilder
 
     override fun duration(duration: Int): ButtonAnimationFrameBuilder
 }

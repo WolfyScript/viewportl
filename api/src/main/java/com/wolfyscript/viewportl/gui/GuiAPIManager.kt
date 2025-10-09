@@ -17,7 +17,6 @@
  */
 package com.wolfyscript.viewportl.gui
 
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
@@ -39,7 +38,7 @@ interface GuiAPIManager {
      * @param key The unique id of the window
      * @param windowConsumer The consumer that provides the new window
      */
-    fun registerGui(key: String, windowConsumer: ReceiverConsumer<WindowScope>)
+    fun registerGui(key: String, windowConsumer: WindowScope.() -> Unit)
 
     /**
      * Gets the registered router with the specified id.<br></br>

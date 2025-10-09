@@ -1,6 +1,5 @@
 package com.wolfyscript.viewportl.gui.elements
 
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.router.ActivePath
 import com.wolfyscript.viewportl.gui.router.MatchPath
 
@@ -19,7 +18,7 @@ interface RouterScope {
      *
      * **Note:** Has no effect when used inside the [viewConfig] function. Routes are calculated once on setup and therefore can only be specified at top level!
      */
-    fun route(path: ReceiverConsumer<MatchPath>, subRoutes: ReceiverConsumer<RouteScope> = ReceiverConsumer {}, view: ComponentScope.() -> Unit)
+    fun route(path: MatchPath.() -> Unit, subRoutes: RouteScope.() -> Unit = {}, view: ComponentScope.() -> Unit)
 
     /**
      * Pops the current path from history and opens the previous path in the history
@@ -29,12 +28,12 @@ interface RouterScope {
     /**
      * Opens the specified route originating from the root and pushes it onto the history.
      */
-    fun openRoute(path: ReceiverConsumer<ActivePath>)
+    fun openRoute(path: ActivePath.() -> Unit)
 
     /**
      * Opens the specified route originating from the current path and pushes it onto the history.
      */
-    fun openSubRoute(path: ReceiverConsumer<ActivePath>)
+    fun openSubRoute(path: ActivePath.() -> Unit)
 }
 
 data class RouterProperties(
@@ -72,6 +71,6 @@ interface RouteScope {
 
     val route: Route
 
-    fun route(pathConfig: ReceiverConsumer<MatchPath>, viewConfig: ComponentScope.() -> Unit, routeConfig: ReceiverConsumer<Route>)
+    fun route(pathConfig: MatchPath.() -> Unit, viewConfig: ComponentScope.() -> Unit, routeConfig: Route.() -> Unit)
 
 }

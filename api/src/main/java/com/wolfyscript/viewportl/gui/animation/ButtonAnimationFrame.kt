@@ -17,10 +17,10 @@
  */
 package com.wolfyscript.viewportl.gui.animation
 
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 
 interface ButtonAnimationFrame : AnimationFrame {
 
-    fun stack(): ItemStack
+    fun stack(): ScafallItemStack
 
 }

@@ -21,7 +21,6 @@ package com.wolfyscript.viewportl.common.gui
 import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.common.base.Preconditions
-import com.wolfyscript.scafall.function.ReceiverFunction
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.elements.ComponentScopeImpl
@@ -50,7 +49,7 @@ class WindowImpl internal constructor(
         Preconditions.checkArgument(size != null || type != null, "Either type or size must be specified!")
     }
 
-    override fun title(titleUpdate: ReceiverFunction<Component?, Component?>) {}
+    override fun title(titleUpdate: Component?.() -> Component?) {}
 
     override fun open() {
         // TODO: Render graph
@@ -72,9 +71,9 @@ class WindowImpl internal constructor(
 
 class WindowScopeImpl(val window: Window, componentScope: ComponentScopeImpl) : WindowScope, ComponentScope by componentScope {
 
-    override fun title(titleUpdate: ReceiverFunction<Component?, Component?>) {
+    override fun title(titleUpdate: Component?.() -> Component?) {
         createEffect {
-            window.title = with(titleUpdate) { window.title.apply() }
+            window.title = titleUpdate(window.title)
             runtime.into().renderer.updateTitle(window.title)
         }
     }

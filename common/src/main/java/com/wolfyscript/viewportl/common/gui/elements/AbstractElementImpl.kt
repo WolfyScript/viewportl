@@ -17,13 +17,9 @@
  */
 package com.wolfyscript.viewportl.common.gui.elements
 
-import com.google.common.base.Preconditions
-import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.rendering.RenderPropertiesImpl
 import com.wolfyscript.viewportl.gui.elements.Element
-import com.wolfyscript.viewportl.gui.reactivity.Effect
 import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import java.util.*
@@ -47,20 +43,8 @@ abstract class AbstractElementImpl<C : Element>(
     override val parent: Element?
 ) : Element {
 
-    private val type: Key = Key.parse(StaticNamespacedKey.KeyBuilder.createKeyString(javaClass))
     internal var currentNodeId: Long? = null
     override var styles: RenderProperties = RenderPropertiesImpl(PropertyPosition.def())
-
-    init {
-        Preconditions.checkNotNull(
-            type,
-            "Missing type key! One must be provided to the Component using the annotation: ${StaticNamespacedKey::class.java.name}"
-        )
-    }
-
-    override fun key(): Key {
-        return type
-    }
 
     override val nodeId: Long
         get() {
@@ -71,10 +55,10 @@ abstract class AbstractElementImpl<C : Element>(
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
         val that = other as AbstractElementImpl<*>
-        return type == that.type && id == that.id
+        return id == that.id
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(type, id)
+        return Objects.hash(id)
     }
 }

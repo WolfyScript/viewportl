@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.google.inject.Inject
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
+import com.wolfyscript.scafall.wrappers.wrap
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.common.gui.reactivity.effect.EffectImpl
@@ -13,6 +14,14 @@ import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.reactivity.Signal
 import net.kyori.adventure.sound.Sound
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.ItemUtils
+import net.minecraft.world.item.Items
+import kotlin.jvm.optionals.getOrNull
 
 internal fun setupButton(properties: ButtonProperties) {
     val runtime = properties.scope.runtime.into()
@@ -71,12 +80,13 @@ class DynamicIcon(
     private val runtime: ViewRuntime<*,*>,
 ) : ButtonIcon {
 
-    override var stack: ItemStack = runtime.viewportl.scafall.factories.itemsFactory.createStack(Key.key(Key.MINECRAFT_NAMESPACE, "air"))
+    override var stack: ScafallItemStack = ItemStack.EMPTY.wrap()
 
-    override fun stack(itemId: String, stackConfig: ItemStack.() -> Unit) {
-        val newStack = runtime.viewportl.scafall.factories.itemsFactory.createStack(Key.key(Key.MINECRAFT_NAMESPACE, itemId))
-        newStack.stackConfig()
-        stack = newStack
+    override fun stack(itemId: String, stackConfig: ScafallItemStack.() -> Unit) {
+        val newStack = BuiltInRegistries.ITEM[ResourceLocation.fromNamespaceAndPath(Key.MINECRAFT_NAMESPACE, itemId)].getOrNull()
+        newStack?.let {
+            stack = ItemStack(newStack).wrap()
+        }
     }
 
 }

@@ -17,7 +17,6 @@
  */
 package com.wolfyscript.viewportl.common.gui.animation
 
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.animation.AnimationFrame
@@ -31,16 +30,16 @@ import java.util.concurrent.atomic.AtomicInteger
 class AnimationImpl<F : AnimationFrame> internal constructor(
     owner: Element,
     animationFrameBuilders: List<AnimationFrameBuilder<F>>,
-    updateSignal: Signal<*>
+    updateSignal: Signal<*>,
 ) :
     AnimationCommonImpl<F>(owner, animationFrameBuilders, updateSignal) {
 
-    fun render(viewManager: ViewRuntime<*,*>, guiHolder: GuiHolder, context: RenderContext) {
+    fun render(viewManager: ViewRuntime<*, *>, guiHolder: GuiHolder, context: RenderContext) {
         val frameDelay = AtomicInteger(0)
         val frameIndex = AtomicInteger(0)
         viewManager.viewportl.scafall.scheduler
-            .task(viewManager.viewportl.scafall.corePlugin)
-            .execute (ReceiverConsumer {
+            .task(viewManager.viewportl.scafall.modInfo)
+            .execute {
                 val delay = frameDelay.getAndIncrement()
                 val frame = frameIndex.get()
                 if (frames().size <= frame) {
@@ -48,17 +47,17 @@ class AnimationImpl<F : AnimationFrame> internal constructor(
                     if (owner() is Effect) {
                         // TODO
                     }
-                    return@ReceiverConsumer
+                    return@execute
                 }
 
                 val frameObj: AnimationFrame = frames()[frame]
                 if (delay <= frameObj.duration()) {
                     frameObj.render(viewManager, guiHolder, context)
-                    return@ReceiverConsumer
+                    return@execute
                 }
                 frameIndex.incrementAndGet()
                 frameDelay.set(0)
-            })
+            }
             .interval(1)
             .build()
     }

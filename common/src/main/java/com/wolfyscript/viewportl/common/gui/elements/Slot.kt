@@ -20,9 +20,8 @@ package com.wolfyscript.viewportl.common.gui.elements
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.google.inject.Inject
-import com.wolfyscript.scafall.function.ReceiverBiFunction
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.elements.Element
@@ -30,7 +29,6 @@ import com.wolfyscript.viewportl.gui.elements.ElementImplementation
 import com.wolfyscript.viewportl.gui.elements.SlotProperties
 import com.wolfyscript.viewportl.gui.elements.StackInputSlot
 import com.wolfyscript.viewportl.gui.interaction.ClickType
-import java.util.function.Consumer
 
 internal fun setupSlot(properties: SlotProperties) {
     val runtime = properties.scope.runtime.into()
@@ -60,9 +58,9 @@ class SlotImpl @JsonCreator @Inject constructor(
     id: String,
     viewportl: Viewportl,
     parent: Element? = null,
-    override var onValueChange: Consumer<ItemStack?>? = null,
-    override var canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null,
-    override var value: ItemStack? = null
+    override var onValueChange: (ScafallItemStack.() -> Unit)? = null,
+    override var canPickUpStack: (ClickType.(ScafallItemStack) -> Boolean)? = null,
+    override var value: ScafallItemStack? = null
 ) : AbstractElementImpl<StackInputSlot>(
     id, viewportl, parent
 ), StackInputSlot

@@ -18,18 +18,40 @@
 
 package com.wolfyscript.viewportl.common.registry
 
-import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.scafall.data.ItemDataComponentConverterRegistry
 import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.scafall.registry.Registry
+import com.wolfyscript.scafall.registry.RegistryKey
+import com.wolfyscript.scafall.registry.RegistryReference
+import com.wolfyscript.scafall.registry.RegistrySimple
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
+import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
+import com.wolfyscript.viewportl.common.gui.elements.GroupImpl
+import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
+import com.wolfyscript.viewportl.registry.ViewportlRegistryTypes
 
-// TODO: Why extend the entire scafall registry? All the other contained registries won't have any values! That's confusing! Perhaps a global Registry of registries would be more useful!
-class CommonViewportlRegistries(viewportl: Viewportl) : ViewportlRegistries(viewportl) {
+class CommonViewportlRegistries(val viewportl: Viewportl) : ViewportlRegistries {
 
-    override val guiComponents: RegistryGUIComponentTypes = RegistryUIComponentImplementations(Key.Companion.key("viewportl", "components"), this)
+    private val rootRegistry = RegistrySimple<Registry<*>>(ViewportlRegistryTypes.root)
 
-    override val itemDataComponentConverterRegistry: ItemDataComponentConverterRegistry = ScafallProvider.get().registries.itemDataComponentConverterRegistry
+    fun initRegistries() {
+        createRegistry(ViewportlRegistryTypes.guiElementTypes) {
+            RegistryUIComponentImplementations(it).apply {
+                register(Key.key("viewportl", "button"), ButtonImpl::class.java)
+                register(Key.key("viewportl", "slot"), SlotImpl::class.java)
+                register(Key.key("viewportl", "group"), GroupImpl::class.java)
+            }
+        }
+    }
 
+    fun <T> createRegistry(type: RegistryReference<T>, loader: (key: Key) -> Registry<T>) {
+        val registry = loader(type.key.registry)
+        rootRegistry.register(type.key.registry, registry)
+    }
+
+    override fun <T> get(type: RegistryKey<T>): Result<Registry<T>> {
+        val registry = rootRegistry[type.registry]
+            ?: return Result.failure(IllegalArgumentException("No registry found for ${type.registry}"))
+        return Result.success(registry as Registry<T>)
+    }
 }

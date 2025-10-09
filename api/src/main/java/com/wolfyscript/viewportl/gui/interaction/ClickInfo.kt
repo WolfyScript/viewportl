@@ -18,15 +18,15 @@
 
 package com.wolfyscript.viewportl.gui.interaction
 
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 
 interface ClickInfo : InteractionTransaction {
 
     val slot: Int
 
-    val cursorStack : ItemStack?
+    val cursorStack : ScafallItemStack?
 
-    val currentStack : ItemStack?
+    val currentStack : ScafallItemStack?
 
     /**
      * An inventory click with the primary mouse button

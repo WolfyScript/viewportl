@@ -20,11 +20,12 @@ package com.wolfyscript.viewportl
 
 import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.scafall.loader.module.Module
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 
-interface Viewportl {
+interface Viewportl : Module<ViewportlServer, ViewportlClient> {
 
     val scafall: Scafall
         get() = ScafallProvider.get()

@@ -37,14 +37,32 @@ dependencies {
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
 
+fun archiveName(): String {
+    return "${rootProject.name}-${project.version}-${project.name}-${libs.versions.minecraft.get()}"
+}
+
 tasks {
     shadowJar {
-        archiveFileName = "viewportl-spigot.innerjar"
+        archiveFileName.set("${archiveName()}-mojmap.jar")
+
+        finalizedBy(reobfJar)
 
         dependencies {
-            include(dependency("com.wolfyscript.viewportl:.*"))
+            include(project(":common"))
         }
+        metaInf.duplicatesStrategy = DuplicatesStrategy.FAIL
     }
+    assemble {
+        dependsOn(reobfJar)
+    }
+    reobfJar {
+        finalizedBy(jar)
+        outputJar.set(layout.buildDirectory.file("libs/${archiveName()}.jar"))
+    }
+}
+
+artifacts {
+    archives(tasks.reobfJar)
 }
 
 publishing {

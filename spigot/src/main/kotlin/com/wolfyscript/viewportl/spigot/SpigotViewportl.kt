@@ -18,13 +18,8 @@
 
 package com.wolfyscript.viewportl.spigot
 
-import com.wolfyscript.scafall.PluginWrapper
-import com.wolfyscript.scafall.spigot.api.into
 import com.wolfyscript.viewportl.common.CommonViewportl
 import com.wolfyscript.viewportl.common.gui.GuiAPIManagerImpl
-import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.elements.GroupImpl
-import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
 import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
@@ -37,8 +32,9 @@ import org.bukkit.command.CommandMap
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.server.PluginDisableEvent
+import org.bukkit.plugin.Plugin
 
-class SpigotViewportl(private val plugin: PluginWrapper) : CommonViewportl(), Listener {
+class SpigotViewportl(private val plugin: Plugin) : CommonViewportl(), Listener {
 
     override lateinit var guiManager: GuiAPIManager
     override lateinit var guiFactory: GuiFactory
@@ -48,12 +44,6 @@ class SpigotViewportl(private val plugin: PluginWrapper) : CommonViewportl(), Li
         guiManager = GuiAPIManagerImpl(this)
         guiFactory = GuiFactoryImpl()
         registries = CommonViewportlRegistries(this)
-
-        // Register GUI things
-        val guiComponentBuilders = registries.guiComponents
-        guiComponentBuilders.register(ButtonImpl::class.java)
-        guiComponentBuilders.register(SlotImpl::class.java)
-        guiComponentBuilders.register(GroupImpl::class.java)
     }
 
     fun enable() {
@@ -66,7 +56,7 @@ class SpigotViewportl(private val plugin: PluginWrapper) : CommonViewportl(), Li
     }
 
     private fun registerListeners() {
-        Bukkit.getPluginManager().registerEvents(this, plugin.into().plugin)
+        Bukkit.getPluginManager().registerEvents(this, plugin)
     }
 
     private fun registerCommands() {

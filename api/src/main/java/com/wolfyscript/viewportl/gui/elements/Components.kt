@@ -1,15 +1,14 @@
 package com.wolfyscript.viewportl.gui.elements
 
-import com.wolfyscript.scafall.function.ReceiverBiFunction
 import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackLike
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.interaction.ClickType
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
-import java.util.function.Consumer
 import kotlin.reflect.KProperty
 
 /**
@@ -59,7 +58,7 @@ interface ComponentScope : ReactiveSource {
     fun button(
         icon: ButtonIcon.() -> Unit,
         styles: RenderProperties.() -> Unit = {},
-        sound: Sound? = Sound.sound(Key.parse("minecraft:ui.button.click").into(), Sound.Source.MASTER, 0.25f, 1f),
+        sound: Sound? = Sound.sound(Key.parse("minecraft:ui.button.click").toAdventure(), Sound.Source.MASTER, 0.25f, 1f),
         onClick: (ClickInfo.() -> Unit)? = null
     )
 
@@ -85,10 +84,10 @@ interface ComponentScope : ReactiveSource {
     )
 
     fun slot(
-        value: () -> ItemStack?,
+        value: () -> ItemStackLike?,
         styles: RenderProperties.() -> Unit,
-        onValueChange: Consumer<ItemStack?>? = null,
-        canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>? = null,
+        onValueChange: ((ScafallItemStack) -> Unit)? = null,
+        canPickUpStack: (ClickType.(ScafallItemStack) -> Boolean)? = null,
     )
 
 }

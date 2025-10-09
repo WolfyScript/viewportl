@@ -19,11 +19,7 @@ package com.wolfyscript.viewportl.gui.elements
 
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
-import com.fasterxml.jackson.databind.annotation.JsonTypeResolver
-import com.wolfyscript.scafall.config.jackson.KeyedTypeIdResolver;
-import com.wolfyscript.scafall.config.jackson.KeyedTypeResolver;
-import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.scafall.identifier.Keyed
+import com.wolfyscript.scafall.config.jackson.RegistryKeyTypeIdResolver
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 
@@ -35,22 +31,16 @@ import com.wolfyscript.viewportl.gui.rendering.RenderProperties
  * See [component]
  *
  */
-@JsonTypeResolver(KeyedTypeResolver::class)
-@JsonTypeIdResolver(
-    KeyedTypeIdResolver::class
+
+@JsonTypeIdResolver(RegistryKeyTypeIdResolver::class)
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.CUSTOM,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type"
 )
-@JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonPropertyOrder(value = ["type"])
 @JsonIgnoreProperties(ignoreUnknown = true)
-interface Element : Keyed {
-
-    @JsonIgnore
-    override fun key(): Key
-
-    @JsonGetter("type")
-    fun type(): Key {
-        return key()
-    }
+interface Element {
 
     /**
      * Gets the unique id (in context of the parent) of this component.

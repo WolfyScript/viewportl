@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui.elements
 
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
@@ -44,9 +44,9 @@ interface Button : Element {
 
 interface ButtonIcon {
 
-    var stack: ItemStack
+    var stack: ScafallItemStack
 
-    fun stack(itemId: String, stackConfig: ItemStack.() -> Unit)
+    fun stack(itemId: String, stackConfig: ScafallItemStack.() -> Unit)
 
 }
 

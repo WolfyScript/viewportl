@@ -17,31 +17,33 @@
  */
 package com.wolfyscript.viewportl.common.gui.animation
 
-import com.wolfyscript.scafall.function.ReceiverConsumer
-import com.wolfyscript.scafall.function.ReceiverFunction
-import com.wolfyscript.scafall.identifier.Key.Companion.MINECRAFT_NAMESPACE
-import com.wolfyscript.scafall.identifier.Key.Companion.key
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
+import com.wolfyscript.scafall.wrappers.wrap
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.ItemHelper
 import com.wolfyscript.viewportl.gui.animation.Animation
 import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrame
 import com.wolfyscript.viewportl.gui.animation.ButtonAnimationFrameBuilder
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.item.ItemStack
+import kotlin.jvm.optionals.getOrNull
 
 class ButtonAnimationFrameBuilderImpl(private val viewportl: Viewportl) : ButtonAnimationFrameBuilder {
     private var duration = 1
-    private var stack: ItemStack? = null
+    private var stack: ScafallItemStack? = null
 
-    override fun stack(itemId: String, config: ReceiverConsumer<ItemStack>): ButtonAnimationFrameBuilder {
-        this.stack = viewportl.scafall.factories.itemsFactory.createStack(key(MINECRAFT_NAMESPACE, itemId))
-
-        with(config) {
-            stack!!.consume()
+    override fun stack(itemId: String, config: ScafallItemStack.() -> Unit): ButtonAnimationFrameBuilder {
+        val newStack = BuiltInRegistries.ITEM[ResourceLocation.fromNamespaceAndPath(Key.MINECRAFT_NAMESPACE, itemId)].getOrNull()
+        newStack?.let {
+            stack = ItemStack(newStack).wrap()
+            stack?.let { config(it) }
         }
         return this
     }
 
-    override fun stack(config: ReceiverFunction<ItemHelper, ItemStack>): ButtonAnimationFrameBuilder {
+    override fun stack(config: ItemHelper.() -> ScafallItemStack): ButtonAnimationFrameBuilder {
         // TODO
         return this
     }

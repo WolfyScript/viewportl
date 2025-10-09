@@ -17,7 +17,6 @@
  */
 package com.wolfyscript.viewportl.gui.animation
 
-import com.wolfyscript.scafall.function.ReceiverConsumer
 import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.reactivity.Signal
 
@@ -28,7 +27,7 @@ interface AnimationBuilder<F : AnimationFrame, FB : AnimationFrameBuilder<F>> {
      * @param frameBuild
      * @return
      */
-    fun frame(frameBuild: ReceiverConsumer<FB>): AnimationBuilder<F, FB>
+    fun frame(frameBuild: FB.() -> Unit): AnimationBuilder<F, FB>
 
     /**
      * Optional: Can be used to manually start the animation.

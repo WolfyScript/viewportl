@@ -1,7 +1,7 @@
 package com.wolfyscript.viewportl.common.gui.elements
 
-import com.wolfyscript.scafall.function.ReceiverBiFunction
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackLike
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
 import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.gui.interaction.ClickInfo
@@ -24,7 +24,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
     }
 
     override fun interval(intervalInTicks: Long, runnable: Runnable) {
-        val task = runtime.viewportl.scafall.scheduler.task(runtime.viewportl.scafall.corePlugin)
+        val task = runtime.viewportl.scafall.scheduler.task(runtime.viewportl.scafall.modInfo)
             .interval(intervalInTicks)
             .delay(1)
             .execute(Runnable{
@@ -83,10 +83,10 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override v
     }
 
     override fun slot(
-        value: () -> ItemStack?,
+        value: () -> ItemStackLike?,
         styles: RenderProperties.() -> Unit,
-        onValueChange: Consumer<ItemStack?>?,
-        canPickUpStack: ReceiverBiFunction<ClickType, ItemStack, Boolean>?
+        onValueChange: ((ScafallItemStack) -> Unit)?,
+        canPickUpStack: (ClickType.(ScafallItemStack) -> Boolean)?
     ) = component(this, runtime) {
         runtime.viewportl.guiFactory.elementFactory.slot(
             SlotProperties(
