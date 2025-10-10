@@ -1,6 +1,6 @@
 name: viewportl
 version: '${version}'
-main: com.wolfyscript.viewportl.spigot.ViewportlLoaderPlugin
+main: com.wolfyscript.viewportl.spigot.SpigotLoaderPlugin
 api-version: 1.21
 authors: [ WolfyScript ]
 load: STARTUP

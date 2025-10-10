@@ -2,5 +2,5 @@ package com.wolfyscript.viewportl
 
 import com.wolfyscript.scafall.loader.module.Client
 
-interface ViewportlClient : Client {
-}
+@Deprecated("Not implemented nor used yet")
+interface ViewportlClient : Client

@@ -19,8 +19,43 @@
 package com.wolfyscript.viewportl.common
 
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.ViewportlClient
+import com.wolfyscript.viewportl.ViewportlServer
 
 abstract class CommonViewportl : Viewportl {
 
+    override var server: ViewportlServer? = null
+        set(value) {
+            field = value
+            if (value != null) {
+
+            }
+        }
+    override var client: ViewportlClient? = null
+        set(value) {
+            field = value
+            if (value != null) {
+
+            }
+        }
+
+    private val clientListeners = mutableListOf<(ViewportlClient) -> Unit>()
+    private val serverListeners = mutableListOf<(ViewportlServer) -> Unit>()
+
+    override fun onClientAvailable(fn: (client: ViewportlClient) -> Unit) {
+        if (client == null) {
+            clientListeners.add(fn)
+            return
+        }
+        fn(client!!)
+    }
+
+    override fun onServerAvailable(fn: (server: ViewportlServer) -> Unit) {
+        if (server == null) {
+            serverListeners.add(fn)
+            return
+        }
+        fn(server!!)
+    }
 
 }

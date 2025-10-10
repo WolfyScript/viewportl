@@ -24,74 +24,22 @@ import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
-import com.wolfyscript.viewportl.spigot.commands.InputCommand
 import com.wolfyscript.viewportl.spigot.gui.factories.GuiFactoryImpl
-import org.bukkit.Bukkit
-import org.bukkit.command.Command
-import org.bukkit.command.CommandMap
-import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.server.PluginDisableEvent
 import org.bukkit.plugin.Plugin
 
 class SpigotViewportl(private val plugin: Plugin) : CommonViewportl(), Listener {
 
-    override lateinit var guiManager: GuiAPIManager
-    override lateinit var guiFactory: GuiFactory
-    override lateinit var registries: ViewportlRegistries
+    override val guiManager: GuiAPIManager = GuiAPIManagerImpl(this)
+    override val guiFactory: GuiFactory = GuiFactoryImpl()
+    override val registries: ViewportlRegistries = CommonViewportlRegistries(this)
 
-    fun init() {
-        guiManager = GuiAPIManagerImpl(this)
-        guiFactory = GuiFactoryImpl()
-        registries = CommonViewportlRegistries(this)
-    }
-
-    fun enable() {
-        registerListeners()
-        registerCommands()
-    }
-
-    fun unload() {
+    override fun onInit() {
 
     }
 
-    private fun registerListeners() {
-        Bukkit.getPluginManager().registerEvents(this, plugin)
-    }
-
-    private fun registerCommands() {
-        registerDynamicCommands(
-            InputCommand(this)
-        )
-    }
-
-    private fun registerDynamicCommands(vararg cmds: Command?) {
-        var commandMap: CommandMap? = null
-        try {
-            val commandMapField = Bukkit.getServer().javaClass.getDeclaredField("commandMap")
-            commandMapField.isAccessible = true
-            commandMap = commandMapField[Bukkit.getServer()] as CommandMap
-        } catch (e: NoSuchFieldException) {
-            e.printStackTrace()
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-        } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        }
-        if (commandMap == null) {
-            scafall.logger.error("Failed to register Commands: Failed to access CommandMap!")
-            return
-        }
-        for (cmd in cmds) {
-            commandMap.register("viewportl", cmd!!)
-        }
-    }
-
-    @EventHandler
-    private fun onViewportlDisabled(event: PluginDisableEvent) {
-
+    fun initServer() {
+        server = SpigotViewportlServer(this, plugin)
     }
 
 }
