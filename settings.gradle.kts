@@ -80,14 +80,3 @@ fun samplePlugin(root: String, vararg modules: String) {
 }
 
 samplePlugin("single-platform", "plugin-common", "spigot-plugin", "sponge-plugin")
-
-/* ********************* *
- * Sponge implementation *
- * ********************* */
-sequenceOf(
-    "platform",
-    "loader"
-).forEach {
-    include(":sponge:${it}")
-    project(":sponge:${it}").projectDir = file("sponge/${it.replace(":", "/")}")
-}

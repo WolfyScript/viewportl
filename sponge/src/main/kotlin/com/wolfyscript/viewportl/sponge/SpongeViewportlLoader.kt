@@ -1,4 +1,4 @@
-package com.wolfyscript.viewportl.loader
+package com.wolfyscript.viewportl.sponge
 
 import com.google.inject.Inject
 import com.google.inject.Injector
@@ -21,15 +21,12 @@ class SpongeViewportlLoader @Inject constructor(
     private val pluginContainer: PluginContainer,
 ) {
 
+    val viewportl: Viewportl = ScafallProvider.get().platformManager.registerModule(Key.key("scafall", "viewportl")) {
+        SpongeViewportl(pluginContainer)
+    }
+
     @Listener
     fun onConstructPlugin(event: ConstructPluginEvent) {
-        ScafallProvider.get().platformManager.registerImplementationModule(
-            Key.key("scafall", "viewportl"),
-            Viewportl::class.java,
-            this.javaClass.classLoader,
-            "viewportl-sponge.innerjar",
-            "com.wolfyscript.viewportl.sponge.SpongeViewportlModule"
-        )
     }
 
     @Listener

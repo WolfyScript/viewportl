@@ -50,6 +50,9 @@ tasks {
     remapSourcesJar {
         targetNamespace = "named"
     }
+    assemble {
+        dependsOn(remapJar)
+    }
 }
 
 artifacts {
