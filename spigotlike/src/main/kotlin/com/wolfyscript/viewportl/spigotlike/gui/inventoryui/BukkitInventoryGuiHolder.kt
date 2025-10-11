@@ -16,17 +16,21 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
+package com.wolfyscript.viewportl.spigotlike.gui.inventoryui
 
-import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
-import com.wolfyscript.viewportl.gui.elements.StackInputSlot
+import com.wolfyscript.viewportl.gui.GuiHolder
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
 
-class InventorySlotComponentRenderer : ComponentRenderer<StackInputSlot, SpigotInvUIRenderContext> {
+internal class BukkitInventoryGuiHolder(val guiHolder: GuiHolder) :
+    InventoryHolder {
+    private var activeInventory: Inventory? = null
 
-    override fun key(): Key = Key.defaultKey("inventory/slot")
+    fun setActiveInventory(activeInventory: Inventory?) {
+        this.activeInventory = activeInventory
+    }
 
-    override fun render(context: SpigotInvUIRenderContext, component: StackInputSlot) {
-        context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.value)
+    override fun getInventory(): Inventory {
+        return activeInventory!!
     }
 }

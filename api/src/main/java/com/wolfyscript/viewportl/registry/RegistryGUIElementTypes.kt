@@ -15,14 +15,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.wolfyscript.viewportl.registry
 
-package com.wolfyscript.viewportl.common.gui.interaction
-
+import com.wolfyscript.scafall.registry.TypeRegistry
 import com.wolfyscript.viewportl.gui.elements.Element
 
-/**
- * Handler that adds interactivity to a [Element].
- *
- * Platform-specific interfaces, that extend this, provide native event functions to handle those platform interactions.
- */
-interface ComponentInteractionHandler<C: Element>
+interface RegistryGUIElementTypes : TypeRegistry<Element> {
+
+    fun getImplementation(baseElementType: Class<out Element>): Class<out Element>?
+
+}

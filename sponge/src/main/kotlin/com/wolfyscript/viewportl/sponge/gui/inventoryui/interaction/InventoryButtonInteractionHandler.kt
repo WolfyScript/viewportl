@@ -23,7 +23,7 @@ import com.wolfyscript.viewportl.gui.elements.Button
 import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction
 
-class InventoryButtonInteractionHandler : SpongeComponentInteractionHandler<Button> {
+class InventoryButtonInteractionHandler : SpongeElementInteractionHandler<Button> {
 
     private fun playSound(runtime: ViewRuntime<*, *>, component: Button) {
         component.sound?.let { sound ->

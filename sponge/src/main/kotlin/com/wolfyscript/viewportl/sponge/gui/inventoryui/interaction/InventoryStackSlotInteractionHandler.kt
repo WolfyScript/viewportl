@@ -28,7 +28,7 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot
 import org.spongepowered.api.item.inventory.Slot
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction
 
-class InventoryStackSlotInteractionHandler : SpongeComponentInteractionHandler<StackInputSlot> {
+class InventoryStackSlotInteractionHandler : SpongeElementInteractionHandler<StackInputSlot> {
 
     override fun onSingleSlotClick(
         runtime: ViewRuntime<*, SpongeUIInteractionHandler>,

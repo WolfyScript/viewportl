@@ -37,14 +37,14 @@ internal fun setupSlot(properties: SlotProperties) {
     val slot = SlotImpl(
         "",
         runtime.viewportl,
-        properties.scope.parent?.component,
+        properties.scope.parent?.element,
         onValueChange = properties.onValueChange,
         canPickUpStack = properties.canPickUpStack,
         value = null//properties.value()
     )
     properties.styles(slot.styles)
 
-    val id = (properties.scope as ComponentScopeImpl).setComponent(slot)
+    val id = (properties.scope as ComponentScopeImpl).setElement(slot)
 
     reactiveSource.createEffect {
         slot.value = properties.value()

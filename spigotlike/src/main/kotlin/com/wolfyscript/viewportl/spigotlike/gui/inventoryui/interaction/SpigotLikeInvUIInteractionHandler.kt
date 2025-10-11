@@ -16,9 +16,8 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
+package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
-import com.wolfyscript.scafall.spigot.api.into
 import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
@@ -32,8 +31,9 @@ import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
+import org.bukkit.plugin.Plugin
 
-class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInteractionHandler>() {
+class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInteractionHandler<InventoryUIInteractionContext>() {
 
     companion object {
 
@@ -51,12 +51,15 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
 
         if (listener == null) {
             // Hook this handler into the Spigot event system
-            listener = InventoryUIListener(runtime)
-            Bukkit.getPluginManager().registerEvents(listener!!, runtime.viewportl.scafall.corePlugin.into().plugin)
+            listener = InventoryUIListener(runtime, this)
+            Bukkit.getPluginManager().registerEvents(listener!!, bukkitPlugin)
         }
     }
 
-    fun onClick(event: InventoryClickEvent, valueHandler: ValueHandler) {
+    override fun onClick(context: InventoryUIInteractionContext) {
+        val event = context.event as? InventoryClickEvent ?: return
+        val valueHandler = context.valueHandler
+
         val clickedTopInv = event.clickedInventory == event.view.topInventory
 
         val originalCursor = event.cursor
@@ -403,7 +406,9 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
         }
     }
 
-    fun onDrag(event: InventoryDragEvent, valueHandler: ValueHandler) {
+    override fun onDrag(context: InventoryUIInteractionContext) {
+        val event = context.event as? InventoryDragEvent ?: return
+
         val topInvSize = runtime.window?.size ?: 0
 
         // Go through each slot that is affected, and call them separately
@@ -419,7 +424,7 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
                 }
 
                 callComponentHandler(node.element) {
-                    onDrag(runtime, node.element, event, Slot(rawSlot), valueHandler)
+                    onDrag(runtime, node.element, event, Slot(rawSlot), context.valueHandler)
                 }
             }
         }
@@ -427,10 +432,10 @@ class SpigotInvUIInteractionHandler : InvUIInteractionHandler<SpigotInvUIInterac
 
     private fun <C : Element> callComponentHandler(
         component: C,
-        fn: SpigotComponentInteractionHandler<C>.() -> Unit
+        fn: SpigotElementInteractionHandler<C>.() -> Unit
     ) {
         val componentHandler =
-            getComponentInteractionHandler(component.javaClass) as SpigotComponentInteractionHandler<C>
+            getComponentInteractionHandler(component.javaClass) as SpigotElementInteractionHandler<C>
         componentHandler.fn()
     }
 

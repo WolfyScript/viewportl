@@ -23,20 +23,22 @@ import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.model.ModelChangeListener
 
 /**
- * Handles the interaction of [Elements][com.wolfyscript.viewportl.gui.components.Element] present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph] of a [ViewRuntime].
+ * Handles the interaction of [Elements][com.wolfyscript.viewportl.gui.elements.Element] present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph] of a [ViewRuntime].
  * It is supplied to the [ViewRuntime] upon creation.
  *
  * For a given type of GUI each platform has its own [InteractionHandler] implementation (with possibly shared common parts)
  *
- * It can be assumed that when this ([Self]) is used for the runtime, then it has the same [InteractionHandler] type.
- * Though, the [Renderer][com.wolfyscript.viewportl.gui.rendering.Renderer] type is unknown!
  */
-interface InteractionHandler<Self: InteractionHandler<Self>> : ModelChangeListener {
+interface InteractionHandler<C: InteractionContext> : ModelChangeListener {
 
-    fun init(runtime: ViewRuntime<*, Self>)
+    fun init(runtime: ViewRuntime)
 
     fun dispose()
 
     fun onWindowOpen(window: Window)
+
+    fun onClick(context: C)
+
+    fun onDrag(context: C)
 
 }

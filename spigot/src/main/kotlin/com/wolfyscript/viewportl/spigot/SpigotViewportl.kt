@@ -24,14 +24,15 @@ import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
-import com.wolfyscript.viewportl.spigot.gui.factories.GuiFactoryImpl
+import com.wolfyscript.viewportl.spigot.gui.factories.SpigotGuiFactory
+import com.wolfyscript.viewportl.spigotlike.gui.factories.SpigotLikeGuiFactoryImpl
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 
 class SpigotViewportl(private val plugin: Plugin) : CommonViewportl(), Listener {
 
     override val guiManager: GuiAPIManager = GuiAPIManagerImpl(this)
-    override val guiFactory: GuiFactory = GuiFactoryImpl()
+    override val guiFactory: GuiFactory = SpigotGuiFactory(plugin)
     override val registries: ViewportlRegistries = CommonViewportlRegistries(this)
 
     override fun onInit() {

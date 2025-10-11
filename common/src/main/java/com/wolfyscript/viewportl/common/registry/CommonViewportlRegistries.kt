@@ -36,7 +36,7 @@ class CommonViewportlRegistries(val viewportl: Viewportl) : ViewportlRegistries 
 
     fun initRegistries() {
         createRegistry(ViewportlRegistryTypes.guiElementTypes) {
-            RegistryUIComponentImplementations(it).apply {
+            RegistryUIElementImplementations(it).apply {
                 register(Key.key("viewportl", "button"), ButtonImpl::class.java)
                 register(Key.key("viewportl", "slot"), SlotImpl::class.java)
                 register(Key.key("viewportl", "group"), GroupImpl::class.java)

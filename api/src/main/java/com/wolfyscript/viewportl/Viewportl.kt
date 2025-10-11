@@ -24,7 +24,9 @@ import com.wolfyscript.scafall.loader.module.Module
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
+import org.jetbrains.annotations.ApiStatus
 
+@ApiStatus.Experimental
 interface Viewportl : Module<ViewportlServer, ViewportlClient> {
 
     val scafall: Scafall

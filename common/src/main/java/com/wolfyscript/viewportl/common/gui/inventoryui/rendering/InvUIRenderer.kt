@@ -9,21 +9,22 @@ import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
 import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
 import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
 import com.wolfyscript.viewportl.gui.rendering.Renderer
+import com.wolfyscript.viewportl.registry.ViewportlRegistryTypes
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 
-abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContext> : Renderer<Self, T> {
+abstract class InvUIRenderer<T : InvUIRenderContext> : Renderer<T> {
 
     companion object {
 
-        private val componentRenderersForUIRenderer : MutableMap<Class<out InvUIRenderer<*, *>>, MutableMap<Key, ComponentRenderer<*, out InvUIRenderContext>>> = mutableMapOf()
+        private val componentRenderersForUIRenderer : MutableMap<Class<out InvUIRenderer<*>>, MutableMap<Key, ComponentRenderer<*, out InvUIRenderContext>>> = mutableMapOf()
 
         @Suppress("UNCHECKED_CAST")
-        fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : Element> getComponentRenderer(uiRendererType: Class<R>, type: Key): ComponentRenderer<C, X>? {
+        fun <X : InvUIRenderContext, R : InvUIRenderer<X>, C : Element> getElementRenderer(uiRendererType: Class<R>, type: Key): ComponentRenderer<C, X>? {
             val handler: ComponentRenderer<*, out InvUIRenderContext>? = componentRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type]
             return handler as? ComponentRenderer<C, X>?
         }
 
-        fun <X : InvUIRenderContext, R : InvUIRenderer<*, X>, C : Element> registerComponentRenderer(
+        fun <X : InvUIRenderContext, R : InvUIRenderer<X>, C : Element> registerComponentRenderer(
             uiRendererType: Class<R>,
             type: Key,
             handler: ComponentRenderer<in C, X>
@@ -33,9 +34,9 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
 
     }
 
-    override lateinit var runtime: ViewRuntime<Self, *>
+    override lateinit var runtime: ViewRuntime
 
-    override fun init(runtime: ViewRuntime<Self, *>) {
+    override fun init(runtime: ViewRuntime) {
         this.runtime = runtime
     }
 
@@ -54,19 +55,20 @@ abstract class InvUIRenderer<Self: InvUIRenderer<Self, T>, T : InvUIRenderContex
     private fun renderChildOf(child: Long, parent: Long, context: T) {
         runtime.model.getNode(child)?.let {
             // Direct rendering to specific component renderer
-            renderComponent(it.element, it, parent, context)
+            renderElement(it.element, it, parent, context)
 
             renderChildren(it.id, context)
         }
     }
 
-    private inline fun <reified C : Element> renderComponent(component: C, node: Node, parent: Long, context: T) {
+    private inline fun <reified C : Element> renderElement(element: C, node: Node, parent: Long, context: T) {
         val nextOffset = calculatePosition(node, context)
         val offset = context.currentOffset()
+        val type = ViewportlRegistryTypes.guiElementTypes.resolveOrThrow().getKey(element.javaClass) ?: return
 
-        val componentRenderer : ComponentRenderer<C, T>? = getComponentRenderer(this::class.java, component.type())
+        val componentRenderer : ComponentRenderer<C, T>? = getElementRenderer(this::class.java, type)
         componentRenderer?.let { renderer ->
-            renderer.render(context, component)
+            renderer.render(context, element)
 
             computed[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))
             // Store the slots affected by this node, so the slots can be easily cleared

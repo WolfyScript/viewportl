@@ -23,19 +23,17 @@ import com.wolfyscript.viewportl.gui.model.ModelChangeListener
 import net.kyori.adventure.text.Component
 
 /**
- * Renders [Elements][com.wolfyscript.viewportl.gui.components.Element] present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph] of a [ViewRuntime].
+ * Renders [Elements][com.wolfyscript.viewportl.gui.elements.Element] present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph] of a [ViewRuntime].
  * It is supplied to the [ViewRuntime] upon creation.
  *
  * For a given type of GUI each platform has its own [Renderer] implementation (with possibly shared common parts)
  *
- * It can be assumed that when this ([Self]) is used for the runtime, then it has the same [Renderer] type.
- * Though, the [InteractionHandler][com.wolfyscript.viewportl.gui.interaction.InteractionHandler] type is unknown!
  */
-interface Renderer<Self: Renderer<Self, C>, C: RenderContext> : ModelChangeListener {
+interface Renderer<C: RenderContext> : ModelChangeListener {
 
-    val runtime: ViewRuntime<Self, *>
+    val runtime: ViewRuntime
 
-    fun init(runtime: ViewRuntime<Self, *>)
+    fun init(runtime: ViewRuntime)
 
     fun onWindowOpen(window: Window)
 

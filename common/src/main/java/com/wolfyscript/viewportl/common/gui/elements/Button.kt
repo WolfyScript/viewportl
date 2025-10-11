@@ -15,12 +15,8 @@ import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.reactivity.Signal
 import net.kyori.adventure.sound.Sound
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.ItemUtils
-import net.minecraft.world.item.Items
 import kotlin.jvm.optionals.getOrNull
 
 internal fun setupButton(properties: ButtonProperties) {
@@ -30,7 +26,7 @@ internal fun setupButton(properties: ButtonProperties) {
     val button = ButtonImpl(
         "",
         runtime = runtime,
-        parent = properties.scope.parent?.component,
+        parent = properties.scope.parent?.element,
         icon = DynamicIcon(runtime),
         onClick = properties.onClick,
         sound = properties.sound,
@@ -55,7 +51,7 @@ internal fun setupButton(properties: ButtonProperties) {
     (styleEffect as EffectImpl).execute()
 
     // Add the button once on init
-    val id = (properties.scope as ComponentScopeImpl).setComponent(button)
+    val id = (properties.scope as ComponentScopeImpl).setElement(button)
 }
 
 @ElementImplementation(base = Button::class)

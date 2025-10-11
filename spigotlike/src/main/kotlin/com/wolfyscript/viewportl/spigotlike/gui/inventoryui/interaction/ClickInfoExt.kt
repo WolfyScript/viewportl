@@ -16,9 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
+package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
-import com.wolfyscript.scafall.spigot.api.wrappers.wrap
+import com.wolfyscript.scafall.spigot.api.wrappers.utils.wrap
 import com.wolfyscript.viewportl.common.gui.interaction.CommonClickInfoImpl
 import com.wolfyscript.viewportl.gui.interaction.ClickInfo
 import com.wolfyscript.viewportl.gui.interaction.ClickType

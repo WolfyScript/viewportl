@@ -56,7 +56,9 @@ plugins {
 sequenceOf(
     "api",
     "common",
+    "spigotlike",
     "spigot",
+    "paper",
     "sponge"
 ).forEach {
     include(":${it}")

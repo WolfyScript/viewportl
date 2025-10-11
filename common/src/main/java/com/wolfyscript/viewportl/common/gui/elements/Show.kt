@@ -3,7 +3,6 @@ package com.wolfyscript.viewportl.common.gui.elements
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
-import com.wolfyscript.viewportl.common.gui.reactivity.signal.TriggerImpl
 import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.elements.Show
 import com.wolfyscript.viewportl.gui.elements.ShowProperties
@@ -14,10 +13,10 @@ internal fun setupShow(properties: ShowProperties) {
     val reactiveSource = runtime.reactiveSource
 
     // Create signals to control condition
-    val show = ShowImpl(properties.scope.parent?.component, runtime.viewportl)
+    val show = ShowImpl(properties.scope.parent?.element, runtime.viewportl)
 
     // add component to graph
-    val id = (properties.scope as ComponentScopeImpl).setComponent(show)
+    val id = (properties.scope as ComponentScopeImpl).setElement(show)
 
     // Keep track if condition result has changed
     val condition: Boolean by reactiveSource.createMemo(false) { properties.condition() }

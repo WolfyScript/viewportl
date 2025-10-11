@@ -9,17 +9,16 @@ import com.wolfyscript.viewportl.gui.interaction.ClickType
 import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
-import java.util.function.Consumer
 
-class ComponentScopeImpl(override val runtime: ViewRuntimeImpl<*, *>, override val parent: ComponentScope? = null) : ComponentScope,
+class ComponentScopeImpl(override val runtime: ViewRuntimeImpl, override val parent: ComponentScope? = null) : ComponentScope,
     ReactiveSource by runtime.reactiveSource {
 
-    override var component: Element? = null
+    override var element: Element? = null
 
-    fun setComponent(component: Element): Long {
-        val id = runtime.model.addNode(component)
-        this.component = component
-        runtime.model.insertNodeAsChildOf(id, parent?.component?.nodeId ?: 0)
+    fun setElement(element: Element): Long {
+        val id = runtime.model.addNode(element)
+        this.element = element
+        runtime.model.insertNodeAsChildOf(id, parent?.element?.nodeId ?: 0)
         return id
     }
 

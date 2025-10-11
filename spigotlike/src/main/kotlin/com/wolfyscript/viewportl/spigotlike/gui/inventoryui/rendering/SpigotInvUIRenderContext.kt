@@ -16,20 +16,16 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
+package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
-import com.wolfyscript.scafall.eval.context.EvalContext
-import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
-import com.wolfyscript.viewportl.gui.ItemStackContext
-import com.wolfyscript.viewportl.gui.elements.Button
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderContext
+import com.wolfyscript.viewportl.gui.ViewRuntime
 
-class InventoryButtonComponentRenderer : ComponentRenderer<Button, SpigotInvUIRenderContext> {
+class SpigotInvUIRenderContext(
+    override val runtime: ViewRuntime,
+    rendererImpl: SpigotInvUIRenderer,
+) : InvUIRenderContext() {
 
-    override fun key(): Key = Key.defaultKey("inventory/button")
+    override val renderer: SpigotInvUIRenderer = rendererImpl
 
-    override fun render(context: SpigotInvUIRenderContext, component: Button) {
-        context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.icon.stack)
-    }
 }

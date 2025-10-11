@@ -31,7 +31,7 @@ import java.util.*
  * The view is immutable, so you need to create a new view each time you need to add a viewer or change the root.
  *
  */
-interface ViewRuntime<R: Renderer<*, *>, I: InteractionHandler<*>> {
+interface ViewRuntime {
 
     val id: Long
 
@@ -82,8 +82,8 @@ interface ViewRuntime<R: Renderer<*, *>, I: InteractionHandler<*>> {
 
     val reactiveSource: ReactiveSource
 
-    val renderer: R
+    val renderer: Renderer<*>
 
-    val interactionHandler: I
+    val interactionHandler: InteractionHandler<*>
 
 }

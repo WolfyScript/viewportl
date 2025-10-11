@@ -14,7 +14,7 @@ import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction
 import java.lang.invoke.MethodHandles
 
-class SpongeUIInteractionHandler : InvUIInteractionHandler<SpongeUIInteractionHandler>() {
+class SpongeUIInteractionHandler : InvUIInteractionHandler() {
 
     companion object {
 
@@ -79,8 +79,8 @@ class SpongeUIInteractionHandler : InvUIInteractionHandler<SpongeUIInteractionHa
         return slotNodes[slotIndex]?.let { runtime.model.getNode(it) }
     }
 
-    private fun <C: Element> callComponentHandler(component: C, fn: SpongeComponentInteractionHandler<C>.() -> Unit) {
-        val componentHandler = getComponentInteractionHandler(component.javaClass) as SpongeComponentInteractionHandler<C>
+    private fun <C: Element> callComponentHandler(component: C, fn: SpongeElementInteractionHandler<C>.() -> Unit) {
+        val componentHandler = getComponentInteractionHandler(component.javaClass) as SpongeElementInteractionHandler<C>
         componentHandler.fn()
     }
 

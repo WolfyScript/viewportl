@@ -1,16 +1,16 @@
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
+package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
+import com.wolfyscript.viewportl.common.gui.interaction.ElementInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.Element
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 
-interface SpigotComponentInteractionHandler<C: Element> : ComponentInteractionHandler<C> {
+interface SpigotElementInteractionHandler<C: Element> : ElementInteractionHandler<C> {
 
     fun onClick(
-        runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>,
-        component: C,
+        runtime: ViewRuntime,
+        element: C,
         event: InventoryClickEvent,
         slot: Slot,
         valueHandler: ValueHandler
@@ -19,8 +19,8 @@ interface SpigotComponentInteractionHandler<C: Element> : ComponentInteractionHa
     }
 
     fun onDrag(
-        runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>,
-        component: C,
+        runtime: ViewRuntime,
+        element: C,
         event: InventoryDragEvent,
         slot: Slot,
         valueHandler: ValueHandler

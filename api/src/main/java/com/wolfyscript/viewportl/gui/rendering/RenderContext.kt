@@ -17,6 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui.rendering
 
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.Element
 
 /**
@@ -24,6 +25,8 @@ import com.wolfyscript.viewportl.gui.elements.Element
  *
  */
 interface RenderContext {
+
+    val runtime: ViewRuntime
 
     fun enterNode(element: Element)
 

@@ -46,7 +46,6 @@ dependencies {
     compileOnly(libs.spongepowered.api)
     implementation(libs.scafall.loader)
     implementation(libs.org.reflections)
-    implementation(libs.scafall.sponge.impl)
     api(project(":common"))
     implementation(libs.scafall.loader)
 }

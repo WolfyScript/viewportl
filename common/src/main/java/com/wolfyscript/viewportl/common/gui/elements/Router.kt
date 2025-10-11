@@ -33,7 +33,7 @@ internal fun setupRouter(properties: RouterProperties) {
     val runtime = properties.scope.runtime.into()
     val reactiveSource = runtime.reactiveSource
 
-    val router = RouterImpl(properties.scope.parent?.component, runtime.viewportl)
+    val router = RouterImpl(properties.scope.parent?.element, runtime.viewportl)
 
     // Create signals to control routing
     val history: Signal<Deque<ActivePath>> = reactiveSource.createSignal(ArrayDeque<ActivePath>())
@@ -48,7 +48,7 @@ internal fun setupRouter(properties: RouterProperties) {
     }
 
     // add component to graph
-    val routerComponentId = (properties.scope as ComponentScopeImpl).setComponent(router)
+    val routerComponentId = (properties.scope as ComponentScopeImpl).setElement(router)
 
     // Keep track if selected route has changed
     val selectedRoute: RouteGraph.Node? by reactiveSource.createMemo(null) { currentPath?.let { router.routeGraph.matchRoute(it) } }

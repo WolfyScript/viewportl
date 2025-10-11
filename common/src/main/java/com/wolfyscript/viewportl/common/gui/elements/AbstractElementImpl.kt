@@ -27,13 +27,10 @@ import java.util.*
 /**
  *
  *
- * Contains the common properties of all Components.
- * It makes it easier to create custom components.
+ * Contains the common properties of all Elements to simplify the creation of custom elements.
  *
- *
- *
- * Additional functionality should be implemented on a per-component basis without further inheritance, to make it easier to expand/change in the future.
- * Instead, use interfaces (that are already there for the platform independent API) and implement them for each component.
+ * Additional functionality should be implemented on a per-element basis without further inheritance, to make it easier to expand/change in the future.
+ * Instead, use interfaces (that are already there for the platform independent API) and implement them for each element.
  * Duplicate code may occur, but it can be put into static methods.
  *
  */

@@ -20,16 +20,16 @@ package com.wolfyscript.viewportl.common.registry
 
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.registry.Registries
-import com.wolfyscript.viewportl.registry.RegistryGUIComponentTypes
+import com.wolfyscript.viewportl.registry.RegistryGUIElementTypes
 import org.jetbrains.annotations.ApiStatus.Internal
 
-private var guiComponentsRegistry: RegistryUIComponentImplementations? = null
+private var guiComponentsRegistry: RegistryUIElementImplementations? = null
 
-val Registries.guiComponents : RegistryGUIComponentTypes
+val Registries.guiComponents : RegistryGUIElementTypes
     get() = guiComponentsRegistry ?: throw RuntimeException("Viewportl Registries not yet initialised!")
 
 @Internal
 internal fun Registries.initViewportlRegistries() {
 
-    guiComponentsRegistry = RegistryUIComponentImplementations(Key.key(Key.SCAFFOLDING_NAMESPACE, "components/implementations"), this)
+    guiComponentsRegistry = RegistryUIElementImplementations(Key.key(Key.SCAFFOLDING_NAMESPACE, "components/implementations"), this)
 }

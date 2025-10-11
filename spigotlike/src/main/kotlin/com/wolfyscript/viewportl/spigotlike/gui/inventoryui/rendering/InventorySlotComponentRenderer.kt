@@ -16,12 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
+package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
-import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderContext
+import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
+import com.wolfyscript.viewportl.gui.elements.StackInputSlot
 
-class SpigotInvUIRenderContext(rendererImpl: SpigotInvUIRenderer) : InvUIRenderContext() {
+class InventorySlotComponentRenderer : ComponentRenderer<StackInputSlot, SpigotInvUIRenderContext> {
 
-    override val renderer: SpigotInvUIRenderer = rendererImpl
-
+    override fun render(context: SpigotInvUIRenderContext, component: StackInputSlot) {
+        context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.value)
+    }
 }

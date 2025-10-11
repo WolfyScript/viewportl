@@ -74,7 +74,7 @@ typesafe-config = { module = "com.typesafe:config", version.ref = "typesafe-conf
 # cross-platform APIs
 scafall-api = { module = "com.wolfyscript.scafall:api", version.ref = "scafall" }
 scafall-loader = { module = "com.wolfyscript.scafall.loader:loader-api", version.ref = "scafall" }
-scafall-spigot-impl = { module = "com.wolfyscript.scafall.spigot:spigot", version.ref = "scafall" }
+scafall-spigot = { module = "com.wolfyscript.scafall.spigot:spigot-api", version.ref = "scafall" }
 scafall-sponge-impl = { module = "com.wolfyscript.scafall.sponge:sponge", version.ref = "scafall" }
 ## Adventure
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure-api" }

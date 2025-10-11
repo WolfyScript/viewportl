@@ -35,9 +35,9 @@ import kotlin.math.abs
 internal fun setupGroup(properties: GroupProperties) {
     val runtime = properties.scope.runtime.into()
 
-    val group = GroupImpl("", runtime.viewportl, properties.scope.parent?.component)
+    val group = GroupImpl("", runtime.viewportl, properties.scope.parent?.element)
     // Add the button once on init
-    val id = (properties.scope as ComponentScopeImpl).setComponent(group)
+    val id = (properties.scope as ComponentScopeImpl).setElement(group)
     properties.content(properties.scope)
 }
 

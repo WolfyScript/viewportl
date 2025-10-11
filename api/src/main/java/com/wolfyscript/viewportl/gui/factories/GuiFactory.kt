@@ -30,15 +30,15 @@ interface GuiFactory {
 
     fun createInventoryUIRuntime(
         viewportl: Viewportl,
-        callback: Function<ViewRuntime<*, *>, Window>,
+        callback: Function<ViewRuntime, Window>,
         viewers: Set<UUID>
-    ): ViewRuntime<*, *>
+    ): ViewRuntime
 
-    fun createInventoryRenderer(): Renderer<*, *>
+    fun createInventoryRenderer(): Renderer<*>
 
     fun createInventoryInteractionHandler(): InteractionHandler<*>
 
-    fun runComponentFunction(runtime: ViewRuntime<*, *>, scope: ComponentScope?, fn: ComponentScope.() -> Unit)
+    fun runComponentFunction(runtime: ViewRuntime, scope: ComponentScope?, fn: ComponentScope.() -> Unit)
 
     val elementFactory: ElementFactory
 }

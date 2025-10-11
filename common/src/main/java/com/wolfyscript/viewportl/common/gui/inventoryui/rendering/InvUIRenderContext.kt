@@ -23,7 +23,7 @@ import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
 abstract class InvUIRenderContext : RenderContext {
 
-    abstract val renderer: InvUIRenderer<*, *>
+    abstract val renderer: InvUIRenderer<*>
     private var currentNode: Element? = null
     private var slotOffsetToParent = 0
 

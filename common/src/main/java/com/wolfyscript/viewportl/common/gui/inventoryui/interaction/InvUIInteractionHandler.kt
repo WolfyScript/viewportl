@@ -1,40 +1,41 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.interaction.ComponentInteractionHandler
+import com.wolfyscript.viewportl.common.gui.interaction.ElementInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.elements.Element
+import com.wolfyscript.viewportl.gui.interaction.InteractionContext
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.Node
 import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
 import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
 import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
 
-abstract class InvUIInteractionHandler<Self: InvUIInteractionHandler<Self>> : InteractionHandler<Self> {
+abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandler<C> {
 
     companion object {
-        private val elementInteractionHandlers: MutableMap<Class<out Element>, ComponentInteractionHandler<*>> = mutableMapOf()
+        private val elementInteractionHandlers: MutableMap<Class<out Element>, ElementInteractionHandler<*>> = mutableMapOf()
 
         @Suppress("UNCHECKED_CAST")
-        fun <C : Element> getComponentInteractionHandler(type: Class<C>): ComponentInteractionHandler<C>? {
-            val handler: ComponentInteractionHandler<*>? = elementInteractionHandlers[type]
-            return handler as ComponentInteractionHandler<C>?
+        fun <C : Element> getComponentInteractionHandler(type: Class<C>): ElementInteractionHandler<C>? {
+            val handler: ElementInteractionHandler<*>? = elementInteractionHandlers[type]
+            return handler as ElementInteractionHandler<C>?
         }
 
         fun <C : Element> registerComponentInteractionHandler(
             type: Class<C>,
-            handler: ComponentInteractionHandler<in C>
+            handler: ElementInteractionHandler<in C>
         ) {
             elementInteractionHandlers[type] = handler
         }
 
     }
 
-    lateinit var runtime: ViewRuntime<*, Self>
+    lateinit var runtime: ViewRuntime
     val slotNodes: MutableMap<Int, Long> = mutableMapOf()
     val cachedProperties: MutableMap<Long, CachedNodeInteractProperties> = mutableMapOf()
 
-    override fun init(runtime: ViewRuntime<*, Self>) {
+    override fun init(runtime: ViewRuntime) {
         this.runtime = runtime
     }
 

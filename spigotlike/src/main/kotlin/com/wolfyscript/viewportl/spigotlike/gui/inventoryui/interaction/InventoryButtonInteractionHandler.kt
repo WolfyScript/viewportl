@@ -16,42 +16,47 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
+package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
-import com.wolfyscript.scafall.spigot.api.wrappers.wrap
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.elements.StackInputSlot
+import com.wolfyscript.viewportl.gui.elements.Button
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 
-class InventoryStackSlotInteractionHandler : SpigotComponentInteractionHandler<StackInputSlot> {
+class InventoryButtonInteractionHandler : SpigotElementInteractionHandler<Button> {
+
+    private fun playSound(runtime: ViewRuntime, component: Button) {
+        component.sound?.let { sound ->
+            runtime.viewers.forEach {
+                runtime.viewportl.scafall.server?.adventure?.player(it)?.playSound(sound)
+            }
+        }
+    }
 
     override fun onDrag(
-        runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>,
-        component: StackInputSlot,
+        runtime: ViewRuntime,
+        element: Button,
         event: InventoryDragEvent,
         slot: Slot,
         valueHandler: ValueHandler
     ) {
-        valueHandler.listeners.put(slot.index) {
-            val wrapped = it?.wrap()
-            component.onValueChange?.accept(wrapped)
-            component.value = wrapped
-        }
+        event.isCancelled = true
     }
 
     override fun onClick(
-        runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>,
-        component: StackInputSlot,
+        runtime: ViewRuntime,
+        element: Button,
         event: InventoryClickEvent,
         slot: Slot,
         valueHandler: ValueHandler
     ) {
-        valueHandler.listeners.put(event.rawSlot) {
-            val wrapped = it?.wrap()
-            component.onValueChange?.accept(wrapped)
-            component.value = wrapped
+        playSound(runtime, element)
+
+        element.onClick?.let { click ->
+            event.convert().click()
         }
+
+        event.isCancelled = true
     }
 
 }

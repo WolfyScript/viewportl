@@ -15,14 +15,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction
+package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.BukkitInventoryGuiHolder
+import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -32,7 +32,7 @@ import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 
-class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHandler>) : Listener {
+class InventoryUIListener(val runtime: ViewRuntime, val interactionHandler: SpigotLikeInvUIInteractionHandler) : Listener {
 
     private fun withHolder(holder: InventoryHolder?, fn: GuiHolder.() -> Unit) {
         if (holder is BukkitInventoryGuiHolder && holder.guiHolder.viewManager == runtime) {
@@ -44,10 +44,10 @@ class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHand
     fun onInvClick(event: InventoryClickEvent) {
         withHolder(event.inventory.holder) {
             val valueHandler = ValueHandler()
-            runtime.interactionHandler.onClick(event, valueHandler)
+            interactionHandler.onClick(InventoryUIInteractionContext(runtime, event, valueHandler))
             event.isCancelled = true
 
-            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
+            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.modInfo) {
                 (runtime.reactiveSource as ReactiveGraph).runEffects()
             }
         }
@@ -64,10 +64,10 @@ class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHand
             }
             if (runtime.window == null) return@withHolder
             val valueHandler = ValueHandler()
-            runtime.interactionHandler.onDrag(event, valueHandler)
+            interactionHandler.onDrag(InventoryUIInteractionContext(runtime, event, valueHandler))
 
             if (!event.isCancelled) {
-                runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
+                runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.modInfo) {
                     for (rawSlot in event.rawSlots) {
                         if (rawSlot < event.inventory.size) {
                             valueHandler.callSlotValueUpdate(rawSlot, event.inventory.getItem(rawSlot))
@@ -76,7 +76,7 @@ class InventoryUIListener(val runtime: ViewRuntime<*, SpigotInvUIInteractionHand
                 }
             }
 
-            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
+            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.modInfo) {
                 (runtime.reactiveSource as ReactiveGraph).runEffects()
             }
         }

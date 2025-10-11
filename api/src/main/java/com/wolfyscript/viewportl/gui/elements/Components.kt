@@ -18,7 +18,7 @@ import kotlin.reflect.KProperty
  * allow for better structuring of UI elements and encapsulate signals, memos, effects, etc.
  *
  */
-fun component(componentScope: ComponentScope? = null, runtime: ViewRuntime<*,*>, fn: ComponentScope.() -> Unit) {
+fun component(componentScope: ComponentScope? = null, runtime: ViewRuntime, fn: ComponentScope.() -> Unit) {
     runtime.viewportl.guiFactory.runComponentFunction(runtime, componentScope, fn)
 }
 
@@ -27,9 +27,9 @@ fun component(componentScope: ComponentScope? = null, runtime: ViewRuntime<*,*>,
  */
 interface ComponentScope : ReactiveSource {
 
-    val runtime : ViewRuntime<*,*>
+    val runtime : ViewRuntime
 
-    val component: Element?
+    val element: Element?
 
     val parent: ComponentScope?
 
@@ -93,7 +93,7 @@ interface ComponentScope : ReactiveSource {
 }
 
 class DynamicProperty<O : Element, T>(
-    val runtime: ViewRuntime<*,*>,
+    val runtime: ViewRuntime,
     initial: T
 ) {
     private var value: T = initial

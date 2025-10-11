@@ -15,7 +15,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.spigot.gui.factories
+package com.wolfyscript.viewportl.spigotlike.gui.factories
 
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
@@ -28,36 +28,37 @@ import com.wolfyscript.viewportl.gui.factories.ElementFactory
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.interaction.SpigotInvUIInteractionHandler
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering.SpigotInvUIRenderer
+import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction.SpigotLikeInvUIInteractionHandler
+import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering.SpigotInvUIRenderer
+import org.bukkit.plugin.Plugin
 import java.util.*
 import java.util.function.Function
 
-class GuiFactoryImpl : GuiFactory {
+abstract class SpigotLikeGuiFactoryImpl(val bukkitPlugin: Plugin) : GuiFactory {
 
     override fun createInventoryUIRuntime(
         viewportl: Viewportl,
-        callback: Function<ViewRuntime<*, *>, Window>,
+        callback: Function<ViewRuntime, Window>,
         viewers: Set<UUID>
-    ): ViewRuntime<*, *> {
+    ): ViewRuntime {
         return ViewRuntimeImpl(
             viewportl,
             callback,
             viewers,
             renderer = SpigotInvUIRenderer(),
-            interactionHandler = SpigotInvUIInteractionHandler(),
+            interactionHandler = SpigotLikeInvUIInteractionHandler(bukkitPlugin),
         )
     }
 
-    override fun createInventoryRenderer(): Renderer<*, *> {
+    override fun createInventoryRenderer(): Renderer<*> {
         return SpigotInvUIRenderer()
     }
 
     override fun createInventoryInteractionHandler(): InteractionHandler<*> {
-        return SpigotInvUIInteractionHandler()
+        return SpigotLikeInvUIInteractionHandler(bukkitPlugin)
     }
 
-    override fun runComponentFunction(runtime: ViewRuntime<*, *>, scope: ComponentScope?, fn: ComponentScope.() -> Unit) {
+    override fun runComponentFunction(runtime: ViewRuntime, scope: ComponentScope?, fn: ComponentScope.() -> Unit) {
         fn(ComponentScopeImpl(runtime as ViewRuntimeImpl, scope))
     }
 

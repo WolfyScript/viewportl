@@ -13,7 +13,7 @@ import org.spongepowered.api.item.inventory.Inventory
 import org.spongepowered.api.item.inventory.type.CarriedInventory
 
 class SpongeInventoryUIListener(
-    private val runtime: ViewRuntime<*, SpongeUIInteractionHandler>,
+    private val runtime: ViewRuntime<*, *>,
     val viewportl: Viewportl
 ) {
 

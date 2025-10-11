@@ -29,15 +29,15 @@ import com.wolfyscript.viewportl.gui.rendering.Renderer
 import java.util.*
 import java.util.function.Function
 
-class ViewRuntimeImpl<R: Renderer<R,*>, I: InteractionHandler<I>>(
+class ViewRuntimeImpl(
     override val viewportl: Viewportl,
-    windowFactory: Function<ViewRuntime<*,*>, Window>,
+    windowFactory: Function<ViewRuntime, Window>,
     override val viewers: Set<UUID>,
     override val model: ModelGraph = ModelGraphImpl(),
     // Handlers that handle rendering and interaction
-    override val renderer: R,
-    override val interactionHandler: I
-) : ViewRuntime<R, I> {
+    override val renderer: Renderer<*>,
+    override val interactionHandler: InteractionHandler<*>
+) : ViewRuntime {
 
     override val id: Long = NEXT_ID++
 
@@ -89,7 +89,7 @@ class ViewRuntimeImpl<R: Renderer<R,*>, I: InteractionHandler<I>>(
         renderer.onWindowOpen(window)
         interactionHandler.onWindowOpen(window)
 
-        viewportl.scafall.scheduler.syncTask(viewportl.scafall.corePlugin) {
+        viewportl.scafall.scheduler.syncTask(viewportl.scafall.modInfo) {
             renderer.render()
             reactiveSource.initScheduler()
         }
@@ -105,7 +105,7 @@ class ViewRuntimeImpl<R: Renderer<R,*>, I: InteractionHandler<I>>(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
-        val that = other as ViewRuntimeImpl<*,*>
+        val that = other as ViewRuntimeImpl
         return id == that.id
     }
 

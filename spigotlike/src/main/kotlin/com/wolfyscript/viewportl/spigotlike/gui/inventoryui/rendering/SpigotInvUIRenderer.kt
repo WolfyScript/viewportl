@@ -16,15 +16,15 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot.gui.inventoryui.rendering
+package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.eval.context.EvalContext
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.platform.PlatformType
-import com.wolfyscript.scafall.spigot.api.wrappers.unwrap
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
+import com.wolfyscript.scafall.spigot.api.wrappers.utils.unwrapSpigot
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
@@ -34,7 +34,7 @@ import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ItemStackContext
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
-import com.wolfyscript.viewportl.spigot.gui.inventoryui.BukkitInventoryGuiHolder
+import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.craftbukkit.BukkitComponentSerializer
 import org.bukkit.Bukkit
@@ -42,7 +42,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import java.util.*
 
-class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRenderContext>() {
+class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>() {
 
     companion object {
 
@@ -58,7 +58,7 @@ class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRender
     private var inventory: Inventory? = Bukkit.createInventory(null, 27)
 
     override fun createContext(): SpigotInvUIRenderContext {
-        return SpigotInvUIRenderContext(this)
+        return SpigotInvUIRenderContext(runtime, this)
     }
 
     override fun onWindowOpen(window: Window) {
@@ -163,15 +163,15 @@ class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRender
             return
         }
 
-        inventory!!.setItem(i, itemStackConfig.constructItemStack()?.unwrap())
+        inventory!!.setItem(i, itemStackConfig.constructItemStack()?.unwrapSpigot())
     }
 
-    fun renderStack(position: Int, itemStack: ItemStack?) {
+    fun renderStack(position: Int, itemStack: ScafallItemStack?) {
         if (itemStack == null) {
             setNativeStack(position, null)
             return
         }
-        setNativeStack(position, itemStack.unwrap())
+        setNativeStack(position, itemStack.unwrapSpigot())
     }
 
     fun renderStack(position: Int, itemStackConfig: ItemStackConfig, itemStackContext: ItemStackContext) {
@@ -179,9 +179,9 @@ class SpigotInvUIRenderer : InvUIRenderer<SpigotInvUIRenderer, SpigotInvUIRender
             position,
             itemStackConfig.constructItemStack(
                 EvalContext(),
-                runtime.viewportl.scafall.adventure.miniMsg,
+                runtime.viewportl.scafall.server?.adventure?.miniMsg,
                 itemStackContext.resolvers
-            )?.unwrap()
+            )?.unwrapSpigot()
         )
     }
 
