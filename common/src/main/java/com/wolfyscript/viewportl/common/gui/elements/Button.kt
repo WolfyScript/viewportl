@@ -58,7 +58,7 @@ internal fun setupButton(properties: ButtonProperties) {
 @StaticNamespacedKey(key = "button")
 class ButtonImpl @JsonCreator @Inject constructor(
     id: String,
-    internal val runtime: ViewRuntime<*,*>,
+    internal val runtime: ViewRuntime,
     viewportl: Viewportl = runtime.viewportl,
     parent: Element? = null,
     icon: ButtonIcon = DynamicIcon(runtime),
@@ -73,7 +73,7 @@ class ButtonImpl @JsonCreator @Inject constructor(
 }
 
 class DynamicIcon(
-    private val runtime: ViewRuntime<*,*>,
+    private val runtime: ViewRuntime,
 ) : ButtonIcon {
 
     override var stack: ScafallItemStack = ItemStack.EMPTY.wrap()

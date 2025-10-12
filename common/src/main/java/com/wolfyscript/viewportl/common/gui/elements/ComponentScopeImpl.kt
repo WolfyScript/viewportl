@@ -10,8 +10,10 @@ import com.wolfyscript.viewportl.gui.reactivity.ReactiveSource
 import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import net.kyori.adventure.sound.Sound
 
-class ComponentScopeImpl(override val runtime: ViewRuntimeImpl, override val parent: ComponentScope? = null) : ComponentScope,
-    ReactiveSource by runtime.reactiveSource {
+class ComponentScopeImpl(
+    override val runtime: ViewRuntimeImpl,
+    override val parent: ComponentScope? = null,
+) : ComponentScope, ReactiveSource by runtime.reactiveSource {
 
     override var element: Element? = null
 
@@ -26,7 +28,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl, override val par
         val task = runtime.viewportl.scafall.scheduler.task(runtime.viewportl.scafall.modInfo)
             .interval(intervalInTicks)
             .delay(1)
-            .execute(Runnable{
+            .execute(Runnable {
                 runnable.run()
             })
             .build()
@@ -38,7 +40,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl, override val par
 
     override fun group(
         styles: RenderProperties.() -> Unit,
-        content: ComponentScope.() -> Unit
+        content: ComponentScope.() -> Unit,
     ) = component(this, runtime) {
         runtime.viewportl.guiFactory.elementFactory.group(GroupProperties(this, styles, content))
     }
@@ -47,7 +49,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl, override val par
         icon: ButtonIcon.() -> Unit,
         styles: RenderProperties.() -> Unit,
         sound: Sound?,
-        onClick: (ClickInfo.() -> Unit)?
+        onClick: (ClickInfo.() -> Unit)?,
     ) = component(this, runtime) {
         runtime.viewportl.guiFactory.elementFactory.button(
             ButtonProperties(
@@ -72,7 +74,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl, override val par
     override fun show(
         condition: () -> Boolean,
         content: ComponentScope.() -> Unit,
-        fallback: ComponentScope.() -> Unit
+        fallback: ComponentScope.() -> Unit,
     ) = component(this, runtime) {
         runtime.viewportl.guiFactory.elementFactory.show(
             ShowProperties(
@@ -85,7 +87,7 @@ class ComponentScopeImpl(override val runtime: ViewRuntimeImpl, override val par
         value: () -> ItemStackLike?,
         styles: RenderProperties.() -> Unit,
         onValueChange: ((ScafallItemStack) -> Unit)?,
-        canPickUpStack: (ClickType.(ScafallItemStack) -> Boolean)?
+        canPickUpStack: (ClickType.(ScafallItemStack) -> Boolean)?,
     ) = component(this, runtime) {
         runtime.viewportl.guiFactory.elementFactory.slot(
             SlotProperties(

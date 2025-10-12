@@ -20,7 +20,6 @@ package com.wolfyscript.viewportl.gui.rendering
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.model.ModelChangeListener
-import net.kyori.adventure.text.Component
 
 /**
  * Renders [Elements][com.wolfyscript.viewportl.gui.elements.Element] present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph] of a [ViewRuntime].

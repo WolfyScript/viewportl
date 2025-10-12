@@ -1,7 +1,7 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
+import com.wolfyscript.viewportl.gui.rendering.ElementRenderer
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.model.Node
@@ -16,20 +16,20 @@ abstract class InvUIRenderer<T : InvUIRenderContext> : Renderer<T> {
 
     companion object {
 
-        private val componentRenderersForUIRenderer : MutableMap<Class<out InvUIRenderer<*>>, MutableMap<Key, ComponentRenderer<*, out InvUIRenderContext>>> = mutableMapOf()
+        private val elementRenderersForUIRenderer : MutableMap<Class<out InvUIRenderer<*>>, MutableMap<Key, ElementRenderer<*, out InvUIRenderContext>>> = mutableMapOf()
 
         @Suppress("UNCHECKED_CAST")
-        fun <X : InvUIRenderContext, R : InvUIRenderer<X>, C : Element> getElementRenderer(uiRendererType: Class<R>, type: Key): ComponentRenderer<C, X>? {
-            val handler: ComponentRenderer<*, out InvUIRenderContext>? = componentRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type]
-            return handler as? ComponentRenderer<C, X>?
+        fun <X : InvUIRenderContext, R : InvUIRenderer<X>, C : Element> getElementRenderer(uiRendererType: Class<R>, type: Key): ElementRenderer<C, X>? {
+            val handler: ElementRenderer<*, out InvUIRenderContext>? = elementRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type]
+            return handler as? ElementRenderer<C, X>?
         }
 
         fun <X : InvUIRenderContext, R : InvUIRenderer<X>, C : Element> registerComponentRenderer(
             uiRendererType: Class<R>,
             type: Key,
-            handler: ComponentRenderer<in C, X>
+            handler: ElementRenderer<in C, X>
         ) {
-            componentRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type] = handler
+            elementRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type] = handler
         }
 
     }
@@ -66,8 +66,8 @@ abstract class InvUIRenderer<T : InvUIRenderContext> : Renderer<T> {
         val offset = context.currentOffset()
         val type = ViewportlRegistryTypes.guiElementTypes.resolveOrThrow().getKey(element.javaClass) ?: return
 
-        val componentRenderer : ComponentRenderer<C, T>? = getElementRenderer(this::class.java, type)
-        componentRenderer?.let { renderer ->
+        val elementRenderer : ElementRenderer<C, T>? = getElementRenderer(this::class.java, type)
+        elementRenderer?.let { renderer ->
             renderer.render(context, element)
 
             computed[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))

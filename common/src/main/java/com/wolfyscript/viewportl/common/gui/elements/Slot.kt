@@ -21,7 +21,10 @@ package com.wolfyscript.viewportl.common.gui.elements
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.google.inject.Inject
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
+import com.wolfyscript.scafall.wrappers.snapshot
+import com.wolfyscript.scafall.wrappers.unwrap
 import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
+import com.wolfyscript.scafall.wrappers.wrap
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.into
 import com.wolfyscript.viewportl.gui.elements.Element
@@ -29,6 +32,7 @@ import com.wolfyscript.viewportl.gui.elements.ElementImplementation
 import com.wolfyscript.viewportl.gui.elements.SlotProperties
 import com.wolfyscript.viewportl.gui.elements.StackInputSlot
 import com.wolfyscript.viewportl.gui.interaction.ClickType
+import net.minecraft.world.item.ItemStack
 
 internal fun setupSlot(properties: SlotProperties) {
     val runtime = properties.scope.runtime.into()
@@ -47,7 +51,7 @@ internal fun setupSlot(properties: SlotProperties) {
     val id = (properties.scope as ComponentScopeImpl).setElement(slot)
 
     reactiveSource.createEffect {
-        slot.value = properties.value()
+        slot.value = properties.value()?.unwrap()?.wrap() ?: ItemStack.EMPTY.wrap()
     }
 
 }

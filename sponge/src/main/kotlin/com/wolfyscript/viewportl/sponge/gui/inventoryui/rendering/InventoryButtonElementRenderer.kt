@@ -19,10 +19,10 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
+import com.wolfyscript.viewportl.gui.rendering.ElementRenderer
 import com.wolfyscript.viewportl.gui.elements.Button
 
-class InventoryButtonComponentRenderer : ComponentRenderer<Button, SpongeInvUIRenderContext> {
+class InventoryButtonElementRenderer : ElementRenderer<Button, SpongeInvUIRenderContext> {
 
     override fun key(): Key = Key.defaultKey("inventory/button")
 

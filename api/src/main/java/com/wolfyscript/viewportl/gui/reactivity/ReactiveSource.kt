@@ -42,7 +42,7 @@ interface ReactiveSource {
      */
     fun <T : Any?> createSignal(
         valueType: Class<T>,
-        defaultValueProvider: ViewRuntime<*, *>.() -> T,
+        defaultValueProvider: ViewRuntime.() -> T,
     ): Signal<T>
 
     /**

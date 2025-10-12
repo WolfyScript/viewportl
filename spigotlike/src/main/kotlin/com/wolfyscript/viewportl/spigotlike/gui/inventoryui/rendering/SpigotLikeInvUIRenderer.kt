@@ -42,14 +42,14 @@ abstract class SpigotLikeInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>
                     StaticNamespacedKey.KeyBuilder.createKeyString(
                         ButtonImpl::class.java
                     )
-                ), InventoryButtonComponentRenderer()
+                ), InventoryButtonElementRenderer()
             )
             registerComponentRenderer(
                 SpigotLikeInvUIRenderer::class.java, Key.parse(
                     StaticNamespacedKey.KeyBuilder.createKeyString(
                         SlotImpl::class.java
                     )
-                ), InventorySlotComponentRenderer()
+                ), InventorySlotElementRenderer()
             )
         }
 

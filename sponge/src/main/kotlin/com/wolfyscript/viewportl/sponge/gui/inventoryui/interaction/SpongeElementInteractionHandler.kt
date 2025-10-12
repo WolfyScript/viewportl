@@ -1,6 +1,6 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.interaction.ElementInteractionHandler
+import com.wolfyscript.viewportl.gui.interaction.ElementInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.Element
 import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent

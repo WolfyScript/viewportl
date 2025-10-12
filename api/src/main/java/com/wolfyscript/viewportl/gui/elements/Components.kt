@@ -51,9 +51,9 @@ interface ComponentScope : ReactiveSource {
      * By default, it uses the default Button sound from Minecraft, on interaction.
      * While the sound can be removed, it is highly recommended to play a sound on interaction to notify the player that an action has been recognised!
      *
-     * ###### Native Component
-     * Buttons are a native component meaning they have a platform specific implementation that handles both interactions and rendering.
-     * Only native components will be present in the component graph, non-native components don't really exist, they just group native components together.
+     * ###### Element
+     * Buttons are elements meaning they have a platform specific implementation that handles both interactions and rendering.
+     * Only elements are present in the model graph, components don't really exist, they just group elements together.
      */
     fun button(
         icon: ButtonIcon.() -> Unit,

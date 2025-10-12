@@ -18,10 +18,10 @@
 
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
-import com.wolfyscript.viewportl.common.gui.rendering.ComponentRenderer
+import com.wolfyscript.viewportl.gui.rendering.ElementRenderer
 import com.wolfyscript.viewportl.gui.elements.Button
 
-class InventoryButtonComponentRenderer : ComponentRenderer<Button, SpigotInvUIRenderContext> {
+class InventoryButtonElementRenderer : ElementRenderer<Button, SpigotInvUIRenderContext> {
 
     override fun render(context: SpigotInvUIRenderContext, component: Button) {
         context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.icon.stack)

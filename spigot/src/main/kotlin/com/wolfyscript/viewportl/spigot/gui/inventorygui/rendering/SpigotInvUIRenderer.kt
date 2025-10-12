@@ -3,7 +3,7 @@ package com.wolfyscript.viewportl.spigot.gui.inventorygui.rendering
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.spigot.gui.inventorygui.BukkitInventoryGuiHolder
+import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering.SpigotLikeInvUIRenderer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit

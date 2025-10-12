@@ -1,10 +1,10 @@
-package com.wolfyscript.viewportl.spigot.gui.inventorygui
+package com.wolfyscript.viewportl.spigotlike.gui.inventoryui
 
 import com.wolfyscript.viewportl.gui.GuiHolder
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-internal class BukkitInventoryGuiHolder(val guiHolder: GuiHolder) :
+class BukkitInventoryGuiHolder(val guiHolder: GuiHolder) :
     InventoryHolder {
     private var activeInventory: Inventory? = null
 

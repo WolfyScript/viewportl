@@ -1,6 +1,6 @@
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.interaction.ElementInteractionHandler
+import com.wolfyscript.viewportl.gui.interaction.ElementInteractionHandler
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.Element
 import org.bukkit.event.inventory.InventoryClickEvent

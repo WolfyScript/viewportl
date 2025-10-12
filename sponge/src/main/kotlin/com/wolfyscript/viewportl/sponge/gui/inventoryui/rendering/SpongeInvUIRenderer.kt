@@ -21,7 +21,6 @@ import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import net.kyori.adventure.text.Component
 import org.spongepowered.api.ResourceKey
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.data.Keys
 import org.spongepowered.api.item.inventory.ContainerType
 import org.spongepowered.api.item.inventory.ContainerTypes
 import org.spongepowered.api.item.inventory.Inventory
@@ -38,14 +37,14 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
                     StaticNamespacedKey.KeyBuilder.createKeyString(
                         ButtonImpl::class.java
                     )
-                ), InventoryButtonComponentRenderer()
+                ), InventoryButtonElementRenderer()
             )
             registerComponentRenderer(
                 SpongeInvUIRenderer::class.java, Key.parse(
                     StaticNamespacedKey.KeyBuilder.createKeyString(
                         SlotImpl::class.java
                     )
-                ), InventorySlotComponentRenderer()
+                ), InventorySlotElementRenderer()
             )
         }
     }
