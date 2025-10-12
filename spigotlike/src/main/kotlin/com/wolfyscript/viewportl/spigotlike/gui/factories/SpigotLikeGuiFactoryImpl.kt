@@ -27,9 +27,7 @@ import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import com.wolfyscript.viewportl.gui.factories.ElementFactory
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
-import com.wolfyscript.viewportl.gui.rendering.Renderer
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction.SpigotLikeInvUIInteractionHandler
-import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering.SpigotInvUIRenderer
 import org.bukkit.plugin.Plugin
 import java.util.*
 import java.util.function.Function
@@ -45,13 +43,9 @@ abstract class SpigotLikeGuiFactoryImpl(val bukkitPlugin: Plugin) : GuiFactory {
             viewportl,
             callback,
             viewers,
-            renderer = SpigotInvUIRenderer(),
+            renderer = createInventoryRenderer(),
             interactionHandler = SpigotLikeInvUIInteractionHandler(bukkitPlugin),
         )
-    }
-
-    override fun createInventoryRenderer(): Renderer<*> {
-        return SpigotInvUIRenderer()
     }
 
     override fun createInventoryInteractionHandler(): InteractionHandler<*> {

@@ -39,6 +39,4 @@ interface Renderer<C: RenderContext> : ModelChangeListener {
 
     fun render()
 
-    fun updateTitle(component: Component?)
-
 }

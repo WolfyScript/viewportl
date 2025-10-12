@@ -23,9 +23,9 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 
 class SpigotInvUIRenderContext(
     override val runtime: ViewRuntime,
-    rendererImpl: SpigotInvUIRenderer,
+    rendererImpl: SpigotLikeInvUIRenderer,
 ) : InvUIRenderContext() {
 
-    override val renderer: SpigotInvUIRenderer = rendererImpl
+    override val renderer: SpigotLikeInvUIRenderer = rendererImpl
 
 }

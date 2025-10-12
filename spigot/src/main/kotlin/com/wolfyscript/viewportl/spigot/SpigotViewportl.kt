@@ -25,7 +25,6 @@ import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import com.wolfyscript.viewportl.spigot.gui.factories.SpigotGuiFactory
-import com.wolfyscript.viewportl.spigotlike.gui.factories.SpigotLikeGuiFactoryImpl
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 
