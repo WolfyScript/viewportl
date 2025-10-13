@@ -82,7 +82,7 @@ interface ReactiveSource {
         initialValue: Result<T>?,
         inputType: Class<I?>,
         input: () -> I?,
-        fetch: (I, Viewportl, ViewRuntime<*, *>) -> Result<T>,
+        fetch: (I, Viewportl, ViewRuntime) -> Result<T>,
     ): Pair<Signal<Result<T>?>, () -> Unit>
 
 }
@@ -103,6 +103,6 @@ inline fun <reified T : Any?> ReactiveSource.createSignal(defaultValue: T): Sign
     return createSignal(T::class.java) { defaultValue }
 }
 
-inline fun <reified T : Any?> ReactiveSource.createSignal(noinline defaultValueProvider: ViewRuntime<*, *>.() -> T): Signal<T> {
+inline fun <reified T : Any?> ReactiveSource.createSignal(noinline defaultValueProvider: ViewRuntime.() -> T): Signal<T> {
     return createSignal(T::class.java, defaultValueProvider)
 }

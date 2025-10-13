@@ -4,5 +4,5 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 
 interface NodeId {
     val id: Long
-    val runtime: ViewRuntime<*,*>
+    val runtime: ViewRuntime
 }

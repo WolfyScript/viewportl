@@ -17,11 +17,11 @@
  */
 package com.wolfyscript.viewportl.gui.callback
 
-import com.wolfyscript.scafall.wrappers.world.entity.Player
+import com.wolfyscript.scafall.wrappers.ScafallPlayer
 import com.wolfyscript.viewportl.gui.ViewRuntime
 
 fun interface TextInputTabCompleteCallback {
 
-    fun apply(player: Player, viewManager: ViewRuntime<*,*>, input: String, args: Array<String>): List<String>
+    fun apply(player: ScafallPlayer, viewManager: ViewRuntime, input: String, args: Array<String>): List<String>
 
 }

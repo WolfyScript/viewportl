@@ -21,7 +21,8 @@ plugins {
     id("viewportl.spigot.conventions")
 
     alias(libs.plugins.shadow)
-    alias(libs.plugins.paperweight.userdev)
+    id("build.docker.run")
+    alias(libs.plugins.resource.factory.bukkit)
 }
 
 description = "viewportl-spigot"
@@ -66,12 +67,12 @@ artifacts {
     archives(tasks.reobfJar)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("lib") {
-            from(components.getByName("java"))
-            groupId = "com.wolfyscript.viewportl.spigot"
-            artifactId = "spigot"
-        }
-    }
+bukkitPluginYaml {
+    name = "viewportl"
+    version = project.version.toString()
+    main = "com.wolfyscript.viewportl.spigot.SpigotLoaderPlugin"
+    apiVersion = libs.versions.minecraft.get() // Only support the latest Minecraft version!
+    authors.add("WolfyScript")
+    depend.add("scafall")
+
 }

@@ -21,7 +21,6 @@ plugins {
     id("viewportl.spigot.conventions")
 
     alias(libs.plugins.shadow)
-    alias(libs.plugins.paperweight.userdev)
 }
 
 description = "viewportl-spigot"

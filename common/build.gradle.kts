@@ -26,6 +26,7 @@ plugins {
 
 dependencies {
     api(project(":api"))
+
     minecraft(libs.minecraft)
     mappings(loom.officialMojangMappings())
 }

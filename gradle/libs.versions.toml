@@ -2,7 +2,7 @@
 
 [versions]
 # Kotlin & Jetbrains
-kotlin-stdlib = "2.0.21"
+kotlin = "2.0.21"
 jetbrains-annotations = "23.0.0"
 
 # Configuration
@@ -31,7 +31,7 @@ junit-jupiter = "5.8.2"
 reflections = "0.10.2"
 
 # Spigot/Paper/Folia
-papermc = "1.21.1-R0.1-SNAPSHOT"
+papermc = "1.21.8-R0.1-SNAPSHOT"
 bstats-bukkit = "3.0.0"
 item-nbt-api = "2.11.3"
 nbt-data-api = "2.11.3"
@@ -40,9 +40,10 @@ nbt-data-api = "2.11.3"
 sponge-gradle = "2.2.0"
 sponge-api = "15.0.0-SNAPSHOT"
 
-# Fabric
-fabric = "0.119.5+1.21.5"
-fabric-loader = "0.16.10"
+## Fabric Impl
+fabric-api = "0.131.0+1.21.8"
+fabric-loader = "0.17.1"
+fabric-kotlin="1.13.4+kotlin.2.2.0"
 
 # Forge
 forge = "55.0.1"
@@ -53,15 +54,16 @@ neoforge_version = "21.5.4-beta"
 neoforge_loader_version_range = "[4,)"
 
 # Gradle plugins
-fabric-loom = "1.10-SNAPSHOT"
+fabric-loom = "1.11-SNAPSHOT"
 shadow = "8.1.7"
-dev-tools = "a2.0.1.0"
+dev-tools = "a2.2.0.0"
 artifactory = "5+"
-paperweight-userdev = "2.0.0-beta.16"
+paperweight-userdev = "2.0.0-beta.18"
+resource-factory = "1.3.0"
 
 [libraries]
 # Kotlin & Jetbrains
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin-stdlib" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 
 # Configurations
@@ -104,6 +106,11 @@ adventure-platform-bukkit = { module = "net.kyori:adventure-platform-bukkit", ve
 # Sponge
 spongepowered-api = { module = "org.spongepowered:spongeapi", version.ref = "sponge-api" }
 
+## Fabric
+fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+fabric-kotlin = { module = "net.fabricmc:fabric-language-kotlin", version.ref = "fabric-kotlin" }
+
 [bundles]
 jetbrains = [ "kotlin-stdlib", "jetbrains-annotations" ]
 adventure = [ "adventure-api", "adventure-minimessage", "adventure-platform-api" ]
@@ -119,3 +126,4 @@ devtools-docker-minecraft = { id = "com.wolfyscript.devtools.docker.minecraft_se
 artifactory = { id = "com.jfrog.artifactory", version.ref = "artifactory"}
 fabric-loom = { id = "fabric-loom", version.ref = "fabric-loom" }
 paperweight-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight-userdev" }
+resource-factory-bukkit = { id = "xyz.jpenilla.resource-factory-bukkit-convention", version.ref= "resource-factory"}

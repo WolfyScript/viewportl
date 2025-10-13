@@ -25,8 +25,7 @@ plugins {
     kotlin("jvm")
     alias(libs.plugins.shadow)
     alias(libs.plugins.spongepowered.gradle)
-    alias(libs.plugins.devtools.docker.run)
-    alias(libs.plugins.devtools.docker.minecraft)
+    id("build.docker.run")
 }
 
 repositories {

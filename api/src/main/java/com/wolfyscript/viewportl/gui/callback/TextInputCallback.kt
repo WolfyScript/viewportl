@@ -22,6 +22,6 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 
 fun interface TextInputCallback {
 
-    fun run(player: ScafallPlayer, viewManager: ViewRuntime<*,*>, input: String, args: Array<String>): Boolean
+    fun run(player: ScafallPlayer, viewManager: ViewRuntime, input: String, args: Array<String>): Boolean
 
 }

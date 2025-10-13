@@ -24,6 +24,6 @@ import com.wolfyscript.viewportl.gui.Window
 
 class GuiHolderImpl(
     override val currentWindow: Window,
-    override val viewManager: ViewRuntime<*, *>,
+    override val viewManager: ViewRuntime,
     override val player: Player? = null
 ) : GuiHolder

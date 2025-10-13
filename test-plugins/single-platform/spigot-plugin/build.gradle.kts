@@ -21,8 +21,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     kotlin("jvm")
     alias(libs.plugins.shadow)
-    alias(libs.plugins.devtools.docker.run)
-    alias(libs.plugins.devtools.docker.minecraft)
+    id("build.docker.run")
 }
 
 repositories {

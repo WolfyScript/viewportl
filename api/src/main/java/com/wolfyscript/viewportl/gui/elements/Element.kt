@@ -31,7 +31,6 @@ import com.wolfyscript.viewportl.gui.rendering.RenderProperties
  * See [component]
  *
  */
-
 @JsonTypeIdResolver(RegistryKeyTypeIdResolver::class)
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CUSTOM,

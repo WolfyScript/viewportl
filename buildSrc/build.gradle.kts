@@ -24,13 +24,26 @@ repositories {
     // Use the plugin portal to apply community plugins in convention plugins.
     gradlePluginPortal()
     mavenCentral()
+    mavenLocal()
+    maven("https://artifacts.wolfyscript.com/artifactory/gradle-dev")
 }
 
 dependencies {
     compileOnly(files(libs::class.java.protectionDomain.codeSource.location))
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.20")
+
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.get()}")
+    implementation(libs.plugins.paperweight.userdev.depNotation())
+    implementation(libs.plugins.devtools.docker.run.depNotation())
+    implementation(libs.plugins.devtools.docker.minecraft.depNotation())
 }
 
 kotlin {
     jvmToolchain(21)
+}
+
+fun Provider<PluginDependency>.depNotation(): String {
+    val t = get()
+    val id = t.pluginId
+    val version = t.version
+    return "$id:$id.gradle.plugin:$version"
 }

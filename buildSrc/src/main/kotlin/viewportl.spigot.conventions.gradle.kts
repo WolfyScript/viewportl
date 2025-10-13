@@ -20,6 +20,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("viewportl.common.conventions")
+    id("io.papermc.paperweight.userdev")
 }
 
 val libs = extensions.getByType(org.gradle.accessors.dm.LibrariesForLibs::class)
