@@ -1,4 +1,4 @@
-package com.wolfyscript.viewportl.spigot.gui.inventorygui
+package com.wolfyscript.viewportl.paper.gui.inventorygui
 
 import com.wolfyscript.viewportl.gui.GuiHolder
 import org.bukkit.inventory.Inventory

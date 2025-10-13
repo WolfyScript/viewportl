@@ -37,11 +37,11 @@ dependencies {
     paperweight.paperDevBundle(libs.versions.papermc.get())
 }
 
-paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
-
 fun archiveName(): String {
     return "${rootProject.name}-${project.version}-${project.name}-${libs.versions.minecraft.get()}"
 }
+
+paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
 
 tasks {
     shadowJar {
@@ -50,14 +50,12 @@ tasks {
         finalizedBy(reobfJar)
 
         dependencies {
-            include(project(":common"))
+            include(project(":spigotlike"))
         }
         metaInf.duplicatesStrategy = DuplicatesStrategy.FAIL
     }
-    assemble {
-        dependsOn(reobfJar)
-    }
     reobfJar {
+        dependsOn(shadowJar)
         finalizedBy(jar)
         outputJar.set(layout.buildDirectory.file("libs/${archiveName()}.jar"))
     }
@@ -74,5 +72,18 @@ bukkitPluginYaml {
     apiVersion = libs.versions.minecraft.get() // Only support the latest Minecraft version!
     authors.add("WolfyScript")
     depend.add("scafall")
+}
 
+minecraftServers {
+    libName.set("${archiveName()}.jar")
+    servers {
+        register("spigot") {
+            destFileName.set("viewportl.jar")
+            version.set(libs.versions.minecraft.get())
+            type.set("SPIGOT")
+            extraEnv.put("BUILD_FROM_SOURCE", "true")
+            imageVersion.set("java21-graalvm") // graalvm contains the jdk required to build from source
+            ports.add("25569:25565")
+        }
+    }
 }

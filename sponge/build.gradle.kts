@@ -102,32 +102,16 @@ publishing {
         }
     }
 }
+
 /* ********************************************************************************************* *
  *  Construct, Copy Plugin & Run Test Servers directly from gradle inside a docker container     *
  *                          !! Requires a local docker instance !!                               *
  * ********************************************************************************************* */
-val debugPort: String = "5006" // This port will be used for the debugger
-
-minecraftDockerRun {
-    val customEnv = env.get().toMutableMap()
-    customEnv["MEMORY"] = "2G"
-    customEnv["JVM_OPTS"] =
-        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${debugPort}" // Allows to attach the IntelliJ debugger to the MC server inside the container
-    customEnv["FORCE_REDOWNLOAD"] = "false"
-    env.set(customEnv)
-    clean = true // When enabled, removes the docker container once it is shutdown
-    // Constrain the container to 2 cpus, to behave similar to servers in production (it is unlikely servers use 24 threads)
-    // and allow for console interactivity with 'docker attach'
-    arguments("--cpus", "2", "-it")
-}
-
 minecraftServers {
-    serversDir.set(file("${System.getProperty("user.home")}${File.separator}minecraft${File.separator}test_servers_v5"))
     libName.set("${archiveName()}.jar") // Makes sure to copy the correct file (when using shaded classifier "-all.jar" this needs to be changed!)
-    val debugPortMapping = "${debugPort}:${debugPort}"
     servers {
         register("spongevanilla_14") {
-            destFileName.set("viewportl-loader.jar")
+            destFileName.set("viewportl.jar")
             val spongeVersion = "1.21.4-14.0.0-RC2113"
             imageVersion.set("java21")
             type.set("CUSTOM")
@@ -136,7 +120,7 @@ minecraftServers {
                 "CUSTOM_SERVER",
                 "https://repo.spongepowered.org/repository/maven-public/org/spongepowered/spongevanilla/${spongeVersion}/spongevanilla-${spongeVersion}-universal.jar"
             )
-            ports.set(setOf(debugPortMapping, "25595:25565"))
+            ports.add("25595:25565")
         }
     }
 }

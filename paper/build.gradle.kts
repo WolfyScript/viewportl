@@ -19,8 +19,10 @@
 plugins {
     kotlin("jvm")
     id("viewportl.spigot.conventions")
+    id("build.docker.run")
 
     alias(libs.plugins.shadow)
+    alias(libs.plugins.resource.factory.bukkit)
 }
 
 description = "viewportl-spigot"
@@ -48,16 +50,15 @@ tasks {
         finalizedBy(reobfJar)
 
         dependencies {
-            include(project(":common"))
+            include(project(":spigotlike"))
+        }
+        manifest {
+            attributes["paperweight-mappings-namespace"] = "mojang"
         }
         metaInf.duplicatesStrategy = DuplicatesStrategy.FAIL
     }
     assemble {
         dependsOn(reobfJar)
-    }
-    reobfJar {
-        finalizedBy(jar)
-        outputJar.set(layout.buildDirectory.file("libs/${archiveName()}.jar"))
     }
 }
 
@@ -65,12 +66,24 @@ artifacts {
     archives(tasks.reobfJar)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("lib") {
-            from(components.getByName("java"))
-            groupId = "com.wolfyscript.viewportl.spigot"
-            artifactId = "spigot"
+bukkitPluginYaml {
+    name = "viewportl"
+    version = project.version.toString()
+    main = "com.wolfyscript.viewportl.paper.PaperLoaderPlugin"
+    apiVersion = libs.versions.minecraft.get() // Only support the latest Minecraft version!
+    authors.add("WolfyScript")
+    depend.add("scafall")
+}
+
+minecraftServers {
+    libName.set("${archiveName()}-mojmap.jar")
+    servers {
+        register("spigot") {
+            destFileName.set("viewportl.jar")
+            version.set(libs.versions.minecraft.get())
+            type.set("PAPER")
+            imageVersion.set("java21")
+            ports.add("25570:25565")
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.wolfyscript.viewportl.spigot
+package com.wolfyscript.viewportl.paper
 
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.Viewportl

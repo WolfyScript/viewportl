@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.spigot
+package com.wolfyscript.viewportl.paper
 
 import com.wolfyscript.viewportl.common.CommonViewportl
 import com.wolfyscript.viewportl.common.gui.GuiAPIManagerImpl
@@ -24,7 +24,7 @@ import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
-import com.wolfyscript.viewportl.spigot.gui.PaperGuiFactory
+import com.wolfyscript.viewportl.paper.gui.PaperGuiFactory
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 

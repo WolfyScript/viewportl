@@ -31,16 +31,6 @@ dependencies {
     mappings(loom.officialMojangMappings())
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("lib") {
-            from(components.getByName("java"))
-            groupId = "com.wolfyscript.viewportl.common"
-            artifactId = "common"
-        }
-    }
-}
-
 tasks {
     // Disable remapping without having to disable the tasks
     // This will get shaded into other platforms that then use their specific remapper instead.

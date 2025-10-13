@@ -1,4 +1,4 @@
-package com.wolfyscript.viewportl.spigot
+package com.wolfyscript.viewportl.paper
 
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.identifier.Key
@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin
 class PaperLoaderPlugin : JavaPlugin() {
 
     val viewportl = ScafallProvider.get().platformManager.registerModule(
-        Key.key("scafall", "viewportl")
+        Key.scafall("viewportl")
     ) { PaperViewportl(this) }
 
     override fun onLoad() {

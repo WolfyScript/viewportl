@@ -1,4 +1,4 @@
-package com.wolfyscript.viewportl.spigot.gui.inventorygui.rendering
+package com.wolfyscript.viewportl.paper.gui.inventorygui.rendering
 
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.gui.GuiHolder
