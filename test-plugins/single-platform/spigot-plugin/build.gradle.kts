@@ -29,6 +29,8 @@ repositories {
     mavenLocal()
     maven(url = "https://repo.papermc.io/repository/maven-public/") // Just the repo required for the paper api
     maven(url = "https://artifacts.wolfyscript.com/artifactory/gradle-dev") // scafall & viewportl will be available on this repo
+    google()
+    maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 dependencies {

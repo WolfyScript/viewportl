@@ -20,6 +20,8 @@ plugins {
     `java-library`
     `maven-publish`
     kotlin("jvm")
+    id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 repositories {
@@ -36,6 +38,9 @@ repositories {
     maven(url = "https://libraries.minecraft.net/")
     maven(url = "https://jitpack.io")
     maven(url = "https://repo.maven.apache.org/maven2/")
+
+    google()
+    maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev")
     mavenLocal()
 }
 
@@ -76,4 +81,6 @@ dependencies {
     compileOnlyApi(libs.bundles.adventure)
 
     testImplementation(libs.bundles.testing)
+
+    implementation(compose.runtime)
 }

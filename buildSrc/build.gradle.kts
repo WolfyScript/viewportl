@@ -26,6 +26,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven("https://artifacts.wolfyscript.com/artifactory/gradle-dev")
+    maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 dependencies {
@@ -35,6 +36,8 @@ dependencies {
     implementation(libs.plugins.paperweight.userdev.depNotation())
     implementation(libs.plugins.devtools.docker.run.depNotation())
     implementation(libs.plugins.devtools.docker.minecraft.depNotation())
+    implementation(libs.plugins.compose.compiler.depNotation())
+    implementation(libs.plugins.jetbrains.compose.depNotation())
 }
 
 kotlin {

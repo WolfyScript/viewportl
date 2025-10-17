@@ -29,6 +29,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev")
 
     maven(url = "https://maven.enginehub.org/repo/")
     maven(url = "https://repo.citizensnpcs.co")
