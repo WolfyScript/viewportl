@@ -22,7 +22,6 @@ import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderCon
 import com.wolfyscript.viewportl.gui.ViewRuntime
 
 class SpigotInvUIRenderContext(
-    override val runtime: ViewRuntime,
     rendererImpl: SpigotLikeInvUIRenderer,
 ) : InvUIRenderContext() {
 

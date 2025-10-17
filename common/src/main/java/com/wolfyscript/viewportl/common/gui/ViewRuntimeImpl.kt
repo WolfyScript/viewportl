@@ -55,7 +55,6 @@ class ViewRuntimeImpl(
         model.registerListener(renderer)
         model.registerListener(interactionHandler)
 
-        renderer.init(this)
         interactionHandler.init(this)
     }
 
@@ -86,11 +85,11 @@ class ViewRuntimeImpl(
     private fun open(window: Window) {
         currentWindow = window
 
-        renderer.onWindowOpen(window)
+        renderer.onWindowOpen(this, window)
         interactionHandler.onWindowOpen(window)
 
         viewportl.scafall.scheduler.syncTask(viewportl.scafall.modInfo) {
-            renderer.render()
+            renderer.render(this, model)
             reactiveSource.initScheduler()
         }
     }

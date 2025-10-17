@@ -6,8 +6,10 @@ import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.sponge.api.SpongePluginWrapper
 import com.wolfyscript.scafall.sponge.api.wrappers.unwrap
+import com.wolfyscript.scafall.wrappers.unwrap
 import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
+import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
 import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
@@ -15,8 +17,10 @@ import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.CachedNodeRend
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ItemStackContext
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
+import com.wolfyscript.viewportl.gui.model.ModelGraph
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import net.kyori.adventure.text.Component
 import org.spongepowered.api.ResourceKey
@@ -28,26 +32,7 @@ import org.spongepowered.api.item.inventory.menu.InventoryMenu
 import org.spongepowered.api.item.inventory.type.ViewableInventory
 import kotlin.jvm.optionals.getOrNull
 
-class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRenderContext>() {
-
-    companion object {
-        init {
-            registerComponentRenderer(
-                SpongeInvUIRenderer::class.java, Key.parse(
-                    StaticNamespacedKey.KeyBuilder.createKeyString(
-                        ButtonImpl::class.java
-                    )
-                ), InventoryButtonElementRenderer()
-            )
-            registerComponentRenderer(
-                SpongeInvUIRenderer::class.java, Key.parse(
-                    StaticNamespacedKey.KeyBuilder.createKeyString(
-                        SlotImpl::class.java
-                    )
-                ), InventorySlotElementRenderer()
-            )
-        }
-    }
+class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderContext>(SpongeInvUIRenderContext::class.java) {
 
     private var inventory: Inventory? = null
     private var title: Component? = null
@@ -63,7 +48,7 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
         }
     }
 
-    override fun onWindowOpen(window: Window) {
+    override fun onWindowOpen(runtime: ViewRuntime, window: Window) {
         val guiHolder: GuiHolder = GuiHolderImpl(window, runtime)
         val carrier = GuiCarrier(guiHolder)
 
@@ -80,14 +65,14 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
         carrier.inventory = inventory
     }
 
-    override fun render() {
+    override fun render(runtime: ViewRuntime, model: ModelGraph) {
         if (inventory == null) return
 
         val context = createContext()
         computed[0] = CachedNodeRenderProperties(0, mutableSetOf(0))
         context.setSlotOffset(0)
 
-        renderChildren(0, context)
+        renderChildren(model, 0, context)
 
         runtime.viewers.forEach { viewer ->
             Sponge.server().player(viewer).ifPresent { player ->
@@ -116,17 +101,6 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
         } ?: ContainerTypes.GENERIC_9X6.get()
     }
 
-    override fun updateTitle(component: Component?) {
-        title = component
-        runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.corePlugin) {
-            for (uuid in runtime.viewers) {
-                Sponge.server().player(uuid).ifPresent { player ->
-//                    player.openInventory(inventory, title)
-                }
-            }
-        }
-    }
-
     fun setStack(i: Int, itemStackConfig: ItemStackConfig?) {
         if (itemStackConfig == null) {
             inventory?.set(i, null)
@@ -136,23 +110,12 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderer, SpongeInvUIRender
         renderStack(i, itemStackConfig.constructItemStack())
     }
 
-    fun renderStack(position: Int, itemStack: ItemStack?) {
+    fun renderStack(position: Int, itemStack: ScafallItemStack?) {
         if (itemStack == null) {
             setNativeStack(position, null)
             return
         }
         setNativeStack(position, itemStack.unwrap())
-    }
-
-    fun renderStack(position: Int, itemStackConfig: ItemStackConfig, itemStackContext: ItemStackContext) {
-        setNativeStack(
-            position,
-            itemStackConfig.constructItemStack(
-                EvalContext(),
-                runtime.viewportl.scafall.adventure.miniMsg,
-                itemStackContext.resolvers
-            )?.unwrap()
-        )
     }
 
     private fun setNativeStack(i: Int, itemStack: org.spongepowered.api.item.inventory.ItemStack?) {

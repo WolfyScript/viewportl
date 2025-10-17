@@ -20,6 +20,7 @@ package com.wolfyscript.viewportl.gui.rendering
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.model.ModelChangeListener
+import com.wolfyscript.viewportl.gui.model.ModelGraph
 
 /**
  * Renders [Elements][com.wolfyscript.viewportl.gui.elements.Element] present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph] of a [ViewRuntime].
@@ -30,12 +31,8 @@ import com.wolfyscript.viewportl.gui.model.ModelChangeListener
  */
 interface Renderer<C: RenderContext> : ModelChangeListener {
 
-    val runtime: ViewRuntime
+    fun onWindowOpen(runtime: ViewRuntime, window: Window)
 
-    fun init(runtime: ViewRuntime)
-
-    fun onWindowOpen(window: Window)
-
-    fun render()
+    fun render(runtime: ViewRuntime, model: ModelGraph)
 
 }

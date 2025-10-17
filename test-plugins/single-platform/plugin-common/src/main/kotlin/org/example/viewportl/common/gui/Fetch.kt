@@ -60,7 +60,7 @@ class Fetch {
             }
 
             val (fetchedSignal, refetch) = resourceAsync(null, Unit.javaClass as Class<Unit?>, { }) { unit, viewportl, runtime ->
-                Thread.sleep(4000);
+                Thread.sleep(4000)
                 if (Math.random() > 0.5) {
                     return@resourceAsync Result.failure(MalformedURLException());
                 }

@@ -72,10 +72,7 @@ class WindowImpl internal constructor(
 class WindowScopeImpl(val window: Window, componentScope: ComponentScopeImpl) : WindowScope, ComponentScope by componentScope {
 
     override fun title(titleUpdate: Component?.() -> Component?) {
-        createEffect {
-            window.title = titleUpdate(window.title)
-            runtime.into().renderer.updateTitle(window.title)
-        }
+        window.title = titleUpdate(window.title)
     }
 
     override var size: Int?

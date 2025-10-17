@@ -1,50 +1,39 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 
-import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.viewportl.gui.rendering.ElementRenderer
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.elements.Element
+import com.wolfyscript.viewportl.gui.model.ModelGraph
 import com.wolfyscript.viewportl.gui.model.Node
 import com.wolfyscript.viewportl.gui.model.NodeAddedEvent
 import com.wolfyscript.viewportl.gui.model.NodeRemovedEvent
 import com.wolfyscript.viewportl.gui.model.NodeUpdatedEvent
+import com.wolfyscript.viewportl.gui.rendering.ElementRenderer
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import com.wolfyscript.viewportl.registry.ViewportlRegistryTypes
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 
-abstract class InvUIRenderer<T : InvUIRenderContext> : Renderer<T> {
+abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) : Renderer<T> {
 
-    companion object {
+    private val renderers: Map<Class<out Element>, ElementRenderer<*, *>>
 
-        private val elementRenderersForUIRenderer : MutableMap<Class<out InvUIRenderer<*>>, MutableMap<Key, ElementRenderer<*, out InvUIRenderContext>>> = mutableMapOf()
-
-        @Suppress("UNCHECKED_CAST")
-        fun <X : InvUIRenderContext, R : InvUIRenderer<X>, C : Element> getElementRenderer(uiRendererType: Class<R>, type: Key): ElementRenderer<C, X>? {
-            val handler: ElementRenderer<*, out InvUIRenderContext>? = elementRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type]
-            return handler as? ElementRenderer<C, X>?
+    init {
+        val guiElementTypes = ViewportlRegistryTypes.guiElementTypes.resolveOrThrow()
+        val invUIRenderers = ViewportlRegistryTypes.inventoryGuiElementRenderers.resolveOrThrow()
+        renderers = buildMap {
+            for (elementType in guiElementTypes) {
+                invUIRenderers.firstOrNull { renderer ->
+                    renderer.canRender(elementType, contextType)
+                }?.let { renderer ->
+                    this[elementType] = renderer
+                }
+            }
         }
-
-        fun <X : InvUIRenderContext, R : InvUIRenderer<X>, C : Element> registerComponentRenderer(
-            uiRendererType: Class<R>,
-            type: Key,
-            handler: ElementRenderer<in C, X>
-        ) {
-            elementRenderersForUIRenderer.getOrPut(uiRendererType) { mutableMapOf() }[type] = handler
-        }
-
-    }
-
-    override lateinit var runtime: ViewRuntime
-
-    override fun init(runtime: ViewRuntime) {
-        this.runtime = runtime
     }
 
     val computed: MutableMap<Long, CachedNodeRenderProperties> = Long2ObjectOpenHashMap()
 
-    fun renderChildren(parent: Long, context: T) {
-        for (child in runtime.model.children(parent)) {
-            renderChildOf(child, parent, context)
+    fun renderChildren(model: ModelGraph, parent: Long, context: T) {
+        for (child in model.children(parent)) {
+            renderChildOf(model, child, parent, context)
         }
     }
 
@@ -52,22 +41,21 @@ abstract class InvUIRenderer<T : InvUIRenderContext> : Renderer<T> {
 
     abstract fun clearSlots(slots: Collection<Int>)
 
-    private fun renderChildOf(child: Long, parent: Long, context: T) {
-        runtime.model.getNode(child)?.let {
+    private fun renderChildOf(model: ModelGraph, child: Long, parent: Long, context: T) {
+        model.getNode(child)?.let {
             // Direct rendering to specific component renderer
             renderElement(it.element, it, parent, context)
 
-            renderChildren(it.id, context)
+            renderChildren(model, it.id, context)
         }
     }
 
     private inline fun <reified C : Element> renderElement(element: C, node: Node, parent: Long, context: T) {
         val nextOffset = calculatePosition(node, context)
         val offset = context.currentOffset()
-        val type = ViewportlRegistryTypes.guiElementTypes.resolveOrThrow().getKey(element.javaClass) ?: return
+        val elementRenderer = (renderers[element::class.java] as? ElementRenderer<C, InvUIRenderContext>) ?: return
 
-        val elementRenderer : ElementRenderer<C, T>? = getElementRenderer(this::class.java, type)
-        elementRenderer?.let { renderer ->
+        elementRenderer.let { renderer ->
             renderer.render(context, element)
 
             computed[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))
@@ -98,7 +86,7 @@ abstract class InvUIRenderer<T : InvUIRenderContext> : Renderer<T> {
 
     override fun onNodeAdded(event: NodeAddedEvent) {
         val context = createContext()
-        val parent = runtime.model.parent(event.node.id)?.let { runtime.model.getNode(it) }
+        val parent = event.model.parent(event.node.id)?.let { event.model.getNode(it) }
         if (parent != null) {
             context.setSlotOffset(0)
             computed[parent.id]?.let {
@@ -106,10 +94,10 @@ abstract class InvUIRenderer<T : InvUIRenderContext> : Renderer<T> {
             }
             val nextOffset = calculatePosition(parent, context)
             context.setSlotOffset(nextOffset)
-            renderChildOf(event.node.id, parent.id, context)
+            renderChildOf(event.model, event.node.id, parent.id, context)
         } else {
             context.setSlotOffset(0)
-            renderChildOf(event.node.id, 0, context)
+            renderChildOf(event.model, event.node.id, 0, context)
         }
     }
 
@@ -119,7 +107,7 @@ abstract class InvUIRenderer<T : InvUIRenderContext> : Renderer<T> {
         clearSlots(removedProperties?.slots ?: emptySet()) // clearSources slots affected by the removed node
 
         // Does it have a parent? if so unlink it
-        val parent = runtime.model.parent(event.node.id)
+        val parent = event.model.parent(event.node.id)
         if (parent != null) {
             computed[parent]?.let { parentProperties ->
                 removedProperties?.slots?.let {
@@ -131,7 +119,7 @@ abstract class InvUIRenderer<T : InvUIRenderContext> : Renderer<T> {
 
     override fun onNodeUpdated(event: NodeUpdatedEvent) {
         val context = createContext()
-        val parent = runtime.model.parent(event.node.id)?.let { runtime.model.getNode(it) }
+        val parent = event.model.parent(event.node.id)?.let { event.model.getNode(it) }
         if (parent != null) {
             context.setSlotOffset(0)
             computed[parent.id]?.let {
@@ -139,10 +127,10 @@ abstract class InvUIRenderer<T : InvUIRenderContext> : Renderer<T> {
             }
             val nextOffset = calculatePosition(parent, context)
             context.setSlotOffset(nextOffset)
-            renderChildOf(event.node.id, parent.id, context)
+            renderChildOf(event.model, event.node.id, parent.id, context)
         } else {
             context.setSlotOffset(0)
-            renderChildOf(event.node.id, 0, context)
+            renderChildOf(event.model, event.node.id, 0, context)
         }
     }
 

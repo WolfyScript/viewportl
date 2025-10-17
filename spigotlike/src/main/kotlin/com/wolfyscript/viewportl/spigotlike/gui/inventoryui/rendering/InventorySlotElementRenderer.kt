@@ -18,12 +18,18 @@
 
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
+import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.rendering.ElementRenderer
 import com.wolfyscript.viewportl.gui.elements.StackInputSlot
+import com.wolfyscript.viewportl.gui.rendering.RenderContext
 
 class InventorySlotElementRenderer : ElementRenderer<StackInputSlot, SpigotInvUIRenderContext> {
 
     override fun render(context: SpigotInvUIRenderContext, component: StackInputSlot) {
         context.renderer.renderStack(component.styles.position.slotPositioning()?.slot() ?: context.currentOffset(), component.value)
+    }
+
+    override fun canRender(elementType: Class<out Element>, contextType: Class<out RenderContext>): Boolean {
+        return elementType.isAssignableFrom(StackInputSlot::class.java) && contextType.isAssignableFrom(SpigotLikeInvUIRenderer::class.java)
     }
 }

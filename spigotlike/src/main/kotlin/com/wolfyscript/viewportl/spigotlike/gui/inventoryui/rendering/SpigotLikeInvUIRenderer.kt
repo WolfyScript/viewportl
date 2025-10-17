@@ -18,57 +18,34 @@
 
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
-import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.spigot.api.wrappers.utils.unwrapSpigot
 import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
-import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.CachedNodeRenderProperties
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
+import com.wolfyscript.viewportl.gui.model.ModelGraph
 import org.bukkit.Bukkit
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 
-abstract class SpigotLikeInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>() {
-
-    companion object {
-
-        init {
-            registerComponentRenderer(
-                SpigotLikeInvUIRenderer::class.java, Key.parse(
-                    StaticNamespacedKey.KeyBuilder.createKeyString(
-                        ButtonImpl::class.java
-                    )
-                ), InventoryButtonElementRenderer()
-            )
-            registerComponentRenderer(
-                SpigotLikeInvUIRenderer::class.java, Key.parse(
-                    StaticNamespacedKey.KeyBuilder.createKeyString(
-                        SlotImpl::class.java
-                    )
-                ), InventorySlotElementRenderer()
-            )
-        }
-
-    }
+abstract class SpigotLikeInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>(SpigotInvUIRenderContext::class.java) {
 
     protected var inventory: Inventory? = Bukkit.createInventory(null, 27)
 
     override fun createContext(): SpigotInvUIRenderContext {
-        return SpigotInvUIRenderContext(runtime, this)
+        return SpigotInvUIRenderContext(this)
     }
 
-    override fun render() {
+    override fun render(runtime: ViewRuntime, model: ModelGraph) {
         if (inventory == null) return
 
         val context = createContext()
         computed[0] = CachedNodeRenderProperties(0, mutableSetOf(0))
         context.setSlotOffset(0)
 
-        renderChildren(0, context)
+        renderChildren(model, 0, context)
 
         runtime.viewers.forEach {
             Bukkit.getPlayer(it)?.openInventory(inventory!!)

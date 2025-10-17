@@ -69,7 +69,7 @@ class ModelGraphImpl : ModelGraph {
         siblings.add(nodeId)
         parents[nodeId] = parent
 
-        listeners.forEach { it.onNodeAdded(NodeAddedEvent(nodes[nodeId]!!)) }
+        listeners.forEach { it.onNodeAdded(NodeAddedEvent(this, nodes[nodeId]!!)) }
     }
 
     override fun getNode(id: Long) : Node? {
@@ -94,7 +94,7 @@ class ModelGraphImpl : ModelGraph {
 
     override fun removeNode(nodeId: Long) {
         val node = nodes.remove(nodeId) ?: return // If no node was removed we can just skip it
-        listeners.forEach { it.onNodeRemoved(NodeRemovedEvent(node)) }
+        listeners.forEach { it.onNodeRemoved(NodeRemovedEvent(this, node)) }
 
         // Remove this node from the parent children list
         val parent = parents.remove(nodeId)
@@ -106,6 +106,6 @@ class ModelGraphImpl : ModelGraph {
 
     override fun updateNode(nodeId: Long) {
         val node = nodes[nodeId] ?: return // If no node was removed we can just skip it
-        listeners.forEach { it.onNodeUpdated(NodeUpdatedEvent(node)) }
+        listeners.forEach { it.onNodeUpdated(NodeUpdatedEvent(this, node)) }
     }
 }

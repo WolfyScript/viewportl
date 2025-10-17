@@ -88,13 +88,16 @@ interface ModelChangeListener {
 }
 
 data class NodeUpdatedEvent(
+    val model: ModelGraph,
     val node: Node
 )
 
 data class NodeRemovedEvent(
+    val model: ModelGraph,
     val node: Node
 )
 
 data class NodeAddedEvent(
+    val model: ModelGraph,
     val node: Node
 )
