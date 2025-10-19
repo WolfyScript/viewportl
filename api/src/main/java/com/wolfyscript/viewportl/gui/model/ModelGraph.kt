@@ -18,6 +18,8 @@
 
 package com.wolfyscript.viewportl.gui.model
 
+import com.wolfyscript.viewportl.gui.compose.layout.Constraints
+import com.wolfyscript.viewportl.gui.compose.layout.Measurements
 import com.wolfyscript.viewportl.gui.elements.Element
 
 /**
@@ -29,13 +31,7 @@ import com.wolfyscript.viewportl.gui.elements.Element
  */
 interface ModelGraph {
 
-    fun registerListener(listener: ModelChangeListener)
-
-    fun unregisterListener(listener: ModelChangeListener)
-
     fun addNode(element: Element) : Long
-
-    fun insertComponentAt(element: Element, insertAt: Long)
 
     fun insertNodeAsChildOf(nodeId: Long, parent: Long)
 
@@ -47,21 +43,75 @@ interface ModelGraph {
 
     fun clearNodeChildren(nodeId: Long)
 
-    fun removeNode(nodeId: Long)
+}
 
-    fun updateNode(nodeId: Long)
+private val nodeIdGeneration = java.util.concurrent.atomic.AtomicLong(0)
+private fun generateNodeId(): Long = nodeIdGeneration.getAndIncrement()
+
+/**
+ * Represents a Node in the Graph. It consists of the associated id and [Element]
+ */
+class Node(val id: Long = generateNodeId(), val element: Element? = null) {
+
+    private var parent: Node? = null
+    private val children = mutableListOf<Node>()
+
+    private var measurements: Measurements? = null
+
+    fun insertChildAt(index: Int, child: Node) {
+        child.parent = this
+        children.add(index, child)
+    }
+
+    fun removeChildAt(index: Int, count: Int) {
+        for (i in index + count - 1 downTo index) {
+            children.removeAt(i)
+        }
+    }
+
+    fun moveChildren(from: Int, to: Int, count: Int) {
+        if (from == to) {
+            return
+        }
+
+        var fromIndex: Int = from
+        var toIndex: Int = (to - 1) + (count - 1)
+        for (i in 0 until count) {
+            if (from > to) {
+                fromIndex = from + i
+                toIndex = to + i
+            }
+            val child = children.removeAt(fromIndex)
+            children.add(toIndex, child)
+        }
+    }
+
+    fun clearChildren() {
+        children.clear()
+    }
+
+    fun remeasure() {
+
+    }
+
+    fun measureAndLayout(constraints: Constraints): Measurements {
+        // TODO: Measure own size constraints
+
+        for (child in children) {
+            // TODO: Use own constraints to measure children
+            child.measureAndLayout(constraints)
+        }
+
+        // TODO: Place Children
+
+        // TODO: Return info to parent
+        return measurements!!
+    }
 
 }
 
 /**
- * Represents a Node in the [ModelGraph]. It consists of the associated id and [Element]
- */
-class Node(val id: Long, val element: Element)
-
-/**
  * Listens to updates of the [ModelGraph]
- *
- * For it to work any class extending this interface needs to be registered via [ModelGraph.registerListener]
  *
  */
 interface ModelChangeListener {

@@ -18,27 +18,36 @@
 
 package com.wolfyscript.viewportl.common.gui
 
-import com.fasterxml.jackson.annotation.JacksonInject
-import com.fasterxml.jackson.annotation.JsonProperty
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composition
+import androidx.compose.runtime.Recomposer
 import com.google.common.base.Preconditions
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.elements.ComponentScopeImpl
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
-import com.wolfyscript.viewportl.gui.elements.ComponentScope
+import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
+import com.wolfyscript.viewportl.gui.model.Node
+import kotlinx.coroutines.Dispatchers
 import net.kyori.adventure.text.Component
 
-@StaticNamespacedKey(key = "window")
 class WindowImpl internal constructor(
-    @JsonProperty("id") override val id: String,
-    @JsonProperty("size") override var size: Int?,
-    @JsonProperty("type") override val type: WindowType? = null,
-    @JacksonInject("viewportl") override val viewportl: Viewportl,
+    override val id: String,
+    override var size: Int?,
+    override val type: WindowType? = null,
+    override val viewportl: Viewportl,
+    val content: @Composable () -> Unit
 ) : Window {
+
+    val root = Node()
+    val composition = Composition(
+        applier = ModelNodeApplier(root),
+        parent = Recomposer(Dispatchers.Main)
+    )
+
     override var title: Component? = null
     override var resourcePath: String? = null
 
@@ -49,14 +58,18 @@ class WindowImpl internal constructor(
         Preconditions.checkArgument(size != null || type != null, "Either type or size must be specified!")
     }
 
-    override fun title(titleUpdate: Component?.() -> Component?) {}
-
     override fun open() {
-        // TODO: Render graph
+        composition.setContent {
+            content()
+        }
+
+        // TODO: Measure & Layout
+        // TODO: Render
     }
 
     override fun close() {
-//        context.runtime.modelGraph.removeNode(0)
+        // TODO: Create a separate dispose function
+        composition.dispose()
     }
 
     override fun width(): Int {
@@ -69,11 +82,7 @@ class WindowImpl internal constructor(
 
 }
 
-class WindowScopeImpl(val window: Window, componentScope: ComponentScopeImpl) : WindowScope, ComponentScope by componentScope {
-
-    override fun title(titleUpdate: Component?.() -> Component?) {
-        window.title = titleUpdate(window.title)
-    }
+class WindowScopeImpl(val window: Window) : WindowScope {
 
     override var size: Int?
         get() = window.size

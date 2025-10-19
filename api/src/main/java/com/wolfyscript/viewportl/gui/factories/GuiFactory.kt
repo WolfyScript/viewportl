@@ -20,7 +20,6 @@ package com.wolfyscript.viewportl.gui.factories
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import java.util.*
@@ -37,8 +36,6 @@ interface GuiFactory {
     fun createInventoryRenderer(): Renderer<*>
 
     fun createInventoryInteractionHandler(): InteractionHandler<*>
-
-    fun runComponentFunction(runtime: ViewRuntime, scope: ComponentScope?, fn: ComponentScope.() -> Unit)
 
     val elementFactory: ElementFactory
 }

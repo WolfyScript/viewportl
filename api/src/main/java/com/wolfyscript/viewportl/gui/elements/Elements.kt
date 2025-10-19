@@ -11,10 +11,6 @@ object Elements {
 
     val button = create<Class<Button>>("button")
     val slot = create<Class<StackInputSlot>>("slot")
-    val group = create<Class<ElementGroup>>("group")
-    val match = create<Class<Match>>("match")
-    val router = create<Class<Router>>("router")
-    val show = create<Class<Show>>("show")
 
     private inline fun <reified T: Class<out Element>> create(key: String) : ValueReference<Class<out Element>, T> {
         return ViewportlRegistryTypes.guiElementTypes.key

@@ -21,50 +21,25 @@ package com.wolfyscript.viewportl.common.gui.elements
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.google.inject.Inject
 import com.wolfyscript.scafall.identifier.StaticNamespacedKey
-import com.wolfyscript.scafall.wrappers.snapshot
-import com.wolfyscript.scafall.wrappers.unwrap
 import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
-import com.wolfyscript.scafall.wrappers.wrap
-import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.into
-import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.elements.ElementImplementation
 import com.wolfyscript.viewportl.gui.elements.SlotProperties
 import com.wolfyscript.viewportl.gui.elements.StackInputSlot
 import com.wolfyscript.viewportl.gui.interaction.ClickType
-import net.minecraft.world.item.ItemStack
 
-internal fun setupSlot(properties: SlotProperties) {
-    val runtime = properties.scope.runtime.into()
-    val reactiveSource = runtime.reactiveSource
-
-    val slot = SlotImpl(
+internal fun setupSlot(properties: SlotProperties): StackInputSlot {
+    return SlotImpl(
         "",
-        runtime.viewportl,
-        properties.scope.parent?.element,
         onValueChange = properties.onValueChange,
         canPickUpStack = properties.canPickUpStack,
-        value = null//properties.value()
     )
-    properties.styles(slot.styles)
-
-    val id = (properties.scope as ComponentScopeImpl).setElement(slot)
-
-    reactiveSource.createEffect {
-        slot.value = properties.value()?.unwrap()?.wrap() ?: ItemStack.EMPTY.wrap()
-    }
-
 }
 
 @ElementImplementation(base = StackInputSlot::class)
 @StaticNamespacedKey(key = "slot")
 class SlotImpl @JsonCreator @Inject constructor(
     id: String,
-    viewportl: Viewportl,
-    parent: Element? = null,
-    override var onValueChange: (ScafallItemStack.() -> Unit)? = null,
-    override var canPickUpStack: (ClickType.(ScafallItemStack) -> Boolean)? = null,
+    override var onValueChange: ScafallItemStack.() -> Unit = { },
+    override var canPickUpStack: ClickType.(ScafallItemStack) -> Boolean = { true },
     override var value: ScafallItemStack? = null
-) : AbstractElementImpl<StackInputSlot>(
-    id, viewportl, parent
-), StackInputSlot
+) : AbstractElementImpl<StackInputSlot>(id), StackInputSlot

@@ -7,14 +7,16 @@ import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.elements.Element
+import com.wolfyscript.viewportl.gui.interaction.InteractionContext
 import com.wolfyscript.viewportl.gui.model.Node
+import com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering.SpongeInvUIRenderContext
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Keys
 import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction
 import java.lang.invoke.MethodHandles
 
-class SpongeUIInteractionHandler : InvUIInteractionHandler() {
+class SpongeUIInteractionHandler : InvUIInteractionHandler<InteractionContext>() {
 
     companion object {
 

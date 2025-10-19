@@ -25,12 +25,8 @@ import com.wolfyscript.scafall.registry.RegistryReference
 import com.wolfyscript.scafall.registry.RegistrySimple
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.elements.GroupImpl
-import com.wolfyscript.viewportl.common.gui.elements.RouterImpl
-import com.wolfyscript.viewportl.common.gui.elements.ShowImpl
 import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
 import com.wolfyscript.viewportl.gui.elements.Elements
-import com.wolfyscript.viewportl.gui.elements.Match
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import com.wolfyscript.viewportl.registry.ViewportlRegistryTypes
 
@@ -43,10 +39,6 @@ class CommonViewportlRegistries(val viewportl: Viewportl) : ViewportlRegistries 
             RegistryUIElementImplementations(it).apply {
                 register(Elements.button.key.key, ButtonImpl::class.java)
                 register(Elements.slot.key.key, SlotImpl::class.java)
-                register(Elements.group.key.key, GroupImpl::class.java)
-                register(Elements.router.key.key, RouterImpl::class.java)
-                register(Elements.show.key.key, ShowImpl::class.java)
-//                register(Elements.match.key.key, Match::class.java)
             }
         }
 

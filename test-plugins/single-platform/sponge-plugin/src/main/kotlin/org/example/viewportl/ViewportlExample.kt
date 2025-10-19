@@ -4,12 +4,6 @@ import com.google.inject.Inject
 import com.google.inject.Injector
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.viewportl
-import org.example.viewportl.common.gui.Counter
-import org.example.viewportl.common.gui.CounterTextured
-import org.example.viewportl.common.gui.Fetch
-import org.example.viewportl.common.gui.NestedRouting
-import org.example.viewportl.common.gui.StackEditor
-import org.example.viewportl.common.gui.StackSlots
 import org.spongepowered.api.Server
 import org.spongepowered.api.command.Command
 import org.spongepowered.api.command.CommandResult

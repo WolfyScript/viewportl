@@ -17,11 +17,7 @@
  */
 package com.wolfyscript.viewportl.common.gui.elements
 
-import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.rendering.RenderPropertiesImpl
 import com.wolfyscript.viewportl.gui.elements.Element
-import com.wolfyscript.viewportl.gui.rendering.PropertyPosition
-import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 import java.util.*
 
 /**
@@ -36,17 +32,7 @@ import java.util.*
  */
 abstract class AbstractElementImpl<C : Element>(
     override val id: String,
-    final override val viewportl: Viewportl,
-    override val parent: Element?
 ) : Element {
-
-    internal var currentNodeId: Long? = null
-    override var styles: RenderProperties = RenderPropertiesImpl(PropertyPosition.def())
-
-    override val nodeId: Long
-        get() {
-            return currentNodeId ?: -1
-        }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

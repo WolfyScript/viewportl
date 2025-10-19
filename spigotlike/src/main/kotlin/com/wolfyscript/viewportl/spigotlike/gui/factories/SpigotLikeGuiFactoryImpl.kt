@@ -19,11 +19,9 @@ package com.wolfyscript.viewportl.spigotlike.gui.factories
 
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
-import com.wolfyscript.viewportl.common.gui.elements.ComponentScopeImpl
 import com.wolfyscript.viewportl.common.gui.factories.ElementFactoryImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import com.wolfyscript.viewportl.gui.factories.ElementFactory
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
@@ -50,10 +48,6 @@ abstract class SpigotLikeGuiFactoryImpl(val bukkitPlugin: Plugin) : GuiFactory {
 
     override fun createInventoryInteractionHandler(): InteractionHandler<*> {
         return SpigotLikeInvUIInteractionHandler(bukkitPlugin)
-    }
-
-    override fun runComponentFunction(runtime: ViewRuntime, scope: ComponentScope?, fn: ComponentScope.() -> Unit) {
-        fn(ComponentScopeImpl(runtime as ViewRuntimeImpl, scope))
     }
 
     override val elementFactory: ElementFactory = ElementFactoryImpl()

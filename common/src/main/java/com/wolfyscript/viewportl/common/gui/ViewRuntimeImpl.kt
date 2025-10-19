@@ -52,9 +52,6 @@ class ViewRuntimeImpl(
     private val history: Deque<Window> = ArrayDeque()
 
     init {
-        model.registerListener(renderer)
-        model.registerListener(interactionHandler)
-
         interactionHandler.init(this)
     }
 

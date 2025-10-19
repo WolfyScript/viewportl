@@ -18,9 +18,6 @@
 
 package com.wolfyscript.viewportl.common.gui.model
 
-import com.google.common.collect.Multimaps
-import com.google.common.collect.SetMultimap
-import com.wolfyscript.viewportl.common.gui.elements.AbstractElementImpl
 import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.model.*
 import java.util.*
@@ -34,78 +31,27 @@ import java.util.*
  */
 class ModelGraphImpl : ModelGraph {
 
-    private var nodeCount: Long = 0
-    private val nodes: MutableMap<Long, Node> = mutableMapOf()
-    private val children: SetMultimap<Long, Long> = Multimaps.newSetMultimap(mutableMapOf()) { mutableSetOf() }
-    private val parents: MutableMap<Long, Long> = mutableMapOf()
-    private val listeners: MutableSet<ModelChangeListener> = mutableSetOf()
-
-    override fun registerListener(listener: ModelChangeListener) {
-        listeners.add(listener)
-    }
-
-    override fun unregisterListener(listener: ModelChangeListener) {
-        listeners.remove(listener)
-    }
-
     override fun addNode(element: Element) : Long {
-        val id = ++nodeCount
-        nodes[id] = Node(id, element)
-        if (element is AbstractElementImpl<*>) {
-            element.currentNodeId = id
-        }
-        return id
-    }
-
-    override fun insertComponentAt(element: Element, insertAt: Long) {
-        if (insertAt != 0L && !nodes.containsKey(insertAt)) return
-        val id = addNode(element)
-        insertNodeAsChildOf(id, insertAt)
+        return 0
     }
 
     override fun insertNodeAsChildOf(nodeId: Long, parent: Long) {
-        if(!nodes.containsKey(nodeId) || (!nodes.containsKey(parent) && parent != 0L)) return
-        val siblings = children[parent]
-        siblings.add(nodeId)
-        parents[nodeId] = parent
-
-        listeners.forEach { it.onNodeAdded(NodeAddedEvent(this, nodes[nodeId]!!)) }
     }
 
     override fun getNode(id: Long) : Node? {
-        return nodes[id]
+        return null
     }
 
     override fun children(id: Long) : Set<Long> {
-        return Collections.unmodifiableSet(children[id])
+        return Collections.emptySet()
     }
 
     override fun parent(id: Long) : Long? {
-        return parents[id]
+        return null
     }
 
     override fun clearNodeChildren(nodeId: Long) {
-        // Recursively remove child nodes
-        val removedChildren = children.removeAll(nodeId)
-        for (child in removedChildren) {
-            removeNode(child)
-        }
+
     }
 
-    override fun removeNode(nodeId: Long) {
-        val node = nodes.remove(nodeId) ?: return // If no node was removed we can just skip it
-        listeners.forEach { it.onNodeRemoved(NodeRemovedEvent(this, node)) }
-
-        // Remove this node from the parent children list
-        val parent = parents.remove(nodeId)
-        if (parent != null) {
-            children[parent].remove(nodeId)
-        }
-        clearNodeChildren(nodeId)
-    }
-
-    override fun updateNode(nodeId: Long) {
-        val node = nodes[nodeId] ?: return // If no node was removed we can just skip it
-        listeners.forEach { it.onNodeUpdated(NodeUpdatedEvent(this, node)) }
-    }
 }

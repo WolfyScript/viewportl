@@ -6,22 +6,22 @@ import com.wolfyscript.viewportl.gui.model.Node
 class ModelNodeApplier(root: Node) : AbstractApplier<Node>(root) {
 
     override fun insertTopDown(index: Int, instance: Node) {
-        TODO("Not yet implemented")
+        //
     }
 
     override fun insertBottomUp(index: Int, instance: Node) {
-        TODO("Not yet implemented")
+        current.insertChildAt(index, instance)
     }
 
     override fun remove(index: Int, count: Int) {
-        TODO("Not yet implemented")
+        current.removeChildAt(index, count)
     }
 
     override fun move(from: Int, to: Int, count: Int) {
-        TODO("Not yet implemented")
+        current.moveChildren(from, to, count)
     }
 
     override fun onClear() {
-        TODO("Not yet implemented")
+        current.clearChildren()
     }
 }

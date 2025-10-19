@@ -62,15 +62,17 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
 
             // Mark slot to interact with this node
             // Only mark components that have an interaction handler
-            getComponentInteractionHandler(node.element.javaClass)?.let {
-                val nextOffset = calculatePosition(node, context)
-                val offset = context.currentOffset()
-                slotNodes[offset] = child
-                cachedProperties[child] = CachedNodeInteractProperties(offset, mutableListOf(offset))
+            node.element?.let { element ->
+                getComponentInteractionHandler(element.javaClass)?.let {
+                    val nextOffset = calculatePosition(node, context)
+                    val offset = context.currentOffset()
+                    slotNodes[offset] = child
+                    cachedProperties[child] = CachedNodeInteractProperties(offset, mutableListOf(offset))
 
-                // Store the position of this node in the parent, so we can easily clean the slot nodes
-                cachedProperties[parent]?.slots?.add(offset)
-                context.setSlotOffset(nextOffset)
+                    // Store the position of this node in the parent, so we can easily clean the slot nodes
+                    cachedProperties[parent]?.slots?.add(offset)
+                    context.setSlotOffset(nextOffset)
+                }
             }
 
             initChildren(node.id, context)
@@ -78,15 +80,7 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
     }
 
     private fun calculatePosition(node: Node, context: InvUIInteractionContext): Int {
-        val nextOffset = node.element.styles.position.slotPositioning()?.let {
-            context.setSlotOffset(it.slot())
-            return@let it.slot() + 1
-        } ?: run {
-            return context.currentOffset() + 1
-        }
-        val offset = context.currentOffset()
-        cachedProperties[node.id] = CachedNodeInteractProperties(offset, mutableListOf(offset))
-        return nextOffset
+        return 0
     }
 
     /* *********************************************************************** *

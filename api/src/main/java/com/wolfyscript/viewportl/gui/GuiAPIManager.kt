@@ -17,6 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui
 
+import androidx.compose.runtime.Composable
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
@@ -38,7 +39,7 @@ interface GuiAPIManager {
      * @param key The unique id of the window
      * @param windowConsumer The consumer that provides the new window
      */
-    fun registerGui(key: String, windowConsumer: WindowScope.() -> Unit)
+    fun registerGui(key: String, content: @Composable () -> Unit)
 
     /**
      * Gets the registered router with the specified id.<br></br>

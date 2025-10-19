@@ -20,15 +20,10 @@ package com.wolfyscript.viewportl.gui.elements
 import com.fasterxml.jackson.annotation.*
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 import com.wolfyscript.scafall.config.jackson.RegistryKeyTypeIdResolver
-import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.gui.rendering.RenderProperties
 
 /**
  * Elements are present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph]. They may have a native renderer and interaction handler implementation on each platform.
  * (Though not necessarily, some are only present in the Model and cannot be interacted with nor are rendered)
- *
- * Using the [component] function elements, signals, memos, etc. can be encapsulated and grouped for better code structure.
- * See [component]
  *
  */
 @JsonTypeIdResolver(RegistryKeyTypeIdResolver::class)
@@ -47,22 +42,5 @@ interface Element {
      * @return The id of this component.
      */
     val id: String?
-
-    val nodeId: Long
-
-    /**
-     * Gets the Viewportl instance this Component belongs to
-     *
-     * @return The Viewportl instance
-     */
-    val viewportl: Viewportl
-
-    /**
-     * The parent of this Component, or null if it is a root Component.
-     *
-     */
-    val parent: Element?
-
-    val styles: RenderProperties
 
 }

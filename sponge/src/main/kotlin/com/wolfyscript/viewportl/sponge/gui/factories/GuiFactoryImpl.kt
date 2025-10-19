@@ -2,11 +2,9 @@ package com.wolfyscript.viewportl.sponge.gui.factories
 
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
-import com.wolfyscript.viewportl.common.gui.elements.ComponentScopeImpl
 import com.wolfyscript.viewportl.common.gui.factories.ElementFactoryImpl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import com.wolfyscript.viewportl.gui.factories.ElementFactory
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
@@ -20,9 +18,9 @@ class GuiFactoryImpl : GuiFactory {
 
     override fun createInventoryUIRuntime(
         viewportl: Viewportl,
-        callback: Function<ViewRuntime<*, *>, Window>,
+        callback: Function<ViewRuntime, Window>,
         viewers: Set<UUID>
-    ): ViewRuntime<*, *> {
+    ): ViewRuntime {
         return ViewRuntimeImpl(
             viewportl,
             callback,
@@ -32,16 +30,12 @@ class GuiFactoryImpl : GuiFactory {
         )
     }
 
-    override fun createInventoryRenderer(): Renderer<*, *> {
+    override fun createInventoryRenderer(): Renderer<*> {
         return SpongeInvUIRenderer()
     }
 
     override fun createInventoryInteractionHandler(): InteractionHandler<*> {
         return SpongeUIInteractionHandler()
-    }
-
-    override fun runComponentFunction(runtime: ViewRuntime<*,*>, scope: ComponentScope?, fn: ComponentScope.() -> Unit) {
-        fn(ComponentScopeImpl(runtime as ViewRuntimeImpl, scope))
     }
 
     override val elementFactory: ElementFactory = ElementFactoryImpl()

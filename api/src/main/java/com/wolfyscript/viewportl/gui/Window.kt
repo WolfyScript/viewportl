@@ -22,7 +22,6 @@ import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
-import com.wolfyscript.viewportl.gui.elements.ComponentScope
 import net.kyori.adventure.text.Component
 
 interface Window {
@@ -53,8 +52,6 @@ interface Window {
      * Returns the current title of this window.
      */
     var title: Component?
-
-    fun title(titleUpdate: Component?.() -> Component?)
 
     var resourcePath: String?
 
@@ -95,12 +92,7 @@ interface Window {
 
 }
 
-interface WindowScope : ComponentScope {
-
-    /**
-     * Setups an effect that updates the title everytime the signal sources are updated.
-     */
-    fun title(titleUpdate: Component?.() -> Component?)
+interface WindowScope {
 
     /**
      * The initial size of the window inventory
