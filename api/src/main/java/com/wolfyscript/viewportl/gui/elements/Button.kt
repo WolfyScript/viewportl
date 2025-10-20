@@ -18,28 +18,13 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReusableComposeNode
-import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
-import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
-import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
-import com.wolfyscript.viewportl.gui.model.Node
-import com.wolfyscript.viewportl.viewportl
 import net.kyori.adventure.sound.Sound
 
 @Composable
 fun Button(icon: () -> ItemStackSnapshot, onClick: () -> Unit) {
 
-    ReusableComposeNode<Node, ModelNodeApplier>(
-        factory = {
-            Node(
-                element = ScafallProvider.get().viewportl.guiFactory.elementFactory.button(
-                    ButtonProperties(icon, onClick = onClick)
-                )
-            )
-        },
-    ) {
-
+    Layout(content = {}) { measurables, constraints ->
 
     }
 
@@ -61,14 +46,6 @@ interface Button : Element {
     var icon: () -> ItemStackSnapshot
     var onClick: () -> Unit
     var sound: Sound?
-}
-
-interface ButtonIcon {
-
-    var stack: ScafallItemStack
-
-    fun stack(itemId: String, stackConfig: ScafallItemStack.() -> Unit)
-
 }
 
 

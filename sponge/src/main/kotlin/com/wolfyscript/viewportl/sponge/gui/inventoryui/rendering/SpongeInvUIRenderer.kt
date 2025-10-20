@@ -1,30 +1,19 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.common.api.into
-import com.wolfyscript.scafall.eval.context.EvalContext
-import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.scafall.identifier.StaticNamespacedKey
 import com.wolfyscript.scafall.sponge.api.SpongePluginWrapper
-import com.wolfyscript.scafall.sponge.api.wrappers.unwrap
 import com.wolfyscript.scafall.wrappers.unwrap
-import com.wolfyscript.scafall.wrappers.world.items.ItemStack
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
-import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
-import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.CachedNodeRenderProperties
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.ItemStackContext
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
-import com.wolfyscript.viewportl.gui.model.ModelGraph
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import net.kyori.adventure.text.Component
 import org.spongepowered.api.ResourceKey
-import org.spongepowered.api.Sponge
 import org.spongepowered.api.item.inventory.ContainerType
 import org.spongepowered.api.item.inventory.ContainerTypes
 import org.spongepowered.api.item.inventory.Inventory
@@ -63,24 +52,6 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderContext>(SpongeInvUIR
             title = it
         }
         carrier.inventory = inventory
-    }
-
-    override fun render(runtime: ViewRuntime, model: ModelGraph) {
-        if (inventory == null) return
-
-        val context = createContext()
-        computed[0] = CachedNodeRenderProperties(0, mutableSetOf(0))
-        context.setSlotOffset(0)
-
-        renderChildren(model, 0, context)
-
-        runtime.viewers.forEach { viewer ->
-            Sponge.server().player(viewer).ifPresent { player ->
-                if (player.openInventory().orElse(null) != inventory) {
-                    player.openInventory(inventory, title)
-                }
-            }
-        }
     }
 
     private fun getInventoryType(window: Window): ContainerType {

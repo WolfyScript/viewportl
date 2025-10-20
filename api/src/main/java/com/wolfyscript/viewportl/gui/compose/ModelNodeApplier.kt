@@ -1,7 +1,6 @@
 package com.wolfyscript.viewportl.gui.compose
 
 import androidx.compose.runtime.AbstractApplier
-import com.wolfyscript.viewportl.gui.model.Node
 
 class ModelNodeApplier(root: Node) : AbstractApplier<Node>(root) {
 

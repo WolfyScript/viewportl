@@ -1,9 +1,9 @@
 package com.wolfyscript.viewportl.gui.compose.layout
 
 class Constraints(
-    val minWidth: Size = Size(Slot(0)),
-    val maxWidth: Size = Size(Slot(Int.MIN_VALUE)),
-    val minHeight: Size = Size(Slot(0)),
-    val maxHeight: Size = Size(Slot(Int.MIN_VALUE)),
+    val minWidth: Size = 0.slots or 0.dp,
+    val maxWidth: Size = Int.MAX_VALUE.slots or Int.MAX_VALUE.dp,
+    val minHeight: Size = 0.slots or 0.dp,
+    val maxHeight: Size = Int.MAX_VALUE.slots or Int.MAX_VALUE.dp,
 ) {
 }

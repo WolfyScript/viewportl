@@ -19,20 +19,11 @@ package com.wolfyscript.viewportl.gui.rendering
 
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.model.ModelChangeListener
-import com.wolfyscript.viewportl.gui.model.ModelGraph
 
 /**
- * Renders [Elements][com.wolfyscript.viewportl.gui.elements.Element] present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph] of a [ViewRuntime].
- * It is supplied to the [ViewRuntime] upon creation.
- *
- * For a given type of GUI each platform has its own [Renderer] implementation (with possibly shared common parts)
- *
  */
-interface Renderer<C: RenderContext> : ModelChangeListener {
+interface Renderer<C: RenderContext> {
 
     fun onWindowOpen(runtime: ViewRuntime, window: Window)
-
-    fun render(runtime: ViewRuntime, model: ModelGraph)
 
 }

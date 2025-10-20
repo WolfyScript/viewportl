@@ -19,12 +19,10 @@
 package com.wolfyscript.viewportl.common.gui
 
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.model.ModelGraphImpl
 import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
-import com.wolfyscript.viewportl.gui.model.ModelGraph
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import java.util.*
 import java.util.function.Function
@@ -33,7 +31,6 @@ class ViewRuntimeImpl(
     override val viewportl: Viewportl,
     windowFactory: Function<ViewRuntime, Window>,
     override val viewers: Set<UUID>,
-    override val model: ModelGraph = ModelGraphImpl(),
     // Handlers that handle rendering and interaction
     override val renderer: Renderer<*>,
     override val interactionHandler: InteractionHandler<*>
@@ -86,7 +83,6 @@ class ViewRuntimeImpl(
         interactionHandler.onWindowOpen(window)
 
         viewportl.scafall.scheduler.syncTask(viewportl.scafall.modInfo) {
-            renderer.render(this, model)
             reactiveSource.initScheduler()
         }
     }

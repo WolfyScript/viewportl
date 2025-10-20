@@ -8,8 +8,7 @@ import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInterac
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.gui.interaction.InteractionContext
-import com.wolfyscript.viewportl.gui.model.Node
-import com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering.SpongeInvUIRenderContext
+import com.wolfyscript.viewportl.gui.compose.Node
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Keys
 import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent
@@ -78,7 +77,7 @@ class SpongeUIInteractionHandler : InvUIInteractionHandler<InteractionContext>()
     }
 
     private fun getNodeAt(slotIndex: Int): Node? {
-        return slotNodes[slotIndex]?.let { runtime.model.getNode(it) }
+        return slotNodes[slotIndex]
     }
 
     private fun <C: Element> callComponentHandler(component: C, fn: SpongeElementInteractionHandler<C>.() -> Unit) {

@@ -278,7 +278,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
             return
         }
         // Top inventory clicked
-        val node = slotNodes[slot.index]?.let { runtime.model.getNode(it) }
+        val node = slotNodes[slot.index]
         if (node == null) {
             event.isCancelled = true
             return
@@ -299,7 +299,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
         if (slot.index >= inventoryView.topInventory.size) {
             return true
         }
-        val node = slotNodes[slot.index]?.let { runtime.model.getNode(it) }
+        val node = slotNodes[slot.index]
         if (node != null) {
             val component = node.element
             callComponentHandler(node.element) {
@@ -416,7 +416,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
         for (rawSlot in event.rawSlots) {
             if (rawSlot < topInvSize) {
                 // Slot is in top inventory
-                val node = slotNodes[rawSlot]?.let { runtime.model.getNode(it) }
+                val node = slotNodes[rawSlot]
 
                 if (node == null) {
                     event.isCancelled = true // Cancel the entire event if only one fails!

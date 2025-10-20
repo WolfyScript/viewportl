@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 import com.wolfyscript.scafall.config.jackson.RegistryKeyTypeIdResolver
 
 /**
- * Elements are present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph]. They may have a native renderer and interaction handler implementation on each platform.
+ * They may have a native renderer and interaction handler implementation on each platform.
  * (Though not necessarily, some are only present in the Model and cannot be interacted with nor are rendered)
  *
  */

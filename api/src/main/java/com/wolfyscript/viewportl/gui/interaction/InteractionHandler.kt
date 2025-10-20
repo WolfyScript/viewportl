@@ -20,16 +20,15 @@ package com.wolfyscript.viewportl.gui.interaction
 
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.model.ModelChangeListener
 
 /**
- * Handles the interaction of [Elements][com.wolfyscript.viewportl.gui.elements.Element] present in the [Model][com.wolfyscript.viewportl.gui.model.ModelGraph] of a [ViewRuntime].
+ * Handles the interaction of [Elements][com.wolfyscript.viewportl.gui.elements.Element].
  * It is supplied to the [ViewRuntime] upon creation.
  *
  * For a given type of GUI each platform has its own [InteractionHandler] implementation (with possibly shared common parts)
  *
  */
-interface InteractionHandler<C: InteractionContext> : ModelChangeListener {
+interface InteractionHandler<C: InteractionContext> {
 
     fun init(runtime: ViewRuntime)
 
