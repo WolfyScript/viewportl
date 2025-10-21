@@ -1,75 +1,42 @@
 package com.wolfyscript.viewportl.gui.compose
 
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
+import com.wolfyscript.viewportl.gui.compose.layout.Arranger
 import com.wolfyscript.viewportl.gui.compose.layout.Measurements
 import com.wolfyscript.viewportl.gui.elements.Element
-import java.util.concurrent.atomic.AtomicLong
+import com.wolfyscript.viewportl.viewportl
 
-private val nodeIdGeneration = AtomicLong(0)
-private fun generateNodeId(): Long = nodeIdGeneration.getAndIncrement()
 
 /**
  * Represents a Node in the Graph. It consists of the associated id and [Element]
  */
-class Node(val id: Long = generateNodeId(), val element: Element? = null) {
+interface Node {
 
-    var parent: Node? = null
-    private val children = mutableListOf<Node>()
+    companion object {
+        val Constructor: () -> Node = { ScafallProvider.get().viewportl.guiFactory.createLayoutNode() }
 
-    private var measurements: Measurements? = null
-
-    fun insertChildAt(index: Int, child: Node) {
-        child.parent = this
-        children.add(index, child)
+        val SetModifier: Node.(ModifierStackBuilder) -> Unit = { this.modifier = it }
+        val SetMeasurePolicy: Node.(MeasurePolicy) -> Unit = { this.measurePolicy = it }
     }
 
-    fun removeChildAt(index: Int, count: Int) {
-        for (i in index + count - 1 downTo index) {
-            children.removeAt(i)
-        }
-    }
+    var parent: Node?
+    var modifier: ModifierStackBuilder
+    var measurePolicy: MeasurePolicy?
+    val arranger: Arranger
 
-    fun moveChildren(from: Int, to: Int, count: Int) {
-        if (from == to) {
-            return
-        }
+    fun insertChildAt(index: Int, child: Node)
 
-        var fromIndex: Int = from
-        var toIndex: Int = (to - 1) + (count - 1)
-        for (i in 0 until count) {
-            if (from > to) {
-                fromIndex = from + i
-                toIndex = to + i
-            }
-            val child = children.removeAt(fromIndex)
-            children.add(toIndex, child)
-        }
-    }
+    fun removeChildAt(index: Int, count: Int)
 
-    fun clearChildren() {
-        children.clear()
-    }
+    fun moveChildren(from: Int, to: Int, count: Int)
 
-    fun forEachChild(action: (Node) -> Unit) {
-        children.forEach(action)
-    }
+    fun clearChildren()
 
-    fun remeasure() {
+    fun forEachChild(action: (Node) -> Unit)
 
-    }
+    fun remeasure()
 
-    fun measureAndLayout(constraints: Constraints): Measurements {
-        // TODO: Measure own size constraints
-
-        for (child in children) {
-            // TODO: Use own constraints to measure children
-            child.measureAndLayout(constraints)
-        }
-
-        // TODO: Place Children
-
-        // TODO: Return info to parent
-        return measurements!!
-    }
+    fun measureAndLayout(constraints: Constraints): Measurements
 
 }
