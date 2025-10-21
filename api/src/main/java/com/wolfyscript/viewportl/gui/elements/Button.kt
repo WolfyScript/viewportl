@@ -24,8 +24,11 @@ import net.kyori.adventure.sound.Sound
 @Composable
 fun Button(icon: () -> ItemStackSnapshot, onClick: () -> Unit) {
 
-    Layout(content = {}) { measurables, constraints ->
+    Layout({}, content = {}) { measurables, constraints ->
 
+        layout(constraints.maxWidth, constraints.maxHeight) {
+
+        }
     }
 
 }

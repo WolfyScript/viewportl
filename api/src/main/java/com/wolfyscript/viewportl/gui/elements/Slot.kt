@@ -3,7 +3,6 @@ package com.wolfyscript.viewportl.gui.elements
 import androidx.compose.runtime.Composable
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackLike
 import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
-import com.wolfyscript.viewportl.gui.compose.Modifier
 import com.wolfyscript.viewportl.gui.interaction.ClickType
 
 @Composable
@@ -12,8 +11,11 @@ fun Slot(
     onValueChange: ScafallItemStack.() -> Unit = {},
     canPickUpStack: ClickType.(ScafallItemStack) -> Boolean = { true },
 ) {
-    Layout(content = { }) { measurable, constraints ->
+    Layout({}, content = { }) { measurable, constraints ->
         // TODO
+        layout(constraints.maxWidth, constraints.maxHeight) {
+
+        }
     }
 }
 

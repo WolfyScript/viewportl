@@ -4,16 +4,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReusableComposeNode
 import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
 import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
-import com.wolfyscript.viewportl.gui.compose.Modifier
+import com.wolfyscript.viewportl.gui.compose.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.Node
+import com.wolfyscript.viewportl.gui.compose.Node.Companion.SetMeasurePolicy
+import com.wolfyscript.viewportl.gui.compose.Node.Companion.SetModifier
 
 @Composable
-fun Layout(modifier: Modifier? = null, content: @Composable () -> Unit, measure: MeasurePolicy) {
+fun Layout(modifier: ModifierStackBuilder, content: @Composable () -> Unit, measurePolicy: MeasurePolicy) {
 
     ReusableComposeNode<Node, ModelNodeApplier>(
-        factory = { Node() },
+        factory = Node.Constructor,
         update = {
-            // TODO
+            set(measurePolicy, SetMeasurePolicy)
+            set(modifier, SetModifier)
         },
         content = content
     )
