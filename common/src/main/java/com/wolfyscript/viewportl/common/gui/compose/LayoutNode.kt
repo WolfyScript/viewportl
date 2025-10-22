@@ -6,7 +6,10 @@ import com.wolfyscript.viewportl.gui.compose.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Arranger
+import com.wolfyscript.viewportl.gui.compose.layout.MeasureScope
 import com.wolfyscript.viewportl.gui.compose.layout.Measurements
+import com.wolfyscript.viewportl.gui.compose.layout.PlacementScope
+import com.wolfyscript.viewportl.gui.compose.layout.Size
 import java.util.concurrent.atomic.AtomicLong
 
 private val nodeIdGeneration = AtomicLong(0)
@@ -68,12 +71,24 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
         children.forEach(action)
     }
 
-    override fun remeasure() {
+    override fun remeasure(constraints: Constraints): Boolean {
+
+
 
     }
 
     override fun measureAndLayout(constraints: Constraints): Measurements {
         // TODO: Measure own size constraints
+
+        val scope = object : MeasureScope {
+            override fun layout(
+                width: Size,
+                height: Size,
+                placement: PlacementScope.() -> Unit,
+            ): Measurements {
+                TODO("Not yet implemented")
+            }
+        }
 
         for (child in children) {
             // TODO: Use own constraints to measure children

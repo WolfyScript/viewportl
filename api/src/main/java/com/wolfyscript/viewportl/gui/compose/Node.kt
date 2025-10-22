@@ -4,12 +4,11 @@ import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Arranger
 import com.wolfyscript.viewportl.gui.compose.layout.Measurements
-import com.wolfyscript.viewportl.gui.elements.Element
 import com.wolfyscript.viewportl.viewportl
 
 
 /**
- * Represents a Node in the Graph. It consists of the associated id and [Element]
+ * A Node in the UI Graph.
  */
 interface Node {
 
@@ -35,7 +34,7 @@ interface Node {
 
     fun forEachChild(action: (Node) -> Unit)
 
-    fun remeasure()
+    fun remeasure(constraints: Constraints): Boolean
 
     fun measureAndLayout(constraints: Constraints): Measurements
 
