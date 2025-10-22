@@ -10,11 +10,24 @@ import com.wolfyscript.viewportl.gui.compose.layout.Placeable
 import com.wolfyscript.viewportl.gui.compose.layout.PlacementScope
 import com.wolfyscript.viewportl.gui.compose.layout.Position
 import com.wolfyscript.viewportl.gui.compose.layout.Size
+import com.wolfyscript.viewportl.gui.compose.layout.dp
+import com.wolfyscript.viewportl.gui.compose.layout.slots
 
 class ArrangerImpl(override val node: Node) : Arranger {
 
+    override val width: Size
+        get() {
+            return measurements?.width ?: Size(0.slots, 0.dp)
+        }
+    override val height: Size
+        get() {
+            return measurements?.height ?: Size(0.slots, 0.dp)
+        }
+
     private var position: Position? = null
     private var measurements: Measurements? = null
+
+    private var previousConstraints: Constraints? = null
 
     override fun measure(constraints: Constraints): Placeable {
         val childMeasurables = buildList<Measurable> {
@@ -54,6 +67,16 @@ class ArrangerImpl(override val node: Node) : Arranger {
             // TODO
             object : PlacementScope {}.place()
         }
+    }
+
+    override fun remeasure(constraints: Constraints): Boolean {
+        if (previousConstraints == null || previousConstraints != constraints) {
+            previousConstraints = constraints
+            val previousMeasurements = measurements
+            measure(constraints)
+            return previousMeasurements != measurements
+        }
+        return false
     }
 
 }

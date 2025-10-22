@@ -6,4 +6,20 @@ class Measurements(
     val placeChildren: PlacementScope.() -> Unit = {},
 ) {
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Measurements) return false
+
+        if (width != other.width) return false
+        if (height != other.height) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = width.hashCode()
+        result = 31 * result + height.hashCode()
+        return result
+    }
+
 }

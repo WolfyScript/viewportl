@@ -3,7 +3,24 @@ package com.wolfyscript.viewportl.gui.compose.layout
 class Size(
     val slot: Slot? = null,
     val dp: Dp? = null,
-)
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Size) return false
+
+        if (slot != other.slot) return false
+        if (dp != other.dp) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = slot?.hashCode() ?: 0
+        result = 31 * result + (dp?.hashCode() ?: 0)
+        return result
+    }
+}
 
 @JvmInline
 value class Slot(val value: Int)
