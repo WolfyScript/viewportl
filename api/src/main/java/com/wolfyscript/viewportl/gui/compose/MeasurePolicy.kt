@@ -8,7 +8,7 @@ import com.wolfyscript.viewportl.gui.compose.layout.Measurements
 fun interface MeasurePolicy {
 
     fun MeasureScope.measure(
-        measurable: List<Measurable>,
+        measurables: List<Measurable>,
         constraints: Constraints,
     ) : Measurements
 

@@ -24,18 +24,15 @@ import androidx.compose.runtime.Recomposer
 import com.google.common.base.Preconditions
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.compose.LayoutNode
+import com.wolfyscript.viewportl.common.gui.compose.RootMeasurePolicy
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
-import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
 import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
-import com.wolfyscript.viewportl.gui.compose.layout.constrainHeight
-import com.wolfyscript.viewportl.gui.compose.layout.constrainWidth
-import com.wolfyscript.viewportl.gui.compose.layout.dp
-import com.wolfyscript.viewportl.gui.compose.layout.or
-import com.wolfyscript.viewportl.gui.compose.layout.slots
+import com.wolfyscript.viewportl.gui.compose.layout.Constraints
+import com.wolfyscript.viewportl.gui.compose.layout.slotsSize
 import kotlinx.coroutines.Dispatchers
 import net.kyori.adventure.text.Component
 
@@ -48,38 +45,7 @@ class WindowImpl internal constructor(
 ) : Window {
 
     val root = LayoutNode().apply {
-        measurePolicy = MeasurePolicy { measurables, constraints ->
-            when {
-                measurables.isEmpty() -> {
-                    layout(constraints.minWidth, constraints.minHeight) {}
-                }
-
-                measurables.size == 1 -> {
-                    val placeable = measurables.first().measure(constraints)
-
-                    layout(constraints.constrainWidth(placeable.width), constraints.constrainHeight(placeable.height)) {
-                        placeable.placeAt(0.slots or 0.dp, 0.slots or 0.dp)
-                    }
-                }
-
-                else -> {
-                    val placeables = measurables.map { it.measure(constraints) }
-
-                    var maxWidth = 0.slots or 0.dp
-                    var maxHeight = 0.slots or 0.dp
-                    for (placeable in placeables) {
-                        maxWidth = maxOf(placeable.width.slot?.value ?: 0, maxWidth.slot?.value ?: 0).slots or maxOf(placeable.width.dp?.value ?: 0, maxWidth.dp?.value ?: 0).dp
-                        maxWidth = maxOf(placeable.height.slot?.value ?: 0, maxHeight.slot?.value ?: 0).slots or maxOf(placeable.height.dp?.value ?: 0, maxHeight.dp?.value ?: 0).dp
-                    }
-
-                    layout(constraints.constrainWidth(maxWidth), constraints.constrainHeight(maxHeight)) {
-                        for (placeable in placeables) {
-                            placeable.placeAt(0.slots or 0.dp, 0.slots or 0.dp)
-                        }
-                    }
-                }
-            }
-        }
+        measurePolicy = RootMeasurePolicy
     }
     val composition = Composition(
         applier = ModelNodeApplier(root),
@@ -100,9 +66,19 @@ class WindowImpl internal constructor(
         composition.setContent {
             content()
         }
+        measureAndPlace()
 
-        // TODO: Measure & Layout
         // TODO: Render
+    }
+
+    private fun measureAndPlace() {
+        val rootConstraints = Constraints(0.slotsSize, width().slotsSize, 0.slotsSize, height().slotsSize)
+        root.arranger.remeasure(rootConstraints)
+        root.arranger.layout()
+    }
+
+    private fun render() {
+
     }
 
     override fun close() {

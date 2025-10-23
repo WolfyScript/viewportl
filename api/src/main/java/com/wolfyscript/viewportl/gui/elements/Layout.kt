@@ -11,7 +11,6 @@ import com.wolfyscript.viewportl.gui.compose.Node.Companion.SetModifier
 
 @Composable
 fun Layout(modifier: ModifierStackBuilder, content: @Composable () -> Unit, measurePolicy: MeasurePolicy) {
-
     ReusableComposeNode<Node, ModelNodeApplier>(
         factory = Node.Constructor,
         update = {

@@ -19,4 +19,6 @@ interface Arranger : Measurable, Placeable {
      */
     fun remeasure(constraints: Constraints): Boolean
 
+    fun layout()
+
 }

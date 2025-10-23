@@ -34,8 +34,6 @@ interface Node {
 
     fun forEachChild(action: (Node) -> Unit)
 
-    fun remeasure(constraints: Constraints): Boolean
-
     fun measureAndLayout(constraints: Constraints): Measurements
 
 }

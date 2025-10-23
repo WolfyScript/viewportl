@@ -10,7 +10,13 @@ import com.wolfyscript.viewportl.gui.compose.layout.Measurements
 class ModifierStackImpl(private val modifiers: ArrayDeque<ModifierNode>) : ModifierStack {
 
     override fun measure(constraints: Constraints): Measurements {
-        TODO("Not yet implemented")
+        var currentConstraints = constraints
+        for (modifier in modifiers) {
+
+
+        }
+
+        return TODO()
     }
 
 }

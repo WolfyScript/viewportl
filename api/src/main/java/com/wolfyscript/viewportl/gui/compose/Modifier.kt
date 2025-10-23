@@ -12,6 +12,9 @@ interface Modifier {
 
 }
 
+/**
+ *
+ */
 interface ModifierNode {
 
     fun onAttach()
@@ -20,6 +23,9 @@ interface ModifierNode {
 
 }
 
+/**
+ * A stack of [ModifierNodes][ModifierNode] applied to a [Node]
+ */
 interface ModifierStack {
 
     fun measure(constraints: Constraints): Measurements

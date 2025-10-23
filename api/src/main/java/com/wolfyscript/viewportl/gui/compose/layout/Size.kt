@@ -1,9 +1,44 @@
 package com.wolfyscript.viewportl.gui.compose.layout
 
 class Size(
-    val slot: Slot? = null,
-    val dp: Dp? = null,
+    val slot: Slot = 0.slots,
+    val dp: Dp = 0.dp,
 ) {
+
+    operator fun plus(other: Size): Size {
+        return Size(
+            slot = (slot.value + other.slot.value).slots,
+            dp = (dp.value + other.dp.value).dp
+        )
+    }
+
+    operator fun minus(other: Size): Size {
+        return Size(
+            slot = (slot.value - other.slot.value).slots,
+            dp = (dp.value - other.dp.value).dp
+        )
+    }
+
+    operator fun div(other: Size): Size {
+        return Size(
+            slot = (slot.value / other.slot.value).slots,
+            dp = (dp.value / other.dp.value).dp
+        )
+    }
+
+    operator fun div(other: Int): Size {
+        return Size(
+            slot = (slot.value / other).slots,
+            dp = (dp.value / other).dp
+        )
+    }
+
+    operator fun times(factor: Int): Size {
+        return Size(
+            slot = (slot.value * factor).slots,
+            dp = (dp.value * factor).dp
+        )
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -16,8 +51,8 @@ class Size(
     }
 
     override fun hashCode(): Int {
-        var result = slot?.hashCode() ?: 0
-        result = 31 * result + (dp?.hashCode() ?: 0)
+        var result = slot.hashCode()
+        result = 31 * result + dp.hashCode()
         return result
     }
 }

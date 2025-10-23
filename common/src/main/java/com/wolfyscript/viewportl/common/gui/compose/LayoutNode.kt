@@ -71,24 +71,10 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
         children.forEach(action)
     }
 
-    override fun remeasure(constraints: Constraints): Boolean {
-
-
-
-    }
-
     override fun measureAndLayout(constraints: Constraints): Measurements {
         // TODO: Measure own size constraints
 
-        val scope = object : MeasureScope {
-            override fun layout(
-                width: Size,
-                height: Size,
-                placement: PlacementScope.() -> Unit,
-            ): Measurements {
-                TODO("Not yet implemented")
-            }
-        }
+        val scope = SimpleMeasureScope()
 
         for (child in children) {
             // TODO: Use own constraints to measure children
