@@ -1,59 +1,65 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 
-import com.wolfyscript.viewportl.gui.elements.Element
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.gui.compose.Node
-import com.wolfyscript.viewportl.gui.rendering.ElementRenderer
+import com.wolfyscript.viewportl.gui.compose.layout.Position
+import com.wolfyscript.viewportl.gui.compose.layout.Size
+import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawModifierNode
+import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.rendering.Renderer
-import com.wolfyscript.viewportl.registry.ViewportlRegistryTypes
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 
 abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) : Renderer<T> {
-
-    private val renderers: Map<Class<out Element>, ElementRenderer<*, *>>
-
-    init {
-        val guiElementTypes = ViewportlRegistryTypes.guiElementTypes.resolveOrThrow()
-        val invUIRenderers = ViewportlRegistryTypes.inventoryGuiElementRenderers.resolveOrThrow()
-        renderers = buildMap {
-            for (elementType in guiElementTypes) {
-                invUIRenderers.firstOrNull { renderer ->
-                    renderer.canRender(elementType, contextType)
-                }?.let { renderer ->
-                    this[elementType] = renderer
-                }
-            }
-        }
-    }
-
-    val computed: MutableMap<Long, CachedNodeRenderProperties> = Long2ObjectOpenHashMap()
 
     abstract fun createContext(): T
 
     abstract fun clearSlots(slots: Collection<Int>)
 
-    private inline fun <reified C : Element> renderElement(element: C, node: Node, parent: Long, context: T) {
-        val nextOffset = calculatePosition(node, context)
-        val offset = context.currentOffset()
-        val elementRenderer = (renderers[element::class.java] as? ElementRenderer<C, InvUIRenderContext>) ?: return
-
-        elementRenderer.let { renderer ->
-            renderer.render(context, element)
-
-            computed[node.id] = CachedNodeRenderProperties(offset, mutableSetOf(offset))
-            // Store the slots affected by this node, so the slots can be easily cleared
-            computed[parent]?.slots?.add(offset)
-
-            context.setSlotOffset(nextOffset)
+    /**
+     * Renders the given [node]
+     */
+    override fun render(node: Node) {
+        var startOffset = Position(Size(), Size())
+        if (node.parent != null) {
+            var current: Node = node
+            while (current.parent != null) {
+                current = current.parent!!
+                startOffset = Position(startOffset.x + current.arranger.position.x, startOffset.y + current.arranger.position.y)
+            }
+        } else {
+            startOffset = node.arranger.position // Root node usually 0,0
         }
-
+        render(node, startOffset)
     }
 
-    /* ************************************************************* *
-     *  Listen to changes to the model graph & rerender accordingly  *
-     * ************************************************************* */
+    private fun render(node: Node, offset: Position) {
+        val drawMod = node.modifierStack.firstOfType(InventoryDrawModifierNode::class) // TODO: support multiple draw modifiers per Node
+        val nodeOffset = Position(
+            x = offset.x + node.arranger.position.x,
+            y = offset.y + node.arranger.position.y
+        )
+        if (drawMod != null) {
+            val scope: InventoryDrawScope = object : InventoryDrawScope { // TODO: mutable shared scope instead to reduce allocations
+                override val width: Int = nodeOffset.x.slot.value
+                override val height: Int = nodeOffset.y.slot.value
 
-    private fun calculatePosition(node: Node, context: InvUIRenderContext): Int {
-        return 0
+                override fun drawStack(
+                    offset: Position,
+                    stack: ItemStackSnapshot,
+                ) {
+
+                    TODO("Not yet implemented")
+                }
+
+            }
+
+            with(drawMod) {
+                scope.draw()
+            }
+        }
+
+        node.forEachChild {
+            render(it, nodeOffset)
+        }
     }
 
 }

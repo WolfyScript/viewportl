@@ -19,11 +19,14 @@ package com.wolfyscript.viewportl.gui.rendering
 
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.compose.Node
 
 /**
  */
 interface Renderer<C: RenderContext> {
 
     fun onWindowOpen(runtime: ViewRuntime, window: Window)
+
+    fun render(node: Node)
 
 }

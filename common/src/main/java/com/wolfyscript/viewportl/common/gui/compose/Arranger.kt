@@ -15,7 +15,7 @@ class NodeArrangerImpl(override val node: Node) : NodeArranger {
         }
 
     internal var offset: Position? = null
-    internal var position: Position? = null
+    override var position: Position = Position(Size(), Size())
     internal var measurements: Measurements? = null
 
     private var previousConstraints: Constraints? = null

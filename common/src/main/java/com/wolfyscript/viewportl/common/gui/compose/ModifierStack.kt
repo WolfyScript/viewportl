@@ -10,6 +10,8 @@ import com.wolfyscript.viewportl.gui.compose.layout.*
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifierNode
 import com.wolfyscript.viewportl.gui.compose.modifier.MeasureModifyScope
+import kotlin.reflect.KClass
+import kotlin.reflect.cast
 
 class ModifierStackImpl(internal val modifiers: ArrayDeque<ModifierNode>) : ModifierStack {
 
@@ -37,6 +39,10 @@ class ModifierStackImpl(internal val modifiers: ArrayDeque<ModifierNode>) : Modi
         }
 
         return SimpleLayoutModification(nodeConstraints)
+    }
+
+    override fun <T : ModifierNode> firstOfType(nodeType: KClass<T>): T? {
+        return modifiers.firstOrNull { nodeType.isInstance(it) }?.let { nodeType.cast(it) }
     }
 
 }

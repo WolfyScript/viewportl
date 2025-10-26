@@ -2,6 +2,7 @@ package com.wolfyscript.viewportl.gui.compose
 
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
+import kotlin.reflect.KClass
 
 /**
  * Lightweight Modifier information used to [create] the underlying [ModifierNode]
@@ -32,6 +33,8 @@ interface ModifierNode {
 interface ModifierStack {
 
     fun modifyLayout(nodeConstraints: Constraints): LayoutModification
+
+    fun <T: ModifierNode> firstOfType(nodeType: KClass<T>): T?
 
 }
 

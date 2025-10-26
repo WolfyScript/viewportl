@@ -12,6 +12,8 @@ interface NodeArranger : Measurable, Placeable {
      */
     val node: Node
 
+    val position: Position
+
     /**
      * Remeasures the [Node] based on the given [constraints] (if they are different from the previous constraints).
      *
