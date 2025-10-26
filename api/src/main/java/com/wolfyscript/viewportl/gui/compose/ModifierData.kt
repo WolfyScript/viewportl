@@ -4,16 +4,19 @@ import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 
 /**
- * The lightweight Modifier information used to create the underlying [ModifierNode]
+ * Lightweight Modifier information used to [create] the underlying [ModifierNode]
  */
-interface Modifier {
+interface ModifierData {
 
+    /**
+     * Creates a [ModifierNode] using the contained data.
+     */
     fun create(): ModifierNode
 
 }
 
 /**
- *
+ * The actual stateful Modifier used to modify the behaviour and appearance of a [Node]
  */
 interface ModifierNode {
 
@@ -39,7 +42,7 @@ interface ModifierStack {
  */
 interface ModifierStackScope {
 
-    fun push(modifier: Modifier)
+    fun push(modifier: ModifierData)
 
 }
 

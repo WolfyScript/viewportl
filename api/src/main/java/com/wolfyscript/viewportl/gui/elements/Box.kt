@@ -1,21 +1,19 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
-import com.wolfyscript.viewportl.gui.compose.layout.Position
-import com.wolfyscript.viewportl.gui.compose.layout.Size
-import com.wolfyscript.viewportl.gui.compose.modifier.modifyLayout
+import com.wolfyscript.viewportl.gui.compose.ModifierStackBuilder
 
 @Composable
-fun Box(content: @Composable () -> Unit) {
-    Layout({
-        modifyLayout { constraints ->
-
-            modifyLayout(constraints, Position(Size(), Size()))
-        }
-    }, content = content) { measurables, constraints ->
+fun Box(modifier: ModifierStackBuilder = ModifierStackBuilder {}, content: @Composable () -> Unit) {
+    Layout(modifier, content = content) { measurables, constraints ->
 
         layout(constraints.maxWidth, constraints.maxHeight) {
 
         }
     }
+}
+
+@Composable
+fun Box(modifier: ModifierStackBuilder) {
+    Box(modifier, {})
 }

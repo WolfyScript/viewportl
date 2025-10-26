@@ -1,14 +1,15 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
+import com.wolfyscript.viewportl.gui.compose.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.dp
 import com.wolfyscript.viewportl.gui.compose.layout.or
 import com.wolfyscript.viewportl.gui.compose.layout.slots
 
 @Composable
-fun Row(content: @Composable () -> Unit) {
-    Layout({}, content = content) { measurables, constraints ->
+fun Row(modifier: ModifierStackBuilder = ModifierStackBuilder {}, content: @Composable () -> Unit) {
+    Layout(modifier, content = content) { measurables, constraints ->
 
         // TODO: Alignment options
         // TODO: adjust height based on children

@@ -2,7 +2,7 @@ package com.wolfyscript.viewportl.common.gui.compose
 
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SimpleLayoutModification
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SimpleMeasureModifyScope
-import com.wolfyscript.viewportl.gui.compose.Modifier
+import com.wolfyscript.viewportl.gui.compose.ModifierData
 import com.wolfyscript.viewportl.gui.compose.ModifierNode
 import com.wolfyscript.viewportl.gui.compose.ModifierStack
 import com.wolfyscript.viewportl.gui.compose.ModifierStackScope
@@ -45,7 +45,7 @@ class ModifierStackScopeImpl : ModifierStackScope {
 
     val stack = ArrayDeque<ModifierNode>()
 
-    override fun push(modifier: Modifier) {
+    override fun push(modifier: ModifierData) {
         stack.addFirst(modifier.create())
     }
 

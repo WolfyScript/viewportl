@@ -22,17 +22,10 @@ import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import net.kyori.adventure.sound.Sound
 
 @Composable
-fun Button(icon: () -> ItemStackSnapshot, onClick: () -> Unit) {
+fun Button(onClick: () -> Unit, content: @Composable () -> Unit) {
+    Row({
 
-    Layout({
-
-    }, content = {}) { measurables, constraints ->
-
-        layout(constraints.maxWidth, constraints.maxHeight) {
-
-        }
-    }
-
+    }, content = content)
 }
 
 /**
