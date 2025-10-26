@@ -5,7 +5,7 @@ import com.wolfyscript.viewportl.gui.compose.Node
 /**
  * Handles the arrangement (size and position) of the wrapped [Node].
  */
-interface Arranger : Measurable, Placeable {
+interface NodeArranger : Measurable, Placeable {
 
     /**
      * The [Node] that is handled by this arranger

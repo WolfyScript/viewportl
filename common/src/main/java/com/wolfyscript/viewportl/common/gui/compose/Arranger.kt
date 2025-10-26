@@ -1,17 +1,9 @@
 package com.wolfyscript.viewportl.common.gui.compose
 
 import com.wolfyscript.viewportl.gui.compose.Node
-import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.layout.Arranger
-import com.wolfyscript.viewportl.gui.compose.layout.Measurable
-import com.wolfyscript.viewportl.gui.compose.layout.Measurements
-import com.wolfyscript.viewportl.gui.compose.layout.Placeable
-import com.wolfyscript.viewportl.gui.compose.layout.Position
-import com.wolfyscript.viewportl.gui.compose.layout.Size
-import com.wolfyscript.viewportl.gui.compose.layout.dp
-import com.wolfyscript.viewportl.gui.compose.layout.slots
+import com.wolfyscript.viewportl.gui.compose.layout.*
 
-class ArrangerImpl(override val node: Node) : Arranger {
+class NodeArrangerImpl(override val node: Node) : NodeArranger {
 
     override val width: Size
         get() {
@@ -22,8 +14,9 @@ class ArrangerImpl(override val node: Node) : Arranger {
             return measurements?.height ?: Size(0.slots, 0.dp)
         }
 
-    private var position: Position? = null
-    private var measurements: Measurements? = null
+    internal var offset: Position? = null
+    internal var position: Position? = null
+    internal var measurements: Measurements? = null
 
     private var previousConstraints: Constraints? = null
 
@@ -31,17 +24,26 @@ class ArrangerImpl(override val node: Node) : Arranger {
     private var requiresReplacement = false
 
     override fun measure(constraints: Constraints): Placeable {
+        val modification = node.modifierStack.modifyLayout(constraints)
+        this@NodeArrangerImpl.offset = modification.offset
+
         val childMeasurables = buildList<Measurable> {
             node.forEachChild { child -> add(child.arranger) }
         }
 
-        val measureScope = SimpleMeasureScope()
-        node.measurePolicy?.let { measurePolicy ->
-            measurements = with(measurePolicy) {
-                measureScope.measure(childMeasurables, constraints)
-            }
+        return performMeasurement(constraints) {
+            val measureScope = SimpleMeasureScope()
+            node.measurePolicy?.let { measurePolicy ->
+                with(measurePolicy) {
+                    measureScope.measure(childMeasurables, modification.constraints)
+                }
+            } ?: Measurements(0.slotsSize, 0.slotsSize)
         }
+    }
 
+    private fun performMeasurement(constraints: Constraints, fn: () -> Measurements): Placeable {
+        previousConstraints = constraints
+        measurements = fn()
         return this
     }
 
@@ -49,7 +51,11 @@ class ArrangerImpl(override val node: Node) : Arranger {
         x: Size,
         y: Size,
     ) {
-        this.position = Position(x, y)
+        if (offset != null) {
+            this.position = Position(offset!!.x + x, offset!!.y + y)
+        } else {
+            this.position = Position(x, y)
+        }
         afterPlace()
     }
 

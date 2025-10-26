@@ -1,7 +1,7 @@
 package com.wolfyscript.viewportl.gui.compose
 
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.layout.Measurements
+import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 
 /**
  * The lightweight Modifier information used to create the underlying [ModifierNode]
@@ -28,7 +28,7 @@ interface ModifierNode {
  */
 interface ModifierStack {
 
-    fun measure(constraints: Constraints): Measurements
+    fun modifyLayout(nodeConstraints: Constraints): LayoutModification
 
 }
 

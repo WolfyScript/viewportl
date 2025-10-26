@@ -1,11 +1,8 @@
 package com.wolfyscript.viewportl.gui.compose
 
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.layout.Arranger
-import com.wolfyscript.viewportl.gui.compose.layout.Measurements
+import com.wolfyscript.viewportl.gui.compose.layout.NodeArranger
 import com.wolfyscript.viewportl.viewportl
-
 
 /**
  * A Node in the UI Graph.
@@ -22,7 +19,9 @@ interface Node {
     var parent: Node?
     var modifier: ModifierStackBuilder
     var measurePolicy: MeasurePolicy?
-    val arranger: Arranger
+
+    val arranger: NodeArranger
+    val modifierStack: ModifierStack
 
     fun insertChildAt(index: Int, child: Node)
 
@@ -33,7 +32,5 @@ interface Node {
     fun clearChildren()
 
     fun forEachChild(action: (Node) -> Unit)
-
-    fun measureAndLayout(constraints: Constraints): Measurements
 
 }

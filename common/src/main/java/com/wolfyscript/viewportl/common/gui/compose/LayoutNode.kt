@@ -4,12 +4,8 @@ import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
 import com.wolfyscript.viewportl.gui.compose.ModifierStack
 import com.wolfyscript.viewportl.gui.compose.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.Node
-import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.layout.Arranger
-import com.wolfyscript.viewportl.gui.compose.layout.MeasureScope
+import com.wolfyscript.viewportl.gui.compose.layout.NodeArranger
 import com.wolfyscript.viewportl.gui.compose.layout.Measurements
-import com.wolfyscript.viewportl.gui.compose.layout.PlacementScope
-import com.wolfyscript.viewportl.gui.compose.layout.Size
 import java.util.concurrent.atomic.AtomicLong
 
 private val nodeIdGeneration = AtomicLong(0)
@@ -20,7 +16,7 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
     override var parent: Node? = null
     private val children = mutableListOf<Node>()
 
-    private var modifierStack: ModifierStack = ModifierStackImpl(ArrayDeque())
+    override var modifierStack: ModifierStack = ModifierStackImpl(ArrayDeque())
     override var modifier: ModifierStackBuilder = ModifierStackBuilder {}
         set(value) {
             field = value
@@ -31,8 +27,9 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
             modifierStack = scope.create()
         }
 
-    override val arranger: Arranger = ArrangerImpl(this)
+    override val arranger: NodeArranger = NodeArrangerImpl(this)
     override var measurePolicy: MeasurePolicy? = null
+
     private var measurements: Measurements? = null
 
     override fun insertChildAt(index: Int, child: Node) {
@@ -69,22 +66,6 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
 
     override fun forEachChild(action: (Node) -> Unit) {
         children.forEach(action)
-    }
-
-    override fun measureAndLayout(constraints: Constraints): Measurements {
-        // TODO: Measure own size constraints
-
-        val scope = SimpleMeasureScope()
-
-        for (child in children) {
-            // TODO: Use own constraints to measure children
-            child.measureAndLayout(constraints)
-        }
-
-        // TODO: Place Children
-
-        // TODO: Return info to parent
-        return measurements!!
     }
 
 }
