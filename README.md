@@ -4,7 +4,7 @@ A Minecraft Inventory GUI framework to easily create **reactive, efficient and p
 ![github_commit](https://img.shields.io/github/last-commit/WolfyScript/WolfyUtilities)
 
 ### Compose
-Viewportl uses the googles androids compose library to make the creation of Minecraft UIs very easy.  
+Viewportl uses googles androids compose library to make the creation of Minecraft UIs very easy.  
 
 Compose at its base is just a library to create a tree structure of nodes, the rest of the implementation is part of the viewportl.
 
