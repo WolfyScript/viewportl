@@ -1,7 +1,7 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
-import com.wolfyscript.viewportl.gui.compose.ModifierStackBuilder
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.dp
 import com.wolfyscript.viewportl.gui.compose.layout.or

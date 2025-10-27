@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReusableComposeNode
 import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
 import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
-import com.wolfyscript.viewportl.gui.compose.ModifierStackBuilder
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.gui.compose.Node.Companion.SetMeasurePolicy
 import com.wolfyscript.viewportl.gui.compose.Node.Companion.SetModifier

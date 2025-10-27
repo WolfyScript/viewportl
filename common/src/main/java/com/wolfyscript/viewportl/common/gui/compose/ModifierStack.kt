@@ -2,10 +2,10 @@ package com.wolfyscript.viewportl.common.gui.compose
 
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SimpleLayoutModification
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SimpleMeasureModifyScope
-import com.wolfyscript.viewportl.gui.compose.ModifierData
-import com.wolfyscript.viewportl.gui.compose.ModifierNode
-import com.wolfyscript.viewportl.gui.compose.ModifierStack
-import com.wolfyscript.viewportl.gui.compose.ModifierStackScope
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierData
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierNode
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStack
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackScope
 import com.wolfyscript.viewportl.gui.compose.layout.*
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifierNode
@@ -23,7 +23,7 @@ class ModifierStackImpl(internal val modifiers: ArrayDeque<ModifierNode>) : Modi
         val scope: MeasureModifyScope = SimpleMeasureModifyScope()
 
         var latestModification: LayoutModification? = null
-        var totalOffset = Position(Size(), Size())
+        var totalOffset = Offset.Zero
 
         for (modifier in modifiers) {
             if (modifier !is LayoutModifierNode) continue
@@ -31,7 +31,7 @@ class ModifierStackImpl(internal val modifiers: ArrayDeque<ModifierNode>) : Modi
             latestModification = with(modifier) {
                 scope.modify(nodeConstraints)
             }
-            totalOffset = Position(totalOffset.x + latestModification.offset.x, totalOffset.y + latestModification.offset.y)
+            totalOffset = Offset(totalOffset.x + latestModification.offset.x, totalOffset.y + latestModification.offset.y)
         }
 
         if (latestModification != null) {
@@ -51,7 +51,7 @@ class ModifierStackScopeImpl : ModifierStackScope {
 
     val stack = ArrayDeque<ModifierNode>()
 
-    override fun push(modifier: ModifierData) {
+    override fun push(modifier: ModifierData<*>) {
         stack.addFirst(modifier.create())
     }
 

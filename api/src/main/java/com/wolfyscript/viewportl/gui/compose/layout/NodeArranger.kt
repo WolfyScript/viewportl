@@ -12,7 +12,7 @@ interface NodeArranger : Measurable, Placeable {
      */
     val node: Node
 
-    val position: Position
+    val position: Offset
 
     /**
      * Remeasures the [Node] based on the given [constraints] (if they are different from the previous constraints).

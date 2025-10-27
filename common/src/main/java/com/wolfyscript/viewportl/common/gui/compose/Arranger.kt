@@ -7,15 +7,15 @@ class NodeArrangerImpl(override val node: Node) : NodeArranger {
 
     override val width: Size
         get() {
-            return measurements?.width ?: Size(0.slots, 0.dp)
+            return measurements?.width ?: Size.Zero
         }
     override val height: Size
         get() {
-            return measurements?.height ?: Size(0.slots, 0.dp)
+            return measurements?.height ?: Size.Zero
         }
 
-    internal var offset: Position? = null
-    override var position: Position = Position(Size(), Size())
+    internal var offset: Offset? = null
+    override var position: Offset = Offset.Zero
     internal var measurements: Measurements? = null
 
     private var previousConstraints: Constraints? = null
@@ -52,9 +52,9 @@ class NodeArrangerImpl(override val node: Node) : NodeArranger {
         y: Size,
     ) {
         if (offset != null) {
-            this.position = Position(offset!!.x + x, offset!!.y + y)
+            this.position = Offset(offset!!.x + x, offset!!.y + y)
         } else {
-            this.position = Position(x, y)
+            this.position = Offset(x, y)
         }
         afterPlace()
     }

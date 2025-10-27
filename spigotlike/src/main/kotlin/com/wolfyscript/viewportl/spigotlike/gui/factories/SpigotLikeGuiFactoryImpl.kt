@@ -24,7 +24,6 @@ import com.wolfyscript.viewportl.common.gui.factories.GuiFactoryCommon
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.factories.ElementFactory
-import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction.SpigotLikeInvUIInteractionHandler
 import org.bukkit.plugin.Plugin

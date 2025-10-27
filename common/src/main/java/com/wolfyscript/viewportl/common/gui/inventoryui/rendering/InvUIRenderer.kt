@@ -2,7 +2,7 @@ package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.gui.compose.Node
-import com.wolfyscript.viewportl.gui.compose.layout.Position
+import com.wolfyscript.viewportl.gui.compose.layout.Offset
 import com.wolfyscript.viewportl.gui.compose.layout.Size
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawModifierNode
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
@@ -18,12 +18,12 @@ abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) 
      * Renders the given [node]
      */
     override fun render(node: Node) {
-        var startOffset = Position(Size(), Size())
+        var startOffset = Offset.Zero
         if (node.parent != null) {
             var current: Node = node
             while (current.parent != null) {
                 current = current.parent!!
-                startOffset = Position(startOffset.x + current.arranger.position.x, startOffset.y + current.arranger.position.y)
+                startOffset = Offset(startOffset.x + current.arranger.position.x, startOffset.y + current.arranger.position.y)
             }
         } else {
             startOffset = node.arranger.position // Root node usually 0,0
@@ -31,9 +31,9 @@ abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) 
         render(node, startOffset)
     }
 
-    private fun render(node: Node, offset: Position) {
+    private fun render(node: Node, offset: Offset) {
         val drawMod = node.modifierStack.firstOfType(InventoryDrawModifierNode::class) // TODO: support multiple draw modifiers per Node
-        val nodeOffset = Position(
+        val nodeOffset = Offset(
             x = offset.x + node.arranger.position.x,
             y = offset.y + node.arranger.position.y
         )
@@ -43,7 +43,7 @@ abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) 
                 override val height: Int = nodeOffset.y.slot.value
 
                 override fun drawStack(
-                    offset: Position,
+                    offset: Offset,
                     stack: ItemStackSnapshot,
                 ) {
 

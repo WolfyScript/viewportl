@@ -36,8 +36,10 @@ object RootMeasurePolicy : MeasurePolicy {
                 var maxWidth = 0.slots or 0.dp
                 var maxHeight = 0.slots or 0.dp
                 for (placeable in placeables) {
-                    maxWidth = maxOf(placeable.width.slot?.value ?: 0, maxWidth.slot?.value ?: 0).slots or maxOf(placeable.width.dp?.value ?: 0, maxWidth.dp?.value ?: 0).dp
-                    maxHeight = maxOf(placeable.height.slot?.value ?: 0, maxHeight.slot?.value ?: 0).slots or maxOf(placeable.height.dp?.value ?: 0, maxHeight.dp?.value ?: 0).dp
+                    maxWidth = maxOf(placeable.width.slot.value, maxWidth.slot.value).slots or
+                            maxOf(placeable.width.dp.value, maxWidth.dp.value).dp
+                    maxHeight = maxOf(placeable.height.slot.value, maxHeight.slot.value).slots or
+                            maxOf(placeable.height.dp.value, maxHeight.dp.value).dp
                 }
 
                 layout(constraints.constrainWidth(maxWidth), constraints.constrainHeight(maxHeight)) {

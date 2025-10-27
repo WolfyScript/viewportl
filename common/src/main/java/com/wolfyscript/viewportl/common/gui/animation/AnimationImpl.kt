@@ -34,7 +34,7 @@ class AnimationImpl<F : AnimationFrame> internal constructor(
 ) :
     AnimationCommonImpl<F>(owner, animationFrameBuilders, updateSignal) {
 
-    fun render(viewManager: ViewRuntime<*, *>, guiHolder: GuiHolder, context: RenderContext) {
+    fun render(viewManager: ViewRuntime, guiHolder: GuiHolder, context: RenderContext) {
         val frameDelay = AtomicInteger(0)
         val frameIndex = AtomicInteger(0)
         viewManager.viewportl.scafall.scheduler

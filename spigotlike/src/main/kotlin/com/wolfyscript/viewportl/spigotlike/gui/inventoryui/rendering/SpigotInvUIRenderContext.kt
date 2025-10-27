@@ -19,7 +19,6 @@
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderContext
-import com.wolfyscript.viewportl.gui.ViewRuntime
 
 class SpigotInvUIRenderContext(
     rendererImpl: SpigotLikeInvUIRenderer,

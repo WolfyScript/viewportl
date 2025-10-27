@@ -1,11 +1,10 @@
 package com.wolfyscript.viewportl.common.gui.compose
 
 import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
-import com.wolfyscript.viewportl.gui.compose.ModifierStack
-import com.wolfyscript.viewportl.gui.compose.ModifierStackBuilder
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStack
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.gui.compose.layout.NodeArranger
-import com.wolfyscript.viewportl.gui.compose.layout.Measurements
 import java.util.concurrent.atomic.AtomicLong
 
 private val nodeIdGeneration = AtomicLong(0)
@@ -29,8 +28,6 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
 
     override val arranger: NodeArranger = NodeArrangerImpl(this)
     override var measurePolicy: MeasurePolicy? = null
-
-    private var measurements: Measurements? = null
 
     override fun insertChildAt(index: Int, child: Node) {
         child.parent = this

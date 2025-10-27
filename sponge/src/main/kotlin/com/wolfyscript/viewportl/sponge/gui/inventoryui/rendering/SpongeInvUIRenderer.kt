@@ -1,7 +1,5 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering
 
-import com.wolfyscript.scafall.common.api.into
-import com.wolfyscript.scafall.sponge.api.SpongePluginWrapper
 import com.wolfyscript.scafall.wrappers.unwrap
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack

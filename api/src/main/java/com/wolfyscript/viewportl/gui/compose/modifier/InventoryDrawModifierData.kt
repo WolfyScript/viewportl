@@ -1,21 +1,22 @@
 package com.wolfyscript.viewportl.gui.compose.modifier
 
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
-import com.wolfyscript.viewportl.gui.compose.ModifierData
-import com.wolfyscript.viewportl.gui.compose.ModifierNode
-import com.wolfyscript.viewportl.gui.compose.ModifierStackScope
-import com.wolfyscript.viewportl.gui.compose.layout.Position
+import com.wolfyscript.viewportl.gui.compose.layout.Offset
 import com.wolfyscript.viewportl.gui.compose.layout.Size
 
 /**
- * Specifies how content is drawn to a slot based interface (Inventory UI)
+ * Specifies how content is drawn to a slot based interface (e.g. Inventory)
  */
 fun ModifierStackScope.drawToSlots(fn: InventoryDrawScope.() -> Unit) {
 
     push(TODO())
 }
 
-interface InventoryDrawModifierData : ModifierData {}
+interface InventoryDrawModifierData : ModifierData<InventoryDrawModifierNode> {
+
+    val draw: InventoryDrawScope.() -> Unit
+
+}
 
 /**
  * A nested scope that allows drawing into a section of an Inventory.
@@ -41,7 +42,7 @@ interface InventoryDrawScope {
      *
      * [stack] the stack to render into the slot
      */
-    fun drawStack(offset: Position = Position(Size(), Size()), stack: ItemStackSnapshot)
+    fun drawStack(offset: Offset = Offset.Zero, stack: ItemStackSnapshot)
 
 }
 

@@ -1,9 +1,15 @@
 package com.wolfyscript.viewportl.gui.compose.layout
 
 class Size(
-    val slot: Slot = 0.slots,
-    val dp: Dp = 0.dp,
+    val slot: Slot,
+    val dp: Dp,
 ) {
+
+    companion object {
+        val Zero = Size(0.slots, 0.dp)
+
+        val Unspecified = Size(Int.MIN_VALUE.slots, Int.MIN_VALUE.dp)
+    }
 
     operator fun plus(other: Size): Size {
         return Size(
@@ -37,6 +43,13 @@ class Size(
         return Size(
             slot = (slot.value * factor).slots,
             dp = (dp.value * factor).dp
+        )
+    }
+
+    operator fun unaryMinus(): Size {
+        return Size(
+            slot = (-slot.value).slots,
+            dp = (-dp.value).dp
         )
     }
 
@@ -79,6 +92,6 @@ val Int.slots get() = Slot(this)
 
 val Int.dp get() = Dp(this)
 
-val Int.slotsSize get() = Size(slot = this.slots)
+val Int.slotsSize get() = Size(slot = this.slots, dp = 0.dp)
 
-val Int.dpSize get() = Size(dp = this.dp)
+val Int.dpSize get() = Size(slot = 0.slots, dp = this.dp)

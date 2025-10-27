@@ -1,23 +1,24 @@
-package com.wolfyscript.viewportl.gui.compose
+package com.wolfyscript.viewportl.gui.compose.modifier
 
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 import kotlin.reflect.KClass
 
 /**
  * Lightweight Modifier information used to [create] the underlying [ModifierNode]
  */
-interface ModifierData {
+interface ModifierData<N: ModifierNode> {
 
     /**
      * Creates a [ModifierNode] using the contained data.
      */
-    fun create(): ModifierNode
+    fun create(): N
+
+    fun update(node: N)
 
 }
 
 /**
- * The actual stateful Modifier used to modify the behaviour and appearance of a [Node]
+ * The actual stateful Modifier used to modify the behaviour and appearance of a [com.wolfyscript.viewportl.gui.compose.Node]
  */
 interface ModifierNode {
 
@@ -28,7 +29,7 @@ interface ModifierNode {
 }
 
 /**
- * A stack of [ModifierNodes][ModifierNode] applied to a [Node]
+ * A stack of [ModifierNodes][ModifierNode] applied to a [com.wolfyscript.viewportl.gui.compose.Node]
  */
 interface ModifierStack {
 
@@ -45,7 +46,7 @@ interface ModifierStack {
  */
 interface ModifierStackScope {
 
-    fun push(modifier: ModifierData)
+    fun push(modifier: ModifierData<*>)
 
 }
 
