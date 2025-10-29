@@ -1,5 +1,7 @@
 package com.wolfyscript.viewportl.common.gui.factories
 
+import com.wolfyscript.viewportl.common.gui.compose.modifier.ClickableModifierDataImpl
+import com.wolfyscript.viewportl.common.gui.compose.modifier.InventoryDrawModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SizeModifier
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Size
@@ -39,6 +41,10 @@ class ModifierFactoryCommon : ModifierFactory {
     }
 
     override fun createInventoryDrawModifier(draw: InventoryDrawScope.() -> Unit): ModifierData<*> {
-        TODO("Not yet implemented")
+        return InventoryDrawModifierDataImpl(draw)
+    }
+
+    override fun createClickableModifier(onClick: () -> Unit): ModifierData<*> {
+        return ClickableModifierDataImpl(onClick)
     }
 }

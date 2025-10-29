@@ -1,8 +1,13 @@
 package com.wolfyscript.viewportl.gui.compose.modifier
 
-fun ModifierStackScope.clickable(onClick: () -> Unit) {
+import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.viewportl.viewportl
 
+fun ModifierStackScope.clickable(onClick: () -> Unit) {
+    push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createClickableModifier(onClick))
 }
+
+interface PointerEventScope
 
 interface ClickableModifier : ModifierData<ClickableModifierNode> {
 
@@ -13,5 +18,7 @@ interface ClickableModifier : ModifierData<ClickableModifierNode> {
 interface ClickableModifierNode : ModifierNode {
 
     val onClick: () -> Unit
+
+    fun PointerEventScope.onClickInteraction(x: Int, y: Int)
 
 }

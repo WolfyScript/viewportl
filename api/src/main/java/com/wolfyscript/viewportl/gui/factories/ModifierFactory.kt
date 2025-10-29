@@ -39,4 +39,8 @@ interface ModifierFactory {
         draw: InventoryDrawScope.() -> Unit
     ): ModifierData<*>
 
+    fun createClickableModifier(
+        onClick: () -> Unit
+    ): ModifierData<*>
+
 }
