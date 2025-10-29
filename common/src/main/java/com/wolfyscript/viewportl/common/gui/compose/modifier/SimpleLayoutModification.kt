@@ -7,5 +7,7 @@ import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 
 class SimpleLayoutModification(
     override val constraints: Constraints,
-    override val offset: Offset = Offset.Zero
+    override val offset: Offset = Offset.Zero,
+    override val measuredWidth: Size = constraints.minWidth,
+    override val measuredHeight: Size = constraints.minHeight,
 ) : LayoutModification
