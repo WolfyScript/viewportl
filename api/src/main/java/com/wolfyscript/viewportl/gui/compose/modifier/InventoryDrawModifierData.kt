@@ -2,7 +2,6 @@ package com.wolfyscript.viewportl.gui.compose.modifier
 
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
-import com.wolfyscript.viewportl.gui.compose.layout.Size
 
 /**
  * Specifies how content is drawn to a slot based interface (e.g. Inventory)
