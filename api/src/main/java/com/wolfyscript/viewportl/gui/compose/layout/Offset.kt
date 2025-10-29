@@ -9,4 +9,17 @@ class Offset(
         val Zero = Offset(Size.Zero, Size.Zero)
 
     }
+
+    operator fun plus(offset: Offset): Offset {
+        return Offset(x + offset.x, y + offset.y)
+    }
+
+    operator fun minus(offset: Offset): Offset {
+        return Offset(x - offset.x, y - offset.y)
+    }
+
+    operator fun times(factor: Int): Offset {
+        return Offset(x * factor, y * factor)
+    }
+
 }

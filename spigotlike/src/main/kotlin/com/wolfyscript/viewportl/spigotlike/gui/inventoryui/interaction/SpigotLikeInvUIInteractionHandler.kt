@@ -18,11 +18,9 @@
 
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
+import com.wolfyscript.viewportl.common.gui.WindowImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.elements.Element
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
@@ -34,15 +32,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
 class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInteractionHandler<InventoryUIInteractionContext>() {
-
-    companion object {
-
-        init {
-            registerComponentInteractionHandler(ButtonImpl::class.java, InventoryButtonInteractionHandler())
-            registerComponentInteractionHandler(SlotImpl::class.java, InventoryStackSlotInteractionHandler())
-        }
-
-    }
 
     private var listener: InventoryUIListener? = null
 
@@ -68,7 +57,14 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
         var cursor: ItemStack? = originalCursor.clone()
         var slotResult: ItemStack? = originalSlotStack?.clone()
 
-        testMainClickTransaction(event, Slot(event.rawSlot), valueHandler)
+        if (event.clickedInventory == event.view.bottomInventory) {
+            event.isCancelled = false // Allow any bottom inventory interaction
+            return
+        }
+
+        (runtime.window as? WindowImpl)?.root?.let {
+            onClick(event.slot, it)
+        }
 
         if (event.isCancelled) {
             return
@@ -268,26 +264,9 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
         valueHandler.callSlotValueUpdate(event.rawSlot, slotResult)
     }
 
-    private fun testMainClickTransaction(
+    private fun isBottomInventoryClick(
         event: InventoryClickEvent,
-        slot: Slot,
-        valueHandler: ValueHandler
     ) {
-        if (event.clickedInventory == event.view.bottomInventory) {
-            event.isCancelled = false // Allow any bottom inventory interaction
-            return
-        }
-        // Top inventory clicked
-        val node = slotNodes[slot.index]
-        if (node == null) {
-            event.isCancelled = true
-            return
-        }
-
-        val component = node.element
-        callComponentHandler(node.element) {
-            onClick(runtime, component, event, slot, valueHandler)
-        }
     }
 
     private fun testChildClickTransaction(
@@ -301,10 +280,6 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
         }
         val node = slotNodes[slot.index]
         if (node != null) {
-            val component = node.element
-            callComponentHandler(node.element) {
-                onClick(runtime, component, event, slot, valueHandler)
-            }
 
             return !event.isCancelled
         }
@@ -423,20 +398,8 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
                     return
                 }
 
-                callComponentHandler(node.element) {
-                    onDrag(runtime, node.element, event, Slot(rawSlot), context.valueHandler)
-                }
             }
         }
-    }
-
-    private fun <C : Element> callComponentHandler(
-        component: C,
-        fn: SpigotElementInteractionHandler<C>.() -> Unit
-    ) {
-        val componentHandler =
-            getComponentInteractionHandler(component.javaClass) as SpigotElementInteractionHandler<C>
-        componentHandler.fn()
     }
 
 }
