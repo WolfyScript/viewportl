@@ -60,14 +60,12 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
         }
     }
 
-    private fun withinBounds(x: Int, y: Int, node: Node, parentOffset: Offset): Boolean {
+    protected fun withinBounds(x: Int, y: Int, node: Node, parentOffset: Offset): Boolean {
         val posX = node.arranger.position.x.slot.value + parentOffset.x.slot.value
         val posY = node.arranger.position.y.slot.value + parentOffset.y.slot.value
 
         return x >= posX && x < posX + node.arranger.width.slot.value &&
             y >= posY && y < posY + node.arranger.height.slot.value
     }
-
-
 
 }

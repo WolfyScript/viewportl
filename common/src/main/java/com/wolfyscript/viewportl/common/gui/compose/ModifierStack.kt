@@ -15,6 +15,8 @@ import kotlin.reflect.cast
 
 class ModifierStackImpl(internal val modifiers: ArrayDeque<ModifierNode>) : ModifierStack {
 
+    private var attached: Boolean = false
+
     override fun modifyLayout(
         nodeConstraints: Constraints,
     ): LayoutModification {
@@ -45,6 +47,28 @@ class ModifierStackImpl(internal val modifiers: ArrayDeque<ModifierNode>) : Modi
         return modifiers.firstOrNull { nodeType.isInstance(it) }?.let { nodeType.cast(it) }
     }
 
+    /**
+     * Called when a node that owns this modifier stack is detached from the tree
+     */
+    fun onNodeDetach() {
+        attached = false
+
+        for (modifier in modifiers) {
+            modifier.onDetach()
+        }
+    }
+
+    /**
+     * Called when a node that owns this modifier stack is attached to the tree
+     */
+    fun onNodeAttach() {
+        for (modifier in modifiers) {
+            modifier.onAttach()
+        }
+
+        attached = true
+    }
+
 }
 
 class ModifierStackScopeImpl : ModifierStackScope {
@@ -55,7 +79,7 @@ class ModifierStackScopeImpl : ModifierStackScope {
         stack.addFirst(modifier.create())
     }
 
-    fun create(): ModifierStack {
+    fun create(): ModifierStackImpl {
         return ModifierStackImpl(stack)
     }
 

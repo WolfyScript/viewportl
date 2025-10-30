@@ -1,7 +1,6 @@
 package com.wolfyscript.viewportl.common.gui.compose
 
 import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStack
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.gui.compose.layout.NodeArranger
@@ -13,9 +12,9 @@ private fun generateNodeId(): Long = nodeIdGeneration.getAndIncrement()
 class LayoutNode(val id: Long = generateNodeId()) : Node {
 
     override var parent: Node? = null
-    private val children = mutableListOf<Node>()
+    private val children = mutableListOf<LayoutNode>()
 
-    override var modifierStack: ModifierStack = ModifierStackImpl(ArrayDeque())
+    override var modifierStack = ModifierStackImpl(ArrayDeque())
     override var modifier: ModifierStackBuilder = ModifierStackBuilder {}
         set(value) {
             field = value
@@ -30,12 +29,18 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
     override var measurePolicy: MeasurePolicy? = null
 
     override fun insertChildAt(index: Int, child: Node) {
+        if (child !is LayoutNode) {
+            return
+        }
         child.parent = this
         children.add(index, child)
+
+        child.attach()
     }
 
     override fun removeChildAt(index: Int, count: Int) {
         for (i in index + count - 1 downTo index) {
+            onChildRemoved(children[i])
             children.removeAt(i)
         }
     }
@@ -57,12 +62,32 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
         }
     }
 
+    fun onChildRemoved(child: LayoutNode) {
+        child.parent = null
+
+        child.detach()
+    }
+
     override fun clearChildren() {
+        for (child in children) {
+            onChildRemoved(child)
+        }
+
         children.clear()
     }
 
     override fun forEachChild(action: (Node) -> Unit) {
         children.forEach(action)
+    }
+
+    private fun detach() {
+        modifierStack.onNodeDetach()
+    }
+
+    private fun attach() {
+
+        modifierStack.onNodeAttach()
+
     }
 
 }
