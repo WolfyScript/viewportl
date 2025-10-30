@@ -62,13 +62,14 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
             return
         }
 
+        event.isCancelled = true // prevent any interaction, handle normal click & slot input separately
+
         (runtime.window as? WindowImpl)?.root?.let {
             onClick(event.slot, it)
+            return // For now just return
         }
 
-        if (event.isCancelled) {
-            return
-        }
+        // TODO: handle slot input, which takes precedence and might allow the interaction
 
         val action = event.action
         when (action) {
@@ -254,19 +255,9 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
             }
         }
 
-        event.isCancelled = true
-
         // Apply calculated slot changes
         event.view.setCursor(cursor)
         event.currentItem = slotResult
-
-        // Notify listeners (e.g. components)
-        valueHandler.callSlotValueUpdate(event.rawSlot, slotResult)
-    }
-
-    private fun isBottomInventoryClick(
-        event: InventoryClickEvent,
-    ) {
     }
 
     private fun testChildClickTransaction(
