@@ -24,17 +24,24 @@ import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
+import kotlinx.coroutines.CoroutineScope
 import java.util.*
 import java.util.function.Function
+import kotlin.coroutines.CoroutineContext
 
 class ViewRuntimeImpl(
     override val viewportl: Viewportl,
+    val parentCoroutineContext: CoroutineContext,
     windowFactory: Function<ViewRuntime, Window>,
     override val viewers: Set<UUID>,
     // Handlers that handle rendering and interaction
     override val renderer: Renderer<*>,
     override val interactionHandler: InteractionHandler<*>
 ) : ViewRuntime {
+
+    // TODO: Coroutine Scope for this runtime
+    // TODO: GUI runtimes are completely async, so need a way to securely communicate with main thread from Composable
+    val coroutineScope = CoroutineScope(parentCoroutineContext)
 
     override val id: Long = NEXT_ID++
 

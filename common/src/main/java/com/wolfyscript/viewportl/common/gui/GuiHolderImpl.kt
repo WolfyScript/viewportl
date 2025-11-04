@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.common.gui
 
-import com.wolfyscript.scafall.wrappers.world.entity.Player
+import com.wolfyscript.scafall.wrappers.ScafallPlayer
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
@@ -25,5 +25,5 @@ import com.wolfyscript.viewportl.gui.Window
 class GuiHolderImpl(
     override val currentWindow: Window,
     override val viewManager: ViewRuntime,
-    override val player: Player? = null
+    override val player: ScafallPlayer? = null
 ) : GuiHolder

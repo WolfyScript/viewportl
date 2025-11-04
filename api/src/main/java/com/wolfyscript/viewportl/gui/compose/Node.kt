@@ -7,7 +7,17 @@ import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.viewportl
 
 /**
- * A Node in the UI Graph.
+ * A Node in the Compose Tree Graph.
+ *
+ * ### Gap Buffer
+ * Compose uses a type of gap-buffer to store the tree of Nodes.
+ *
+ * The buffers operations to insert, move, and remove nodes are handled by
+ * - [insertChildAt],
+ * - [removeChildrenAt],
+ * - [moveChildren],
+ * - and [clearChildren]
+ *
  */
 interface Node {
 
@@ -27,7 +37,10 @@ interface Node {
 
     fun insertChildAt(index: Int, child: Node)
 
-    fun removeChildAt(index: Int, count: Int)
+    /**
+     * Removes the section of child [Nodes][Node] from this Node.
+     */
+    fun removeChildrenAt(index: Int, count: Int)
 
     fun moveChildren(from: Int, to: Int, count: Int)
 

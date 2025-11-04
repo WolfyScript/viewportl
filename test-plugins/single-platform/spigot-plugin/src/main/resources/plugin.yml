@@ -1,8 +1,0 @@
-name: ViewportlExample
-version: '${version}'
-main: org.example.viewportl.ViewportlExample
-api-version: 1.21
-authors: [ SomeAuthor ]
-load: STARTUP
-
-depend: [ NBTAPI, scafall, viewportl ]

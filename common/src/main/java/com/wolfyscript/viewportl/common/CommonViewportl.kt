@@ -21,6 +21,7 @@ package com.wolfyscript.viewportl.common
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.ViewportlClient
 import com.wolfyscript.viewportl.ViewportlServer
+import com.wolfyscript.viewportl.example.counter.Counter
 
 abstract class CommonViewportl : Viewportl {
 
@@ -28,19 +29,25 @@ abstract class CommonViewportl : Viewportl {
         set(value) {
             field = value
             if (value != null) {
-
+                serverListeners.forEach { it(value) }
+                serverListeners.clear()
             }
         }
     override var client: ViewportlClient? = null
         set(value) {
             field = value
             if (value != null) {
-
+                clientListeners.forEach { it(value) }
+                clientListeners.clear()
             }
         }
 
     private val clientListeners = mutableListOf<(ViewportlClient) -> Unit>()
     private val serverListeners = mutableListOf<(ViewportlServer) -> Unit>()
+
+    override fun onInit() {
+
+    }
 
     override fun onClientAvailable(fn: (client: ViewportlClient) -> Unit) {
         if (client == null) {

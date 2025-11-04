@@ -18,6 +18,7 @@
 package com.wolfyscript.viewportl.gui
 
 import androidx.compose.runtime.Composable
+import com.wolfyscript.scafall.identifier.Key
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
@@ -30,16 +31,13 @@ import java.util.stream.Stream
  */
 interface GuiAPIManager {
 
-    val registeredGuis : Set<String>
-
     /**
-     * Registers a new window with the specified id.<br></br>
-     * The consumer provides the newly constructed [Window], which can then be configured.<br></br>
+     * Registers a new window with the specified id.
      *
-     * @param key The unique id of the window
+     * @param id The unique id of the window
      * @param windowConsumer The consumer that provides the new window
      */
-    fun registerGui(key: String, content: @Composable () -> Unit)
+    fun registerGui(id: Key, content: @Composable () -> Unit)
 
     /**
      * Gets the registered router with the specified id.<br></br>
@@ -47,7 +45,7 @@ interface GuiAPIManager {
      * @param id The id of the router.
      * @return The registered router only if the id matches; otherwise empty Optional.
      */
-    fun getGui(id: String): Optional<Function<ViewRuntime, Window>>
+    fun getGui(id: Key): Optional<Function<ViewRuntime, Window>>
 
     /**
      * Creates a new view for the specified viewers, with the specified GUI.
@@ -66,19 +64,21 @@ interface GuiAPIManager {
      * @param callback The callback, that is run right after the view manager has been created. **May be Async!**
      * @param viewers The viewers of this view.
      */
-    fun createViewAndThen(guiId: String, callback: Consumer<ViewRuntime>, vararg viewers: UUID)
+    fun createViewAndThen(id: Key, callback: Consumer<ViewRuntime>, vararg viewers: UUID)
+
+    // TODO: create and open an unregistered GUI
 
     /**
      * Creates (or gets the existing ViewManager) and opens the entry menu right after the creation of the view.
      *
-     * @param guiID The id of the gui.
+     * @param id The id of the gui.
      * @param viewers The viewers of this view.
      */
-    fun createViewAndOpen(guiID: String, vararg viewers: UUID)
+    fun createViewAndOpen(id: Key, vararg viewers: UUID)
 
     fun getViewManagersFor(uuid: UUID): Stream<ViewRuntime>
 
-    fun getViewManagersFor(uuid: UUID, guiID: String): Stream<ViewRuntime>
+    fun getViewManagersFor(uuid: UUID, id: Key): Stream<ViewRuntime>
 
-    fun clearFromCache(guiId: String)
+    fun clearFromCache(id: Key)
 }

@@ -13,7 +13,7 @@ class ModelNodeApplier(root: Node) : AbstractApplier<Node>(root) {
     }
 
     override fun remove(index: Int, count: Int) {
-        current.removeChildAt(index, count)
+        current.removeChildrenAt(index, count)
     }
 
     override fun move(from: Int, to: Int, count: Int) {

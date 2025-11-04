@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.Recomposer
 import com.google.common.base.Preconditions
+import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.compose.LayoutNode
 import com.wolfyscript.viewportl.common.gui.compose.RootMeasurePolicy
@@ -37,7 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import net.kyori.adventure.text.Component
 
 class WindowImpl internal constructor(
-    override val id: String,
+    override val id: Key,
     override var size: Int?,
     override val type: WindowType? = null,
     override val viewportl: Viewportl,

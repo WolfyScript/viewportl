@@ -10,6 +10,8 @@ import com.wolfyscript.viewportl.gui.compose.layout.*
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifierNode
 import com.wolfyscript.viewportl.gui.compose.modifier.MeasureModifyScope
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
+import net.minecraft.world.level.storage.loot.functions.SetAttributesFunction.modifier
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 

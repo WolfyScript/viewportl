@@ -35,20 +35,7 @@ class CommonViewportlRegistries(val viewportl: Viewportl) : ViewportlRegistries 
     private val rootRegistry = RegistrySimple<Registry<*>>(ViewportlRegistryTypes.root)
 
     fun initRegistries() {
-        createRegistry(ViewportlRegistryTypes.guiElementTypes) {
-            RegistryUIElementImplementations(it).apply {
-                register(Elements.button.key.key, ButtonImpl::class.java)
-                register(Elements.slot.key.key, SlotImpl::class.java)
-            }
-        }
 
-        // No default values here. These values are platform dependent!
-        createRegistry(ViewportlRegistryTypes.inventoryGuiElementRenderers) {
-            RegistrySimple(it)
-        }
-        createRegistry(ViewportlRegistryTypes.inventoryGuiElementInteractionHandlers) {
-            RegistrySimple(it)
-        }
 
     }
 

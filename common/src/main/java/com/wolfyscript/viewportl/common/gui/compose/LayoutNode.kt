@@ -17,16 +17,29 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
     override var modifierStack = ModifierStackImpl(ArrayDeque())
     override var modifier: ModifierStackBuilder = ModifierStackBuilder {}
         set(value) {
+            // Node reused. Modifiers were updated
             field = value
             val scope = ModifierStackScopeImpl()
             with(value) {
                 scope.build()
             }
+            // TODO: Check each modifier and swap if changed instead of full swap
+            modifierStack.onNodeDetach()
             modifierStack = scope.create()
+            if (attached) {
+                modifierStack.onNodeAttach()
+            }
         }
 
     override val arranger: NodeArranger = NodeArrangerImpl(this)
     override var measurePolicy: MeasurePolicy? = null
+        set(value) {
+            // Node reused. MeasurePolicy was updated
+            field = value
+            // TODO: Invalidate measurements & request remeasure
+        }
+
+    var attached = false
 
     override fun insertChildAt(index: Int, child: Node) {
         if (child !is LayoutNode) {
@@ -38,7 +51,7 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
         child.attach()
     }
 
-    override fun removeChildAt(index: Int, count: Int) {
+    override fun removeChildrenAt(index: Int, count: Int) {
         for (i in index + count - 1 downTo index) {
             onChildRemoved(children[i])
             children.removeAt(i)
@@ -80,14 +93,22 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
         children.forEach(action)
     }
 
+    /**
+     * Node was detached from the compose graph.
+     */
     private fun detach() {
+        attached = false
+
         modifierStack.onNodeDetach()
     }
 
+    /**
+     * Node was attached to the compose graph.
+     */
     private fun attach() {
-
         modifierStack.onNodeAttach()
 
+        attached = true
     }
 
 }

@@ -23,37 +23,44 @@ import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import com.google.common.collect.Multimap
 import com.google.common.collect.MultimapBuilder
+import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.GuiAPIManager
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.stream.Stream
 
 class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
-    private val entriesMap: BiMap<String, Function<ViewRuntime, Window>> = HashBiMap.create()
+
+    // TODO: Root Coroutine Scope for GUIs
+    val coroutineScope = CoroutineScope(Dispatchers.Default)
+
+    private val entriesMap: BiMap<Key, Function<ViewRuntime, Window>> = HashBiMap.create()
 
     private val runtimes: Long2ObjectMap<ViewRuntime> = Long2ObjectOpenHashMap()
-    private val cachedViewRuntimes: Multimap<String, Long> = MultimapBuilder.hashKeys().hashSetValues().build()
+    private val cachedViewRuntimes: Multimap<Key, Long> = MultimapBuilder.hashKeys().hashSetValues().build()
     private val viewRuntimesPerPlayer: Multimap<UUID, Long> = MultimapBuilder.hashKeys().hashSetValues().build()
 
     override fun getViewManagersFor(uuid: UUID): Stream<ViewRuntime> {
         return viewRuntimesPerPlayer[uuid].stream().map { runtimes[it] }
     }
 
-    override fun getViewManagersFor(uuid: UUID, guiID: String): Stream<ViewRuntime> {
-        val ids = cachedViewRuntimes[guiID]
+    override fun getViewManagersFor(uuid: UUID, id: Key): Stream<ViewRuntime> {
+        val ids = cachedViewRuntimes[id]
         return viewRuntimesPerPlayer[uuid].stream()
             .filter { ids.contains(it) }
             .map { runtimes[it] }
     }
 
-    override fun clearFromCache(guiId: String) {
-        val runtimes = cachedViewRuntimes[guiId]
+    override fun clearFromCache(id: Key) {
+        val runtimes = cachedViewRuntimes[id]
         cachedViewRuntimes.removeAll(runtimes)
 
         val playerEntries = viewRuntimesPerPlayer.entries().iterator()
@@ -65,24 +72,21 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
             }
         }
 
-        cachedViewRuntimes.removeAll(guiId)
+        cachedViewRuntimes.removeAll(id)
     }
 
-    override val registeredGuis: Set<String>
-        get() = entriesMap.keys
-
-    override fun registerGui(key: String, content: @Composable () -> Unit) {
-        registerGui(key) { runtime ->
-            val window: Window = WindowImpl(key, 54, null, viewportl, content)
+    override fun registerGui(id: Key, content: @Composable () -> Unit) {
+        registerGui(id) { runtime ->
+            val window: Window = WindowImpl(id, 54, null, viewportl, content)
 
             window
         }
     }
 
-    override fun createViewAndThen(guiId: String, callback: Consumer<ViewRuntime>, vararg viewers: UUID) {
-        getGui(guiId).ifPresent { constructor ->
+    override fun createViewAndThen(id: Key, callback: Consumer<ViewRuntime>, vararg viewers: UUID) {
+        getGui(id).ifPresent { constructor ->
             val viewerSet = mutableSetOf(*viewers)
-            val viewManagersForID = cachedViewRuntimes[guiId]
+            val viewManagersForID = cachedViewRuntimes[id]
             val runtime = viewManagersForID.map { runtimes[it] }.firstOrNull { it.viewers == viewerSet }
             if (runtime != null) {
                 callback.accept(runtime)
@@ -105,15 +109,15 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
         }
     }
 
-    private fun registerGui(id: String, constructor: Function<ViewRuntime, Window>) {
+    private fun registerGui(id: Key, constructor: Function<ViewRuntime, Window>) {
         entriesMap[id] = constructor
     }
 
-    override fun createViewAndOpen(guiID: String, vararg viewers: UUID) {
-        createViewAndThen(guiID, { it.open() }, *viewers)
+    override fun createViewAndOpen(id: Key, vararg viewers: UUID) {
+        createViewAndThen(id, { it.open() }, *viewers)
     }
 
-    override fun getGui(id: String): Optional<Function<ViewRuntime, Window>> {
+    override fun getGui(id: Key): Optional<Function<ViewRuntime, Window>> {
         return Optional.ofNullable(
             entriesMap[id]
         )

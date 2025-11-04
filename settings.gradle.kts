@@ -64,21 +64,3 @@ sequenceOf(
     include(":${it}")
     project(":${it}").projectDir = file(it)
 }
-
-/* ********************* *
- * Example/Test Projects *
- * ********************* */
-val examplesDir: String = "test-plugins"
-
-fun samplePlugin(root: String, vararg modules: String) {
-    include(":$examplesDir:$root")
-    project(":$examplesDir:$root").projectDir = file("$examplesDir/$root")
-
-    modules.forEach {
-        // platform loader project
-        include(":$examplesDir:$root:$it")
-        project(":$examplesDir:$root:$it").projectDir = file("$examplesDir/$root/${it.replace(":", "/")}")
-    }
-}
-
-samplePlugin("single-platform", "plugin-common", "spigot-plugin", "sponge-plugin")

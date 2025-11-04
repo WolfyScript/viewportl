@@ -19,6 +19,7 @@ package com.wolfyscript.viewportl.gui
 
 import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
@@ -60,7 +61,7 @@ interface Window {
      *
      * @return The id of this component.
      */
-    val id: String?
+    val id: Key?
 
     /**
      * Gets the Viewportl instance this Window belongs to
