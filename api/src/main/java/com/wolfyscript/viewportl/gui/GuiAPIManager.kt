@@ -20,8 +20,6 @@ package com.wolfyscript.viewportl.gui
 import androidx.compose.runtime.Composable
 import com.wolfyscript.scafall.identifier.Key
 import java.util.*
-import java.util.function.Consumer
-import java.util.function.Function
 import java.util.stream.Stream
 
 /**
@@ -45,36 +43,14 @@ interface GuiAPIManager {
      * @param id The id of the router.
      * @return The registered router only if the id matches; otherwise empty Optional.
      */
-    fun getGui(id: Key): Optional<Function<ViewRuntime, Window>>
+    fun getGui(id: Key): Window?
 
     /**
      * Creates a new view for the specified viewers, with the specified GUI.
      *
-     *
-     * The view is build async, so care should be taken to not access any main-thread objects (e.g. Entities, World, etc.).<br></br>
-     * When such data is required inside the GUI use [ReactiveSource.resourceSync]!
-     *
-     *
-     *
-     * The callback is run right after the creation (or retrieval) of the view manager.<br></br>
-     * **That means the callback may be ASYNC!**
-     *
-     *
-     * @param guiId The id of the gui.
-     * @param callback The callback, that is run right after the view manager has been created. **May be Async!**
      * @param viewers The viewers of this view.
      */
-    fun createViewAndThen(id: Key, callback: Consumer<ViewRuntime>, vararg viewers: UUID)
-
-    // TODO: create and open an unregistered GUI
-
-    /**
-     * Creates (or gets the existing ViewManager) and opens the entry menu right after the creation of the view.
-     *
-     * @param id The id of the gui.
-     * @param viewers The viewers of this view.
-     */
-    fun createViewAndOpen(id: Key, vararg viewers: UUID)
+    fun createView(id: Key, content: @Composable () -> Unit, viewers: Set<UUID>) : ViewRuntime
 
     fun getViewManagersFor(uuid: UUID): Stream<ViewRuntime>
 

@@ -24,13 +24,14 @@ import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import java.util.*
-import java.util.function.Function
+import kotlin.coroutines.CoroutineContext
 
 interface GuiFactory {
 
     fun createInventoryUIRuntime(
         viewportl: Viewportl,
-        callback: Function<ViewRuntime, Window>,
+        parentCoroutineContext: CoroutineContext,
+        window: Window,
         viewers: Set<UUID>
     ): ViewRuntime
 

@@ -28,18 +28,20 @@ import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction.SpigotLikeInvUIInteractionHandler
 import org.bukkit.plugin.Plugin
 import java.util.*
-import java.util.function.Function
+import kotlin.coroutines.CoroutineContext
 
 abstract class SpigotLikeGuiFactoryImpl(val bukkitPlugin: Plugin) : GuiFactoryCommon() {
 
     override fun createInventoryUIRuntime(
         viewportl: Viewportl,
-        callback: Function<ViewRuntime, Window>,
+        parentCoroutineContext: CoroutineContext,
+        window: Window,
         viewers: Set<UUID>
     ): ViewRuntime {
         return ViewRuntimeImpl(
             viewportl,
-            callback,
+            parentCoroutineContext,
+            window,
             viewers,
             renderer = createInventoryRenderer(),
             interactionHandler = SpigotLikeInvUIInteractionHandler(bukkitPlugin),

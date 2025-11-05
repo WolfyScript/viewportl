@@ -21,13 +21,11 @@ package com.wolfyscript.viewportl.common.gui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.Recomposer
-import com.google.common.base.Preconditions
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.compose.LayoutNode
 import com.wolfyscript.viewportl.common.gui.compose.RootMeasurePolicy
 import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.WindowScope
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
@@ -39,8 +37,8 @@ import net.kyori.adventure.text.Component
 
 class WindowImpl internal constructor(
     override val id: Key,
-    override var size: Int?,
-    override val type: WindowType? = null,
+    override var size: Int = 54,
+    override val type: WindowType = WindowType.CUSTOM,
     override val viewportl: Viewportl,
     val content: @Composable () -> Unit
 ) : Window {
@@ -58,10 +56,6 @@ class WindowImpl internal constructor(
 
     override var onTextInput: TextInputCallback? = null
     override var onTextInputTabComplete: TextInputTabCompleteCallback? = null
-
-    init {
-        Preconditions.checkArgument(size != null || type != null, "Either type or size must be specified!")
-    }
 
     override fun open() {
         composition.setContent {
@@ -88,30 +82,11 @@ class WindowImpl internal constructor(
     }
 
     override fun width(): Int {
-        return size?.div(height()) ?: 9
+        return size / height()
     }
 
     override fun height(): Int {
-        return size?.div(9) ?: 1
+        return size / 9
     }
 
-}
-
-class WindowScopeImpl(val window: Window) : WindowScope {
-
-    override var size: Int?
-        get() = window.size
-        set(value) { window.size = value }
-
-    override var title: Component?
-        get() = window.title
-        set(value) { window.title = value }
-
-    override fun onTextInput(inputCallback: TextInputCallback?) {
-        window.onTextInput = inputCallback
-    }
-
-    override fun onTextInputTabComplete(textInputTabCompleteCallback: TextInputTabCompleteCallback?) {
-        window.onTextInputTabComplete = textInputTabCompleteCallback
-    }
 }

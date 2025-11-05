@@ -17,14 +17,15 @@
  */
 package com.wolfyscript.viewportl.gui
 
-import com.wolfyscript.scafall.Scafall
-import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
 import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
 import net.kyori.adventure.text.Component
 
+/**
+ * Holds the composition of the GUI and other properties of the window frame (such as title, background, etc.)
+ */
 interface Window {
 
     fun open()
@@ -32,22 +33,20 @@ interface Window {
     fun close()
 
     /**
-     * Gets the type that is configured for this Window.<br></br>
-     * **When this is empty, then [.getSize] will return the specified size.**
+     * The type of inventory used for this window.
      *
-     * @return The specified type; or empty Optional when no type is configured.
-     * @see .getSize
+     * @return The specified type; or default [WindowType.CUSTOM]
+     * @see size
      */
-    val type: WindowType?
+    val type: WindowType
 
     /**
-     * Gets the size that is configured for this Window.<br></br>
-     *
-     * **When this is empty, then [.getType] will return the specified type.**
+     * Gets the size that is configured for the specified [window type][type].
+     * Ignored when the [type] does not support a custom size.
      *
      * @return The specified size: or empty Optional when no size is configured.
      */
-    var size: Int?
+    var size: Int
 
     /**
      * Returns the current title of this window.
@@ -70,9 +69,6 @@ interface Window {
      */
     val viewportl: Viewportl
 
-    val scaffolding: Scafall
-        get() = ScafallProvider.get()
-
     /**
      * Gets the width of this Window in slot count.
      *
@@ -90,24 +86,5 @@ interface Window {
     var onTextInput: TextInputCallback?
 
     var onTextInputTabComplete: TextInputTabCompleteCallback?
-
-}
-
-interface WindowScope {
-
-    /**
-     * The initial size of the window inventory
-     */
-    var size: Int?
-
-    /**
-     * The title of the window.
-     * Note: This will get replaced if a title update effect is applied
-     */
-    var title: Component?
-
-    fun onTextInput(inputCallback: TextInputCallback?)
-
-    fun onTextInputTabComplete(textInputTabCompleteCallback: TextInputTabCompleteCallback?)
 
 }

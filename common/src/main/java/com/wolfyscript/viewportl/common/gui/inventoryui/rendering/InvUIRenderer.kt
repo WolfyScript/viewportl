@@ -1,9 +1,7 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
-import com.wolfyscript.viewportl.gui.compose.layout.Size
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawModifierNode
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.rendering.Renderer
@@ -38,19 +36,7 @@ abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) 
             y = offset.y + node.arranger.position.y
         )
         if (drawMod != null) {
-            val scope: InventoryDrawScope = object : InventoryDrawScope { // TODO: mutable shared scope instead to reduce allocations
-                override val width: Int = nodeOffset.x.slot.value
-                override val height: Int = nodeOffset.y.slot.value
-
-                override fun drawStack(
-                    offset: Offset,
-                    stack: ItemStackSnapshot,
-                ) {
-
-                    TODO("Not yet implemented")
-                }
-
-            }
+            val scope: InventoryDrawScope = subDrawScope(nodeOffset, node.arranger.width.slot.value, node.arranger.height.slot.value)
 
             with(drawMod) {
                 scope.draw()
@@ -61,5 +47,7 @@ abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) 
             render(it, nodeOffset)
         }
     }
+
+    protected abstract fun subDrawScope(offset: Offset, width: Int, height: Int): InventoryDrawScope
 
 }

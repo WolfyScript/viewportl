@@ -1,5 +1,6 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering
 
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.wrappers.unwrap
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
@@ -9,7 +10,11 @@ import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
+import com.wolfyscript.viewportl.gui.compose.layout.Offset
+import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
+import com.wolfyscript.viewportl.sponge.SpongeViewportl
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
+import com.wolfyscript.viewportl.viewportl
 import net.kyori.adventure.text.Component
 import org.spongepowered.api.ResourceKey
 import org.spongepowered.api.item.inventory.ContainerType
@@ -35,6 +40,14 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderContext>(SpongeInvUIR
         }
     }
 
+    override fun subDrawScope(
+        offset: Offset,
+        width: Int,
+        height: Int,
+    ): InventoryDrawScope {
+        TODO("Not yet implemented")
+    }
+
     override fun onWindowOpen(runtime: ViewRuntime, window: Window) {
         val guiHolder: GuiHolder = GuiHolderImpl(window, runtime)
         val carrier = GuiCarrier(guiHolder)
@@ -43,8 +56,8 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderContext>(SpongeInvUIR
             .type { getInventoryType(window) }
             .completeStructure()
             .carrier(carrier)
-            .plugin(runtime.viewportl.scafall.corePlugin.into<SpongePluginWrapper>().plugin)
-            .build();
+            .plugin((ScafallProvider.get().viewportl as SpongeViewportl).plugin)
+            .build()
 
         window.title?.let {
             title = it
@@ -53,21 +66,16 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderContext>(SpongeInvUIR
     }
 
     private fun getInventoryType(window: Window): ContainerType {
-        return window.type?.let { type ->
-            when (type) {
-                WindowType.CUSTOM -> window.size?.let { size ->
-                    val rows: Int = size / 9
-                    ContainerTypes.registry().findValue<ContainerType?>(ResourceKey.minecraft("generic_9x$rows"))
-                        .getOrNull()
-                } ?: ContainerTypes.GENERIC_9X6.get()
+        return when (window.type) {
+            WindowType.CUSTOM -> window.size.let { size ->
+                val rows: Int = size / 9
+                ContainerTypes.registry().findValue<ContainerType?>(ResourceKey.minecraft("generic_9x$rows"))
+                    .getOrNull()
+            } ?: ContainerTypes.GENERIC_9X6.get()
 
-                WindowType.HOPPER -> ContainerTypes.HOPPER.get()
-                WindowType.DROPPER, WindowType.DISPENSER -> ContainerTypes.GENERIC_3X3.get()
-            }
-        } ?: window.size?.let { size ->
-            val rows: Int = size / 9
-            ContainerTypes.registry().findValue<ContainerType?>(ResourceKey.minecraft("generic_9x$rows")).getOrNull()
-        } ?: ContainerTypes.GENERIC_9X6.get()
+            WindowType.HOPPER -> ContainerTypes.HOPPER.get()
+            WindowType.DROPPER, WindowType.DISPENSER -> ContainerTypes.GENERIC_3X3.get()
+        }
     }
 
     fun setStack(i: Int, itemStackConfig: ItemStackConfig?) {

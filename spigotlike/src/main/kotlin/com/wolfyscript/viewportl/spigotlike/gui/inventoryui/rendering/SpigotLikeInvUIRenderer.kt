@@ -19,10 +19,12 @@
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
 import com.wolfyscript.scafall.spigot.api.wrappers.utils.unwrapSpigot
-import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
+import com.wolfyscript.viewportl.gui.compose.layout.Offset
+import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import org.bukkit.Bukkit
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
@@ -35,38 +37,36 @@ abstract class SpigotLikeInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>
         return SpigotInvUIRenderContext(this)
     }
 
-    protected fun getInventoryType(window: Window): InventoryType? {
-        return window.type?.let { type: WindowType? ->
-            when (type) {
-                WindowType.CUSTOM -> InventoryType.CHEST
-                WindowType.HOPPER -> InventoryType.HOPPER
-                WindowType.DROPPER -> InventoryType.DROPPER
-                WindowType.DISPENSER -> InventoryType.DISPENSER
-                null -> InventoryType.CHEST
-            }
+    protected fun getInventoryType(window: Window): InventoryType {
+        return when (window.type) {
+            WindowType.CUSTOM -> InventoryType.CHEST
+            WindowType.HOPPER -> InventoryType.HOPPER
+            WindowType.DROPPER -> InventoryType.DROPPER
+            WindowType.DISPENSER -> InventoryType.DISPENSER
         }
-    }
-
-    fun renderStack(position: Int, itemStack: ScafallItemStack?) {
-        if (itemStack == null) {
-            setNativeStack(position, null)
-            return
-        }
-        setNativeStack(position, itemStack.unwrapSpigot())
-    }
-
-    private fun setNativeStack(i: Int, itemStack: org.bukkit.inventory.ItemStack?) {
-        //checkIfSlotInBounds(i);
-        if (itemStack == null) {
-            inventory!!.setItem(i, null)
-            return
-        }
-        inventory!!.setItem(i, itemStack)
     }
 
     override fun clearSlots(slots: Collection<Int>) {
         for (slot in slots) {
             inventory?.clear(slot)
         }
+    }
+
+    override fun subDrawScope(offset: Offset, width: Int, height: Int): InventoryDrawScope {
+        val nodeOffset = offset
+        return object : InventoryDrawScope { // TODO: mutable shared scope instead to reduce allocations
+            override val width: Int = width
+            override val height: Int = height
+
+            override fun drawStack(
+                offset: Offset,
+                stack: ItemStackSnapshot,
+            ) {
+                val finalPos = nodeOffset + offset
+                inventory?.setItem(finalPos.x.slot.value + finalPos.y.slot.value * 9, stack.unwrapSpigot())
+            }
+
+        }
+
     }
 }

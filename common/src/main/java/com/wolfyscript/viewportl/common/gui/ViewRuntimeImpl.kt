@@ -19,21 +19,19 @@
 package com.wolfyscript.viewportl.common.gui
 
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.CoroutineScope
 import java.util.*
-import java.util.function.Function
 import kotlin.coroutines.CoroutineContext
 
 class ViewRuntimeImpl(
     override val viewportl: Viewportl,
     val parentCoroutineContext: CoroutineContext,
-    windowFactory: Function<ViewRuntime, Window>,
-    override val viewers: Set<UUID>,
+    override val window: Window,
+    override var viewers: Set<UUID>,
     // Handlers that handle rendering and interaction
     override val renderer: Renderer<*>,
     override val interactionHandler: InteractionHandler<*>
@@ -45,60 +43,19 @@ class ViewRuntimeImpl(
 
     override val id: Long = NEXT_ID++
 
-    // Create model & reactivity graphs
-    override val reactiveSource: ReactiveGraph = ReactiveGraph(this)
-
     // Build the components and init the rendering tree
-    private var currentWindow: Window? = windowFactory.apply(this)
-    override val window: Window?
-        get() = currentWindow
-
-    private val history: Deque<Window> = ArrayDeque()
 
     init {
         interactionHandler.init(this)
     }
 
     override fun dispose() {
-        reactiveSource.exit()
         interactionHandler.dispose()
     }
 
-    override fun openNew() {
-        openNew(*emptyArray())
-    }
-
-    override fun openNew(vararg path: String) {
-        window?.apply {
-            open(this)
-        }
-    }
-
     override fun open() {
-        if (history.isEmpty()) {
-            window?.close()
-            openNew()
-        } else {
-            window?.let { open(it) }
-        }
-    }
-
-    private fun open(window: Window) {
-        currentWindow = window
-
         renderer.onWindowOpen(this, window)
         interactionHandler.onWindowOpen(window)
-
-        viewportl.scafall.scheduler.syncTask(viewportl.scafall.modInfo) {
-            reactiveSource.initScheduler()
-        }
-    }
-
-    override fun openPrevious() {
-        history.poll() // Remove active current menu
-        val window = history.peek()
-        this.window?.close()
-        open(window)
     }
 
     override fun equals(other: Any?): Boolean {

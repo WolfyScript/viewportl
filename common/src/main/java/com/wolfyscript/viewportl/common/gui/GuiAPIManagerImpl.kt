@@ -32,9 +32,9 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.util.*
 import java.util.function.Consumer
-import java.util.function.Function
 import java.util.stream.Stream
 
 class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
@@ -42,7 +42,7 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
     // TODO: Root Coroutine Scope for GUIs
     val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    private val entriesMap: BiMap<Key, Function<ViewRuntime, Window>> = HashBiMap.create()
+    private val entriesMap: BiMap<Key, Window> = HashBiMap.create()
 
     private val runtimes: Long2ObjectMap<ViewRuntime> = Long2ObjectOpenHashMap()
     private val cachedViewRuntimes: Multimap<Key, Long> = MultimapBuilder.hashKeys().hashSetValues().build()
@@ -76,51 +76,30 @@ class GuiAPIManagerImpl(private val viewportl: Viewportl) : GuiAPIManager {
     }
 
     override fun registerGui(id: Key, content: @Composable () -> Unit) {
-        registerGui(id) { runtime ->
-            val window: Window = WindowImpl(id, 54, null, viewportl, content)
-
-            window
-        }
+         entriesMap[id] = WindowImpl(id, viewportl = viewportl, content = content)
     }
 
-    override fun createViewAndThen(id: Key, callback: Consumer<ViewRuntime>, vararg viewers: UUID) {
-        getGui(id).ifPresent { constructor ->
-            val viewerSet = mutableSetOf(*viewers)
-            val viewManagersForID = cachedViewRuntimes[id]
-            val runtime = viewManagersForID.map { runtimes[it] }.firstOrNull { it.viewers == viewerSet }
-            if (runtime != null) {
-                callback.accept(runtime)
-            } else {
-                // Construct the new view manager async, so it doesn't affect the main thread!
-                viewportl.scafall.scheduler.asyncTask(viewportl.scafall.modInfo) {
-                    val viewManager = viewportl.guiFactory.createInventoryUIRuntime(viewportl, constructor, viewerSet)
-                    synchronized(runtimes) {
-                        viewManagersForID.add(viewManager.id)
-                        runtimes.put(viewManager.id, viewManager)
-                    }
-                    synchronized(viewRuntimesPerPlayer) {
-                        for (viewer in viewerSet) {
-                            viewRuntimesPerPlayer.put(viewer, viewManager.id)
-                        }
-                    }
-                    callback.accept(viewManager)
-                }
+    override fun createView(
+        id: Key,
+        content: @Composable (() -> Unit),
+        viewers: Set<UUID>,
+    ): ViewRuntime {
+        val window = WindowImpl(id, viewportl = viewportl, content = content)
+        val view = viewportl.guiFactory.createInventoryUIRuntime(viewportl, coroutineScope.coroutineContext, window, viewers)
+        synchronized(runtimes) {
+            runtimes.put(view.id, view)
+        }
+        synchronized(viewRuntimesPerPlayer) {
+            for (viewer in viewers) {
+                viewRuntimesPerPlayer.put(viewer, view.id)
             }
         }
+
+        return view
     }
 
-    private fun registerGui(id: Key, constructor: Function<ViewRuntime, Window>) {
-        entriesMap[id] = constructor
-    }
-
-    override fun createViewAndOpen(id: Key, vararg viewers: UUID) {
-        createViewAndThen(id, { it.open() }, *viewers)
-    }
-
-    override fun getGui(id: Key): Optional<Function<ViewRuntime, Window>> {
-        return Optional.ofNullable(
-            entriesMap[id]
-        )
+    override fun getGui(id: Key): Window? {
+        return entriesMap[id]
     }
 
 }

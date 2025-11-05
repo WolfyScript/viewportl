@@ -19,7 +19,6 @@ package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
-import com.wolfyscript.viewportl.common.gui.reactivity.ReactiveGraph
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
@@ -46,10 +45,6 @@ class InventoryUIListener(val runtime: ViewRuntime, val interactionHandler: Spig
             val valueHandler = ValueHandler()
             interactionHandler.onClick(InventoryUIInteractionContext(runtime, event, valueHandler))
             event.isCancelled = true
-
-            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.modInfo) {
-                (runtime.reactiveSource as ReactiveGraph).runEffects()
-            }
         }
     }
 
@@ -76,9 +71,6 @@ class InventoryUIListener(val runtime: ViewRuntime, val interactionHandler: Spig
                 }
             }
 
-            runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.modInfo) {
-                (runtime.reactiveSource as ReactiveGraph).runEffects()
-            }
         }
     }
 

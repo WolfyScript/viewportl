@@ -12,18 +12,15 @@ import com.wolfyscript.viewportl.gui.rendering.Renderer
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction.SpongeUIInteractionHandler
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.rendering.SpongeInvUIRenderer
 import java.util.*
-import java.util.function.Function
+import kotlin.coroutines.CoroutineContext
 
 class GuiFactoryImpl : GuiFactoryCommon() {
 
-    override fun createInventoryUIRuntime(
-        viewportl: Viewportl,
-        callback: Function<ViewRuntime, Window>,
-        viewers: Set<UUID>
-    ): ViewRuntime {
+    override fun createInventoryUIRuntime(viewportl: Viewportl, parentCoroutineContext: CoroutineContext, window: Window, viewers: Set<UUID>): ViewRuntime {
         return ViewRuntimeImpl(
             viewportl,
-            callback,
+            parentCoroutineContext,
+            window,
             viewers,
             renderer = SpongeInvUIRenderer(),
             interactionHandler = SpongeUIInteractionHandler(),
