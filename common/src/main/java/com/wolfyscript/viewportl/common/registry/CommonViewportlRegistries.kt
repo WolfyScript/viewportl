@@ -24,9 +24,6 @@ import com.wolfyscript.scafall.registry.RegistryKey
 import com.wolfyscript.scafall.registry.RegistryReference
 import com.wolfyscript.scafall.registry.RegistrySimple
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.elements.ButtonImpl
-import com.wolfyscript.viewportl.common.gui.elements.SlotImpl
-import com.wolfyscript.viewportl.gui.elements.Elements
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import com.wolfyscript.viewportl.registry.ViewportlRegistryTypes
 

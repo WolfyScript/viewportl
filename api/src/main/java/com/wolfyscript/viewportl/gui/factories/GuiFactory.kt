@@ -39,8 +39,6 @@ interface GuiFactory {
 
     fun createInventoryInteractionHandler(): InteractionHandler<*>
 
-    val elementFactory: ElementFactory
-
     val modifierFactory: ModifierFactory
 
     fun createLayoutNode(): Node
