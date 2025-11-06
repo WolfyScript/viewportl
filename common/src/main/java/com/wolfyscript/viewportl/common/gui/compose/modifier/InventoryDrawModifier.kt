@@ -13,7 +13,7 @@ class InventoryDrawModifierDataImpl(
     }
 
     override fun update(node: InventoryDrawModifierNode) {
-        TODO("Not yet implemented")
+
     }
 
 }
@@ -28,11 +28,11 @@ class InventoryDrawModifierNodeImpl(
     }
 
     override fun onAttach() {
-        TODO("Not yet implemented")
+
     }
 
     override fun onDetach() {
-        TODO("Not yet implemented")
+
     }
 
 }

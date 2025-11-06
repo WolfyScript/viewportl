@@ -1,7 +1,6 @@
 package com.wolfyscript.viewportl.example.counter
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,9 +24,6 @@ import net.minecraft.world.item.Items
 @Composable
 fun Counter() {
     var count by remember { mutableStateOf(0) }
-
-    LaunchedEffect(Unit) {}
-
     Row { // Horizontally splits the inventory into sections and places children left to right
         Box { // Centers child in first section
             Icon(ItemStack(Items.REDSTONE).apply {
@@ -36,10 +32,14 @@ fun Counter() {
         }
         Column { // Splits other section vertically, and places buttons vertically top to bottom
             Button(onClick = { count++ }) {
-                Icon(stack = ItemStack(Items.GREEN_CONCRETE).snapshot())
+                Icon(stack = ItemStack(Items.GREEN_CONCRETE).apply {
+                    set(DataComponents.CUSTOM_NAME, "<b>Increment".deser().vanilla())
+                }.snapshot())
             }
             Button(onClick = { count-- }) {
-                Icon(stack = ItemStack(Items.RED_CONCRETE).snapshot())
+                Icon(stack = ItemStack(Items.RED_CONCRETE).apply {
+                    set(DataComponents.CUSTOM_NAME, "<b>Decrement".deser().vanilla())
+                }.snapshot())
             }
         }
     }

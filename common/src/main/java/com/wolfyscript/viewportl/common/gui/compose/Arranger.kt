@@ -76,7 +76,7 @@ class NodeArrangerImpl(override val node: Node) : NodeArranger {
     }
 
     override fun layout() {
-        if (measurements == null) {
+        if (measurements != null) {
             val scope = SimplePlacementScope()
             measurements?.placeChildren(scope)
         }

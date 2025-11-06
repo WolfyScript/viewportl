@@ -26,6 +26,11 @@ class SpigotInvUIRenderer : SpigotLikeInvUIRenderer() {
             WindowType.HOPPER -> createInventory(InventoryType.HOPPER, holder, title)
         }
         holder.setActiveInventory(inventory)
+        if (inventory != null) {
+            runtime.viewers.forEach {
+                Bukkit.getPlayer(it)?.openInventory(inventory!!)
+            }
+        }
     }
 
     private fun createInventory(type: InventoryType, holder: InventoryHolder, title: String?): Inventory {

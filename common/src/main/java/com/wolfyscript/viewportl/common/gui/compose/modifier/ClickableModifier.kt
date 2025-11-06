@@ -21,11 +21,11 @@ class ClickableModifierDataImpl(
 class ClickableModifierNodeImpl(override val onClick: () -> Unit) : ClickableModifierNode {
 
     override fun onAttach() {
-        TODO("Not yet implemented")
+
     }
 
     override fun onDetach() {
-        TODO("Not yet implemented")
+
     }
 
     override fun PointerEventScope.onClickInteraction(x: Int, y: Int) {

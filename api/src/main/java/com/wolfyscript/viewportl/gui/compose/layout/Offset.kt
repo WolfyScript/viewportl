@@ -22,4 +22,8 @@ class Offset(
         return Offset(x * factor, y * factor)
     }
 
+    override fun toString(): String {
+        return "(x=$x, y=$y)"
+    }
+
 }

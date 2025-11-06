@@ -1,14 +1,15 @@
 package com.wolfyscript.viewportl.gui.compose.modifier
 
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
+import com.wolfyscript.viewportl.viewportl
 
 /**
  * Specifies how content is drawn to a slot based interface (e.g. Inventory)
  */
 fun ModifierStackScope.drawToSlots(fn: InventoryDrawScope.() -> Unit) {
-
-    push(TODO())
+    push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createInventoryDrawModifier(fn))
 }
 
 interface InventoryDrawModifierData : ModifierData<InventoryDrawModifierNode> {

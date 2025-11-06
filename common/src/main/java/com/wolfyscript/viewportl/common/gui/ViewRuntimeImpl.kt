@@ -43,8 +43,6 @@ class ViewRuntimeImpl(
 
     override val id: Long = NEXT_ID++
 
-    // Build the components and init the rendering tree
-
     init {
         interactionHandler.init(this)
     }
@@ -56,6 +54,7 @@ class ViewRuntimeImpl(
     override fun open() {
         renderer.onWindowOpen(this, window)
         interactionHandler.onWindowOpen(window)
+        window.render(renderer)
     }
 
     override fun equals(other: Any?): Boolean {

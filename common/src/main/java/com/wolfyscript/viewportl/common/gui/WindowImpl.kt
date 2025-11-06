@@ -32,6 +32,7 @@ import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.slotsSize
+import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.Dispatchers
 import net.kyori.adventure.text.Component
 
@@ -57,23 +58,18 @@ class WindowImpl internal constructor(
     override var onTextInput: TextInputCallback? = null
     override var onTextInputTabComplete: TextInputTabCompleteCallback? = null
 
-    override fun open() {
-        composition.setContent {
-            content()
-        }
-        measureAndPlace()
-
-        // TODO: Render
-    }
-
     private fun measureAndPlace() {
         val rootConstraints = Constraints(0.slotsSize, width().slotsSize, 0.slotsSize, height().slotsSize)
         root.arranger.remeasure(rootConstraints)
         root.arranger.layout()
     }
 
-    private fun render() {
-
+    override fun render(renderer: Renderer<*>) {
+        composition.setContent {
+            content()
+        }
+        measureAndPlace()
+        renderer.render(root)
     }
 
     override fun close() {

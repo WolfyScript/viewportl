@@ -44,7 +44,7 @@ abstract class SpigotLikeGuiFactoryImpl(val bukkitPlugin: Plugin) : GuiFactoryCo
             window,
             viewers,
             renderer = createInventoryRenderer(),
-            interactionHandler = SpigotLikeInvUIInteractionHandler(bukkitPlugin),
+            interactionHandler = createInventoryInteractionHandler(),
         )
     }
 

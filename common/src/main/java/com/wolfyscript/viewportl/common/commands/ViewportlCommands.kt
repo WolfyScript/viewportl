@@ -7,6 +7,7 @@ object ViewportlCommands {
 
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
         InputCommand.register(dispatcher)
+        ExampleCommand.register(dispatcher)
     }
 
 }

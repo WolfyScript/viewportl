@@ -22,4 +22,8 @@ class Measurements(
         return result
     }
 
+    override fun toString(): String {
+        return "(id=${super.toString()}, width=$width, height=$height)"
+    }
+
 }

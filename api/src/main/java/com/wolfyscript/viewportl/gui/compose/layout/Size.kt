@@ -68,6 +68,10 @@ class Size(
         result = 31 * result + dp.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "(slot=$slot, dp=$dp)"
+    }
 }
 
 @JvmInline
