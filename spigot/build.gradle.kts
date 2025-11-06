@@ -51,6 +51,20 @@ tasks {
 
         dependencies {
             include(project(":spigotlike"))
+            include(project(":api"))
+            include(project(":common"))
+
+            include(dependency("androidx.annotation:.*"))
+            include(dependency("androidx.collection:.*"))
+            include(dependency("androidx.compose.runtime:.*"))
+
+
+//            include {
+//                if (it.moduleGroup.startsWith("androidx")) {
+//                    println("Filter Shadow: ${it.moduleGroup} ${it.moduleName} ${it.moduleVersion}")
+//                }
+//                it.moduleGroup == "org.jetbrains.compose.runtime" || it.moduleGroup == "androidx.compose.runtime"
+//            }
         }
         metaInf.duplicatesStrategy = DuplicatesStrategy.FAIL
     }
@@ -70,6 +84,16 @@ bukkitPluginYaml {
     version = project.version.toString()
     main = "com.wolfyscript.viewportl.spigot.SpigotLoaderPlugin"
     apiVersion = libs.versions.minecraft.get() // Only support the latest Minecraft version!
+//    libraries.addAll(
+//        "androidx.compose.runtime:runtime:1.9.0",
+//        "androidx.compose.runtime:runtime-desktop:1.9.0",
+//        "androidx.compose.runtime:runtime-annotation:1.9.0",
+//        "androidx.compose.runtime:runtime-annotation-jvm:1.9.0",
+//        "androidx.collection:collection:1.5.0",
+//        "androidx.collection:collection-jvm:1.5.0",
+//        "androidx.annotation:annotation:1.9.1",
+//        "androidx.annotation:annotation-jvm:1.9.1",
+//    )
     authors.add("WolfyScript")
     depend.add("scafall")
 }

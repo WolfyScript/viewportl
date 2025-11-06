@@ -20,7 +20,7 @@ adventure-platform-mod-shared = "6.4.0"
 adventure-minimessage = "4.10.0"
 
 # Minecraft
-minecraft = "1.21.5"
+minecraft = "1.21.10"
 authlib = "6.0.58"
 fastutil = "8.5.15"
 netty = "4.1.74.Final"
@@ -33,7 +33,7 @@ junit-jupiter = "5.8.2"
 reflections = "0.10.2"
 
 # Spigot/Paper/Folia
-papermc = "1.21.8-R0.1-SNAPSHOT"
+papermc = "1.21.10-R0.1-SNAPSHOT"
 bstats-bukkit = "3.0.0"
 item-nbt-api = "2.11.3"
 nbt-data-api = "2.11.3"

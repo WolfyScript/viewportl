@@ -82,5 +82,7 @@ dependencies {
 
     testImplementation(libs.bundles.testing)
 
-    implementation(compose.runtime)
+    api(compose.runtime) {
+        exclude("org.jetbrains.kotlin")
+    }
 }
