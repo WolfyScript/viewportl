@@ -29,7 +29,10 @@ import net.kyori.adventure.text.Component
  */
 interface Window {
 
-    fun render(renderer: Renderer<*>)
+    /**
+     * Renders this window state using the specified [renderer]
+     */
+    suspend fun render(renderer: Renderer<*>)
 
     fun close()
 

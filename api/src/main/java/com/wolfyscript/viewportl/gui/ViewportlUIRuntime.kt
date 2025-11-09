@@ -15,25 +15,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.gui.rendering
+package com.wolfyscript.viewportl.gui
 
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
-import com.wolfyscript.viewportl.gui.compose.Node
+import com.wolfyscript.scafall.identifier.Key
+import java.util.*
 
 /**
- * Renders the state of a composition
+ * Handles the general GUI API and acts as an entry point to the whole creation of [ViewRuntime]s.
  */
-interface Renderer<C: RenderContext> {
+interface ViewportlUIRuntime {
 
     /**
-     * Whether the renderer is actively asking for new frames to be rendered.
-     * When false, then the previous frame is kept and rendered as is.
+     * Creates a new view for the specified viewers, with the specified GUI.
+     *
+     * @param viewers The viewers of this view.
      */
-    var requestsNewFrames: Boolean
+    fun createViewRuntime(id: Key, viewers: Set<UUID>, then: suspend (ViewRuntime) -> Unit)
 
-    fun onWindowOpen(runtime: ViewRuntime, window: Window)
-
-    fun render(node: Node)
+    fun getActiveRuntime(player: UUID): ViewRuntime?
 
 }

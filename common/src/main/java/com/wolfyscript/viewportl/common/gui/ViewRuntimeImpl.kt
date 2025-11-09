@@ -18,43 +18,93 @@
 
 package com.wolfyscript.viewportl.common.gui
 
+import androidx.compose.runtime.BroadcastFrameClock
+import androidx.compose.runtime.Composable
+import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.lang.System.nanoTime
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 class ViewRuntimeImpl(
     override val viewportl: Viewportl,
-    val parentCoroutineContext: CoroutineContext,
-    override val window: Window,
+    parentCoroutineContext: CoroutineContext,
     override var viewers: Set<UUID>,
     // Handlers that handle rendering and interaction
     override val renderer: Renderer<*>,
     override val interactionHandler: InteractionHandler<*>
 ) : ViewRuntime {
 
-    // TODO: Coroutine Scope for this runtime
+    override var window: Window? = null
+    val runtimeClock = BroadcastFrameClock { }
+
     // TODO: GUI runtimes are completely async, so need a way to securely communicate with main thread from Composable
-    val coroutineScope = CoroutineScope(parentCoroutineContext)
+    override val coroutineContext: CoroutineContext = parentCoroutineContext + runtimeClock
 
     override val id: Long = NEXT_ID++
+    private var running = true
 
     init {
         interactionHandler.init(this)
+        // Main update loop
+        launch {
+            while (running) {
+                if (viewers.isEmpty()) { // Check for viewers before rendering the next frame
+                    running = false
+                    continue
+                }
+
+                if (renderer.requestsNewFrames) {
+                    runtimeClock.sendFrame(nanoTime())
+                } else {
+                    // Renderer is rendering previous frame
+                }
+
+                delay(500)
+            }
+        }
+    }
+
+    override fun createNewWindow(id: Key, size: Int, type: WindowType, content: @Composable (() -> Unit)) {
+        window = WindowImpl(coroutineContext, id, size, type, viewportl, content)
     }
 
     override fun dispose() {
         interactionHandler.dispose()
+        running = false
     }
 
-    override fun open() {
-        renderer.onWindowOpen(this, window)
-        interactionHandler.onWindowOpen(window)
-        window.render(renderer)
+    fun joinViewer(uuid: UUID) {
+        launch {
+            window?.let {
+                renderer.onWindowOpen(this@ViewRuntimeImpl, it)
+            }
+        }
+    }
+
+    fun leaveViewer(uuid: UUID) {
+        launch {
+            window?.let {
+                renderer.onWindowOpen(this@ViewRuntimeImpl, it)
+            }
+        }
+    }
+
+    override suspend fun open() {
+        launch {
+            window?.let {
+                interactionHandler.onWindowOpen(it)
+                renderer.onWindowOpen(this@ViewRuntimeImpl, it)
+                it.render(renderer)
+            }
+        }
     }
 
     override fun equals(other: Any?): Boolean {

@@ -20,15 +20,10 @@ object InputCommand {
                     val executor = ctx.source.player ?: return@executes 0
                     val args = StringArgumentType.getString(ctx, INPUT_ARG)
 
-                    viewportl.guiManager.getViewManagersFor(executor.uuid)
-                        .map { runtime -> Pair(runtime, runtime.window) }
-                        .filter { pair -> pair.second != null && pair.second!!.onTextInput != null }
-                        .forEach { pair ->
-                            val runtime = pair.first
-                            val window = pair.second
-
+                    viewportl.guiManager.getActiveRuntime(executor.uuid)?.let { runtime ->
+                        runtime.window?.let { window ->
                             ScafallProvider.get().scheduler.syncTask(ScafallProvider.get().modInfo) {
-                                window!!.onTextInput!!.run(
+                                window.onTextInput?.run(
                                     executor.wrap(),
                                     runtime,
                                     args,
@@ -36,9 +31,10 @@ object InputCommand {
                                 )
                                 window.onTextInput = null
                                 window.onTextInputTabComplete = null
-                                runtime.open()
+                                // TODO: reopen view
                             }
                         }
+                    }
 
                     return@executes 1
                 }.suggests { ctx, builder ->
@@ -46,20 +42,14 @@ object InputCommand {
                     val executor = ctx.source.player ?: return@suggests builder.buildFuture()
                     val args = StringArgumentType.getString(ctx, INPUT_ARG)
 
-                    viewportl.guiManager.getViewManagersFor(executor.uuid)
-                        .map { viewManager -> Pair(viewManager, viewManager.window) }
-                        .filter { pair -> pair.second != null && pair.second!!.onTextInputTabComplete != null }
-                        .findFirst()
-                        .map { pair ->
-                            val runtime = pair.first
-                            val window = pair.second
-                            window!!.onTextInputTabComplete!!.apply(
-                                executor.wrap(),
-                                runtime,
-                                args,
-                                args.split(" ").toTypedArray()
-                            )
-                        }.orElse(listOf())
+                    viewportl.guiManager.getActiveRuntime(executor.uuid)?.let { runtime ->
+                        runtime.window?.onTextInputTabComplete?.apply(
+                            executor.wrap(),
+                            runtime,
+                            args,
+                            args.split(" ").toTypedArray()
+                        )
+                    }
                     return@suggests builder.buildFuture()
                 })
         )

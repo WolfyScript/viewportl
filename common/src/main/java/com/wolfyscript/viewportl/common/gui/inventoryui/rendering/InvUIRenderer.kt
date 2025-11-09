@@ -8,6 +8,8 @@ import com.wolfyscript.viewportl.gui.rendering.Renderer
 
 abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) : Renderer<T> {
 
+    override var requestsNewFrames: Boolean = true
+
     abstract fun createContext(): T
 
     abstract fun clearSlots(slots: Collection<Int>)

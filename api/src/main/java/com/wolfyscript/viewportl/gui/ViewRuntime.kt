@@ -17,27 +17,35 @@
  */
 package com.wolfyscript.viewportl.gui
 
+import androidx.compose.runtime.Composable
+import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
+import kotlinx.coroutines.CoroutineScope
 import java.util.*
 
 /**
  * The [ViewRuntime], as the name suggests, manages a view of the GUI for one or more players.<br></br>
  * It contains the custom Data object that stores all the required data of this view.<br></br>
  *
- * The view is immutable, so you need to create a new view each time you need to add a viewer or change the root.
- *
  */
-interface ViewRuntime {
+interface ViewRuntime : CoroutineScope {
 
     val id: Long
+
+    fun createNewWindow(
+        id: Key,
+        size: Int = 54,
+        type: WindowType = WindowType.CUSTOM,
+        content: @Composable () -> Unit,
+    )
 
     /**
      * Opens the currently active menu without updating the history.<br></br>
      * In case there is no active menu it opens the entry of the root cluster.
      */
-    fun open()
+    suspend fun open()
 
     fun dispose()
 

@@ -13,7 +13,6 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
 
     lateinit var runtime: ViewRuntime
     val slotNodes: MutableMap<Int, Node> = mutableMapOf()
-    val cachedProperties: MutableMap<Long, CachedNodeInteractProperties> = mutableMapOf()
 
     override fun init(runtime: ViewRuntime) {
         this.runtime = runtime
@@ -24,9 +23,6 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
     }
 
     override fun onWindowOpen(window: Window) {
-        val context = InvUIInteractionContext(this)
-        cachedProperties[0] = CachedNodeInteractProperties(0, mutableListOf(0))
-        context.setSlotOffset(0)
 
     }
 

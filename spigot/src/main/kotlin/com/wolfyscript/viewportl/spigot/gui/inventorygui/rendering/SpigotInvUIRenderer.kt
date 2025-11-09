@@ -1,5 +1,6 @@
 package com.wolfyscript.viewportl.spigot.gui.inventorygui.rendering
 
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.ViewRuntime
@@ -27,8 +28,10 @@ class SpigotInvUIRenderer : SpigotLikeInvUIRenderer() {
         }
         holder.setActiveInventory(inventory)
         if (inventory != null) {
-            runtime.viewers.forEach {
-                Bukkit.getPlayer(it)?.openInventory(inventory!!)
+            ScafallProvider.get().scheduler.syncTask(ScafallProvider.get().modInfo) {
+                runtime.viewers.forEach {
+                    Bukkit.getPlayer(it)?.openInventory(inventory!!)
+                }
             }
         }
     }
