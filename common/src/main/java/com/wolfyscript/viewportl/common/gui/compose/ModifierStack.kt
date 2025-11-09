@@ -11,7 +11,6 @@ import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifierNode
 import com.wolfyscript.viewportl.gui.compose.modifier.MeasureModifyScope
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
-import net.minecraft.world.level.storage.loot.functions.SetAttributesFunction.modifier
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
@@ -69,6 +68,23 @@ class ModifierStackImpl(internal val modifiers: ArrayDeque<ModifierNode>) : Modi
         }
 
         attached = true
+    }
+
+}
+
+class SimpleModifierStackBuilder : ModifierStackBuilder {
+
+    val stack = ArrayDeque<ModifierData<*>>()
+
+    override fun push(modifier: ModifierData<*>): ModifierStackBuilder {
+        stack.add(modifier)
+        return this
+    }
+
+    override fun build(): ModifierStackImpl {
+        return ModifierStackImpl(stack.mapTo(ArrayDeque()) { data ->
+            data.create()
+        })
     }
 
 }

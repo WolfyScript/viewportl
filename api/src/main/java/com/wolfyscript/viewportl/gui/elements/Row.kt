@@ -6,9 +6,10 @@ import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.dp
 import com.wolfyscript.viewportl.gui.compose.layout.or
 import com.wolfyscript.viewportl.gui.compose.layout.slots
+import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 
 @Composable
-fun Row(modifier: ModifierStackBuilder = ModifierStackBuilder {}, content: @Composable () -> Unit) {
+fun Row(modifier: ModifierStackBuilder = Modifier, content: @Composable () -> Unit) {
     Layout(modifier, content = content) { measurables, constraints ->
 
         // TODO: Alignment options

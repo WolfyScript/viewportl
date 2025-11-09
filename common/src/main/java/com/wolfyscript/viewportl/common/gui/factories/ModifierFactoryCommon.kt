@@ -1,5 +1,6 @@
 package com.wolfyscript.viewportl.common.gui.factories
 
+import com.wolfyscript.viewportl.common.gui.compose.SimpleModifierStackBuilder
 import com.wolfyscript.viewportl.common.gui.compose.modifier.ClickableModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.InventoryDrawModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SizeModifier
@@ -9,9 +10,14 @@ import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 import com.wolfyscript.viewportl.gui.compose.modifier.MeasureModifyScope
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierData
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.factories.ModifierFactory
 
 class ModifierFactoryCommon : ModifierFactory {
+
+    override fun createModifierStackBuilder(): ModifierStackBuilder {
+        return SimpleModifierStackBuilder()
+    }
 
     override fun createPaddingModifier(
         start: Size,

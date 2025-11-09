@@ -2,12 +2,11 @@ package com.wolfyscript.viewportl.gui.compose.modifier
 
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 
-fun ModifierStackScope.modifyLayout(modifyFn: MeasureModifyScope.(Constraints) -> LayoutModification) {
+fun ModifierStackBuilder.modifyLayout(modifyFn: MeasureModifyScope.(Constraints) -> LayoutModification): ModifierStackBuilder =
     push(LayoutModifierData(modifyFn))
-}
 
 class LayoutModifierData(
-    val layoutFn: MeasureModifyScope.(Constraints) -> LayoutModification
+    val layoutFn: MeasureModifyScope.(Constraints) -> LayoutModification,
 ) : ModifierData<LayoutModifierNode> {
 
     override fun create(): LayoutModifierNode {
@@ -20,10 +19,11 @@ class LayoutModifierData(
 
 }
 
-class CustomLayoutModifierNode(val layoutFn: MeasureModifyScope.(Constraints) -> LayoutModification) : LayoutModifierNode {
+class CustomLayoutModifierNode(val layoutFn: MeasureModifyScope.(Constraints) -> LayoutModification) :
+    LayoutModifierNode {
 
     override fun MeasureModifyScope.modify(
-        constraints: Constraints
+        constraints: Constraints,
     ): LayoutModification {
         return layoutFn(constraints)
     }

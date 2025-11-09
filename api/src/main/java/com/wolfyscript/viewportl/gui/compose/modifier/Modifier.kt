@@ -1,6 +1,8 @@
 package com.wolfyscript.viewportl.gui.compose.modifier
 
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
+import com.wolfyscript.viewportl.viewportl
 import kotlin.reflect.KClass
 
 /**
@@ -50,11 +52,16 @@ interface ModifierStackScope {
 
 }
 
+val Modifier
+    get() = ScafallProvider.get().viewportl.guiFactory.modifierFactory.createModifierStackBuilder()
+
 /**
  * Callback that builds the [ModifierStack]
  */
-fun interface ModifierStackBuilder {
+interface ModifierStackBuilder {
 
-    fun ModifierStackScope.build()
+    fun push(modifier: ModifierData<*>): ModifierStackBuilder
+
+    fun build() : ModifierStack
 
 }

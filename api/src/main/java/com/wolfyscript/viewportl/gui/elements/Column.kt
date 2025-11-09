@@ -5,10 +5,11 @@ import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.dp
 import com.wolfyscript.viewportl.gui.compose.layout.or
 import com.wolfyscript.viewportl.gui.compose.layout.slots
+import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 
 @Composable
 fun Column(content: @Composable () -> Unit) {
-    Layout({}, content = content) { measurables, constraints ->
+    Layout(Modifier, content = content) { measurables, constraints ->
 
         // TODO: Alignment options
         // TODO: adjust width based on children

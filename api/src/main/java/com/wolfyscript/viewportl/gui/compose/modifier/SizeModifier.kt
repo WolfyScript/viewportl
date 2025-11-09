@@ -4,7 +4,7 @@ import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.gui.compose.layout.Size
 import com.wolfyscript.viewportl.viewportl
 
-fun ModifierStackScope.width(width: Size) {
+fun ModifierStackBuilder.width(width: Size) {
     push(
         ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
             minWidth = width,
@@ -13,7 +13,7 @@ fun ModifierStackScope.width(width: Size) {
     )
 }
 
-fun ModifierStackScope.height(height: Size) {
+fun ModifierStackBuilder.height(height: Size) {
     push(
         ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
             minHeight = height,
@@ -22,7 +22,7 @@ fun ModifierStackScope.height(height: Size) {
     )
 }
 
-fun ModifierStackScope.size(size: Size) {
+fun ModifierStackBuilder.size(size: Size) {
     push(
         ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
             minWidth = size,
@@ -33,7 +33,7 @@ fun ModifierStackScope.size(size: Size) {
     )
 }
 
-fun ModifierStackScope.size(width: Size, height: Size) {
+fun ModifierStackBuilder.size(width: Size, height: Size) {
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = width,
         maxWidth = width,
@@ -42,21 +42,21 @@ fun ModifierStackScope.size(width: Size, height: Size) {
     ))
 }
 
-fun ModifierStackScope.widthIn(min: Size, max: Size) {
+fun ModifierStackBuilder.widthIn(min: Size, max: Size) {
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = min,
         maxWidth = max,
     ))
 }
 
-fun ModifierStackScope.heightIn(min: Size, max: Size) {
+fun ModifierStackBuilder.heightIn(min: Size, max: Size) {
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minHeight = min,
         maxHeight = max,
     ))
 }
 
-fun ModifierStackScope.sizeIn(
+fun ModifierStackBuilder.sizeIn(
     minWidth: Size,
     minHeight: Size,
     maxWidth: Size,
@@ -70,7 +70,7 @@ fun ModifierStackScope.sizeIn(
     ))
 }
 
-fun ModifierStackScope.requireWidth(width: Size) {
+fun ModifierStackBuilder.requireWidth(width: Size) {
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = width,
         maxWidth = width,
@@ -78,7 +78,7 @@ fun ModifierStackScope.requireWidth(width: Size) {
     ))
 }
 
-fun ModifierStackScope.requireHeight(height: Size) {
+fun ModifierStackBuilder.requireHeight(height: Size) {
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minHeight = height,
         maxHeight = height,
@@ -86,7 +86,7 @@ fun ModifierStackScope.requireHeight(height: Size) {
     ))
 }
 
-fun ModifierStackScope.requireSize(size: Size) {
+fun ModifierStackBuilder.requireSize(size: Size) {
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = size,
         minHeight = size,
@@ -96,7 +96,7 @@ fun ModifierStackScope.requireSize(size: Size) {
     ))
 }
 
-fun ModifierStackScope.requireSize(width: Size, height: Size) {
+fun ModifierStackBuilder.requireSize(width: Size, height: Size) {
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = width,
         maxWidth = width,
@@ -106,7 +106,7 @@ fun ModifierStackScope.requireSize(width: Size, height: Size) {
     ))
 }
 
-fun ModifierStackScope.requireWidthIn(min: Size, max: Size) {
+fun ModifierStackBuilder.requireWidthIn(min: Size, max: Size) {
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = min,
         maxWidth = max,
@@ -114,7 +114,7 @@ fun ModifierStackScope.requireWidthIn(min: Size, max: Size) {
     ))
 }
 
-fun ModifierStackScope.requireHeightIn(min: Size, max: Size) {
+fun ModifierStackBuilder.requireHeightIn(min: Size, max: Size) {
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minHeight = min,
         maxHeight = max,
@@ -122,7 +122,7 @@ fun ModifierStackScope.requireHeightIn(min: Size, max: Size) {
     ))
 }
 
-fun ModifierStackScope.requireSizeIn(
+fun ModifierStackBuilder.requireSizeIn(
     minWidth: Size,
     minHeight: Size,
     maxWidth: Size,

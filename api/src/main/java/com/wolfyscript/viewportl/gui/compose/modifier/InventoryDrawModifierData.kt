@@ -8,9 +8,8 @@ import com.wolfyscript.viewportl.viewportl
 /**
  * Specifies how content is drawn to a slot based interface (e.g. Inventory)
  */
-fun ModifierStackScope.drawToSlots(fn: InventoryDrawScope.() -> Unit) {
+fun ModifierStackBuilder.drawToSlots(fn: InventoryDrawScope.() -> Unit) =
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createInventoryDrawModifier(fn))
-}
 
 interface InventoryDrawModifierData : ModifierData<InventoryDrawModifierNode> {
 

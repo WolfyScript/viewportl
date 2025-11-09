@@ -6,6 +6,7 @@ import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 import com.wolfyscript.viewportl.gui.compose.modifier.MeasureModifyScope
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierData
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 
 /**
  * Used to create Modifiers.
@@ -13,6 +14,8 @@ import com.wolfyscript.viewportl.gui.compose.modifier.ModifierData
  * The returned type is not available as it may be different on different platforms.
  */
 interface ModifierFactory {
+
+    fun createModifierStackBuilder() : ModifierStackBuilder
 
     fun createPaddingModifier(
         start: Size = Size.Zero,

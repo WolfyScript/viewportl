@@ -3,9 +3,8 @@ package com.wolfyscript.viewportl.gui.compose.modifier
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.viewportl
 
-fun ModifierStackScope.clickable(onClick: () -> Unit) {
+fun ModifierStackBuilder.clickable(onClick: () -> Unit): ModifierStackBuilder =
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createClickableModifier(onClick))
-}
 
 interface PointerEventScope
 

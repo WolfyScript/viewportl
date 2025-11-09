@@ -1,31 +1,29 @@
 package com.wolfyscript.viewportl.common.gui.compose
 
+import androidx.compose.runtime.ComposeNodeLifecycleCallback
 import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.gui.compose.layout.NodeArranger
+import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 import java.util.concurrent.atomic.AtomicLong
 
 private val nodeIdGeneration = AtomicLong(0)
 private fun generateNodeId(): Long = nodeIdGeneration.getAndIncrement()
 
-class LayoutNode(val id: Long = generateNodeId()) : Node {
+class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCallback {
 
     override var parent: Node? = null
     private val children = mutableListOf<LayoutNode>()
 
     override var modifierStack = ModifierStackImpl(ArrayDeque())
-    override var modifier: ModifierStackBuilder = ModifierStackBuilder {}
+    override var modifier: ModifierStackBuilder = Modifier
         set(value) {
             // Node reused. Modifiers were updated
             field = value
-            val scope = ModifierStackScopeImpl()
-            with(value) {
-                scope.build()
-            }
             // TODO: Check each modifier and swap if changed instead of full swap
             modifierStack.onNodeDetach()
-            modifierStack = scope.create()
+            modifierStack = value.build() as ModifierStackImpl
             if (attached) {
                 modifierStack.onNodeAttach()
             }
@@ -109,6 +107,18 @@ class LayoutNode(val id: Long = generateNodeId()) : Node {
         modifierStack.onNodeAttach()
 
         attached = true
+    }
+
+    override fun onReuse() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDeactivate() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onRelease() {
+        TODO("Not yet implemented")
     }
 
 }
