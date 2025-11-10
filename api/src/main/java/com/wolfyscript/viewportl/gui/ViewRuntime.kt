@@ -47,6 +47,10 @@ interface ViewRuntime : CoroutineScope {
      */
     suspend fun open()
 
+    fun joinViewer(uuid: UUID)
+
+    fun leaveViewer(uuid: UUID)
+
     fun dispose()
 
     /**

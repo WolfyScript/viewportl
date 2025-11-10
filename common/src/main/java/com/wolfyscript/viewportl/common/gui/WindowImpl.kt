@@ -19,6 +19,8 @@
 package com.wolfyscript.viewportl.common.gui
 
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.ObserverHandle
+import androidx.compose.runtime.snapshots.Snapshot
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.compose.LayoutNode
@@ -32,7 +34,11 @@ import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.slotsSize
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
 import net.kyori.adventure.text.Component
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
 
 class WindowImpl internal constructor(
@@ -48,8 +54,8 @@ class WindowImpl internal constructor(
 
     // Coroutine setup
     val job = Job(parentCoroutineContext[Job])
-    val clock = BroadcastFrameClock {}
-    override val coroutineContext = parentCoroutineContext + clock + job
+    val compositionClock = BroadcastFrameClock {}
+    override val coroutineContext = parentCoroutineContext + compositionClock + job
 
     // Composition
     val root = LayoutNode().apply {
@@ -57,7 +63,9 @@ class WindowImpl internal constructor(
     }
     val recomposer = Recomposer(coroutineContext)
     val composition = Composition(
-        applier = ModelNodeApplier(root),
+        applier = ModelNodeApplier(root) {
+            requireLayout = true
+        },
         parent = recomposer
     )
 
@@ -70,7 +78,19 @@ class WindowImpl internal constructor(
 
     private var activeRenderer: Renderer<*>? = null
 
+    private val applyObserverHandle: ObserverHandle
+    private val readStatesOnLayout = mutableSetOf<Any>()
+    private val readStatesOnLayoutObserver: (Any) -> Unit = readStatesOnLayout::add
+    private val readStatesOnDraw = mutableSetOf<Any>()
+    private val readStatesOnDrawObserver: (Any) -> Unit = readStatesOnDraw::add
+
+    private var requireLayout = true
+    private var requireDraw = true
+
     init {
+//        composition.setContent(content)
+        GlobalSnapshotManager().ensureStarted(this)
+        applyObserverHandle = registerSnapshotApplyObserver()
         startRecomposerImmediate()
         startFrameListenerImmediate()
     }
@@ -84,31 +104,108 @@ class WindowImpl internal constructor(
         root.arranger.layout()
     }
 
+    private fun registerSnapshotApplyObserver(): ObserverHandle {
+        return Snapshot.registerApplyObserver { changed, _ ->
+            if(!requireLayout) {
+                var hasRequiredDraw = requireDraw
+                for (state in changed) {
+                    if (state in readStatesOnLayout) {
+                        requireLayout = true
+                        break
+                    }
+                    if (hasRequiredDraw) {
+                        break
+                    }
+                    if (state in readStatesOnDraw) {
+                        requireDraw = true
+                        hasRequiredDraw = true
+                    }
+                }
+            }
+        }
+    }
+
     private fun startRecomposerImmediate() {
-        launch(start = CoroutineStart.UNDISPATCHED) {
+        launch {
             recomposer.runRecomposeAndApplyChanges()
+            println("END RECOMPOSER")
         }
     }
 
     private fun startFrameListenerImmediate() {
-        launch(start = CoroutineStart.UNDISPATCHED) {
+        launch {
             do {
                 runtimeClock.withFrameNanos { nanos ->
-                    measureAndPlace()
-                    activeRenderer?.render(root)
+                    compositionClock.sendFrame(nanos)
+
+                    if (requireLayout) {
+                        layout()
+                        render()
+                    } else if (requireDraw) {
+                        render()
+                    }
                 }
             } while (job.isActive)
+            println("END FRAME LISTENER")
+        }
+    }
+
+    suspend fun awaitCompletion() {
+        try {
+            val effectJob = checkNotNull(recomposer.effectCoroutineContext[Job]) {
+                "No Job in effectCoroutineContext of recomposer"
+            }
+            effectJob.children.forEach { it.join() }
+            recomposer.awaitIdle()
+
+            launch { compositionClock.withFrameNanos { } }.join()
+
+            recomposer.close()
+            recomposer.join()
+        } finally {
+            job.cancel()
+        }
+        println("END COMPLETION")
+    }
+
+    /**
+     * Performs the layout of the composition and observes any accessed states.
+     */
+    private fun layout() {
+        requireLayout = false
+
+        readStatesOnLayout.clear()
+        Snapshot.observe(readObserver = readStatesOnLayoutObserver) {
+            measureAndPlace()
+        }
+    }
+
+    /**
+     * Renders the composition and observes any accessed states that may cause it to be invalidated.
+     */
+    private fun render() {
+        requireDraw = false
+
+        readStatesOnDraw.clear()
+        activeRenderer?.let { renderer ->
+            Snapshot.observe(readObserver = readStatesOnDrawObserver) {
+                renderer.render(root)
+            }
         }
     }
 
     override suspend fun render(renderer: Renderer<*>) {
-        composition.setContent { content() }
         activeRenderer = renderer
+
+        composition.setContent(content)
+        requireLayout = true
+        requireDraw = true
     }
 
     override fun close() {
         // TODO: Create a separate dispose function
         composition.dispose()
+        recomposer.close()
     }
 
     override fun width(): Int {
@@ -119,4 +216,27 @@ class WindowImpl internal constructor(
         return size / 9
     }
 
+}
+
+@OptIn(ExperimentalAtomicApi::class)
+internal class GlobalSnapshotManager {
+    private val started = AtomicBoolean(false)
+    private val sent = AtomicBoolean(false)
+
+    fun ensureStarted(scope: CoroutineScope) {
+        if (started.compareAndSet(expectedValue = false, newValue = true)) {
+            val channel = Channel<Unit>(1)
+            scope.launch {
+                channel.consumeEach {
+                    sent.store(false)
+                    Snapshot.sendApplyNotifications()
+                }
+            }
+            Snapshot.registerGlobalWriteObserver {
+                if (sent.compareAndSet(expectedValue = false, newValue = true)) {
+                    channel.trySend(Unit)
+                }
+            }
+        }
+    }
 }

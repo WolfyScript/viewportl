@@ -20,7 +20,6 @@ package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
 import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -31,10 +30,10 @@ import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 
-class InventoryUIListener(val runtime: ViewRuntime, val interactionHandler: SpigotLikeInvUIInteractionHandler) : Listener {
+class InventoryUIListener() : Listener {
 
     private fun withHolder(holder: InventoryHolder?, fn: GuiHolder.() -> Unit) {
-        if (holder is BukkitInventoryGuiHolder && holder.guiHolder.viewManager == runtime) {
+        if (holder is BukkitInventoryGuiHolder) {
             fn(holder.guiHolder)
         }
     }
@@ -43,7 +42,10 @@ class InventoryUIListener(val runtime: ViewRuntime, val interactionHandler: Spig
     fun onInvClick(event: InventoryClickEvent) {
         withHolder(event.inventory.holder) {
             val valueHandler = ValueHandler()
-            interactionHandler.onClick(InventoryUIInteractionContext(runtime, event, valueHandler))
+            val interactionHandler = viewManager.interactionHandler
+            if (interactionHandler is SpigotLikeInvUIInteractionHandler) {
+                interactionHandler.onClick(InventoryUIInteractionContext(viewManager, event, valueHandler))
+            }
             event.isCancelled = true
         }
     }
@@ -57,12 +59,16 @@ class InventoryUIListener(val runtime: ViewRuntime, val interactionHandler: Spig
                 event.isCancelled = true
                 return@withHolder
             }
-            if (runtime.window == null) return@withHolder
+            if (viewManager.window == null) return@withHolder
             val valueHandler = ValueHandler()
-            interactionHandler.onDrag(InventoryUIInteractionContext(runtime, event, valueHandler))
+            val interactionHandler = viewManager.interactionHandler
+            if (interactionHandler !is SpigotLikeInvUIInteractionHandler) {
+                return@withHolder
+            }
+            interactionHandler.onDrag(InventoryUIInteractionContext(viewManager, event, valueHandler))
 
             if (!event.isCancelled) {
-                runtime.viewportl.scafall.scheduler.syncTask(runtime.viewportl.scafall.modInfo) {
+                viewManager.viewportl.scafall.scheduler.syncTask(viewManager.viewportl.scafall.modInfo) {
                     for (rawSlot in event.rawSlots) {
                         if (rawSlot < event.inventory.size) {
                             valueHandler.callSlotValueUpdate(rawSlot, event.inventory.getItem(rawSlot))
@@ -77,7 +83,7 @@ class InventoryUIListener(val runtime: ViewRuntime, val interactionHandler: Spig
     @EventHandler(priority = EventPriority.HIGH)
     fun onClose(event: InventoryCloseEvent) {
         withHolder(event.inventory.holder) {
-            runtime.window?.apply { close() }
+            viewManager.leaveViewer(event.player.uniqueId)
         }
     }
 }

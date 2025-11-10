@@ -19,7 +19,7 @@ fun Counter() {
     var count by remember { mutableStateOf(0) }
     Row { // Horizontally splits the inventory into sections and places children left to right
         Box { // Centers child in first section
-            Icon(createStack(count))
+            Icon(createCounterStack(count))
         }
         Column { // Splits other section vertically, and places buttons vertically top to bottom
             Button(onClick = {
@@ -40,7 +40,7 @@ fun Counter() {
     }
 }
 
-private fun createStack(count: Int): ItemStackSnapshot {
+private fun createCounterStack(count: Int): ItemStackSnapshot {
     return ItemStack(Items.REDSTONE).apply {
         set(DataComponents.CUSTOM_NAME, "<b>Count: $count".deser().vanilla())
     }.snapshot()

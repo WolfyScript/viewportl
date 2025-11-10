@@ -21,7 +21,6 @@ package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 import com.wolfyscript.viewportl.common.gui.WindowImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -33,16 +32,14 @@ import org.bukkit.plugin.Plugin
 
 class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInteractionHandler<InventoryUIInteractionContext>() {
 
-    private var listener: InventoryUIListener? = null
+    override var isBusy: Boolean = false
 
     override fun onWindowOpen(window: Window) {
         super.onWindowOpen(window)
+    }
 
-        if (listener == null) {
-            // Hook this handler into the Spigot event system
-            listener = InventoryUIListener(runtime, this)
-            Bukkit.getPluginManager().registerEvents(listener!!, bukkitPlugin)
-        }
+    override fun dispose() {
+        super.dispose()
     }
 
     override fun onClick(context: InventoryUIInteractionContext) {
@@ -64,8 +61,10 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
 
         event.isCancelled = true // prevent any interaction, handle normal click & slot input separately
 
+        isBusy = true
         (runtime.window as? WindowImpl)?.root?.let {
             onClick(event.slot, it)
+            isBusy = false
             return // For now just return
         }
 
@@ -258,6 +257,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
         // Apply calculated slot changes
         event.view.setCursor(cursor)
         event.currentItem = slotResult
+        isBusy = false
     }
 
     private fun testChildClickTransaction(

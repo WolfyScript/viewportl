@@ -30,6 +30,11 @@ import com.wolfyscript.viewportl.gui.Window
  */
 interface InteractionHandler<C: InteractionContext> {
 
+    /**
+     * Whether this handler is currently handling an interaction.
+     */
+    val isBusy: Boolean
+
     fun init(runtime: ViewRuntime)
 
     fun dispose()

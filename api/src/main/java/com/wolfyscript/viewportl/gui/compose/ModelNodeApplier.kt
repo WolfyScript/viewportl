@@ -2,7 +2,13 @@ package com.wolfyscript.viewportl.gui.compose
 
 import androidx.compose.runtime.AbstractApplier
 
-class ModelNodeApplier(root: Node) : AbstractApplier<Node>(root) {
+class ModelNodeApplier(root: Node, private val onChanges: () -> Unit = {}) : AbstractApplier<Node>(root) {
+
+    override fun onBeginChanges() {
+        super.onBeginChanges()
+
+        onChanges()
+    }
 
     override fun insertTopDown(index: Int, instance: Node) {
         //

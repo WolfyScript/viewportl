@@ -36,12 +36,13 @@ import kotlin.coroutines.CoroutineContext
 class ViewRuntimeImpl(
     override val viewportl: Viewportl,
     parentCoroutineContext: CoroutineContext,
-    override var viewers: Set<UUID>,
+    viewers: Set<UUID>,
     // Handlers that handle rendering and interaction
     override val renderer: Renderer<*>,
-    override val interactionHandler: InteractionHandler<*>
+    override val interactionHandler: InteractionHandler<*>,
 ) : ViewRuntime {
 
+    override val viewers: MutableSet<UUID> = viewers.toMutableSet()
     override var window: Window? = null
     val runtimeClock = BroadcastFrameClock { }
 
@@ -49,15 +50,21 @@ class ViewRuntimeImpl(
     override val coroutineContext: CoroutineContext = parentCoroutineContext + runtimeClock
 
     override val id: Long = NEXT_ID++
-    private var running = true
+    var running = true
 
     init {
         interactionHandler.init(this)
-        // Main update loop
+    }
+
+    private fun startMainLoop() {
         launch {
             while (running) {
                 if (viewers.isEmpty()) { // Check for viewers before rendering the next frame
-                    running = false
+                    dispose()
+                    continue
+                }
+
+                if (interactionHandler.isBusy) {
                     continue
                 }
 
@@ -67,21 +74,26 @@ class ViewRuntimeImpl(
                     // Renderer is rendering previous frame
                 }
 
-                delay(500)
+                delay(50)
             }
         }
     }
 
     override fun createNewWindow(id: Key, size: Int, type: WindowType, content: @Composable (() -> Unit)) {
         window = WindowImpl(coroutineContext, id, size, type, viewportl, content)
+
+        startMainLoop()
     }
 
     override fun dispose() {
         interactionHandler.dispose()
+        window?.close()
+        window = null
         running = false
     }
 
-    fun joinViewer(uuid: UUID) {
+    override fun joinViewer(uuid: UUID) {
+        viewers.add(uuid)
         launch {
             window?.let {
                 renderer.onWindowOpen(this@ViewRuntimeImpl, it)
@@ -89,21 +101,18 @@ class ViewRuntimeImpl(
         }
     }
 
-    fun leaveViewer(uuid: UUID) {
-        launch {
-            window?.let {
-                renderer.onWindowOpen(this@ViewRuntimeImpl, it)
-            }
-        }
+    override fun leaveViewer(uuid: UUID) {
+        viewers.remove(uuid)
     }
 
     override suspend fun open() {
-        launch {
-            window?.let {
-                interactionHandler.onWindowOpen(it)
-                renderer.onWindowOpen(this@ViewRuntimeImpl, it)
-                it.render(renderer)
-            }
+        window?.let {
+            interactionHandler.onWindowOpen(it)
+            renderer.onWindowOpen(this@ViewRuntimeImpl, it)
+
+            it.render(renderer)
+
+            println("COMPLETE")
         }
     }
 
