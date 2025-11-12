@@ -66,6 +66,14 @@ abstract class SpigotLikeInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>
                 inventory?.setItem(finalPos.x.slot.value + finalPos.y.slot.value * 9, stack.unwrapSpigot())
             }
 
+            override fun clear() {
+                for (x in 0 until width) {
+                    for (y in 0 until height) {
+                        inventory?.clear((nodeOffset.x.slot.value + x) + (nodeOffset.y.slot.value + y) * 9)
+                    }
+                }
+            }
+
         }
 
     }

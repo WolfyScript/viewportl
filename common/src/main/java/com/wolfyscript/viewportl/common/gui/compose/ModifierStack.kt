@@ -1,15 +1,16 @@
 package com.wolfyscript.viewportl.common.gui.compose
 
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SimpleLayoutModification
+import com.wolfyscript.viewportl.common.gui.compose.modifier.SimpleLayoutModifyScope
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SimpleMeasureModifyScope
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierData
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierNode
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStack
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackScope
 import com.wolfyscript.viewportl.gui.compose.layout.*
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifierNode
-import com.wolfyscript.viewportl.gui.compose.modifier.MeasureModifyScope
+import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifyScope
+import com.wolfyscript.viewportl.gui.compose.modifier.MeasureModification
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
@@ -18,30 +19,47 @@ class ModifierStackImpl(internal val modifiers: ArrayDeque<ModifierNode>) : Modi
 
     private var attached: Boolean = false
 
-    override fun modifyLayout(
+    // TODO: Invalidate these cached modifications when Modifiers change! (assuming we not just swap out the ModifierStackImpl instance, but update the stack directly)
+    private val modificationSnapshots: ArrayDeque<LayoutModification> = ArrayDeque()
+    private var performedLayoutModification: Boolean = false
+
+    override fun modifyMeasure(
         nodeConstraints: Constraints,
     ): LayoutModification {
-        if (modifiers.isEmpty()) return SimpleLayoutModification(nodeConstraints)
+        if (modifiers.isEmpty()) return SimpleLayoutModification(nodeConstraints) { it }
+        if (modificationSnapshots.isNotEmpty()) {
+            return modificationSnapshots.first()
+        }
+        if (performedLayoutModification) {
+            return SimpleLayoutModification(nodeConstraints) { it }
+        }
 
-        val scope: MeasureModifyScope = SimpleMeasureModifyScope()
-
-        var latestModification: LayoutModification? = null
-        var totalOffset = Offset.Zero
-
+        val scope: LayoutModifyScope = SimpleLayoutModifyScope()
         for (modifier in modifiers) {
             if (modifier !is LayoutModifierNode) continue
 
-            latestModification = with(modifier) {
+            val latestModification = with(modifier) {
                 scope.modify(nodeConstraints)
             }
-            totalOffset = Offset(totalOffset.x + latestModification.offset.x, totalOffset.y + latestModification.offset.y)
+            modificationSnapshots.addFirst(latestModification)
+        }
+        performedLayoutModification = true
+        return modificationSnapshots.firstOrNull() ?: SimpleLayoutModification(nodeConstraints) { it }
+    }
+
+    override fun modifyLayout(initialMeasure: MeasureModification): MeasureModification {
+        if (modificationSnapshots.isEmpty()) {
+            return initialMeasure
         }
 
-        if (latestModification != null) {
-            return SimpleLayoutModification(latestModification.constraints, totalOffset)
+        var currentMeasure: MeasureModification = initialMeasure
+        val scope = SimpleMeasureModifyScope()
+        for (modification in modificationSnapshots) {
+            currentMeasure = with(modification) {
+                scope.measure(currentMeasure)
+            }
         }
-
-        return SimpleLayoutModification(nodeConstraints)
+        return currentMeasure
     }
 
     override fun <T : ModifierNode> firstOfType(nodeType: KClass<T>): T? {
@@ -89,16 +107,3 @@ class SimpleModifierStackBuilder : ModifierStackBuilder {
 
 }
 
-class ModifierStackScopeImpl : ModifierStackScope {
-
-    val stack = ArrayDeque<ModifierNode>()
-
-    override fun push(modifier: ModifierData<*>) {
-        stack.addFirst(modifier.create())
-    }
-
-    fun create(): ModifierStackImpl {
-        return ModifierStackImpl(stack)
-    }
-
-}

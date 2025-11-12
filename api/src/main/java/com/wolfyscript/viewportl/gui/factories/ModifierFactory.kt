@@ -4,7 +4,7 @@ import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Size
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
-import com.wolfyscript.viewportl.gui.compose.modifier.MeasureModifyScope
+import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifyScope
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierData
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 
@@ -35,7 +35,7 @@ interface ModifierFactory {
     fun createFillModifier(): ModifierData<*>
 
     fun createLayoutModifier(
-        layoutFn: MeasureModifyScope.(Constraints) -> LayoutModification
+        layoutFn: LayoutModifyScope.(Constraints) -> LayoutModification
     ): ModifierData<*>
 
     fun createInventoryDrawModifier(

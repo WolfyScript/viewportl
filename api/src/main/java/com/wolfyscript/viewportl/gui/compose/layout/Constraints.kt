@@ -9,10 +9,12 @@ class Constraints(
     val maxHeight: Size = Int.MAX_VALUE.slots or Int.MAX_VALUE.dp,
 ) {
 
-    companion object {
-
-    }
-
+    /**
+     * Grows or shrinks the current constraints.
+     *
+     * Both the [minWidth], [minHeight] and the [maxWidth], [maxHeight] are grown/shrunk according to [horizontal], [vertical].
+     *
+     */
     fun offset(horizontal: Size, vertical: Size): Constraints {
         return Constraints(
             minWidth = max(minWidth.slot.value + horizontal.slot.value, 0).slots or max(minWidth.dp.value + horizontal.dp.value, 0).dp,
@@ -24,6 +26,13 @@ class Constraints(
 
 }
 
+/**
+ * Makes sure that [width] is within this constraints' specification:
+ *
+ * [ [Constraints.minWidth], [Constraints.maxWidth] ]
+ *
+ * @return a new width that is within `[minWidth, maxWidth]`
+ */
 fun Constraints.constrainWidth(width: Size): Size {
     return Size(
         width.slot.value.coerceIn(minWidth.slot.value, maxWidth.slot.value).slots,
@@ -31,10 +40,27 @@ fun Constraints.constrainWidth(width: Size): Size {
     )
 }
 
+/**
+ * Makes sure that [height] is within this constraints' specification:
+ *
+ * [ [Constraints.minHeight], [Constraints.maxHeight] ]
+ *
+ * @return a new height that is within `[minHeight, maxHeight]`
+ */
 fun Constraints.constrainHeight(height: Size): Size {
     return Size(
         height.slot.value.coerceIn(minHeight.slot.value, maxHeight.slot.value).slots,
         height.dp.value.coerceIn(minHeight.dp.value, maxHeight.dp.value).dp
+    )
+}
+
+fun Constraints.constrain(otherConstraints: Constraints): Constraints {
+    // TODO: Rethink the whole shared slot/dp Size...
+    return Constraints(
+        minWidth = otherConstraints.minWidth.slot.value.coerceIn(minWidth.slot.value, maxWidth.slot.value).slots or otherConstraints.minWidth.dp.value.coerceIn(minWidth.dp.value, maxWidth.dp.value).dp,
+        maxWidth = otherConstraints.maxWidth.slot.value.coerceIn(minWidth.slot.value, maxWidth.slot.value).slots or otherConstraints.maxWidth.dp.value.coerceIn(minWidth.dp.value, maxWidth.dp.value).dp,
+        minHeight = otherConstraints.minHeight.slot.value.coerceIn(minHeight.slot.value, maxHeight.slot.value).slots or otherConstraints.minHeight.dp.value.coerceIn(minHeight.dp.value, maxHeight.dp.value).dp,
+        maxHeight = otherConstraints.maxHeight.slot.value.coerceIn(minHeight.slot.value, minHeight.slot.value).slots or otherConstraints.maxHeight.dp.value.coerceIn(minHeight.slot.value, maxHeight.slot.value).dp,
     )
 }
 

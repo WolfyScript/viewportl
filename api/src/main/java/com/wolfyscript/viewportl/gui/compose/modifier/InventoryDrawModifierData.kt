@@ -43,6 +43,8 @@ interface InventoryDrawScope {
      */
     fun drawStack(offset: Offset = Offset.Zero, stack: ItemStackSnapshot)
 
+    fun clear()
+
 }
 
 interface InventoryDrawModifierNode : ModifierNode {

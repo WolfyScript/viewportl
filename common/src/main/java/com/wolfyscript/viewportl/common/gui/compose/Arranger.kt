@@ -1,5 +1,6 @@
 package com.wolfyscript.viewportl.common.gui.compose
 
+import com.wolfyscript.viewportl.common.gui.compose.modifier.SimpleMeasureModification
 import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.gui.compose.layout.*
 
@@ -14,7 +15,6 @@ class NodeArrangerImpl(override val node: Node) : NodeArranger {
             return measurements?.height ?: Size.Zero
         }
 
-    internal var offset: Offset? = null
     override var position: Offset = Offset.Zero
     internal var measurements: Measurements? = null
 
@@ -24,8 +24,7 @@ class NodeArrangerImpl(override val node: Node) : NodeArranger {
     private var requiresReplacement = false
 
     override fun measure(constraints: Constraints): Placeable {
-        val modification = node.modifierStack.modifyLayout(constraints)
-        this@NodeArrangerImpl.offset = modification.offset
+        val modification = node.modifierStack.modifyMeasure(constraints)
 
         val childMeasurables = buildList<Measurable> {
             node.forEachChild { child -> add(child.arranger) }
@@ -51,11 +50,9 @@ class NodeArrangerImpl(override val node: Node) : NodeArranger {
         x: Size,
         y: Size,
     ) {
-        if (offset != null) {
-            this.position = Offset(offset!!.x + x, offset!!.y + y)
-        } else {
-            this.position = Offset(x, y)
-        }
+        val modification = node.modifierStack.modifyLayout(SimpleMeasureModification(width, height, Offset.Zero))
+
+        this.position = Offset(x, y) + modification.offset
         afterPlace()
     }
 

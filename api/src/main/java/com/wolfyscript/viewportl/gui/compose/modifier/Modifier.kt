@@ -35,20 +35,21 @@ interface ModifierNode {
  */
 interface ModifierStack {
 
-    fun modifyLayout(nodeConstraints: Constraints): LayoutModification
+    /**
+     * Modifies the [nodeConstraints] using the [Modifiers][ModifierNode] in this stack.
+     *
+     * @return The [LayoutModification] accumulated from the [LayoutModifierNode]s in this stack.
+     */
+    fun modifyMeasure(nodeConstraints: Constraints): LayoutModification
+
+    /**
+     * Modifies the layout (width, height, offset) using the calculated size and offset instructions from [modifyMeasure].
+     *
+     * When not yet measured by [modifyMeasure], returns the [initialMeasure] as is.
+     */
+    fun modifyLayout(initialMeasure: MeasureModification): MeasureModification
 
     fun <T: ModifierNode> firstOfType(nodeType: KClass<T>): T?
-
-}
-
-/**
- * Used to build the [ModifierStack] using the provided functions.
- *
- * Custom Modifiers may provide an extension function for this scope to wrap [push].
- */
-interface ModifierStackScope {
-
-    fun push(modifier: ModifierData<*>)
 
 }
 

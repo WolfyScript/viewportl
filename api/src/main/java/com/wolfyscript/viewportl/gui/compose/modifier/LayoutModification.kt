@@ -6,11 +6,17 @@ import com.wolfyscript.viewportl.gui.compose.layout.Size
 
 interface LayoutModification {
 
+    val constraints: Constraints
+
+    val measure: MeasureModifyScope.(MeasureModification) -> MeasureModification
+
+}
+
+interface MeasureModification {
+
     val measuredWidth: Size
 
     val measuredHeight: Size
-
-    val constraints: Constraints
 
     val offset: Offset
 

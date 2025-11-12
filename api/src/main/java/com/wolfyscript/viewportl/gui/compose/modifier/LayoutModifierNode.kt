@@ -2,8 +2,18 @@ package com.wolfyscript.viewportl.gui.compose.modifier
 
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 
+/**
+ * A [ModifierNode] that modifies the layout of a [com.wolfyscript.viewportl.gui.compose.Node]
+ */
 interface LayoutModifierNode : ModifierNode {
 
-    fun MeasureModifyScope.modify(constraints: Constraints): LayoutModification
+    /**
+     * Modifies the incoming constraints and produces a new [LayoutModification]
+     *
+     * [constraints] - The incoming constraints (either from a previous modifier or the initial constrain for the node)
+     *
+     * @return a new [LayoutModification]
+     */
+    fun LayoutModifyScope.modify(constraints: Constraints): LayoutModification
 
 }

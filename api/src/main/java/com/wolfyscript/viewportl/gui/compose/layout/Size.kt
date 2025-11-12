@@ -11,6 +11,8 @@ class Size(
         val Unspecified = Size(Int.MIN_VALUE.slots, Int.MIN_VALUE.dp)
     }
 
+    val isSpecified: Boolean = slot.value != Int.MIN_VALUE && dp.value != Int.MIN_VALUE
+
     operator fun plus(other: Size): Size {
         return Size(
             slot = (slot.value + other.slot.value).slots,

@@ -28,7 +28,7 @@ object ExampleCommand {
                                     exampleId,
                                     setOf(executor.uuid)
                                 ) {
-                                    it.createNewWindow(exampleId, content = { Counter() })
+                                    it.createNewWindow(exampleId, size = 36, content = { Counter() })
                                     it.open()
                                 }
                             }

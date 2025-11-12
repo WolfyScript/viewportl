@@ -8,7 +8,7 @@ import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Size
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
-import com.wolfyscript.viewportl.gui.compose.modifier.MeasureModifyScope
+import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifyScope
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierData
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.factories.ModifierFactory
@@ -42,7 +42,7 @@ class ModifierFactoryCommon : ModifierFactory {
         TODO("Not yet implemented")
     }
 
-    override fun createLayoutModifier(layoutFn: MeasureModifyScope.(Constraints) -> LayoutModification): ModifierData<*> {
+    override fun createLayoutModifier(layoutFn: LayoutModifyScope.(Constraints) -> LayoutModification): ModifierData<*> {
         TODO("Not yet implemented")
     }
 
