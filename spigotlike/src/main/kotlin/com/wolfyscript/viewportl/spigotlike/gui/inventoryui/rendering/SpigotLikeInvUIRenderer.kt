@@ -53,28 +53,6 @@ abstract class SpigotLikeInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>
     }
 
     override fun subDrawScope(offset: Offset, width: Int, height: Int): InventoryDrawScope {
-        val nodeOffset = offset
-        return object : InventoryDrawScope { // TODO: mutable shared scope instead to reduce allocations
-            override val width: Int = width
-            override val height: Int = height
-
-            override fun drawStack(
-                offset: Offset,
-                stack: ItemStackSnapshot,
-            ) {
-                val finalPos = nodeOffset + offset
-                inventory?.setItem(finalPos.x.slot.value + finalPos.y.slot.value * 9, stack.unwrapSpigot())
-            }
-
-            override fun clear() {
-                for (x in 0 until width) {
-                    for (y in 0 until height) {
-                        inventory?.clear((nodeOffset.x.slot.value + x) + (nodeOffset.y.slot.value + y) * 9)
-                    }
-                }
-            }
-
-        }
-
+        return CacheInventoryDrawScope(offset, width, height, inventory)
     }
 }

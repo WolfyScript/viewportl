@@ -14,26 +14,23 @@ private fun generateNodeId(): Long = nodeIdGeneration.getAndIncrement()
 class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCallback {
 
     override var parent: Node? = null
-    private val children = mutableListOf<LayoutNode>()
+    internal val children = mutableListOf<LayoutNode>()
 
-    override var modifierStack = ModifierStackImpl(ArrayDeque())
+    override var modifierStack = ModifierStackImpl()
     override var modifier: ModifierStackBuilder = Modifier
         set(value) {
             // Node reused. Modifiers were updated
             field = value
             // TODO: Check each modifier and swap if changed instead of full swap
-            modifierStack.onNodeDetach()
-            modifierStack = value.build() as ModifierStackImpl
-            if (attached) {
-                modifierStack.onNodeAttach()
-            }
+            modifierStack.update(field)
         }
 
-    override val arranger: NodeArranger = NodeArrangerImpl(this)
+    override val arranger: NodeArrangerImpl = NodeArrangerImpl(this)
     override var measurePolicy: MeasurePolicy? = null
         set(value) {
             // Node reused. MeasurePolicy was updated
             field = value
+
             // TODO: Invalidate measurements & request remeasure
         }
 
@@ -98,6 +95,7 @@ class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCa
         attached = false
 
         modifierStack.onNodeDetach()
+        children.forEach(LayoutNode::detach)
     }
 
     /**
@@ -117,5 +115,7 @@ class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCa
 
     override fun onRelease() {
     }
+
+
 
 }

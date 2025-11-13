@@ -11,7 +11,7 @@ import com.wolfyscript.viewportl.viewportl
 fun ModifierStackBuilder.drawToSlots(fn: InventoryDrawScope.() -> Unit) =
     push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createInventoryDrawModifier(fn))
 
-interface InventoryDrawModifierData : ModifierData<InventoryDrawModifierNode> {
+interface InventoryDrawModifierData<T: InventoryDrawModifierNode> : ModifierData<T> {
 
     val draw: InventoryDrawScope.() -> Unit
 
@@ -23,6 +23,8 @@ interface InventoryDrawModifierData : ModifierData<InventoryDrawModifierNode> {
  * Positioning is taken care by the scope, so draw calls are always relative to the origin of the current section.
  */
 interface InventoryDrawScope {
+
+    val nodeOffset: Offset
 
     /**
      * The width in slots of the current section

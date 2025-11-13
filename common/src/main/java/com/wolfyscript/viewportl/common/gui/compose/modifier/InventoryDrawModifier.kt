@@ -6,25 +6,35 @@ import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 
 class InventoryDrawModifierDataImpl(
     override val draw: InventoryDrawScope.() -> Unit
-) : InventoryDrawModifierData {
+) : InventoryDrawModifierData<InventoryDrawModifierNodeImpl> {
 
-    override fun create(): InventoryDrawModifierNode {
+    override fun create(): InventoryDrawModifierNodeImpl {
         return InventoryDrawModifierNodeImpl(draw)
     }
 
-    override fun update(node: InventoryDrawModifierNode) {
-
+    override fun update(node: InventoryDrawModifierNodeImpl) {
+        node.onDraw = draw
     }
 
 }
 
 
 class InventoryDrawModifierNodeImpl(
-    val onDraw: InventoryDrawScope.() -> Unit
+    internal var onDraw: InventoryDrawScope.() -> Unit
 ) : InventoryDrawModifierNode {
+
+    private var previousScope: InventoryDrawScope? = null
 
     override fun InventoryDrawScope.draw() {
         onDraw()
+        previousScope = this
+    }
+
+    override fun onMeasurementsChanged() {
+        if (previousScope != null) {
+            previousScope!!.clear()
+            previousScope = null
+        }
     }
 
     override fun onAttach() {
@@ -32,7 +42,10 @@ class InventoryDrawModifierNodeImpl(
     }
 
     override fun onDetach() {
-
+        if (previousScope != null) {
+            previousScope!!.clear()
+            previousScope = null
+        }
     }
 
 }

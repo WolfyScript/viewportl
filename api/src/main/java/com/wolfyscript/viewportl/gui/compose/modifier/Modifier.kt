@@ -28,6 +28,8 @@ interface ModifierNode {
 
     fun onDetach()
 
+    fun onMeasurementsChanged() { }
+
 }
 
 /**
@@ -63,6 +65,6 @@ interface ModifierStackBuilder {
 
     fun push(modifier: ModifierData<*>): ModifierStackBuilder
 
-    fun build() : ModifierStack
+    val data: List<ModifierData<*>>
 
 }

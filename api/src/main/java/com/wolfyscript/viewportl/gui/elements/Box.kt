@@ -7,6 +7,9 @@ import com.wolfyscript.viewportl.gui.compose.layout.constrainWidth
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 
+/**
+ * A Box centers its content. If more than one child is present they are rendered above each other.
+ */
 @Composable
 fun Box(modifier: ModifierStackBuilder = Modifier, content: @Composable () -> Unit) {
     Layout(modifier, content = content) { measurables, constraints ->

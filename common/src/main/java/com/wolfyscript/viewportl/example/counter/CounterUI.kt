@@ -38,12 +38,14 @@ fun Counter() {
             }
         }
         if (count != 0) {
-            Button(onClick = {
-                count = 0
-            }) {
-                Icon(stack = ItemStack(Items.CYAN_CONCRETE).apply {
-                    set(DataComponents.CUSTOM_NAME, "<b>Reset".deser().vanilla())
-                }.snapshot())
+            Box {
+                Button(onClick = {
+                    count = 0
+                }) {
+                    Icon(stack = ItemStack(Items.CYAN_CONCRETE).apply {
+                        set(DataComponents.CUSTOM_NAME, "<b>Reset".deser().vanilla())
+                    }.snapshot())
+                }
             }
         }
     }

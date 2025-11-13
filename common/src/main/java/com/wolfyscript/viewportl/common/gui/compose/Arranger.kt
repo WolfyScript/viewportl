@@ -1,10 +1,9 @@
 package com.wolfyscript.viewportl.common.gui.compose
 
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SimpleMeasureModification
-import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.gui.compose.layout.*
 
-class NodeArrangerImpl(override val node: Node) : NodeArranger {
+class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
 
     override val width: Size
         get() {
@@ -17,6 +16,14 @@ class NodeArrangerImpl(override val node: Node) : NodeArranger {
 
     override var position: Offset = Offset.Zero
     internal var measurements: Measurements? = null
+        set(value) {
+            val previous = field
+            field = value
+
+            if (previous != value) {
+                onMeasureChange()
+            }
+        }
 
     private var previousConstraints: Constraints? = null
 
@@ -77,6 +84,12 @@ class NodeArrangerImpl(override val node: Node) : NodeArranger {
             val scope = SimplePlacementScope()
             measurements?.placeChildren(scope)
         }
+    }
+
+    fun onMeasureChange() {
+        node.modifierStack.onMeasureChange()
+
+        node.children.forEach { it.arranger.onMeasureChange() }
     }
 
 }
