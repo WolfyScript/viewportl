@@ -31,6 +31,10 @@ class ModifierStackImpl() : ModifierStack {
     private var attached: Boolean = false
 
     // TODO: Invalidate these cached modifications when Modifiers change! (assuming we not just swap out the ModifierStackImpl instance, but update the stack directly)
+    /**
+     * The snapshots of modifications after each [LayoutModifierNode].
+     * TODO: We keep those for future improvements like multiple [InventoryDrawModifierNode]s and other [ModifierNode]s that may use the layout info closest to them.
+     */
     private val modificationSnapshots: ArrayDeque<LayoutModification> = ArrayDeque()
     private var performedLayoutModification: Boolean = false
 

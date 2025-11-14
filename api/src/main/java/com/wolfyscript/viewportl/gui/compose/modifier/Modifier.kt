@@ -38,14 +38,14 @@ interface ModifierNode {
 interface ModifierStack {
 
     /**
-     * Modifies the [nodeConstraints] using the [Modifiers][ModifierNode] in this stack.
+     * Modifies the incoming [nodeConstraints] using the [Modifiers][ModifierNode] in this stack.
      *
      * @return The [LayoutModification] accumulated from the [LayoutModifierNode]s in this stack.
      */
     fun modifyMeasure(nodeConstraints: Constraints): LayoutModification
 
     /**
-     * Modifies the layout (width, height, offset) using the calculated size and offset instructions from [modifyMeasure].
+     * Modifies the layout (outgoing [Measurements][com.wolfyscript.viewportl.gui.compose.layout.Measurements]) using the calculated size and offset instructions from [modifyMeasure].
      *
      * When not yet measured by [modifyMeasure], returns the [initialMeasure] as is.
      */

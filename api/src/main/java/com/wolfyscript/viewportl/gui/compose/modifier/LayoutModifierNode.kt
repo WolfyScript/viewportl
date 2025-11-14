@@ -4,6 +4,7 @@ import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 
 /**
  * A [ModifierNode] that modifies the layout of a [com.wolfyscript.viewportl.gui.compose.Node]
+ * by modifying the incoming [Constraints] and outgoing [com.wolfyscript.viewportl.gui.compose.layout.Measurements]
  */
 interface LayoutModifierNode : ModifierNode {
 
