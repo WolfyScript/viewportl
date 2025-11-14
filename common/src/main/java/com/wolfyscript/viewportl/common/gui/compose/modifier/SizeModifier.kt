@@ -33,31 +33,29 @@ class SizeModifierNode(
 
     private fun targetConstraints(outerMaxWidth: Size, outerMaxHeight: Size): Constraints {
         val maxWidth: Size = if (maxWidth.isSpecified) {
-            maxWidth.slot.value.coerceAtLeast(0).slots or maxWidth.dp.value.coerceAtLeast(0).dp
+            maxWidth.slot.value.coerceAtLeast(0).slots or
+                    maxWidth.dp.value.coerceAtLeast(0).dp
         } else {
             outerMaxWidth
         }
 
         val maxHeight: Size = if (maxHeight.isSpecified) {
-            maxHeight.slot.value.coerceAtLeast(0).slots or maxHeight.dp.value.coerceAtLeast(0).dp
+            maxHeight.slot.value.coerceAtLeast(0).slots or
+                    maxHeight.dp.value.coerceAtLeast(0).dp
         } else {
             outerMaxHeight
         }
 
         val minWidth = if (minWidth.isSpecified) {
-            minWidth.slot.value.coerceIn(0, maxWidth.slot.value).slots or minWidth.dp.value.coerceIn(
-                0,
-                maxWidth.dp.value
-            ).dp
+            minWidth.slot.value.coerceIn(0, maxWidth.slot.value).slots or
+                    minWidth.dp.value.coerceIn(0, maxWidth.dp.value).dp
         } else {
             Size.Zero
         }
 
         val minHeight = if (minHeight.isSpecified) {
-            minHeight.slot.value.coerceIn(0, maxHeight.slot.value).slots or minHeight.dp.value.coerceIn(
-                0,
-                maxHeight.dp.value
-            ).dp
+            minHeight.slot.value.coerceIn(0, maxHeight.slot.value).slots or
+                    minHeight.dp.value.coerceIn(0, maxHeight.dp.value).dp
         } else {
             Size.Zero
         }

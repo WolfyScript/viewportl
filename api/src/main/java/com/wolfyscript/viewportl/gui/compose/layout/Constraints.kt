@@ -60,7 +60,7 @@ fun Constraints.constrain(otherConstraints: Constraints): Constraints {
         minWidth = otherConstraints.minWidth.slot.value.coerceIn(minWidth.slot.value, maxWidth.slot.value).slots or otherConstraints.minWidth.dp.value.coerceIn(minWidth.dp.value, maxWidth.dp.value).dp,
         maxWidth = otherConstraints.maxWidth.slot.value.coerceIn(minWidth.slot.value, maxWidth.slot.value).slots or otherConstraints.maxWidth.dp.value.coerceIn(minWidth.dp.value, maxWidth.dp.value).dp,
         minHeight = otherConstraints.minHeight.slot.value.coerceIn(minHeight.slot.value, maxHeight.slot.value).slots or otherConstraints.minHeight.dp.value.coerceIn(minHeight.dp.value, maxHeight.dp.value).dp,
-        maxHeight = otherConstraints.maxHeight.slot.value.coerceIn(minHeight.slot.value, minHeight.slot.value).slots or otherConstraints.maxHeight.dp.value.coerceIn(minHeight.slot.value, maxHeight.slot.value).dp,
+        maxHeight = otherConstraints.maxHeight.slot.value.coerceIn(minHeight.slot.value, maxHeight.slot.value).slots or otherConstraints.maxHeight.dp.value.coerceIn(minHeight.dp.value, maxHeight.dp.value).dp,
     )
 }
 
