@@ -19,13 +19,17 @@ package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
+import com.wolfyscript.viewportl.gui.compose.layout.dp
+import com.wolfyscript.viewportl.gui.compose.layout.or
+import com.wolfyscript.viewportl.gui.compose.layout.slots
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 import com.wolfyscript.viewportl.gui.compose.modifier.clickable
+import com.wolfyscript.viewportl.gui.compose.modifier.size
 import net.kyori.adventure.sound.Sound
 
 @Composable
 fun Button(onClick: () -> Unit, content: @Composable () -> Unit) {
-    Row(Modifier.clickable { onClick() }, content = content)
+    Row(Modifier.size(1.slots or 1.dp).clickable { onClick() }, content = content)
 }
 
 /**
