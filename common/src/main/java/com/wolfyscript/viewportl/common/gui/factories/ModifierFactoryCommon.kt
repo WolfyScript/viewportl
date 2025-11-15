@@ -4,6 +4,7 @@ import com.wolfyscript.viewportl.common.gui.compose.SimpleModifierStackBuilder
 import com.wolfyscript.viewportl.common.gui.compose.modifier.ClickableModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.DefaultMinSizeModifier
 import com.wolfyscript.viewportl.common.gui.compose.modifier.InventoryDrawModifierDataImpl
+import com.wolfyscript.viewportl.common.gui.compose.modifier.LayoutModifierData
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SizeModifier
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Size
@@ -51,7 +52,7 @@ class ModifierFactoryCommon : ModifierFactory {
     }
 
     override fun createLayoutModifier(layoutFn: LayoutModifyScope.(Constraints) -> LayoutModification): ModifierData<*> {
-        TODO("Not yet implemented")
+        return LayoutModifierData(layoutFn)
     }
 
     override fun createInventoryDrawModifier(draw: InventoryDrawScope.() -> Unit): ModifierData<*> {
