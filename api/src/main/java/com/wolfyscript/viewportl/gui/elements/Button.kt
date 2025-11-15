@@ -18,37 +18,38 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
-import com.wolfyscript.viewportl.gui.compose.layout.dp
-import com.wolfyscript.viewportl.gui.compose.layout.or
-import com.wolfyscript.viewportl.gui.compose.layout.slots
+import com.wolfyscript.viewportl.gui.compose.layout.*
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 import com.wolfyscript.viewportl.gui.compose.modifier.clickable
-import com.wolfyscript.viewportl.gui.compose.modifier.size
-import net.kyori.adventure.sound.Sound
+import com.wolfyscript.viewportl.gui.compose.modifier.defaultMinSize
 
 @Composable
 fun Button(onClick: () -> Unit, content: @Composable () -> Unit) {
-    Row(Modifier.size(1.slots or 1.dp).clickable { onClick() }, content = content)
+    Row(
+        Modifier
+            .defaultMinSize(
+                ButtonDefaults.SlotDefaults.MinWidth or ButtonDefaults.DpDefaults.MinWidth,
+                ButtonDefaults.SlotDefaults.MinHeight or ButtonDefaults.DpDefaults.MinHeight
+            )
+            .clickable { onClick() },
+        content = content
+    )
 }
 
-/**
- * The properties used to create a button implementation
- */
-data class ButtonProperties(
-    val icon: () -> ItemStackSnapshot,
-    val sound: Sound? = null,
-    val onClick: () -> Unit = {},
-)
+object ButtonDefaults {
 
-/**
- * A simple button that has an icon and a click callback.
- */
-interface Button : Element {
-    var icon: () -> ItemStackSnapshot
-    var onClick: () -> Unit
-    var sound: Sound?
+    object SlotDefaults {
+
+        val MinWidth: Slot = 1.slots
+        val MinHeight: Slot = 1.slots
+
+    }
+
+    object DpDefaults {
+
+        val MinWidth: Dp = 58.dp
+        val MinHeight: Dp = 40.dp
+
+    }
+
 }
-
-
-

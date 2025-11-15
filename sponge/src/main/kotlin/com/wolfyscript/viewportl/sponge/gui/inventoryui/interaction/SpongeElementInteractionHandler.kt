@@ -8,10 +8,10 @@ import org.spongepowered.api.item.inventory.transaction.SlotTransaction
 
 interface SpongeElementInteractionHandler<C : Element> : ElementInteractionHandler<C> {
 
-    fun onSingleSlotClick(runtime: ViewRuntime<*, SpongeUIInteractionHandler>, component: C, event: ClickContainerEvent) {}
+    fun onSingleSlotClick(runtime: ViewRuntime, component: C, event: ClickContainerEvent) {}
 
     fun onDrag(
-        runtime: ViewRuntime<*, SpongeUIInteractionHandler>,
+        runtime: ViewRuntime,
         component: C,
         slotTransaction: SlotTransaction,
         event: ClickContainerEvent.Drag

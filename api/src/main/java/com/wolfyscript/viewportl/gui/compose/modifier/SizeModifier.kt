@@ -132,8 +132,9 @@ fun ModifierStackBuilder.requireSizeIn(
 )
 
 /**
- * Specifies a minimum width or height, that can be overridden by incoming constraints.
+ * Specifies a minimum [width][minWidth] or [height][minHeight],
+ * that applies when the incoming [minWidth][com.wolfyscript.viewportl.gui.compose.layout.Constraints.minWidth]/[minHeight][com.wolfyscript.viewportl.gui.compose.layout.Constraints.minHeight] is `0`.
  */
-fun ModifierStackBuilder.defaultMinSize(minWidth: Size, minHeight: Size) = push(
+fun ModifierStackBuilder.defaultMinSize(minWidth: Size = Size.Unspecified, minHeight: Size = Size.Unspecified) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createDefaultMinSizeModifier(minWidth, minHeight)
 )
