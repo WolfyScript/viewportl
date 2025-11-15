@@ -51,6 +51,8 @@ class ModifierStackImpl() : ModifierStack {
                     }
 
                     UpdateNode -> {
+                        modificationSnapshots.clear() // TODO: only remove those that have changed?
+                        performedLayoutModification = false
                         next.updateUnsafe(modifier)
                     }
 
@@ -60,6 +62,8 @@ class ModifierStackImpl() : ModifierStack {
                 }
             }
         } else if (previousData.isEmpty()) {
+            modificationSnapshots.clear()
+            performedLayoutModification = false
             modifiers.clear() // Modifiers should be empty already! just make sure... maybe an assert would be better
             for (newData in data) {
                 val modifier = newData.create()
@@ -69,6 +73,8 @@ class ModifierStackImpl() : ModifierStack {
                 }
             }
         } else if (data.isEmpty()) {
+            modificationSnapshots.clear()
+            performedLayoutModification = false
             for (node in modifiers) {
                 node.onDetach()
             }
@@ -80,6 +86,8 @@ class ModifierStackImpl() : ModifierStack {
     }
 
     private fun structuralChange() {
+        modificationSnapshots.clear()
+        performedLayoutModification = false
         // TODO: Structural update, for now just remove all and readd new
         for (node in modifiers) {
             node.onDetach()
@@ -111,7 +119,7 @@ class ModifierStackImpl() : ModifierStack {
             return modificationSnapshots.first()
         }
         if (performedLayoutModification) {
-            return SimpleLayoutModification(nodeConstraints) { it }
+            return modificationSnapshots.firstOrNull() ?: SimpleLayoutModification(nodeConstraints) { it }
         }
 
         val scope: LayoutModifyScope = SimpleLayoutModifyScope()
