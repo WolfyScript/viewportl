@@ -32,6 +32,11 @@ interface ModifierFactory {
         enforceIncoming: Boolean = true
     ): ModifierData<*>
 
+    fun createDefaultMinSizeModifier(
+        minWidth: Size = Size.Unspecified,
+        minHeight: Size = Size.Unspecified,
+    ) : ModifierData<*>
+
     fun createFillModifier(): ModifierData<*>
 
     fun createLayoutModifier(

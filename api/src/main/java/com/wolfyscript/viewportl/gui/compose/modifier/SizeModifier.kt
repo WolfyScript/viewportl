@@ -130,3 +130,10 @@ fun ModifierStackBuilder.requireSizeIn(
         enforceIncoming = false
     )
 )
+
+/**
+ * Specifies a minimum width or height, that can be overridden by incoming constraints.
+ */
+fun ModifierStackBuilder.defaultMinSize(minWidth: Size, minHeight: Size) = push(
+    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createDefaultMinSizeModifier(minWidth, minHeight)
+)

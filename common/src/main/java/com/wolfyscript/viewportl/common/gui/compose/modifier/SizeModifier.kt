@@ -113,3 +113,70 @@ class SizeModifierNode(
     }
 
 }
+
+class DefaultMinSizeModifier(
+    val minWidth: Size = Size.Unspecified,
+    val minHeight: Size = Size.Unspecified,
+) : ModifierData<DefaultMinSizeModifierNode> {
+
+    override fun create(): DefaultMinSizeModifierNode {
+        return DefaultMinSizeModifierNode(minWidth, minHeight)
+    }
+
+    override fun update(node: DefaultMinSizeModifierNode) {
+        node.minWidth = minWidth
+        node.minHeight = minHeight
+    }
+
+}
+
+class DefaultMinSizeModifierNode(
+    internal var minWidth: Size = Size.Unspecified,
+    internal var minHeight: Size = Size.Unspecified,
+) : ModifierNode, LayoutModifierNode {
+
+    override fun onAttach() {}
+
+    override fun onDetach() {}
+
+    override fun LayoutModifyScope.modify(constraints: Constraints): LayoutModification {
+        val modifiedConstraints = Constraints(
+            minWidth = if (minWidth.isSpecified) {
+                Size(
+                    if (constraints.minWidth.slot.value == 0) {
+                        minWidth.slot.value.coerceIn(0, constraints.maxWidth.slot.value).slots
+                    } else {
+                        constraints.minWidth.slot
+                    },
+                    if (constraints.minWidth.dp.value == 0) {
+                        minWidth.dp.value.coerceIn(0, constraints.maxWidth.dp.value).dp
+                    } else {
+                        constraints.minWidth.dp
+                    }
+                )
+            } else {
+                constraints.minWidth
+            },
+            maxWidth = constraints.maxWidth,
+            minHeight = if (minHeight.isSpecified) {
+                Size(
+                    if (constraints.minHeight.slot.value == 0) {
+                        minHeight.slot.value.coerceIn(0, constraints.maxHeight.slot.value).slots
+                    } else {
+                        constraints.minHeight.slot
+                    },
+                    if (constraints.minHeight.dp.value == 0) {
+                        minHeight.dp.value.coerceIn(0, constraints.maxHeight.dp.value).dp
+                    } else {
+                        constraints.minHeight.dp
+                    }
+                )
+            } else {
+                constraints.minHeight
+            },
+            maxHeight = constraints.maxHeight,
+        )
+        return modifyLayout(modifiedConstraints) { it }
+    }
+
+}

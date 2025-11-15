@@ -2,6 +2,7 @@ package com.wolfyscript.viewportl.common.gui.factories
 
 import com.wolfyscript.viewportl.common.gui.compose.SimpleModifierStackBuilder
 import com.wolfyscript.viewportl.common.gui.compose.modifier.ClickableModifierDataImpl
+import com.wolfyscript.viewportl.common.gui.compose.modifier.DefaultMinSizeModifier
 import com.wolfyscript.viewportl.common.gui.compose.modifier.InventoryDrawModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SizeModifier
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
@@ -36,6 +37,13 @@ class ModifierFactoryCommon : ModifierFactory {
         enforceIncoming: Boolean,
     ): ModifierData<*> {
         return SizeModifier(minWidth, minHeight, maxWidth, maxHeight, enforceIncoming)
+    }
+
+    override fun createDefaultMinSizeModifier(
+        minWidth: Size,
+        minHeight: Size,
+    ): ModifierData<*> {
+        return DefaultMinSizeModifier(minWidth, minHeight)
     }
 
     override fun createFillModifier(): ModifierData<*> {
