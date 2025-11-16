@@ -48,6 +48,13 @@ class Size(
         )
     }
 
+    operator fun times(factor: Float): Size {
+        return Size(
+            slot = (slot.value * factor).toInt().slots,
+            dp = (dp.value * factor).toInt().dp
+        )
+    }
+
     operator fun unaryMinus(): Size {
         return Size(
             slot = (-slot.value).slots,

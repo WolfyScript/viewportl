@@ -1,6 +1,7 @@
 package com.wolfyscript.viewportl.gui.compose.modifier
 
 import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.viewportl.gui.compose.layout.Direction
 import com.wolfyscript.viewportl.gui.compose.layout.Size
 import com.wolfyscript.viewportl.viewportl
 
@@ -137,4 +138,16 @@ fun ModifierStackBuilder.requireSizeIn(
  */
 fun ModifierStackBuilder.defaultMinSize(minWidth: Size = Size.Unspecified, minHeight: Size = Size.Unspecified) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createDefaultMinSizeModifier(minWidth, minHeight)
+)
+
+fun ModifierStackBuilder.fillMaxWidth(fraction: Float = 1f) = push(
+    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createFillModifier(Direction.Horizontal, fraction)
+)
+
+fun ModifierStackBuilder.fillMaxHeight(fraction: Float = 1f) = push(
+    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createFillModifier(Direction.Vertical, fraction)
+)
+
+fun ModifierStackBuilder.fillMaxSize(fraction: Float = 1f) = push(
+    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createFillModifier(Direction.Both, fraction)
 )

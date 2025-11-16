@@ -180,3 +180,59 @@ class DefaultMinSizeModifierNode(
     }
 
 }
+
+class FillModifierData(
+    val direction: Direction,
+    val fraction: Float,
+) : ModifierData<FillModifierNode> {
+
+    override fun create(): FillModifierNode {
+        return FillModifierNode(direction, fraction)
+    }
+
+    override fun update(node: FillModifierNode) {
+        node.direction = direction
+        node.fraction = fraction
+    }
+
+}
+
+class FillModifierNode(
+    var direction: Direction,
+    var fraction: Float,
+) : LayoutModifierNode {
+
+    override fun LayoutModifyScope.modify(constraints: Constraints): LayoutModification {
+        val correctFraction = fraction.coerceIn(0f, 1f)
+
+        val minWidth = if (direction.isVertical) {
+            constraints.maxWidth * correctFraction
+        } else {
+            constraints.minWidth
+        }
+
+        val minHeight = if (direction.isHorizontal) {
+            constraints.maxHeight * correctFraction
+        } else {
+            constraints.minHeight
+        }
+
+        return modifyLayout(
+            modifiedConstraints = Constraints(
+                minWidth,
+                constraints.maxWidth,
+                minHeight,
+                constraints.maxHeight
+            )
+        ) { it }
+    }
+
+    override fun onAttach() {
+
+    }
+
+    override fun onDetach() {
+
+    }
+
+}

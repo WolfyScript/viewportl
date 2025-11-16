@@ -1,6 +1,7 @@
 package com.wolfyscript.viewportl.gui.factories
 
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
+import com.wolfyscript.viewportl.gui.compose.layout.Direction
 import com.wolfyscript.viewportl.gui.compose.layout.Size
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
@@ -37,7 +38,7 @@ interface ModifierFactory {
         minHeight: Size = Size.Unspecified,
     ) : ModifierData<*>
 
-    fun createFillModifier(): ModifierData<*>
+    fun createFillModifier(direction: Direction, fraction: Float): ModifierData<*>
 
     fun createLayoutModifier(
         layoutFn: LayoutModifyScope.(Constraints) -> LayoutModification

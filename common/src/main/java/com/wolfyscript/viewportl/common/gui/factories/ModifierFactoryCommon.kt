@@ -3,10 +3,12 @@ package com.wolfyscript.viewportl.common.gui.factories
 import com.wolfyscript.viewportl.common.gui.compose.SimpleModifierStackBuilder
 import com.wolfyscript.viewportl.common.gui.compose.modifier.ClickableModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.DefaultMinSizeModifier
+import com.wolfyscript.viewportl.common.gui.compose.modifier.FillModifierData
 import com.wolfyscript.viewportl.common.gui.compose.modifier.InventoryDrawModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.LayoutModifierData
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SizeModifier
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
+import com.wolfyscript.viewportl.gui.compose.layout.Direction
 import com.wolfyscript.viewportl.gui.compose.layout.Size
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
@@ -47,8 +49,8 @@ class ModifierFactoryCommon : ModifierFactory {
         return DefaultMinSizeModifier(minWidth, minHeight)
     }
 
-    override fun createFillModifier(): ModifierData<*> {
-        TODO("Not yet implemented")
+    override fun createFillModifier(direction: Direction, fraction: Float): ModifierData<*> {
+        return FillModifierData(direction, fraction)
     }
 
     override fun createLayoutModifier(layoutFn: LayoutModifyScope.(Constraints) -> LayoutModification): ModifierData<*> {
