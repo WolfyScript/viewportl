@@ -32,7 +32,7 @@ interface Window {
     /**
      * Renders this window state using the specified [renderer]
      */
-    suspend fun render(renderer: Renderer<*>)
+    suspend fun render(runtime: ViewRuntime, renderer: Renderer<*>)
 
     fun close()
 

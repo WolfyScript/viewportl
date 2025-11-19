@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
+import com.wolfyscript.viewportl.gui.model.DataStoreMap
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.CoroutineScope
 import java.util.*
@@ -71,6 +72,8 @@ interface ViewRuntime : CoroutineScope {
     val viewportl: Viewportl
 
     val renderer: Renderer<*>
+
+    val storeOwner: DataStoreMap
 
     val interactionHandler: InteractionHandler<*>
 

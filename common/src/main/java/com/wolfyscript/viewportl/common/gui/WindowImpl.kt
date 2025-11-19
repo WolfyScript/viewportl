@@ -25,6 +25,7 @@ import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.compose.LayoutNode
 import com.wolfyscript.viewportl.common.gui.compose.RootMeasurePolicy
+import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.callback.TextInputCallback
@@ -32,6 +33,7 @@ import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.slotsSize
+import com.wolfyscript.viewportl.gui.model.LocalStoreOwner
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -194,10 +196,15 @@ class WindowImpl internal constructor(
         }
     }
 
-    override suspend fun render(renderer: Renderer<*>) {
+    override suspend fun render(runtime: ViewRuntime, renderer: Renderer<*>) {
         activeRenderer = renderer
 
-        composition.setContent(content)
+        composition.setContent {
+            CompositionLocalProvider(
+                LocalStoreOwner provides runtime.storeOwner,
+                content = content
+            )
+        }
         requireLayout = true
         requireDraw = true
     }

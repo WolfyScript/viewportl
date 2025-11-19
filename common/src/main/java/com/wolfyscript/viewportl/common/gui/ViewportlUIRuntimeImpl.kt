@@ -18,13 +18,10 @@
 
 package com.wolfyscript.viewportl.common.gui
 
-import androidx.compose.runtime.mutableStateMapOf
-import com.google.common.collect.Multimap
-import com.google.common.collect.MultimapBuilder
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.gui.ViewportlUIRuntime
 import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.ViewportlUIRuntime
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import kotlinx.coroutines.CoroutineScope
@@ -38,40 +35,43 @@ class ViewportlUIRuntimeImpl(private val viewportl: Viewportl) : ViewportlUIRunt
     override val coroutineContext: CoroutineContext = Dispatchers.Default
 
     private val runtimes: Long2ObjectMap<ViewRuntime> = Long2ObjectOpenHashMap()
-    private val cachedViewRuntimes: Multimap<Key, Long> = MultimapBuilder.hashKeys().hashSetValues().build()
-    private val viewRuntimesPerPlayer: MutableMap<UUID, Long> = mutableStateMapOf()
-
-    fun clearFromCache(id: Key) {
-        val runtimes = cachedViewRuntimes[id]
-        cachedViewRuntimes.removeAll(runtimes)
-
-        val playerEntries = viewRuntimesPerPlayer.entries.iterator()
-        while (playerEntries.hasNext()) {
-            val entry = playerEntries.next()
-            if (runtimes.contains(entry.value)) {
-                this.runtimes[entry.value].dispose()
-                playerEntries.remove()
-            }
-        }
-
-        cachedViewRuntimes.removeAll(id)
-    }
+    private val viewRuntimesPerPlayer: MutableMap<UUID, PlayerViewRuntimes> = mutableMapOf()
+    private val sharedViewRuntimes: MutableMap<Key, ViewRuntime> = mutableMapOf()
 
     override fun createViewRuntime(
         id: Key,
         viewers: Set<UUID>,
         then: suspend (ViewRuntime) -> Unit,
     ) {
-        // TODO: Reuse cached runtime or get rid of caching
         launch {
-            val view = viewportl.guiFactory.createInventoryUIRuntime(viewportl, coroutineContext, viewers)
+            val view: ViewRuntime = if (viewers.size > 1) {
+                val sharedView = sharedViewRuntimes[id] ?: viewportl.guiFactory.createInventoryUIRuntime(
+                    viewportl,
+                    coroutineContext,
+                    viewers
+                )
+
+                for (viewer in viewers) {
+                    val playerRuntimes = viewRuntimesPerPlayer.getOrPut(viewer) { PlayerViewRuntimes() }
+                    playerRuntimes[id] = sharedView
+                }
+
+                sharedView
+            } else {
+                viewRuntimesPerPlayer.getOrPut(viewers.first()) { PlayerViewRuntimes() }.let {
+                    val existing = it[id]
+                    if (existing != null) {
+                        existing.joinViewer(viewers.first())
+                        return@let existing
+                    }
+                    val view = viewportl.guiFactory.createInventoryUIRuntime(viewportl, coroutineContext, viewers)
+                    it[id] = view
+                    view
+                }
+            }
+
             synchronized(runtimes) {
                 runtimes.put(view.id, view)
-            }
-            synchronized(viewRuntimesPerPlayer) {
-                for (viewer in viewers) {
-                    viewRuntimesPerPlayer[viewer] = view.id
-                }
             }
 
             then(view)
@@ -80,6 +80,18 @@ class ViewportlUIRuntimeImpl(private val viewportl: Viewportl) : ViewportlUIRunt
 
     override fun getActiveRuntime(player: UUID): ViewRuntime? {
         return viewRuntimesPerPlayer[player]?.let { runtimes.get(it as Long) }
+    }
+
+}
+
+internal class PlayerViewRuntimes() {
+
+    private val runtimes: MutableMap<Key, ViewRuntime> = mutableMapOf()
+
+    operator fun get(id: Key): ViewRuntime? = runtimes[id]
+
+    operator fun set(id: Key, runtime: ViewRuntime) {
+        runtimes[id] = runtime
     }
 
 }

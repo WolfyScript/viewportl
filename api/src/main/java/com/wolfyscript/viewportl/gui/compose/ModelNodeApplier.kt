@@ -11,7 +11,7 @@ class ModelNodeApplier(root: Node, private val onChanges: () -> Unit = {}) : Abs
     }
 
     override fun insertTopDown(index: Int, instance: Node) {
-        //
+        // We are using the Bottom up method to create the tree
     }
 
     override fun insertBottomUp(index: Int, instance: Node) {

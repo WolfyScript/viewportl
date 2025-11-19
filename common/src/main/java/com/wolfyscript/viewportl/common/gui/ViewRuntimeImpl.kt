@@ -22,10 +22,13 @@ import androidx.compose.runtime.BroadcastFrameClock
 import androidx.compose.runtime.Composable
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.common.gui.model.SimpleDataStoreMap
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
+import com.wolfyscript.viewportl.gui.model.DataStoreMap
+import com.wolfyscript.viewportl.gui.model.Store
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -52,11 +55,14 @@ class ViewRuntimeImpl(
     override val id: Long = NEXT_ID++
     var running = true
 
+    override val storeOwner: DataStoreMap = SimpleDataStoreMap()
+
     init {
         interactionHandler.init(this)
     }
 
     private fun startMainLoop() {
+        running = true
         launch {
             while (running) {
                 if (viewers.isEmpty()) { // Check for viewers before rendering the next frame
@@ -110,7 +116,7 @@ class ViewRuntimeImpl(
             interactionHandler.onWindowOpen(it)
             renderer.onWindowOpen(this@ViewRuntimeImpl, it)
 
-            it.render(renderer)
+            it.render(this, renderer)
 
             println("COMPLETE")
         }
