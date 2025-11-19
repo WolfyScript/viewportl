@@ -81,6 +81,7 @@ class Size(
     override fun toString(): String {
         return "(slot=$slot, dp=$dp)"
     }
+
 }
 
 @JvmInline
@@ -108,3 +109,10 @@ val Int.dp get() = Dp(this)
 val Int.slotsSize get() = Size(slot = this.slots, dp = 0.dp)
 
 val Int.dpSize get() = Size(slot = 0.slots, dp = this.dp)
+
+fun Size.coerceIn(minimumValue: Size, maximumValue: Size): Size {
+    return Size(
+        slot.value.coerceIn(minimumValue.slot.value, maximumValue.slot.value).slots,
+        dp.value.coerceIn(minimumValue.dp.value, maximumValue.dp.value).dp
+    )
+}

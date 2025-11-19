@@ -206,13 +206,13 @@ class FillModifierNode(
         val correctFraction = fraction.coerceIn(0f, 1f)
 
         val minWidth = if (direction.isVertical) {
-            constraints.maxWidth * correctFraction
+            (constraints.maxWidth * correctFraction).coerceIn(constraints.minWidth, constraints.maxWidth)
         } else {
             constraints.minWidth
         }
 
         val minHeight = if (direction.isHorizontal) {
-            constraints.maxHeight * correctFraction
+            (constraints.maxHeight * correctFraction).coerceIn(constraints.minHeight, constraints.maxHeight)
         } else {
             constraints.minHeight
         }

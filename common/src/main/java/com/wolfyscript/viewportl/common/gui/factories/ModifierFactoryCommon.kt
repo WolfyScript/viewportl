@@ -6,6 +6,7 @@ import com.wolfyscript.viewportl.common.gui.compose.modifier.DefaultMinSizeModif
 import com.wolfyscript.viewportl.common.gui.compose.modifier.FillModifierData
 import com.wolfyscript.viewportl.common.gui.compose.modifier.InventoryDrawModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.LayoutModifierData
+import com.wolfyscript.viewportl.common.gui.compose.modifier.PaddingModifier
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SizeModifier
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Direction
@@ -29,7 +30,7 @@ class ModifierFactoryCommon : ModifierFactory {
         end: Size,
         bottom: Size,
     ): ModifierData<*> {
-        TODO("Not yet implemented")
+        return PaddingModifier(start, top, end, bottom)
     }
 
     override fun createSizeModifier(
