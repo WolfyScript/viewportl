@@ -7,7 +7,7 @@ A Minecraft Inventory GUI framework to easily create **powerful, reactive, and e
 Viewportl uses the Compose Runtime library to make the creation of Minecraft UIs very easy.  
 
 > [!note]
-> Jetpack Compose, that you may know from the Android, is build on top of the Compose Runtime.  
+> Jetpack Compose, that you may know from the Android Ecosystem, is build on top of the Compose Runtime.  
 > Compose Runtime is a standalone library separate from the Android stack and can be used outside of it.
 > Its main goal is to make the creation of dynamic (UI) Trees easy and provides utilities for it.
 
