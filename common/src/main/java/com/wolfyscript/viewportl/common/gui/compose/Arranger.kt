@@ -5,17 +5,13 @@ import com.wolfyscript.viewportl.gui.compose.layout.*
 
 class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
 
-    override val width: Size
-        get() {
-            return measurements?.width ?: Size.Zero
-        }
-    override val height: Size
-        get() {
-            return measurements?.height ?: Size.Zero
-        }
-
+    override var width: Size = Size.Zero
+        private set
+    override var height: Size = Size.Zero
+        private set
     override var position: Offset = Offset.Zero
-    internal var measurements: Measurements? = null
+    private var sizeOffset: Offset = Offset.Zero
+    internal var measurements: Measurements = Measurements()
         set(value) {
             val previous = field
             field = value
@@ -25,7 +21,7 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
             }
         }
 
-    private var previousConstraints: Constraints? = null
+    private var incomingConstraints: Constraints = Constraints()
 
     private var requiresRemeasure = false
     private var requiresReplacement = false
@@ -48,7 +44,7 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
     }
 
     private fun performMeasurement(constraints: Constraints, fn: () -> Measurements): Placeable {
-        previousConstraints = constraints
+        incomingConstraints = constraints
         measurements = fn()
         return this
     }
@@ -64,14 +60,14 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
     }
 
     private fun afterPlace() {
-        measurements?.placeChildren?.let { place ->
+        measurements.placeChildren.let { place ->
             SimplePlacementScope().place()
         }
     }
 
     override fun remeasure(constraints: Constraints): Boolean {
-        if (previousConstraints == null || previousConstraints != constraints) {
-            previousConstraints = constraints
+        if (incomingConstraints != constraints) {
+            incomingConstraints = constraints
             val previousMeasurements = measurements
             measure(constraints)
             return previousMeasurements != measurements
@@ -80,13 +76,16 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
     }
 
     override fun layout() {
-        if (measurements != null) {
-            val scope = SimplePlacementScope()
-            measurements?.placeChildren(scope)
-        }
+        val scope = SimplePlacementScope()
+        measurements.placeChildren(scope)
     }
 
     fun onMeasureChange() {
+        // TODO: move to a fun together with the same logic for LayoutModifiers
+        width = measurements.width.coerceIn(incomingConstraints.minWidth, incomingConstraints.maxWidth)
+        height = measurements.height.coerceIn(incomingConstraints.minHeight, incomingConstraints.maxHeight)
+        sizeOffset = Offset((width - measurements.width) / 2, (height - measurements.height) / 2)
+
         node.modifierStack.onMeasureChange()
 
         node.children.forEach { it.arranger.onMeasureChange() }
