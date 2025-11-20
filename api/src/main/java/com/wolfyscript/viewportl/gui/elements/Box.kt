@@ -1,9 +1,10 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
-import com.wolfyscript.viewportl.gui.compose.layout.Offset
-import com.wolfyscript.viewportl.gui.compose.layout.constrainHeight
-import com.wolfyscript.viewportl.gui.compose.layout.constrainWidth
+import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
+import com.wolfyscript.viewportl.gui.compose.layout.Placeable
+import com.wolfyscript.viewportl.gui.compose.layout.Size
+import com.wolfyscript.viewportl.gui.compose.layout.max
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 
@@ -13,21 +14,34 @@ import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 @Composable
 fun Box(modifier: ModifierStackBuilder = Modifier, content: @Composable () -> Unit) {
     Layout(modifier, content = content) { measurables, constraints ->
-        val width = constraints.maxWidth
-        val height = constraints.maxHeight
-
-        val placeables = measurables.map {
-            val placeable = it.measure(constraints)
-            val offset = Offset(
-                (width - constraints.constrainWidth(placeable.width)) / 2,
-                (height - constraints.constrainHeight(placeable.height)) / 2
-            )
-            placeable to offset
+        if (measurables.isEmpty()) {
+            return@Layout layout(constraints.minWidth, constraints.minHeight) {}
         }
 
-        layout(constraints.maxWidth, constraints.maxHeight) {
-            for (placeableOffset in placeables) {
-                placeableOffset.first.placeAt(placeableOffset.second.x, placeableOffset.second.y)
+        if (measurables.size == 1) {
+            val placeable = measurables[0].measure(constraints)
+            val width = max(constraints.minWidth, placeable.width)
+            val height = max(constraints.minHeight, placeable.height)
+
+            return@Layout layout(width, height) {
+                placeable.placeAt(Size.Zero, Size.Zero)
+            }
+        }
+
+        val placeables = arrayOfNulls<Placeable>(measurables.size)
+        var width = constraints.minWidth
+        var height = constraints.minHeight
+
+        for ((index, measurable) in measurables.withIndex()) {
+            val placeable = measurable.measure(constraints)
+            placeables[index] = placeable
+            width = max(width, placeable.width)
+            height = max(height, placeable.height)
+        }
+
+        layout(width, height) {
+            for (placeable in placeables) {
+                placeable?.placeAt(Size.Zero, Size.Zero)
             }
         }
     }
@@ -38,5 +52,7 @@ fun Box(modifier: ModifierStackBuilder = Modifier, content: @Composable () -> Un
  */
 @Composable
 fun Box(modifier: ModifierStackBuilder) {
-    Box(modifier, {})
+    Layout(modifier, content = {}, EmptyBoxMeasurePolicy)
 }
+
+private val EmptyBoxMeasurePolicy = MeasurePolicy { measurables, constraints -> layout(constraints.minWidth, constraints.minHeight) {} }

@@ -1,5 +1,7 @@
 package com.wolfyscript.viewportl.gui.compose.layout
 
+import kotlin.math.max
+
 class Size(
     val slot: Slot,
     val dp: Dp,
@@ -114,5 +116,12 @@ fun Size.coerceIn(minimumValue: Size, maximumValue: Size): Size {
     return Size(
         slot.value.coerceIn(minimumValue.slot.value, maximumValue.slot.value).slots,
         dp.value.coerceIn(minimumValue.dp.value, maximumValue.dp.value).dp
+    )
+}
+
+fun max(a: Size, b: Size): Size {
+    return Size(
+        max(a.slot.value, b.slot.value).slots,
+        max(a.dp.value, b.dp.value).dp
     )
 }
