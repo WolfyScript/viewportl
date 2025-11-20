@@ -141,8 +141,8 @@ class ModifierStackImpl() : ModifierStack {
         }
 
         var currentMeasure: MeasureModification = initialMeasure
-        val scope = SimpleMeasureModifyScope()
         for (modification in modificationSnapshots) {
+            val scope = SimpleMeasureModifyScope(modification.constraints)
             currentMeasure = with(modification) {
                 scope.measure(currentMeasure)
             }

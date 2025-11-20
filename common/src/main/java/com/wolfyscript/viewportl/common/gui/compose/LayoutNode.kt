@@ -16,13 +16,12 @@ class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCa
     override var parent: Node? = null
     internal val children = mutableListOf<LayoutNode>()
 
-    override var modifierStack = ModifierStackImpl()
+    override val modifierStack = ModifierStackImpl()
     override var modifier: ModifierStackBuilder = Modifier
         set(value) {
             // Node reused. Modifiers were updated
             field = value
-            // TODO: Check each modifier and swap if changed instead of full swap
-            modifierStack.update(field)
+            modifierStack.update(value)
         }
 
     override val arranger: NodeArrangerImpl = NodeArrangerImpl(this)
