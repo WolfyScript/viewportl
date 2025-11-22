@@ -43,7 +43,7 @@ internal class CounterStore : Store {
 fun Counter() {
     val countStore = store(key = Key.key("viewportl", "counter")) { CounterStore() }
 
-    Row { // Horizontally splits the inventory into sections and places children left to right
+    Row(content = { // Horizontally splits the inventory into sections and places children left to right
         Box { // Centers child in first section
             Icon(createCounterStack(countStore.count))
         }
@@ -68,7 +68,7 @@ fun Counter() {
                 }
             }
         }
-    }
+    })
 }
 
 private fun createCounterStack(count: Int): ItemStackSnapshot {
