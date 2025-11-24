@@ -208,13 +208,13 @@ class FillModifierNode(
         val minWidth = if (direction.isVertical) {
             (constraints.maxWidth * correctFraction).coerceIn(constraints.minWidth, constraints.maxWidth)
         } else {
-            constraints.minWidth
+            constraints.maxWidth
         }
 
         val minHeight = if (direction.isHorizontal) {
             (constraints.maxHeight * correctFraction).coerceIn(constraints.minHeight, constraints.maxHeight)
         } else {
-            constraints.minHeight
+            constraints.maxHeight
         }
 
         return modifyLayout(
