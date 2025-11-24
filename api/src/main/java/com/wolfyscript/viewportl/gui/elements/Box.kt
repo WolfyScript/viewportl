@@ -2,8 +2,10 @@ package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
 import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
+import com.wolfyscript.viewportl.gui.compose.layout.Alignment
+import com.wolfyscript.viewportl.gui.compose.layout.LayoutDirection
+import com.wolfyscript.viewportl.gui.compose.layout.Offset
 import com.wolfyscript.viewportl.gui.compose.layout.Placeable
-import com.wolfyscript.viewportl.gui.compose.layout.Size
 import com.wolfyscript.viewportl.gui.compose.layout.max
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
@@ -12,7 +14,11 @@ import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
  * A Box centers its content. If more than one child is present they are rendered above each other.
  */
 @Composable
-fun Box(modifier: ModifierStackBuilder = Modifier, content: @Composable () -> Unit) {
+fun Box(
+    modifier: ModifierStackBuilder = Modifier,
+    contentAlignment: Alignment.HorizontalAndVertical = Alignment.TopStart,
+    content: @Composable () -> Unit
+) {
     Layout(modifier, content = content) { measurables, constraints ->
         if (measurables.isEmpty()) {
             return@Layout layout(constraints.minWidth, constraints.minHeight) {}
@@ -24,7 +30,8 @@ fun Box(modifier: ModifierStackBuilder = Modifier, content: @Composable () -> Un
             val height = max(constraints.minHeight, placeable.height)
 
             return@Layout layout(width, height) {
-                placeable.placeAt(Size.Zero, Size.Zero)
+                val offset = contentAlignment.align(Offset(placeable.width, placeable.height), Offset(width, height), LayoutDirection.LtR)
+                placeable.placeAt(offset.x, offset.y)
             }
         }
 
@@ -41,7 +48,10 @@ fun Box(modifier: ModifierStackBuilder = Modifier, content: @Composable () -> Un
 
         layout(width, height) {
             for (placeable in placeables) {
-                placeable?.placeAt(Size.Zero, Size.Zero)
+                placeable?.let {
+                    val offset = contentAlignment.align(Offset(it.width, it.height), Offset(width, height), LayoutDirection.LtR)
+                    it.placeAt(offset.x, offset.y)
+                }
             }
         }
     }

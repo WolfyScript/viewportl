@@ -1,6 +1,7 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
+import com.wolfyscript.viewportl.gui.compose.layout.Alignment
 import com.wolfyscript.viewportl.gui.compose.layout.Arrangement
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
@@ -17,6 +18,7 @@ import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 fun Row(
     modifier: ModifierStackBuilder = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    verticalAlignment: Alignment.Vertical = Alignment.Top,
     content: @Composable () -> Unit
 ) {
     Layout(modifier, content = content) { measurables, constraints ->
@@ -48,7 +50,7 @@ fun Row(
         }
 
         val finalWidth = max(constraints.minWidth, fixedSpace)
-        val finalHeight = max(constraints.minHeight, constraints.maxHeight)
+        val finalHeight = max(constraints.minHeight, height)
 
         val mainAxisPositions = horizontalArrangement.arrange(finalWidth, LayoutDirection.LtR, childWidthSizes)
 
