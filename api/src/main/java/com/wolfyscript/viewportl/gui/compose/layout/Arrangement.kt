@@ -19,7 +19,7 @@ object Arrangement {
 
     interface Vertical {
 
-        fun arrange(totalWidth: Size, sizes: Array<Size>): Array<Size>
+        fun arrange(totalHeight: Size, sizes: Array<Size>): Array<Size>
 
     }
 
@@ -85,7 +85,7 @@ object Arrangement {
     object Top : Vertical {
 
         override fun arrange(
-            totalWidth: Size,
+            totalHeight: Size,
             sizes: Array<Size>,
         ): Array<Size> = placeConcatStart(sizes, false)
 
@@ -97,9 +97,9 @@ object Arrangement {
     object Bottom : Vertical {
 
         override fun arrange(
-            totalWidth: Size,
+            totalHeight: Size,
             sizes: Array<Size>,
-        ): Array<Size> = placeConcatEnd(totalWidth, sizes, false)
+        ): Array<Size> = placeConcatEnd(totalHeight, sizes, false)
 
     }
 
@@ -121,9 +121,9 @@ object Arrangement {
         }
 
         override fun arrange(
-            totalWidth: Size,
+            totalHeight: Size,
             sizes: Array<Size>,
-        ): Array<Size> = placeCenter(totalWidth, sizes, false)
+        ): Array<Size> = placeCenter(totalHeight, sizes, false)
 
     }
 
@@ -145,9 +145,9 @@ object Arrangement {
         }
 
         override fun arrange(
-            totalWidth: Size,
+            totalHeight: Size,
             sizes: Array<Size>,
-        ): Array<Size> = placeSpaceEvenly(totalWidth, sizes, false)
+        ): Array<Size> = placeSpaceEvenly(totalHeight, sizes, false)
 
     }
 
@@ -169,9 +169,9 @@ object Arrangement {
         }
 
         override fun arrange(
-            totalWidth: Size,
+            totalHeight: Size,
             sizes: Array<Size>,
-        ): Array<Size> = placeSpaceBetween(totalWidth, sizes, false)
+        ): Array<Size> = placeSpaceBetween(totalHeight, sizes, false)
 
     }
 
@@ -193,9 +193,9 @@ object Arrangement {
         }
 
         override fun arrange(
-            totalWidth: Size,
+            totalHeight: Size,
             sizes: Array<Size>,
-        ): Array<Size> = placeSpaceAround(totalWidth, sizes, false)
+        ): Array<Size> = placeSpaceAround(totalHeight, sizes, false)
 
     }
 
