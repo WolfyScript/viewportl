@@ -7,19 +7,9 @@ enum class Direction {
     Both;
 
     val isVertical: Boolean
-        get() {
-            return when (this) {
-                Vertical, Both -> true
-                Horizontal -> false
-            }
-        }
+        get() = this == Vertical || this == Both
 
     val isHorizontal: Boolean
-        get() {
-            return when (this) {
-                Vertical -> false
-                Horizontal, Both -> true
-            }
-        }
+        get() = this == Horizontal || this == Both
 
 }
