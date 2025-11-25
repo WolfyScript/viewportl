@@ -205,16 +205,16 @@ class FillModifierNode(
     override fun LayoutModifyScope.modify(constraints: Constraints): LayoutModification {
         val correctFraction = fraction.coerceIn(0f, 1f)
 
-        val minWidth = if (direction.isVertical) {
+        val minWidth = if (direction.isHorizontal) {
             (constraints.maxWidth * correctFraction).coerceIn(constraints.minWidth, constraints.maxWidth)
         } else {
-            constraints.maxWidth
+            constraints.minWidth
         }
 
-        val minHeight = if (direction.isHorizontal) {
+        val minHeight = if (direction.isVertical) {
             (constraints.maxHeight * correctFraction).coerceIn(constraints.minHeight, constraints.maxHeight)
         } else {
-            constraints.maxHeight
+            constraints.minHeight
         }
 
         return modifyLayout(
