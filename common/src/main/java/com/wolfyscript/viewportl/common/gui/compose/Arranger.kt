@@ -63,6 +63,7 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
         measurements.placeChildren.let { place ->
             SimplePlacementScope().place()
         }
+        onLayoutChange()
     }
 
     override fun remeasure(constraints: Constraints): Boolean {
@@ -80,6 +81,10 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
         measurements.placeChildren(scope)
     }
 
+    fun onLayoutChange() {
+        node.modifierStack.onLayoutChange()
+    }
+
     fun onMeasureChange() {
         // TODO: move to a fun together with the same logic for LayoutModifiers
         width = measurements.width.coerceIn(incomingConstraints.minWidth, incomingConstraints.maxWidth)
@@ -87,8 +92,6 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
         sizeOffset = Offset((width - measurements.width) / 2, (height - measurements.height) / 2)
 
         node.modifierStack.onMeasureChange()
-
-        node.children.forEach { it.arranger.onMeasureChange() }
     }
 
 }

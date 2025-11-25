@@ -1,5 +1,6 @@
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.spigot.api.wrappers.utils.unwrapSpigot
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
@@ -17,9 +18,14 @@ class CacheInventoryDrawScope(
         offset: Offset,
         stack: ItemStackSnapshot,
     ) {
+        if (inventory == null) return
         val finalPos = nodeOffset + offset
         val slot = finalPos.x.slot.value + finalPos.y.slot.value * 9
-        inventory?.setItem(slot, stack.unwrapSpigot())
+        if (slot < inventory.size) {
+            inventory.setItem(slot, stack.unwrapSpigot())
+        } else {
+            ScafallProvider.get().logger.warn("Skipping out of bounds slot: $slot")
+        }
     }
 
     override fun clear() {

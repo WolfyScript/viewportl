@@ -30,6 +30,8 @@ interface ModifierNode {
 
     fun onMeasurementsChanged() { }
 
+    fun onLayoutChanged() {}
+
 }
 
 /**

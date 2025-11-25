@@ -33,7 +33,12 @@ class InventoryDrawModifierNodeImpl(
     override fun onMeasurementsChanged() {
         if (previousScope != null) {
             previousScope!!.clear()
-            previousScope = null
+        }
+    }
+
+    override fun onLayoutChanged() {
+        if (previousScope != null) {
+            previousScope!!.clear()
         }
     }
 
@@ -44,7 +49,6 @@ class InventoryDrawModifierNodeImpl(
     override fun onDetach() {
         if (previousScope != null) {
             previousScope!!.clear()
-            previousScope = null
         }
     }
 

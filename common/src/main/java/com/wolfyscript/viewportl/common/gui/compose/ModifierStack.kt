@@ -182,6 +182,12 @@ class ModifierStackImpl() : ModifierStack {
         }
     }
 
+    fun onLayoutChange() {
+        for (node in modifiers) {
+            node.onLayoutChanged()
+        }
+    }
+
 }
 
 class SimpleModifierStackBuilder : ModifierStackBuilder {
