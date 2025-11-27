@@ -33,25 +33,25 @@ class SizeModifierNode(
 
     private fun targetConstraints(outerMaxWidth: Dp, outerMaxHeight: Dp): Constraints {
         val maxWidth: Dp = if (maxWidth.isSpecified) {
-            Dp(maxWidth.value.coerceAtLeast(0f))
+            maxWidth.value.coerceAtLeast(0f).dp
         } else {
             outerMaxWidth
         }
 
         val maxHeight: Dp = if (maxHeight.isSpecified) {
-            Dp(maxHeight.value.coerceAtLeast(0f))
+            maxHeight.value.coerceAtLeast(0f).dp
         } else {
             outerMaxHeight
         }
 
         val minWidth: Dp = if (minWidth.isSpecified) {
-            Dp(minWidth.value.coerceIn(0f, maxWidth.value))
+            minWidth.value.coerceIn(0f, maxWidth.value).dp
         } else {
             Dp.Zero
         }
 
         val minHeight: Dp = if (minHeight.isSpecified) {
-            Dp(minHeight.value.coerceIn(0f, maxHeight.value))
+            minHeight.value.coerceIn(0f, maxHeight.value).dp
         } else {
             Dp.Zero
         }

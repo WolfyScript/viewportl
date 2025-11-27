@@ -58,10 +58,10 @@ fun Constraints.constrainHeight(height: Dp): Dp {
 
 fun Constraints.constrain(otherConstraints: Constraints): Constraints {
     return Constraints(
-        minWidth = Dp(otherConstraints.minWidth.value.coerceIn(minWidth.value, maxWidth.value)),
-        maxWidth = Dp(otherConstraints.maxWidth.value.coerceIn(minWidth.value, maxWidth.value)),
-        minHeight = Dp(otherConstraints.minHeight.value.coerceIn(minHeight.value, maxHeight.value)),
-        maxHeight = Dp(otherConstraints.maxHeight.value.coerceIn(minHeight.value, maxHeight.value)),
+        minWidth = otherConstraints.minWidth.value.coerceIn(minWidth.value, maxWidth.value).dp,
+        maxWidth = otherConstraints.maxWidth.value.coerceIn(minWidth.value, maxWidth.value).dp,
+        minHeight = otherConstraints.minHeight.value.coerceIn(minHeight.value, maxHeight.value).dp,
+        maxHeight = otherConstraints.maxHeight.value.coerceIn(minHeight.value, maxHeight.value).dp,
     )
 }
 

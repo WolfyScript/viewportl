@@ -127,7 +127,7 @@ class ModifierStackImpl() : ModifierStack {
             if (modifier !is LayoutModifierNode) continue
 
             val latestModification = with(modifier) {
-                scope.modify(nodeConstraints)
+                scope.modify(modificationSnapshots.firstOrNull()?.constraints ?: nodeConstraints)
             }
             modificationSnapshots.addFirst(latestModification)
         }
