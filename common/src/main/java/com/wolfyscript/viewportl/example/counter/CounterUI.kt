@@ -9,6 +9,14 @@ import com.wolfyscript.scafall.adventure.vanilla
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.wrappers.snapshot
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
+import com.wolfyscript.viewportl.gui.compose.layout.Alignment
+import com.wolfyscript.viewportl.gui.compose.layout.Arrangement
+import com.wolfyscript.viewportl.gui.compose.layout.slots
+import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
+import com.wolfyscript.viewportl.gui.compose.modifier.fillMaxHeight
+import com.wolfyscript.viewportl.gui.compose.modifier.fillMaxWidth
+import com.wolfyscript.viewportl.gui.compose.modifier.height
+import com.wolfyscript.viewportl.gui.compose.modifier.width
 import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.gui.model.Store
 import com.wolfyscript.viewportl.gui.model.store
@@ -43,32 +51,39 @@ internal class CounterStore : Store {
 fun Counter() {
     val countStore = store(key = Key.key("viewportl", "counter")) { CounterStore() }
 
-    Row(content = { // Horizontally splits the inventory into sections and places children left to right
-        Box { // Centers child in first section
-            Icon(createCounterStack(countStore.count))
+    Row(
+        modifier = Modifier
+            .height(3.slots) // limit height to 3 incase Counter is used in a bigger inventory
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        Box(Modifier.width(3.slots).fillMaxHeight(), Alignment.Center) {
+            Icon(stack = createCounterStack(countStore.count))
         }
-        Column { // Splits other section vertically, and places buttons vertically top to bottom
-            Button(onClick = { countStore.increment() }) {
-                Icon(stack = ItemStack(Items.GREEN_CONCRETE).apply {
-                    set(DataComponents.CUSTOM_NAME, "<b>Increment".deser().vanilla())
-                }.snapshot())
-            }
-            Button(onClick = { countStore.decrement() }) {
-                Icon(stack = ItemStack(Items.RED_CONCRETE).apply {
-                    set(DataComponents.CUSTOM_NAME, "<b>Decrement".deser().vanilla())
-                }.snapshot())
-            }
-        }
-        if (countStore.count != 0) {
-            Box {
-                Button(onClick = { countStore.reset() }) {
-                    Icon(stack = ItemStack(Items.CYAN_CONCRETE).apply {
-                        set(DataComponents.CUSTOM_NAME, "<b>Reset".deser().vanilla())
+        Row(Modifier.width(3.slots), Arrangement.SpaceBetween) {
+            Column(Modifier.fillMaxHeight(), Arrangement.SpaceBetween) {
+                Button(onClick = { countStore.increment() }) {
+                    Icon(stack = ItemStack(Items.GREEN_CONCRETE).apply {
+                        set(DataComponents.CUSTOM_NAME, "<b>Increment".deser().vanilla())
+                    }.snapshot())
+                }
+                Button(onClick = { countStore.decrement() }) {
+                    Icon(stack = ItemStack(Items.RED_CONCRETE).apply {
+                        set(DataComponents.CUSTOM_NAME, "<b>Decrement".deser().vanilla())
                     }.snapshot())
                 }
             }
+            if (countStore.count != 0) {
+                Box(Modifier.fillMaxHeight(), Alignment.Center) {
+                    Button(onClick = { countStore.reset() }) {
+                        Icon(stack = ItemStack(Items.CYAN_CONCRETE).apply {
+                            set(DataComponents.CUSTOM_NAME, "<b>Reset".deser().vanilla())
+                        }.snapshot())
+                    }
+                }
+            }
         }
-    })
+    }
 }
 
 private fun createCounterStack(count: Int): ItemStackSnapshot {
