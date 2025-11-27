@@ -1,127 +1,65 @@
 package com.wolfyscript.viewportl.gui.compose.layout
 
 import kotlin.math.max
+import kotlin.math.roundToInt
 
-class Size(
-    val slot: Slot,
-    val dp: Dp,
-) {
+@JvmInline
+value class Dp(val value: Float) : Comparable<Dp> {
 
     companion object {
-        val Zero = Size(0.slots, 0.dp)
 
-        val Unspecified = Size(Int.MIN_VALUE.slots, Int.MIN_VALUE.dp)
+        val Zero = Dp(0f)
+        val Unspecified = Dp(Float.NaN)
+        val Infinity = Dp(Float.POSITIVE_INFINITY)
+
     }
 
-    val isSpecified: Boolean = slot.value != Int.MIN_VALUE && dp.value != Int.MIN_VALUE
+    val isSpecified: Boolean get() = !value.isNaN()
 
-    operator fun plus(other: Size): Size {
-        return Size(
-            slot = (slot.value + other.slot.value).slots,
-            dp = (dp.value + other.dp.value).dp
-        )
+    operator fun plus(other: Dp): Dp = Dp(value + other.value)
+
+    operator fun minus(other: Dp): Dp = Dp(value - other.value)
+
+    operator fun div(other: Dp): Dp = Dp(value / other.value)
+
+    operator fun div(other: Int): Dp = Dp(value / other)
+
+    operator fun div(other: Float): Dp = Dp(value / other)
+
+    operator fun times(other: Dp): Dp = Dp(value * other.value)
+
+    operator fun times(other: Float): Dp = Dp(value * other)
+
+    operator fun times(factor: Int): Dp = Dp(value * factor)
+
+    operator fun unaryMinus(): Dp = Dp(-value)
+
+    fun roundToSlots(): Int {
+        // 18 pixels is the size of one slot in the default resource pack
+        // This makes it possible to combine both slot based UIs and client-side rendered UIs in the future
+        return (value / 18f).roundToInt()
     }
 
-    operator fun minus(other: Size): Size {
-        return Size(
-            slot = (slot.value - other.slot.value).slots,
-            dp = (dp.value - other.dp.value).dp
-        )
+    fun roundToPixels(): Int {
+        return value.roundToInt()
     }
 
-    operator fun div(other: Size): Size {
-        return Size(
-            slot = (slot.value / other.slot.value).slots,
-            dp = (dp.value / other.dp.value).dp
-        )
-    }
-
-    operator fun div(other: Int): Size {
-        return Size(
-            slot = (slot.value / other).slots,
-            dp = (dp.value / other).dp
-        )
-    }
-
-    operator fun times(factor: Int): Size {
-        return Size(
-            slot = (slot.value * factor).slots,
-            dp = (dp.value * factor).dp
-        )
-    }
-
-    operator fun times(factor: Float): Size {
-        return Size(
-            slot = (slot.value * factor).toInt().slots,
-            dp = (dp.value * factor).toInt().dp
-        )
-    }
-
-    operator fun unaryMinus(): Size {
-        return Size(
-            slot = (-slot.value).slots,
-            dp = (-dp.value).dp
-        )
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Size) return false
-
-        if (slot != other.slot) return false
-        if (dp != other.dp) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = slot.hashCode()
-        result = 31 * result + dp.hashCode()
-        return result
-    }
-
-    override fun toString(): String {
-        return "(slot=$slot, dp=$dp)"
+    override fun compareTo(other: Dp): Int {
+        return if (value.isNaN() || other.value.isNaN()) 0 else value.compareTo(other.value)
     }
 
 }
 
-@JvmInline
-value class Slot(val value: Int)
+val Int.slots get() = Dp(this * 18f)
 
-@JvmInline
-value class Dp(val value: Int)
+val Int.dp get() = Dp(this.toFloat())
 
-infix fun Int.slotsDp(dp: Int): Size {
-    return Size(Slot(this), Dp(dp))
+val Float.dp get() = Dp(this)
+
+fun Dp.coerceIn(minimumValue: Dp, maximumValue: Dp): Dp {
+    return Dp(value.coerceIn(minimumValue.value, maximumValue.value))
 }
 
-infix fun Slot.or(dp: Dp): Size {
-    return Size(this, dp)
-}
-
-infix fun Dp.or(slot: Slot): Size {
-    return Size(slot, this)
-}
-
-val Int.slots get() = Slot(this)
-
-val Int.dp get() = Dp(this)
-
-val Int.slotsSize get() = Size(slot = this.slots, dp = 0.dp)
-
-val Int.dpSize get() = Size(slot = 0.slots, dp = this.dp)
-
-fun Size.coerceIn(minimumValue: Size, maximumValue: Size): Size {
-    return Size(
-        slot.value.coerceIn(minimumValue.slot.value, maximumValue.slot.value).slots,
-        dp.value.coerceIn(minimumValue.dp.value, maximumValue.dp.value).dp
-    )
-}
-
-fun max(a: Size, b: Size): Size {
-    return Size(
-        max(a.slot.value, b.slot.value).slots,
-        max(a.dp.value, b.dp.value).dp
-    )
+fun max(a: Dp, b: Dp): Dp {
+    return Dp(max(a.value, b.value))
 }

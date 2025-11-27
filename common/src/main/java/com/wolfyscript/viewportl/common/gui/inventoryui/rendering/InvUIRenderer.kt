@@ -38,7 +38,7 @@ abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) 
             y = offset.y + node.arranger.position.y
         )
         if (drawMod != null) {
-            val scope: InventoryDrawScope = subDrawScope(nodeOffset, node.arranger.width.slot.value, node.arranger.height.slot.value)
+            val scope: InventoryDrawScope = subDrawScope(nodeOffset, node.arranger.width.roundToSlots(), node.arranger.height.roundToSlots())
 
 //            scope.clear() // TODO: Move clear to point of node invalidation to prevent bleed into other components that do not rerender
             with(drawMod) {

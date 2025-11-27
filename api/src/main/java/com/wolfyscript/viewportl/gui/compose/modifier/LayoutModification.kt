@@ -2,7 +2,7 @@ package com.wolfyscript.viewportl.gui.compose.modifier
 
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
-import com.wolfyscript.viewportl.gui.compose.layout.Size
+import com.wolfyscript.viewportl.gui.compose.layout.Dp
 
 /**
  * Result of a [LayoutModifierNode] that consists of the modified [constraints]
@@ -32,12 +32,12 @@ interface MeasureModification {
     /**
      * The width of this **[LayoutModifierNode]**
      */
-    val measuredWidth: Size
+    val measuredWidth: Dp
 
     /**
      * The height of this **[LayoutModifierNode]**
      */
-    val measuredHeight: Size
+    val measuredHeight: Dp
 
     /**
      * The additional offset relative to the previous Nodes origin

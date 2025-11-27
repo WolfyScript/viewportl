@@ -28,11 +28,13 @@ import com.wolfyscript.viewportl.common.gui.compose.RootMeasurePolicy
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
-import com.wolfyscript.viewportl.gui.callback.TextInputCallback
-import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
+import com.wolfyscript.viewportl.gui.input.TextInputCallback
+import com.wolfyscript.viewportl.gui.input.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.layout.slotsSize
+import com.wolfyscript.viewportl.gui.compose.layout.Dp
+import com.wolfyscript.viewportl.gui.compose.layout.dp
+import com.wolfyscript.viewportl.gui.compose.layout.slots
 import com.wolfyscript.viewportl.gui.model.LocalStoreOwner
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.*
@@ -101,7 +103,7 @@ class WindowImpl internal constructor(
      * Measures the root node and places it. This is recursively measures and then places all the child nodes.
      */
     private fun measureAndPlace() {
-        val rootConstraints = Constraints(0.slotsSize, width().slotsSize, 0.slotsSize, height().slotsSize)
+        val rootConstraints = Constraints(Dp.Zero, width().slots, Dp.Zero, height().slots)
         root.arranger.remeasure(rootConstraints)
         root.arranger.layout()
     }

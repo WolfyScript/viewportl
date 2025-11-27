@@ -2,24 +2,24 @@ package com.wolfyscript.viewportl.gui.compose.modifier
 
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.gui.compose.layout.Direction
-import com.wolfyscript.viewportl.gui.compose.layout.Size
+import com.wolfyscript.viewportl.gui.compose.layout.Dp
 import com.wolfyscript.viewportl.viewportl
 
-fun ModifierStackBuilder.width(width: Size) = push(
+fun ModifierStackBuilder.width(width: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = width,
         maxWidth = width
     )
 )
 
-fun ModifierStackBuilder.height(height: Size) = push(
+fun ModifierStackBuilder.height(height: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minHeight = height,
         maxHeight = height
     )
 )
 
-fun ModifierStackBuilder.size(size: Size) = push(
+fun ModifierStackBuilder.size(size: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = size,
         minHeight = size,
@@ -28,7 +28,7 @@ fun ModifierStackBuilder.size(size: Size) = push(
     )
 )
 
-fun ModifierStackBuilder.size(width: Size, height: Size) = push(
+fun ModifierStackBuilder.size(width: Dp, height: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = width,
         maxWidth = width,
@@ -37,14 +37,14 @@ fun ModifierStackBuilder.size(width: Size, height: Size) = push(
     )
 )
 
-fun ModifierStackBuilder.widthIn(min: Size, max: Size) = push(
+fun ModifierStackBuilder.widthIn(min: Dp, max: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = min,
         maxWidth = max,
     )
 )
 
-fun ModifierStackBuilder.heightIn(min: Size, max: Size) = push(
+fun ModifierStackBuilder.heightIn(min: Dp, max: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minHeight = min,
         maxHeight = max,
@@ -52,10 +52,10 @@ fun ModifierStackBuilder.heightIn(min: Size, max: Size) = push(
 )
 
 fun ModifierStackBuilder.sizeIn(
-    minWidth: Size,
-    minHeight: Size,
-    maxWidth: Size,
-    maxHeight: Size,
+    minWidth: Dp,
+    minHeight: Dp,
+    maxWidth: Dp,
+    maxHeight: Dp,
 ) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = minWidth,
@@ -65,7 +65,7 @@ fun ModifierStackBuilder.sizeIn(
     )
 )
 
-fun ModifierStackBuilder.requireWidth(width: Size) = push(
+fun ModifierStackBuilder.requireWidth(width: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = width,
         maxWidth = width,
@@ -73,7 +73,7 @@ fun ModifierStackBuilder.requireWidth(width: Size) = push(
     )
 )
 
-fun ModifierStackBuilder.requireHeight(height: Size) = push(
+fun ModifierStackBuilder.requireHeight(height: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minHeight = height,
         maxHeight = height,
@@ -81,7 +81,7 @@ fun ModifierStackBuilder.requireHeight(height: Size) = push(
     )
 )
 
-fun ModifierStackBuilder.requireSize(size: Size) = push(
+fun ModifierStackBuilder.requireSize(size: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = size,
         minHeight = size,
@@ -91,7 +91,7 @@ fun ModifierStackBuilder.requireSize(size: Size) = push(
     )
 )
 
-fun ModifierStackBuilder.requireSize(width: Size, height: Size) = push(
+fun ModifierStackBuilder.requireSize(width: Dp, height: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = width,
         maxWidth = width,
@@ -101,7 +101,7 @@ fun ModifierStackBuilder.requireSize(width: Size, height: Size) = push(
     )
 )
 
-fun ModifierStackBuilder.requireWidthIn(min: Size, max: Size) = push(
+fun ModifierStackBuilder.requireWidthIn(min: Dp, max: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = min,
         maxWidth = max,
@@ -109,7 +109,7 @@ fun ModifierStackBuilder.requireWidthIn(min: Size, max: Size) = push(
     )
 )
 
-fun ModifierStackBuilder.requireHeightIn(min: Size, max: Size) = push(
+fun ModifierStackBuilder.requireHeightIn(min: Dp, max: Dp) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minHeight = min,
         maxHeight = max,
@@ -118,10 +118,10 @@ fun ModifierStackBuilder.requireHeightIn(min: Size, max: Size) = push(
 )
 
 fun ModifierStackBuilder.requireSizeIn(
-    minWidth: Size,
-    minHeight: Size,
-    maxWidth: Size,
-    maxHeight: Size,
+    minWidth: Dp,
+    minHeight: Dp,
+    maxWidth: Dp,
+    maxHeight: Dp,
 ) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
         minWidth = minWidth,
@@ -136,7 +136,7 @@ fun ModifierStackBuilder.requireSizeIn(
  * Specifies a minimum [width][minWidth] or [height][minHeight],
  * that applies when the incoming [minWidth][com.wolfyscript.viewportl.gui.compose.layout.Constraints.minWidth]/[minHeight][com.wolfyscript.viewportl.gui.compose.layout.Constraints.minHeight] is `0`.
  */
-fun ModifierStackBuilder.defaultMinSize(minWidth: Size = Size.Unspecified, minHeight: Size = Size.Unspecified) = push(
+fun ModifierStackBuilder.defaultMinSize(minWidth: Dp = Dp.Unspecified, minHeight: Dp = Dp.Unspecified) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createDefaultMinSizeModifier(minWidth, minHeight)
 )
 

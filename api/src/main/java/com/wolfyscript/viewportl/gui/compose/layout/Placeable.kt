@@ -2,10 +2,10 @@ package com.wolfyscript.viewportl.gui.compose.layout
 
 interface Placeable {
 
-    val width: Size
+    val width: Dp
 
-    val height: Size
+    val height: Dp
 
-    fun placeAt(x: Size, y: Size)
+    fun placeAt(x: Dp, y: Dp)
 
 }

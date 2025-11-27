@@ -1,19 +1,19 @@
 package com.wolfyscript.viewportl.gui.compose.modifier
 
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.viewportl.gui.compose.layout.Size
+import com.wolfyscript.viewportl.gui.compose.layout.Dp
 import com.wolfyscript.viewportl.viewportl
 
 fun ModifierStackBuilder.padding(
-    start: Size = Size.Zero,
-    top: Size = Size.Zero,
-    end: Size = Size.Zero,
-    bottom: Size = Size.Zero,
+    start: Dp = Dp.Zero,
+    top: Dp = Dp.Zero,
+    end: Dp = Dp.Zero,
+    bottom: Dp = Dp.Zero,
 ) = push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createPaddingModifier(start, top, end, bottom))
 
 fun ModifierStackBuilder.padding(
-    horizontal: Size = Size.Zero,
-    vertical: Size = Size.Zero,
+    horizontal: Dp = Dp.Zero,
+    vertical: Dp = Dp.Zero,
 ) = push(
     ScafallProvider.get().viewportl.guiFactory.modifierFactory.createPaddingModifier(
         horizontal,
@@ -25,5 +25,5 @@ fun ModifierStackBuilder.padding(
 
 
 fun ModifierStackBuilder.padding(
-    all: Size = Size.Zero,
+    all: Dp = Dp.Zero,
 ) = push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createPaddingModifier(all, all, all, all))

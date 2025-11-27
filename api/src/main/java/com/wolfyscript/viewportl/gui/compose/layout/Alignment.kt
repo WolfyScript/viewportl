@@ -31,7 +31,7 @@ object Alignment {
      */
     fun interface Horizontal {
 
-        fun align(size: Size, space: Size, layoutDirection: LayoutDirection): Size
+        fun align(size: Dp, space: Dp, layoutDirection: LayoutDirection): Dp
 
         operator fun plus(vertical: Vertical): HorizontalAndVertical = HorizontalAndVerticalImpl(this, vertical)
 
@@ -42,7 +42,7 @@ object Alignment {
      */
     fun interface Vertical {
 
-        fun align(size: Size, space: Size): Size
+        fun align(size: Dp, space: Dp): Dp
 
         operator fun plus(horizontal: Horizontal): HorizontalAndVertical = HorizontalAndVerticalImpl(horizontal, this)
 
@@ -60,10 +60,10 @@ object Alignment {
     private class HorizontalImpl(val bias: Int) : Horizontal {
 
         override fun align(
-            size: Size,
-            space: Size,
+            size: Dp,
+            space: Dp,
             layoutDirection: LayoutDirection,
-        ): Size {
+        ): Dp {
             val center = (space - size) / 2
             val resolvedBias = if (layoutDirection == LayoutDirection.LtR) bias else -1 * bias
             return center * (1 + resolvedBias)
@@ -74,9 +74,9 @@ object Alignment {
     private class VerticalImpl(val bias: Int) : Vertical {
 
         override fun align(
-            size: Size,
-            space: Size,
-        ): Size {
+            size: Dp,
+            space: Dp,
+        ): Dp {
             val center = (space - size) / 2
             return center * (1 + bias)
         }

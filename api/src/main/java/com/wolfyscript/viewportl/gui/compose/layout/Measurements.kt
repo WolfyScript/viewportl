@@ -1,8 +1,8 @@
 package com.wolfyscript.viewportl.gui.compose.layout
 
 class Measurements(
-    val width: Size = Size.Zero,
-    val height: Size = Size.Zero,
+    val width: Dp = Dp.Zero,
+    val height: Dp = Dp.Zero,
     val placeChildren: PlacementScope.() -> Unit = {},
 ) {
 

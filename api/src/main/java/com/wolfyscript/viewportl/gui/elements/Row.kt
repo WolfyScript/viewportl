@@ -7,11 +7,9 @@ import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.LayoutDirection
 import com.wolfyscript.viewportl.gui.compose.layout.Placeable
-import com.wolfyscript.viewportl.gui.compose.layout.Size
+import com.wolfyscript.viewportl.gui.compose.layout.Dp
 import com.wolfyscript.viewportl.gui.compose.layout.dp
 import com.wolfyscript.viewportl.gui.compose.layout.max
-import com.wolfyscript.viewportl.gui.compose.layout.or
-import com.wolfyscript.viewportl.gui.compose.layout.slots
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 
 @Composable
@@ -27,18 +25,18 @@ fun Row(
         }
 
         val placeables = arrayOfNulls<Placeable>(measurables.size)
-        val childWidthSizes = Array(measurables.size) { Size.Zero }
-        var fixedSpace = Size.Zero
-        var height = Size.Zero
+        val childWidthSizes = Array(measurables.size) { Dp.Zero }
+        var fixedSpace = Dp.Zero
+        var height = Dp.Zero
 
         for ((i, measurable) in measurables.withIndex()) {
             val remainingSpace = constraints.maxWidth - fixedSpace
 
             val placeable = measurable.measure(
                 Constraints(
-                    minWidth = Size.Zero,
+                    minWidth = Dp.Zero,
                     maxWidth = remainingSpace,
-                    minHeight = Size.Zero,
+                    minHeight = Dp.Zero,
                     maxHeight = constraints.maxHeight
                 )
             )
@@ -56,7 +54,7 @@ fun Row(
 
         layout(finalWidth, finalHeight) {
             // TODO: vertical Alignment
-            val y = 0.slots or 0.dp
+            val y = 0.dp
 
             placeables.forEachIndexed { index, placeable ->
                 placeable?.placeAt(mainAxisPositions[index], y)

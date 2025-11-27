@@ -15,13 +15,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.gui.callback
+package com.wolfyscript.viewportl.gui.input
 
 import com.wolfyscript.scafall.wrappers.ScafallPlayer
 import com.wolfyscript.viewportl.gui.ViewRuntime
 
-fun interface TextInputTabCompleteCallback {
+fun interface TextInputCallback {
 
-    fun apply(player: ScafallPlayer, viewManager: ViewRuntime, input: String, args: Array<String>): List<String>
+    fun run(player: ScafallPlayer, viewManager: ViewRuntime, input: String, args: Array<String>): Boolean
 
 }

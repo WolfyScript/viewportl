@@ -2,7 +2,7 @@ package com.wolfyscript.viewportl.gui.factories
 
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Direction
-import com.wolfyscript.viewportl.gui.compose.layout.Size
+import com.wolfyscript.viewportl.gui.compose.layout.Dp
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifyScope
@@ -19,23 +19,23 @@ interface ModifierFactory {
     fun createModifierStackBuilder() : ModifierStackBuilder
 
     fun createPaddingModifier(
-        start: Size = Size.Zero,
-        top: Size = Size.Zero,
-        end: Size = Size.Zero,
-        bottom: Size = Size.Zero,
+        start: Dp = Dp.Zero,
+        top: Dp = Dp.Zero,
+        end: Dp = Dp.Zero,
+        bottom: Dp = Dp.Zero,
     ): ModifierData<*>
 
     fun createSizeModifier(
-        minWidth: Size = Size.Unspecified,
-        minHeight: Size = Size.Unspecified,
-        maxWidth: Size = Size.Unspecified,
-        maxHeight: Size = Size.Unspecified,
+        minWidth: Dp = Dp.Unspecified,
+        minHeight: Dp = Dp.Unspecified,
+        maxWidth: Dp = Dp.Unspecified,
+        maxHeight: Dp = Dp.Unspecified,
         enforceIncoming: Boolean = true
     ): ModifierData<*>
 
     fun createDefaultMinSizeModifier(
-        minWidth: Size = Size.Unspecified,
-        minHeight: Size = Size.Unspecified,
+        minWidth: Dp = Dp.Unspecified,
+        minHeight: Dp = Dp.Unspecified,
     ) : ModifierData<*>
 
     fun createFillModifier(direction: Direction, fraction: Float): ModifierData<*>

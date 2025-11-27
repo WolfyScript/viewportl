@@ -20,16 +20,17 @@ package com.wolfyscript.viewportl.gui.elements
 import androidx.compose.runtime.Composable
 import com.wolfyscript.viewportl.gui.compose.layout.*
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.compose.modifier.clickable
 import com.wolfyscript.viewportl.gui.compose.modifier.defaultMinSize
 
 @Composable
-fun Button(onClick: () -> Unit, content: @Composable () -> Unit) {
+fun Button(modifier: ModifierStackBuilder = Modifier, onClick: () -> Unit, content: @Composable () -> Unit) {
     Row(
-        Modifier
+        modifier
             .defaultMinSize(
-                ButtonDefaults.SlotDefaults.MinWidth or ButtonDefaults.DpDefaults.MinWidth,
-                ButtonDefaults.SlotDefaults.MinHeight or ButtonDefaults.DpDefaults.MinHeight
+                ButtonDefaults.MinWidth,
+                ButtonDefaults.MinHeight
             )
             .clickable { onClick() },
         content = content
@@ -38,18 +39,7 @@ fun Button(onClick: () -> Unit, content: @Composable () -> Unit) {
 
 object ButtonDefaults {
 
-    object SlotDefaults {
-
-        val MinWidth: Slot = 1.slots
-        val MinHeight: Slot = 1.slots
-
-    }
-
-    object DpDefaults {
-
-        val MinWidth: Dp = 58.dp
-        val MinHeight: Dp = 40.dp
-
-    }
+    val MinWidth: Dp = 18.dp
+    val MinHeight: Dp = 18.dp
 
 }

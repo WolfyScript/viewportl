@@ -19,8 +19,8 @@ package com.wolfyscript.viewportl.gui
 
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.gui.callback.TextInputCallback
-import com.wolfyscript.viewportl.gui.callback.TextInputTabCompleteCallback
+import com.wolfyscript.viewportl.gui.input.TextInputCallback
+import com.wolfyscript.viewportl.gui.input.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import net.kyori.adventure.text.Component
 

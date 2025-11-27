@@ -20,7 +20,7 @@ class CacheInventoryDrawScope(
     ) {
         if (inventory == null) return
         val finalPos = nodeOffset + offset
-        val slot = finalPos.x.slot.value + finalPos.y.slot.value * 9
+        val slot = finalPos.x.roundToSlots() + finalPos.y.roundToSlots() * 9
         if (slot < inventory.size) {
             inventory.setItem(slot, stack.unwrapSpigot())
         } else {
@@ -31,7 +31,7 @@ class CacheInventoryDrawScope(
     override fun clear() {
         for (x in 0 until width) {
             for (y in 0 until height) {
-                inventory?.clear((nodeOffset.x.slot.value + x) + (nodeOffset.y.slot.value + y) * 9)
+                inventory?.clear((nodeOffset.x.roundToSlots() + x) + (nodeOffset.y.roundToSlots() + y) * 9)
             }
         }
     }

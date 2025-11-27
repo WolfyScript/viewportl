@@ -5,9 +5,9 @@ import com.wolfyscript.viewportl.gui.compose.layout.*
 
 class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
 
-    override var width: Size = Size.Zero
+    override var width: Dp = Dp.Zero
         private set
-    override var height: Size = Size.Zero
+    override var height: Dp = Dp.Zero
         private set
     override var position: Offset = Offset.Zero
     private var sizeOffset: Offset = Offset.Zero
@@ -39,7 +39,7 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
                 with(measurePolicy) {
                     measureScope.measure(childMeasurables, modification.constraints)
                 }
-            } ?: Measurements(0.slotsSize, 0.slotsSize)
+            } ?: Measurements(Dp.Zero, Dp.Zero)
         }
     }
 
@@ -50,8 +50,8 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
     }
 
     override fun placeAt(
-        x: Size,
-        y: Size,
+        x: Dp,
+        y: Dp,
     ) {
         val modification = node.modifierStack.modifyLayout(SimpleMeasureModification(width, height, Offset.Zero))
 

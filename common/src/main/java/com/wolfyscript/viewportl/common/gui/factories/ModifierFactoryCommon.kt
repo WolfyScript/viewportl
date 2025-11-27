@@ -10,7 +10,7 @@ import com.wolfyscript.viewportl.common.gui.compose.modifier.PaddingModifier
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SizeModifier
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Direction
-import com.wolfyscript.viewportl.gui.compose.layout.Size
+import com.wolfyscript.viewportl.gui.compose.layout.Dp
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
 import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifyScope
@@ -25,27 +25,27 @@ class ModifierFactoryCommon : ModifierFactory {
     }
 
     override fun createPaddingModifier(
-        start: Size,
-        top: Size,
-        end: Size,
-        bottom: Size,
+        start: Dp,
+        top: Dp,
+        end: Dp,
+        bottom: Dp,
     ): ModifierData<*> {
         return PaddingModifier(start, top, end, bottom)
     }
 
     override fun createSizeModifier(
-        minWidth: Size,
-        minHeight: Size,
-        maxWidth: Size,
-        maxHeight: Size,
+        minWidth: Dp,
+        minHeight: Dp,
+        maxWidth: Dp,
+        maxHeight: Dp,
         enforceIncoming: Boolean,
     ): ModifierData<*> {
         return SizeModifier(minWidth, minHeight, maxWidth, maxHeight, enforceIncoming)
     }
 
     override fun createDefaultMinSizeModifier(
-        minWidth: Size,
-        minHeight: Size,
+        minWidth: Dp,
+        minHeight: Dp,
     ): ModifierData<*> {
         return DefaultMinSizeModifier(minWidth, minHeight)
     }

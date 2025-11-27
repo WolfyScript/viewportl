@@ -2,7 +2,7 @@ package com.wolfyscript.viewportl.gui.compose.modifier
 
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
-import com.wolfyscript.viewportl.gui.compose.layout.Size
+import com.wolfyscript.viewportl.gui.compose.layout.Dp
 
 interface LayoutModifyScope {
 
@@ -15,6 +15,6 @@ interface LayoutModifyScope {
 
 interface MeasureModifyScope {
 
-    fun modifyMeasure(measuredWidth: Size, measuredHeight: Size, offset: Offset): MeasureModification
+    fun modifyMeasure(measuredWidth: Dp, measuredHeight: Dp, offset: Offset): MeasureModification
 
 }

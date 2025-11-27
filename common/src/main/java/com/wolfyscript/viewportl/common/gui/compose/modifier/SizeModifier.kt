@@ -4,10 +4,10 @@ import com.wolfyscript.viewportl.gui.compose.layout.*
 import com.wolfyscript.viewportl.gui.compose.modifier.*
 
 class SizeModifier(
-    val minWidth: Size = Size.Unspecified,
-    val minHeight: Size = Size.Unspecified,
-    val maxWidth: Size = Size.Unspecified,
-    val maxHeight: Size = Size.Unspecified,
+    val minWidth: Dp = Dp.Unspecified,
+    val minHeight: Dp = Dp.Unspecified,
+    val maxWidth: Dp = Dp.Unspecified,
+    val maxHeight: Dp = Dp.Unspecified,
     val enforceIncoming: Boolean,
 ) : ModifierData<SizeModifierNode> {
 
@@ -24,40 +24,36 @@ class SizeModifier(
 }
 
 class SizeModifierNode(
-    val minWidth: Size = Size.Unspecified,
-    val minHeight: Size = Size.Unspecified,
-    val maxWidth: Size = Size.Unspecified,
-    val maxHeight: Size = Size.Unspecified,
+    val minWidth: Dp = Dp.Unspecified,
+    val minHeight: Dp = Dp.Unspecified,
+    val maxWidth: Dp = Dp.Unspecified,
+    val maxHeight: Dp = Dp.Unspecified,
     val enforceIncoming: Boolean,
 ) : LayoutModifierNode, ModifierNode {
 
-    private fun targetConstraints(outerMaxWidth: Size, outerMaxHeight: Size): Constraints {
-        val maxWidth: Size = if (maxWidth.isSpecified) {
-            maxWidth.slot.value.coerceAtLeast(0).slots or
-                    maxWidth.dp.value.coerceAtLeast(0).dp
+    private fun targetConstraints(outerMaxWidth: Dp, outerMaxHeight: Dp): Constraints {
+        val maxWidth: Dp = if (maxWidth.isSpecified) {
+            Dp(maxWidth.value.coerceAtLeast(0f))
         } else {
             outerMaxWidth
         }
 
-        val maxHeight: Size = if (maxHeight.isSpecified) {
-            maxHeight.slot.value.coerceAtLeast(0).slots or
-                    maxHeight.dp.value.coerceAtLeast(0).dp
+        val maxHeight: Dp = if (maxHeight.isSpecified) {
+            Dp(maxHeight.value.coerceAtLeast(0f))
         } else {
             outerMaxHeight
         }
 
-        val minWidth = if (minWidth.isSpecified) {
-            minWidth.slot.value.coerceIn(0, maxWidth.slot.value).slots or
-                    minWidth.dp.value.coerceIn(0, maxWidth.dp.value).dp
+        val minWidth: Dp = if (minWidth.isSpecified) {
+            Dp(minWidth.value.coerceIn(0f, maxWidth.value))
         } else {
-            Size.Zero
+            Dp.Zero
         }
 
-        val minHeight = if (minHeight.isSpecified) {
-            minHeight.slot.value.coerceIn(0, maxHeight.slot.value).slots or
-                    minHeight.dp.value.coerceIn(0, maxHeight.dp.value).dp
+        val minHeight: Dp = if (minHeight.isSpecified) {
+            Dp(minHeight.value.coerceIn(0f, maxHeight.value))
         } else {
-            Size.Zero
+            Dp.Zero
         }
 
         return Constraints(
@@ -115,8 +111,8 @@ class SizeModifierNode(
 }
 
 class DefaultMinSizeModifier(
-    val minWidth: Size = Size.Unspecified,
-    val minHeight: Size = Size.Unspecified,
+    val minWidth: Dp = Dp.Unspecified,
+    val minHeight: Dp = Dp.Unspecified,
 ) : ModifierData<DefaultMinSizeModifierNode> {
 
     override fun create(): DefaultMinSizeModifierNode {
@@ -131,8 +127,8 @@ class DefaultMinSizeModifier(
 }
 
 class DefaultMinSizeModifierNode(
-    internal var minWidth: Size = Size.Unspecified,
-    internal var minHeight: Size = Size.Unspecified,
+    internal var minWidth: Dp = Dp.Unspecified,
+    internal var minHeight: Dp = Dp.Unspecified,
 ) : ModifierNode, LayoutModifierNode {
 
     override fun onAttach() {}
@@ -142,33 +138,21 @@ class DefaultMinSizeModifierNode(
     override fun LayoutModifyScope.modify(constraints: Constraints): LayoutModification {
         val modifiedConstraints = Constraints(
             minWidth = if (minWidth.isSpecified) {
-                Size(
-                    if (constraints.minWidth.slot.value == 0) {
-                        minWidth.slot.value.coerceIn(0, constraints.maxWidth.slot.value).slots
-                    } else {
-                        constraints.minWidth.slot
-                    },
-                    if (constraints.minWidth.dp.value == 0) {
-                        minWidth.dp.value.coerceIn(0, constraints.maxWidth.dp.value).dp
-                    } else {
-                        constraints.minWidth.dp
-                    }
-                )
+                if (constraints.minWidth.value == 0f) {
+                    minWidth.value.coerceIn(0f, constraints.maxWidth.value).dp
+                } else {
+                    constraints.minWidth
+                }
             } else {
                 constraints.minWidth
             },
             maxWidth = constraints.maxWidth,
             minHeight = if (minHeight.isSpecified) {
-                Size(
-                    if (constraints.minHeight.slot.value == 0) {
-                        minHeight.slot.value.coerceIn(0, constraints.maxHeight.slot.value).slots
+                Dp(
+                    if (constraints.minHeight.value == 0f) {
+                        minHeight.value.coerceIn(0f, constraints.maxHeight.value)
                     } else {
-                        constraints.minHeight.slot
-                    },
-                    if (constraints.minHeight.dp.value == 0) {
-                        minHeight.dp.value.coerceIn(0, constraints.maxHeight.dp.value).dp
-                    } else {
-                        constraints.minHeight.dp
+                        constraints.minHeight.value
                     }
                 )
             } else {

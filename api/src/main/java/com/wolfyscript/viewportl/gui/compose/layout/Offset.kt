@@ -1,12 +1,12 @@
 package com.wolfyscript.viewportl.gui.compose.layout
 
 class Offset(
-    val x: Size,
-    val y: Size,
+    val x: Dp,
+    val y: Dp,
 ) {
     companion object {
 
-        val Zero = Offset(Size.Zero, Size.Zero)
+        val Zero = Offset(Dp.Zero, Dp.Zero)
 
     }
 
