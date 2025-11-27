@@ -22,19 +22,29 @@ Now the goal is to get to the same state as the project was in previously.
 * [ ] Default route (initial route to select, useful for nested routing)
 * [ ] Basic elements
   * [ ] Column
+    * [x] Basics, Vertical Item Arrangement
+    * [ ] Horizontal Alignment
   * [ ] Row
-  * [ ] Box
+    * [x] Basics, Horizontal Item Arrangement
+    * [ ] Vertical Alignment
+  * [x] Box
   * [ ] Buttons
+    * [x] on click
+    * [x] multi-slot (larger than a single slot)
+    * [ ] sound
   * [ ] Icon
+    * [x] stack icon
+    * [ ] direct item model support
   * [ ] Slot Input
-* [ ] Persistent Data (Stores)
+* [x] Persistent Data (Stores)
 * [ ] Data fetching (async/sync data fetching utils)
 * [ ] Multi-player GUIs (multiple viewers, synchronisation)
 * [ ] Multi Platform Support
   * [ ] Spigot
     * [ ] InvUI Renderer
+      * [x] Rendering specified draw modifiers
       * [ ] Inventory Background texture
-    * [ ] InvUI Interaction Handler
+    * [x] InvUI Interaction Handler
   * [ ] Fabric
     * [ ] platform integration
     * [ ] InvUI Renderer
