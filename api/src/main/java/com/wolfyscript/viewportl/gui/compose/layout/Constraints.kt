@@ -24,6 +24,10 @@ class Constraints(
         )
     }
 
+    override fun toString(): String {
+        return "Constraints(w=$minWidth h=$minHeight > x < w=$maxWidth h=$maxHeight)"
+    }
+
 }
 
 /**

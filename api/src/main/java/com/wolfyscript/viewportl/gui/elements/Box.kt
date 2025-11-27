@@ -3,6 +3,7 @@ package com.wolfyscript.viewportl.gui.elements
 import androidx.compose.runtime.Composable
 import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
 import com.wolfyscript.viewportl.gui.compose.layout.Alignment
+import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.LayoutDirection
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
 import com.wolfyscript.viewportl.gui.compose.layout.Placeable
@@ -17,6 +18,7 @@ import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 fun Box(
     modifier: ModifierStackBuilder = Modifier,
     contentAlignment: Alignment.HorizontalAndVertical = Alignment.TopStart,
+    propagateMinConstraints: Boolean = false,
     content: @Composable () -> Unit
 ) {
     Layout(modifier, content = content) { measurables, constraints ->
@@ -24,8 +26,14 @@ fun Box(
             return@Layout layout(constraints.minWidth, constraints.minHeight) {}
         }
 
+        val contentConstraints = if (propagateMinConstraints) {
+            constraints
+        } else {
+            Constraints(maxWidth = constraints.maxWidth, maxHeight = constraints.maxHeight)
+        }
+
         if (measurables.size == 1) {
-            val placeable = measurables[0].measure(constraints)
+            val placeable = measurables[0].measure(contentConstraints)
             val width = max(constraints.minWidth, placeable.width)
             val height = max(constraints.minHeight, placeable.height)
 
@@ -36,11 +44,11 @@ fun Box(
         }
 
         val placeables = arrayOfNulls<Placeable>(measurables.size)
-        var width = constraints.minWidth
-        var height = constraints.minHeight
+        var width = contentConstraints.minWidth
+        var height = contentConstraints.minHeight
 
         for ((index, measurable) in measurables.withIndex()) {
-            val placeable = measurable.measure(constraints)
+            val placeable = measurable.measure(contentConstraints)
             placeables[index] = placeable
             width = max(width, placeable.width)
             height = max(height, placeable.height)
