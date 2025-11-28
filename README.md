@@ -21,12 +21,12 @@ Now the goal is to get to the same state as the project was in previously.
 * [ ] Routing
 * [ ] Default route (initial route to select, useful for nested routing)
 * [ ] Basic elements
-  * [ ] Column
+  * [x] Column
     * [x] Basics, Vertical Item Arrangement
-    * [ ] Horizontal Alignment
-  * [ ] Row
+    * [x] Horizontal Alignment
+  * [x] Row
     * [x] Basics, Horizontal Item Arrangement
-    * [ ] Vertical Alignment
+    * [x] Vertical Alignment
   * [x] Box
   * [ ] Buttons
     * [x] on click
