@@ -12,12 +12,11 @@ import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.gui.compose.layout.Alignment
 import com.wolfyscript.viewportl.gui.compose.layout.Arrangement
 import com.wolfyscript.viewportl.gui.compose.layout.slots
-import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
-import com.wolfyscript.viewportl.gui.compose.modifier.fillMaxHeight
-import com.wolfyscript.viewportl.gui.compose.modifier.fillMaxWidth
-import com.wolfyscript.viewportl.gui.compose.modifier.height
-import com.wolfyscript.viewportl.gui.compose.modifier.width
-import com.wolfyscript.viewportl.gui.elements.*
+import com.wolfyscript.viewportl.gui.compose.modifier.*
+import com.wolfyscript.viewportl.gui.elements.Button
+import com.wolfyscript.viewportl.gui.elements.Column
+import com.wolfyscript.viewportl.gui.elements.Icon
+import com.wolfyscript.viewportl.gui.elements.Row
 import com.wolfyscript.viewportl.gui.model.Store
 import com.wolfyscript.viewportl.gui.model.store
 import net.minecraft.core.component.DataComponents
@@ -55,12 +54,12 @@ fun Counter() {
         modifier = Modifier
             .height(3.slots) // limit height to 3 incase Counter is used in a bigger inventory
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(Modifier.width(3.slots).fillMaxHeight(), Alignment.Center) {
-            Icon(stack = createCounterStack(countStore.count))
-        }
-        Row(Modifier.width(3.slots), Arrangement.SpaceBetween) {
+        Icon(stack = createCounterStack(countStore.count))
+
+        Row(Modifier.width(3.slots), Arrangement.SpaceBetween, Alignment.CenterVertically) {
             Column(Modifier.fillMaxHeight(), Arrangement.SpaceBetween) {
                 Button(onClick = { countStore.increment() }) {
                     Icon(stack = ItemStack(Items.GREEN_CONCRETE).apply {
@@ -74,12 +73,10 @@ fun Counter() {
                 }
             }
             if (countStore.count != 0) {
-                Box(Modifier.fillMaxHeight(), Alignment.Center) {
-                    Button(onClick = { countStore.reset() }) {
-                        Icon(stack = ItemStack(Items.CYAN_CONCRETE).apply {
-                            set(DataComponents.CUSTOM_NAME, "<b>Reset".deser().vanilla())
-                        }.snapshot())
-                    }
+                Button(onClick = { countStore.reset() }) {
+                    Icon(stack = ItemStack(Items.CYAN_CONCRETE).apply {
+                        set(DataComponents.CUSTOM_NAME, "<b>Reset".deser().vanilla())
+                    }.snapshot())
                 }
             }
         }
