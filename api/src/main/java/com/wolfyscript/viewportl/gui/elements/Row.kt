@@ -8,7 +8,6 @@ import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.LayoutDirection
 import com.wolfyscript.viewportl.gui.compose.layout.Placeable
 import com.wolfyscript.viewportl.gui.compose.layout.Dp
-import com.wolfyscript.viewportl.gui.compose.layout.dp
 import com.wolfyscript.viewportl.gui.compose.layout.max
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 
@@ -53,11 +52,11 @@ fun Row(
         val mainAxisPositions = horizontalArrangement.arrange(finalWidth, LayoutDirection.LtR, childWidthSizes)
 
         layout(finalWidth, finalHeight) {
-            // TODO: vertical Alignment
-            val y = 0.dp
-
             placeables.forEachIndexed { index, placeable ->
-                placeable?.placeAt(mainAxisPositions[index], y)
+                placeable?.placeAt(
+                    mainAxisPositions[index],
+                    verticalAlignment.align(placeable.height, finalHeight)
+                )
             }
         }
     }

@@ -6,7 +6,7 @@ import com.wolfyscript.viewportl.gui.compose.layout.Arrangement
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Placeable
 import com.wolfyscript.viewportl.gui.compose.layout.Dp
-import com.wolfyscript.viewportl.gui.compose.layout.dp
+import com.wolfyscript.viewportl.gui.compose.layout.LayoutDirection
 import com.wolfyscript.viewportl.gui.compose.layout.max
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
@@ -52,11 +52,11 @@ fun Column(
         val mainAxisPositions = verticalArrangement.arrange(finalHeight, childHeightSizes)
 
         layout(finalWidth, finalHeight) {
-            // TODO: horizontal Alignment
-            val x = 0.dp
-
             placeables.forEachIndexed { index, placeable ->
-                placeable?.placeAt(x, mainAxisPositions[index])
+                placeable?.placeAt(
+                    horizontalAlignment.align(placeable.width, finalWidth, LayoutDirection.LtR),
+                    mainAxisPositions[index]
+                )
             }
         }
     }
