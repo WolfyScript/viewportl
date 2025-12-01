@@ -1,5 +1,6 @@
 package com.wolfyscript.viewportl.common.gui.factories
 
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.common.gui.compose.SimpleModifierStackBuilder
 import com.wolfyscript.viewportl.common.gui.compose.modifier.ClickableModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.DefaultMinSizeModifier
@@ -8,6 +9,7 @@ import com.wolfyscript.viewportl.common.gui.compose.modifier.InventoryDrawModifi
 import com.wolfyscript.viewportl.common.gui.compose.modifier.LayoutModifierData
 import com.wolfyscript.viewportl.common.gui.compose.modifier.PaddingModifier
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SizeModifier
+import com.wolfyscript.viewportl.common.gui.compose.modifier.SlotInputModifierImpl
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Direction
 import com.wolfyscript.viewportl.gui.compose.layout.Dp
@@ -64,5 +66,14 @@ class ModifierFactoryCommon : ModifierFactory {
 
     override fun createClickableModifier(onClick: () -> Unit): ModifierData<*> {
         return ClickableModifierDataImpl(onClick)
+    }
+
+    override fun createSlotInputModifier(
+        canPlace: (stack: ItemStackSnapshot) -> Boolean,
+        canPickup: (stack: ItemStackSnapshot) -> Boolean,
+        onValueChange: (stack: ItemStackSnapshot) -> Unit,
+        value: () -> ItemStackSnapshot
+    ): ModifierData<*> {
+        return SlotInputModifierImpl(canPlace, canPickup, onValueChange, value)
     }
 }

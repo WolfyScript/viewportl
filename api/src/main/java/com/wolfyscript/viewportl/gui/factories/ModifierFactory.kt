@@ -1,5 +1,6 @@
 package com.wolfyscript.viewportl.gui.factories
 
+import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Direction
 import com.wolfyscript.viewportl.gui.compose.layout.Dp
@@ -50,6 +51,13 @@ interface ModifierFactory {
 
     fun createClickableModifier(
         onClick: () -> Unit
+    ): ModifierData<*>
+
+    fun createSlotInputModifier(
+        canPlace: (stack: ItemStackSnapshot) -> Boolean,
+        canPickup: (stack: ItemStackSnapshot) -> Boolean,
+        onValueChange: (stack: ItemStackSnapshot) -> Unit,
+        value: () -> ItemStackSnapshot
     ): ModifierData<*>
 
 }

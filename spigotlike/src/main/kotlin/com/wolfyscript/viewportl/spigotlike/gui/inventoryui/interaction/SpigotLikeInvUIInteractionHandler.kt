@@ -18,6 +18,7 @@
 
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
+import com.wolfyscript.scafall.spigot.api.wrappers.utils.snapshot
 import com.wolfyscript.viewportl.common.gui.WindowImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.Window
@@ -30,7 +31,8 @@ import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
-class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInteractionHandler<InventoryUIInteractionContext>() {
+class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
+    InvUIInteractionHandler<InventoryUIInteractionContext>() {
 
     override var isBusy: Boolean = false
 
@@ -48,216 +50,253 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
 
         val clickedTopInv = event.clickedInventory == event.view.topInventory
 
-        val originalCursor = event.cursor
-        val originalSlotStack = event.currentItem
-
-        var cursor: ItemStack? = originalCursor.clone()
-        var slotResult: ItemStack? = originalSlotStack?.clone()
-
-        if (event.clickedInventory == event.view.bottomInventory) {
-            event.isCancelled = false // Allow any bottom inventory interaction
-            return
-        }
+//        if (event.clickedInventory == event.view.bottomInventory) {
+//            event.isCancelled = false // Allow any bottom inventory interaction
+//            return
+//        }
 
         event.isCancelled = true // prevent any interaction, handle normal click & slot input separately
 
         isBusy = true
-        (runtime.window as? WindowImpl)?.root?.let {
-            onClick(event.slot, it)
-            isBusy = false
-            return // For now just return
-        }
+        val root = (runtime.window as? WindowImpl)?.root ?: return
 
-        // TODO: handle slot input, which takes precedence and might allow the interaction
+        val originalCursor = event.cursor
+        val originalSlotStack = event.currentItem
 
-        val action = event.action
-        when (action) {
-            // place/collect stack
-            InventoryAction.PLACE_ONE -> {
-                if (slotResult == null) {
-                    slotResult = cursor?.let {
-                        val copy = it.clone()
-                        copy.amount = 1
-                        copy
-                    }
-                    cursor?.apply {
-                        amount -= 1
-                    }
-                } else if (cursor != null && cursor.isSimilar(slotResult)) {
-                    slotResult.amount += 1
-                    cursor.amount -= 1
-                }
-            }
+        var newCursor: ItemStack? = originalCursor.clone()
+        var newSlotStack: ItemStack? = originalSlotStack?.clone()
 
-            InventoryAction.PLACE_ALL -> {
-                if (slotResult == null) {
-                    slotResult = cursor?.clone()
-                } else {
-                    slotResult.amount += cursor?.amount ?: 0
-                }
-                cursor = null
-            }
+        if (clickedTopInv) {
+            onClick(event.slot, root)
 
-            InventoryAction.PLACE_SOME -> {
-                if (slotResult != null) {
-                    val amountToAdd = cursor?.amount ?: 0
-
-                    val newSlotAmount = (slotResult.amount + amountToAdd).coerceAtMost(slotResult.maxStackSize)
-                    val newCursorAmount = newSlotAmount - slotResult.amount
-
-                    slotResult.amount = newSlotAmount
-                    cursor?.amount = newCursorAmount
-                }
-            }
-
-            InventoryAction.PICKUP_ONE -> {
-                if (cursor == null || cursor.type == Material.AIR) {
-                    cursor = slotResult?.clone()
-                    slotResult = null
-                } else {
-                    cursor.amount += 1
-                    slotResult?.apply {
-                        amount -= 1
-                    }
-                }
-            }
-
-            InventoryAction.PICKUP_SOME -> {
-                /*
-                 * Doesn't seem to be called ever...
-                 * apparently it is called when a full stack is picked up, but with items left in the inventory?!
-                 */
-                if (cursor == null || cursor.type == Material.AIR) {
-                    cursor = slotResult
-                } else {
-                    cursor.amount += slotResult?.amount ?: 0
-                }
-            }
-
-            InventoryAction.PICKUP_HALF -> {
-                val amount = slotResult?.amount ?: 0
-                val splitAmount = amount.div(2)
-
-                if (cursor == null || cursor.type == Material.AIR) {
-                    cursor = slotResult?.clone()
-                }
-                cursor?.amount = amount - splitAmount
-                slotResult?.amount = splitAmount
-            }
-
-            InventoryAction.PICKUP_ALL -> {
-                if (cursor == null || cursor.type == Material.AIR) {
-                    cursor = slotResult?.clone()
-                } else {
-                    // IDK if this can actually happen, but just in case it does
-                    cursor.amount += slotResult?.amount ?: 0
-                }
-                slotResult = null
-            }
-
-            InventoryAction.COLLECT_TO_CURSOR -> {
-                event.isCancelled = true
-
-                if (!event.isCancelled) { // Only continue to collect items when main component allows it
-                    // Clear the slot, it was moved to the cursor
-                    slotResult = null
-                    valueHandler.callSlotValueUpdate(event.rawSlot, null)
-
-                    if (cursor != null) {
-                        // calculate the slots that should be collected. Skip Buttons and other components that invalidate the transaction
-                        collectToCursor(cursor, event.view, { index, stack ->
-                            testChildClickTransaction(event, Slot(index), valueHandler, event.view)
-                        }) { rawSlot, stack ->
-                            valueHandler.callSlotValueUpdate(rawSlot, stack)
+            val slotInput = getSlotInputFor(event.slot, root)
+            if (slotInput != null) {
+                val action = event.action
+                when (action) {
+                    // place/collect stack
+                    InventoryAction.PLACE_ONE -> {
+                        if (slotInput.canPlace(originalCursor.snapshot())) {
+                            if (newSlotStack == null) {
+                                newSlotStack = newCursor?.let {
+                                    val copy = it.clone()
+                                    copy.amount = 1
+                                    copy
+                                }
+                                newCursor?.apply {
+                                    amount -= 1
+                                }
+                            } else if (newCursor != null && newCursor.isSimilar(newSlotStack)) {
+                                newSlotStack.amount += 1
+                                newCursor.amount -= 1
+                            }
                         }
                     }
 
-                    // Apply calculated slot changes
-                    event.view.setCursor(cursor)
-                    event.currentItem = null
-                }
-                return
-            }
-
-            InventoryAction.SWAP_WITH_CURSOR -> {
-                val originalSlot = slotResult?.clone()
-                slotResult = cursor?.clone()
-                cursor = originalSlot
-            }
-
-            // Moving items between inventories using shift clicking
-            InventoryAction.MOVE_TO_OTHER_INVENTORY -> {
-                event.isCancelled = true
-
-                if (!event.isCancelled) { // Only move items when parent transaction is allowed
-                    if (clickedTopInv) {
-                        // Move from Top Inv to Bottom Inv
-                        // So no need to test and update child transactions in bottom inv
-                        if (slotResult != null) {
-                            moveToOtherInventory(
-                                slotResult,
-                                event.view,
-                                event.view.topInventory,
-                                event.view.bottomInventory,
-                                { _, _ -> true }) { _, _ -> }
-                            valueHandler.callSlotValueUpdate(event.rawSlot, slotResult)
-
-                            // Apply calculated slot changes
-                            event.currentItem = slotResult
+                    InventoryAction.PLACE_ALL -> {
+                        if (slotInput.canPlace(originalCursor.snapshot())) {
+                            if (newSlotStack == null) {
+                                newSlotStack = newCursor?.clone()
+                            } else {
+                                newSlotStack.amount += newCursor?.amount ?: 0
+                            }
+                            newCursor = null
                         }
-                    } else {
-                        // Move from Bottom Inv to Top Inv
-                        // The slotResult here is sitting in the bottom inventory, so no need to update it
-                        if (slotResult != null) {
+                    }
+
+                    InventoryAction.PLACE_SOME -> {
+                        if (newSlotStack != null && slotInput.canPlace(originalCursor.snapshot())) {
+                            val amountToAdd = newCursor?.amount ?: 0
+
+                            val newSlotAmount =
+                                (newSlotStack.amount + amountToAdd).coerceAtMost(newSlotStack.maxStackSize)
+                            val newCursorAmount = newSlotAmount - newSlotStack.amount
+
+                            newSlotStack.amount = newSlotAmount
+                            newCursor?.amount = newCursorAmount
+                        }
+                    }
+
+                    InventoryAction.PICKUP_ONE -> {
+                        if (originalSlotStack != null && slotInput.canTake(originalSlotStack.snapshot())) {
+                            if (newCursor == null || newCursor.type == Material.AIR) {
+                                newCursor = newSlotStack?.clone()
+                                newSlotStack = null
+                            } else {
+                                newCursor.amount += 1
+                                newSlotStack?.apply {
+                                    amount -= 1
+                                }
+                            }
+                        }
+                    }
+
+                    InventoryAction.PICKUP_SOME -> {
+                        /*
+                        Doesn't seem to be called ever...
+                        apparently it is called when a full stack is picked up, but with items left in the inventory?!
+                        */
+                        if (originalSlotStack != null && slotInput.canTake(originalSlotStack.snapshot())) {
+                            if (newCursor == null || newCursor.type == Material.AIR) {
+                                newCursor = newSlotStack
+                            } else {
+                                newCursor.amount += newSlotStack?.amount ?: 0
+                            }
+                        }
+                    }
+
+                    InventoryAction.PICKUP_HALF -> {
+                        if (originalSlotStack != null && slotInput.canTake(originalSlotStack.snapshot())) {
+                            val amount = newSlotStack?.amount ?: 0
+                            val splitAmount = amount.div(2)
+
+                            if (newCursor == null || newCursor.type == Material.AIR) {
+                                newCursor = newSlotStack?.clone()
+                            }
+                            newCursor?.amount = amount - splitAmount
+                            newSlotStack?.amount = splitAmount
+                        }
+                    }
+
+                    InventoryAction.PICKUP_ALL -> {
+                        if (originalSlotStack != null && slotInput.canTake(originalSlotStack.snapshot())) {
+                            if (newCursor == null || newCursor.type == Material.AIR) {
+                                newCursor = newSlotStack?.clone()
+                            } else {
+                                // IDK if this can actually happen, but just in case it does
+                                newCursor.amount += newSlotStack?.amount ?: 0
+                            }
+                            newSlotStack = null
+                        }
+                    }
+
+                    InventoryAction.SWAP_WITH_CURSOR -> {
+                        if (
+                            (originalSlotStack == null || slotInput.canTake(originalSlotStack.snapshot())) &&
+                            slotInput.canPlace(originalCursor.snapshot())
+                        ) {
+                            val originalSlot = newSlotStack?.clone()
+                            newSlotStack = newCursor?.clone()
+                            newCursor = originalSlot
+                        }
+                    }
+
+                    // Dropping the item out of the inventory using the drop keybind (default: Q)
+                    InventoryAction.DROP_ONE_SLOT -> {
+                        if (originalSlotStack != null && slotInput.canTake(originalSlotStack.snapshot())) {
+                            newSlotStack?.apply {
+                                amount -= 1
+                            }
+                        }
+                    }
+
+                    InventoryAction.DROP_ALL_SLOT -> {
+                        if (originalSlotStack != null && slotInput.canTake(originalSlotStack.snapshot())) {
+                            newSlotStack = null
+                        }
+                    }
+
+                    // Hotbar swapping using the number keys
+                    InventoryAction.HOTBAR_SWAP -> {
+                        val clickedStack = newSlotStack?.clone()
+                        val target = event.whoClicked.inventory.getItem(event.hotbarButton)
+                        if (
+                            (clickedStack == null || slotInput.canTake(clickedStack.snapshot())) &&
+                            (target == null || slotInput.canPlace(target.snapshot()))
+                        ) {
+                            newSlotStack = target
+                            event.whoClicked.inventory.setItem(event.hotbarButton, clickedStack)
+                        }
+                    }
+
+                    // Moving items between inventories using shift clicking
+                    InventoryAction.MOVE_TO_OTHER_INVENTORY -> {
+                        if (newSlotStack != null) {
                             moveToOtherInventory(
-                                slotResult,
+                                newSlotStack,
                                 event.view,
-                                event.view.bottomInventory,
                                 event.view.topInventory,
-                                { index, stack ->
-                                    testChildClickTransaction(event, Slot(index), valueHandler, event.view)
-                                }) { rawSlot, stack ->
-                                valueHandler.callSlotValueUpdate(rawSlot, stack)
+                                event.view.bottomInventory,
+                                { _, _ -> true }) { _, _ ->
+
                             }
 
                             // Apply calculated slot changes
-                            event.currentItem = slotResult
+                            event.currentItem = newSlotStack
                         }
+                        return
+                    }
+
+                    InventoryAction.COLLECT_TO_CURSOR -> {
+                        if (!event.isCancelled) { // Only continue to collect items when main component allows it
+                            // Clear the slot, it was moved to the cursor
+                            newSlotStack = null
+                            valueHandler.callSlotValueUpdate(event.rawSlot, null)
+
+                            if (newCursor != null) {
+                                // calculate the slots that should be collected. Skip Buttons and other components that invalidate the transaction
+                                collectToCursor(newCursor, event.view, { index, stack ->
+                                    testChildClickTransaction(event, Slot(index), valueHandler, event.view)
+                                }) { rawSlot, stack ->
+                                    valueHandler.callSlotValueUpdate(rawSlot, stack)
+                                }
+                            }
+
+                            // Apply calculated slot changes
+                            event.view.setCursor(newCursor)
+                            event.currentItem = null
+                        }
+                        return
+                    }
+
+                    else -> {
+                        /* Click action not handled */
+                        return
                     }
                 }
-                return
-            }
 
-            // Dropping the item out of the inventory using the drop keybind (default: Q)
-            InventoryAction.DROP_ONE_SLOT -> {
-                slotResult?.apply {
-                    amount -= 1
+                // Apply calculated slot changes
+                event.view.setCursor(newCursor)
+                event.currentItem = newSlotStack
+
+                slotInput.onValueChange(newSlotStack?.snapshot() ?: ItemStack.empty().snapshot())
+
+                isBusy = false
+            }
+        } else {
+            // Handle some clicks that occur in the bottom inv and may affect the top inv
+            // e.g. shift-click, collect to cursor
+            // In this case the slot input is not available and the target needs to be determined
+
+            when (event.action) {
+                InventoryAction.COLLECT_TO_CURSOR -> {
+
                 }
-            }
 
-            InventoryAction.DROP_ALL_SLOT -> {
-                slotResult = null
-            }
+                InventoryAction.MOVE_TO_OTHER_INVENTORY -> {
+                    // Move from Bottom Inv to Top Inv
+                    // The slotResult here is sitting in the bottom inventory, so no need to update it
+                    if (newSlotStack != null) {
+                        moveToOtherInventory(
+                            newSlotStack,
+                            event.view,
+                            event.view.bottomInventory,
+                            event.view.topInventory,
+                            { index, stack ->
+                                testChildClickTransaction(event, Slot(index), valueHandler, event.view)
+                            }) { rawSlot, stack ->
+                            valueHandler.callSlotValueUpdate(rawSlot, stack)
+                        }
 
-            // Hotbar swapping using the number keys
-            InventoryAction.HOTBAR_SWAP, InventoryAction.HOTBAR_MOVE_AND_READD -> {
-                if (!event.isCancelled) {
-                    val clickedStack = slotResult?.clone()
-                    slotResult = event.whoClicked.inventory.getItem(event.hotbarButton)
-                    event.whoClicked.inventory.setItem(event.hotbarButton, clickedStack)
+                        // Apply calculated slot changes
+                        event.currentItem = newSlotStack
+                    }
                 }
-            }
 
-            else -> {
-                /* Click action not handled */
-                return
+                else -> {
+
+                }
             }
         }
-
-        // Apply calculated slot changes
-        event.view.setCursor(cursor)
-        event.currentItem = slotResult
-        isBusy = false
     }
 
     private fun testChildClickTransaction(
@@ -283,7 +322,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
         moveFrom: Inventory,
         moveTo: Inventory,
         stackPredicate: (Int, ItemStack?) -> Boolean,
-        onStackUpdated: (Int, ItemStack?) -> Unit
+        onStackUpdated: (Int, ItemStack?) -> Unit,
     ) {
         var amount = stackToMove.amount
         val slotOffset = if (inventoryView.topInventory == moveTo) {
@@ -353,7 +392,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) : InvUIInterac
         cursor: ItemStack,
         inventoryView: InventoryView,
         stackPredicate: (Int, ItemStack) -> Boolean,
-        onStackUpdated: (Int, ItemStack?) -> Unit
+        onStackUpdated: (Int, ItemStack?) -> Unit,
     ) {
         for (i in 0 until inventoryView.countSlots()) {
             val stack = inventoryView.getItem(i) ?: continue
