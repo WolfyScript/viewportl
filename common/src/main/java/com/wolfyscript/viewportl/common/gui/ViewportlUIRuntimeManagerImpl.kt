@@ -21,8 +21,8 @@ package com.wolfyscript.viewportl.common.gui
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.PlayerViewRuntime
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.ViewportlUIRuntime
+import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.gui.ViewportlUIRuntimeManager
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
-class ViewportlUIRuntimeImpl(private val viewportl: Viewportl) : ViewportlUIRuntime, CoroutineScope {
+class ViewportlUIRuntimeManagerImpl(private val viewportl: Viewportl) : ViewportlUIRuntimeManager, CoroutineScope {
 
     /*
      * TODO: Rework runtime system.
@@ -44,19 +44,19 @@ class ViewportlUIRuntimeImpl(private val viewportl: Viewportl) : ViewportlUIRunt
 
     override val coroutineContext: CoroutineContext = Dispatchers.Default
 
-    private val runtimes: Long2ObjectMap<ViewRuntime> = Long2ObjectOpenHashMap()
+    private val runtimes: Long2ObjectMap<UIRuntime> = Long2ObjectOpenHashMap()
     private val playerRuntimes: MutableMap<UUID, PlayerViewRuntimeImpl> = mutableMapOf()
-    private val sharedViewRuntimes: MutableMap<Key, ViewRuntime> = mutableMapOf()
+    private val sharedUIRuntimes: MutableMap<Key, UIRuntime> = mutableMapOf()
 
     override fun createViewRuntime(
         id: Key,
         viewers: Set<UUID>,
-        then: suspend (ViewRuntime) -> Unit,
+        then: suspend (UIRuntime) -> Unit,
     ) {
         launch {
-            val view: ViewRuntime = if (viewers.size > 1) {
+            val view: UIRuntime = if (viewers.size > 1) {
                 val owner = viewers.first()
-                val sharedView = sharedViewRuntimes[id] ?: viewportl.guiFactory.createInventoryUIRuntime(
+                val sharedView = sharedUIRuntimes[id] ?: viewportl.guiFactory.createUIRuntime(
                     viewportl,
                     coroutineContext,
                     owner
@@ -86,7 +86,7 @@ class ViewportlUIRuntimeImpl(private val viewportl: Viewportl) : ViewportlUIRunt
         return playerRuntimes.getOrPut(player) { PlayerViewRuntimeImpl(player, viewportl) }
     }
 
-    override fun getViewRuntime(player: UUID): ViewRuntime {
+    override fun getViewRuntime(player: UUID): UIRuntime {
         return getPlayerRuntime(player).getOwn(coroutineContext)
     }
 
@@ -94,14 +94,14 @@ class ViewportlUIRuntimeImpl(private val viewportl: Viewportl) : ViewportlUIRunt
 
 internal class PlayerViewRuntimeImpl(val player: UUID, val viewportl: Viewportl) : PlayerViewRuntime {
 
-    override var activeRuntime: ViewRuntime? = null
+    override var activeRuntime: UIRuntime? = null
 
     private var usedCoroutineContext: CoroutineContext? = null
-    private var ownRuntime: ViewRuntime? = null
+    private var ownRuntime: UIRuntime? = null
 
-    override fun getOwn(coroutineContext: CoroutineContext): ViewRuntime {
+    override fun getOwn(coroutineContext: CoroutineContext): UIRuntime {
         if (ownRuntime == null || usedCoroutineContext != coroutineContext) {
-            ownRuntime = viewportl.guiFactory.createInventoryUIRuntime(viewportl, coroutineContext, player)
+            ownRuntime = viewportl.guiFactory.createUIRuntime(viewportl, coroutineContext, player)
             usedCoroutineContext = coroutineContext
         }
         return ownRuntime!!

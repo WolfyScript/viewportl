@@ -19,7 +19,7 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.sponge.api.wrappers.wrap
-import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.elements.StackInputSlot
 import org.spongepowered.api.data.Keys
 import org.spongepowered.api.data.Transaction
@@ -31,7 +31,7 @@ import org.spongepowered.api.item.inventory.transaction.SlotTransaction
 class InventoryStackSlotInteractionHandler : SpongeElementInteractionHandler<StackInputSlot> {
 
     override fun onSingleSlotClick(
-        runtime: ViewRuntime<*, SpongeUIInteractionHandler>,
+        runtime: UIRuntime<*, SpongeUIInteractionHandler>,
         component: StackInputSlot,
         event: ClickContainerEvent
     ) {
@@ -41,7 +41,7 @@ class InventoryStackSlotInteractionHandler : SpongeElementInteractionHandler<Sta
     }
 
     override fun onDrag(
-        runtime: ViewRuntime<*, SpongeUIInteractionHandler>,
+        runtime: UIRuntime<*, SpongeUIInteractionHandler>,
         component: StackInputSlot,
         slotTransaction: SlotTransaction,
         event: ClickContainerEvent.Drag

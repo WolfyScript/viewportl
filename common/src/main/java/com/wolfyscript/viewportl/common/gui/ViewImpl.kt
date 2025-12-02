@@ -25,15 +25,14 @@ import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.compose.LayoutNode
 import com.wolfyscript.viewportl.common.gui.compose.RootMeasurePolicy
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.input.TextInputCallback
 import com.wolfyscript.viewportl.gui.input.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Dp
-import com.wolfyscript.viewportl.gui.compose.layout.dp
 import com.wolfyscript.viewportl.gui.compose.layout.slots
 import com.wolfyscript.viewportl.gui.model.LocalStoreOwner
 import com.wolfyscript.viewportl.gui.rendering.Renderer
@@ -45,14 +44,14 @@ import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
 
-class WindowImpl internal constructor(
+class ViewImpl internal constructor(
     parentCoroutineContext: CoroutineContext,
     override val id: Key,
     override var size: Int = 54,
     override val type: WindowType = WindowType.CUSTOM,
     override val viewportl: Viewportl,
     val content: @Composable () -> Unit,
-) : Window, CoroutineScope {
+) : View, CoroutineScope {
     val runtimeClock: MonotonicFrameClock = parentCoroutineContext[MonotonicFrameClock]
         ?: throw IllegalStateException("Requires an external MonotonicFrameClock in the coroutine context!")
 
@@ -198,7 +197,7 @@ class WindowImpl internal constructor(
         }
     }
 
-    override fun render(runtime: ViewRuntime, renderer: Renderer<*>) {
+    override fun render(runtime: UIRuntime, renderer: Renderer<*>) {
         activeRenderer = renderer
 
         composition.setContent {

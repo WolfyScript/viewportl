@@ -21,9 +21,9 @@ import com.wolfyscript.scafall.wrappers.ScafallPlayer
 
 interface GuiHolder {
 
-    val viewManager: ViewRuntime
+    val viewManager: UIRuntime
 
-    val currentWindow: Window
+    val currentView: View
 
     val player: ScafallPlayer?
 }

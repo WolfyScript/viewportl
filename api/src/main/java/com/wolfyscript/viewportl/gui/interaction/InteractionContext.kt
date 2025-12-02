@@ -1,9 +1,9 @@
 package com.wolfyscript.viewportl.gui.interaction
 
-import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.UIRuntime
 
 interface InteractionContext {
 
-    val runtime: ViewRuntime
+    val runtime: UIRuntime
 
 }

@@ -7,8 +7,8 @@ import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
@@ -48,26 +48,26 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderContext>(SpongeInvUIR
         TODO("Not yet implemented")
     }
 
-    override fun onWindowOpen(runtime: ViewRuntime, window: Window) {
-        val guiHolder: GuiHolder = GuiHolderImpl(window, runtime)
+    override fun onWindowOpen(runtime: UIRuntime, view: View) {
+        val guiHolder: GuiHolder = GuiHolderImpl(view, runtime)
         val carrier = GuiCarrier(guiHolder)
 
         inventory = ViewableInventory.builder()
-            .type { getInventoryType(window) }
+            .type { getInventoryType(view) }
             .completeStructure()
             .carrier(carrier)
             .plugin((ScafallProvider.get().viewportl as SpongeViewportl).plugin)
             .build()
 
-        window.title?.let {
+        view.title?.let {
             title = it
         }
         carrier.inventory = inventory
     }
 
-    private fun getInventoryType(window: Window): ContainerType {
-        return when (window.type) {
-            WindowType.CUSTOM -> window.size.let { size ->
+    private fun getInventoryType(view: View): ContainerType {
+        return when (view.type) {
+            WindowType.CUSTOM -> view.size.let { size ->
                 val rows: Int = size / 9
                 ContainerTypes.registry().findValue<ContainerType?>(ResourceKey.minecraft("generic_9x$rows"))
                     .getOrNull()

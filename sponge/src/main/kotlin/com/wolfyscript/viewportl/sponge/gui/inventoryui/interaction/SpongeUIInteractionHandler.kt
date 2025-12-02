@@ -1,7 +1,7 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.interaction.InteractionContext
 import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.sponge.SpongeViewportl
@@ -16,8 +16,8 @@ class SpongeUIInteractionHandler : InvUIInteractionHandler<InteractionContext>()
 
     private var listener: SpongeInventoryUIListener? = null
 
-    override fun onWindowOpen(window: Window) {
-        super.onWindowOpen(window)
+    override fun onViewOpened(view: View) {
+        super.onViewOpened(view)
 
         if (listener == null) {
             listener = SpongeInventoryUIListener(runtime, runtime.viewportl)

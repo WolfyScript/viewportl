@@ -18,10 +18,10 @@
 package com.wolfyscript.viewportl.gui.input
 
 import com.wolfyscript.scafall.wrappers.ScafallPlayer
-import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.UIRuntime
 
 fun interface TextInputCallback {
 
-    fun run(player: ScafallPlayer, viewManager: ViewRuntime, input: String, args: Array<String>): Boolean
+    fun run(player: ScafallPlayer, viewManager: UIRuntime, input: String, args: Array<String>): Boolean
 
 }

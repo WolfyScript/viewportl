@@ -18,12 +18,12 @@
 
 package com.wolfyscript.viewportl.gui.interaction
 
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.gui.View
 
 /**
  * Handles the interaction of [Elements][com.wolfyscript.viewportl.gui.elements.Element].
- * It is supplied to the [ViewRuntime] upon creation.
+ * It is supplied to the [UIRuntime] upon creation.
  *
  * For a given type of GUI each platform has its own [InteractionHandler] implementation (with possibly shared common parts)
  *
@@ -35,11 +35,11 @@ interface InteractionHandler<C: InteractionContext> {
      */
     val isBusy: Boolean
 
-    fun init(runtime: ViewRuntime)
+    fun init(runtime: UIRuntime)
 
     fun dispose()
 
-    fun onWindowOpen(window: Window)
+    fun onViewOpened(view: View)
 
     fun onClick(context: C)
 

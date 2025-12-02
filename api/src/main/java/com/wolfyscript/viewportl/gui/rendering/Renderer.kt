@@ -17,8 +17,8 @@
  */
 package com.wolfyscript.viewportl.gui.rendering
 
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.compose.Node
 
 /**
@@ -32,7 +32,7 @@ interface Renderer<C: RenderContext> {
      */
     var requestsNewFrames: Boolean
 
-    fun onWindowOpen(runtime: ViewRuntime, window: Window)
+    fun onWindowOpen(runtime: UIRuntime, view: View)
 
     fun render(node: Node)
 

@@ -25,14 +25,14 @@ import com.wolfyscript.viewportl.gui.rendering.Renderer
 import net.kyori.adventure.text.Component
 
 /**
- * Holds the composition of the GUI and other properties of the window frame (such as title, background, etc.)
+ * Holds the composition of the UI and other properties of the window frame (such as title, background, etc.)
  */
-interface Window {
+interface View {
 
     /**
      * Renders this window state using the specified [renderer]
      */
-    fun render(runtime: ViewRuntime, renderer: Renderer<*>)
+    fun render(runtime: UIRuntime, renderer: Renderer<*>)
 
     fun close()
 

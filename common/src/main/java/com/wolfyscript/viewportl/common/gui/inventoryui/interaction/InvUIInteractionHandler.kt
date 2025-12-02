@@ -1,8 +1,8 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.common.gui.compose.modifier.PointerEventScopeImpl
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.interaction.InteractionContext
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.compose.Node
@@ -12,10 +12,10 @@ import com.wolfyscript.viewportl.gui.compose.modifier.SlotInputModifierNode
 
 abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandler<C> {
 
-    lateinit var runtime: ViewRuntime
+    lateinit var runtime: UIRuntime
     val slotNodes: MutableMap<Int, Node> = mutableMapOf()
 
-    override fun init(runtime: ViewRuntime) {
+    override fun init(runtime: UIRuntime) {
         this.runtime = runtime
     }
 
@@ -23,7 +23,7 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
 
     }
 
-    override fun onWindowOpen(window: Window) {
+    override fun onViewOpened(view: View) {
 
     }
 

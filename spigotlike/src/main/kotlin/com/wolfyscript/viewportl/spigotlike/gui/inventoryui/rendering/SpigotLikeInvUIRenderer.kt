@@ -18,10 +18,8 @@
 
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
-import com.wolfyscript.scafall.spigot.api.wrappers.utils.unwrapSpigot
-import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
@@ -37,8 +35,8 @@ abstract class SpigotLikeInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>
         return SpigotInvUIRenderContext(this)
     }
 
-    protected fun getInventoryType(window: Window): InventoryType {
-        return when (window.type) {
+    protected fun getInventoryType(view: View): InventoryType {
+        return when (view.type) {
             WindowType.CUSTOM -> InventoryType.CHEST
             WindowType.HOPPER -> InventoryType.HOPPER
             WindowType.DROPPER -> InventoryType.DROPPER

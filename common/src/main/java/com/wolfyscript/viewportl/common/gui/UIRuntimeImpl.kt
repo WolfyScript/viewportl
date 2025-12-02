@@ -23,8 +23,8 @@ import androidx.compose.runtime.Composable
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.model.SimpleDataStoreMap
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.DataStoreMap
@@ -35,25 +35,30 @@ import java.lang.System.nanoTime
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
-class ViewRuntimeImpl(
+class UIRuntimeImpl(
     override val viewportl: Viewportl,
     parentCoroutineContext: CoroutineContext,
     override val owner: UUID,
     // Handlers that handle rendering and interaction
     override val renderer: Renderer<*>,
     override val interactionHandler: InteractionHandler<*>,
-) : ViewRuntime {
+) : UIRuntime {
+    override val id: Long = NEXT_ID++
 
     override val viewers: MutableSet<UUID> = mutableSetOf()
-    override var window: Window? = null
+    override var view: View? = null
+
+    /**
+     * The runtime clock handles the timings of this runtime.
+     * Open views use these timings to render and update.
+     * That way if there are multiple viewers with different views they all use the correct timings and are synced.
+     */
     val runtimeClock = BroadcastFrameClock { }
-
-    // TODO: GUI runtimes are completely async, so need a way to securely communicate with main thread from Composable
     override val coroutineContext: CoroutineContext = parentCoroutineContext + runtimeClock
-
-    override val id: Long = NEXT_ID++
     var running = true
 
+    // TODO: GUI runtimes are completely async, so need a way to securely communicate with main thread from Composable
+    // TODO: Rework data storage
     override val storeOwner: DataStoreMap = SimpleDataStoreMap()
 
     init {
@@ -79,24 +84,23 @@ class ViewRuntimeImpl(
         }
     }
 
-    override fun createNewWindow(id: Key, size: Int, type: WindowType, content: @Composable (() -> Unit)) {
-        window = WindowImpl(coroutineContext, id, size, type, viewportl, content)
-
+    override fun setNewView(id: Key, size: Int, type: WindowType, content: @Composable (() -> Unit)) {
+        view = ViewImpl(coroutineContext, id, size, type, viewportl, content)
         startMainLoop()
     }
 
     override fun dispose() {
         interactionHandler.dispose()
-        window?.close()
-        window = null
+        view?.close()
+        view = null
         running = false
     }
 
     override fun joinViewer(uuid: UUID) {
         viewers.add(uuid)
         launch {
-            window?.let {
-                renderer.onWindowOpen(this@ViewRuntimeImpl, it)
+            view?.let {
+                renderer.onWindowOpen(this@UIRuntimeImpl, it)
             }
         }
     }
@@ -105,10 +109,10 @@ class ViewRuntimeImpl(
         viewers.remove(uuid)
     }
 
-    override fun open() {
-        window?.let {
-            interactionHandler.onWindowOpen(it)
-            renderer.onWindowOpen(this@ViewRuntimeImpl, it)
+    override fun openView() {
+        view?.let {
+            interactionHandler.onViewOpened(it)
+            renderer.onWindowOpen(this@UIRuntimeImpl, it)
 
             it.render(this, renderer)
 
@@ -119,7 +123,7 @@ class ViewRuntimeImpl(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
-        val that = other as ViewRuntimeImpl
+        val that = other as UIRuntimeImpl
         return id == that.id
     }
 

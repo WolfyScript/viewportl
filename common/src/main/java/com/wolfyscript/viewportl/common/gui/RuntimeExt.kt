@@ -1,7 +1,7 @@
 package com.wolfyscript.viewportl.common.gui
 
-import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.UIRuntime
 
-fun ViewRuntime.into() : ViewRuntimeImpl {
-    return this as ViewRuntimeImpl
+fun UIRuntime.into() : UIRuntimeImpl {
+    return this as UIRuntimeImpl
 }

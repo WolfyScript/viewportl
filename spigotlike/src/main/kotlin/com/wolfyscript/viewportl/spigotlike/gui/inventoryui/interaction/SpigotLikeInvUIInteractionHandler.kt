@@ -19,9 +19,9 @@
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.spigot.api.wrappers.utils.snapshot
-import com.wolfyscript.viewportl.common.gui.WindowImpl
+import com.wolfyscript.viewportl.common.gui.ViewImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.View
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -36,8 +36,8 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
 
     override var isBusy: Boolean = false
 
-    override fun onWindowOpen(window: Window) {
-        super.onWindowOpen(window)
+    override fun onViewOpened(view: View) {
+        super.onViewOpened(view)
     }
 
     override fun dispose() {
@@ -50,15 +50,10 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
 
         val clickedTopInv = event.clickedInventory == event.view.topInventory
 
-//        if (event.clickedInventory == event.view.bottomInventory) {
-//            event.isCancelled = false // Allow any bottom inventory interaction
-//            return
-//        }
-
         event.isCancelled = true // prevent any interaction, handle normal click & slot input separately
 
         isBusy = true
-        val root = (runtime.window as? WindowImpl)?.root ?: return
+        val root = (runtime.view as? ViewImpl)?.root ?: return
 
         val originalCursor = event.cursor
         val originalSlotStack = event.currentItem
@@ -236,7 +231,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
                             if (newCursor != null) {
                                 // calculate the slots that should be collected. Skip Buttons and other components that invalidate the transaction
                                 collectToCursor(newCursor, event.view, { index, stack ->
-                                    testChildClickTransaction(event, Slot(index), valueHandler, event.view)
+                                    testChildClickTransaction(event, Slot(index), event.view)
                                 }) { rawSlot, stack ->
                                     valueHandler.callSlotValueUpdate(rawSlot, stack)
                                 }
@@ -284,7 +279,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
                             event.view.bottomInventory,
                             event.view.topInventory,
                             { index, stack ->
-                                testChildClickTransaction(event, Slot(index), valueHandler, event.view)
+                                testChildClickTransaction(event, Slot(index), event.view)
                             }) { rawSlot, stack ->
                             valueHandler.callSlotValueUpdate(rawSlot, stack)
                         }
@@ -305,7 +300,6 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
     private fun testChildClickTransaction(
         event: InventoryClickEvent,
         slot: Slot,
-        valueHandler: ValueHandler,
         inventoryView: InventoryView,
     ): Boolean {
         if (slot.index >= inventoryView.topInventory.size) {
@@ -417,7 +411,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
     override fun onDrag(context: InventoryUIInteractionContext) {
         val event = context.event as? InventoryDragEvent ?: return
 
-        val topInvSize = runtime.window?.size ?: 0
+        val topInvSize = runtime.view?.size ?: 0
 
         // Go through each slot that is affected, and call them separately
         // (Sponge allows us to invalidate single slot transactions of the drag event! Keep the same API behaviour on Spigot, but cancel the entire event!)

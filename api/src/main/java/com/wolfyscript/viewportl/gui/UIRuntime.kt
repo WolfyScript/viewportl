@@ -27,26 +27,23 @@ import kotlinx.coroutines.CoroutineScope
 import java.util.*
 
 /**
- * The [ViewRuntime], as the name suggests, manages a view of the GUI for one or more players.<br></br>
- * It contains the custom Data object that stores all the required data of this view.<br></br>
+ * The [UIRuntime], manages the [View(s)][View] of a UI Interface for one or more players.
  *
+ * It keeps track of the state across configuration changes (closing and reopening UIs),
+ * provides the timings for UI updates and rendering, and manages the viewers.
  */
-interface ViewRuntime : CoroutineScope {
+interface UIRuntime : CoroutineScope {
 
     val id: Long
 
-    fun createNewWindow(
+    fun setNewView(
         id: Key,
         size: Int = 54,
         type: WindowType = WindowType.CUSTOM,
         content: @Composable () -> Unit,
     )
 
-    /**
-     * Opens the currently active menu without updating the history.<br></br>
-     * In case there is no active menu it opens the entry of the root cluster.
-     */
-    fun open()
+    fun openView()
 
     fun joinViewer(uuid: UUID)
 
@@ -59,7 +56,7 @@ interface ViewRuntime : CoroutineScope {
      *
      * @return The currently active menu.
      */
-    val window: Window?
+    val view: View?
 
     val owner: UUID
 

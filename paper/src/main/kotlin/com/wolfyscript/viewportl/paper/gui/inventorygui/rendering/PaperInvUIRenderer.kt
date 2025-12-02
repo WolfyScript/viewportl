@@ -2,8 +2,8 @@ package com.wolfyscript.viewportl.paper.gui.inventorygui.rendering
 
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering.SpigotLikeInvUIRenderer
@@ -15,16 +15,16 @@ import org.bukkit.inventory.InventoryHolder
 
 class PaperInvUIRenderer() : SpigotLikeInvUIRenderer() {
 
-    override fun onWindowOpen(runtime: ViewRuntime, window: Window) {
-        val guiHolder: GuiHolder = GuiHolderImpl(window, runtime)
+    override fun onWindowOpen(runtime: UIRuntime, view: View) {
+        val guiHolder: GuiHolder = GuiHolderImpl(view, runtime)
         val holder = BukkitInventoryGuiHolder(guiHolder)
 
         // Paper has direct Adventure support, so use it for better titles!
-        inventory = when (window.type) {
-            WindowType.CUSTOM -> createInventory(window.size, holder, window.title)
-            WindowType.DISPENSER -> createInventory(InventoryType.DISPENSER, holder, window.title)
-            WindowType.DROPPER -> createInventory(InventoryType.DROPPER, holder, window.title)
-            WindowType.HOPPER -> createInventory(InventoryType.HOPPER, holder, window.title)
+        inventory = when (view.type) {
+            WindowType.CUSTOM -> createInventory(view.size, holder, view.title)
+            WindowType.DISPENSER -> createInventory(InventoryType.DISPENSER, holder, view.title)
+            WindowType.DROPPER -> createInventory(InventoryType.DROPPER, holder, view.title)
+            WindowType.HOPPER -> createInventory(InventoryType.HOPPER, holder, view.title)
         }
         holder.setActiveInventory(inventory)
     }

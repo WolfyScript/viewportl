@@ -3,8 +3,8 @@ package com.wolfyscript.viewportl.spigot.gui.inventorygui.rendering
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.ViewRuntime
-import com.wolfyscript.viewportl.gui.Window
+import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering.SpigotLikeInvUIRenderer
@@ -16,12 +16,12 @@ import org.bukkit.inventory.InventoryHolder
 
 class SpigotInvUIRenderer : SpigotLikeInvUIRenderer() {
 
-    override fun onWindowOpen(runtime: ViewRuntime, window: Window) {
-        val guiHolder: GuiHolder = GuiHolderImpl(window, runtime)
+    override fun onWindowOpen(runtime: UIRuntime, view: View) {
+        val guiHolder: GuiHolder = GuiHolderImpl(view, runtime)
         val holder = BukkitInventoryGuiHolder(guiHolder)
-        val title: String? = window.title?.let { LegacyComponentSerializer.legacySection().serialize(it) }
-        inventory = when (window.type) {
-            WindowType.CUSTOM -> createInventory(window.size, holder, title)
+        val title: String? = view.title?.let { LegacyComponentSerializer.legacySection().serialize(it) }
+        inventory = when (view.type) {
+            WindowType.CUSTOM -> createInventory(view.size, holder, title)
             WindowType.DISPENSER -> createInventory(InventoryType.DISPENSER, holder, title)
             WindowType.DROPPER -> createInventory(InventoryType.DROPPER, holder, title)
             WindowType.HOPPER -> createInventory(InventoryType.HOPPER, holder, title)

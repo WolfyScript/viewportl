@@ -18,9 +18,9 @@
 package com.wolfyscript.viewportl.spigotlike.gui.factories
 
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.ViewRuntimeImpl
+import com.wolfyscript.viewportl.common.gui.UIRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.factories.GuiFactoryCommon
-import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction.SpigotLikeInvUIInteractionHandler
 import org.bukkit.plugin.Plugin
@@ -29,12 +29,12 @@ import kotlin.coroutines.CoroutineContext
 
 abstract class SpigotLikeGuiFactoryImpl(val bukkitPlugin: Plugin) : GuiFactoryCommon() {
 
-    override fun createInventoryUIRuntime(
+    override fun createUIRuntime(
         viewportl: Viewportl,
         parentCoroutineContext: CoroutineContext,
         viewer: UUID
-    ): ViewRuntime {
-        return ViewRuntimeImpl(
+    ): UIRuntime {
+        return UIRuntimeImpl(
             viewportl,
             parentCoroutineContext,
             viewer,

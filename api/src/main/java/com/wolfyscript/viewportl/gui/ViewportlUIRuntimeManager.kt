@@ -22,27 +22,27 @@ import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Handles the general GUI API and acts as an entry point to the whole creation of [ViewRuntime]s.
+ * Handles the general GUI API and acts as an entry point to the whole creation of [UIRuntime]s.
  */
-interface ViewportlUIRuntime {
+interface ViewportlUIRuntimeManager {
 
     /**
      * Creates a new view for the specified viewers, with the specified GUI.
      *
      * @param viewers The viewers of this view.
      */
-    fun createViewRuntime(id: Key, viewers: Set<UUID>, then: suspend (ViewRuntime) -> Unit)
+    fun createViewRuntime(id: Key, viewers: Set<UUID>, then: suspend (UIRuntime) -> Unit)
 
     fun getPlayerRuntime(player: UUID): PlayerViewRuntime
 
-    fun getViewRuntime(player: UUID): ViewRuntime
+    fun getViewRuntime(player: UUID): UIRuntime
 
 }
 
 interface PlayerViewRuntime {
 
-    var activeRuntime: ViewRuntime?
+    var activeRuntime: UIRuntime?
 
-    fun getOwn(coroutineContext: CoroutineContext): ViewRuntime
+    fun getOwn(coroutineContext: CoroutineContext): UIRuntime
 
 }

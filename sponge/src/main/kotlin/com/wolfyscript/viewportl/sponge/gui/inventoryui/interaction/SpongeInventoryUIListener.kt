@@ -2,7 +2,7 @@ package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.ViewRuntime
+import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.filter.type.Include
@@ -12,7 +12,7 @@ import org.spongepowered.api.item.inventory.Inventory
 import org.spongepowered.api.item.inventory.type.CarriedInventory
 
 class SpongeInventoryUIListener(
-    private val runtime: ViewRuntime<*, *>,
+    private val runtime: UIRuntime<*, *>,
     val viewportl: Viewportl
 ) {
 
@@ -78,7 +78,7 @@ class SpongeInventoryUIListener(
     fun onClose(event: InteractContainerEvent.Close) {
         val inventory = event.container()
         withGuiHolder(inventory) {
-            viewManager.window?.close()
+            viewManager.view?.close()
         }
     }
 
