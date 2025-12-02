@@ -46,7 +46,7 @@ interface ViewRuntime : CoroutineScope {
      * Opens the currently active menu without updating the history.<br></br>
      * In case there is no active menu it opens the entry of the root cluster.
      */
-    suspend fun open()
+    fun open()
 
     fun joinViewer(uuid: UUID)
 
@@ -60,6 +60,8 @@ interface ViewRuntime : CoroutineScope {
      * @return The currently active menu.
      */
     val window: Window?
+
+    val owner: UUID
 
     /**
      * Gets the viewers that are handled by this view manager.

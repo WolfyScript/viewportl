@@ -16,12 +16,12 @@ class GuiFactoryImpl : GuiFactoryCommon() {
     override fun createInventoryUIRuntime(
         viewportl: Viewportl,
         parentCoroutineContext: CoroutineContext,
-        viewers: Set<UUID>
+        viewer: UUID
     ): ViewRuntime {
         return ViewRuntimeImpl(
             viewportl,
             parentCoroutineContext,
-            viewers,
+            viewer,
             renderer = SpongeInvUIRenderer(),
             interactionHandler = SpongeUIInteractionHandler(),
         )

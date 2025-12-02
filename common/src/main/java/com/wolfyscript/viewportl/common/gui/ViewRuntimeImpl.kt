@@ -28,7 +28,6 @@ import com.wolfyscript.viewportl.gui.Window
 import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.DataStoreMap
-import com.wolfyscript.viewportl.gui.model.Store
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,13 +38,13 @@ import kotlin.coroutines.CoroutineContext
 class ViewRuntimeImpl(
     override val viewportl: Viewportl,
     parentCoroutineContext: CoroutineContext,
-    viewers: Set<UUID>,
+    override val owner: UUID,
     // Handlers that handle rendering and interaction
     override val renderer: Renderer<*>,
     override val interactionHandler: InteractionHandler<*>,
 ) : ViewRuntime {
 
-    override val viewers: MutableSet<UUID> = viewers.toMutableSet()
+    override val viewers: MutableSet<UUID> = mutableSetOf()
     override var window: Window? = null
     val runtimeClock = BroadcastFrameClock { }
 
@@ -65,11 +64,6 @@ class ViewRuntimeImpl(
         running = true
         launch {
             while (running) {
-                if (viewers.isEmpty()) { // Check for viewers before rendering the next frame
-                    dispose()
-                    continue
-                }
-
                 if (interactionHandler.isBusy) {
                     continue
                 }
@@ -111,7 +105,7 @@ class ViewRuntimeImpl(
         viewers.remove(uuid)
     }
 
-    override suspend fun open() {
+    override fun open() {
         window?.let {
             interactionHandler.onWindowOpen(it)
             renderer.onWindowOpen(this@ViewRuntimeImpl, it)

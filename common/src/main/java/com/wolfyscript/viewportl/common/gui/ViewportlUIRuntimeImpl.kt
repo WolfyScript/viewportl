@@ -20,6 +20,7 @@ package com.wolfyscript.viewportl.common.gui
 
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.gui.PlayerViewRuntime
 import com.wolfyscript.viewportl.gui.ViewRuntime
 import com.wolfyscript.viewportl.gui.ViewportlUIRuntime
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
@@ -32,10 +33,19 @@ import kotlin.coroutines.CoroutineContext
 
 class ViewportlUIRuntimeImpl(private val viewportl: Viewportl) : ViewportlUIRuntime, CoroutineScope {
 
+    /*
+     * TODO: Rework runtime system.
+     *  - Allow each Runtime to have an owner, that is never removed upon closing the view
+     *  - Allow others to join it and therefor see the same state
+     *  - Allow entities to "own" a runtime (like NPCs) with persistent data stores
+     *  - Create multi-state UIs, where state from other viewers can be used within the shared runtime
+     *    e.i. common section in the UI is same for all viewers, while other sections display player specific state
+     */
+
     override val coroutineContext: CoroutineContext = Dispatchers.Default
 
     private val runtimes: Long2ObjectMap<ViewRuntime> = Long2ObjectOpenHashMap()
-    private val viewRuntimesPerPlayer: MutableMap<UUID, PlayerViewRuntimes> = mutableMapOf()
+    private val playerRuntimes: MutableMap<UUID, PlayerViewRuntimeImpl> = mutableMapOf()
     private val sharedViewRuntimes: MutableMap<Key, ViewRuntime> = mutableMapOf()
 
     override fun createViewRuntime(
@@ -45,29 +55,23 @@ class ViewportlUIRuntimeImpl(private val viewportl: Viewportl) : ViewportlUIRunt
     ) {
         launch {
             val view: ViewRuntime = if (viewers.size > 1) {
+                val owner = viewers.first()
                 val sharedView = sharedViewRuntimes[id] ?: viewportl.guiFactory.createInventoryUIRuntime(
                     viewportl,
                     coroutineContext,
-                    viewers
+                    owner
                 )
 
                 for (viewer in viewers) {
-                    val playerRuntimes = viewRuntimesPerPlayer.getOrPut(viewer) { PlayerViewRuntimes() }
-                    playerRuntimes[id] = sharedView
+                    val playerRuntimes = playerRuntimes.getOrPut(viewer) { PlayerViewRuntimeImpl(viewer, viewportl) }
+                    playerRuntimes.activeRuntime = sharedView
+                    sharedView.joinViewer(viewer)
                 }
 
                 sharedView
             } else {
-                viewRuntimesPerPlayer.getOrPut(viewers.first()) { PlayerViewRuntimes() }.let {
-                    val existing = it[id]
-                    if (existing != null) {
-                        existing.joinViewer(viewers.first())
-                        return@let existing
-                    }
-                    val view = viewportl.guiFactory.createInventoryUIRuntime(viewportl, coroutineContext, viewers)
-                    it[id] = view
-                    view
-                }
+                val viewer = viewers.first()
+                playerRuntimes.getOrPut(viewer) { PlayerViewRuntimeImpl(viewer, viewportl) }.getOwn(coroutineContext)
             }
 
             synchronized(runtimes) {
@@ -78,20 +82,29 @@ class ViewportlUIRuntimeImpl(private val viewportl: Viewportl) : ViewportlUIRunt
         }
     }
 
-    override fun getActiveRuntime(player: UUID): ViewRuntime? {
-        return viewRuntimesPerPlayer[player]?.let { runtimes.get(it as Long) }
+    override fun getPlayerRuntime(player: UUID): PlayerViewRuntime {
+        return playerRuntimes.getOrPut(player) { PlayerViewRuntimeImpl(player, viewportl) }
+    }
+
+    override fun getViewRuntime(player: UUID): ViewRuntime {
+        return getPlayerRuntime(player).getOwn(coroutineContext)
     }
 
 }
 
-internal class PlayerViewRuntimes() {
+internal class PlayerViewRuntimeImpl(val player: UUID, val viewportl: Viewportl) : PlayerViewRuntime {
 
-    private val runtimes: MutableMap<Key, ViewRuntime> = mutableMapOf()
+    override var activeRuntime: ViewRuntime? = null
 
-    operator fun get(id: Key): ViewRuntime? = runtimes[id]
+    private var usedCoroutineContext: CoroutineContext? = null
+    private var ownRuntime: ViewRuntime? = null
 
-    operator fun set(id: Key, runtime: ViewRuntime) {
-        runtimes[id] = runtime
+    override fun getOwn(coroutineContext: CoroutineContext): ViewRuntime {
+        if (ownRuntime == null || usedCoroutineContext != coroutineContext) {
+            ownRuntime = viewportl.guiFactory.createInventoryUIRuntime(viewportl, coroutineContext, player)
+            usedCoroutineContext = coroutineContext
+        }
+        return ownRuntime!!
     }
 
 }

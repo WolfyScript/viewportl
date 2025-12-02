@@ -30,7 +30,7 @@ interface GuiFactory {
     fun createInventoryUIRuntime(
         viewportl: Viewportl,
         parentCoroutineContext: CoroutineContext,
-        viewers: Set<UUID>
+        viewer: UUID
     ): ViewRuntime
 
     fun createInventoryRenderer(): Renderer<*>

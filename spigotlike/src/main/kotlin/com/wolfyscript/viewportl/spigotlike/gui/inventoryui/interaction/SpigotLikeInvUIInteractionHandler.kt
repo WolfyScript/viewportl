@@ -223,6 +223,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
                             // Apply calculated slot changes
                             event.currentItem = newSlotStack
                         }
+                        isBusy = false
                         return
                     }
 
@@ -245,11 +246,13 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
                             event.view.setCursor(newCursor)
                             event.currentItem = null
                         }
+                        isBusy = false
                         return
                     }
 
                     else -> {
                         /* Click action not handled */
+                        isBusy = false
                         return
                     }
                 }
@@ -259,9 +262,8 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
                 event.currentItem = newSlotStack
 
                 slotInput.onValueChange(newSlotStack?.snapshot() ?: ItemStack.empty().snapshot())
-
-                isBusy = false
             }
+            isBusy = false
         } else {
             // Handle some clicks that occur in the bottom inv and may affect the top inv
             // e.g. shift-click, collect to cursor
@@ -296,6 +298,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
 
                 }
             }
+            isBusy = false
         }
     }
 

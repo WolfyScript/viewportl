@@ -23,13 +23,23 @@ object ExampleCommand {
                             val viewportl = ScafallProvider.get().viewportl
                             val executor = ctx.source.player ?: return@executes 0
                             val exampleId = ResourceLocationArgument.getId(ctx, EXAMPLE_ID_ARG).toKey()
-                            when (exampleId) {
-                                Key.viewportl("counter") -> viewportl.guiManager.createViewRuntime(
-                                    exampleId,
-                                    setOf(executor.uuid)
-                                ) {
-                                    it.createNewWindow(exampleId, size = 36, content = { Counter() })
-                                    it.open()
+
+                            ScafallProvider.get().scheduler.asyncTask(ScafallProvider.get().modInfo) {
+                                viewportl.guiManager.getViewRuntime(executor.uuid).let { playerRuntime ->
+                                    playerRuntime.joinViewer(executor.uuid)
+                                    playerRuntime.createNewWindow(
+                                        exampleId,
+                                        size = 36,
+                                        content = when (exampleId) {
+                                            Key.viewportl("counter") -> {
+                                                { Counter() }
+                                            }
+
+                                            else -> {
+                                                {}
+                                            }
+                                        })
+                                    playerRuntime.open()
                                 }
                             }
 

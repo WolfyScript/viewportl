@@ -198,7 +198,7 @@ class WindowImpl internal constructor(
         }
     }
 
-    override suspend fun render(runtime: ViewRuntime, renderer: Renderer<*>) {
+    override fun render(runtime: ViewRuntime, renderer: Renderer<*>) {
         activeRenderer = renderer
 
         composition.setContent {

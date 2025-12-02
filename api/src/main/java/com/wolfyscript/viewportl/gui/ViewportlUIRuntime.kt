@@ -19,6 +19,7 @@ package com.wolfyscript.viewportl.gui
 
 import com.wolfyscript.scafall.identifier.Key
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Handles the general GUI API and acts as an entry point to the whole creation of [ViewRuntime]s.
@@ -32,6 +33,16 @@ interface ViewportlUIRuntime {
      */
     fun createViewRuntime(id: Key, viewers: Set<UUID>, then: suspend (ViewRuntime) -> Unit)
 
-    fun getActiveRuntime(player: UUID): ViewRuntime?
+    fun getPlayerRuntime(player: UUID): PlayerViewRuntime
+
+    fun getViewRuntime(player: UUID): ViewRuntime
+
+}
+
+interface PlayerViewRuntime {
+
+    var activeRuntime: ViewRuntime?
+
+    fun getOwn(coroutineContext: CoroutineContext): ViewRuntime
 
 }
