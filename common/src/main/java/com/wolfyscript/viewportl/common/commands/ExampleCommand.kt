@@ -5,6 +5,7 @@ import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.toKey
 import com.wolfyscript.viewportl.example.Counter
+import com.wolfyscript.viewportl.example.SlotGridTest
 import com.wolfyscript.viewportl.example.SlotInputTest
 import com.wolfyscript.viewportl.viewportl
 import net.minecraft.commands.CommandSourceStack
@@ -38,6 +39,10 @@ object ExampleCommand {
 
                                             Key.viewportl("slot_input_test") -> {
                                                 { SlotInputTest() }
+                                            }
+
+                                            Key.viewportl("slot_grid_test") -> {
+                                                { SlotGridTest() }
                                             }
 
                                             else -> {

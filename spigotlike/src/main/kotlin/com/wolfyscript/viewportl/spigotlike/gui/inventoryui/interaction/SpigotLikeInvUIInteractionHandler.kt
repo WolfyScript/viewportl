@@ -23,6 +23,7 @@ import com.wolfyscript.scafall.wrappers.snapshot
 import com.wolfyscript.viewportl.common.gui.ViewImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.View
+import com.wolfyscript.viewportl.gui.compose.modifier.SlotInputModifierNode
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -211,39 +212,21 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
                                 newSlotStack,
                                 event.view,
                                 event.view.topInventory,
-                                event.view.bottomInventory,
-                                { _, _ -> true }) { _, _ ->
-
+                                event.view.bottomInventory
+                            ) { i, stack ->
+                                getSlotInputFor(i, root)
                             }
-
-                            // Apply calculated slot changes
-                            event.currentItem = newSlotStack
                         }
-                        isBusy = false
-                        return
                     }
 
                     InventoryAction.COLLECT_TO_CURSOR -> {
-                        if (!event.isCancelled) { // Only continue to collect items when main component allows it
-                            // Clear the slot, it was moved to the cursor
-                            newSlotStack = null
-                            valueHandler.callSlotValueUpdate(event.rawSlot, null)
-
-                            if (newCursor != null) {
-                                // calculate the slots that should be collected. Skip Buttons and other components that invalidate the transaction
-                                collectToCursor(newCursor, event.view, { index, stack ->
-                                    testChildClickTransaction(event, Slot(index), event.view)
-                                }) { rawSlot, stack ->
-                                    valueHandler.callSlotValueUpdate(rawSlot, stack)
-                                }
+                        if (newCursor != null) {
+                            // calculate the slots that should be collected. Skip Buttons and other components that invalidate the transaction
+                            collectToCursor(newCursor, event.view) { index, stack ->
+                                getSlotInputFor(index, root)
                             }
-
-                            // Apply calculated slot changes
-                            event.view.setCursor(newCursor)
-                            event.currentItem = null
                         }
-                        isBusy = false
-                        return
+                        newSlotStack = null
                     }
 
                     else -> {
@@ -278,11 +261,9 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
                             newSlotStack,
                             event.view,
                             event.view.bottomInventory,
-                            event.view.topInventory,
-                            { index, stack ->
-                                testChildClickTransaction(event, Slot(index), event.view)
-                            }) { rawSlot, stack ->
-                            valueHandler.callSlotValueUpdate(rawSlot, stack)
+                            event.view.topInventory
+                        ) { index, stack ->
+                            getSlotInputFor(index, root)
                         }
 
                         // Apply calculated slot changes
@@ -298,51 +279,32 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
         }
     }
 
-    private fun testChildClickTransaction(
-        event: InventoryClickEvent,
-        slot: Slot,
-        inventoryView: InventoryView,
-    ): Boolean {
-        if (slot.index >= inventoryView.topInventory.size) {
-            return true
-        }
-        val node = slotNodes[slot.index]
-        if (node != null) {
-
-            return !event.isCancelled
-        }
-        return false
-    }
-
     private fun moveToOtherInventory(
         stackToMove: ItemStack,
         inventoryView: InventoryView,
         moveFrom: Inventory,
         moveTo: Inventory,
-        stackPredicate: (Int, ItemStack?) -> Boolean,
-        onStackUpdated: (Int, ItemStack?) -> Unit,
+        topInvSlotProvider: (Int, ItemStack?) -> SlotInputModifierNode?,
     ) {
         var amount = stackToMove.amount
-        val slotOffset = if (inventoryView.topInventory == moveTo) {
-            0
-        } else {
-            moveFrom.size
-        }
-        val storageSize =
-            moveTo.storageContents.size // Do not include armor, off-hand, etc. to get the proper slot position
+        val fromTopInv = inventoryView.topInventory == moveFrom
 
-        for (i in storageSize - 1 downTo 0) {
+        val moveToContents = moveTo.storageContents
+
+        for (index in moveToContents.size - 1 downTo 0) {
             if (amount <= 0) {
                 break
             }
-            val rawSlot = slotOffset + i
-            val slot = inventoryView.convertSlot(rawSlot)
 
-            val stack = moveTo.getItem(slot)
-            if (stack == null || stack.type == Material.AIR) {
-                continue
-            }
-            if (!stackToMove.isSimilar(stack) || !stackPredicate(rawSlot, stack)) {
+            val stack = moveToContents[index]
+            val slot = if (fromTopInv) { null } else { topInvSlotProvider(index, stack) }
+
+            if (
+                stack == null ||
+                stack.type == Material.AIR ||
+                !stackToMove.isSimilar(stack) ||
+                (!fromTopInv && slot == null)
+            ) {
                 continue
             }
 
@@ -354,22 +316,21 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
             // Apply changes
             amount -= canAdd
             stack.amount += canAdd
-            onStackUpdated(rawSlot, stack)
+            slot?.onValueChange(stack.snapshot())
         }
+
         if (amount > 0) {
             // There are still items left to move, look for empty slots
-            for (i in storageSize - 1 downTo 0) {
+            for (index in 0 until moveToContents.size) {
                 if (amount <= 0) {
                     break
                 }
-                val rawSlot = slotOffset + i
-                val slot = inventoryView.convertSlot(rawSlot)
-
-                val stack = moveTo.getItem(slot)
+                val stack = moveToContents[index]
                 if (stack != null && stack.type != Material.AIR) {
                     continue
                 }
-                if (!stackPredicate(rawSlot, stack)) {
+                val slot = if (fromTopInv) { null } else { topInvSlotProvider(index, stack) }
+                if (!fromTopInv && slot == null) {
                     continue
                 }
 
@@ -377,8 +338,11 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
                 val newStack = stackToMove.clone()
                 newStack.amount = amount.coerceAtMost(stackToMove.maxStackSize)
                 amount -= newStack.amount
-                moveTo.setItem(slot, newStack)
-                onStackUpdated(rawSlot, newStack)
+                if (fromTopInv) {
+                    moveTo.setItem(index, newStack) // Storage contents always comes first in player inv (start at index 0)
+                } else {
+                    slot?.onValueChange(newStack.snapshot())
+                }
             }
         }
 
@@ -389,43 +353,72 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
     private fun collectToCursor(
         cursor: ItemStack,
         inventoryView: InventoryView,
-        stackPredicate: (Int, ItemStack) -> Boolean,
-        onStackUpdated: (Int, ItemStack?) -> Unit,
+        topInvPredicate: (Int, ItemStack) -> SlotInputModifierNode?,
     ) {
-        for (i in 0 until inventoryView.countSlots()) {
-            val stack = inventoryView.getItem(i) ?: continue
-            var canAdd = cursor.maxStackSize - cursor.amount
-            if (canAdd <= 0) {
+        for ((index, stack) in inventoryView.topInventory.contents.withIndex()) {
+            if (stack == null || stack.type == Material.AIR) {
+                continue
+            }
+            var remainingAmount = cursor.maxStackSize - cursor.amount
+            if (remainingAmount <= 0) {
                 return
             }
-            if (cursor.isSimilar(stack) && stackPredicate(i, stack)) {
-                if (canAdd > stack.amount) {
-                    canAdd = stack.amount
+            val slot = topInvPredicate(index, stack)
+            if (slot != null && cursor.isSimilar(stack)) {
+                if (remainingAmount > stack.amount) {
+                    remainingAmount = stack.amount
                 }
-                stack.amount -= canAdd
-                cursor.amount += canAdd
-                onStackUpdated(i, stack)
+                stack.amount -= remainingAmount
+                cursor.amount += remainingAmount
+                slot.onValueChange(stack.snapshot())
+            }
+        }
+        for (stack in inventoryView.bottomInventory.contents) {
+            if (stack == null || stack.type == Material.AIR) {
+                continue
+            }
+            var remainingAmount = cursor.maxStackSize - cursor.amount
+            if (remainingAmount <= 0) {
+                return
+            }
+            if (cursor.isSimilar(stack)) {
+                if (remainingAmount > stack.amount) {
+                    remainingAmount = stack.amount
+                }
+                stack.amount -= remainingAmount
+                cursor.amount += remainingAmount
             }
         }
     }
 
     override fun onDrag(context: InventoryUIInteractionContext) {
         val event = context.event as? InventoryDragEvent ?: return
-
+        val root = (runtime.view as? ViewImpl)?.root ?: return
         val topInvSize = runtime.view?.size ?: 0
 
+        // TODO: WIP
         // Go through each slot that is affected, and call them separately
         // (Sponge allows us to invalidate single slot transactions of the drag event! Keep the same API behaviour on Spigot, but cancel the entire event!)
         for (rawSlot in event.rawSlots) {
             if (rawSlot < topInvSize) {
                 // Slot is in top inventory
-                val node = slotNodes[rawSlot]
-
-                if (node == null) {
+                val slotIndex = event.view.convertSlot(rawSlot)
+                val slot = getSlotInputFor(slotIndex, root)
+                if (slot == null) {
                     event.isCancelled = true // Cancel the entire event if only one fails!
                     return
                 }
-
+            }
+        }
+        if (!event.isCancelled) {
+            for ((rawSlot, stack) in event.newItems) {
+                if (rawSlot < topInvSize) {
+                    val slotIndex = event.view.convertSlot(rawSlot)
+                    val slot = getSlotInputFor(slotIndex, root)
+                    if (slot != null) {
+                        slot.onValueChange(stack.snapshot())
+                    }
+                }
             }
         }
     }
