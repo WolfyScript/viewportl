@@ -4,7 +4,8 @@ import com.mojang.brigadier.CommandDispatcher
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.toKey
-import com.wolfyscript.viewportl.example.counter.Counter
+import com.wolfyscript.viewportl.example.Counter
+import com.wolfyscript.viewportl.example.SlotInputTest
 import com.wolfyscript.viewportl.viewportl
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
@@ -35,6 +36,10 @@ object ExampleCommand {
                                                 { Counter() }
                                             }
 
+                                            Key.viewportl("slot_input_test") -> {
+                                                { SlotInputTest() }
+                                            }
+
                                             else -> {
                                                 {}
                                             }
@@ -46,6 +51,7 @@ object ExampleCommand {
                             return@executes 1
                         }.suggests { context, builder ->
                             builder.suggest("viewportl:counter")
+                                .suggest("viewportl:slot_input_test")
                             return@suggests builder.buildFuture()
                         }
                     )

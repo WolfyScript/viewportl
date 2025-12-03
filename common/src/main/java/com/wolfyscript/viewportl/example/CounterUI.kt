@@ -1,4 +1,4 @@
-package com.wolfyscript.viewportl.example.counter
+package com.wolfyscript.viewportl.example
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

@@ -19,6 +19,7 @@
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.spigot.api.wrappers.utils.snapshot
+import com.wolfyscript.scafall.wrappers.snapshot
 import com.wolfyscript.viewportl.common.gui.ViewImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.View
@@ -256,7 +257,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
                 event.view.setCursor(newCursor)
                 event.currentItem = newSlotStack
 
-                slotInput.onValueChange(newSlotStack?.snapshot() ?: ItemStack.empty().snapshot())
+                slotInput.onValueChange(newSlotStack?.snapshot() ?: net.minecraft.world.item.ItemStack.EMPTY.snapshot())
             }
             isBusy = false
         } else {
@@ -290,7 +291,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
                 }
 
                 else -> {
-
+                    event.isCancelled = false
                 }
             }
             isBusy = false

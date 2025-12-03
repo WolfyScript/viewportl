@@ -46,7 +46,6 @@ class InventoryUIListener() : Listener {
             if (interactionHandler is SpigotLikeInvUIInteractionHandler) {
                 interactionHandler.onClick(InventoryUIInteractionContext(viewManager, event, valueHandler))
             }
-            event.isCancelled = true
         }
     }
 

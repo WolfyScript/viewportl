@@ -46,8 +46,8 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
                     modifier = node.modifierStack.firstOfType(SlotInputModifierNode::class)
                     if (modifier != null) {
                         processing = false
-                        return@forEachChild
                     }
+                    return@forEachChild
                 }
             }
             if (!intersects) {
@@ -79,6 +79,7 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
                             scope.onClickInteraction(x, y)
                         }
                     }
+                    return@forEachChild
                 }
             }
             if (!intersects) {
