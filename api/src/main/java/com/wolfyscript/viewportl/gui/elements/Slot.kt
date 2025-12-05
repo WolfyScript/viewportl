@@ -2,12 +2,9 @@ package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
-import com.wolfyscript.viewportl.gui.compose.layout.dp
 import com.wolfyscript.viewportl.gui.compose.layout.slots
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
-import com.wolfyscript.viewportl.gui.compose.modifier.defaultMinSize
 import com.wolfyscript.viewportl.gui.compose.modifier.requireSize
-import com.wolfyscript.viewportl.gui.compose.modifier.requireSizeIn
 import com.wolfyscript.viewportl.gui.compose.modifier.slotInput
 
 @Composable
