@@ -43,7 +43,6 @@ fun Navigation() {
 
 @Composable
 private fun Home(backstack: SnapshotStateList<NavKey>) {
-
     viewProperties(Key.viewportl("home")) {
         title("<b>Home")
         size(9.slots, 3.slots)
@@ -54,22 +53,12 @@ private fun Home(backstack: SnapshotStateList<NavKey>) {
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Button(
-            onClick = {
-                backstack.add(Settings)
-            }
-        ) {
-            Icon(stack = ItemStack(Items.REDSTONE).apply { set(DataComponents.ITEM_NAME, "Settings".deser().vanilla()) }
-                .snapshot())
+        Button(onClick = { backstack.add(Settings) }) {
+            Icon(stack = btnSettingsStack)
         }
 
-        Button(
-            onClick = {
-                backstack.add(About)
-            }
-        ) {
-            Icon(stack = ItemStack(Items.PAPER).apply { set(DataComponents.ITEM_NAME, "About".deser().vanilla()) }
-                .snapshot())
+        Button(onClick = { backstack.add(About) }) {
+            Icon(stack = btnAboutStack)
         }
     }
 }
@@ -83,28 +72,11 @@ private fun About(backstack: SnapshotStateList<NavKey>) {
 
     Column(Modifier.fillMaxSize(), Arrangement.SpaceBetween, Alignment.CenterHorizontally) {
         Row(Modifier.fillMaxWidth(), Arrangement.Center) {
-            Icon(stack = ItemStack(Items.BOOKSHELF).apply {
-                set(DataComponents.ITEM_NAME, "The About Page".deser().vanilla())
-                set(
-                    DataComponents.LORE,
-                    ItemLore(
-                        listOf(
-                            "This example shows how".deser().vanilla(),
-                            "a simple Navigation".deser().vanilla(),
-                            "can be used.".deser().vanilla()
-                        )
-                    )
-                )
-            }.snapshot())
+            Icon(stack = iconAboutInfoStack)
         }
 
-        Button(
-            onClick = {
-                backstack.removeLastOrNull()
-            }
-        ) {
-            Icon(stack = ItemStack(Items.BARRIER).apply { set(DataComponents.ITEM_NAME, "Back".deser().vanilla()) }
-                .snapshot())
+        Button(onClick = { backstack.removeLastOrNull() }) {
+            Icon(stack = btnBackStack)
         }
     }
 }
@@ -118,26 +90,48 @@ private fun Settings(backstack: SnapshotStateList<NavKey>) {
 
     Column(Modifier.fillMaxSize(), Arrangement.SpaceBetween, Alignment.CenterHorizontally) {
         Row(Modifier.fillMaxWidth(), Arrangement.Center) {
-            Icon(stack = ItemStack(Items.ANVIL).apply {
-                set(DataComponents.ITEM_NAME, "Nah...".deser().vanilla())
-                set(
-                    DataComponents.LORE,
-                    ItemLore(
-                        listOf(
-                            "...nothing to configure here!".deser().vanilla()
-                        )
-                    )
-                )
-            }.snapshot())
+            Icon(stack = iconSettingsInfoStack)
         }
-
         Button(
             onClick = {
                 backstack.removeLastOrNull()
             }
         ) {
-            Icon(stack = ItemStack(Items.BARRIER).apply { set(DataComponents.ITEM_NAME, "Back".deser().vanilla()) }
-                .snapshot())
+            Icon(stack = btnBackStack)
         }
     }
 }
+
+private val btnSettingsStack = ItemStack(Items.REDSTONE).apply {
+    set(DataComponents.ITEM_NAME, "Settings".deser().vanilla())
+}.snapshot()
+private val btnAboutStack = ItemStack(Items.PAPER).apply {
+    set(DataComponents.ITEM_NAME, "About".deser().vanilla())
+}.snapshot()
+private val btnBackStack = ItemStack(Items.BARRIER).apply {
+    set(DataComponents.ITEM_NAME, "Back".deser().vanilla())
+}.snapshot()
+private val iconSettingsInfoStack = ItemStack(Items.ANVIL).apply {
+    set(DataComponents.ITEM_NAME, "Nah...".deser().vanilla())
+    set(
+        DataComponents.LORE,
+        ItemLore(
+            listOf(
+                "...nothing to configure here!".deser().vanilla()
+            )
+        )
+    )
+}.snapshot()
+private val iconAboutInfoStack = ItemStack(Items.BOOKSHELF).apply {
+    set(DataComponents.ITEM_NAME, "The About Page".deser().vanilla())
+    set(
+        DataComponents.LORE,
+        ItemLore(
+            listOf(
+                "This example shows how".deser().vanilla(),
+                "a simple Navigation".deser().vanilla(),
+                "can be used.".deser().vanilla()
+            )
+        )
+    )
+}.snapshot()
