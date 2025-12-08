@@ -13,12 +13,14 @@ import com.wolfyscript.viewportl.gui.compose.layout.Alignment
 import com.wolfyscript.viewportl.gui.compose.layout.Arrangement
 import com.wolfyscript.viewportl.gui.compose.layout.slots
 import com.wolfyscript.viewportl.gui.compose.modifier.*
+import com.wolfyscript.viewportl.gui.compose.viewProperties
 import com.wolfyscript.viewportl.gui.elements.Button
 import com.wolfyscript.viewportl.gui.elements.Column
 import com.wolfyscript.viewportl.gui.elements.Icon
 import com.wolfyscript.viewportl.gui.elements.Row
 import com.wolfyscript.viewportl.gui.model.Store
 import com.wolfyscript.viewportl.gui.model.store
+import com.wolfyscript.viewportl.viewportl
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -49,6 +51,11 @@ internal class CounterStore : Store {
 @Composable
 fun Counter() {
     val countStore = store(key = Key.key("viewportl", "counter")) { CounterStore() }
+
+    viewProperties(Key.viewportl("counter")) {
+        title("<b>Counter")
+        size(9.slots, 3.slots)
+    }
 
     Row(
         modifier = Modifier

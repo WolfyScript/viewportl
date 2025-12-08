@@ -20,7 +20,7 @@ package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.WindowType
+import com.wolfyscript.viewportl.gui.ViewType
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import org.bukkit.Bukkit
@@ -36,11 +36,11 @@ abstract class SpigotLikeInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>
     }
 
     protected fun getInventoryType(view: View): InventoryType {
-        return when (view.type) {
-            WindowType.CUSTOM -> InventoryType.CHEST
-            WindowType.HOPPER -> InventoryType.HOPPER
-            WindowType.DROPPER -> InventoryType.DROPPER
-            WindowType.DISPENSER -> InventoryType.DISPENSER
+        return when (view.properties.type.type) {
+            ViewType.CUSTOM -> InventoryType.CHEST
+            ViewType.HOPPER -> InventoryType.HOPPER
+            ViewType.DROPPER -> InventoryType.DROPPER
+            ViewType.DISPENSER -> InventoryType.DISPENSER
         }
     }
 

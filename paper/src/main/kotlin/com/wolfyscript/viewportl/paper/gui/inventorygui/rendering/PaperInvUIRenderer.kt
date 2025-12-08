@@ -4,7 +4,7 @@ import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.WindowType
+import com.wolfyscript.viewportl.gui.ViewType
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering.SpigotLikeInvUIRenderer
 import net.kyori.adventure.text.Component
@@ -15,16 +15,27 @@ import org.bukkit.inventory.InventoryHolder
 
 class PaperInvUIRenderer() : SpigotLikeInvUIRenderer() {
 
-    override fun onWindowOpen(runtime: UIRuntime, view: View) {
+    override fun onViewInit(runtime: UIRuntime, view: View) {
+        initInventory(view, runtime)
+    }
+
+    override fun onViewChange(
+        runtime: UIRuntime,
+        view: View,
+    ) {
+        initInventory(view, runtime)
+    }
+
+    private fun initInventory(view: View, runtime: UIRuntime) {
         val guiHolder: GuiHolder = GuiHolderImpl(view, runtime)
         val holder = BukkitInventoryGuiHolder(guiHolder)
 
         // Paper has direct Adventure support, so use it for better titles!
-        inventory = when (view.type) {
-            WindowType.CUSTOM -> createInventory(view.size, holder, view.title)
-            WindowType.DISPENSER -> createInventory(InventoryType.DISPENSER, holder, view.title)
-            WindowType.DROPPER -> createInventory(InventoryType.DROPPER, holder, view.title)
-            WindowType.HOPPER -> createInventory(InventoryType.HOPPER, holder, view.title)
+        inventory = when (view.properties.type.type) {
+            ViewType.CUSTOM -> createInventory(view.properties.dimensions.inventorySize, holder, view.properties.title.component)
+            ViewType.DISPENSER -> createInventory(InventoryType.DISPENSER, holder, view.properties.title.component)
+            ViewType.DROPPER -> createInventory(InventoryType.DROPPER, holder, view.properties.title.component)
+            ViewType.HOPPER -> createInventory(InventoryType.HOPPER, holder, view.properties.title.component)
         }
         holder.setActiveInventory(inventory)
     }

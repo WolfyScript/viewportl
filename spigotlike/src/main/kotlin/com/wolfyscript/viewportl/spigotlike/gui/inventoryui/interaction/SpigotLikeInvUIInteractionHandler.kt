@@ -394,7 +394,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
     override fun onDrag(context: InventoryUIInteractionContext) {
         val event = context.event as? InventoryDragEvent ?: return
         val root = (runtime.view as? ViewImpl)?.root ?: return
-        val topInvSize = runtime.view?.size ?: 0
+        val topInvSize = runtime.view?.properties?.dimensions?.inventorySize ?: 0
 
         // TODO: WIP
         // Go through each slot that is affected, and call them separately

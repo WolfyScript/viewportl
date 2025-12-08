@@ -17,7 +17,7 @@
  */
 package com.wolfyscript.viewportl.gui
 
-enum class WindowType {
+enum class ViewType {
     CUSTOM,
     DISPENSER,
     DROPPER,

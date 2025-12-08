@@ -27,29 +27,36 @@ import com.wolfyscript.viewportl.common.gui.compose.LayoutNode
 import com.wolfyscript.viewportl.common.gui.compose.RootMeasurePolicy
 import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.WindowType
+import com.wolfyscript.viewportl.gui.ViewType
 import com.wolfyscript.viewportl.gui.input.TextInputCallback
 import com.wolfyscript.viewportl.gui.input.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
+import com.wolfyscript.viewportl.gui.compose.ViewProperties
+import com.wolfyscript.viewportl.gui.compose.ViewPropertiesOverride
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Dp
 import com.wolfyscript.viewportl.gui.compose.layout.slots
 import com.wolfyscript.viewportl.gui.model.LocalStoreOwner
+import com.wolfyscript.viewportl.gui.model.LocalView
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
-import net.kyori.adventure.text.Component
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
 
+val DefaultViewProperties = ViewProperties(
+    type = ViewProperties.Type(ViewType.CUSTOM),
+    dimensions = ViewProperties.Dimensions(9.slots, 9.slots),
+    title = ViewProperties.Title(null),
+)
+
 class ViewImpl internal constructor(
     parentCoroutineContext: CoroutineContext,
     override val id: Key,
-    override var size: Int = 54,
-    override val type: WindowType = WindowType.CUSTOM,
     override val viewportl: Viewportl,
+    val runtime: UIRuntime,
     val content: @Composable () -> Unit,
 ) : View, CoroutineScope {
     val runtimeClock: MonotonicFrameClock = parentCoroutineContext[MonotonicFrameClock]
@@ -72,9 +79,38 @@ class ViewImpl internal constructor(
         parent = recomposer
     )
 
-    // Window state
-    override var title: Component? = null
+    // State
     override var resourcePath: String? = null
+
+    private val keyedPropertyStack: MutableMap<Key, ViewPropertiesOverride> = mutableMapOf()
+    override var properties: ViewProperties = DefaultViewProperties
+        private set
+
+    override fun overrideProperties(key: Key, properties: ViewPropertiesOverride) {
+        keyedPropertyStack[key] = properties
+        updateProperties()
+    }
+
+    override fun removePropertiesOverride(key: Key) {
+        keyedPropertyStack.remove(key)
+        updateProperties()
+    }
+
+    private fun updateProperties() {
+        var override: ViewPropertiesOverride? = null
+        for (value in keyedPropertyStack.values) {
+            override = value.override(override)
+        }
+        this.properties = ViewProperties(
+            type = override?.type ?: DefaultViewProperties.type,
+            dimensions = override?.dimensions ?: DefaultViewProperties.dimensions,
+            title = override?.title ?: DefaultViewProperties.title,
+        )
+        // TODO: require relayout and rerender
+        requireLayout = true
+        requireDraw = true
+        activeRenderer?.onViewChange(runtime, this)
+    }
 
     override var onTextInput: TextInputCallback? = null
     override var onTextInputTabComplete: TextInputTabCompleteCallback? = null
@@ -102,7 +138,7 @@ class ViewImpl internal constructor(
      * Measures the root node and places it. This is recursively measures and then places all the child nodes.
      */
     private fun measureAndPlace() {
-        val rootConstraints = Constraints(Dp.Zero, width().slots, Dp.Zero, height().slots)
+        val rootConstraints = Constraints(Dp.Zero, properties.dimensions.width, Dp.Zero, properties.dimensions.height)
         root.arranger.remeasure(rootConstraints)
         root.arranger.layout()
     }
@@ -192,17 +228,18 @@ class ViewImpl internal constructor(
         readStatesOnDraw.clear()
         activeRenderer?.let { renderer ->
             Snapshot.observe(readObserver = readStatesOnDrawObserver) {
-                renderer.render(root)
+                renderer.render(this, root)
             }
         }
     }
 
-    override fun render(runtime: UIRuntime, renderer: Renderer<*>) {
+    override fun render(renderer: Renderer<*>) {
         activeRenderer = renderer
 
         composition.setContent {
             CompositionLocalProvider(
                 LocalStoreOwner provides runtime.storeOwner,
+                LocalView provides this,
                 content = content
             )
         }
@@ -214,14 +251,6 @@ class ViewImpl internal constructor(
         // TODO: Create a separate dispose function
         composition.dispose()
         recomposer.close()
-    }
-
-    override fun width(): Int {
-        return size / height()
-    }
-
-    override fun height(): Int {
-        return size / 9
     }
 
 }

@@ -25,7 +25,6 @@ import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.model.SimpleDataStoreMap
 import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.WindowType
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.DataStoreMap
 import com.wolfyscript.viewportl.gui.rendering.Renderer
@@ -84,8 +83,8 @@ class UIRuntimeImpl(
         }
     }
 
-    override fun setNewView(id: Key, size: Int, type: WindowType, content: @Composable (() -> Unit)) {
-        view = ViewImpl(coroutineContext, id, size, type, viewportl, content)
+    override fun setNewView(id: Key, content: @Composable (() -> Unit)) {
+        view = ViewImpl(coroutineContext, id, viewportl, this, content)
         startMainLoop()
     }
 
@@ -100,7 +99,7 @@ class UIRuntimeImpl(
         viewers.add(uuid)
         launch {
             view?.let {
-                renderer.onWindowOpen(this@UIRuntimeImpl, it)
+                renderer.onViewInit(this@UIRuntimeImpl, it)
             }
         }
     }
@@ -111,10 +110,10 @@ class UIRuntimeImpl(
 
     override fun openView() {
         view?.let {
-            interactionHandler.onViewOpened(it)
-            renderer.onWindowOpen(this@UIRuntimeImpl, it)
+            it.render(renderer)
 
-            it.render(this, renderer)
+            interactionHandler.onViewOpened(it)
+            renderer.onViewInit(this@UIRuntimeImpl, it)
 
             println("COMPLETE")
         }

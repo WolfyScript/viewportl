@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.wolfyscript.scafall.adventure.deser
 import com.wolfyscript.scafall.adventure.vanilla
+import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.wrappers.snapshot
 import com.wolfyscript.viewportl.gui.compose.layout.Alignment
 import com.wolfyscript.viewportl.gui.compose.layout.Arrangement
@@ -14,7 +15,9 @@ import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
 import com.wolfyscript.viewportl.gui.compose.modifier.fillMaxSize
 import com.wolfyscript.viewportl.gui.compose.modifier.fillMaxWidth
 import com.wolfyscript.viewportl.gui.compose.modifier.height
+import com.wolfyscript.viewportl.gui.compose.viewProperties
 import com.wolfyscript.viewportl.gui.elements.*
+import com.wolfyscript.viewportl.viewportl
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -40,6 +43,12 @@ fun Navigation() {
 
 @Composable
 private fun Home(backstack: SnapshotStateList<NavKey>) {
+
+    viewProperties(Key.viewportl("home")) {
+        title("<b>Home")
+        size(9.slots, 3.slots)
+    }
+
     Row(
         Modifier.fillMaxWidth().height(3.slots),
         horizontalArrangement = Arrangement.SpaceAround,
@@ -67,6 +76,11 @@ private fun Home(backstack: SnapshotStateList<NavKey>) {
 
 @Composable
 private fun About(backstack: SnapshotStateList<NavKey>) {
+    viewProperties(Key.viewportl("about")) {
+        title("<b>About")
+        size(9.slots, 4.slots)
+    }
+
     Column(Modifier.fillMaxSize(), Arrangement.SpaceBetween, Alignment.CenterHorizontally) {
         Row(Modifier.fillMaxWidth(), Arrangement.Center) {
             Icon(stack = ItemStack(Items.BOOKSHELF).apply {
@@ -97,6 +111,11 @@ private fun About(backstack: SnapshotStateList<NavKey>) {
 
 @Composable
 private fun Settings(backstack: SnapshotStateList<NavKey>) {
+    viewProperties(Key.viewportl("settings")) {
+        title("<b>Settings")
+        size(9.slots, 6.slots)
+    }
+
     Column(Modifier.fillMaxSize(), Arrangement.SpaceBetween, Alignment.CenterHorizontally) {
         Row(Modifier.fillMaxWidth(), Arrangement.Center) {
             Icon(stack = ItemStack(Items.ANVIL).apply {

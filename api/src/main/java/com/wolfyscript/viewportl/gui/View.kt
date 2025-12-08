@@ -19,10 +19,11 @@ package com.wolfyscript.viewportl.gui
 
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
+import com.wolfyscript.viewportl.gui.compose.ViewProperties
+import com.wolfyscript.viewportl.gui.compose.ViewPropertiesOverride
 import com.wolfyscript.viewportl.gui.input.TextInputCallback
 import com.wolfyscript.viewportl.gui.input.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.rendering.Renderer
-import net.kyori.adventure.text.Component
 
 /**
  * Holds the composition of the UI and other properties of the window frame (such as title, background, etc.)
@@ -32,30 +33,9 @@ interface View {
     /**
      * Renders this window state using the specified [renderer]
      */
-    fun render(runtime: UIRuntime, renderer: Renderer<*>)
+    fun render(renderer: Renderer<*>)
 
     fun close()
-
-    /**
-     * The type of inventory used for this window.
-     *
-     * @return The specified type; or default [WindowType.CUSTOM]
-     * @see size
-     */
-    val type: WindowType
-
-    /**
-     * Gets the size that is configured for the specified [window type][type].
-     * Ignored when the [type] does not support a custom size.
-     *
-     * @return The specified size: or empty Optional when no size is configured.
-     */
-    var size: Int
-
-    /**
-     * Returns the current title of this window.
-     */
-    var title: Component?
 
     var resourcePath: String?
 
@@ -66,26 +46,18 @@ interface View {
      */
     val id: Key?
 
+    val properties: ViewProperties
+
+    fun overrideProperties(key: Key, properties: ViewPropertiesOverride)
+
+    fun removePropertiesOverride(key: Key)
+
     /**
      * Gets the Viewportl instance this Window belongs to
      *
      * @return The Viewportl instance
      */
     val viewportl: Viewportl
-
-    /**
-     * Gets the width of this Window in slot count.
-     *
-     * @return The width in slots.
-     */
-    fun width(): Int
-
-    /**
-     * Gets the width of this Window in slot count.
-     *
-     * @return The height in slots.
-     */
-    fun height(): Int
 
     var onTextInput: TextInputCallback?
 

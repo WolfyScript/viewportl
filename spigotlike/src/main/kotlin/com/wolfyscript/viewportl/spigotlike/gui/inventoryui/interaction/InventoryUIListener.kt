@@ -81,9 +81,9 @@ class InventoryUIListener() : Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     fun onClose(event: InventoryCloseEvent) {
-        withHolder(event.inventory.holder) {
-            viewManager.leaveViewer(event.player.uniqueId)
-        }
+//        withHolder(event.inventory.holder) {
+//            viewManager.leaveViewer(event.player.uniqueId)
+//        }
     }
 }
 

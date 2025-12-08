@@ -9,7 +9,7 @@ import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.WindowType
+import com.wolfyscript.viewportl.gui.ViewType
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
 import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.sponge.SpongeViewportl
@@ -48,7 +48,7 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderContext>(SpongeInvUIR
         TODO("Not yet implemented")
     }
 
-    override fun onWindowOpen(runtime: UIRuntime, view: View) {
+    override fun onViewInit(runtime: UIRuntime, view: View) {
         val guiHolder: GuiHolder = GuiHolderImpl(view, runtime)
         val carrier = GuiCarrier(guiHolder)
 
@@ -59,22 +59,22 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderContext>(SpongeInvUIR
             .plugin((ScafallProvider.get().viewportl as SpongeViewportl).plugin)
             .build()
 
-        view.title?.let {
+        view.properties.title?.let {
             title = it
         }
         carrier.inventory = inventory
     }
 
     private fun getInventoryType(view: View): ContainerType {
-        return when (view.type) {
-            WindowType.CUSTOM -> view.size.let { size ->
+        return when (view.properties.type) {
+            ViewType.CUSTOM -> view.properties.inventorySize.let { size ->
                 val rows: Int = size / 9
                 ContainerTypes.registry().findValue<ContainerType?>(ResourceKey.minecraft("generic_9x$rows"))
                     .getOrNull()
             } ?: ContainerTypes.GENERIC_9X6.get()
 
-            WindowType.HOPPER -> ContainerTypes.HOPPER.get()
-            WindowType.DROPPER, WindowType.DISPENSER -> ContainerTypes.GENERIC_3X3.get()
+            ViewType.HOPPER -> ContainerTypes.HOPPER.get()
+            ViewType.DROPPER, ViewType.DISPENSER -> ContainerTypes.GENERIC_3X3.get()
         }
     }
 

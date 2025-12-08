@@ -40,7 +40,6 @@ object ExampleCommand {
                                     playerRuntime.joinViewer(executor.uuid)
                                     playerRuntime.setNewView(
                                         exampleId,
-                                        size = 36,
                                         content = examples[exampleId] ?: {}
                                     )
                                     playerRuntime.openView()

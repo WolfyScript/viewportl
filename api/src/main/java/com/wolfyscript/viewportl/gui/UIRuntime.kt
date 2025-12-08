@@ -38,8 +38,6 @@ interface UIRuntime : CoroutineScope {
 
     fun setNewView(
         id: Key,
-        size: Int = 54,
-        type: WindowType = WindowType.CUSTOM,
         content: @Composable () -> Unit,
     )
 

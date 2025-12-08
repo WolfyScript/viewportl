@@ -32,8 +32,10 @@ interface Renderer<C: RenderContext> {
      */
     var requestsNewFrames: Boolean
 
-    fun onWindowOpen(runtime: UIRuntime, view: View)
+    fun onViewInit(runtime: UIRuntime, view: View)
 
-    fun render(node: Node)
+    fun onViewChange(runtime: UIRuntime, view: View)
+
+    fun render(view: View, node: Node)
 
 }

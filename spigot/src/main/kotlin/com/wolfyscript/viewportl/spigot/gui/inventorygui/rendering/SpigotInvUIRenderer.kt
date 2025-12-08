@@ -5,7 +5,7 @@ import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.WindowType
+import com.wolfyscript.viewportl.gui.ViewType
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering.SpigotLikeInvUIRenderer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -16,15 +16,26 @@ import org.bukkit.inventory.InventoryHolder
 
 class SpigotInvUIRenderer : SpigotLikeInvUIRenderer() {
 
-    override fun onWindowOpen(runtime: UIRuntime, view: View) {
+    override fun onViewInit(runtime: UIRuntime, view: View) {
+        initiateUIInventory(runtime, view)
+    }
+
+    override fun onViewChange(
+        runtime: UIRuntime,
+        view: View,
+    ) {
+        initiateUIInventory(runtime, view)
+    }
+
+    private fun initiateUIInventory(runtime: UIRuntime, view: View) {
         val guiHolder: GuiHolder = GuiHolderImpl(view, runtime)
         val holder = BukkitInventoryGuiHolder(guiHolder)
-        val title: String? = view.title?.let { LegacyComponentSerializer.legacySection().serialize(it) }
-        inventory = when (view.type) {
-            WindowType.CUSTOM -> createInventory(view.size, holder, title)
-            WindowType.DISPENSER -> createInventory(InventoryType.DISPENSER, holder, title)
-            WindowType.DROPPER -> createInventory(InventoryType.DROPPER, holder, title)
-            WindowType.HOPPER -> createInventory(InventoryType.HOPPER, holder, title)
+        val title: String? = view.properties.title.component?.let { LegacyComponentSerializer.legacySection().serialize(it) }
+        inventory = when (view.properties.type.type) {
+            ViewType.CUSTOM -> createInventory(view.properties.dimensions.inventorySize, holder, title)
+            ViewType.DISPENSER -> createInventory(InventoryType.DISPENSER, holder, title)
+            ViewType.DROPPER -> createInventory(InventoryType.DROPPER, holder, title)
+            ViewType.HOPPER -> createInventory(InventoryType.HOPPER, holder, title)
         }
         holder.setActiveInventory(inventory)
         if (inventory != null) {
@@ -35,6 +46,8 @@ class SpigotInvUIRenderer : SpigotLikeInvUIRenderer() {
             }
         }
     }
+
+
 
     private fun createInventory(type: InventoryType, holder: InventoryHolder, title: String?): Inventory {
         if (title != null) {
