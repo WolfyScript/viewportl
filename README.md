@@ -15,41 +15,8 @@ Viewportl uses the Compose Runtime library to make the creation of Minecraft UIs
 This project is in its early stages and the API is not stable!  
 **The API may receive breaking changes at anytime without notice!**
 
-### Things I'm working / Gonna work on / Planned Features
-With the move over to compose the todo-list was basically reset.  
-Now the goal is to get to the same state as the project was in previously.  
-* [ ] Routing
-* [ ] Default route (initial route to select, useful for nested routing)
-* [ ] Basic elements
-  * [x] Column
-    * [x] Basics, Vertical Item Arrangement
-    * [x] Horizontal Alignment
-  * [x] Row
-    * [x] Basics, Horizontal Item Arrangement
-    * [x] Vertical Alignment
-  * [x] Box
-  * [ ] Buttons
-    * [x] on click
-    * [x] multi-slot (larger than a single slot)
-    * [ ] sound
-  * [ ] Icon
-    * [x] stack icon
-    * [ ] direct item model support
-  * [ ] Slot Input
-* [x] Persistent Data (Stores)
-* [ ] Data fetching (async/sync data fetching utils)
-* [ ] Multi-player GUIs (multiple viewers, synchronisation)
-* [ ] Multi Platform Support
-  * [ ] Spigot
-    * [ ] InvUI Renderer
-      * [x] Rendering specified draw modifiers
-      * [ ] Inventory Background texture
-    * [x] InvUI Interaction Handler
-  * [ ] Fabric
-    * [ ] platform integration
-    * [ ] InvUI Renderer
-      * [ ] Inventory Background texture
-    * [ ] InvUI Interaction Handler
+### Features & Progress
+[List of the existing and planned Features](https://github.com/WolfyScript/viewportl/wiki/Features-%E2%80%90-Planned-%E2%80%90-Progress)
 
 ## Resources
 - https://github.com/JakeWharton/mosaic - Compose Runtime for Console UI
