@@ -6,7 +6,7 @@ import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.identifier.toKey
 import com.wolfyscript.viewportl.example.Counter
-import com.wolfyscript.viewportl.example.Navigation
+import com.wolfyscript.viewportl.example.SimpleNavigation
 import com.wolfyscript.viewportl.example.SlotGridTest
 import com.wolfyscript.viewportl.example.SlotInputTest
 import com.wolfyscript.viewportl.viewportl
@@ -22,7 +22,7 @@ object ExampleCommand {
         Key.viewportl("counter") to { Counter() },
         Key.viewportl("slot_input") to { SlotInputTest() },
         Key.viewportl("slot_grid") to { SlotGridTest() },
-        Key.viewportl("navigation") to { Navigation() },
+        Key.viewportl("simple_navigation") to { SimpleNavigation() },
     )
 
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {

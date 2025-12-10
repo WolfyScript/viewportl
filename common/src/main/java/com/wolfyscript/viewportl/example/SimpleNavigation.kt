@@ -28,7 +28,7 @@ object Settings : NavKey
 object About : NavKey
 
 @Composable
-fun Navigation() {
+fun SimpleNavigation() {
     val backstack = remember { mutableStateListOf<NavKey>(Home) }
 
     NavHost(
