@@ -48,7 +48,7 @@ import kotlin.coroutines.CoroutineContext
 
 val DefaultViewProperties = ViewProperties(
     type = ViewProperties.Type(ViewType.CUSTOM),
-    dimensions = ViewProperties.Dimensions(9.slots, 9.slots),
+    dimensions = ViewProperties.Dimensions(9.slots, 6.slots),
     title = ViewProperties.Title(null),
 )
 
@@ -87,6 +87,9 @@ class ViewImpl internal constructor(
         private set
 
     override fun overrideProperties(key: Key, properties: ViewPropertiesOverride) {
+        if (keyedPropertyStack.containsKey(key)) {
+            error("An override with the key $key already exists!")
+        }
         keyedPropertyStack[key] = properties
         updateProperties()
     }

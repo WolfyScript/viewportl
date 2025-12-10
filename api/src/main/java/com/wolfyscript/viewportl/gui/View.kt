@@ -26,7 +26,7 @@ import com.wolfyscript.viewportl.gui.input.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 
 /**
- * Holds the composition of the UI and other properties of the window frame (such as title, background, etc.)
+ * Holds the composition of the UI and other properties of the viewport (such as title, background, etc.)
  */
 interface View {
 
@@ -46,10 +46,29 @@ interface View {
      */
     val id: Key?
 
+    /**
+     * The current active properties of this view, such as dimensions of the viewport, or title.
+     */
     val properties: ViewProperties
 
+    /**
+     * Allows to override the current properties with new values.
+     *
+     * This should be configured using the [viewProperties][com.wolfyscript.viewportl.gui.compose.viewProperties] fun within a Composition, which
+     * allows to modify the properties when a Composable joins the Composition and removing the modification automatically when it leaves.
+     *
+     * @see com.wolfyscript.viewportl.gui.compose.viewProperties
+     */
     fun overrideProperties(key: Key, properties: ViewPropertiesOverride)
 
+    /**
+     * Removes the specified properties override.
+     *
+     * When using the [viewProperties][com.wolfyscript.viewportl.gui.compose.viewProperties] fun within a Composable,
+     * then this is done automatically when that Composable leaves the Composition.
+     *
+     * @see com.wolfyscript.viewportl.gui.compose.viewProperties
+     */
     fun removePropertiesOverride(key: Key)
 
     /**

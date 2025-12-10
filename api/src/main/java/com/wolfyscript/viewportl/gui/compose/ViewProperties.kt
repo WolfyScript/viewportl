@@ -12,6 +12,23 @@ import com.wolfyscript.viewportl.gui.model.LocalView
 import net.kyori.adventure.text.Component
 import kotlin.math.min
 
+/**
+ * Configures the current properties of the viewport.
+ *
+ * When the Composable joins the composition it overrides the view properties with the ones defined in [config].
+ * Overrides are stored in a stack, so the values in the last added override take precedence.
+ * Overrides may choose to not override specific values in which case it uses the existing value.
+ *
+ * Once the Composable leaves the composition the override is removed and the view properties are recalculated based on
+ * the previously added overrides.
+ *
+ * The [key] identifies the properties override and must be unique.
+ *
+ * #### Warning
+ * Overriding the properties may cause the Inventory to reopen and cause the mouse cursor position to reset!
+ *
+ * **Modifying the dimensions will cause a complete relayout**, so this function should be used sparingly!
+ */
 @Composable
 fun viewProperties(key: Key, config: ViewPropertyScope.() -> Unit) {
     val view = LocalView.current
