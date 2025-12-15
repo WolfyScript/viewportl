@@ -20,7 +20,7 @@ adventure-platform-mod-shared = "6.4.0"
 adventure-minimessage = "4.10.0"
 
 # Minecraft
-minecraft = "1.21.10"
+minecraft = "1.21.11"
 authlib = "6.0.58"
 fastutil = "8.5.15"
 netty = "4.1.74.Final"
@@ -43,8 +43,8 @@ sponge-gradle = "2.2.0"
 sponge-api = "15.0.0-SNAPSHOT"
 
 ## Fabric Impl
-fabric-api = "0.131.0+1.21.8"
-fabric-loader = "0.17.1"
+fabric-api = "0.139.5+1.21.11"
+fabric-loader = "0.18.2"
 fabric-kotlin="1.13.4+kotlin.2.2.0"
 
 # Forge
@@ -56,7 +56,7 @@ neoforge_version = "21.5.4-beta"
 neoforge_loader_version_range = "[4,)"
 
 # Gradle plugins
-fabric-loom = "1.11-SNAPSHOT"
+fabric-loom = "1.14-SNAPSHOT"
 shadow = "8.1.7"
 dev-tools = "a2.2.0.0"
 artifactory = "5+"
@@ -127,7 +127,7 @@ spongepowered-gradle = { id = "org.spongepowered.gradle.plugin", version.ref = "
 devtools-docker-run = { id = "com.wolfyscript.devtools.docker.run", version.ref = "dev-tools" }
 devtools-docker-minecraft = { id = "com.wolfyscript.devtools.docker.minecraft_servers", version.ref = "dev-tools" }
 artifactory = { id = "com.jfrog.artifactory", version.ref = "artifactory"}
-fabric-loom = { id = "fabric-loom", version.ref = "fabric-loom" }
+fabric-loom = { id = "net.fabricmc.fabric-loom-remap", version.ref = "fabric-loom" } # TODO: change to "net.fabric.fabric-loom" next mc release
 paperweight-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight-userdev" }
 resource-factory-bukkit = { id = "xyz.jpenilla.resource-factory-bukkit-convention", version.ref= "resource-factory"}
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
