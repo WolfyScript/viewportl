@@ -22,11 +22,10 @@ import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.View
 
 /**
- * Handles the interaction of [Elements][com.wolfyscript.viewportl.gui.elements.Element].
+ * Handles the interaction of modifier e.g. [com.wolfyscript.viewportl.gui.compose.modifier.clickable].
  * It is supplied to the [UIRuntime] upon creation.
  *
- * For a given type of GUI each platform has its own [InteractionHandler] implementation (with possibly shared common parts)
- *
+ * For a given type of GUI each platform has its own [InteractionHandler] implementation
  */
 interface InteractionHandler<C: InteractionContext> {
 

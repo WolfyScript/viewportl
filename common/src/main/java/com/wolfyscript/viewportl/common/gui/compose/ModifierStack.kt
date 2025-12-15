@@ -30,12 +30,18 @@ class ModifierStackImpl() : ModifierStack {
     internal val modifiers: ArrayDeque<ModifierNode> = ArrayDeque()
     private var attached: Boolean = false
 
-    // TODO: Invalidate these cached modifications when Modifiers change! (assuming we not just swap out the ModifierStackImpl instance, but update the stack directly)
     /**
      * The snapshots of modifications after each [LayoutModifierNode].
-     * TODO: We keep those for future improvements like multiple [InventoryDrawModifierNode]s and other [ModifierNode]s that may use the layout info closest to them.
+     *
+     * We keep those for future improvements like
+     * multiple [InventoryDrawModifierNode]s and other [ModifierNode]s that may use the layout info closest to them.
+     * At the moment only the first entry is important, as it reflects the final modification step.
      */
     private val modificationSnapshots: ArrayDeque<LayoutModification> = ArrayDeque()
+
+    /**
+     * Whether the layout modification was performed and produced up-to-date [modificationSnapshots]
+     */
     private var performedLayoutModification: Boolean = false
 
     fun update(stackBuilder: ModifierStackBuilder) {
@@ -115,9 +121,6 @@ class ModifierStackImpl() : ModifierStack {
         nodeConstraints: Constraints,
     ): LayoutModification {
         if (modifiers.isEmpty()) return SimpleLayoutModification(nodeConstraints) { it }
-        if (modificationSnapshots.isNotEmpty()) {
-            return modificationSnapshots.first()
-        }
         if (performedLayoutModification) {
             return modificationSnapshots.firstOrNull() ?: SimpleLayoutModification(nodeConstraints) { it }
         }
