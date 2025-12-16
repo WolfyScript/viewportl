@@ -12,7 +12,7 @@ import com.wolfyscript.viewportl.example.SlotInputTest
 import com.wolfyscript.viewportl.viewportl
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
-import net.minecraft.commands.arguments.ResourceLocationArgument
+import net.minecraft.commands.arguments.IdentifierArgument
 
 object ExampleCommand {
 
@@ -30,10 +30,10 @@ object ExampleCommand {
             Commands.literal("viewportl").then(
                 Commands.literal("example")
                     .then(
-                        Commands.argument(EXAMPLE_ID_ARG, ResourceLocationArgument.id()).executes { ctx ->
+                        Commands.argument(EXAMPLE_ID_ARG, IdentifierArgument.id()).executes { ctx ->
                             val viewportl = ScafallProvider.get().viewportl
                             val executor = ctx.source.player ?: return@executes 0
-                            val exampleId = ResourceLocationArgument.getId(ctx, EXAMPLE_ID_ARG).toKey()
+                            val exampleId = IdentifierArgument.getId(ctx, EXAMPLE_ID_ARG).toKey()
 
                             ScafallProvider.get().scheduler.asyncTask(ScafallProvider.get().modInfo) {
                                 viewportl.guiManager.getViewRuntime(executor.uuid).let { playerRuntime ->
