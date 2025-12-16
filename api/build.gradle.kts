@@ -31,8 +31,8 @@ publishing {
     publications {
         create<MavenPublication>("lib") {
             from(components.getByName("java"))
-            groupId = "com.wolfyscript.viewportl.api"
-            artifactId = "api"
+            groupId = "com.wolfyscript.viewportl"
+            artifactId = "viewportl-api"
             artifact(tasks.kotlinSourcesJar) {
                 classifier = "sources"
             }
