@@ -48,6 +48,12 @@ tasks {
         archiveFileName.set("${archiveName()}-mojmap.jar")
         dependencies {
             include(project(":spigotlike"))
+            include(project(":api"))
+            include(project(":common"))
+
+            include(dependency("androidx.annotation:.*"))
+            include(dependency("androidx.collection:.*"))
+            include(dependency("androidx.compose.runtime:.*"))
         }
         manifest {
             attributes["paperweight-mappings-namespace"] = "mojang"
