@@ -1,5 +1,6 @@
 package com.wolfyscript.viewportl.paper.gui.inventorygui.rendering
 
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.UIRuntime
@@ -38,6 +39,13 @@ class PaperInvUIRenderer() : SpigotLikeInvUIRenderer() {
             ViewType.HOPPER -> createInventory(InventoryType.HOPPER, holder, view.properties.title.component)
         }
         holder.setActiveInventory(inventory)
+        if (inventory != null) {
+            ScafallProvider.get().scheduler.syncTask(ScafallProvider.get().modInfo) {
+                runtime.viewers.forEach {
+                    Bukkit.getPlayer(it)?.openInventory(inventory!!)
+                }
+            }
+        }
     }
 
     private fun createInventory(type: InventoryType, holder: InventoryHolder, title: Component?): Inventory {
