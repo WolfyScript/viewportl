@@ -8,7 +8,7 @@ const val VIEWPORTL_NAMESPACE = "viewportl"
 val Scafall.viewportl: Viewportl
     get() {
         return this.platformManager.getImplementationModule(
-            Key.key("scafall", VIEWPORTL_NAMESPACE),
+            Key.scafall(VIEWPORTL_NAMESPACE),
             Viewportl::class.java
         ) ?: throw IllegalStateException("Viewportl not initialized!")
     }
