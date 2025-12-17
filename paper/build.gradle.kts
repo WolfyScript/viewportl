@@ -37,7 +37,7 @@ dependencies {
     paperweight.paperDevBundle(libs.versions.papermc.get())
 }
 
-paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
+paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
 fun archiveName(): String {
     return "${rootProject.name}-${project.version}-${project.name}-${libs.versions.minecraft.get()}"
@@ -46,9 +46,6 @@ fun archiveName(): String {
 tasks {
     shadowJar {
         archiveFileName.set("${archiveName()}-mojmap.jar")
-
-        finalizedBy(reobfJar)
-
         dependencies {
             include(project(":spigotlike"))
         }
@@ -58,12 +55,12 @@ tasks {
         metaInf.duplicatesStrategy = DuplicatesStrategy.FAIL
     }
     assemble {
-        dependsOn(reobfJar)
+        dependsOn(shadowJar)
     }
 }
 
 artifacts {
-    archives(tasks.reobfJar)
+    archives(tasks.shadowJar)
 }
 
 bukkitPluginYaml {
@@ -78,7 +75,7 @@ bukkitPluginYaml {
 minecraftServers {
     libName.set("${archiveName()}-mojmap.jar")
     servers {
-        register("spigot") {
+        register("paper") {
             destFileName.set("viewportl.jar")
             version.set(libs.versions.minecraft.get())
             type.set("PAPER")
