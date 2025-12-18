@@ -6,14 +6,14 @@ import androidx.compose.runtime.compositionLocalOf
 
 object LocalStoreOwner {
 
-    private val LocalStoreOwner = compositionLocalOf<DataStoreMap> { error("LocalStoreOwner not initialized") }
+    private val LocalStoreOwner = compositionLocalOf<StoreOwner> { error("LocalStoreOwner not initialized") }
 
-    val current: DataStoreMap
+    val current: StoreOwner
         @Composable get() = LocalStoreOwner.current
 
     infix fun provides(
-        storeOwner: DataStoreMap
-    ): ProvidedValue<DataStoreMap> {
+        storeOwner: StoreOwner
+    ): ProvidedValue<StoreOwner> {
         return LocalStoreOwner provides storeOwner
     }
 

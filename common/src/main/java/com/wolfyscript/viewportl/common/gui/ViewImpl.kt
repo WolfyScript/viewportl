@@ -42,6 +42,7 @@ import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
+import java.util.UUID
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
@@ -54,7 +55,7 @@ val DefaultViewProperties = ViewProperties(
 
 class ViewImpl internal constructor(
     parentCoroutineContext: CoroutineContext,
-    override val id: Key,
+    override val viewer: UUID,
     override val viewportl: Viewportl,
     val runtime: UIRuntime,
     val content: @Composable () -> Unit,
@@ -241,7 +242,7 @@ class ViewImpl internal constructor(
 
         composition.setContent {
             CompositionLocalProvider(
-                LocalStoreOwner provides runtime.storeOwner,
+                LocalStoreOwner provides runtime,
                 LocalView provides this,
                 content = content
             )

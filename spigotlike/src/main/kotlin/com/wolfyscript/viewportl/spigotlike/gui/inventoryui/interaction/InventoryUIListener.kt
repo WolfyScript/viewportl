@@ -58,7 +58,7 @@ class InventoryUIListener() : Listener {
                 event.isCancelled = true
                 return@withHolder
             }
-            if (viewManager.view == null) return@withHolder
+            if (viewManager.views[event.whoClicked.uniqueId] == null) return@withHolder
             val valueHandler = ValueHandler()
             val interactionHandler = viewManager.interactionHandler
             if (interactionHandler !is SpigotLikeInvUIInteractionHandler) {

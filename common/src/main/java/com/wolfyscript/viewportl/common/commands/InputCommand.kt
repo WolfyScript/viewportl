@@ -21,7 +21,7 @@ object InputCommand {
                     val args = StringArgumentType.getString(ctx, INPUT_ARG)
 
                     viewportl.guiManager.getViewRuntime(executor.uuid).let { runtime ->
-                        runtime.view?.let { window ->
+                        runtime.views[executor.uuid]?.let { window ->
                             ScafallProvider.get().scheduler.syncTask(ScafallProvider.get().modInfo) {
                                 window.onTextInput?.run(
                                     executor.wrap(),
@@ -43,7 +43,7 @@ object InputCommand {
                     val args = StringArgumentType.getString(ctx, INPUT_ARG)
 
                     viewportl.guiManager.getViewRuntime(executor.uuid).let { runtime ->
-                        runtime.view?.onTextInputTabComplete?.apply(
+                        runtime.views[executor.uuid]?.onTextInputTabComplete?.apply(
                             executor.wrap(),
                             runtime,
                             args,

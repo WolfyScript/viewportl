@@ -24,6 +24,7 @@ import com.wolfyscript.viewportl.gui.compose.ViewPropertiesOverride
 import com.wolfyscript.viewportl.gui.input.TextInputCallback
 import com.wolfyscript.viewportl.gui.input.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.rendering.Renderer
+import java.util.UUID
 
 /**
  * Holds the composition of the UI and other properties of the viewport (such as title, background, etc.)
@@ -38,14 +39,6 @@ interface View {
     fun close()
 
     var resourcePath: String?
-
-    /**
-     * Gets the unique id (in context of the parent) of this Window.
-     *
-     * @return The id of this component.
-     */
-    val id: Key?
-
     /**
      * The current active properties of this view, such as dimensions of the viewport, or title.
      */
@@ -77,6 +70,8 @@ interface View {
      * @return The Viewportl instance
      */
     val viewportl: Viewportl
+
+    val viewer: UUID
 
     var onTextInput: TextInputCallback?
 

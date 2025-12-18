@@ -38,10 +38,7 @@ object ExampleCommand {
                             ScafallProvider.get().scheduler.asyncTask(ScafallProvider.get().modInfo) {
                                 viewportl.guiManager.getViewRuntime(executor.uuid).let { playerRuntime ->
                                     playerRuntime.joinViewer(executor.uuid)
-                                    playerRuntime.setNewView(
-                                        exampleId,
-                                        content = examples[exampleId] ?: {}
-                                    )
+                                    playerRuntime.setContent(examples[exampleId] ?: {})
                                     playerRuntime.openView()
                                 }
                             }

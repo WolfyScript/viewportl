@@ -18,10 +18,9 @@
 package com.wolfyscript.viewportl.gui
 
 import androidx.compose.runtime.Composable
-import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
-import com.wolfyscript.viewportl.gui.model.DataStoreMap
+import com.wolfyscript.viewportl.gui.model.StoreOwner
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.CoroutineScope
 import java.util.*
@@ -32,12 +31,11 @@ import java.util.*
  * It keeps track of the state across configuration changes (closing and reopening UIs),
  * provides the timings for UI updates and rendering, and manages the viewers.
  */
-interface UIRuntime : CoroutineScope {
+interface UIRuntime : CoroutineScope, StoreOwner {
 
     val id: Long
 
-    fun setNewView(
-        id: Key,
+    fun setContent(
         content: @Composable () -> Unit,
     )
 
@@ -49,12 +47,7 @@ interface UIRuntime : CoroutineScope {
 
     fun dispose()
 
-    /**
-     * Gets the currently active menu.
-     *
-     * @return The currently active menu.
-     */
-    val view: View?
+    val views: Map<UUID, View>
 
     val owner: UUID
 
@@ -69,8 +62,6 @@ interface UIRuntime : CoroutineScope {
     val viewportl: Viewportl
 
     val renderer: Renderer<*>
-
-    val storeOwner: DataStoreMap
 
     val interactionHandler: InteractionHandler<*>
 

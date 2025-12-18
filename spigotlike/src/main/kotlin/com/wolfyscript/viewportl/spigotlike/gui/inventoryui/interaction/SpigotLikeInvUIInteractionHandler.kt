@@ -48,14 +48,12 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
 
     override fun onClick(context: InventoryUIInteractionContext) {
         val event = context.event as? InventoryClickEvent ?: return
-        val valueHandler = context.valueHandler
-
         val clickedTopInv = event.clickedInventory == event.view.topInventory
 
         event.isCancelled = true // prevent any interaction, handle normal click & slot input separately
 
         isBusy = true
-        val root = (runtime.view as? ViewImpl)?.root ?: return
+        val root = (runtime.views[event.whoClicked.uniqueId] as? ViewImpl)?.root ?: return
 
         val originalCursor = event.cursor
         val originalSlotStack = event.currentItem
@@ -247,7 +245,6 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
             // Handle some clicks that occur in the bottom inv and may affect the top inv
             // e.g. shift-click, collect to cursor
             // In this case the slot input is not available and the target needs to be determined
-
             when (event.action) {
                 InventoryAction.COLLECT_TO_CURSOR -> {
 
@@ -393,8 +390,9 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
 
     override fun onDrag(context: InventoryUIInteractionContext) {
         val event = context.event as? InventoryDragEvent ?: return
-        val root = (runtime.view as? ViewImpl)?.root ?: return
-        val topInvSize = runtime.view?.properties?.dimensions?.inventorySize ?: 0
+        val view = runtime.views[event.whoClicked.uniqueId]
+        val root = (view as? ViewImpl)?.root ?: return
+        val topInvSize = view.properties.dimensions.inventorySize
 
         // TODO: WIP
         // Go through each slot that is affected, and call them separately

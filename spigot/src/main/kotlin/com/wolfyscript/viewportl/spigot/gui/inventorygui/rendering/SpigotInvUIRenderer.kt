@@ -47,8 +47,6 @@ class SpigotInvUIRenderer : SpigotLikeInvUIRenderer() {
         }
     }
 
-
-
     private fun createInventory(type: InventoryType, holder: InventoryHolder, title: String?): Inventory {
         if (title != null) {
             return Bukkit.createInventory(holder, type, title)

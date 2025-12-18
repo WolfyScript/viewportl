@@ -20,7 +20,6 @@ package com.wolfyscript.viewportl.common.gui
 
 import androidx.compose.runtime.BroadcastFrameClock
 import androidx.compose.runtime.Composable
-import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.model.SimpleDataStoreMap
 import com.wolfyscript.viewportl.gui.UIRuntime
@@ -45,7 +44,8 @@ class UIRuntimeImpl(
     override val id: Long = NEXT_ID++
 
     override val viewers: MutableSet<UUID> = mutableSetOf()
-    override var view: View? = null
+    var content: (@Composable () -> Unit)? = null
+    override val views: MutableMap<UUID, View> = mutableMapOf()
 
     /**
      * The runtime clock handles the timings of this runtime.
@@ -58,7 +58,8 @@ class UIRuntimeImpl(
 
     // TODO: GUI runtimes are completely async, so need a way to securely communicate with main thread from Composable
     // TODO: Rework data storage
-    override val storeOwner: DataStoreMap = SimpleDataStoreMap()
+    override val sharedStore: DataStoreMap = SimpleDataStoreMap()
+    private val viewerStores: MutableMap<UUID, SimpleDataStoreMap> = mutableMapOf()
 
     init {
         interactionHandler.init(this)
@@ -83,37 +84,53 @@ class UIRuntimeImpl(
         }
     }
 
-    override fun setNewView(id: Key, content: @Composable (() -> Unit)) {
-        view = ViewImpl(coroutineContext, id, viewportl, this, content)
+    override fun getViewerStore(viewer: UUID): DataStoreMap {
+        return viewerStores[viewer] ?: throw IllegalStateException("Viewer $viewer not part of runtime")
+    }
+
+    override fun setContent(content: @Composable (() -> Unit)) {
+        this.content = content
+        for (view in views.values) {
+            view.close()
+        }
+        views.clear()
+        for (viewer in viewers) {
+            views[viewer] = ViewImpl(coroutineContext, viewer, viewportl, this, content)
+        }
         startMainLoop()
     }
 
     override fun dispose() {
         interactionHandler.dispose()
-        view?.close()
-        view = null
+        views.forEach { it.value.close() }
+        views.clear()
+        content = null
         running = false
     }
 
     override fun joinViewer(uuid: UUID) {
         viewers.add(uuid)
-        launch {
-            view?.let {
-                renderer.onViewInit(this@UIRuntimeImpl, it)
+        if (content != null && !viewers.contains(uuid)) { // incase the content has been set already
+            views[uuid] = ViewImpl(coroutineContext, uuid, viewportl, this, content!!)
+            launch {
+                views[uuid]?.let {
+                    renderer.onViewInit(this@UIRuntimeImpl, it)
+                }
             }
         }
     }
 
     override fun leaveViewer(uuid: UUID) {
         viewers.remove(uuid)
+        views.remove(uuid)?.close()
     }
 
     override fun openView() {
-        view?.let {
-            it.render(renderer)
+        for (view in views.values) {
+            view.render(renderer)
 
-            interactionHandler.onViewOpened(it)
-            renderer.onViewInit(this@UIRuntimeImpl, it)
+            interactionHandler.onViewOpened(view)
+            renderer.onViewInit(this@UIRuntimeImpl, view)
 
             println("COMPLETE")
         }
