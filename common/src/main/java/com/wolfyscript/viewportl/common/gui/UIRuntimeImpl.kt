@@ -44,7 +44,7 @@ class UIRuntimeImpl(
     override val id: Long = NEXT_ID++
 
     override val viewers: MutableSet<UUID> = mutableSetOf()
-    var content: (@Composable () -> Unit)? = null
+    var viewContent: (@Composable () -> Unit)? = null
     override val views: MutableMap<UUID, View> = mutableMapOf()
 
     /**
@@ -89,7 +89,7 @@ class UIRuntimeImpl(
     }
 
     override fun setContent(content: @Composable (() -> Unit)) {
-        this.content = content
+        this.viewContent = content
         for (view in views.values) {
             view.close()
         }
@@ -104,14 +104,14 @@ class UIRuntimeImpl(
         interactionHandler.dispose()
         views.forEach { it.value.close() }
         views.clear()
-        content = null
+        viewContent = null
         running = false
     }
 
     override fun joinViewer(uuid: UUID) {
         viewers.add(uuid)
-        if (content != null && !viewers.contains(uuid)) { // incase the content has been set already
-            views[uuid] = ViewImpl(coroutineContext, uuid, viewportl, this, content!!)
+        if (viewContent != null && !viewers.contains(uuid)) { // incase the content has been set already
+            views[uuid] = ViewImpl(coroutineContext, uuid, viewportl, this, viewContent!!)
             launch {
                 views[uuid]?.let {
                     renderer.onViewInit(this@UIRuntimeImpl, it)
