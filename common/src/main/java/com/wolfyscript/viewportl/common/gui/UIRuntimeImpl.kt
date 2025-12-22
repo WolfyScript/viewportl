@@ -110,6 +110,7 @@ class UIRuntimeImpl(
 
     override fun joinViewer(uuid: UUID) {
         viewers.add(uuid)
+        viewerStores[uuid] = SimpleDataStoreMap()
         if (viewContent != null && !viewers.contains(uuid)) { // incase the content has been set already
             views[uuid] = ViewImpl(coroutineContext, uuid, viewportl, this, viewContent!!)
             launch {
@@ -122,6 +123,7 @@ class UIRuntimeImpl(
 
     override fun leaveViewer(uuid: UUID) {
         viewers.remove(uuid)
+        viewerStores.remove(uuid)
         views.remove(uuid)?.close()
     }
 
