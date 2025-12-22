@@ -2,6 +2,7 @@ package com.wolfyscript.viewportl.gui.model
 
 import androidx.compose.runtime.Composable
 import com.wolfyscript.scafall.identifier.Key
+import java.util.UUID
 
 /**
  * Stores the data in the shared store of the [UIRuntime][com.wolfyscript.viewportl.gui.UIRuntime].
@@ -38,7 +39,7 @@ inline fun <reified S: Store> sharedStore(
 inline fun <reified S: Store> store(
     storeOwner: StoreOwner = LocalStoreOwner.current,
     key: Key,
-    noinline initializer: () -> S
+    noinline initializer: (viewer: UUID) -> S
 ): S {
     val view = LocalView.current
     val store = storeOwner.getViewerStore(view.viewer)
@@ -46,7 +47,7 @@ inline fun <reified S: Store> store(
     if (existing != null) {
         return existing
     }
-    val newStore = initializer()
+    val newStore = initializer(view.viewer)
     store[key] = newStore
     return newStore
 }
