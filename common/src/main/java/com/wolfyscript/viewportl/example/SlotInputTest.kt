@@ -24,7 +24,7 @@ import com.wolfyscript.viewportl.viewportl
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
-class SlotInputTestStore : Store {
+class SlotInputTestStore : Store() {
 
     var stack by mutableStateOf(ItemStack.EMPTY.snapshot())
         private set

@@ -1,9 +1,8 @@
 package com.wolfyscript.viewportl.example
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.wolfyscript.scafall.adventure.deser
 import com.wolfyscript.scafall.adventure.vanilla
 import com.wolfyscript.scafall.identifier.Key
@@ -21,25 +20,27 @@ import com.wolfyscript.viewportl.gui.elements.Row
 import com.wolfyscript.viewportl.gui.model.Store
 import com.wolfyscript.viewportl.gui.model.store
 import com.wolfyscript.viewportl.viewportl
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
-internal class CounterStore : Store {
+internal class CounterStore : Store() {
 
-    var count by mutableStateOf(0)
-        private set
+    private val countState = MutableStateFlow(0)
+    val count = countState.asStateFlow()
 
     fun increment() {
-        count++
+        countState.value++
     }
 
     fun decrement() {
-        count--
+        countState.value--
     }
 
     fun reset() {
-        count = 0
+        countState.value = 0
     }
 
 }
@@ -51,6 +52,7 @@ internal class CounterStore : Store {
 @Composable
 fun Counter() {
     val countStore = store(key = Key.key("viewportl", "counter")) { CounterStore() }
+    val count by countStore.count.collectAsState()
 
     viewProperties(Key.viewportl("counter")) {
         title("<b>Counter")
@@ -64,7 +66,7 @@ fun Counter() {
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(stack = createCounterStack(countStore.count))
+        Icon(stack = createCounterStack(count))
 
         Row(Modifier.width(3.slots), Arrangement.SpaceBetween, Alignment.CenterVertically) {
             Column(Modifier.fillMaxHeight(), Arrangement.SpaceBetween) {
@@ -79,7 +81,7 @@ fun Counter() {
                     }.snapshot())
                 }
             }
-            if (countStore.count != 0) {
+            if (count != 0) {
                 Button(onClick = { countStore.reset() }) {
                     Icon(stack = ItemStack(Items.CYAN_CONCRETE).apply {
                         set(DataComponents.CUSTOM_NAME, "<b>Reset".deser().vanilla())

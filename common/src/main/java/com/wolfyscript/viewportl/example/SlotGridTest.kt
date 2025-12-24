@@ -18,7 +18,7 @@ import com.wolfyscript.viewportl.viewportl
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
-class SlotGridTestStore : Store {
+class SlotGridTestStore : Store() {
 
     val grid = mutableStateListOf<ItemStackSnapshot>().apply {
         for (i in 0 until 9) {
