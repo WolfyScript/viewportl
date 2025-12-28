@@ -52,8 +52,7 @@ class ViewProperties(
         /*
      * Inventory UI specific properties
      */
-        val inventoryWidth
-            get() = width.roundToSlots().coerceIn(9, 9)
+        val inventoryWidth = 9
         val inventoryHeight
             get() = height.roundToSlots().coerceAtMost(6)
         val inventorySize: Int
