@@ -39,5 +39,7 @@ interface GuiFactory {
 
     val modifierFactory: ModifierFactory
 
+    val dataStoreFactory: DataStoreFactory
+
     fun createLayoutNode(): Node
 }

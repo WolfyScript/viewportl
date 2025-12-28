@@ -8,4 +8,6 @@ interface DataStoreMap {
 
     operator fun <T: Store> get(key: Key): T?
 
+    fun clear()
+
 }
