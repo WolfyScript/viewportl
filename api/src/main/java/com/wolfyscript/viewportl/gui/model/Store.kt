@@ -41,5 +41,9 @@ abstract class Store {
                 closeable.close()
             }
         }
+        onCleared()
     }
+
+    open fun onCleared() {}
+
 }

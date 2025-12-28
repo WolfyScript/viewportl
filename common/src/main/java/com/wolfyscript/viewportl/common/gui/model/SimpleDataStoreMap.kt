@@ -21,5 +21,11 @@ class SimpleDataStoreMap : DataStoreMap {
         }
     }
 
+    override fun clear() {
+        for (store in map.values) {
+            store.clear()
+        }
+        map.clear()
+    }
 
 }
