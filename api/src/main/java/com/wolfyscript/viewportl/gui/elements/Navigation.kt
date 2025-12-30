@@ -16,9 +16,7 @@ fun NavHost(
     onBack: () -> Unit,
     graph: @DisallowComposableCalls NavHostScope.() -> Unit
 ) {
-    // TODO: Cache graph calculation
-    val scope = NavHostScope()
-    graph(scope)
+    val scope = remember { NavHostScope().also { graph(it) } }
 
     val lastKey = backstack.lastOrNull() ?: return
 
