@@ -31,9 +31,8 @@ object About : NavKey
 fun SimpleNavigation() {
     val backstack = remember { mutableStateListOf<NavKey>(Home) }
 
-    NavHost(
+    NavigationRoot(
         backstack = backstack,
-        onBack = { backstack.removeLastOrNull() },
     ) {
         composable<Home> { Home(backstack) }
         composable<Settings> { Settings(backstack) }
