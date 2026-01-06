@@ -9,28 +9,49 @@ import com.wolfyscript.viewportl.viewportl
 import java.util.*
 
 /**
- * Handles navigation between different [Composables][Composable] bound to a Key.
- *
- *
- *
+ * Handles navigation between different [Composables][Composable]
+ * bound to [NavKeys][NavKey] for the current viewer of the composition.
  */
 @Composable
 fun NavigationRoot(
     backstack: SnapshotStateList<NavKey>,
-    sharedNavigation: Boolean = true,
     paths: @DisallowComposableCalls NavPathBuilderScope.() -> Unit,
 ) {
-    val scope = remember(sharedNavigation, paths) {
+    val navEntryStoresMap = store<NavEntryStoresMap>(NavigationStoreMapKey)
+    NavigationRoot(backstack, navEntryStoresMap, paths)
+}
+
+/**
+ * Handles navigation between different [Composables][Composable]
+ * bound to [NavKeys][NavKey], using a shared backstack and path config for all viewers in the runtime.
+ */
+@Composable
+fun SharedNavigationRoot(
+    backstack: SnapshotStateList<NavKey>,
+    paths: @DisallowComposableCalls NavPathBuilderScope.() -> Unit,
+) {
+    val navEntryStoresMap = sharedStore<NavEntryStoresMap>(NavigationStoreMapKey)
+    NavigationRoot(backstack, navEntryStoresMap, paths)
+}
+
+@Composable
+private fun NavigationRoot(
+    backstack: SnapshotStateList<NavKey>,
+    navEntryStoresMap: NavEntryStoresMap,
+    paths: @DisallowComposableCalls NavPathBuilderScope.() -> Unit,
+) {
+    val scope = remember(paths) {
         ScafallProvider.get().logger.info("Recalculating NavigationRoot paths: $paths")
         NavPathBuilderScope().also { paths(it) }
     }
-    val keysInBackstack = remember(sharedNavigation, backstack) {
+    val keysInBackstack = remember(backstack) {
+        ScafallProvider.get().logger.info("Recalculating keys in backstack: $backstack")
         backstack.map { it }.toSet()
     }
-    val lastKey = remember(sharedNavigation, backstack) { backstack.lastOrNull() } ?: return
+    val lastKey = backstack.lastOrNull() ?: return
 
     for (entry in scope.entries) {
-        if (entry.tryRunContent(lastKey, sharedNavigation, keysInBackstack)) {
+        if (entry.tryRunContent(lastKey, navEntryStoresMap, keysInBackstack)) {
             break
         }
     }
@@ -75,7 +96,7 @@ val NavigationStoreMapKey = Key.viewportl("navigation")
 data class NavPathConfig<T : NavKey>(
     val type: Class<T>,
     val content: @Composable (T) -> Unit,
-    ) {
+) {
 
     /**
      * Runs the content lambda defined for this route based on the [key].
@@ -84,25 +105,21 @@ data class NavPathConfig<T : NavKey>(
      * @param keysInBackstack A set of **unique** [NavKeys][NavKey] that are currently in the backstack
      */
     @Composable
-    fun tryRunContent(key: NavKey, sharedNavigation: Boolean, keysInBackstack: Set<NavKey>): Boolean {
+    internal fun tryRunContent(
+        key: NavKey,
+        navEntryStoresMap: NavEntryStoresMap,
+        keysInBackstack: Set<NavKey>,
+    ): Boolean {
         if (type.isInstance(key)) {
             val currentViewer = LocalView.current.viewer
             val currentStoreOwner = LocalStoreOwner.current
-            val navEntryStoresMap = if (sharedNavigation) {
-                sharedStore<NavEntryStoresMap>(NavigationStoreMapKey)
-            } else {
-                store<NavEntryStoresMap>(NavigationStoreMapKey)
-            }
-            val currentViewerEntryStoresMap = if (sharedNavigation) {
-                store<NavEntryStoresMap>(NavigationStoreMapKey)
-            } else {
-                navEntryStoresMap
-            }
+            val currentViewerEntryStoresMap = store<NavEntryStoresMap>(NavigationStoreMapKey)
 
             DisposableEffect(key1 = key) {
                 onDispose {
                     if (!keysInBackstack.contains(key)) {
                         navEntryStoresMap.clearStoreFor(key)
+                        currentViewerEntryStoresMap.clearStoreFor(key)
                         onPop()
                     }
                 }
