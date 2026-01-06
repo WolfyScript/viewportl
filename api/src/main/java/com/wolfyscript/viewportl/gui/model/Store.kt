@@ -5,6 +5,7 @@ import com.wolfyscript.viewportl.viewportl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlin.coroutines.EmptyCoroutineContext
 
 val StoreCoroutineScopeKey = Key.viewportl("coroutine_scope")
 
@@ -19,7 +20,7 @@ abstract class Store {
     val storeCoroutineScope: CoroutineScope
         get() {
             return getClosable(StoreCoroutineScopeKey)
-                ?: CoroutineScope(Dispatchers.Main.immediate + SupervisorJob()).also {
+                ?: CoroutineScope(EmptyCoroutineContext + SupervisorJob()).also {
                     addClosable(StoreCoroutineScopeKey, it.asCloseable())
                 }
         }
