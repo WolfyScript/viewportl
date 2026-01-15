@@ -8,6 +8,7 @@ import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.compose.Node
 import com.wolfyscript.viewportl.gui.compose.layout.Offset
 import com.wolfyscript.viewportl.gui.compose.modifier.ClickableModifierNode
+import com.wolfyscript.viewportl.gui.compose.modifier.ScrollSelectableModifierNode
 import com.wolfyscript.viewportl.gui.compose.modifier.SlotInputModifierNode
 
 abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandler<C> {
@@ -27,10 +28,13 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
 
     }
 
-    protected fun getSlotInputFor(slot: Int, root: Node): SlotInputModifierNode? {
-        val y = slot / 9
-        val x = slot - y * 9
+    private fun Int.slotToVec() : Pair<Int, Int> {
+        val y = this / 9
+        return Pair(this - y * 9, y)
+    }
 
+    protected fun getSlotInputFor(slot: Int, root: Node): SlotInputModifierNode? {
+        val (x, y) = slot.slotToVec()
         var currentNode = root
         var totalOffset: Offset = root.arranger.position
         var modifier: SlotInputModifierNode? = null
@@ -58,9 +62,7 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
     }
 
     protected fun onClick(slot: Int, root: Node) {
-        val y = slot / 9
-        val x = slot - y * 9
-
+        val (x, y) = slot.slotToVec()
         var currentNode = root
         var totalOffset: Offset = root.arranger.position
 
@@ -79,6 +81,30 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
                             scope.onClickInteraction(x, y)
                         }
                     }
+                    return@forEachChild
+                }
+            }
+            if (!intersects) {
+                processing = false
+            }
+        }
+    }
+
+    protected fun onScrollSelectSubmit(slot: Int, root: Node, selectedItem: Int) {
+        val (x, y) = slot.slotToVec()
+        var currentNode = root
+        var totalOffset: Offset = root.arranger.position
+
+        var processing = true
+        while (processing) {
+            var intersects = false
+            currentNode.forEachChild { node ->
+                if (withinBounds(x, y, node, totalOffset)) {
+                    currentNode = node
+                    totalOffset += currentNode.arranger.position
+                    intersects = true
+
+                    node.modifierStack.firstOfType(ScrollSelectableModifierNode::class)?.onSubmit(selectedItem)
                     return@forEachChild
                 }
             }

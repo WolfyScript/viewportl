@@ -8,6 +8,7 @@ import com.wolfyscript.viewportl.common.gui.compose.modifier.FillModifierData
 import com.wolfyscript.viewportl.common.gui.compose.modifier.InventoryDrawModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.LayoutModifierData
 import com.wolfyscript.viewportl.common.gui.compose.modifier.PaddingModifier
+import com.wolfyscript.viewportl.common.gui.compose.modifier.ScrollSelectableModifierDataImpl
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SizeModifier
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SlotInputModifierImpl
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
@@ -66,6 +67,10 @@ class ModifierFactoryCommon : ModifierFactory {
 
     override fun createClickableModifier(onClick: () -> Unit): ModifierData<*> {
         return ClickableModifierDataImpl(onClick)
+    }
+
+    override fun createScrollSelectModifier(onSubmit: (selectedItem: Int) -> Unit): ModifierData<*> {
+        return ScrollSelectableModifierDataImpl(onSubmit)
     }
 
     override fun createSlotInputModifier(

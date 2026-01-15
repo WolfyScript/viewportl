@@ -53,6 +53,10 @@ interface ModifierFactory {
         onClick: () -> Unit
     ): ModifierData<*>
 
+    fun createScrollSelectModifier(
+        onSubmit: (selectedItem: Int) -> Unit
+    ): ModifierData<*>
+
     fun createSlotInputModifier(
         canPlace: (stack: ItemStackSnapshot) -> Boolean,
         canPickup: (stack: ItemStackSnapshot) -> Boolean,

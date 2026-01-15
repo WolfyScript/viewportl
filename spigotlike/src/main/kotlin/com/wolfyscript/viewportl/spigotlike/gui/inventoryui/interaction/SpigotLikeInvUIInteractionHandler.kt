@@ -19,11 +19,14 @@
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.spigot.api.wrappers.utils.snapshot
+import com.wolfyscript.scafall.spigot.api.wrappers.utils.wrap
 import com.wolfyscript.scafall.wrappers.snapshot
+import com.wolfyscript.scafall.wrappers.unwrap
 import com.wolfyscript.viewportl.common.gui.ViewImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.compose.modifier.SlotInputModifierNode
+import net.minecraft.core.component.DataComponents
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -63,6 +66,15 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
 
         if (clickedTopInv) {
             onClick(event.slot, root)
+
+            if (event.action == InventoryAction.PICKUP_FROM_BUNDLE) {
+                originalSlotStack?.wrap()?.unwrap()?.let { stack ->
+                    val bundleContents = stack.get(DataComponents.BUNDLE_CONTENTS)
+                    if (bundleContents != null) {
+                        onScrollSelectSubmit(event.slot, root, bundleContents.selectedItem)
+                    }
+                }
+            }
 
             val slotInput = getSlotInputFor(event.slot, root)
             if (slotInput != null) {
