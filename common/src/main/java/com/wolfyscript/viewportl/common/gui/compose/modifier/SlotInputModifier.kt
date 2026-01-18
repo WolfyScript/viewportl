@@ -32,6 +32,8 @@ class SlotInputModifierNodeImpl(
     override val value: () -> ItemStackSnapshot
 ) : SlotInputModifierNode {
 
+    private var previousScope: InventoryDrawScope? = null
+
     override fun SlotInputEventScope.onPlaceStack(
         x: Int,
         y: Int,
@@ -54,12 +56,27 @@ class SlotInputModifierNodeImpl(
 
     }
 
-    override fun onDetach() {
+    override fun onMeasurementsChanged() {
+        if (previousScope != null) {
+            previousScope!!.clear()
+        }
+    }
 
+    override fun onLayoutChanged() {
+        if (previousScope != null) {
+            previousScope!!.clear()
+        }
+    }
+
+    override fun onDetach() {
+        if (previousScope != null) {
+            previousScope!!.clear()
+        }
     }
 
     override fun InventoryDrawScope.draw() {
         // TODO: invalidate rendering
         this.drawStack(stack = value())
+        previousScope = this
     }
 }
