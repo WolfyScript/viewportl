@@ -17,7 +17,7 @@ abstract class Store {
     private val lock = Any()
     private val closeables: MutableMap<Key, AutoCloseable> = mutableMapOf()
 
-    val storeCoroutineScope: CoroutineScope
+    protected val storeCoroutineScope: CoroutineScope
         get() {
             return getClosable(StoreCoroutineScopeKey)
                 ?: CoroutineScope(EmptyCoroutineContext + SupervisorJob()).also {
