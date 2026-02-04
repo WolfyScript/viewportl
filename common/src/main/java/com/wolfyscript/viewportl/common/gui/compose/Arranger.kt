@@ -2,6 +2,7 @@ package com.wolfyscript.viewportl.common.gui.compose
 
 import com.wolfyscript.viewportl.common.gui.compose.modifier.SimpleMeasureModification
 import com.wolfyscript.viewportl.gui.compose.layout.*
+import com.wolfyscript.viewportl.gui.compose.modifier.ScopeDataModifierNode
 
 class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
 
@@ -19,6 +20,14 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
             if (previous != value) {
                 onMeasureChange()
             }
+        }
+    override val scopeData: Any?
+        get() {
+            var scopeData: Any? = null
+            node.modifierStack.forEachOfType(ScopeDataModifierNode::class) {
+                scopeData = it.modifyScopeData(scopeData)
+            }
+            return scopeData
         }
 
     private var incomingConstraints: Constraints = Constraints()

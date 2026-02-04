@@ -1,63 +1,105 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
-import com.wolfyscript.viewportl.gui.compose.layout.Alignment
-import com.wolfyscript.viewportl.gui.compose.layout.Arrangement
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
-import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.layout.LayoutDirection
-import com.wolfyscript.viewportl.gui.compose.layout.Placeable
-import com.wolfyscript.viewportl.gui.compose.layout.Dp
-import com.wolfyscript.viewportl.gui.compose.layout.max
+import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
+import com.wolfyscript.viewportl.gui.compose.layout.*
+import com.wolfyscript.viewportl.gui.compose.modifier.LayoutWeightModifier
 import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
+import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
 
 @Composable
 fun Row(
     modifier: ModifierStackBuilder = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     verticalAlignment: Alignment.Vertical = Alignment.Top,
-    content: @Composable () -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) {
-    Layout(modifier, content = content) { measurables, constraints ->
-        if (measurables.isEmpty()) {
-            return@Layout layout(constraints.minWidth, constraints.minHeight) {}
-        }
+    Layout(
+        modifier,
+        content = { RowScopeImpl.content() },
+        measurePolicy = RowMeasurePolicy(horizontalArrangement, verticalAlignment)
+    )
+}
 
-        val placeables = arrayOfNulls<Placeable>(measurables.size)
-        val childWidthSizes = Array(measurables.size) { Dp.Zero }
-        var fixedSpace = Dp.Zero
-        var height = Dp.Zero
+interface RowScope {
 
-        for ((i, measurable) in measurables.withIndex()) {
-            val remainingSpace = constraints.maxWidth - fixedSpace
+    /**
+     *
+     */
+    fun ModifierStackBuilder.weight(weight: Float, fill: Boolean = true): ModifierStackBuilder
 
-            val placeable = measurable.measure(
-                Constraints(
-                    minWidth = Dp.Zero,
-                    maxWidth = remainingSpace,
-                    minHeight = Dp.Zero,
-                    maxHeight = constraints.maxHeight
-                )
-            )
+}
 
-            childWidthSizes[i] = placeable.width
-            fixedSpace += placeable.width
-            height = max(height, placeable.height)
-            placeables[i] = placeable
-        }
+internal object RowScopeImpl : RowScope {
 
-        val finalWidth = max(constraints.minWidth, fixedSpace)
-        val finalHeight = max(constraints.minHeight, height)
+    override fun ModifierStackBuilder.weight(
+        weight: Float,
+        fill: Boolean,
+    ): ModifierStackBuilder {
+        require(weight > 0f) { "invalid weight: $weight: weight must be > 0" }
+        return push(LayoutWeightModifier(weight, fill))
+    }
 
-        val mainAxisPositions = horizontalArrangement.arrange(finalWidth, LayoutDirection.LtR, childWidthSizes)
+}
 
-        layout(finalWidth, finalHeight) {
+internal class RowMeasurePolicy(
+    val horizontalArrangement: Arrangement.Horizontal,
+    val verticalAlignment: Alignment.Vertical,
+) : MeasurePolicy, LayoutAxisMeasurePolicy {
+
+    override fun MeasureScope.measure(
+        measurables: List<Measurable>,
+        constraints: Constraints,
+    ): Measurements = measure(
+        this,
+        measurables,
+        constraints.minWidth,
+        constraints.minHeight,
+        constraints.maxWidth,
+        constraints.maxHeight
+    )
+
+    override fun Placeable.mainAxisSize(): Dp = width
+
+    override fun Placeable.crossAxisSize(): Dp = height
+
+    override fun createConstraints(
+        mainAxisMin: Dp,
+        mainAxisMax: Dp,
+        crossAxisMin: Dp,
+        crossAxisMax: Dp,
+    ): Constraints = Constraints(
+        mainAxisMin,
+        mainAxisMax,
+        crossAxisMin,
+        crossAxisMax
+    )
+
+    override fun arrangeMainAxis(
+        measureScope: MeasureScope,
+        mainAxisSpace: Dp,
+        mainAxisChildSizes: Array<Dp>,
+    ): Array<Dp> = horizontalArrangement.arrange(
+        mainAxisSpace,
+        LayoutDirection.LtR,
+        mainAxisChildSizes
+    )
+
+    override fun placeItems(
+        measureScope: MeasureScope,
+        placeables: Array<Placeable?>,
+        mainAxisPositions: Array<Dp>,
+        mainAxisSpace: Dp,
+        crossAxisSpace: Dp,
+    ): Measurements = with(measureScope) {
+        layout(mainAxisSpace, crossAxisSpace) {
             placeables.forEachIndexed { index, placeable ->
                 placeable?.placeAt(
                     mainAxisPositions[index],
-                    verticalAlignment.align(placeable.height, finalHeight)
+                    verticalAlignment.align(placeable.height, crossAxisSpace)
                 )
             }
         }
     }
+
 }

@@ -116,7 +116,6 @@ class ModifierStackImpl() : ModifierStack {
         update(modifier as T)
     }
 
-
     override fun modifyMeasure(
         nodeConstraints: Constraints,
     ): LayoutModification {
@@ -155,6 +154,14 @@ class ModifierStackImpl() : ModifierStack {
 
     override fun <T : ModifierNode> firstOfType(nodeType: KClass<T>): T? {
         return modifiers.firstOrNull { nodeType.isInstance(it) }?.let { nodeType.cast(it) }
+    }
+
+    override fun <T: ModifierNode> forEachOfType(nodeType: KClass<T>, block: (T) -> Unit) {
+        for (modifier in modifiers) {
+            if (nodeType.isInstance(modifier)) {
+                block(nodeType.cast(modifier))
+            }
+        }
     }
 
     /**

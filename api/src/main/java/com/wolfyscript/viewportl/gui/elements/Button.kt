@@ -25,7 +25,7 @@ import com.wolfyscript.viewportl.gui.compose.modifier.clickable
 import com.wolfyscript.viewportl.gui.compose.modifier.defaultMinSize
 
 @Composable
-fun Button(modifier: ModifierStackBuilder = Modifier, onClick: () -> Unit, content: @Composable () -> Unit) {
+fun Button(modifier: ModifierStackBuilder = Modifier, onClick: () -> Unit, content: @Composable RowScope.() -> Unit) {
     Row(
         modifier
             .defaultMinSize(

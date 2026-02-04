@@ -19,7 +19,6 @@ class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCa
     override val modifierStack = ModifierStackImpl()
     override var modifier: ModifierStackBuilder = Modifier
         set(value) {
-            // Node reused. Modifiers were updated
             field = value
             modifierStack.update(value)
         }
@@ -107,6 +106,10 @@ class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCa
     }
 
     override fun onReuse() {
+        assert(attached) { "onReuse called on non-attached Node" }
+
+
+
     }
 
     override fun onDeactivate() {

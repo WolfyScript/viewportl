@@ -55,6 +55,8 @@ interface ModifierStack {
 
     fun <T: ModifierNode> firstOfType(nodeType: KClass<T>): T?
 
+    fun <T: ModifierNode> forEachOfType(nodeType: KClass<T>, block: (T) -> Unit)
+
 }
 
 val Modifier
