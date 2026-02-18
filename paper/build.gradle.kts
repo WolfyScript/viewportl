@@ -45,7 +45,7 @@ fun archiveName(): String {
 
 tasks {
     shadowJar {
-        archiveFileName.set("${archiveName()}-mojmap.jar")
+        archiveFileName.set("${archiveName()}.jar")
         dependencies {
             include(project(":spigotlike"))
             include(project(":api"))
@@ -79,7 +79,7 @@ bukkitPluginYaml {
 }
 
 minecraftServers {
-    libName.set("${archiveName()}-mojmap.jar")
+    libName.set("${archiveName()}.jar")
     servers {
         register("paper") {
             destFileName.set("viewportl.jar")
