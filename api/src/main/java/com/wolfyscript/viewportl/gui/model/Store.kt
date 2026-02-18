@@ -1,9 +1,11 @@
 package com.wolfyscript.viewportl.gui.model
 
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.viewportl
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -17,10 +19,14 @@ abstract class Store {
     private val lock = Any()
     private val closeables: MutableMap<Key, AutoCloseable> = mutableMapOf()
 
+    // Without this, uncaught exceptions would be hidden and never printed to the logger
+    private val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
+        ScafallProvider.get().logger.error("[Store@${this::class.simpleName}] An error occurred in coroutine ${context[CoroutineName] ?: ""}", throwable)
+    }
     protected val storeCoroutineScope: CoroutineScope
         get() {
             return getClosable(StoreCoroutineScopeKey)
-                ?: CoroutineScope(EmptyCoroutineContext + SupervisorJob()).also {
+                ?: CoroutineScope(EmptyCoroutineContext + exceptionHandler + SupervisorJob()).also {
                     addClosable(StoreCoroutineScopeKey, it.asCloseable())
                 }
         }
