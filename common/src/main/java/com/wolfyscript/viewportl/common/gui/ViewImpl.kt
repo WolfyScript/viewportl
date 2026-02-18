@@ -21,6 +21,7 @@ package com.wolfyscript.viewportl.common.gui
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.ObserverHandle
 import androidx.compose.runtime.snapshots.Snapshot
+import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.compose.LayoutNode
@@ -28,21 +29,23 @@ import com.wolfyscript.viewportl.common.gui.compose.RootMeasurePolicy
 import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.ViewType
-import com.wolfyscript.viewportl.gui.input.TextInputCallback
-import com.wolfyscript.viewportl.gui.input.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.compose.ModelNodeApplier
 import com.wolfyscript.viewportl.gui.compose.ViewProperties
 import com.wolfyscript.viewportl.gui.compose.ViewPropertiesOverride
 import com.wolfyscript.viewportl.gui.compose.layout.Constraints
 import com.wolfyscript.viewportl.gui.compose.layout.Dp
 import com.wolfyscript.viewportl.gui.compose.layout.slots
+import com.wolfyscript.viewportl.gui.input.TextInputCallback
+import com.wolfyscript.viewportl.gui.input.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.model.LocalStoreOwner
 import com.wolfyscript.viewportl.gui.model.LocalView
 import com.wolfyscript.viewportl.gui.rendering.Renderer
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
-import java.util.UUID
+import kotlinx.coroutines.launch
+import java.util.*
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
@@ -149,7 +152,7 @@ class ViewImpl internal constructor(
 
     private fun registerSnapshotApplyObserver(): ObserverHandle {
         return Snapshot.registerApplyObserver { changed, _ ->
-            if(!requireLayout) {
+            if (!requireLayout) {
                 var hasRequiredDraw = requireDraw
                 for (state in changed) {
                     if (state in readStatesOnLayout) {
@@ -171,7 +174,7 @@ class ViewImpl internal constructor(
     private fun startRecomposerImmediate() {
         launch {
             recomposer.runRecomposeAndApplyChanges()
-            println("END RECOMPOSER")
+            ScafallProvider.get().logger.info("[View@$viewer] Stop recomposition")
         }
     }
 
@@ -189,14 +192,14 @@ class ViewImpl internal constructor(
                     }
                 }
             } while (job.isActive)
-            println("END FRAME LISTENER")
+            ScafallProvider.get().logger.info("[View@$viewer] Stop frame listener")
         }
     }
 
     suspend fun awaitCompletion() {
         try {
             val effectJob = checkNotNull(recomposer.effectCoroutineContext[Job]) {
-                "No Job in effectCoroutineContext of recomposer"
+                "[View@$viewer] No Job in effectCoroutineContext of recomposer"
             }
             effectJob.children.forEach { it.join() }
             recomposer.awaitIdle()
@@ -219,8 +222,14 @@ class ViewImpl internal constructor(
 
         readStatesOnLayout.clear()
         Snapshot.observe(readObserver = readStatesOnLayoutObserver) {
-            measureAndPlace()
+            try {
+                measureAndPlace()
+            } catch (e: Exception) {
+                ScafallProvider.get().logger.error("[View@$viewer] Error during layout", e)
+                readStatesOnLayout.clear()
+            }
         }
+
     }
 
     /**
@@ -232,7 +241,14 @@ class ViewImpl internal constructor(
         readStatesOnDraw.clear()
         activeRenderer?.let { renderer ->
             Snapshot.observe(readObserver = readStatesOnDrawObserver) {
-                renderer.render(this, root)
+                try {
+                    renderer.render(this, root)
+                } catch (e: Exception) {
+                    ScafallProvider.get().logger.error(
+                        "[View@$viewer] Error during render (renderer: $activeRenderer)",
+                        e
+                    )
+                }
             }
         }
     }
