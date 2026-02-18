@@ -2,9 +2,9 @@
 
 [versions]
 # Kotlin & Jetbrains
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 jetbrains-annotations = "23.0.0"
-compose = "1.9.0"
+compose = "1.10.1"
 coroutines = "1.10.2"
 
 # Configuration
