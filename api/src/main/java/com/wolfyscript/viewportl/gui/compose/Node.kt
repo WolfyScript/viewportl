@@ -30,7 +30,7 @@ interface Node {
 
     var parent: Node?
     var modifier: ModifierStackBuilder
-    var measurePolicy: MeasurePolicy?
+    var measurePolicy: MeasurePolicy
 
     val arranger: NodeArranger
     val modifierStack: ModifierStack

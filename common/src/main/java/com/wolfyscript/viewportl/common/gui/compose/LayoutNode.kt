@@ -24,7 +24,7 @@ class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCa
         }
 
     override val arranger: NodeArrangerImpl = NodeArrangerImpl(this)
-    override var measurePolicy: MeasurePolicy? = null
+    override var measurePolicy: MeasurePolicy = EmptyMeasurePolicy
         set(value) {
             // Node reused. MeasurePolicy was updated
             field = value
@@ -119,5 +119,10 @@ class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCa
     }
 
 
+    companion object {
+
+        val EmptyMeasurePolicy = MeasurePolicy { _, _ -> error("Failed to measure Layout: Layout is missing required MeasurePolicy!") }
+
+    }
 
 }
