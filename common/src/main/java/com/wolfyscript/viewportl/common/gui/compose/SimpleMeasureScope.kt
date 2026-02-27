@@ -1,11 +1,10 @@
 package com.wolfyscript.viewportl.common.gui.compose
 
-import com.wolfyscript.viewportl.gui.compose.layout.MeasureScope
-import com.wolfyscript.viewportl.gui.compose.layout.Measurements
-import com.wolfyscript.viewportl.gui.compose.layout.PlacementScope
-import com.wolfyscript.viewportl.gui.compose.layout.Dp
+import com.wolfyscript.viewportl.gui.compose.layout.*
 
-class SimpleMeasureScope : MeasureScope {
+class SimpleMeasureScope(
+    override val layoutDirection: LayoutDirection
+) : MeasureScope {
 
     override fun layout(
         width: Dp,

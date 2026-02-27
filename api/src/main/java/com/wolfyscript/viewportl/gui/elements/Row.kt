@@ -81,7 +81,7 @@ internal class RowMeasurePolicy(
         mainAxisChildSizes: Array<Dp>,
     ): Array<Dp> = horizontalArrangement.arrange(
         mainAxisSpace,
-        LayoutDirection.LtR,
+        measureScope.layoutDirection,
         mainAxisChildSizes
     )
 

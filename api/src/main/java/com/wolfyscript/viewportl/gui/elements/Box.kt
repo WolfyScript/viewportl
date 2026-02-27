@@ -38,7 +38,7 @@ fun Box(
             val height = max(constraints.minHeight, placeable.height)
 
             return@Layout layout(width, height) {
-                val offset = contentAlignment.align(Offset(placeable.width, placeable.height), Offset(width, height), LayoutDirection.LtR)
+                val offset = contentAlignment.align(Offset(placeable.width, placeable.height), Offset(width, height), layoutDirection)
                 placeable.placeAt(offset.x, offset.y)
             }
         }
@@ -57,7 +57,7 @@ fun Box(
         layout(width, height) {
             for (placeable in placeables) {
                 placeable?.let {
-                    val offset = contentAlignment.align(Offset(it.width, it.height), Offset(width, height), LayoutDirection.LtR)
+                    val offset = contentAlignment.align(Offset(it.width, it.height), Offset(width, height), layoutDirection)
                     it.placeAt(offset.x, offset.y)
                 }
             }

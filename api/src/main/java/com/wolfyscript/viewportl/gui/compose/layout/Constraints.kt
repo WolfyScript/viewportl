@@ -9,6 +9,21 @@ class Constraints(
     val maxHeight: Dp = Dp.Infinity,
 ) {
 
+    val hasBoundedWidth: Boolean
+        get() = maxWidth != Dp.Infinity
+
+    val hasBoundedHeight: Boolean
+        get() = maxHeight != Dp.Infinity
+
+    val hasFixedWidth: Boolean
+        get() = minWidth == maxWidth
+
+    val hasFixedHeight: Boolean
+        get() = minHeight == maxHeight
+
+    val isZero: Boolean
+        get() = maxWidth == Dp.Zero || maxHeight == Dp.Zero
+
     /**
      * Grows or shrinks the current constraints.
      *

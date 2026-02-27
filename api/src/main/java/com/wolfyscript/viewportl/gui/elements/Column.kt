@@ -106,7 +106,7 @@ internal class ColumnMeasurePolicy(
         layout(crossAxisSpace, mainAxisSpace) {
             placeables.forEachIndexed { index, placeable ->
                 placeable?.placeAt(
-                    horizontalAlignment.align(placeable.width, crossAxisSpace, LayoutDirection.LtR),
+                    horizontalAlignment.align(placeable.width, crossAxisSpace, layoutDirection),
                     mainAxisPositions[index]
                 )
             }

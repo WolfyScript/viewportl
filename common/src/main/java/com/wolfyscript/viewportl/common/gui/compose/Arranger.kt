@@ -29,6 +29,12 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
             }
             return scopeData
         }
+    val childMeasurables
+        get() = buildList<Measurable> {
+            node.forEachChild { child -> add(child.arranger) }
+        }
+
+
 
     private var incomingConstraints: Constraints = Constraints()
 
@@ -37,18 +43,11 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
 
     override fun measure(constraints: Constraints): Placeable {
         val modification = node.modifierStack.modifyMeasure(constraints)
-
-        val childMeasurables = buildList<Measurable> {
-            node.forEachChild { child -> add(child.arranger) }
-        }
-
         return performMeasurement(constraints) {
-            val measureScope = SimpleMeasureScope()
-            node.measurePolicy?.let { measurePolicy ->
-                with(measurePolicy) {
-                    measureScope.measure(childMeasurables, modification.constraints)
-                }
-            } ?: Measurements(Dp.Zero, Dp.Zero)
+            val measureScope = SimpleMeasureScope(LayoutDirection.LtR)
+            with(node.measurePolicy) {
+                measureScope.measure(childMeasurables, modification.constraints)
+            }
         }
     }
 
