@@ -1,21 +1,19 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
-import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
-import com.wolfyscript.viewportl.gui.compose.layout.Alignment
-import com.wolfyscript.viewportl.gui.compose.layout.Arrangement
-import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.layout.Placeable
-import com.wolfyscript.viewportl.gui.compose.layout.Dp
-import com.wolfyscript.viewportl.gui.compose.layout.LayoutAxisMeasurePolicy
-import com.wolfyscript.viewportl.gui.compose.layout.LayoutDirection
-import com.wolfyscript.viewportl.gui.compose.layout.Measurable
-import com.wolfyscript.viewportl.gui.compose.layout.MeasureScope
-import com.wolfyscript.viewportl.gui.compose.layout.Measurements
-import com.wolfyscript.viewportl.gui.compose.layout.max
-import com.wolfyscript.viewportl.gui.compose.modifier.LayoutWeightModifier
-import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
+import com.wolfyscript.viewportl.ui.MeasurePolicy
+import com.wolfyscript.viewportl.ui.layout.Alignment
+import com.wolfyscript.viewportl.ui.layout.Arrangement
+import com.wolfyscript.viewportl.ui.layout.Constraints
+import com.wolfyscript.viewportl.ui.layout.Placeable
+import com.wolfyscript.viewportl.ui.layout.Dp
+import com.wolfyscript.viewportl.ui.layout.LayoutAxisMeasurePolicy
+import com.wolfyscript.viewportl.ui.layout.Measurable
+import com.wolfyscript.viewportl.ui.layout.MeasureScope
+import com.wolfyscript.viewportl.ui.layout.Measurements
+import com.wolfyscript.viewportl.ui.modifier.LayoutWeightModifier
+import com.wolfyscript.viewportl.ui.modifier.Modifier
+import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder
 
 @Composable
 fun Column(

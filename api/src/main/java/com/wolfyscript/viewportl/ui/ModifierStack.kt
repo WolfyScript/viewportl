@@ -1,0 +1,264 @@
+package com.wolfyscript.viewportl.ui
+
+import com.wolfyscript.viewportl.ui.layout.Constraints
+import com.wolfyscript.viewportl.ui.layout.Dp
+import com.wolfyscript.viewportl.ui.layout.IntrinsicMeasureScope
+import com.wolfyscript.viewportl.ui.layout.LayoutDirection
+import com.wolfyscript.viewportl.ui.modifier.*
+import kotlin.reflect.KClass
+import kotlin.reflect.cast
+
+internal class ModifierStackImpl : ModifierStack {
+
+    companion object {
+        private const val ReuseNode = 0
+        private const val UpdateNode = 1
+        private const val ReplaceNode = 2
+
+        fun modifierDataAction(prev: ModifierData<*>, next: ModifierData<*>): Int {
+            if (prev == next) {
+                return ReuseNode
+            }
+            if (prev::class.java == next::class.java) {
+                return UpdateNode
+            }
+            return ReuseNode
+        }
+    }
+
+    internal var data: List<ModifierData<*>> = emptyList()
+    internal val modifiers: ArrayDeque<ModifierNode> = ArrayDeque()
+    private var attached: Boolean = false
+
+    /**
+     * The snapshots of modifications after each [LayoutModifierNode].
+     *
+     * We keep those for future improvements like
+     * multiple [com.wolfyscript.viewportl.ui.modifier.InventoryDrawModifierNode]s and other [ModifierNode]s that may use the layout info closest to them.
+     * At the moment only the first entry is important, as it reflects the final modification step.
+     */
+    private val modificationSnapshots: ArrayDeque<LayoutModification> = ArrayDeque()
+
+
+    /**
+     * Whether the layout modification was performed and produced up-to-date [modificationSnapshots]
+     */
+    private var performedLayoutModification: Boolean = false
+
+    fun update(stackBuilder: ModifierStackBuilder) {
+        val previousData = data
+        data = stackBuilder.data
+        if (previousData.size == data.size) {
+            for ((index, prev) in previousData.withIndex()) {
+                val next = data[index]
+                val modifier = modifiers[index]
+                when (modifierDataAction(prev, next)) {
+                    ReuseNode -> {
+                        // Do nothing
+                    }
+
+                    UpdateNode -> {
+                        modificationSnapshots.clear() // TODO: only remove those that have changed?
+                        performedLayoutModification = false
+                        next.updateUnsafe(modifier)
+                    }
+
+                    ReplaceNode -> {
+                        structuralChange()
+                    }
+                }
+            }
+        } else if (previousData.isEmpty()) {
+            modificationSnapshots.clear()
+            performedLayoutModification = false
+            modifiers.clear() // Modifiers should be empty already! just make sure... maybe an assert would be better
+            for (newData in data) {
+                val modifier = newData.create()
+                modifiers += modifier
+                if (attached) {
+                    modifier.onAttach()
+                }
+            }
+        } else if (data.isEmpty()) {
+            modificationSnapshots.clear()
+            performedLayoutModification = false
+            for (node in modifiers) {
+                node.onDetach()
+            }
+            modifiers.clear()
+        } else {
+            structuralChange()
+        }
+
+    }
+
+    private fun structuralChange() {
+        modificationSnapshots.clear()
+        performedLayoutModification = false
+        // TODO: Structural update, for now just remove all and readd new
+        for (node in modifiers) {
+            node.onDetach()
+        }
+        modifiers.clear()
+        for (modifierData in data) {
+            val modifier = modifierData.create()
+            modifiers += modifier
+            if (attached) {
+                modifier.onAttach()
+            }
+        }
+    }
+
+    fun updateModifier(next: ModifierData<*>, modifier: ModifierNode) {
+        next.updateUnsafe(modifier)
+    }
+
+    private fun <T : ModifierNode> ModifierData<T>.updateUnsafe(modifier: ModifierNode) {
+        update(modifier as T)
+    }
+
+    override fun modifyMeasure(
+        nodeConstraints: Constraints,
+    ): LayoutModification {
+        if (modifiers.isEmpty()) return SimpleLayoutModification(nodeConstraints) { it }
+        if (performedLayoutModification) {
+            return modificationSnapshots.firstOrNull() ?: SimpleLayoutModification(nodeConstraints) { it }
+        }
+
+        val scope: LayoutModifyScope = SimpleLayoutModifyScope()
+        for (modifier in modifiers) {
+            if (modifier !is LayoutModifierNode) continue
+
+            val latestModification = with(modifier) {
+                scope.modify(modificationSnapshots.firstOrNull()?.constraints ?: nodeConstraints)
+            }
+            modificationSnapshots.addFirst(latestModification)
+        }
+        performedLayoutModification = true
+        return modificationSnapshots.firstOrNull() ?: SimpleLayoutModification(nodeConstraints) { it }
+    }
+
+    override fun modifyLayout(initialMeasure: MeasureModification): MeasureModification {
+        if (modificationSnapshots.isEmpty()) {
+            return initialMeasure
+        }
+
+        var currentMeasure: MeasureModification = initialMeasure
+        for (modification in modificationSnapshots) {
+            val scope = SimpleMeasureModifyScope(modification.constraints)
+            currentMeasure = with(modification) {
+                scope.measure(currentMeasure)
+            }
+        }
+        return currentMeasure
+    }
+
+    override fun modifyIntrinsic(
+        initialIntrinsicSize: IntrinsicSize,
+        layoutDirection: LayoutDirection,
+        crossAxisSize: Dp,
+        modifyMin: LayoutModifierNode.(scope: IntrinsicModifyIncomingScope, crossAxisSize: Dp) -> IntrinsicIncomingModification,
+        modifyMax: LayoutModifierNode.(scope: IntrinsicModifyIncomingScope, crossAxisSize: Dp) -> IntrinsicIncomingModification,
+        nodeIntrinsics: IntrinsicMeasureScope.(crossAxisSize: Dp) -> Dp,
+    ): Dp {
+        val measureScope = SimpleMeasureScope(layoutDirection)
+        if (modifiers.isEmpty()) {
+            return measureScope.nodeIntrinsics(crossAxisSize)
+        }
+
+        // Modify incoming cross axis size
+        val intrinsicModificationStack: MutableList<IntrinsicIncomingModification> = mutableListOf()
+        var currentModification: IntrinsicIncomingModification =
+            SimpleIntrinsicIncomingModification(crossAxisSize, initialIntrinsicSize, null)
+        for (modifier in modifiers) {
+            if (modifier !is LayoutModifierNode) continue
+
+            currentModification = when (currentModification.usedChildSize) {
+                null -> break // previous modification didn't ask for child intrinsics
+
+                IntrinsicSize.Min -> modifier.modifyMin(
+                    SimpleIntrinsicModifyIncomingScope,
+                    currentModification.crossAxisSize
+                )
+
+                else -> modifier.modifyMax(SimpleIntrinsicModifyIncomingScope, currentModification.crossAxisSize)
+            }
+            intrinsicModificationStack.add(currentModification)
+        }
+
+        // Modify outgoing intrinsics
+        var currentIntrinsics: Dp? = null
+        for (modification in intrinsicModificationStack.reversed()) {
+            if (currentIntrinsics == null) {
+                currentIntrinsics = when (modification.usedChildSize) {
+                    null -> Dp.Zero
+                    else -> measureScope.nodeIntrinsics(currentModification.crossAxisSize)
+                }
+            }
+            if (modification.intrinsicMeasure == null) continue
+            currentIntrinsics = modification.intrinsicMeasure!!(SimpleIntrinsicModifyOutgoingScope, currentIntrinsics)
+        }
+        return currentIntrinsics ?: Dp.Zero
+    }
+
+    override fun <T : ModifierNode> firstOfType(nodeType: KClass<T>): T? {
+        return modifiers.firstOrNull { nodeType.isInstance(it) }?.let { nodeType.cast(it) }
+    }
+
+    override fun <T : ModifierNode> forEachOfType(nodeType: KClass<T>, block: (T) -> Unit) {
+        for (modifier in modifiers) {
+            if (nodeType.isInstance(modifier)) {
+                block(nodeType.cast(modifier))
+            }
+        }
+    }
+
+    /**
+     * Called when a node that owns this modifier stack is detached from the tree
+     */
+    fun onNodeDetach() {
+        attached = false
+
+        for (modifier in modifiers) {
+            modifier.onDetach()
+        }
+    }
+
+    /**
+     * Called when a node that owns this modifier stack is attached to the tree
+     */
+    fun onNodeAttach() {
+        for (modifier in modifiers) {
+            modifier.onAttach()
+        }
+
+        attached = true
+    }
+
+    fun onMeasureChange() {
+        for (node in modifiers) {
+            node.onMeasurementsChanged()
+        }
+    }
+
+    fun onLayoutChange() {
+        for (node in modifiers) {
+            node.onLayoutChanged()
+        }
+    }
+
+}
+
+class SimpleModifierStackBuilder : ModifierStackBuilder {
+
+    val stack = ArrayDeque<ModifierData<*>>()
+    override val data: List<ModifierData<*>>
+        get() = stack.toList()
+
+    override fun push(modifier: ModifierData<*>): ModifierStackBuilder {
+        stack.add(modifier)
+        return this
+    }
+
+}
+

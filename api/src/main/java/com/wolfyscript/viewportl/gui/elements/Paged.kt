@@ -8,10 +8,10 @@ import androidx.compose.runtime.setValue
 import com.wolfyscript.scafall.adventure.deser
 import com.wolfyscript.scafall.adventure.vanilla
 import com.wolfyscript.scafall.wrappers.snapshot
-import com.wolfyscript.viewportl.gui.compose.layout.Arrangement
-import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
-import com.wolfyscript.viewportl.gui.compose.modifier.fillMaxWidth
+import com.wolfyscript.viewportl.ui.layout.Arrangement
+import com.wolfyscript.viewportl.ui.modifier.Modifier
+import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder
+import com.wolfyscript.viewportl.ui.modifier.fillMaxWidth
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items

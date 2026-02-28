@@ -18,11 +18,12 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
-import com.wolfyscript.viewportl.gui.compose.layout.*
-import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
-import com.wolfyscript.viewportl.gui.compose.modifier.clickable
-import com.wolfyscript.viewportl.gui.compose.modifier.defaultMinSize
+import com.wolfyscript.viewportl.ui.modifier.Modifier
+import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder
+import com.wolfyscript.viewportl.ui.modifier.clickable
+import com.wolfyscript.viewportl.ui.modifier.defaultMinSize
+import com.wolfyscript.viewportl.ui.layout.Dp
+import com.wolfyscript.viewportl.ui.layout.dp
 
 @Composable
 fun Button(modifier: ModifierStackBuilder = Modifier, onClick: () -> Unit, content: @Composable RowScope.() -> Unit) {

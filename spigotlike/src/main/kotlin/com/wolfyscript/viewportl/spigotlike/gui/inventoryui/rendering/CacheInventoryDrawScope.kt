@@ -3,8 +3,8 @@ package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.spigot.api.wrappers.utils.unwrapSpigot
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
-import com.wolfyscript.viewportl.gui.compose.layout.Offset
-import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
+import com.wolfyscript.viewportl.ui.layout.Offset
+import com.wolfyscript.viewportl.ui.modifier.InventoryDrawScope
 import org.bukkit.inventory.Inventory
 
 class CacheInventoryDrawScope(

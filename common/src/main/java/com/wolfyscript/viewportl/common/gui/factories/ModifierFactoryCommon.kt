@@ -1,24 +1,24 @@
 package com.wolfyscript.viewportl.common.gui.factories
 
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
-import com.wolfyscript.viewportl.common.gui.compose.SimpleModifierStackBuilder
-import com.wolfyscript.viewportl.common.gui.compose.modifier.ClickableModifierDataImpl
-import com.wolfyscript.viewportl.common.gui.compose.modifier.DefaultMinSizeModifier
-import com.wolfyscript.viewportl.common.gui.compose.modifier.FillModifierData
-import com.wolfyscript.viewportl.common.gui.compose.modifier.InventoryDrawModifierDataImpl
-import com.wolfyscript.viewportl.common.gui.compose.modifier.LayoutModifierData
-import com.wolfyscript.viewportl.common.gui.compose.modifier.PaddingModifier
-import com.wolfyscript.viewportl.common.gui.compose.modifier.ScrollSelectableModifierDataImpl
-import com.wolfyscript.viewportl.common.gui.compose.modifier.SizeModifier
-import com.wolfyscript.viewportl.common.gui.compose.modifier.SlotInputModifierImpl
-import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.layout.Direction
-import com.wolfyscript.viewportl.gui.compose.layout.Dp
-import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
-import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
-import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifyScope
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierData
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
+import com.wolfyscript.viewportl.ui.SimpleModifierStackBuilder
+import com.wolfyscript.viewportl.ui.modifier.ClickableModifierDataImpl
+import com.wolfyscript.viewportl.ui.modifier.DefaultMinSizeModifier
+import com.wolfyscript.viewportl.ui.modifier.FillModifierData
+import com.wolfyscript.viewportl.ui.modifier.InventoryDrawModifierDataImpl
+import com.wolfyscript.viewportl.ui.modifier.LayoutModifierData
+import com.wolfyscript.viewportl.ui.modifier.PaddingModifier
+import com.wolfyscript.viewportl.ui.modifier.ScrollSelectableModifierDataImpl
+import com.wolfyscript.viewportl.ui.modifier.SizeModifier
+import com.wolfyscript.viewportl.ui.modifier.SlotInputModifierImpl
+import com.wolfyscript.viewportl.ui.layout.Constraints
+import com.wolfyscript.viewportl.ui.layout.Direction
+import com.wolfyscript.viewportl.ui.layout.Dp
+import com.wolfyscript.viewportl.ui.modifier.InventoryDrawScope
+import com.wolfyscript.viewportl.ui.modifier.LayoutModification
+import com.wolfyscript.viewportl.ui.modifier.LayoutModifyScope
+import com.wolfyscript.viewportl.ui.modifier.ModifierData
+import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder
 import com.wolfyscript.viewportl.gui.factories.ModifierFactory
 
 class ModifierFactoryCommon : ModifierFactory {

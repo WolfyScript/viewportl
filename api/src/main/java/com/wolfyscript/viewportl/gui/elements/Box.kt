@@ -1,15 +1,15 @@
 package com.wolfyscript.viewportl.gui.elements
 
 import androidx.compose.runtime.Composable
-import com.wolfyscript.viewportl.gui.compose.MeasurePolicy
-import com.wolfyscript.viewportl.gui.compose.layout.Alignment
-import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.layout.LayoutDirection
-import com.wolfyscript.viewportl.gui.compose.layout.Offset
-import com.wolfyscript.viewportl.gui.compose.layout.Placeable
-import com.wolfyscript.viewportl.gui.compose.layout.max
-import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
+import com.wolfyscript.viewportl.ui.MeasurePolicy
+import com.wolfyscript.viewportl.ui.layout.Alignment
+import com.wolfyscript.viewportl.ui.layout.Constraints
+import com.wolfyscript.viewportl.ui.layout.LayoutDirection
+import com.wolfyscript.viewportl.ui.layout.Offset
+import com.wolfyscript.viewportl.ui.layout.Placeable
+import com.wolfyscript.viewportl.ui.layout.max
+import com.wolfyscript.viewportl.ui.modifier.Modifier
+import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder
 
 /**
  * A Box centers its content. If more than one child is present they are rendered above each other.

@@ -1,15 +1,15 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.common.gui.compose.modifier.PointerEventScopeImpl
+import com.wolfyscript.viewportl.ui.modifier.PointerEventScopeImpl
 import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.interaction.InteractionContext
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
-import com.wolfyscript.viewportl.gui.compose.Node
-import com.wolfyscript.viewportl.gui.compose.layout.Offset
-import com.wolfyscript.viewportl.gui.compose.modifier.ClickableModifierNode
-import com.wolfyscript.viewportl.gui.compose.modifier.ScrollSelectableModifierNode
-import com.wolfyscript.viewportl.gui.compose.modifier.SlotInputModifierNode
+import com.wolfyscript.viewportl.ui.Node
+import com.wolfyscript.viewportl.ui.layout.Offset
+import com.wolfyscript.viewportl.ui.modifier.ClickableModifierNode
+import com.wolfyscript.viewportl.ui.modifier.ScrollSelectableModifierNode
+import com.wolfyscript.viewportl.ui.modifier.SlotInputModifierNode
 
 abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandler<C> {
 

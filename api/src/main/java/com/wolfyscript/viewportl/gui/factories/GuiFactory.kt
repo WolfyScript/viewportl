@@ -19,7 +19,7 @@ package com.wolfyscript.viewportl.gui.factories
 
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.UIRuntime
-import com.wolfyscript.viewportl.gui.compose.Node
+import com.wolfyscript.viewportl.ui.Node
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import java.util.*

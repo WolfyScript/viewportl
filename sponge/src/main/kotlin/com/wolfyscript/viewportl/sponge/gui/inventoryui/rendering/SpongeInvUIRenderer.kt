@@ -10,8 +10,8 @@ import com.wolfyscript.viewportl.gui.GuiHolder
 import com.wolfyscript.viewportl.gui.UIRuntime
 import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.ViewType
-import com.wolfyscript.viewportl.gui.compose.layout.Offset
-import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
+import com.wolfyscript.viewportl.ui.layout.Offset
+import com.wolfyscript.viewportl.ui.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.sponge.SpongeViewportl
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import com.wolfyscript.viewportl.viewportl

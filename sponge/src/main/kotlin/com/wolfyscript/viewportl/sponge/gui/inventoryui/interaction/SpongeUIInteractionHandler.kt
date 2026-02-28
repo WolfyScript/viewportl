@@ -3,7 +3,7 @@ package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.gui.View
 import com.wolfyscript.viewportl.gui.interaction.InteractionContext
-import com.wolfyscript.viewportl.gui.compose.Node
+import com.wolfyscript.viewportl.ui.Node
 import com.wolfyscript.viewportl.sponge.SpongeViewportl
 import com.wolfyscript.viewportl.viewportl
 import org.spongepowered.api.Sponge

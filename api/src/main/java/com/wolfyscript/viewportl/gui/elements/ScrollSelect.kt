@@ -21,11 +21,13 @@ import androidx.compose.runtime.Composable
 import com.wolfyscript.scafall.wrappers.unwrap
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.gui.compose.layout.*
-import com.wolfyscript.viewportl.gui.compose.modifier.Modifier
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
-import com.wolfyscript.viewportl.gui.compose.modifier.clickable
-import com.wolfyscript.viewportl.gui.compose.modifier.defaultMinSize
-import com.wolfyscript.viewportl.gui.compose.modifier.scrollSelect
+import com.wolfyscript.viewportl.ui.modifier.Modifier
+import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder
+import com.wolfyscript.viewportl.ui.modifier.clickable
+import com.wolfyscript.viewportl.ui.modifier.defaultMinSize
+import com.wolfyscript.viewportl.ui.modifier.scrollSelect
+import com.wolfyscript.viewportl.ui.layout.Dp
+import com.wolfyscript.viewportl.ui.layout.dp
 
 /**
  *

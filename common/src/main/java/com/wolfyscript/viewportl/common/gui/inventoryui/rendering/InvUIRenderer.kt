@@ -1,10 +1,10 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 
 import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.compose.Node
-import com.wolfyscript.viewportl.gui.compose.layout.Offset
-import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawModifierNode
-import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
+import com.wolfyscript.viewportl.ui.Node
+import com.wolfyscript.viewportl.ui.layout.Offset
+import com.wolfyscript.viewportl.ui.modifier.InventoryDrawModifierNode
+import com.wolfyscript.viewportl.ui.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 
 abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) : Renderer<T> {
@@ -24,7 +24,8 @@ abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) 
             var current: Node = node
             while (current.parent != null) {
                 current = current.parent!!
-                startOffset = Offset(startOffset.x + current.arranger.position.x, startOffset.y + current.arranger.position.y)
+                startOffset =
+                    Offset(startOffset.x + current.arranger.position.x, startOffset.y + current.arranger.position.y)
             }
         } else {
             startOffset = node.arranger.position // Root node usually 0,0
@@ -33,13 +34,15 @@ abstract class InvUIRenderer<T : InvUIRenderContext>(val contextType: Class<T>) 
     }
 
     private fun render(node: Node, offset: Offset) {
-        val drawMod = node.modifierStack.firstOfType(InventoryDrawModifierNode::class) // TODO: support multiple draw modifiers per Node
+        val drawMod =
+            node.modifierStack.firstOfType(InventoryDrawModifierNode::class) // TODO: support multiple draw modifiers per Node
         val nodeOffset = Offset(
             x = offset.x + node.arranger.position.x,
             y = offset.y + node.arranger.position.y
         )
         if (drawMod != null) {
-            val scope: InventoryDrawScope = subDrawScope(nodeOffset, node.arranger.width.roundToSlots(), node.arranger.height.roundToSlots())
+            val scope: InventoryDrawScope =
+                subDrawScope(nodeOffset, node.arranger.width.roundToSlots(), node.arranger.height.roundToSlots())
 
 //            scope.clear() // TODO: Move clear to point of node invalidation to prevent bleed into other components that do not rerender
             with(drawMod) {

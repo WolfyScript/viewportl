@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateListOf
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.wrappers.snapshot
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
-import com.wolfyscript.viewportl.gui.compose.layout.Arrangement
-import com.wolfyscript.viewportl.gui.compose.layout.slots
+import com.wolfyscript.viewportl.ui.layout.Arrangement
+import com.wolfyscript.viewportl.ui.layout.slots
 import com.wolfyscript.viewportl.gui.compose.modifier.*
 import com.wolfyscript.viewportl.gui.elements.Column
 import com.wolfyscript.viewportl.gui.elements.Icon
@@ -14,6 +14,11 @@ import com.wolfyscript.viewportl.gui.elements.Row
 import com.wolfyscript.viewportl.gui.elements.Slot
 import com.wolfyscript.viewportl.gui.model.Store
 import com.wolfyscript.viewportl.gui.model.store
+import com.wolfyscript.viewportl.ui.modifier.Modifier
+import com.wolfyscript.viewportl.ui.modifier.fillMaxHeight
+import com.wolfyscript.viewportl.ui.modifier.fillMaxWidth
+import com.wolfyscript.viewportl.ui.modifier.height
+import com.wolfyscript.viewportl.ui.modifier.width
 import com.wolfyscript.viewportl.viewportl
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items

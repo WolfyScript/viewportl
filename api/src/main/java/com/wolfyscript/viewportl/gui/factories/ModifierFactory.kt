@@ -1,14 +1,14 @@
 package com.wolfyscript.viewportl.gui.factories
 
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
-import com.wolfyscript.viewportl.gui.compose.layout.Constraints
-import com.wolfyscript.viewportl.gui.compose.layout.Direction
-import com.wolfyscript.viewportl.gui.compose.layout.Dp
-import com.wolfyscript.viewportl.gui.compose.modifier.InventoryDrawScope
-import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModification
-import com.wolfyscript.viewportl.gui.compose.modifier.LayoutModifyScope
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierData
-import com.wolfyscript.viewportl.gui.compose.modifier.ModifierStackBuilder
+import com.wolfyscript.viewportl.ui.layout.Constraints
+import com.wolfyscript.viewportl.ui.layout.Direction
+import com.wolfyscript.viewportl.ui.layout.Dp
+import com.wolfyscript.viewportl.ui.modifier.InventoryDrawScope
+import com.wolfyscript.viewportl.ui.modifier.LayoutModification
+import com.wolfyscript.viewportl.ui.modifier.LayoutModifyScope
+import com.wolfyscript.viewportl.ui.modifier.ModifierData
+import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder
 
 /**
  * Used to create Modifiers.
