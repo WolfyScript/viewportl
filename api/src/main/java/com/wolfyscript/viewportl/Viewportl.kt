@@ -21,7 +21,7 @@ package com.wolfyscript.viewportl
 import com.wolfyscript.scafall.Scafall
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.loader.module.Module
-import com.wolfyscript.viewportl.gui.ViewportlUIRuntimeManager
+import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import org.jetbrains.annotations.ApiStatus

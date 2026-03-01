@@ -18,8 +18,8 @@
 
 package com.wolfyscript.viewportl.gui.interaction
 
-import com.wolfyscript.viewportl.gui.UIRuntime
-import com.wolfyscript.viewportl.gui.View
+import com.wolfyscript.viewportl.runtime.UIRuntime
+import com.wolfyscript.viewportl.runtime.View
 
 /**
  * Handles the interaction of modifier e.g. [com.wolfyscript.viewportl.ui.modifier.clickable].

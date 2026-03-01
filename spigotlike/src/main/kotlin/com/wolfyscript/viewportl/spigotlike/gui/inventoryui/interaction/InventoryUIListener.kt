@@ -19,7 +19,7 @@ package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
 import com.google.common.collect.Multimap
 import com.google.common.collect.Multimaps
-import com.wolfyscript.viewportl.gui.GuiHolder
+import com.wolfyscript.viewportl.runtime.GuiHolder
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority

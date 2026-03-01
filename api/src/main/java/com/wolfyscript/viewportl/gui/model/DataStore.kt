@@ -9,9 +9,9 @@ import com.wolfyscript.viewportl.viewportl
 import java.util.*
 
 /**
- * Stores the data in the shared store of the [UIRuntime][com.wolfyscript.viewportl.gui.UIRuntime].
+ * Stores the data in the shared store of the [UIRuntime][com.wolfyscript.viewportl.runtime.UIRuntime].
  *
- * This data is shared between different viewers of the same [UIRuntime][com.wolfyscript.viewportl.gui.UIRuntime].
+ * This data is shared between different viewers of the same [UIRuntime][com.wolfyscript.viewportl.runtime.UIRuntime].
  *
  * @param storeOwner (Optional) the [StoreOwner] that stores the data
  * @param key A unique Key identifying the data in the store
@@ -33,7 +33,7 @@ inline fun <reified S : Store> sharedStore(
 }
 
 /**
- * Stores the data in the viewer specific store of the [com.wolfyscript.viewportl.gui.UIRuntime]
+ * Stores the data in the viewer specific store of the [com.wolfyscript.viewportl.runtime.UIRuntime]
  *
  * @param storeOwner (Optional) the [StoreOwner] that stores the data
  * @param key A unique Key identifying the data in the store

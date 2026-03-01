@@ -5,8 +5,8 @@ import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.remember
 import com.wolfyscript.scafall.adventure.deser
 import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.ViewType
+import com.wolfyscript.viewportl.runtime.View
+import com.wolfyscript.viewportl.runtime.ViewType
 import com.wolfyscript.viewportl.ui.layout.Dp
 import com.wolfyscript.viewportl.gui.model.LocalView
 import net.kyori.adventure.text.Component

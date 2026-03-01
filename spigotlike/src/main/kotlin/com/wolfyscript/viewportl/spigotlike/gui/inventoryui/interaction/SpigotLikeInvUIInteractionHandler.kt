@@ -24,7 +24,7 @@ import com.wolfyscript.scafall.wrappers.snapshot
 import com.wolfyscript.scafall.wrappers.unwrap
 import com.wolfyscript.viewportl.common.gui.ViewImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
-import com.wolfyscript.viewportl.gui.View
+import com.wolfyscript.viewportl.runtime.View
 import com.wolfyscript.viewportl.ui.modifier.SlotInputModifierNode
 import net.minecraft.core.component.DataComponents
 import org.bukkit.Material

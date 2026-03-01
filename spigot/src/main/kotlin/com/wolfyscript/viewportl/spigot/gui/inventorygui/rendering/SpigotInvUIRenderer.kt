@@ -2,10 +2,10 @@ package com.wolfyscript.viewportl.spigot.gui.inventorygui.rendering
 
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
-import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.UIRuntime
-import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.ViewType
+import com.wolfyscript.viewportl.runtime.GuiHolder
+import com.wolfyscript.viewportl.runtime.UIRuntime
+import com.wolfyscript.viewportl.runtime.View
+import com.wolfyscript.viewportl.runtime.ViewType
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.BukkitInventoryGuiHolder
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering.SpigotLikeInvUIRenderer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer

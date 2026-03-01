@@ -1,6 +1,6 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui
 
-import com.wolfyscript.viewportl.gui.GuiHolder
+import com.wolfyscript.viewportl.runtime.GuiHolder
 import org.spongepowered.api.item.inventory.Carrier
 import org.spongepowered.api.item.inventory.Inventory
 import org.spongepowered.api.item.inventory.type.CarriedInventory

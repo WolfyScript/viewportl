@@ -18,7 +18,7 @@
 package com.wolfyscript.viewportl.gui.input
 
 import com.wolfyscript.scafall.wrappers.ScafallPlayer
-import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.runtime.UIRuntime
 
 fun interface TextInputCallback {
 

@@ -19,8 +19,8 @@
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
-import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.ViewType
+import com.wolfyscript.viewportl.runtime.View
+import com.wolfyscript.viewportl.runtime.ViewType
 import com.wolfyscript.viewportl.ui.layout.Offset
 import com.wolfyscript.viewportl.ui.modifier.InventoryDrawScope
 import org.bukkit.Bukkit

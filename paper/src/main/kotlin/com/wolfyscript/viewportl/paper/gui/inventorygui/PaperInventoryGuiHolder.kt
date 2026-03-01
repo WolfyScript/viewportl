@@ -1,6 +1,6 @@
 package com.wolfyscript.viewportl.paper.gui.inventorygui
 
-import com.wolfyscript.viewportl.gui.GuiHolder
+import com.wolfyscript.viewportl.runtime.GuiHolder
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 

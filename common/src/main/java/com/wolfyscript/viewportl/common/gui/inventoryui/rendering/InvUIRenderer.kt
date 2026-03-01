@@ -1,6 +1,6 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.rendering
 
-import com.wolfyscript.viewportl.gui.View
+import com.wolfyscript.viewportl.runtime.View
 import com.wolfyscript.viewportl.ui.Node
 import com.wolfyscript.viewportl.ui.layout.Offset
 import com.wolfyscript.viewportl.ui.modifier.InventoryDrawModifierNode

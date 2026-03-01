@@ -6,10 +6,10 @@ import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
 import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
-import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.UIRuntime
-import com.wolfyscript.viewportl.gui.View
-import com.wolfyscript.viewportl.gui.ViewType
+import com.wolfyscript.viewportl.runtime.GuiHolder
+import com.wolfyscript.viewportl.runtime.UIRuntime
+import com.wolfyscript.viewportl.runtime.View
+import com.wolfyscript.viewportl.runtime.ViewType
 import com.wolfyscript.viewportl.ui.layout.Offset
 import com.wolfyscript.viewportl.ui.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.sponge.SpongeViewportl

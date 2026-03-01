@@ -17,8 +17,8 @@
  */
 package com.wolfyscript.viewportl.gui.rendering
 
-import com.wolfyscript.viewportl.gui.UIRuntime
-import com.wolfyscript.viewportl.gui.View
+import com.wolfyscript.viewportl.runtime.UIRuntime
+import com.wolfyscript.viewportl.runtime.View
 import com.wolfyscript.viewportl.ui.Node
 
 /**

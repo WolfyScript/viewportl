@@ -22,8 +22,8 @@ import androidx.compose.runtime.BroadcastFrameClock
 import androidx.compose.runtime.Composable
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.common.gui.model.SimpleDataStoreMap
-import com.wolfyscript.viewportl.gui.UIRuntime
-import com.wolfyscript.viewportl.gui.View
+import com.wolfyscript.viewportl.runtime.UIRuntime
+import com.wolfyscript.viewportl.runtime.View
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.DataStoreMap
 import com.wolfyscript.viewportl.gui.rendering.Renderer

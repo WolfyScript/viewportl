@@ -18,9 +18,9 @@
 package com.wolfyscript.viewportl.common.gui
 
 import com.wolfyscript.scafall.wrappers.ScafallPlayer
-import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.UIRuntime
-import com.wolfyscript.viewportl.gui.View
+import com.wolfyscript.viewportl.runtime.GuiHolder
+import com.wolfyscript.viewportl.runtime.UIRuntime
+import com.wolfyscript.viewportl.runtime.View
 
 class GuiHolderImpl(
     override val currentView: View,

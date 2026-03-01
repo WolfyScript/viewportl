@@ -1,8 +1,8 @@
 package com.wolfyscript.viewportl.sponge.gui.inventoryui.interaction
 
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.gui.GuiHolder
-import com.wolfyscript.viewportl.gui.UIRuntime
+import com.wolfyscript.viewportl.runtime.GuiHolder
+import com.wolfyscript.viewportl.runtime.UIRuntime
 import com.wolfyscript.viewportl.sponge.gui.inventoryui.GuiCarrier
 import org.spongepowered.api.event.EventContextKeys
 import org.spongepowered.api.event.Listener

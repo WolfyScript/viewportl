@@ -15,9 +15,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.gui
+package com.wolfyscript.viewportl.runtime
 
 import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.viewportl.runtime.UIRuntime
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 

@@ -3,7 +3,7 @@ package com.wolfyscript.viewportl.gui.model
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.compositionLocalOf
-import com.wolfyscript.viewportl.gui.View
+import com.wolfyscript.viewportl.runtime.View
 
 object LocalView {
 
