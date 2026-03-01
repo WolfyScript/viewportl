@@ -1,4 +1,4 @@
-package com.wolfyscript.viewportl.gui.elements
+package com.wolfyscript.viewportl.foundation
 
 import androidx.compose.runtime.Composable
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot

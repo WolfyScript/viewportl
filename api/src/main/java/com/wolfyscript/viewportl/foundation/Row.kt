@@ -1,8 +1,7 @@
-package com.wolfyscript.viewportl.gui.elements
+package com.wolfyscript.viewportl.foundation
 
 import androidx.compose.runtime.Composable
 import com.wolfyscript.viewportl.ui.MeasurePolicy
-import com.wolfyscript.viewportl.gui.compose.layout.*
 import com.wolfyscript.viewportl.ui.modifier.LayoutWeightModifier
 import com.wolfyscript.viewportl.ui.modifier.Modifier
 import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder

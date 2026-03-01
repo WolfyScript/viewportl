@@ -12,10 +12,10 @@ import com.wolfyscript.viewportl.ui.layout.Alignment
 import com.wolfyscript.viewportl.ui.layout.Arrangement
 import com.wolfyscript.viewportl.ui.layout.slots
 import com.wolfyscript.viewportl.ui.viewProperties
-import com.wolfyscript.viewportl.gui.elements.Button
-import com.wolfyscript.viewportl.gui.elements.Column
-import com.wolfyscript.viewportl.gui.elements.Icon
-import com.wolfyscript.viewportl.gui.elements.Row
+import com.wolfyscript.viewportl.foundation.Button
+import com.wolfyscript.viewportl.foundation.Column
+import com.wolfyscript.viewportl.foundation.Icon
+import com.wolfyscript.viewportl.foundation.Row
 import com.wolfyscript.viewportl.gui.model.Store
 import com.wolfyscript.viewportl.gui.model.store
 import com.wolfyscript.viewportl.ui.modifier.Modifier

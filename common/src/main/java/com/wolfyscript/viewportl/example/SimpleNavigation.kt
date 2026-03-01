@@ -8,6 +8,12 @@ import com.wolfyscript.scafall.adventure.deser
 import com.wolfyscript.scafall.adventure.vanilla
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.scafall.wrappers.snapshot
+import com.wolfyscript.viewportl.foundation.Button
+import com.wolfyscript.viewportl.foundation.Column
+import com.wolfyscript.viewportl.foundation.Icon
+import com.wolfyscript.viewportl.foundation.NavKey
+import com.wolfyscript.viewportl.foundation.NavigationRoot
+import com.wolfyscript.viewportl.foundation.Row
 import com.wolfyscript.viewportl.ui.layout.Alignment
 import com.wolfyscript.viewportl.ui.layout.Arrangement
 import com.wolfyscript.viewportl.ui.layout.slots
@@ -16,7 +22,6 @@ import com.wolfyscript.viewportl.ui.modifier.fillMaxSize
 import com.wolfyscript.viewportl.ui.modifier.fillMaxWidth
 import com.wolfyscript.viewportl.ui.modifier.height
 import com.wolfyscript.viewportl.ui.viewProperties
-import com.wolfyscript.viewportl.gui.elements.*
 import com.wolfyscript.viewportl.viewportl
 import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.ItemStack

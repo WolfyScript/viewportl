@@ -15,15 +15,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.gui.elements
+package com.wolfyscript.viewportl.foundation
 
 import androidx.compose.runtime.Composable
-import com.wolfyscript.scafall.wrappers.unwrap
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
-import com.wolfyscript.viewportl.gui.compose.layout.*
 import com.wolfyscript.viewportl.ui.modifier.Modifier
 import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder
-import com.wolfyscript.viewportl.ui.modifier.clickable
 import com.wolfyscript.viewportl.ui.modifier.defaultMinSize
 import com.wolfyscript.viewportl.ui.modifier.scrollSelect
 import com.wolfyscript.viewportl.ui.layout.Dp

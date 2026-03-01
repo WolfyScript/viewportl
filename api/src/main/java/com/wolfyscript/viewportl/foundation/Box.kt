@@ -1,10 +1,9 @@
-package com.wolfyscript.viewportl.gui.elements
+package com.wolfyscript.viewportl.foundation
 
 import androidx.compose.runtime.Composable
 import com.wolfyscript.viewportl.ui.MeasurePolicy
 import com.wolfyscript.viewportl.ui.layout.Alignment
 import com.wolfyscript.viewportl.ui.layout.Constraints
-import com.wolfyscript.viewportl.ui.layout.LayoutDirection
 import com.wolfyscript.viewportl.ui.layout.Offset
 import com.wolfyscript.viewportl.ui.layout.Placeable
 import com.wolfyscript.viewportl.ui.layout.max

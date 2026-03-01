@@ -7,11 +7,10 @@ import com.wolfyscript.scafall.wrappers.snapshot
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.ui.layout.Arrangement
 import com.wolfyscript.viewportl.ui.layout.slots
-import com.wolfyscript.viewportl.gui.compose.modifier.*
-import com.wolfyscript.viewportl.gui.elements.Column
-import com.wolfyscript.viewportl.gui.elements.Icon
-import com.wolfyscript.viewportl.gui.elements.Row
-import com.wolfyscript.viewportl.gui.elements.Slot
+import com.wolfyscript.viewportl.foundation.Column
+import com.wolfyscript.viewportl.foundation.Icon
+import com.wolfyscript.viewportl.foundation.Row
+import com.wolfyscript.viewportl.foundation.Slot
 import com.wolfyscript.viewportl.gui.model.Store
 import com.wolfyscript.viewportl.gui.model.store
 import com.wolfyscript.viewportl.ui.modifier.Modifier

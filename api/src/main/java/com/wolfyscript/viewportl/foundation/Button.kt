@@ -15,7 +15,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.wolfyscript.viewportl.gui.elements
+package com.wolfyscript.viewportl.foundation
 
 import androidx.compose.runtime.Composable
 import com.wolfyscript.viewportl.ui.modifier.Modifier

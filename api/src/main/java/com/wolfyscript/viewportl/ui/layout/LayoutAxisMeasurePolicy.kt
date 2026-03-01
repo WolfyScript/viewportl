@@ -5,8 +5,8 @@ import com.wolfyscript.viewportl.ui.modifier.RowColumnScopeData
 /**
  * MeasurePolicy for layouts with a Main and Cross Axis.
  *
- * @see com.wolfyscript.viewportl.gui.elements.Row
- * @see com.wolfyscript.viewportl.gui.elements.Column
+ * @see com.wolfyscript.viewportl.foundation.Row
+ * @see com.wolfyscript.viewportl.foundation.Column
  */
 internal interface LayoutAxisMeasurePolicy {
 
