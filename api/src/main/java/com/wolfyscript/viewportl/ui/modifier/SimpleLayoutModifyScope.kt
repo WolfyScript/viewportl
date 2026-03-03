@@ -11,6 +11,22 @@ import com.wolfyscript.viewportl.ui.modifier.MeasureModifyScope
 
 class SimpleLayoutModifyScope() : LayoutModifyScope {
 
+    override fun minIntrinsicWidth(height: Dp): Dp {
+        TODO("Not yet implemented")
+    }
+
+    override fun minIntrinsicHeight(width: Dp): Dp {
+        TODO("Not yet implemented")
+    }
+
+    override fun maxIntrinsicWidth(height: Dp): Dp {
+        TODO("Not yet implemented")
+    }
+
+    override fun maxIntrinsicHeight(width: Dp): Dp {
+        TODO("Not yet implemented")
+    }
+
     override fun modifyLayout(
         modifiedConstraints: Constraints,
         measure: MeasureModifyScope.(MeasureModification) -> MeasureModification,

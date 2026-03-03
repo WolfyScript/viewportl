@@ -1,11 +1,10 @@
 package com.wolfyscript.viewportl.ui.modifier
 
 import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.viewportl.ui.IntrinsicDimension
 import com.wolfyscript.viewportl.ui.IntrinsicSize
 import com.wolfyscript.viewportl.ui.layout.Constraints
 import com.wolfyscript.viewportl.ui.layout.Dp
-import com.wolfyscript.viewportl.ui.layout.IntrinsicMeasureScope
-import com.wolfyscript.viewportl.ui.layout.LayoutDirection
 import com.wolfyscript.viewportl.viewportl
 import kotlin.reflect.KClass
 
@@ -65,18 +64,25 @@ interface ModifierStack {
      * @param nodeIntrinsics calculates the [com.wolfyscript.viewportl.ui.layout.IntrinsicMeasurable] intrinsics
      */
     fun modifyIntrinsic(
-        initialIntrinsicSize: IntrinsicSize,
-        layoutDirection: LayoutDirection,
+        intrinsicSize: IntrinsicSize,
+        intrinsicDimension: IntrinsicDimension,
         crossAxisSize: Dp,
-        modifyMin: LayoutModifierNode.(scope: IntrinsicModifyIncomingScope, crossAxisSize: Dp) -> IntrinsicIncomingModification,
-        modifyMax: LayoutModifierNode.(scope: IntrinsicModifyIncomingScope, crossAxisSize: Dp) -> IntrinsicIncomingModification,
-        nodeIntrinsics: IntrinsicMeasureScope.(Dp) -> Dp,
+        nodeIntrinsics: IntrinsicMeasureBlock,
     ): Dp
 
     fun <T : ModifierNode> firstOfType(nodeType: KClass<T>): T?
 
     fun <T : ModifierNode> forEachOfType(nodeType: KClass<T>, block: (T) -> Unit)
 
+}
+
+fun interface IntrinsicMeasureBlock {
+
+    operator fun invoke(
+        dimension: IntrinsicDimension,
+        intrinsicSize: IntrinsicSize,
+        crossAxisSize: Dp,
+    ): Dp
 }
 
 val Modifier

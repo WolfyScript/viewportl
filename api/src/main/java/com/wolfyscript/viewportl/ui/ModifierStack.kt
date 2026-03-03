@@ -2,8 +2,6 @@ package com.wolfyscript.viewportl.ui
 
 import com.wolfyscript.viewportl.ui.layout.Constraints
 import com.wolfyscript.viewportl.ui.layout.Dp
-import com.wolfyscript.viewportl.ui.layout.IntrinsicMeasureScope
-import com.wolfyscript.viewportl.ui.layout.LayoutDirection
 import com.wolfyscript.viewportl.ui.modifier.*
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
@@ -126,7 +124,8 @@ internal class ModifierStackImpl : ModifierStack {
         }
 
         val scope: LayoutModifyScope = SimpleLayoutModifyScope()
-        for (modifier in modifiers) {
+        for (i in 0 until modifiers.size) {
+            val modifier = modifiers[i]
             if (modifier !is LayoutModifierNode) continue
 
             val latestModification = with(modifier) {
@@ -154,51 +153,86 @@ internal class ModifierStackImpl : ModifierStack {
     }
 
     override fun modifyIntrinsic(
-        initialIntrinsicSize: IntrinsicSize,
-        layoutDirection: LayoutDirection,
+        intrinsicSize: IntrinsicSize,
+        intrinsicDimension: IntrinsicDimension,
         crossAxisSize: Dp,
-        modifyMin: LayoutModifierNode.(scope: IntrinsicModifyIncomingScope, crossAxisSize: Dp) -> IntrinsicIncomingModification,
-        modifyMax: LayoutModifierNode.(scope: IntrinsicModifyIncomingScope, crossAxisSize: Dp) -> IntrinsicIncomingModification,
-        nodeIntrinsics: IntrinsicMeasureScope.(crossAxisSize: Dp) -> Dp,
+        nodeIntrinsics: IntrinsicMeasureBlock,
     ): Dp {
-        val measureScope = SimpleMeasureScope(layoutDirection)
-        if (modifiers.isEmpty()) {
-            return measureScope.nodeIntrinsics(crossAxisSize)
-        }
-
-        // Modify incoming cross axis size
-        val intrinsicModificationStack: MutableList<IntrinsicIncomingModification> = mutableListOf()
-        var currentModification: IntrinsicIncomingModification =
-            SimpleIntrinsicIncomingModification(crossAxisSize, initialIntrinsicSize, null)
-        for (modifier in modifiers) {
+        val startIndex = 0
+        for (index in startIndex.coerceAtLeast(0) until modifiers.size) {
+            val modifier = modifiers[index]
             if (modifier !is LayoutModifierNode) continue
 
-            currentModification = when (currentModification.usedChildSize) {
-                null -> break // previous modification didn't ask for child intrinsics
-
-                IntrinsicSize.Min -> modifier.modifyMin(
-                    SimpleIntrinsicModifyIncomingScope,
-                    currentModification.crossAxisSize
-                )
-
-                else -> modifier.modifyMax(SimpleIntrinsicModifyIncomingScope, currentModification.crossAxisSize)
-            }
-            intrinsicModificationStack.add(currentModification)
-        }
-
-        // Modify outgoing intrinsics
-        var currentIntrinsics: Dp? = null
-        for (modification in intrinsicModificationStack.reversed()) {
-            if (currentIntrinsics == null) {
-                currentIntrinsics = when (modification.usedChildSize) {
-                    null -> Dp.Zero
-                    else -> measureScope.nodeIntrinsics(currentModification.crossAxisSize)
+            val scope = DelegateIntrinsicModifyIncomingScope(index, nodeIntrinsics, modifiers)
+            return with(modifier) {
+                if (intrinsicDimension == IntrinsicDimension.Width) {
+                    if (intrinsicSize == IntrinsicSize.Min) {
+                        scope.modifyMinIntrinsicWidth(crossAxisSize)
+                    } else {
+                        scope.modifyMaxIntrinsicWidth(crossAxisSize)
+                    }
+                } else {
+                    if (intrinsicSize == IntrinsicSize.Min) {
+                        scope.modifyMinIntrinsicHeight(crossAxisSize)
+                    } else {
+                        scope.modifyMaxIntrinsicHeight(crossAxisSize)
+                    }
                 }
             }
-            if (modification.intrinsicMeasure == null) continue
-            currentIntrinsics = modification.intrinsicMeasure!!(SimpleIntrinsicModifyOutgoingScope, currentIntrinsics)
         }
-        return currentIntrinsics ?: Dp.Zero
+        return crossAxisSize
+    }
+
+    private class DelegateIntrinsicModifyIncomingScope(
+        val startIndex: Int,
+        val measureNode: IntrinsicMeasureBlock,
+        val modifiers: List<ModifierNode>,
+    ) : IntrinsicModifyIncomingScope {
+
+        private fun getNextNode(): Pair<Int, LayoutModifierNode>? {
+            for (i in (startIndex + 1) until modifiers.size) {
+                val modifier = modifiers[i]
+                if (modifier !is LayoutModifierNode) continue
+                return i to modifier
+            }
+            return null
+        }
+
+        private fun childIntrinsic(modify: LayoutModifierNode.(scope: IntrinsicModifyIncomingScope) -> Dp): Dp? {
+            val nextModifier = getNextNode()
+            if (nextModifier != null) {
+                val scope = DelegateIntrinsicModifyIncomingScope(nextModifier.first, measureNode, modifiers)
+                return with(nextModifier.second) {
+                    modify(scope)
+                }
+            }
+            return null
+        }
+
+        override fun childIntrinsicMinWidth(height: Dp): Dp {
+            return childIntrinsic { scope ->
+                scope.modifyMinIntrinsicWidth(height)
+            } ?: measureNode(IntrinsicDimension.Width, IntrinsicSize.Min, height)
+        }
+
+        override fun childIntrinsicMinHeight(width: Dp): Dp {
+            return childIntrinsic { scope ->
+                scope.modifyMinIntrinsicHeight(width)
+            } ?: measureNode(IntrinsicDimension.Height, IntrinsicSize.Min, width)
+        }
+
+        override fun childIntrinsicMaxWidth(height: Dp): Dp {
+            return childIntrinsic { scope ->
+                scope.modifyMaxIntrinsicWidth(height)
+            } ?: measureNode(IntrinsicDimension.Width, IntrinsicSize.Max, height)
+        }
+
+        override fun childIntrinsicMaxHeight(width: Dp): Dp {
+            return childIntrinsic { scope ->
+                scope.modifyMaxIntrinsicHeight(width)
+            } ?: measureNode(IntrinsicDimension.Height, IntrinsicSize.Max, width)
+        }
+
     }
 
     override fun <T : ModifierNode> firstOfType(nodeType: KClass<T>): T? {

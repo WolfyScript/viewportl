@@ -26,21 +26,6 @@ interface ModifierFactory {
         bottom: Dp = Dp.Zero,
     ): ModifierData<*>
 
-    fun createSizeModifier(
-        minWidth: Dp = Dp.Unspecified,
-        minHeight: Dp = Dp.Unspecified,
-        maxWidth: Dp = Dp.Unspecified,
-        maxHeight: Dp = Dp.Unspecified,
-        enforceIncoming: Boolean = true
-    ): ModifierData<*>
-
-    fun createDefaultMinSizeModifier(
-        minWidth: Dp = Dp.Unspecified,
-        minHeight: Dp = Dp.Unspecified,
-    ) : ModifierData<*>
-
-    fun createFillModifier(direction: Direction, fraction: Float): ModifierData<*>
-
     fun createLayoutModifier(
         layoutFn: LayoutModifyScope.(Constraints) -> LayoutModification
     ): ModifierData<*>

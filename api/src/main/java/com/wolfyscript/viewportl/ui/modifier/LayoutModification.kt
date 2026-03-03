@@ -1,9 +1,7 @@
 package com.wolfyscript.viewportl.ui.modifier
 
-import com.wolfyscript.viewportl.ui.IntrinsicSize
 import com.wolfyscript.viewportl.ui.layout.Constraints
 import com.wolfyscript.viewportl.ui.layout.Dp
-import com.wolfyscript.viewportl.ui.layout.IntrinsicMeasurable
 import com.wolfyscript.viewportl.ui.layout.Offset
 
 /**
@@ -45,51 +43,5 @@ interface MeasureModification {
      * The additional offset relative to the previous Nodes origin
      */
     val offset: Offset
-
-}
-
-interface IntrinsicIncomingModification {
-
-    val crossAxisSize: Dp
-
-    val usedChildSize: IntrinsicSize?
-
-    val intrinsicMeasure: (IntrinsicModifyOutgoingScope.(childIntrinsics: Dp) -> Dp)?
-
-}
-
-interface IntrinsicOutgoingModification {
-
-    val intrinsicMainAxisSize: Dp
-
-    val intrinsicCrossAxisSize: Dp
-
-}
-
-internal class SimpleIntrinsicIncomingModification(
-    override val crossAxisSize: Dp,
-    override val usedChildSize: IntrinsicSize?,
-    override val intrinsicMeasure: (IntrinsicModifyOutgoingScope.(Dp) -> Dp)?,
-) : IntrinsicIncomingModification
-
-internal class IdentityIntrinsicIncomingModification(
-    override val crossAxisSize: Dp,
-) : IntrinsicIncomingModification {
-    override val usedChildSize: IntrinsicSize? = null
-    override val intrinsicMeasure: (IntrinsicModifyOutgoingScope.(childIntrinsics: Dp) -> Dp)? = null
-}
-
-internal class MeasurableIntrinsicOutgoingModification(
-    val measurable: IntrinsicMeasurable,
-    override val intrinsicMainAxisSize: Dp,
-    override val intrinsicCrossAxisSize: Dp
-) : IntrinsicOutgoingModification {
-
-}
-
-internal class SimpleIntrinsicOutgoingModification(
-    override val intrinsicMainAxisSize: Dp,
-    override val intrinsicCrossAxisSize: Dp
-) : IntrinsicOutgoingModification {
 
 }

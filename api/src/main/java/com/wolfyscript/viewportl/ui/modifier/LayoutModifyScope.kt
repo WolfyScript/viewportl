@@ -1,6 +1,5 @@
 package com.wolfyscript.viewportl.ui.modifier
 
-import com.wolfyscript.viewportl.ui.IntrinsicSize
 import com.wolfyscript.viewportl.ui.layout.Constraints
 import com.wolfyscript.viewportl.ui.layout.Dp
 import com.wolfyscript.viewportl.ui.layout.Offset
@@ -12,6 +11,14 @@ import com.wolfyscript.viewportl.ui.layout.Offset
  * [LayoutModification] after the last modifier.
  */
 interface LayoutModifyScope {
+
+    fun minIntrinsicWidth(height: Dp): Dp
+
+    fun minIntrinsicHeight(width: Dp): Dp
+
+    fun maxIntrinsicWidth(height: Dp): Dp
+
+    fun maxIntrinsicHeight(width: Dp): Dp
 
     fun modifyLayout(
         modifiedConstraints: Constraints,
@@ -40,70 +47,12 @@ interface MeasureModifyScope {
  */
 interface IntrinsicModifyIncomingScope {
 
-    /**
-     * Modifies the incoming cross axis size (width/height) and specifies the [child size][usedChildSize] used
-     * to calculate the final [outgoing] intrinsic size.
-     */
-    fun modify(
-        modifiedCrossAxisSize: Dp,
-        usedChildSize: IntrinsicSize,
-        outgoing: IntrinsicModifyOutgoingScope.(childIntrinsic: Dp) -> Dp,
-    ): IntrinsicIncomingModification
+    fun childIntrinsicMinWidth(height: Dp): Dp
 
-    /**
-     * Modifies the incoming cross axis size (width/height), while skipping
-     * the child size calculation.
-     * Instead, it returns a custom [outgoing] intrinsic size independent of the child size.
-     *
-     */
-    fun custom(
-        modifiedCrossAxisSize: Dp,
-        outgoing: IntrinsicModifyOutgoingScope.(_: Dp) -> Dp,
-    ): IntrinsicIncomingModification
+    fun childIntrinsicMinHeight(width: Dp): Dp
 
-    /**
-     * Modifies the incoming cross axis size (width/height), selects the [child size][usedChildSize]
-     * and passes the outgoing child intrinsic through without modifying it.
-     */
-    fun passthrough(
-        modifiedCrossAxisSize: Dp,
-        usedChildSize: IntrinsicSize,
-    ): IntrinsicIncomingModification
+    fun childIntrinsicMaxWidth(height: Dp): Dp
 
-}
-
-interface IntrinsicModifyOutgoingScope
-
-internal object SimpleIntrinsicModifyOutgoingScope : IntrinsicModifyOutgoingScope
-
-internal object SimpleIntrinsicModifyIncomingScope : IntrinsicModifyIncomingScope {
-
-    override fun modify(
-        modifiedCrossAxisSize: Dp,
-        usedChildSize: IntrinsicSize,
-        outgoing: IntrinsicModifyOutgoingScope.(childModification: Dp) -> Dp,
-    ): IntrinsicIncomingModification = SimpleIntrinsicIncomingModification(
-        modifiedCrossAxisSize,
-        usedChildSize,
-        outgoing
-    )
-
-    override fun custom(
-        modifiedCrossAxisSize: Dp,
-        outgoing: IntrinsicModifyOutgoingScope.(childIntrinsic: Dp) -> Dp,
-    ): IntrinsicIncomingModification = SimpleIntrinsicIncomingModification(
-        modifiedCrossAxisSize,
-        null,
-        outgoing
-    )
-
-    override fun passthrough(
-        modifiedCrossAxisSize: Dp,
-        usedChildSize: IntrinsicSize,
-    ): IntrinsicIncomingModification = SimpleIntrinsicIncomingModification(
-        modifiedCrossAxisSize,
-        usedChildSize,
-        null
-    )
+    fun childIntrinsicMaxHeight(width: Dp): Dp
 
 }

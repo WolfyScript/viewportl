@@ -1,6 +1,5 @@
 package com.wolfyscript.viewportl.ui.modifier
 
-import com.wolfyscript.viewportl.ui.IntrinsicSize
 import com.wolfyscript.viewportl.ui.layout.Constraints
 import com.wolfyscript.viewportl.ui.layout.Dp
 
@@ -19,20 +18,20 @@ interface LayoutModifierNode : ModifierNode {
      */
     fun LayoutModifyScope.modify(constraints: Constraints): LayoutModification
 
-    fun IntrinsicModifyIncomingScope.modifyMinIntrinsicWidth(height: Dp): IntrinsicIncomingModification {
-        return passthrough(height, IntrinsicSize.Min)
+    fun IntrinsicModifyIncomingScope.modifyMinIntrinsicWidth(height: Dp): Dp {
+        return childIntrinsicMinWidth(height)
     }
 
-    fun IntrinsicModifyIncomingScope.modifyMinIntrinsicHeight(width: Dp): IntrinsicIncomingModification {
-        return passthrough(width, IntrinsicSize.Min)
+    fun IntrinsicModifyIncomingScope.modifyMinIntrinsicHeight(width: Dp): Dp {
+        return childIntrinsicMinHeight(width)
     }
 
-    fun IntrinsicModifyIncomingScope.modifyMaxIntrinsicWidth(height: Dp): IntrinsicIncomingModification {
-        return passthrough(height, IntrinsicSize.Max)
+    fun IntrinsicModifyIncomingScope.modifyMaxIntrinsicWidth(height: Dp): Dp {
+        return childIntrinsicMaxWidth(height)
     }
 
-    fun IntrinsicModifyIncomingScope.modifyMaxIntrinsicHeight(width: Dp): IntrinsicIncomingModification {
-        return passthrough(width, IntrinsicSize.Max)
+    fun IntrinsicModifyIncomingScope.modifyMaxIntrinsicHeight(width: Dp): Dp {
+        return childIntrinsicMaxHeight(width)
     }
 
 }

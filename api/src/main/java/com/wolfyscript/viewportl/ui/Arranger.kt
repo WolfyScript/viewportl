@@ -1,7 +1,9 @@
 package com.wolfyscript.viewportl.ui
 
 import com.wolfyscript.viewportl.ui.layout.*
-import com.wolfyscript.viewportl.ui.modifier.*
+import com.wolfyscript.viewportl.ui.modifier.IntrinsicMeasureBlock
+import com.wolfyscript.viewportl.ui.modifier.ScopeDataModifierNode
+import com.wolfyscript.viewportl.ui.modifier.SimpleMeasureModification
 
 class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
 
@@ -42,7 +44,7 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
 
     override fun measure(constraints: Constraints): Placeable {
         val modification = node.modifierStack.modifyMeasure(constraints)
-        return performMeasurement(constraints) {
+        return measureSelf(constraints) {
             val measureScope = SimpleMeasureScope(layoutDirection)
             with(node.measurePolicy) {
                 measureScope.measure(childMeasurables, modification.constraints)
@@ -50,7 +52,7 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
         }
     }
 
-    private fun performMeasurement(constraints: Constraints, fn: () -> Measurements): Placeable {
+    private fun measureSelf(constraints: Constraints, fn: () -> Measurements): Placeable {
         incomingConstraints = constraints
         measurements = fn()
         return this
@@ -101,69 +103,60 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
         node.modifierStack.onMeasureChange()
     }
 
-    private val modifyMinIntrinsicWidth: LayoutModifierNode.(IntrinsicModifyIncomingScope, Dp) -> IntrinsicIncomingModification =
-        { scope, cAS -> scope.modifyMinIntrinsicWidth(cAS) }
-    private val modifyMaxIntrinsicWidth: LayoutModifierNode.(IntrinsicModifyIncomingScope, Dp) -> IntrinsicIncomingModification =
-        { scope, cAS -> scope.modifyMaxIntrinsicWidth(cAS) }
-    private val modifyMinIntrinsicHeight: LayoutModifierNode.(IntrinsicModifyIncomingScope, Dp) -> IntrinsicIncomingModification =
-        { scope, cAS -> scope.modifyMinIntrinsicHeight(cAS) }
-    private val modifyMaxIntrinsicHeight: LayoutModifierNode.(IntrinsicModifyIncomingScope, Dp) -> IntrinsicIncomingModification =
-        { scope, cAS -> scope.modifyMaxIntrinsicHeight(cAS) }
+    internal val measureIntrinsics =
+        IntrinsicMeasureBlock { dimension, size, crossAxisSize ->
+            val scope = SimpleMeasureScope(layoutDirection)
+            with(node.measurePolicy) {
+                if (dimension == IntrinsicDimension.Width) {
+                    if (size == IntrinsicSize.Min) {
+                        scope.minIntrinsicWidth(childMeasurables, crossAxisSize)
+                    } else {
+                        scope.maxIntrinsicWidth(childMeasurables, crossAxisSize)
+                    }
+                } else {
+                    if (size == IntrinsicSize.Min) {
+                        scope.minIntrinsicHeight(childMeasurables, crossAxisSize)
+                    } else {
+                        scope.maxIntrinsicHeight(childMeasurables, crossAxisSize)
+                    }
+                }
+            }
+        }
 
     override fun minIntrinsicWidth(height: Dp): Dp {
         return node.modifierStack.modifyIntrinsic(
             IntrinsicSize.Min,
-            layoutDirection,
+            IntrinsicDimension.Width,
             height,
-            modifyMinIntrinsicWidth,
-            modifyMaxIntrinsicWidth,
-        ) { crossAxisSize ->
-            with(node.measurePolicy) {
-                minIntrinsicWidth(childMeasurables, crossAxisSize)
-            }
-        }
+            measureIntrinsics
+        )
     }
 
     override fun maxIntrinsicWidth(height: Dp): Dp {
         return node.modifierStack.modifyIntrinsic(
             IntrinsicSize.Max,
-            layoutDirection,
+            IntrinsicDimension.Width,
             height,
-            modifyMinIntrinsicWidth,
-            modifyMaxIntrinsicWidth,
-        ) { crossAxisSize ->
-            with(node.measurePolicy) {
-                maxIntrinsicWidth(childMeasurables, crossAxisSize)
-            }
-        }
+            measureIntrinsics
+        )
     }
 
     override fun minIntrinsicHeight(width: Dp): Dp {
         return node.modifierStack.modifyIntrinsic(
             IntrinsicSize.Min,
-            layoutDirection,
+            IntrinsicDimension.Height,
             width,
-            modifyMinIntrinsicHeight,
-            modifyMaxIntrinsicHeight,
-        ) { crossAxisSize ->
-            with(node.measurePolicy) {
-                minIntrinsicHeight(childMeasurables, crossAxisSize)
-            }
-        }
+            measureIntrinsics
+        )
     }
 
     override fun maxIntrinsicHeight(width: Dp): Dp {
         return node.modifierStack.modifyIntrinsic(
             IntrinsicSize.Max,
-            layoutDirection,
+            IntrinsicDimension.Height,
             width,
-            modifyMinIntrinsicHeight,
-            modifyMaxIntrinsicHeight,
-        ) { crossAxisSize ->
-            with(node.measurePolicy) {
-                maxIntrinsicHeight(childMeasurables, crossAxisSize)
-            }
-        }
+            measureIntrinsics
+        )
     }
 
 }

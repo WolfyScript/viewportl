@@ -1,112 +1,48 @@
 package com.wolfyscript.viewportl.ui.modifier
 
-import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.viewportl.ui.layout.Constraints
-import com.wolfyscript.viewportl.ui.layout.Direction
-import com.wolfyscript.viewportl.ui.layout.Dp
-import com.wolfyscript.viewportl.ui.layout.coerceIn
-import com.wolfyscript.viewportl.ui.layout.constrain
-import com.wolfyscript.viewportl.ui.layout.dp
-import com.wolfyscript.viewportl.viewportl
+import com.wolfyscript.viewportl.ui.layout.*
 
-fun ModifierStackBuilder.width(width: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minWidth = width,
-        maxWidth = width
-    )
-)
+fun ModifierStackBuilder.width(width: Dp) = push(SizeModifier(minWidth = width, maxWidth = width))
 
-fun ModifierStackBuilder.height(height: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minHeight = height,
-        maxHeight = height
-    )
-)
+fun ModifierStackBuilder.height(height: Dp) = push(SizeModifier(minHeight = height, maxHeight = height))
 
 fun ModifierStackBuilder.size(size: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minWidth = size,
-        minHeight = size,
-        maxWidth = size,
-        maxHeight = size
-    )
+    SizeModifier(minWidth = size, minHeight = size, maxWidth = size, maxHeight = size)
 )
 
 fun ModifierStackBuilder.size(width: Dp, height: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minWidth = width,
-        maxWidth = width,
-        minHeight = height,
-        maxHeight = height
-    )
+    SizeModifier(minWidth = width, maxWidth = width, minHeight = height, maxHeight = height)
 )
 
-fun ModifierStackBuilder.widthIn(min: Dp, max: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minWidth = min,
-        maxWidth = max,
-    )
-)
+fun ModifierStackBuilder.widthIn(min: Dp, max: Dp) = push(SizeModifier(minWidth = min, maxWidth = max))
 
-fun ModifierStackBuilder.heightIn(min: Dp, max: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minHeight = min,
-        maxHeight = max,
-    )
-)
+fun ModifierStackBuilder.heightIn(min: Dp, max: Dp) = push(SizeModifier(minHeight = min, maxHeight = max))
 
-fun ModifierStackBuilder.sizeIn(
-    minWidth: Dp,
-    minHeight: Dp,
-    maxWidth: Dp,
-    maxHeight: Dp,
-) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minWidth = minWidth,
-        minHeight = minHeight,
-        maxWidth = maxWidth,
-        maxHeight = maxHeight,
-    )
+fun ModifierStackBuilder.sizeIn(minWidth: Dp, minHeight: Dp, maxWidth: Dp, maxHeight: Dp) = push(
+    SizeModifier(minWidth = minWidth, minHeight = minHeight, maxWidth = maxWidth, maxHeight = maxHeight)
 )
 
 fun ModifierStackBuilder.requireWidth(width: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minWidth = width,
-        maxWidth = width,
-        enforceIncoming = false
-    )
+    SizeModifier(minWidth = width, maxWidth = width, enforceIncoming = false)
 )
 
 fun ModifierStackBuilder.requireHeight(height: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minHeight = height,
-        maxHeight = height,
-        enforceIncoming = false
-    )
+    SizeModifier(minHeight = height, maxHeight = height, enforceIncoming = false)
 )
 
 fun ModifierStackBuilder.requireSize(size: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minWidth = size,
-        minHeight = size,
-        maxWidth = size,
-        maxHeight = size,
-        enforceIncoming = false
-    )
+    SizeModifier(minWidth = size, minHeight = size, maxWidth = size, maxHeight = size, enforceIncoming = false)
 )
 
 fun ModifierStackBuilder.requireSize(width: Dp, height: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minWidth = width,
-        maxWidth = width,
-        minHeight = height,
-        maxHeight = height,
+    SizeModifier(
+        minWidth = width, maxWidth = width, minHeight = height, maxHeight = height,
         enforceIncoming = false
     )
 )
 
 fun ModifierStackBuilder.requireWidthIn(min: Dp, max: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
+    SizeModifier(
         minWidth = min,
         maxWidth = max,
         enforceIncoming = false
@@ -114,11 +50,7 @@ fun ModifierStackBuilder.requireWidthIn(min: Dp, max: Dp) = push(
 )
 
 fun ModifierStackBuilder.requireHeightIn(min: Dp, max: Dp) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minHeight = min,
-        maxHeight = max,
-        enforceIncoming = false
-    )
+    SizeModifier(minHeight = min, maxHeight = max, enforceIncoming = false)
 )
 
 fun ModifierStackBuilder.requireSizeIn(
@@ -127,11 +59,8 @@ fun ModifierStackBuilder.requireSizeIn(
     maxWidth: Dp,
     maxHeight: Dp,
 ) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSizeModifier(
-        minWidth = minWidth,
-        minHeight = minHeight,
-        maxWidth = maxWidth,
-        maxHeight = maxHeight,
+    SizeModifier(
+        minWidth = minWidth, minHeight = minHeight, maxWidth = maxWidth, maxHeight = maxHeight,
         enforceIncoming = false
     )
 )
@@ -141,27 +70,27 @@ fun ModifierStackBuilder.requireSizeIn(
  * that applies when the incoming [minWidth][com.wolfyscript.viewportl.ui.layout.Constraints.minWidth]/[minHeight][com.wolfyscript.viewportl.ui.layout.Constraints.minHeight] is `0`.
  */
 fun ModifierStackBuilder.defaultMinSize(minWidth: Dp = Dp.Unspecified, minHeight: Dp = Dp.Unspecified) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createDefaultMinSizeModifier(minWidth, minHeight)
+    DefaultMinSizeModifier(minWidth, minHeight)
 )
 
 fun ModifierStackBuilder.fillMaxWidth(fraction: Float = 1f) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createFillModifier(Direction.Horizontal, fraction)
+    FillModifierData(Direction.Horizontal, fraction)
 )
 
 fun ModifierStackBuilder.fillMaxHeight(fraction: Float = 1f) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createFillModifier(Direction.Vertical, fraction)
+    FillModifierData(Direction.Vertical, fraction)
 )
 
 fun ModifierStackBuilder.fillMaxSize(fraction: Float = 1f) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createFillModifier(Direction.Both, fraction)
+    FillModifierData(Direction.Both, fraction)
 )
 
-class SizeModifier(
+private class SizeModifier(
     val minWidth: Dp = Dp.Unspecified,
     val minHeight: Dp = Dp.Unspecified,
     val maxWidth: Dp = Dp.Unspecified,
     val maxHeight: Dp = Dp.Unspecified,
-    val enforceIncoming: Boolean,
+    val enforceIncoming: Boolean = true,
 ) : ModifierData<SizeModifierNode> {
 
     override fun create(): SizeModifierNode {
@@ -176,7 +105,7 @@ class SizeModifier(
 
 }
 
-class SizeModifierNode(
+private class SizeModifierNode(
     val minWidth: Dp = Dp.Unspecified,
     val minHeight: Dp = Dp.Unspecified,
     val maxWidth: Dp = Dp.Unspecified,
@@ -263,7 +192,7 @@ class SizeModifierNode(
 
 }
 
-class DefaultMinSizeModifier(
+private class DefaultMinSizeModifier(
     val minWidth: Dp = Dp.Unspecified,
     val minHeight: Dp = Dp.Unspecified,
 ) : ModifierData<DefaultMinSizeModifierNode> {
@@ -279,9 +208,9 @@ class DefaultMinSizeModifier(
 
 }
 
-class DefaultMinSizeModifierNode(
-    internal var minWidth: Dp = Dp.Unspecified,
-    internal var minHeight: Dp = Dp.Unspecified,
+private class DefaultMinSizeModifierNode(
+    var minWidth: Dp = Dp.Unspecified,
+    var minHeight: Dp = Dp.Unspecified,
 ) : ModifierNode, LayoutModifierNode {
 
     override fun onAttach() {}
@@ -318,7 +247,7 @@ class DefaultMinSizeModifierNode(
 
 }
 
-class FillModifierData(
+private class FillModifierData(
     val direction: Direction,
     val fraction: Float,
 ) : ModifierData<FillModifierNode> {
@@ -334,7 +263,7 @@ class FillModifierData(
 
 }
 
-class FillModifierNode(
+private class FillModifierNode(
     var direction: Direction,
     var fraction: Float,
 ) : LayoutModifierNode {
