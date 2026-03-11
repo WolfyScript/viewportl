@@ -46,6 +46,9 @@ repositories {
 
 kotlin {
     jvmToolchain(21)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexplicit-backing-fields")
+    }
 }
 
 // Make sure all tasks which produce archives (jar, sources jar, javadoc jar, etc) produce more consistent output
