@@ -55,10 +55,10 @@ internal class RowMeasurePolicy(
     ): Measurements = measure(
         this,
         measurables,
-        constraints.minWidth,
-        constraints.minHeight,
-        constraints.maxWidth,
-        constraints.maxHeight
+        mainAxisMin = constraints.minWidth,
+        crossAxisMin = constraints.minHeight,
+        mainAxisMax = constraints.maxWidth,
+        crossAxisMax = constraints.maxHeight
     )
 
     override fun Placeable.mainAxisSize(): Dp = width

@@ -40,6 +40,7 @@ internal interface LayoutAxisMeasurePolicy {
     fun measure(
         measureScope: MeasureScope,
         measurables: List<Measurable>,
+        placeables: Array<Placeable?> = arrayOfNulls(measurables.size),
         mainAxisMin: Dp,
         crossAxisMin: Dp,
         mainAxisMax: Dp,
