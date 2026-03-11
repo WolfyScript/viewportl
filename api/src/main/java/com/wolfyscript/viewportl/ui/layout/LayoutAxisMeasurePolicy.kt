@@ -10,6 +10,8 @@ import com.wolfyscript.viewportl.ui.modifier.RowColumnScopeData
  */
 internal interface LayoutAxisMeasurePolicy {
 
+    val orientation: LayoutOrientation
+
     fun Placeable.mainAxisSize(): Dp
 
     fun Placeable.crossAxisSize(): Dp

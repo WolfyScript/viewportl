@@ -8,6 +8,7 @@ import com.wolfyscript.viewportl.ui.layout.Constraints
 import com.wolfyscript.viewportl.ui.layout.Placeable
 import com.wolfyscript.viewportl.ui.layout.Dp
 import com.wolfyscript.viewportl.ui.layout.LayoutAxisMeasurePolicy
+import com.wolfyscript.viewportl.ui.layout.LayoutOrientation
 import com.wolfyscript.viewportl.ui.layout.Measurable
 import com.wolfyscript.viewportl.ui.layout.MeasureScope
 import com.wolfyscript.viewportl.ui.layout.Measurements
@@ -57,16 +58,18 @@ internal class ColumnMeasurePolicy(
     val horizontalAlignment: Alignment.Horizontal,
 ) : MeasurePolicy, LayoutAxisMeasurePolicy {
 
+    override val orientation: LayoutOrientation = LayoutOrientation.Vertical
+
     override fun MeasureScope.measure(
         measurables: List<Measurable>,
         constraints: Constraints,
     ): Measurements = measure(
         this,
         measurables,
-        constraints.minHeight,
-        constraints.minWidth,
-        constraints.maxHeight,
-        constraints.maxWidth
+        mainAxisMin = constraints.minHeight,
+        crossAxisMin = constraints.minWidth,
+        mainAxisMax = constraints.maxHeight,
+        crossAxisMax = constraints.maxWidth
     )
 
     override fun Placeable.mainAxisSize(): Dp = height

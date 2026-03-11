@@ -2,18 +2,10 @@ package com.wolfyscript.viewportl.foundation
 
 import androidx.compose.runtime.Composable
 import com.wolfyscript.viewportl.ui.MeasurePolicy
+import com.wolfyscript.viewportl.ui.layout.*
 import com.wolfyscript.viewportl.ui.modifier.LayoutWeightModifier
 import com.wolfyscript.viewportl.ui.modifier.Modifier
 import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder
-import com.wolfyscript.viewportl.ui.layout.Alignment
-import com.wolfyscript.viewportl.ui.layout.Arrangement
-import com.wolfyscript.viewportl.ui.layout.Constraints
-import com.wolfyscript.viewportl.ui.layout.Dp
-import com.wolfyscript.viewportl.ui.layout.LayoutAxisMeasurePolicy
-import com.wolfyscript.viewportl.ui.layout.Measurable
-import com.wolfyscript.viewportl.ui.layout.MeasureScope
-import com.wolfyscript.viewportl.ui.layout.Measurements
-import com.wolfyscript.viewportl.ui.layout.Placeable
 
 @Composable
 fun Row(
@@ -54,6 +46,8 @@ internal class RowMeasurePolicy(
     val horizontalArrangement: Arrangement.Horizontal,
     val verticalAlignment: Alignment.Vertical,
 ) : MeasurePolicy, LayoutAxisMeasurePolicy {
+
+    override val orientation: LayoutOrientation = LayoutOrientation.Horizontal
 
     override fun MeasureScope.measure(
         measurables: List<Measurable>,
