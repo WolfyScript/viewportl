@@ -1,6 +1,6 @@
 package com.wolfyscript.viewportl.ui.layout
 
-enum class Direction {
+enum class FillDirection {
 
     Vertical,
     Horizontal,

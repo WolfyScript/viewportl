@@ -74,15 +74,15 @@ fun ModifierStackBuilder.defaultMinSize(minWidth: Dp = Dp.Unspecified, minHeight
 )
 
 fun ModifierStackBuilder.fillMaxWidth(fraction: Float = 1f) = push(
-    FillModifierData(Direction.Horizontal, fraction)
+    FillModifierData(FillDirection.Horizontal, fraction)
 )
 
 fun ModifierStackBuilder.fillMaxHeight(fraction: Float = 1f) = push(
-    FillModifierData(Direction.Vertical, fraction)
+    FillModifierData(FillDirection.Vertical, fraction)
 )
 
 fun ModifierStackBuilder.fillMaxSize(fraction: Float = 1f) = push(
-    FillModifierData(Direction.Both, fraction)
+    FillModifierData(FillDirection.Both, fraction)
 )
 
 private class SizeModifier(
@@ -248,7 +248,7 @@ private class DefaultMinSizeModifierNode(
 }
 
 private class FillModifierData(
-    val direction: Direction,
+    val direction: FillDirection,
     val fraction: Float,
 ) : ModifierData<FillModifierNode> {
 
@@ -264,7 +264,7 @@ private class FillModifierData(
 }
 
 private class FillModifierNode(
-    var direction: Direction,
+    var direction: FillDirection,
     var fraction: Float,
 ) : LayoutModifierNode {
 
