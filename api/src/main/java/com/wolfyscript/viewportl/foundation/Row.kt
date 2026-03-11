@@ -102,7 +102,7 @@ internal class RowMeasurePolicy(
     ): Measurements = with(measureScope) {
         layout(mainAxisSpace, crossAxisSpace) {
             placeables.forEachIndexed { index, placeable ->
-                placeable?.placeAt(
+                placeable?.place(
                     mainAxisPositions[index],
                     verticalAlignment.align(placeable.height, crossAxisSpace)
                 )

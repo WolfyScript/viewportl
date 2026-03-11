@@ -1,6 +1,5 @@
 package com.wolfyscript.viewportl.ui
 
-import com.wolfyscript.viewportl.ui.MeasurePolicy
 import com.wolfyscript.viewportl.ui.layout.Constraints
 import com.wolfyscript.viewportl.ui.layout.Dp
 import com.wolfyscript.viewportl.ui.layout.Measurable
@@ -25,7 +24,7 @@ object RootMeasurePolicy : MeasurePolicy {
                 val placeable = measurables.first().measure(constraints)
 
                 layout(constraints.constrainWidth(placeable.width), constraints.constrainHeight(placeable.height)) {
-                    placeable.placeAt(Dp.Zero, Dp.Zero)
+                    placeable.place(Dp.Zero, Dp.Zero)
                 }
             }
 
@@ -41,7 +40,7 @@ object RootMeasurePolicy : MeasurePolicy {
 
                 layout(constraints.constrainWidth(maxWidth), constraints.constrainHeight(maxHeight)) {
                     for (placeable in placeables) {
-                        placeable.placeAt(Dp.Zero, Dp.Zero)
+                        placeable.place(Dp.Zero, Dp.Zero)
                     }
                 }
             }

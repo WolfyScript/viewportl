@@ -58,7 +58,7 @@ class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
         return this
     }
 
-    override fun placeAt(
+    override fun placeNoOffset(
         x: Dp,
         y: Dp,
     ) {

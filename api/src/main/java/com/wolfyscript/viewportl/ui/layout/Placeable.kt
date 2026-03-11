@@ -6,6 +6,6 @@ interface Placeable {
 
     val height: Dp
 
-    fun placeAt(x: Dp, y: Dp)
+    fun placeNoOffset(x: Dp, y: Dp)
 
 }

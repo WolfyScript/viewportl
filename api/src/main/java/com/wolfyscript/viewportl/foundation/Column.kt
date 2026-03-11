@@ -103,7 +103,7 @@ internal class ColumnMeasurePolicy(
     ): Measurements = with(measureScope) {
         layout(crossAxisSpace, mainAxisSpace) {
             placeables.forEachIndexed { index, placeable ->
-                placeable?.placeAt(
+                placeable?.place(
                     horizontalAlignment.align(placeable.width, crossAxisSpace, layoutDirection),
                     mainAxisPositions[index]
                 )
