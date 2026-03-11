@@ -80,5 +80,42 @@ fun Constraints.constrain(otherConstraints: Constraints): Constraints {
     )
 }
 
+class UndirectedConstraints(
+    val mainAxisMin: Dp = 0.dp,
+    val mainAxisMax: Dp = 0.dp,
+    val crossAxisMin: Dp = 0.dp,
+    val crossAxisMax: Dp = 0.dp,
+) {
+
+    constructor(
+        constraints: Constraints,
+        orientation: LayoutOrientation
+    ) : this(
+        if (orientation == LayoutOrientation.Horizontal) constraints.minWidth else constraints.minHeight,
+        if (orientation == LayoutOrientation.Horizontal) constraints.maxWidth else constraints.maxHeight,
+        if (orientation == LayoutOrientation.Horizontal) constraints.minHeight else constraints.maxWidth,
+        if (orientation == LayoutOrientation.Horizontal) constraints.maxHeight else constraints.maxWidth
+    )
+
+    fun resolve(orientation: LayoutOrientation): Constraints {
+        return if (orientation == LayoutOrientation.Horizontal) {
+            Constraints(
+                minWidth = mainAxisMin,
+                maxWidth = mainAxisMax,
+                minHeight = crossAxisMin,
+                maxHeight = crossAxisMax,
+            )
+        } else {
+            Constraints(
+                minWidth = crossAxisMin,
+                maxWidth = crossAxisMax,
+                minHeight = mainAxisMin,
+                maxHeight = mainAxisMax,
+            )
+        }
+    }
+
+
+}
 
 
