@@ -2,7 +2,6 @@ package com.wolfyscript.viewportl.gui.factories
 
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackSnapshot
 import com.wolfyscript.viewportl.ui.layout.Constraints
-import com.wolfyscript.viewportl.ui.layout.Direction
 import com.wolfyscript.viewportl.ui.layout.Dp
 import com.wolfyscript.viewportl.ui.modifier.InventoryDrawScope
 import com.wolfyscript.viewportl.ui.modifier.LayoutModification
