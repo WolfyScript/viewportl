@@ -245,6 +245,181 @@ internal class FlowMeasurePolicy(
 
     }
 
+    override fun IntrinsicMeasureScope.minIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Dp): Dp {
+        return if (lineMeasurePolicy.orientation == LayoutOrientation.Horizontal) {
+            intrinsicMainAxisSizeMin(measurables, height)
+        } else {
+            intrinsicCrossAxisSize(measurables, height)
+        }
+    }
+
+    override fun IntrinsicMeasureScope.minIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Dp): Dp {
+        return if (lineMeasurePolicy.orientation == LayoutOrientation.Horizontal) {
+            intrinsicCrossAxisSize(measurables, width)
+        } else {
+            intrinsicMainAxisSizeMin(measurables, width)
+        }
+    }
+
+    override fun IntrinsicMeasureScope.maxIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Dp): Dp {
+        return if (lineMeasurePolicy.orientation == LayoutOrientation.Horizontal) {
+            intrinsicMainAxisSizeMax(measurables, height)
+        } else {
+            intrinsicCrossAxisSize(measurables, height)
+        }
+    }
+
+    override fun IntrinsicMeasureScope.maxIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Dp): Dp {
+        return if (lineMeasurePolicy.orientation == LayoutOrientation.Horizontal) {
+            intrinsicCrossAxisSize(measurables, width)
+        } else {
+            intrinsicMainAxisSizeMax(measurables, width)
+        }
+    }
+
+    private fun intrinsicMainAxisSizeMin(
+        items: List<IntrinsicMeasurable>,
+        availableCrossAxisSize: Dp,
+    ): Dp = intrinsicMainAxisSizeMin(
+        items,
+        { _, size -> mainAxisIntrinsicSize(lineMeasurePolicy.orientation, IntrinsicSize.Min, size) },
+        { _, size -> crossAxisIntrinsicSize(lineMeasurePolicy.orientation, IntrinsicSize.Min, size) },
+        availableCrossAxisSize,
+    )
+
+    /**
+     *
+     */
+    private fun intrinsicMainAxisSizeMin(
+        items: List<IntrinsicMeasurable>,
+        itemMainAxisSize: IntrinsicMeasurable.(index: Int, crossAxisSize: Dp) -> Dp,
+        itemCrossAxisSize: IntrinsicMeasurable.(index: Int, mainAxisSize: Dp) -> Dp,
+        availableCrossAxisSize: Dp,
+    ): Dp {
+        if (items.isEmpty()) {
+            return Dp.Zero
+        }
+
+        val mainAxisSizes = Array(items.size) { Dp.Zero }
+        val crossAxisSizes = Array(items.size) { Dp.Zero }
+
+        for (i in items.indices) {
+            val item = items[i]
+            val mainAxisSize = item.itemMainAxisSize(i, availableCrossAxisSize)
+            mainAxisSizes[i] = mainAxisSize
+            crossAxisSizes[i] = item.itemCrossAxisSize(i, mainAxisSize)
+        }
+
+        // Main Axis size range that can fit all items
+        val maxMainAxisSize = mainAxisSizes.reduce { acc, dp -> acc + dp }
+        val minMainAxisSize = mainAxisSizes.maxOf { it }
+
+        var currentMainAxisSize = maxMainAxisSize
+        var currentCrossAxisSize = crossAxisSizes.maxOf { it }
+
+        var low = minMainAxisSize
+        var high = maxMainAxisSize
+        while (low <= high) {
+            if (currentCrossAxisSize == availableCrossAxisSize) {
+                return currentMainAxisSize
+            }
+            val mid = (low + high) / 2
+            currentMainAxisSize = mid
+
+            val updatedCrossAxis = intrinsicCrossAxisSize(
+                items,
+                { index, _ -> mainAxisSizes[index] },
+                { index, _ -> crossAxisSizes[index] },
+                currentMainAxisSize,
+            )
+
+            currentCrossAxisSize = updatedCrossAxis.first
+            val itemsShown = updatedCrossAxis.second
+
+            if (currentCrossAxisSize > availableCrossAxisSize || itemsShown < maxMainAxisItems) {
+                low = mid + 1.dp
+                if (low > high) {
+                    return low
+                }
+            } else if (currentCrossAxisSize < availableCrossAxisSize) {
+                high = mid - 1.dp
+            } else {
+                return currentMainAxisSize
+            }
+        }
+        return currentMainAxisSize
+    }
+
+    private fun intrinsicMainAxisSizeMax(
+        items: List<IntrinsicMeasurable>,
+        availableCrossAxisSize: Dp,
+    ): Dp = intrinsicMainAxisSizeMax(
+        items,
+        {_, size -> mainAxisIntrinsicSize(lineMeasurePolicy.orientation, IntrinsicSize.Max, size) },
+        availableCrossAxisSize
+    )
+
+    private fun intrinsicMainAxisSizeMax(
+        items: List<IntrinsicMeasurable>,
+        itemMainAxisSize: IntrinsicMeasurable.(index: Int, crossAxisSize: Dp) -> Dp,
+        availableCrossAxisSize: Dp,
+    ): Dp {
+        var maxMainAxisSize = Dp.Zero
+        var lineMainAxisSize = Dp.Zero
+        var lastLineBreak = 0
+        for ((index, item) in items.withIndex()) {
+            lineMainAxisSize += item.itemMainAxisSize(index, availableCrossAxisSize)
+            if (index + 1 - lastLineBreak >= maxMainAxisItems || index + 1 >= items.size) {
+                lastLineBreak = index
+                maxMainAxisSize = max(maxMainAxisSize, lineMainAxisSize)
+            }
+        }
+        return maxMainAxisSize
+    }
+
+    private fun intrinsicCrossAxisSize(
+        items: List<IntrinsicMeasurable>,
+        availableMainAxisSize: Dp,
+    ): Dp = intrinsicCrossAxisSize(
+            items,
+            { _, size -> crossAxisIntrinsicSize(lineMeasurePolicy.orientation, IntrinsicSize.Min, size) },
+            { _, size -> crossAxisIntrinsicSize(lineMeasurePolicy.orientation, IntrinsicSize.Min, size) },
+            availableMainAxisSize,
+        ).first
+
+    private fun intrinsicCrossAxisSize(
+        items: List<IntrinsicMeasurable>,
+        itemMainAxisSize: IntrinsicMeasurable.(index: Int, crossAxisSize: Dp) -> Dp,
+        itemCrossAxisSize: IntrinsicMeasurable.(index: Int, mainAxisSize: Dp) -> Dp,
+        availableMainAxisSize: Dp,
+    ) : Pair<Dp, Int> {
+        if (items.isEmpty()) {
+            return Dp.Zero to 0
+        }
+
+        val accumulator = FlowLineAccumulator(
+            availableMainAxisSize,
+            Dp.Infinity,
+            maxLines,
+            maxMainAxisItems
+        )
+
+        var shownItems = 0
+        for (i in items.indices) {
+            val item = items[i]
+            val itemCrossAxisSize = item.itemCrossAxisSize(i, availableMainAxisSize)
+            val itemMainAxisSize = item.itemMainAxisSize(i, itemCrossAxisSize)
+
+            if (!accumulator.tryAppend(itemMainAxisSize, itemCrossAxisSize)) {
+                break
+            }
+
+            ++shownItems
+        }
+
+        return accumulator.totalCrossAxisSize to shownItems
+    }
+
 }
 
 internal class FlowLineAccumulator(
@@ -258,7 +433,8 @@ internal class FlowLineAccumulator(
     val lineBreakIndices: List<Int> field = mutableListOf()
 
     val crossAxisSizes: List<Dp> field = mutableListOf<Dp>()
-    private var totalCrossAxisSize = Dp.Zero
+    var totalCrossAxisSize = Dp.Zero
+        private set
 
     var mainAxisSize = Dp.Zero
         private set
@@ -284,8 +460,6 @@ internal class FlowLineAccumulator(
     }
 
     fun tryAppend(
-        measurable: Measurable,
-        placeable: Placeable?,
         itemMainAxisSize: Dp,
         itemCrossAxisSize: Dp,
     ): Boolean {
@@ -304,14 +478,26 @@ internal class FlowLineAccumulator(
             if (!breakLine()) {
                 return false
             }
-            return tryAppend(measurable, placeable, itemMainAxisSize, itemCrossAxisSize)
+            return tryAppend(itemMainAxisSize, itemCrossAxisSize)
         }
 
         ++itemIndex
-        cachedPlaceables[itemIndex] = placeable
-        measurables.add(measurable)
         currentLine.append(itemMainAxisSize, itemCrossAxisSize)
         return true
+    }
+
+    fun tryAppend(
+        measurable: Measurable,
+        placeable: Placeable?,
+        itemMainAxisSize: Dp,
+        itemCrossAxisSize: Dp,
+    ): Boolean {
+        if (tryAppend(itemMainAxisSize, itemCrossAxisSize)) {
+            cachedPlaceables[itemIndex] = placeable
+            measurables.add(measurable)
+            return true
+        }
+        return false
     }
 
     class FlowLine(
