@@ -136,3 +136,80 @@ internal interface LayoutAxisMeasurePolicy {
     }
 
 }
+
+object IntrinsicMeasurement {
+
+    fun intrinsicMainAxisSize(
+        measurables: List<IntrinsicMeasurable>,
+        itemMainAxisSize: IntrinsicMeasurable.(crossAxisSize: Dp) -> Dp,
+        availableCrossAxisSpace: Dp,
+    ): Dp {
+        var fixedSize = Dp.Zero
+        var totalWeight = 0f
+        var weightUnitSpace = Dp.Zero
+        for (measurable in measurables) {
+            val size = measurable.itemMainAxisSize(availableCrossAxisSpace)
+            (measurable.scopeData as? RowColumnScopeData)?.apply {
+                if (weight > 0f) {
+                    totalWeight += weight
+                    // calculate the required space, so that the measurable size occupies the specified weight of that space.
+                    weightUnitSpace = max(weightUnitSpace, size / weight)
+                    continue
+                }
+            }
+            fixedSize += size
+        }
+        return fixedSize + (weightUnitSpace * totalWeight)
+    }
+
+    fun intrinsicCrossAxisSize(
+        measurables: List<IntrinsicMeasurable>,
+        itemMainAxisSize: IntrinsicMeasurable.(crossAxisSize: Dp) -> Dp,
+        itemCrossAxisSize: IntrinsicMeasurable.(mainAxisSize: Dp) -> Dp,
+        availableMainAxisSpace: Dp,
+    ): Dp {
+        if (measurables.isEmpty()) {
+            return Dp.Zero
+        }
+        var fixedMainAxisSpace = Dp.Zero
+        var maxCrossAxisSize = Dp.Zero
+        var totalWeight = 0f
+        for (measurable in measurables) {
+            (measurable.scopeData as? RowColumnScopeData)?.apply {
+                if (weight > 0f) {
+                    totalWeight += weight
+                    continue
+                }
+            }
+            val remaining = availableMainAxisSpace - fixedMainAxisSpace
+            val mainAxisSize = minOf(measurable.itemMainAxisSize(Dp.Infinity), remaining)
+            fixedMainAxisSpace += mainAxisSize
+            maxCrossAxisSize = max(maxCrossAxisSize, measurable.itemCrossAxisSize(mainAxisSize))
+        }
+
+        val weightUnitSpace = when {
+            totalWeight <= 0f -> Dp.Zero
+            availableMainAxisSpace >= Dp.Infinity -> Dp.Infinity
+            else -> max(availableMainAxisSpace - fixedMainAxisSpace, Dp.Zero) / totalWeight
+        }
+
+        for (measurable in measurables) {
+            (measurable.scopeData as? RowColumnScopeData)?.apply {
+                if (weight > 0f) {
+                    maxCrossAxisSize = max(
+                        maxCrossAxisSize,
+                        measurable.itemCrossAxisSize(
+                            if (weightUnitSpace == Dp.Infinity) {
+                                Dp.Infinity
+                            } else {
+                                weightUnitSpace * weight
+                            }
+                        )
+                    )
+                }
+            }
+        }
+        return maxCrossAxisSize
+    }
+
+}

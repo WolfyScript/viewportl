@@ -104,4 +104,38 @@ internal class RowMeasurePolicy(
         }
     }
 
+    override fun IntrinsicMeasureScope.minIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Dp): Dp {
+        return IntrinsicMeasurement.intrinsicMainAxisSize(
+            measurables,
+            { minIntrinsicWidth(it) },
+            height
+        )
+    }
+
+    override fun IntrinsicMeasureScope.maxIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Dp): Dp {
+        return IntrinsicMeasurement.intrinsicMainAxisSize(
+            measurables,
+            { maxIntrinsicWidth(it) },
+            height
+        )
+    }
+
+    override fun IntrinsicMeasureScope.minIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Dp): Dp {
+        return IntrinsicMeasurement.intrinsicCrossAxisSize(
+            measurables,
+            { maxIntrinsicWidth(it) },
+            { minIntrinsicHeight(it) },
+            width
+        )
+    }
+
+    override fun IntrinsicMeasureScope.maxIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Dp): Dp {
+        return IntrinsicMeasurement.intrinsicCrossAxisSize(
+            measurables,
+            { maxIntrinsicWidth(it) },
+            { maxIntrinsicHeight(it) },
+            width
+        )
+    }
+
 }

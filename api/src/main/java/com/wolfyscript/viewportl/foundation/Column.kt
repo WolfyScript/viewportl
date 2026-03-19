@@ -7,6 +7,9 @@ import com.wolfyscript.viewportl.ui.layout.Arrangement
 import com.wolfyscript.viewportl.ui.layout.Constraints
 import com.wolfyscript.viewportl.ui.layout.Placeable
 import com.wolfyscript.viewportl.ui.layout.Dp
+import com.wolfyscript.viewportl.ui.layout.IntrinsicMeasurable
+import com.wolfyscript.viewportl.ui.layout.IntrinsicMeasureScope
+import com.wolfyscript.viewportl.ui.layout.IntrinsicMeasurement
 import com.wolfyscript.viewportl.ui.layout.LayoutAxisMeasurePolicy
 import com.wolfyscript.viewportl.ui.layout.LayoutOrientation
 import com.wolfyscript.viewportl.ui.layout.Measurable
@@ -112,5 +115,39 @@ internal class ColumnMeasurePolicy(
                 )
             }
         }
+    }
+
+    override fun IntrinsicMeasureScope.minIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Dp): Dp {
+        return IntrinsicMeasurement.intrinsicCrossAxisSize(
+            measurables,
+            { maxIntrinsicHeight(it) },
+            { minIntrinsicWidth(it) },
+            height
+        )
+    }
+
+    override fun IntrinsicMeasureScope.maxIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Dp): Dp {
+        return IntrinsicMeasurement.intrinsicCrossAxisSize(
+            measurables,
+            { maxIntrinsicHeight(it) },
+            { maxIntrinsicWidth(it) },
+            height
+        )
+    }
+
+    override fun IntrinsicMeasureScope.minIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Dp): Dp {
+        return IntrinsicMeasurement.intrinsicMainAxisSize(
+            measurables,
+            { minIntrinsicHeight(it) },
+            width
+        )
+    }
+
+    override fun IntrinsicMeasureScope.maxIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Dp): Dp {
+        return IntrinsicMeasurement.intrinsicMainAxisSize(
+            measurables,
+            { maxIntrinsicHeight(it) },
+            width
+        )
     }
 }
