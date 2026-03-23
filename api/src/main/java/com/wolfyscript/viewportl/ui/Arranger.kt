@@ -5,7 +5,7 @@ import com.wolfyscript.viewportl.ui.modifier.IntrinsicMeasureBlock
 import com.wolfyscript.viewportl.ui.modifier.ScopeDataModifierNode
 import com.wolfyscript.viewportl.ui.modifier.SimpleMeasureModification
 
-class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
+internal class NodeArrangerImpl(override val node: LayoutNode) : NodeArranger {
 
     private val layoutDirection: LayoutDirection = LayoutDirection.LtR
     override var width: Dp = Dp.Zero

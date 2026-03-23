@@ -1,9 +1,8 @@
 package com.wolfyscript.viewportl.ui
 
 import androidx.compose.runtime.ComposeNodeLifecycleCallback
-import com.wolfyscript.viewportl.ui.MeasurePolicy
 import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder
-import com.wolfyscript.viewportl.ui.Node
+import com.wolfyscript.viewportl.ui.layout.NodeArranger
 import com.wolfyscript.viewportl.ui.modifier.Modifier
 import java.util.concurrent.atomic.AtomicLong
 
@@ -22,7 +21,7 @@ class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCa
             modifierStack.update(value)
         }
 
-    override val arranger: NodeArrangerImpl = NodeArrangerImpl(this)
+    override val arranger: NodeArranger = NodeArrangerImpl(this)
     override var measurePolicy: MeasurePolicy = EmptyMeasurePolicy
         set(value) {
             // Node reused. MeasurePolicy was updated
