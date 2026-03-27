@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong
 private val nodeIdGeneration = AtomicLong(0)
 private fun generateNodeId(): Long = nodeIdGeneration.getAndIncrement()
 
-class LayoutNode(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCallback {
+class LayoutNode internal constructor(val id: Long = generateNodeId()) : Node, ComposeNodeLifecycleCallback {
 
     override var parent: Node? = null
     internal val children = mutableListOf<LayoutNode>()

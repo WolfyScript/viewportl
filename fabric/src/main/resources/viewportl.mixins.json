@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "com.wolfyscript.viewportl.fabric.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ServerPlayerOpenUIMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

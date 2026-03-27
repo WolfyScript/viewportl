@@ -22,7 +22,7 @@ import com.wolfyscript.viewportl.viewportl
 interface Node {
 
     companion object {
-        val Constructor: () -> Node = { ScafallProvider.get().viewportl.guiFactory.createLayoutNode() }
+        val Constructor: () -> Node = { LayoutNode() }
 
         val SetModifier: Node.(ModifierStackBuilder) -> Unit = { this.modifier = it }
         val SetMeasurePolicy: Node.(MeasurePolicy) -> Unit = { this.measurePolicy = it }

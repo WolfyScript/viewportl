@@ -30,9 +30,7 @@ import org.bukkit.plugin.Plugin
 
 class PaperViewportl(private val plugin: Plugin) : CommonViewportl(), Listener {
 
-    override val guiManager: ViewportlUIRuntimeManager = ViewportlUIRuntimeManagerImpl(this)
     override val guiFactory: GuiFactory = PaperGuiFactory(plugin)
-    override val registries: ViewportlRegistries = CommonViewportlRegistries(this)
 
     override fun onInit() {
 

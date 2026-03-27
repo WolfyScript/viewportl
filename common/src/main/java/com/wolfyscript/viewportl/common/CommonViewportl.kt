@@ -18,50 +18,18 @@
 
 package com.wolfyscript.viewportl.common
 
+import com.wolfyscript.scafall.loader.module.BasicModule
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.ViewportlClient
 import com.wolfyscript.viewportl.ViewportlServer
+import com.wolfyscript.viewportl.common.gui.ViewportlUIRuntimeManagerImpl
+import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
+import com.wolfyscript.viewportl.registry.ViewportlRegistries
+import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManager
 
-abstract class CommonViewportl : Viewportl {
+abstract class CommonViewportl : Viewportl, BasicModule<ViewportlServer, ViewportlClient>() {
 
-    override var server: ViewportlServer? = null
-        set(value) {
-            field = value
-            if (value != null) {
-                serverListeners.forEach { it(value) }
-                serverListeners.clear()
-            }
-        }
-    override var client: ViewportlClient? = null
-        set(value) {
-            field = value
-            if (value != null) {
-                clientListeners.forEach { it(value) }
-                clientListeners.clear()
-            }
-        }
-
-    private val clientListeners = mutableListOf<(ViewportlClient) -> Unit>()
-    private val serverListeners = mutableListOf<(ViewportlServer) -> Unit>()
-
-    override fun onInit() {
-
-    }
-
-    override fun onClientAvailable(fn: (client: ViewportlClient) -> Unit) {
-        if (client == null) {
-            clientListeners.add(fn)
-            return
-        }
-        fn(client!!)
-    }
-
-    override fun onServerAvailable(fn: (server: ViewportlServer) -> Unit) {
-        if (server == null) {
-            serverListeners.add(fn)
-            return
-        }
-        fn(server!!)
-    }
+    override val registries: ViewportlRegistries = CommonViewportlRegistries(this)
+    override val guiManager: ViewportlUIRuntimeManager = ViewportlUIRuntimeManagerImpl(this)
 
 }

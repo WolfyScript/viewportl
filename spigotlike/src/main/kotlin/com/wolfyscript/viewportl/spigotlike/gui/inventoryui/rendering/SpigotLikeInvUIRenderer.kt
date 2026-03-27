@@ -19,12 +19,9 @@
 package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.rendering
 
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
-import com.wolfyscript.viewportl.runtime.View
-import com.wolfyscript.viewportl.runtime.ViewType
 import com.wolfyscript.viewportl.ui.layout.Offset
 import com.wolfyscript.viewportl.ui.modifier.InventoryDrawScope
 import org.bukkit.Bukkit
-import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 
 abstract class SpigotLikeInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>(SpigotInvUIRenderContext::class.java) {
@@ -33,15 +30,6 @@ abstract class SpigotLikeInvUIRenderer : InvUIRenderer<SpigotInvUIRenderContext>
 
     override fun createContext(): SpigotInvUIRenderContext {
         return SpigotInvUIRenderContext(this)
-    }
-
-    protected fun getInventoryType(view: View): InventoryType {
-        return when (view.properties.type.type) {
-            ViewType.CUSTOM -> InventoryType.CHEST
-            ViewType.HOPPER -> InventoryType.HOPPER
-            ViewType.DROPPER -> InventoryType.DROPPER
-            ViewType.DISPENSER -> InventoryType.DISPENSER
-        }
     }
 
     override fun clearSlots(slots: Collection<Int>) {

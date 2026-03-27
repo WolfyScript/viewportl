@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "viewportl",
+  "version": "${version}",
+  "name": "viewportl",
+  "description": "",
+  "authors": [
+    "WolfyScript"
+  ],
+  "contact": {
+    "sources": "https://github.com/WolfyScript/viewportl"
+  },
+  "license": "CC0-1.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "value": "com.wolfyscript.viewportl.fabric.ViewportlFabricMod",
+        "adapter": "kotlin"
+      }
+    ]
+  },
+  "mixins": [
+    "viewportl.mixins.json"
+  ],
+  "depends": {
+    "scafall": "alpha0.4.0.0-SNAPSHOT",
+    "fabricloader": ">=0.16.14",
+    "minecraft": "~1.21.7",
+    "java": ">=21",
+    "fabric-api": "*",
+    "fabric-language-kotlin": "*"
+  }
+}

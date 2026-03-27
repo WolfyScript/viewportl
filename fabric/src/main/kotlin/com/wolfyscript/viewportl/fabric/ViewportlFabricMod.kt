@@ -1,0 +1,47 @@
+package com.wolfyscript.viewportl.fabric
+
+import com.wolfyscript.scafall.ScafallProvider
+import com.wolfyscript.scafall.identifier.Key
+import com.wolfyscript.viewportl.VIEWPORTL_NAMESPACE
+import net.fabricmc.api.ModInitializer
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
+import org.slf4j.LoggerFactory
+
+class ViewportlFabricMod : ModInitializer {
+
+    private val logger = LoggerFactory.getLogger(javaClass)
+    private lateinit var viewportl: ViewportlFabric
+
+    init {
+        ScafallProvider.whenReady {
+            viewportl = it.platformManager.registerModule(Key.scafall(VIEWPORTL_NAMESPACE)) {
+                ViewportlFabric(logger)
+            }
+        }
+    }
+
+    override fun onInitialize() {
+
+        ServerLifecycleEvents.SERVER_STARTING.register { mcServer ->
+            logger.info("[Viewportl] Server starting")
+
+            ScafallProvider.whenReady {
+                it.onServerAvailable {
+                    logger.info("[Viewportl] Init viewportl server...")
+
+                    viewportl.initServer(mcServer)
+
+                    viewportl.server?.onLoad()
+                }
+            }
+
+        }
+
+        ServerLifecycleEvents.SERVER_STOPPED.register { server ->
+
+            viewportl.server?.onUnload()
+        }
+
+    }
+
+}
