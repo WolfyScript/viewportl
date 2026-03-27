@@ -59,7 +59,8 @@ sequenceOf(
     "spigotlike",
     "spigot",
     "paper",
-    "sponge"
+    "sponge",
+    "fabric"
 ).forEach {
     include(":${it}")
     project(":${it}").projectDir = file(it)
