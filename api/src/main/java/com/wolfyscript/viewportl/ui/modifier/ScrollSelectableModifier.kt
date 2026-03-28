@@ -11,7 +11,7 @@ import com.wolfyscript.viewportl.viewportl
  * They allow you to select an item by scrolling and submit the selection by right-clicking.
  */
 fun ModifierStackBuilder.scrollSelect(onSubmit: (selectedItem: Int) -> Unit): ModifierStackBuilder =
-    push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createScrollSelectModifier(onSubmit))
+    push(ScrollSelectableModifierDataImpl(onSubmit))
 
 interface ScrollSelectableModifier : ModifierData<ScrollSelectableModifierNode> {
 

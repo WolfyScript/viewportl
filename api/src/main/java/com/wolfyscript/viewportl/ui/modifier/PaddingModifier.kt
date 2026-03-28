@@ -17,13 +17,13 @@ fun ModifierStackBuilder.padding(
     top: Dp = Dp.Zero,
     end: Dp = Dp.Zero,
     bottom: Dp = Dp.Zero,
-) = push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createPaddingModifier(start, top, end, bottom))
+) = push(PaddingModifier(start, top, end, bottom))
 
 fun ModifierStackBuilder.padding(
     horizontal: Dp = Dp.Zero,
     vertical: Dp = Dp.Zero,
 ) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createPaddingModifier(
+    PaddingModifier(
         horizontal,
         vertical,
         horizontal,
@@ -34,7 +34,7 @@ fun ModifierStackBuilder.padding(
 
 fun ModifierStackBuilder.padding(
     all: Dp = Dp.Zero,
-) = push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createPaddingModifier(all, all, all, all))
+) = push(PaddingModifier(all, all, all, all))
 
 
 

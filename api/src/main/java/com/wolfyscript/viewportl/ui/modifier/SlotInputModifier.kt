@@ -21,7 +21,7 @@ fun ModifierStackBuilder.slotInput(
     onValueChange: (stack: ItemStackSnapshot) -> Unit = { _ -> },
     value: () -> ItemStackSnapshot
 ) = push(
-    ScafallProvider.get().viewportl.guiFactory.modifierFactory.createSlotInputModifier(
+    SlotInputModifierImpl(
         canPlace,
         canTake,
         onValueChange,

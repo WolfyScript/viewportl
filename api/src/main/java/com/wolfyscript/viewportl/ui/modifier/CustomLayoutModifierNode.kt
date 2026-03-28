@@ -5,4 +5,4 @@ import com.wolfyscript.viewportl.ui.layout.Constraints
 import com.wolfyscript.viewportl.viewportl
 
 fun ModifierStackBuilder.modifyLayout(modifyFn: LayoutModifyScope.(Constraints) -> LayoutModification): ModifierStackBuilder =
-    push(ScafallProvider.get().viewportl.guiFactory.modifierFactory.createLayoutModifier(modifyFn))
+    push(LayoutModifierData(modifyFn))

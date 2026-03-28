@@ -3,6 +3,7 @@ package com.wolfyscript.viewportl.ui.modifier
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.ui.IntrinsicDimension
 import com.wolfyscript.viewportl.ui.IntrinsicSize
+import com.wolfyscript.viewportl.ui.SimpleModifierStackBuilder
 import com.wolfyscript.viewportl.ui.layout.Constraints
 import com.wolfyscript.viewportl.ui.layout.Dp
 import com.wolfyscript.viewportl.viewportl
@@ -86,7 +87,7 @@ fun interface IntrinsicMeasureBlock {
 }
 
 val Modifier
-    get() = ScafallProvider.get().viewportl.guiFactory.modifierFactory.createModifierStackBuilder()
+    get() = SimpleModifierStackBuilder()
 
 /**
  * Callback that builds the [ModifierStack]
