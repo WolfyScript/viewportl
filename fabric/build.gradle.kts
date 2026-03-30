@@ -1,3 +1,5 @@
+import utils.archiveName
+
 plugins {
     kotlin("jvm")
     `java-library`
@@ -5,24 +7,21 @@ plugins {
     id("viewportl.common.conventions")
     id("build.docker.run")
     alias(libs.plugins.fabric.loom)
+    alias(libs.plugins.shadow)
 }
 
 dependencies {
     api(project(":api"))
-    implementation(libs.scafall.spigot)
     implementation(libs.scafall.loader)
     api(project(":common"))
 
     minecraft(libs.minecraft)
-    mappings(loom.officialMojangMappings())
 
-    modImplementation(libs.fabric.loader)
-    modImplementation(libs.fabric.api)
+    implementation(libs.fabric.loader)
+    implementation(libs.fabric.api)
 }
 
 loom {
-    serverOnlyMinecraftJar()
-
     mods {
         create("viewportl") {
             sourceSet(sourceSets.main.get())
@@ -31,20 +30,40 @@ loom {
 }
 
 tasks {
-    // Disable remapping without having to disable the tasks
-    // This will get shaded into other platforms that then use their specific remapper instead.
-    // Additionally, this will be a public api, which should work across all platforms.
-    remapJar {
-        targetNamespace = "named"
+    processResources {
+        inputs.property("version", project.version)
+
+        filesMatching("fabric.mod.json") {
+            expand("version" to project.version)
+        }
     }
-    remapSourcesJar {
-        targetNamespace = "named"
-    }
-    assemble {
-        dependsOn(remapJar)
+    shadowJar {
+        archiveFileName.set("${archiveName("fabric", libs.versions.minecraft.get())}.jar")
+        dependencies {
+            include(project(":api"))
+            include(project(":common"))
+        }
+        metaInf.duplicatesStrategy = DuplicatesStrategy.FAIL
+        finalizedBy("fabric_copy")
     }
 }
 
 artifacts {
-    archives(tasks.remapJar)
+    archives(tasks.shadowJar)
+}
+
+minecraftServers {
+    libName.set("${archiveName("fabric", libs.versions.minecraft.get())}.jar")
+    servers {
+        register("fabric") {
+            destPath.set("mods")
+            destFileName.set("viewportl.jar")
+            version.set(libs.versions.minecraft.get())
+            type.set("FABRIC")
+            imageVersion.set("java25")
+            ports.add("25569:25565")
+            extraEnv.put("MODRINTH_PROJECTS", "fabric-api, fabric-language-kotlin")
+            extraEnv.put("FABRIC_LOADER_VERSION", libs.versions.fabric.loader.get())
+        }
+    }
 }
