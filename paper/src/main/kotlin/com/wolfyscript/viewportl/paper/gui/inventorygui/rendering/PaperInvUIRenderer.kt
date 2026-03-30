@@ -1,7 +1,7 @@
 package com.wolfyscript.viewportl.paper.gui.inventorygui.rendering
 
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.viewportl.common.gui.GuiHolderImpl
+import com.wolfyscript.viewportl.runtime.GuiHolderImpl
 import com.wolfyscript.viewportl.runtime.GuiHolder
 import com.wolfyscript.viewportl.runtime.UIRuntime
 import com.wolfyscript.viewportl.runtime.View

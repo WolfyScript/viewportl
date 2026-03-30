@@ -1,5 +1,6 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 
+import com.wolfyscript.viewportl.runtime.ViewImpl
 import com.wolfyscript.viewportl.ui.modifier.PointerEventScopeImpl
 import com.wolfyscript.viewportl.runtime.UIRuntime
 import com.wolfyscript.viewportl.runtime.View
@@ -10,6 +11,7 @@ import com.wolfyscript.viewportl.ui.layout.Offset
 import com.wolfyscript.viewportl.ui.modifier.ClickableModifierNode
 import com.wolfyscript.viewportl.ui.modifier.ScrollSelectableModifierNode
 import com.wolfyscript.viewportl.ui.modifier.SlotInputModifierNode
+import java.util.UUID
 
 abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandler<C> {
 
@@ -31,6 +33,17 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
     private fun Int.slotToVec() : Pair<Int, Int> {
         val y = this / 9
         return Pair(this - y * 9, y)
+    }
+
+    override fun findSlotInputAt(viewer: UUID, slotIndex: Int): SlotInputModifierNode? {
+        val root = (runtime.views[viewer] as? ViewImpl)?.root ?: return null
+        return getSlotInputFor(slotIndex, root)
+    }
+
+    override fun clicked(viewer: UUID, slotIndex: Int) {
+        (runtime.views[viewer] as? ViewImpl)?.root?.let {
+            onClick(slotIndex, it)
+        }
     }
 
     protected fun getSlotInputFor(slot: Int, root: Node): SlotInputModifierNode? {

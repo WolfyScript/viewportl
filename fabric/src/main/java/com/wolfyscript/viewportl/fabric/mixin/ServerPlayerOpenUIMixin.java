@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.wolfyscript.viewportl.fabric.inject.OpenInventoryUIExt;
 import com.wolfyscript.viewportl.fabric.server.ui.CustomUIContainer;
 import com.wolfyscript.viewportl.fabric.server.ui.CustomUIContainerMenu;
-import com.wolfyscript.viewportl.fabric.server.ui.inventory.UIContainersKt;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;

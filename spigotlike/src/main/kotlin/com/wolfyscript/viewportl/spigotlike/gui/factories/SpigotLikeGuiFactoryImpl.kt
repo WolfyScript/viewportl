@@ -18,7 +18,7 @@
 package com.wolfyscript.viewportl.spigotlike.gui.factories
 
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.UIRuntimeImpl
+import com.wolfyscript.viewportl.runtime.UIRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.factories.GuiFactoryCommon
 import com.wolfyscript.viewportl.runtime.UIRuntime
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler

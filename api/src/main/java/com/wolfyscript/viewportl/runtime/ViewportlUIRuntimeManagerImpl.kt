@@ -16,13 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.wolfyscript.viewportl.common.gui
+package com.wolfyscript.viewportl.runtime
 
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.runtime.PlayerViewRuntime
-import com.wolfyscript.viewportl.runtime.UIRuntime
-import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManager
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import kotlinx.coroutines.CoroutineScope

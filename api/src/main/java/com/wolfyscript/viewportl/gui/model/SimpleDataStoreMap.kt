@@ -1,8 +1,6 @@
-package com.wolfyscript.viewportl.common.gui.model
+package com.wolfyscript.viewportl.gui.model
 
 import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.viewportl.gui.model.DataStoreMap
-import com.wolfyscript.viewportl.gui.model.Store
 
 class SimpleDataStoreMap : DataStoreMap {
 

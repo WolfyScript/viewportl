@@ -41,10 +41,9 @@ class InventoryUIListener() : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onInvClick(event: InventoryClickEvent) {
         withHolder(event.inventory.holder) {
-            val valueHandler = ValueHandler()
             val interactionHandler = viewManager.interactionHandler
             if (interactionHandler is SpigotLikeInvUIInteractionHandler) {
-                interactionHandler.onClick(InventoryUIInteractionContext(viewManager, event, valueHandler))
+                interactionHandler.onClick(InventoryUIInteractionContext(viewManager, event))
             }
         }
     }
@@ -59,22 +58,11 @@ class InventoryUIListener() : Listener {
                 return@withHolder
             }
             if (viewManager.views[event.whoClicked.uniqueId] == null) return@withHolder
-            val valueHandler = ValueHandler()
             val interactionHandler = viewManager.interactionHandler
             if (interactionHandler !is SpigotLikeInvUIInteractionHandler) {
                 return@withHolder
             }
-            interactionHandler.onDrag(InventoryUIInteractionContext(viewManager, event, valueHandler))
-
-            if (!event.isCancelled) {
-                viewManager.viewportl.scafall.scheduler.syncTask(viewManager.viewportl.scafall.modInfo) {
-                    for (rawSlot in event.rawSlots) {
-                        if (rawSlot < event.inventory.size) {
-                            valueHandler.callSlotValueUpdate(rawSlot, event.inventory.getItem(rawSlot))
-                        }
-                    }
-                }
-            }
+            interactionHandler.onDrag(InventoryUIInteractionContext(viewManager, event))
 
         }
     }

@@ -12,13 +12,15 @@ class CacheInventoryDrawScope(
     override val nodeOffset: Offset,
     override val width: Int,
     override val height: Int,
-    val container: CustomUIContainer,
+    val container: CustomUIContainer?,
 ) : InventoryDrawScope {
 
     override fun drawStack(
         offset: Offset,
         stack: ItemStackSnapshot,
     ) {
+        if (container == null) return
+
         val finalPos = offset + nodeOffset
         val slot = finalPos.x.roundToSlots() + finalPos.y.roundToSlots() * 9
         if (slot < container.size) {
@@ -29,6 +31,8 @@ class CacheInventoryDrawScope(
     }
 
     override fun clear() {
+        if (container == null) return
+
         for (x in 0 until width) {
             for (y in 0 until height) {
                 container.setItem(

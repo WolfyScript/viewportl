@@ -13,15 +13,17 @@ import net.minecraft.world.item.ItemStack
 
 class FabricInvUIRenderer : InvUIRenderer<FabricInvUIRenderContext>(FabricInvUIRenderContext::class.java) {
 
-    internal var container: CustomUIContainer = createInventoryUI(27, Component.text("Inventory UI"))
+    internal var container: CustomUIContainer? = null
 
     override fun createContext(): FabricInvUIRenderContext {
         return FabricInvUIRenderContext(this)
     }
 
     override fun clearSlots(slots: Collection<Int>) {
-        for (i in 0 until container.containerSize) {
-            container.setItem(i, ItemStack.EMPTY)
+        container?.let {
+            for (i in 0 until it.containerSize) {
+                it.setItem(i, ItemStack.EMPTY)
+            }
         }
     }
 
@@ -49,7 +51,7 @@ class FabricInvUIRenderer : InvUIRenderer<FabricInvUIRenderContext>(FabricInvUIR
 
     private fun initInventoryUI(runtime: UIRuntime, view: View) {
         val finalTitle = view.properties.title.component ?: Component.text("Inventory UI")
-        container = createInventoryUI(view.properties.dimensions.inventorySize, finalTitle)
+        container = CustomUIContainer(view.properties.dimensions.inventorySize, view, runtime, finalTitle)
 
         ScafallProvider.get().server?.minecraftServer?.playerList?.let { playerList ->
             runtime.viewers.forEach {

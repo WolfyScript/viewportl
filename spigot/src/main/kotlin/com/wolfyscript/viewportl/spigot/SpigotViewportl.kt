@@ -19,7 +19,7 @@
 package com.wolfyscript.viewportl.spigot
 
 import com.wolfyscript.viewportl.common.CommonViewportl
-import com.wolfyscript.viewportl.common.gui.ViewportlUIRuntimeManagerImpl
+import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManagerImpl
 import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory

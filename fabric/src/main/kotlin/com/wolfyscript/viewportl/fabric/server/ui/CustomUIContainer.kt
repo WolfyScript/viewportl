@@ -1,5 +1,7 @@
 package com.wolfyscript.viewportl.fabric.server.ui
 
+import com.wolfyscript.viewportl.runtime.UIRuntime
+import com.wolfyscript.viewportl.runtime.View
 import net.kyori.adventure.text.Component
 import net.minecraft.core.NonNullList
 import net.minecraft.world.Container
@@ -9,6 +11,8 @@ import net.minecraft.world.item.ItemStack
 
 class CustomUIContainer(
     val size: Int,
+    val view: View,
+    val runtime: UIRuntime,
     val title: Component
 ) : Container {
 

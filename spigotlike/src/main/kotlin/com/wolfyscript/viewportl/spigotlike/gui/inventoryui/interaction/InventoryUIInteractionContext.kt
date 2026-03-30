@@ -7,5 +7,4 @@ import org.bukkit.event.inventory.InventoryInteractEvent
 data class InventoryUIInteractionContext(
     override val runtime: UIRuntime,
     val event: InventoryInteractEvent,
-    val valueHandler: ValueHandler
 ) : InteractionContext

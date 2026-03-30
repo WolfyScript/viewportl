@@ -3,6 +3,7 @@
   "package": "com.wolfyscript.viewportl.fabric.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ContainerMenuQuickcraftAccessor",
     "ServerPlayerOpenUIMixin"
   ],
   "server": [

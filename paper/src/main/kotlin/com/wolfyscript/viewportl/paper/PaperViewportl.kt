@@ -19,11 +19,7 @@
 package com.wolfyscript.viewportl.paper
 
 import com.wolfyscript.viewportl.common.CommonViewportl
-import com.wolfyscript.viewportl.common.gui.ViewportlUIRuntimeManagerImpl
-import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
-import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
-import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import com.wolfyscript.viewportl.paper.gui.PaperGuiFactory
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin

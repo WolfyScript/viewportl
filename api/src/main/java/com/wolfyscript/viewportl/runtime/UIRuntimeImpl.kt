@@ -1,36 +1,16 @@
-/*
- *     viewportl - multiplatform GUI framework to easily create reactive GUIs
- *     Copyright (C) 2024  WolfyScript
- *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-package com.wolfyscript.viewportl.common.gui
+package com.wolfyscript.viewportl.runtime
 
 import androidx.compose.runtime.BroadcastFrameClock
 import androidx.compose.runtime.Composable
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.common.gui.model.SimpleDataStoreMap
-import com.wolfyscript.viewportl.runtime.UIRuntime
-import com.wolfyscript.viewportl.runtime.View
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.DataStoreMap
+import com.wolfyscript.viewportl.gui.model.SimpleDataStoreMap
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.lang.System.nanoTime
-import java.util.*
+import java.util.Objects
+import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
 class UIRuntimeImpl(
@@ -74,7 +54,7 @@ class UIRuntimeImpl(
                 }
 
                 if (renderer.requestsNewFrames) {
-                    runtimeClock.sendFrame(nanoTime())
+                    runtimeClock.sendFrame(System.nanoTime())
                 } else {
                     // Renderer is rendering previous frame
                 }

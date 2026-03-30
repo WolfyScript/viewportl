@@ -18,8 +18,11 @@
 
 package com.wolfyscript.viewportl.gui.interaction
 
+import com.wolfyscript.scafall.wrappers.ScafallPlayer
 import com.wolfyscript.viewportl.runtime.UIRuntime
 import com.wolfyscript.viewportl.runtime.View
+import com.wolfyscript.viewportl.ui.modifier.SlotInputModifierNode
+import java.util.UUID
 
 /**
  * Handles the interaction of modifier e.g. [com.wolfyscript.viewportl.ui.modifier.clickable].
@@ -43,5 +46,9 @@ interface InteractionHandler<C: InteractionContext> {
     fun onClick(context: C)
 
     fun onDrag(context: C)
+
+    fun findSlotInputAt(viewer: UUID, slotIndex: Int): SlotInputModifierNode?
+
+    fun clicked(viewer: UUID, slotIndex: Int)
 
 }

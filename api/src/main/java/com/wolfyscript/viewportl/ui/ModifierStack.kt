@@ -6,7 +6,7 @@ import com.wolfyscript.viewportl.ui.modifier.*
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
-internal class ModifierStackImpl : ModifierStack {
+class ModifierStackImpl : ModifierStack {
 
     companion object {
         private const val ReuseNode = 0

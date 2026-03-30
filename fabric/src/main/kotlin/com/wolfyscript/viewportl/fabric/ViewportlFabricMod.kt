@@ -3,7 +3,10 @@ package com.wolfyscript.viewportl.fabric
 import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.identifier.Key
 import com.wolfyscript.viewportl.VIEWPORTL_NAMESPACE
+import com.wolfyscript.viewportl.common.commands.ViewportlCommands
 import net.fabricmc.api.ModInitializer
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import org.slf4j.LoggerFactory
 
@@ -35,6 +38,10 @@ class ViewportlFabricMod : ModInitializer {
                 }
             }
 
+        }
+
+        CommandRegistrationCallback.EVENT.register { dispatcher, context, selection ->
+            ViewportlCommands.register(dispatcher)
         }
 
         ServerLifecycleEvents.SERVER_STOPPED.register { server ->
