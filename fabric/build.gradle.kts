@@ -3,22 +3,22 @@ import utils.archiveName
 plugins {
     kotlin("jvm")
     `java-library`
-    id(libs.plugins.devtools.docker.minecraft.get().pluginId)
+    id(sharedLibs.plugins.devtools.docker.minecraft.get().pluginId)
     id("viewportl.common.conventions")
     id("build.docker.run")
-    alias(libs.plugins.fabric.loom)
-    alias(libs.plugins.shadow)
+    alias(sharedLibs.plugins.fabric.loom)
+    alias(sharedLibs.plugins.shadow)
 }
 
 dependencies {
     api(project(":api"))
-    implementation(libs.scafall.loader)
+    implementation(sharedLibs.scafall.loader)
     api(project(":common"))
 
-    minecraft(libs.minecraft)
+    minecraft(sharedLibs.minecraft)
 
-    implementation(libs.fabric.loader)
-    implementation(libs.fabric.api)
+    implementation(sharedLibs.fabric.loader)
+    implementation(sharedLibs.fabric.api)
 }
 
 loom {
@@ -38,7 +38,7 @@ tasks {
         }
     }
     shadowJar {
-        archiveFileName.set("${archiveName("fabric", libs.versions.minecraft.get())}.jar")
+        archiveFileName.set("${archiveName("fabric", sharedLibs.versions.minecraft.get())}.jar")
         dependencies {
             include(project(":api"))
             include(project(":common"))
@@ -53,17 +53,17 @@ artifacts {
 }
 
 minecraftServers {
-    libName.set("${archiveName("fabric", libs.versions.minecraft.get())}.jar")
+    libName.set("${archiveName("fabric", sharedLibs.versions.minecraft.get())}.jar")
     servers {
         register("fabric") {
             destPath.set("mods")
             destFileName.set("viewportl.jar")
-            version.set(libs.versions.minecraft.get())
+            version.set(sharedLibs.versions.minecraft.get())
             type.set("FABRIC")
             imageVersion.set("java25")
             ports.add("25569:25565")
             extraEnv.put("MODRINTH_PROJECTS", "fabric-api, fabric-language-kotlin")
-            extraEnv.put("FABRIC_LOADER_VERSION", libs.versions.fabric.loader.get())
+            extraEnv.put("FABRIC_LOADER_VERSION", sharedLibs.versions.fabric.loader.get())
         }
     }
 }

@@ -30,14 +30,14 @@ repositories {
 }
 
 dependencies {
-    compileOnly(files(libs::class.java.protectionDomain.codeSource.location))
+    compileOnly(files(sharedLibs::class.java.protectionDomain.codeSource.location))
 
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.get()}")
-    implementation(libs.plugins.paperweight.userdev.depNotation())
-    implementation(libs.plugins.devtools.docker.run.depNotation())
-    implementation(libs.plugins.devtools.docker.minecraft.depNotation())
-    implementation(libs.plugins.compose.compiler.depNotation())
-    implementation(libs.plugins.jetbrains.compose.depNotation())
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${sharedLibs.versions.kotlin.get()}")
+    implementation(sharedLibs.plugins.paperweight.userdev.depNotation())
+    implementation(sharedLibs.plugins.devtools.docker.run.depNotation())
+    implementation(sharedLibs.plugins.devtools.docker.minecraft.depNotation())
+    implementation(sharedLibs.plugins.compose.compiler.depNotation())
+    implementation(sharedLibs.plugins.jetbrains.compose.depNotation())
 }
 
 kotlin {

@@ -20,17 +20,17 @@ plugins {
     kotlin("jvm")
     id("viewportl.spigot.conventions")
 
-    alias(libs.plugins.shadow)
+    alias(sharedLibs.plugins.shadow)
 }
 
 description = "viewportl-spigot"
 
 dependencies {
-    compileOnly(libs.adventure.platform.bukkit)
-    implementation(libs.scafall.spigot)
+    compileOnly(sharedLibs.adventure.platform.bukkit)
+    implementation(sharedLibs.scafall.spigot)
     api(project(":common"))
 
-    paperweight.paperDevBundle(libs.versions.papermc.get())
+    paperweight.paperDevBundle(sharedLibs.versions.papermc.get())
 }
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION

@@ -20,25 +20,25 @@ plugins {
     kotlin("jvm")
     id("viewportl.spigot.conventions")
 
-    alias(libs.plugins.shadow)
+    alias(sharedLibs.plugins.shadow)
     id("build.docker.run")
-    alias(libs.plugins.resource.factory.bukkit)
+    alias(sharedLibs.plugins.resource.factory.bukkit)
 }
 
 description = "viewportl-spigot"
 
 dependencies {
-    compileOnly(libs.adventure.platform.bukkit)
-    implementation(libs.scafall.spigot)
-    implementation(libs.scafall.loader)
+    compileOnly(sharedLibs.adventure.platform.bukkit)
+    implementation(sharedLibs.scafall.spigot)
+    implementation(sharedLibs.scafall.loader)
     api(project(":common"))
     implementation(project(":spigotlike"))
 
-    paperweight.paperDevBundle(libs.versions.papermc.get())
+    paperweight.paperDevBundle(sharedLibs.versions.papermc.get())
 }
 
 fun archiveName(): String {
-    return "${rootProject.name}-${project.version}-${project.name}-${libs.versions.minecraft.get()}"
+    return "${rootProject.name}-${project.version}-${project.name}-${sharedLibs.versions.minecraft.get()}"
 }
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.REOBF_PRODUCTION
@@ -83,7 +83,7 @@ bukkitPluginYaml {
     name = "viewportl"
     version = project.version.toString()
     main = "com.wolfyscript.viewportl.spigot.SpigotLoaderPlugin"
-    apiVersion = libs.versions.minecraft.get() // Only support the latest Minecraft version!
+    apiVersion = sharedLibs.versions.minecraft.get() // Only support the latest Minecraft version!
 //    libraries.addAll(
 //        "androidx.compose.runtime:runtime:1.9.0",
 //        "androidx.compose.runtime:runtime-desktop:1.9.0",
@@ -103,7 +103,7 @@ minecraftServers {
     servers {
         register("spigot") {
             destFileName.set("viewportl.jar")
-            version.set(libs.versions.minecraft.get())
+            version.set(sharedLibs.versions.minecraft.get())
             type.set("SPIGOT")
             extraEnv.put("BUILD_FROM_SOURCE", "true")
             imageVersion.set("java21-graalvm") // graalvm contains the jdk required to build from source

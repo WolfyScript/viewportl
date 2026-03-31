@@ -20,8 +20,8 @@ import org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask
 
 plugins {
     kotlin("jvm")
-    alias(libs.plugins.artifactory)
-    alias(libs.plugins.fabric.loom) apply false
+    alias(sharedLibs.plugins.artifactory)
+    alias(sharedLibs.plugins.fabric.loom) apply false
 }
 
 repositories {

@@ -21,26 +21,26 @@ plugins {
     id("viewportl.spigot.conventions")
     id("build.docker.run")
 
-    alias(libs.plugins.shadow)
-    alias(libs.plugins.resource.factory.bukkit)
+    alias(sharedLibs.plugins.shadow)
+    alias(sharedLibs.plugins.resource.factory.bukkit)
 }
 
 description = "viewportl-spigot"
 
 dependencies {
-    compileOnly(libs.adventure.platform.bukkit)
-    implementation(libs.scafall.spigot)
-    implementation(libs.scafall.loader)
+    compileOnly(sharedLibs.adventure.platform.bukkit)
+    implementation(sharedLibs.scafall.spigot)
+    implementation(sharedLibs.scafall.loader)
     api(project(":common"))
     implementation(project(":spigotlike"))
 
-    paperweight.paperDevBundle(libs.versions.papermc.get())
+    paperweight.paperDevBundle(sharedLibs.versions.papermc.get())
 }
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
 
 fun archiveName(): String {
-    return "${rootProject.name}-${project.version}-${project.name}-${libs.versions.minecraft.get()}"
+    return "${rootProject.name}-${project.version}-${project.name}-${sharedLibs.versions.minecraft.get()}"
 }
 
 tasks {
@@ -73,7 +73,7 @@ bukkitPluginYaml {
     name = "viewportl"
     version = project.version.toString()
     main = "com.wolfyscript.viewportl.paper.PaperLoaderPlugin"
-    apiVersion = libs.versions.minecraft.get() // Only support the latest Minecraft version!
+    apiVersion = sharedLibs.versions.minecraft.get() // Only support the latest Minecraft version!
     authors.add("WolfyScript")
     depend.add("scafall")
 }
@@ -83,7 +83,7 @@ minecraftServers {
     servers {
         register("paper") {
             destFileName.set("viewportl.jar")
-            version.set(libs.versions.minecraft.get())
+            version.set(sharedLibs.versions.minecraft.get())
             type.set("PAPER")
             imageVersion.set("java21")
             ports.add("25570:25565")

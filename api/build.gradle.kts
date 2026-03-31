@@ -21,12 +21,12 @@ plugins {
     `java-library`
     `maven-publish`
     id("viewportl.common.conventions")
-    alias(libs.plugins.fabric.loom)
+    alias(sharedLibs.plugins.fabric.loom)
 }
 
 dependencies {
-    implementation(libs.scafall.loader)
-    minecraft(libs.minecraft)
+    implementation(sharedLibs.scafall.loader)
+    minecraft(sharedLibs.minecraft)
 }
 
 publishing {

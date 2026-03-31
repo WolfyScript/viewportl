@@ -21,13 +21,13 @@ plugins {
     `java-library`
     `maven-publish`
     id("viewportl.common.conventions")
-    alias(libs.plugins.fabric.loom)
+    alias(sharedLibs.plugins.fabric.loom)
 }
 
 dependencies {
     api(project(":api"))
 
-    minecraft(libs.minecraft)
+    minecraft(sharedLibs.minecraft)
 }
 
 tasks {

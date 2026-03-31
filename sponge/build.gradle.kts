@@ -26,8 +26,8 @@ plugins {
     kotlin("jvm")
     `java-library`
     `maven-publish`
-    alias(libs.plugins.shadow)
-    alias(libs.plugins.spongepowered.gradle)
+    alias(sharedLibs.plugins.shadow)
+    alias(sharedLibs.plugins.spongepowered.gradle)
     id("build.docker.run")
 }
 
@@ -41,18 +41,14 @@ repositories {
 }
 
 dependencies {
-    compileOnly(libs.spongepowered.api)
-    implementation(libs.scafall.loader)
-    implementation(libs.org.reflections)
+    compileOnly(sharedLibs.spongepowered.api)
+    implementation(sharedLibs.scafall.loader)
+    implementation(sharedLibs.org.reflections)
     api(project(":common"))
-    implementation(libs.scafall.loader)
+    implementation(sharedLibs.scafall.loader)
 }
 
-kotlin {
-    jvmToolchain(21)
-}
-
-fun archiveName() = "${project.rootProject.name}-${project.version}-spigot-${libs.versions.minecraft.get()}"
+fun archiveName() = "${project.rootProject.name}-${project.version}-spigot-${sharedLibs.versions.minecraft.get()}"
 
 tasks {
     named<ProcessResources>("processResources") {
@@ -70,7 +66,7 @@ tasks {
 }
 
 sponge {
-    apiVersion(libs.versions.sponge.api.get())
+    apiVersion(sharedLibs.versions.sponge.api.get())
     license("GNU GPL 3.0")
     loader {
         name(PluginLoaders.JAVA_PLAIN)
@@ -86,7 +82,7 @@ sponge {
             optional(false)
         }
         dependency("scafall") {
-            version(libs.versions.scafall.get().convertToEpochVer())
+            version(sharedLibs.versions.scafall.get().convertToEpochVer())
             loadOrder(LoadOrder.AFTER)
             optional(false)
         }

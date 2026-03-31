@@ -23,7 +23,7 @@ plugins {
     id("io.papermc.paperweight.userdev")
 }
 
-val libs = extensions.getByType(org.gradle.accessors.dm.LibrariesForLibs::class)
+val sharedLibs = extensions.getByType(org.gradle.accessors.dm.LibrariesForSharedLibs::class)
 
 repositories {
     mavenLocal()
