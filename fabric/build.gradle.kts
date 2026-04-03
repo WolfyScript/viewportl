@@ -31,10 +31,16 @@ loom {
 
 tasks {
     processResources {
-        inputs.property("version", project.version)
+        doNotTrackState("Always process resources to stay up-to-date with versions")
 
         filesMatching("fabric.mod.json") {
-            expand("version" to project.version)
+            expand(
+                "version" to project.version,
+                "minecraftVersion" to sharedLibs.versions.minecraft.get(),
+                "fabricLoaderVersion" to sharedLibs.versions.fabric.loader.get(),
+                "scafallVersion" to sharedLibs.versions.scafall.get(),
+                "javaVersion" to kotlin.target.compilerOptions.jvmTarget.get().target
+            )
         }
     }
     shadowJar {
