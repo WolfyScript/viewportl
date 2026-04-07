@@ -32,6 +32,14 @@ class CustomUIContainer(
         return itemStack
     }
 
+    override fun canPlaceItem(slot: Int, itemStack: ItemStack): Boolean {
+        return super.canPlaceItem(slot, itemStack)
+    }
+
+    override fun canTakeItem(into: Container, slot: Int, itemStack: ItemStack): Boolean {
+        return super.canTakeItem(into, slot, itemStack)
+    }
+
     override fun removeItemNoUpdate(slot: Int): ItemStack {
         return ContainerHelper.takeItem(items, slot)
     }
@@ -49,4 +57,5 @@ class CustomUIContainer(
     override fun clearContent() {
         items.clear()
     }
+
 }

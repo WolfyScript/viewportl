@@ -9,7 +9,7 @@ import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.ItemStack
-import java.util.Optional
+import java.util.*
 import kotlin.math.min
 
 class CustomUIContainerMenu(
@@ -161,25 +161,29 @@ class CustomUISlot(val slot: Slot) : Slot(slot.container, slot.index, slot.x, sl
         get() = (customContainer.runtime.interactionHandler as? FabricInvUIInteractionHandler)
 
     override fun mayPlace(itemStack: ItemStack): Boolean {
-        interactionHandler?.findSlotInputAt(customContainer.view.viewer, slot.index)?.let { input ->
+        interactionHandler?.findSlotInputAt(customContainer.view.viewer, slot.containerSlot)?.let { input ->
             return input.canPlace(itemStack.snapshot())
         }
         return false
     }
 
     override fun mayPickup(player: Player): Boolean {
-        interactionHandler?.findSlotInputAt(player.uuid, slot.index)?.let { input ->
+        interactionHandler?.findSlotInputAt(player.uuid, slot.containerSlot)?.let { input ->
             return input.canTake(item.snapshot())
         }
         return false
     }
 
     override fun setChanged() {
-        val slotInput = interactionHandler?.findSlotInputAt(customContainer.view.viewer, slot.index)
+        updateSlotInput()
+        slot.setChanged()
+    }
+
+    private fun updateSlotInput() {
+        val slotInput = interactionHandler?.findSlotInputAt(customContainer.view.viewer, slot.containerSlot)
         if (slotInput != null) {
             slotInput.onValueChange(item.snapshot())
         }
-        super.setChanged()
     }
 
     override fun getItem(): ItemStack {
@@ -187,15 +191,16 @@ class CustomUISlot(val slot: Slot) : Slot(slot.container, slot.index, slot.x, sl
     }
 
     override fun set(itemStack: ItemStack) {
-        slot.set(itemStack)
+        container.setItem(slot.containerSlot, itemStack)
+        this.setChanged()
     }
 
     override fun setByPlayer(itemStack: ItemStack) {
-        slot.setByPlayer(itemStack)
+        this.setByPlayer(itemStack, item)
     }
 
     override fun setByPlayer(itemStack: ItemStack, previous: ItemStack) {
-        slot.setByPlayer(itemStack, previous)
+        this.set(itemStack)
     }
 
     override fun getMaxStackSize(): Int {
@@ -235,7 +240,7 @@ class CustomUISlot(val slot: Slot) : Slot(slot.container, slot.index, slot.x, sl
     }
 
     override fun safeTake(amount: Int, maxAmount: Int, player: Player): ItemStack {
-        return slot.safeTake(amount, maxAmount, player)
+        return super.safeTake(amount, maxAmount, player)
     }
 
     override fun isHighlightable(): Boolean {
@@ -259,7 +264,7 @@ class CustomUISlot(val slot: Slot) : Slot(slot.container, slot.index, slot.x, sl
     }
 
     override fun onTake(player: Player, carried: ItemStack) {
-        slot.onTake(player, carried)
+        this.setChanged()
     }
 
     override fun remove(amount: Int): ItemStack {
@@ -267,11 +272,11 @@ class CustomUISlot(val slot: Slot) : Slot(slot.container, slot.index, slot.x, sl
     }
 
     override fun safeInsert(inputStack: ItemStack, inputAmount: Int): ItemStack {
-        return slot.safeInsert(inputStack, inputAmount)
+        return super.safeInsert(inputStack, inputAmount)
     }
 
     override fun safeInsert(stack: ItemStack): ItemStack {
-        return slot.safeInsert(stack)
+        return super.safeInsert(stack)
     }
 
     override fun checkTakeAchievements(carried: ItemStack) {}
