@@ -16,7 +16,7 @@ dependencies {
     api(project(":common"))
 
     minecraft(sharedLibs.minecraft)
-
+    implementation(sharedLibs.adventure.platform.fabric)
     implementation(sharedLibs.fabric.loader)
     implementation(sharedLibs.fabric.api)
 }
@@ -48,6 +48,10 @@ tasks {
         dependencies {
             include(project(":api"))
             include(project(":common"))
+
+            include(dependency("androidx.annotation:.*"))
+            include(dependency("androidx.collection:.*"))
+            include(dependency("androidx.compose.runtime:.*"))
         }
         metaInf.duplicatesStrategy = DuplicatesStrategy.FAIL
         finalizedBy("fabric_copy")

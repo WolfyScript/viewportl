@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.wolfyscript.viewportl.fabric.inject.OpenInventoryUIExt;
 import com.wolfyscript.viewportl.fabric.server.ui.CustomUIContainer;
 import com.wolfyscript.viewportl.fabric.server.ui.CustomUIContainerMenu;
-import net.minecraft.network.chat.Component;
+import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -49,7 +49,7 @@ public abstract class ServerPlayerOpenUIMixin extends Player implements OpenInve
             connection.send(new ClientboundOpenScreenPacket(
                 containerCounter,
                 menu.getType(),
-                (Component) container.getTitle()
+                NonWrappingComponentSerializer.INSTANCE.serialize(container.getTitle())
             ));
         }
 

@@ -54,10 +54,8 @@ class FabricInvUIRenderer : InvUIRenderer<FabricInvUIRenderContext>(FabricInvUIR
         container = CustomUIContainer(view.properties.dimensions.inventorySize, view, runtime, finalTitle)
 
         ScafallProvider.get().server?.minecraftServer?.playerList?.let { playerList ->
-            runtime.viewers.forEach {
-                playerList.getPlayer(it)?.let { player ->
-                    (player as OpenInventoryUIExt).`viewportl$openUIContainer`(container)
-                }
+            playerList.getPlayer(view.viewer)?.let { player ->
+                (player as OpenInventoryUIExt).`viewportl$openUIContainer`(container)
             }
         }
 

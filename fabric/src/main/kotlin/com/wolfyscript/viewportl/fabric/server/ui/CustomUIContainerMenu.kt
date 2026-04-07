@@ -2,12 +2,14 @@ package com.wolfyscript.viewportl.fabric.server.ui
 
 import com.wolfyscript.scafall.wrappers.snapshot
 import com.wolfyscript.viewportl.fabric.server.ui.inventory.FabricInvUIInteractionHandler
+import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.ChestMenu
 import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.ItemStack
+import java.util.Optional
 import kotlin.math.min
 
 class CustomUIContainerMenu(
@@ -21,10 +23,6 @@ class CustomUIContainerMenu(
             return super.addSlot(CustomUISlot(slot))
         }
         return super.addSlot(slot)
-    }
-
-    override fun quickMoveStack(player: Player, slotIndex: Int): ItemStack {
-        return super.quickMoveStack(player, slotIndex)
     }
 
     override fun moveItemStackTo(itemStack: ItemStack, startSlot: Int, endSlot: Int, backwards: Boolean): Boolean {
@@ -156,14 +154,14 @@ class CustomUISlot(val slot: Slot) : Slot(slot.container, slot.index, slot.x, sl
         require(slot.container is CustomUIContainer)
     }
 
-    val container: CustomUIContainer
+    val customContainer: CustomUIContainer
         get() = slot.container as CustomUIContainer
 
     private val interactionHandler: FabricInvUIInteractionHandler?
-        get() = (container.runtime.interactionHandler as? FabricInvUIInteractionHandler)
+        get() = (customContainer.runtime.interactionHandler as? FabricInvUIInteractionHandler)
 
     override fun mayPlace(itemStack: ItemStack): Boolean {
-        interactionHandler?.findSlotInputAt(container.view.viewer, slot.index)?.let { input ->
+        interactionHandler?.findSlotInputAt(customContainer.view.viewer, slot.index)?.let { input ->
             return input.canPlace(itemStack.snapshot())
         }
         return false
@@ -177,11 +175,109 @@ class CustomUISlot(val slot: Slot) : Slot(slot.container, slot.index, slot.x, sl
     }
 
     override fun setChanged() {
-        val slotInput = interactionHandler?.findSlotInputAt(container.view.viewer, slot.index)
+        val slotInput = interactionHandler?.findSlotInputAt(customContainer.view.viewer, slot.index)
         if (slotInput != null) {
             slotInput.onValueChange(item.snapshot())
         }
         super.setChanged()
     }
+
+    override fun getItem(): ItemStack {
+        return slot.item
+    }
+
+    override fun set(itemStack: ItemStack) {
+        slot.set(itemStack)
+    }
+
+    override fun setByPlayer(itemStack: ItemStack) {
+        slot.setByPlayer(itemStack)
+    }
+
+    override fun setByPlayer(itemStack: ItemStack, previous: ItemStack) {
+        slot.setByPlayer(itemStack, previous)
+    }
+
+    override fun getMaxStackSize(): Int {
+        return slot.maxStackSize
+    }
+
+    override fun getMaxStackSize(itemStack: ItemStack): Int {
+        return slot.maxStackSize
+    }
+
+    override fun allowModification(player: Player): Boolean {
+        return slot.allowModification(player)
+    }
+
+    override fun tryRemove(amount: Int, maxAmount: Int, player: Player): Optional<ItemStack> {
+        return slot.tryRemove(amount, maxAmount, player)
+    }
+
+    override fun hasItem(): Boolean {
+        return slot.hasItem()
+    }
+
+    override fun getContainerSlot(): Int {
+        return slot.containerSlot
+    }
+
+    override fun getNoItemIcon(): Identifier? {
+        return slot.noItemIcon
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return slot.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        return slot.hashCode()
+    }
+
+    override fun safeTake(amount: Int, maxAmount: Int, player: Player): ItemStack {
+        return slot.safeTake(amount, maxAmount, player)
+    }
+
+    override fun isHighlightable(): Boolean {
+        return slot.isHighlightable
+    }
+
+    override fun isActive(): Boolean {
+        return slot.isActive
+    }
+
+    override fun isFake(): Boolean {
+        return slot.isFake
+    }
+
+    override fun toString(): String {
+        return slot.toString()
+    }
+
+    override fun onQuickCraft(picked: ItemStack, original: ItemStack) {
+        slot.onQuickCraft(picked, original)
+    }
+
+    override fun onTake(player: Player, carried: ItemStack) {
+        slot.onTake(player, carried)
+    }
+
+    override fun remove(amount: Int): ItemStack {
+        return slot.remove(amount)
+    }
+
+    override fun safeInsert(inputStack: ItemStack, inputAmount: Int): ItemStack {
+        return slot.safeInsert(inputStack, inputAmount)
+    }
+
+    override fun safeInsert(stack: ItemStack): ItemStack {
+        return slot.safeInsert(stack)
+    }
+
+    override fun checkTakeAchievements(carried: ItemStack) {}
+
+    override fun onQuickCraft(picked: ItemStack, count: Int) {}
+
+    override fun onSwapCraft(count: Int) {}
 
 }
