@@ -34,8 +34,6 @@ interface Viewportl : Module<ViewportlServer, ViewportlClient> {
 
     val guiManager: ViewportlUIRuntimeManager
 
-    val guiFactory: GuiFactory
-
     val registries: ViewportlRegistries
 
     companion object

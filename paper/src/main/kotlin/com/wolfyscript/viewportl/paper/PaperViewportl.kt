@@ -19,14 +19,10 @@
 package com.wolfyscript.viewportl.paper
 
 import com.wolfyscript.viewportl.common.CommonViewportl
-import com.wolfyscript.viewportl.gui.factories.GuiFactory
-import com.wolfyscript.viewportl.paper.gui.PaperGuiFactory
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 
 class PaperViewportl(private val plugin: Plugin) : CommonViewportl(), Listener {
-
-    override val guiFactory: GuiFactory = PaperGuiFactory(plugin)
 
     override fun onInit() {
 

@@ -1,6 +1,10 @@
 package com.wolfyscript.viewportl
 
 import com.wolfyscript.scafall.loader.module.Client
+import com.wolfyscript.viewportl.gui.factories.GuiFactory
 
-@Deprecated("Not implemented nor used yet")
-interface ViewportlClient : Client
+interface ViewportlClient : Client {
+
+    val guiFactory: GuiFactory
+
+}

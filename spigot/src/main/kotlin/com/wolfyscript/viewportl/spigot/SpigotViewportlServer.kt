@@ -4,11 +4,15 @@ import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.ViewportlServer
 import com.wolfyscript.viewportl.common.commands.ViewportlCommands
+import com.wolfyscript.viewportl.gui.factories.GuiFactory
+import com.wolfyscript.viewportl.spigot.gui.factories.SpigotGuiFactory
 import com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction.InventoryUIListener
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 
 class SpigotViewportlServer(val viewportl: Viewportl, val plugin: Plugin) : ViewportlServer {
+
+    override val guiFactory: GuiFactory = SpigotGuiFactory(plugin)
 
     override fun onLoad() {
         Bukkit.getPluginManager().registerEvents(InventoryUIListener(), plugin)
