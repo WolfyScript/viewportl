@@ -12,7 +12,7 @@ class ScopedDataStoreMapStore : Store() {
     private val storeMap = mutableMapOf<Key, DataStoreMap>()
 
     fun getOrCreateStore(key: Key) : DataStoreMap {
-        return storeMap.getOrPut(key) { ScafallProvider.get().viewportl.guiFactory.dataStoreFactory.createDataStoreMap() }
+        return storeMap.getOrPut(key) { SimpleDataStoreMap() }
     }
 
     fun clearStore(key: Key) {

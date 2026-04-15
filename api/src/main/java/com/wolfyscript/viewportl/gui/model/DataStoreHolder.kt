@@ -1,12 +1,10 @@
 package com.wolfyscript.viewportl.gui.model
 
-import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.viewportl.viewportl
 import java.util.UUID
 
 class DataStoreHolder : StoreOwner {
 
-    override val sharedStore: DataStoreMap = ScafallProvider.get().viewportl.guiFactory.dataStoreFactory.createDataStoreMap()
+    override val sharedStore: DataStoreMap = SimpleDataStoreMap()
     private val viewerStores: MutableMap<UUID, DataStoreMap> = mutableMapOf()
 
     override fun getViewerStore(viewer: UUID): DataStoreMap {
@@ -18,7 +16,7 @@ class DataStoreHolder : StoreOwner {
     }
 
     fun addViewer(viewer: UUID) {
-        viewerStores[viewer] = ScafallProvider.get().viewportl.guiFactory.dataStoreFactory.createDataStoreMap()
+        viewerStores[viewer] = SimpleDataStoreMap()
     }
 
 }

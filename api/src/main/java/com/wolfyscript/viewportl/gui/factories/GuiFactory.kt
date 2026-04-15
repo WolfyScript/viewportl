@@ -36,6 +36,4 @@ interface GuiFactory {
 
     fun createInventoryInteractionHandler(): InteractionHandler<*>
 
-    val dataStoreFactory: DataStoreFactory
-
 }

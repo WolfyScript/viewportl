@@ -166,7 +166,7 @@ internal class NavEntryStoresMap : Store() {
     private val stores = mutableMapOf<NavKey, DataStoreMap>()
 
     fun storeFor(key: NavKey): DataStoreMap {
-        return stores.getOrPut(key) { ScafallProvider.get().viewportl.guiFactory.dataStoreFactory.createDataStoreMap() }
+        return stores.getOrPut(key) { SimpleDataStoreMap() }
     }
 
     fun clearStoreFor(key: NavKey) {
