@@ -5,6 +5,7 @@ import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.gui.input.TextInputCallback
 import com.wolfyscript.viewportl.gui.input.TextInputTabCompleteCallback
 import com.wolfyscript.viewportl.gui.rendering.Renderer
+import com.wolfyscript.viewportl.ui.Node
 import com.wolfyscript.viewportl.ui.ViewProperties
 import com.wolfyscript.viewportl.ui.ViewPropertiesOverride
 import java.util.UUID
@@ -13,6 +14,8 @@ import java.util.UUID
  * Holds the composition of the UI and other properties of the viewport (such as title, background, etc.)
  */
 interface View {
+
+    val root: Node
 
     /**
      * Renders this window state using the specified [renderer]

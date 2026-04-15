@@ -4,7 +4,15 @@ import com.wolfyscript.scafall.wrappers.ScafallPlayer
 
 interface GuiHolder {
 
-    val viewManager: UIRuntime
+    companion object {
+
+        fun of(runtime: UIRuntime, view: View, player: ScafallPlayer? = null): GuiHolder {
+            return GuiHolderImpl(view, runtime, player)
+        }
+
+    }
+
+    val runtime: UIRuntime
 
     val currentView: View
 

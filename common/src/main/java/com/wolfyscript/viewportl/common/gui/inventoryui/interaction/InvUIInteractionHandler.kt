@@ -1,6 +1,5 @@
 package com.wolfyscript.viewportl.common.gui.inventoryui.interaction
 
-import com.wolfyscript.viewportl.runtime.ViewImpl
 import com.wolfyscript.viewportl.ui.modifier.PointerEventScopeImpl
 import com.wolfyscript.viewportl.runtime.UIRuntime
 import com.wolfyscript.viewportl.runtime.View
@@ -36,12 +35,12 @@ abstract class InvUIInteractionHandler<C: InteractionContext> : InteractionHandl
     }
 
     override fun findSlotInputAt(viewer: UUID, slotIndex: Int): SlotInputModifierNode? {
-        val root = (runtime.views[viewer] as? ViewImpl)?.root ?: return null
+        val root = runtime.views[viewer]?.root ?: return null
         return getSlotInputFor(slotIndex, root)
     }
 
     override fun clicked(viewer: UUID, slotIndex: Int) {
-        (runtime.views[viewer] as? ViewImpl)?.root?.let {
+        runtime.views[viewer]?.root?.let {
             onClick(slotIndex, it)
         }
     }

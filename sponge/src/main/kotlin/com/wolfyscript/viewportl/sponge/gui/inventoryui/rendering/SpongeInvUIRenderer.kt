@@ -4,7 +4,6 @@ import com.wolfyscript.scafall.ScafallProvider
 import com.wolfyscript.scafall.wrappers.unwrap
 import com.wolfyscript.scafall.wrappers.world.items.ItemStackConfig
 import com.wolfyscript.scafall.wrappers.world.items.ScafallItemStack
-import com.wolfyscript.viewportl.runtime.GuiHolderImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.rendering.InvUIRenderer
 import com.wolfyscript.viewportl.runtime.GuiHolder
 import com.wolfyscript.viewportl.runtime.UIRuntime
@@ -49,7 +48,7 @@ class SpongeInvUIRenderer : InvUIRenderer<SpongeInvUIRenderContext>(SpongeInvUIR
     }
 
     override fun onViewInit(runtime: UIRuntime, view: View) {
-        val guiHolder: GuiHolder = GuiHolderImpl(view, runtime)
+        val guiHolder: GuiHolder = GuiHolder.of(runtime, view)
         val carrier = GuiCarrier(guiHolder)
 
         inventory = ViewableInventory.builder()

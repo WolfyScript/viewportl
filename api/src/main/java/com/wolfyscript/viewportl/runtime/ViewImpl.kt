@@ -53,7 +53,7 @@ val DefaultViewProperties = ViewProperties(
     title = ViewProperties.Title(null),
 )
 
-class ViewImpl internal constructor(
+internal class ViewImpl(
     parentCoroutineContext: CoroutineContext,
     override val viewer: UUID,
     override val viewportl: Viewportl,
@@ -69,7 +69,7 @@ class ViewImpl internal constructor(
     override val coroutineContext = parentCoroutineContext + compositionClock + job
 
     // Composition
-    val root = LayoutNode().apply {
+    override val root = LayoutNode().apply {
         measurePolicy = RootMeasurePolicy
     }
     val recomposer = Recomposer(coroutineContext)

@@ -22,7 +22,6 @@ import com.wolfyscript.scafall.spigot.api.wrappers.utils.snapshot
 import com.wolfyscript.scafall.spigot.api.wrappers.utils.wrap
 import com.wolfyscript.scafall.wrappers.snapshot
 import com.wolfyscript.scafall.wrappers.unwrap
-import com.wolfyscript.viewportl.runtime.ViewImpl
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.runtime.View
 import com.wolfyscript.viewportl.ui.modifier.SlotInputModifierNode
@@ -56,7 +55,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
         event.isCancelled = true // prevent any interaction, handle normal click & slot input separately
 
         isBusy = true
-        val root = (runtime.views[event.whoClicked.uniqueId] as? ViewImpl)?.root ?: return
+        val root = runtime.views[event.whoClicked.uniqueId]?.root ?: return
 
         val originalCursor = event.cursor
         val originalSlotStack = event.currentItem
@@ -403,7 +402,7 @@ class SpigotLikeInvUIInteractionHandler(val bukkitPlugin: Plugin) :
     override fun onDrag(context: InventoryUIInteractionContext) {
         val event = context.event as? InventoryDragEvent ?: return
         val view = runtime.views[event.whoClicked.uniqueId]
-        val root = (view as? ViewImpl)?.root ?: return
+        val root = view?.root ?: return
         val topInvSize = view.properties.dimensions.inventorySize
 
         // TODO: WIP

@@ -19,7 +19,6 @@
 package com.wolfyscript.viewportl.spigot
 
 import com.wolfyscript.viewportl.common.CommonViewportl
-import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManagerImpl
 import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
@@ -30,8 +29,8 @@ import org.bukkit.plugin.Plugin
 
 class SpigotViewportl(private val plugin: Plugin) : CommonViewportl(), Listener {
 
-    override val guiManager: ViewportlUIRuntimeManager = ViewportlUIRuntimeManagerImpl(this)
     override val guiFactory: GuiFactory = SpigotGuiFactory(plugin)
+    override val guiManager: ViewportlUIRuntimeManager = ViewportlUIRuntimeManager.create(this)
     override val registries: ViewportlRegistries = CommonViewportlRegistries(this)
 
     override fun onInit() {

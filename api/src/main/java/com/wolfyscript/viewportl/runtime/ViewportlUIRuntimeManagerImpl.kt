@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
-class ViewportlUIRuntimeManagerImpl(private val viewportl: Viewportl) : ViewportlUIRuntimeManager, CoroutineScope {
+internal class ViewportlUIRuntimeManagerImpl(private val viewportl: Viewportl) : ViewportlUIRuntimeManager, CoroutineScope {
 
     /*
      * TODO: Rework runtime system.
@@ -50,32 +50,34 @@ class ViewportlUIRuntimeManagerImpl(private val viewportl: Viewportl) : Viewport
         viewers: Set<UUID>,
         then: suspend (UIRuntime) -> Unit,
     ) {
-        launch {
-            val view: UIRuntime = if (viewers.size > 1) {
-                val owner = viewers.first()
-                val sharedView = sharedUIRuntimes[id] ?: viewportl.guiFactory.createUIRuntime(
-                    viewportl,
-                    coroutineContext,
-                    owner
-                )
+        viewportl.onServerAvailable { server ->
+            launch {
+                val view: UIRuntime = if (viewers.size > 1) {
+                    val owner = viewers.first()
+                    val sharedView = sharedUIRuntimes[id] ?: server.guiFactory.createUIRuntime(
+                        viewportl,
+                        coroutineContext,
+                        owner
+                    )
 
-                for (viewer in viewers) {
-                    val playerRuntimes = playerRuntimes.getOrPut(viewer) { PlayerViewRuntimeImpl(viewer, viewportl) }
-                    playerRuntimes.activeRuntime = sharedView
-                    sharedView.joinViewer(viewer)
+                    for (viewer in viewers) {
+                        val playerRuntimes = playerRuntimes.getOrPut(viewer) { PlayerViewRuntimeImpl(viewer, viewportl) }
+                        playerRuntimes.activeRuntime = sharedView
+                        sharedView.joinViewer(viewer)
+                    }
+
+                    sharedView
+                } else {
+                    val viewer = viewers.first()
+                    playerRuntimes.getOrPut(viewer) { PlayerViewRuntimeImpl(viewer, viewportl) }.getOwn(coroutineContext)
                 }
 
-                sharedView
-            } else {
-                val viewer = viewers.first()
-                playerRuntimes.getOrPut(viewer) { PlayerViewRuntimeImpl(viewer, viewportl) }.getOwn(coroutineContext)
-            }
+                synchronized(runtimes) {
+                    runtimes.put(view.id, view)
+                }
 
-            synchronized(runtimes) {
-                runtimes.put(view.id, view)
+                then(view)
             }
-
-            then(view)
         }
     }
 
@@ -89,19 +91,3 @@ class ViewportlUIRuntimeManagerImpl(private val viewportl: Viewportl) : Viewport
 
 }
 
-internal class PlayerViewRuntimeImpl(val player: UUID, val viewportl: Viewportl) : PlayerViewRuntime {
-
-    override var activeRuntime: UIRuntime? = null
-
-    private var usedCoroutineContext: CoroutineContext? = null
-    private var ownRuntime: UIRuntime? = null
-
-    override fun getOwn(coroutineContext: CoroutineContext): UIRuntime {
-        if (ownRuntime == null || usedCoroutineContext != coroutineContext) {
-            ownRuntime = viewportl.guiFactory.createUIRuntime(viewportl, coroutineContext, player)
-            usedCoroutineContext = coroutineContext
-        }
-        return ownRuntime!!
-    }
-
-}

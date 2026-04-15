@@ -80,7 +80,7 @@ class SpongeInventoryUIListener(
         val inventory = event.container()
         withGuiHolder(inventory) {
             event.context().get(EventContextKeys.PLAYER).ifPresent {
-                viewManager.views[it.uniqueId()]?.close()
+                runtime.views[it.uniqueId()]?.close()
             }
         }
     }

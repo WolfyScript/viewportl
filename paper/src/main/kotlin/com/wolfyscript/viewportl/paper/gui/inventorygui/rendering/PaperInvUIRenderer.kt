@@ -1,7 +1,6 @@
 package com.wolfyscript.viewportl.paper.gui.inventorygui.rendering
 
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.viewportl.runtime.GuiHolderImpl
 import com.wolfyscript.viewportl.runtime.GuiHolder
 import com.wolfyscript.viewportl.runtime.UIRuntime
 import com.wolfyscript.viewportl.runtime.View
@@ -28,7 +27,7 @@ class PaperInvUIRenderer() : SpigotLikeInvUIRenderer() {
     }
 
     private fun initInventory(view: View, runtime: UIRuntime) {
-        val guiHolder: GuiHolder = GuiHolderImpl(view, runtime)
+        val guiHolder: GuiHolder = GuiHolder.of(runtime, view)
         val holder = BukkitInventoryGuiHolder(guiHolder)
 
         // Paper has direct Adventure support, so use it for better titles!

@@ -22,7 +22,6 @@ import com.wolfyscript.scafall.loader.module.BasicModule
 import com.wolfyscript.viewportl.Viewportl
 import com.wolfyscript.viewportl.ViewportlClient
 import com.wolfyscript.viewportl.ViewportlServer
-import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManagerImpl
 import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.registry.ViewportlRegistries
 import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManager
@@ -30,6 +29,6 @@ import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManager
 abstract class CommonViewportl : Viewportl, BasicModule<ViewportlServer, ViewportlClient>() {
 
     override val registries: ViewportlRegistries = CommonViewportlRegistries(this)
-    override val guiManager: ViewportlUIRuntimeManager = ViewportlUIRuntimeManagerImpl(this)
+    override val guiManager: ViewportlUIRuntimeManager = ViewportlUIRuntimeManager.create(this)
 
 }

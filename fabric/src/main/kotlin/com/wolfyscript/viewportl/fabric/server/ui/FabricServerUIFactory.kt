@@ -1,7 +1,6 @@
 package com.wolfyscript.viewportl.fabric.server.ui
 
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.runtime.UIRuntimeImpl
 import com.wolfyscript.viewportl.common.gui.factories.GuiFactoryCommon
 import com.wolfyscript.viewportl.fabric.server.ui.inventory.FabricInvUIInteractionHandler
 import com.wolfyscript.viewportl.fabric.server.ui.inventory.FabricInvUIRenderer
@@ -18,7 +17,7 @@ class FabricServerUIFactory : GuiFactoryCommon() {
         parentCoroutineContext: CoroutineContext,
         viewer: UUID,
     ): UIRuntime {
-        return UIRuntimeImpl(
+        return UIRuntime.create(
             viewportl,
             parentCoroutineContext,
             viewer,

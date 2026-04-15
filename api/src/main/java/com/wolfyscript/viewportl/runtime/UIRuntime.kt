@@ -2,12 +2,12 @@ package com.wolfyscript.viewportl.runtime
 
 import androidx.compose.runtime.Composable
 import com.wolfyscript.viewportl.Viewportl
-import com.wolfyscript.viewportl.runtime.View
 import com.wolfyscript.viewportl.gui.interaction.InteractionHandler
 import com.wolfyscript.viewportl.gui.model.StoreOwner
 import com.wolfyscript.viewportl.gui.rendering.Renderer
 import kotlinx.coroutines.CoroutineScope
 import java.util.UUID
+import kotlin.coroutines.CoroutineContext
 
 /**
  * The [UIRuntime], manages the [View(s)][View] of a UI Interface for one or more players.
@@ -16,6 +16,21 @@ import java.util.UUID
  * provides the timings for UI updates and rendering, and manages the viewers.
  */
 interface UIRuntime : CoroutineScope, StoreOwner {
+
+    companion object {
+
+        fun create(
+            viewportl: Viewportl,
+            parentCoroutineContext: CoroutineContext,
+            owner: UUID,
+            // Handlers that handle rendering and interaction
+            renderer: Renderer<*>,
+            interactionHandler: InteractionHandler<*>,
+        ): UIRuntime {
+            return UIRuntimeImpl(viewportl, parentCoroutineContext, owner, renderer, interactionHandler)
+        }
+
+    }
 
     val id: Long
 

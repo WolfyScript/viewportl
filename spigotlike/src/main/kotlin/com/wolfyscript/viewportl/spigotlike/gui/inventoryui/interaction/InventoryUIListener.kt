@@ -41,9 +41,9 @@ class InventoryUIListener() : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onInvClick(event: InventoryClickEvent) {
         withHolder(event.inventory.holder) {
-            val interactionHandler = viewManager.interactionHandler
+            val interactionHandler = runtime.interactionHandler
             if (interactionHandler is SpigotLikeInvUIInteractionHandler) {
-                interactionHandler.onClick(InventoryUIInteractionContext(viewManager, event))
+                interactionHandler.onClick(InventoryUIInteractionContext(runtime, event))
             }
         }
     }
@@ -57,12 +57,12 @@ class InventoryUIListener() : Listener {
                 event.isCancelled = true
                 return@withHolder
             }
-            if (viewManager.views[event.whoClicked.uniqueId] == null) return@withHolder
-            val interactionHandler = viewManager.interactionHandler
+            if (runtime.views[event.whoClicked.uniqueId] == null) return@withHolder
+            val interactionHandler = runtime.interactionHandler
             if (interactionHandler !is SpigotLikeInvUIInteractionHandler) {
                 return@withHolder
             }
-            interactionHandler.onDrag(InventoryUIInteractionContext(viewManager, event))
+            interactionHandler.onDrag(InventoryUIInteractionContext(runtime, event))
 
         }
     }

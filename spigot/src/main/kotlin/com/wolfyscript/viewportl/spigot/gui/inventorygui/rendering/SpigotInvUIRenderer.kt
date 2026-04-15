@@ -1,7 +1,6 @@
 package com.wolfyscript.viewportl.spigot.gui.inventorygui.rendering
 
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.viewportl.runtime.GuiHolderImpl
 import com.wolfyscript.viewportl.runtime.GuiHolder
 import com.wolfyscript.viewportl.runtime.UIRuntime
 import com.wolfyscript.viewportl.runtime.View
@@ -28,7 +27,7 @@ class SpigotInvUIRenderer : SpigotLikeInvUIRenderer() {
     }
 
     private fun initiateUIInventory(runtime: UIRuntime, view: View) {
-        val guiHolder: GuiHolder = GuiHolderImpl(view, runtime)
+        val guiHolder: GuiHolder = GuiHolder.of(runtime, view)
         val holder = BukkitInventoryGuiHolder(guiHolder)
         val title: String? = view.properties.title.component?.let { LegacyComponentSerializer.legacySection().serialize(it) }
         inventory = when (view.properties.type.type) {

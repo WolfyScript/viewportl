@@ -1,7 +1,6 @@
 package com.wolfyscript.viewportl.sponge
 
 import com.wolfyscript.viewportl.common.CommonViewportl
-import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManagerImpl
 import com.wolfyscript.viewportl.common.registry.CommonViewportlRegistries
 import com.wolfyscript.viewportl.runtime.ViewportlUIRuntimeManager
 import com.wolfyscript.viewportl.gui.factories.GuiFactory
@@ -20,8 +19,8 @@ import java.lang.invoke.MethodHandles
 
 class SpongeViewportl(val plugin: PluginContainer) : CommonViewportl() {
 
-    override val guiManager: ViewportlUIRuntimeManager = ViewportlUIRuntimeManagerImpl(this)
     override val guiFactory: GuiFactory = GuiFactoryImpl()
+    override val guiManager: ViewportlUIRuntimeManager = ViewportlUIRuntimeManager.create(this)
     override val registries: ViewportlRegistries = CommonViewportlRegistries(this)
 
     override fun onInit() {

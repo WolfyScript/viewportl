@@ -13,7 +13,7 @@ import java.util.Objects
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
-class UIRuntimeImpl(
+internal class UIRuntimeImpl(
     override val viewportl: Viewportl,
     parentCoroutineContext: CoroutineContext,
     override val owner: UUID,
@@ -21,6 +21,7 @@ class UIRuntimeImpl(
     override val renderer: Renderer<*>,
     override val interactionHandler: InteractionHandler<*>,
 ) : UIRuntime {
+
     override val id: Long = NEXT_ID++
 
     override val viewers: MutableSet<UUID> = mutableSetOf()
