@@ -6,20 +6,28 @@ import com.wolfyscript.viewportl.VIEWPORTL_NAMESPACE
 import com.wolfyscript.viewportl.common.commands.ViewportlCommands
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
-import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import org.slf4j.LoggerFactory
 
 class ViewportlFabricMod : ModInitializer {
 
+    companion object {
+        private var instance: ViewportlFabric? = null
+
+        val viewportl: ViewportlFabric
+            get() = instance!!
+
+    }
+
     private val logger = LoggerFactory.getLogger(javaClass)
-    private lateinit var viewportl: ViewportlFabric
+    internal lateinit var viewportl: ViewportlFabric
 
     init {
         ScafallProvider.whenReady {
             viewportl = it.platformManager.registerModule(Key.scafall(VIEWPORTL_NAMESPACE)) {
                 ViewportlFabric(logger)
             }
+            instance = viewportl
         }
     }
 

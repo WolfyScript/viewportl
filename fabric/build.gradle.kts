@@ -22,9 +22,12 @@ dependencies {
 }
 
 loom {
+    splitEnvironmentSourceSets()
+
     mods {
         create("viewportl") {
             sourceSet(sourceSets.main.get())
+            sourceSet("client")
         }
     }
 }

@@ -18,10 +18,20 @@
         "value": "com.wolfyscript.viewportl.fabric.ViewportlFabricMod",
         "adapter": "kotlin"
       }
+    ],
+    "client": [
+      {
+        "value": "com.wolfyscript.viewportl.fabric.client.ViewportlClientFabricMod",
+        "adapter": "kotlin"
+      }
     ]
   },
   "mixins": [
-    "viewportl.mixins.json"
+    "viewportl.mixins.json",
+    {
+      "config": "viewportl.client.mixins.json",
+      "environment": "client"
+    }
   ],
   "depends": {
     "scafall": "${scafallVersion}",
