@@ -63,7 +63,7 @@ internal class ViewportlUIRuntimeManagerImpl(private val viewportl: Viewportl) :
                     for (viewer in viewers) {
                         val playerRuntimes = playerRuntimes.getOrPut(viewer) { PlayerViewRuntimeImpl(viewer, viewportl) }
                         playerRuntimes.activeRuntime = sharedView
-                        sharedView.joinViewer(viewer)
+                        sharedView.addViewer(viewer)
                     }
 
                     sharedView
