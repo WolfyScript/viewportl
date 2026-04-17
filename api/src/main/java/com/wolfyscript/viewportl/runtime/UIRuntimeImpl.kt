@@ -12,12 +12,12 @@ import kotlinx.coroutines.launch
 import java.util.Objects
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class UIRuntimeImpl(
     override val viewportl: Viewportl,
     parentCoroutineContext: CoroutineContext,
     override val owner: UUID,
-    // Handlers that handle rendering and interaction
     override val renderer: Renderer<*>,
     override val interactionHandler: InteractionHandler<*>,
 ) : UIRuntime {
@@ -56,11 +56,9 @@ internal class UIRuntimeImpl(
 
                 if (renderer.requestsNewFrames) {
                     runtimeClock.sendFrame(System.nanoTime())
-                } else {
-                    // Renderer is rendering previous frame
                 }
 
-                delay(50)
+                delay(50.milliseconds)
             }
         }
     }
@@ -69,14 +67,14 @@ internal class UIRuntimeImpl(
         return viewerStores[viewer] ?: throw IllegalStateException("Viewer $viewer not part of runtime")
     }
 
-    override fun setContent(content: @Composable (() -> Unit)) {
+    override fun setContent(content: @Composable () -> Unit) {
         this.viewContent = content
         for (view in views.values) {
             view.close()
         }
         views.clear()
         for (viewer in viewers) {
-            views[viewer] = ViewImpl(coroutineContext, viewer, viewportl, this, content)
+            resetView(viewer, viewContent!!)
         }
         startMainLoop()
     }
@@ -89,33 +87,30 @@ internal class UIRuntimeImpl(
         running = false
     }
 
-    override fun joinViewer(uuid: UUID) {
+    override fun addViewer(uuid: UUID) {
         viewers.add(uuid)
         viewerStores[uuid] = SimpleDataStoreMap()
-        if (viewContent != null && !viewers.contains(uuid)) { // incase the content has been set already
-            views[uuid] = ViewImpl(coroutineContext, uuid, viewportl, this, viewContent!!)
-            launch {
-                views[uuid]?.let {
-                    renderer.onViewInit(this@UIRuntimeImpl, it)
-                }
-            }
+        if (viewContent != null && !viewers.contains(uuid)) {
+            resetView(uuid, viewContent!!)
         }
     }
 
-    override fun leaveViewer(uuid: UUID) {
+    private fun resetView(viewer: UUID, content: @Composable () -> Unit) {
+        views[viewer] = ViewImpl(coroutineContext, viewer, viewportl, this, content)
+    }
+
+    override fun removeViewer(uuid: UUID) {
         viewers.remove(uuid)
         viewerStores.remove(uuid)
         views.remove(uuid)?.close()
     }
 
-    override fun openView() {
+    override fun openViews() {
         for (view in views.values) {
             view.render(renderer)
 
             interactionHandler.onViewOpened(view)
             renderer.onViewInit(this@UIRuntimeImpl, view)
-
-            println("COMPLETE")
         }
     }
 

@@ -36,11 +36,10 @@ object ExampleCommand {
                             val exampleId = IdentifierArgument.getId(ctx, EXAMPLE_ID_ARG).toKey()
 
                             ScafallProvider.get().scheduler.asyncTask(ScafallProvider.get().modInfo) {
-                                viewportl.guiManager.getViewRuntime(executor.uuid).let { playerRuntime ->
-                                    playerRuntime.joinViewer(executor.uuid)
-                                    playerRuntime.setContent(examples[exampleId] ?: {})
-                                    playerRuntime.openView()
-                                }
+                                val runtime = viewportl.guiManager.getViewRuntime(executor.uuid)
+                                runtime.addViewer(executor.uuid)
+                                runtime.setContent(examples[exampleId] ?: {})
+                                runtime.openViews()
                             }
 
                             return@executes 1

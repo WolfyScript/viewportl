@@ -38,11 +38,11 @@ interface UIRuntime : CoroutineScope, StoreOwner {
         content: @Composable () -> Unit,
     )
 
-    fun openView()
+    fun openViews()
 
-    fun joinViewer(uuid: UUID)
+    fun addViewer(uuid: UUID)
 
-    fun leaveViewer(uuid: UUID)
+    fun removeViewer(uuid: UUID)
 
     fun dispose()
 
