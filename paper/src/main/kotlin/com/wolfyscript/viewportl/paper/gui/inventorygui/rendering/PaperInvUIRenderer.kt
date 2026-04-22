@@ -39,7 +39,7 @@ class PaperInvUIRenderer() : SpigotLikeInvUIRenderer() {
         }
         holder.setActiveInventory(inventory)
         if (inventory != null) {
-            ScafallProvider.get().scheduler.syncTask(ScafallProvider.get().modInfo) {
+            ScafallProvider.get().scheduler.sync(ScafallProvider.get().modInfo) {
                 runtime.viewers.forEach {
                     Bukkit.getPlayer(it)?.openInventory(inventory!!)
                 }

@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.wolfyscript.scafall.adventure.deser
 import com.wolfyscript.scafall.adventure.vanilla
-import com.wolfyscript.scafall.wrappers.snapshot
+import com.wolfyscript.scafall.wrappers.minecraft.snapshot
 import com.wolfyscript.viewportl.ui.layout.Arrangement
 import com.wolfyscript.viewportl.ui.modifier.Modifier
 import com.wolfyscript.viewportl.ui.modifier.ModifierStackBuilder

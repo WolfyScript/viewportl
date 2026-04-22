@@ -20,8 +20,8 @@ package com.wolfyscript.viewportl.spigotlike.gui.inventoryui.interaction
 
 import com.wolfyscript.scafall.spigot.api.wrappers.utils.snapshot
 import com.wolfyscript.scafall.spigot.api.wrappers.utils.wrap
-import com.wolfyscript.scafall.wrappers.snapshot
-import com.wolfyscript.scafall.wrappers.unwrap
+import com.wolfyscript.scafall.wrappers.minecraft.snapshot
+import com.wolfyscript.scafall.wrappers.minecraft.unwrap
 import com.wolfyscript.viewportl.common.gui.inventoryui.interaction.InvUIInteractionHandler
 import com.wolfyscript.viewportl.runtime.View
 import com.wolfyscript.viewportl.ui.modifier.SlotInputModifierNode

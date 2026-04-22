@@ -3,7 +3,7 @@ package com.wolfyscript.viewportl.common.commands
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.wolfyscript.scafall.ScafallProvider
-import com.wolfyscript.scafall.wrappers.wrap
+import com.wolfyscript.scafall.wrappers.minecraft.wrap
 import com.wolfyscript.viewportl.viewportl
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
@@ -22,7 +22,7 @@ object InputCommand {
 
                     viewportl.guiManager.getViewRuntime(executor.uuid).let { runtime ->
                         runtime.views[executor.uuid]?.let { window ->
-                            ScafallProvider.get().scheduler.syncTask(ScafallProvider.get().modInfo) {
+                            ScafallProvider.get().scheduler.sync(ScafallProvider.get().modInfo) {
                                 window.onTextInput?.run(
                                     executor.wrap(),
                                     runtime,

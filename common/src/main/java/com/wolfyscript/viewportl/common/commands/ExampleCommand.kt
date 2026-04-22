@@ -35,7 +35,7 @@ object ExampleCommand {
                             val executor = ctx.source.player ?: return@executes 0
                             val exampleId = IdentifierArgument.getId(ctx, EXAMPLE_ID_ARG).toKey()
 
-                            ScafallProvider.get().scheduler.asyncTask(ScafallProvider.get().modInfo) {
+                            ScafallProvider.get().scheduler.async(ScafallProvider.get().modInfo) {
                                 val runtime = viewportl.guiManager.getViewRuntime(executor.uuid)
                                 runtime.addViewer(executor.uuid)
                                 runtime.setContent(examples[exampleId] ?: {})

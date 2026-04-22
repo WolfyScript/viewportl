@@ -1,7 +1,7 @@
 package com.wolfyscript.viewportl.fabric.server.ui
 
-import com.wolfyscript.scafall.wrappers.snapshot
 import com.wolfyscript.viewportl.fabric.server.ui.inventory.FabricInvUIInteractionHandler
+import com.wolfyscript.scafall.wrappers.minecraft.snapshot
 import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.ChestMenu

@@ -7,7 +7,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.wolfyscript.scafall.adventure.deser
 import com.wolfyscript.scafall.adventure.vanilla
 import com.wolfyscript.scafall.identifier.Key
-import com.wolfyscript.scafall.wrappers.snapshot
+import com.wolfyscript.scafall.wrappers.minecraft.snapshot
 import com.wolfyscript.viewportl.foundation.Button
 import com.wolfyscript.viewportl.foundation.Column
 import com.wolfyscript.viewportl.foundation.Icon
